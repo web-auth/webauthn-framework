@@ -13,7 +13,7 @@ If the response is valid, the counter for the credential will be updated and the
 
 # Assertion Request
 
-To perform a Public Key Credential Request, you need to instantiate a `U2FAuthentication\Fido2\PublicKeyCredentialRequestOptions` object.
+To perform a Public Key Credential Request, you need to instantiate a `Webauthn\PublicKeyCredentialRequestOptions` object.
 This object will need:
 
 * A challenge (random binary string)
@@ -47,7 +47,7 @@ We recommend to set 60 seconds (60000 milliseconds).
 ## Allowed Credentials
 
 The user trying to authenticate must have registered at least one device.
-For this user, you have to get all `U2FAuthentication\Fido2\PublicKeyCredentialDescriptor` associated to his account.
+For this user, you have to get all `Webauthn\PublicKeyCredentialDescriptor` associated to his account.
 
 ## User Verification
 
@@ -76,8 +76,8 @@ The Following example is totally fictive.
 
 ```php
 <?php
-use U2FAuthentication\Fido2\AuthenticationExtensions\AuthenticationExtension;
-use U2FAuthentication\Fido2\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 $locationExtension = new AuthenticationExtension('loc', true); // Location of the device required during the creation process
 
@@ -92,9 +92,9 @@ $creationExtensions->add($locationExtension);
 
 declare(strict_types=1);
 
-use U2FAuthentication\Fido2\AuthenticationExtensions\AuthenticationExtension;
-use U2FAuthentication\Fido2\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use U2FAuthentication\Fido2\PublicKeyCredentialRequestOptions;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 // Extensions
 $extensions = new AuthenticationExtensionsClientInputs();
@@ -190,7 +190,7 @@ The only exception is that you have to instantiate a Authenticator Assertion Res
 
 ### Authenticator Assertion Response Validator
 
-The `U2FAuthentication\Fido2\AuthenticatorAssertionResponseValidator` class corresponds to the Authenticator Assertion Response Validator.
+The `Webauthn\AuthenticatorAssertionResponseValidator` class corresponds to the Authenticator Assertion Response Validator.
 This class requires the Credential Repository service and the CBOR Decoder service.
 
 ```php
@@ -198,7 +198,7 @@ This class requires the Credential Repository service and the CBOR Decoder servi
 
 declare(strict_types=1);
 
-use U2FAuthentication\Fido2\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
     $credentialIdRepository, // The Credential Repository service
@@ -229,7 +229,7 @@ $data = '
 $publicKeyCredential = $publicKeyCredentialLoader->load($data);
 ```
 
-If no exception is thrown, the `$publicKeyCredential` is a `U2FAuthentication\Fido2\PublicKeyCredential` object.
+If no exception is thrown, the `$publicKeyCredential` is a `Webauthn\PublicKeyCredential` object.
 
 ## Response Verification
 
@@ -246,7 +246,7 @@ The first is easy to perform:
 
 declare(strict_types=1);
 
-use U2FAuthentication\Fido2\AuthenticatorAssertionResponse;
+use Webauthn\AuthenticatorAssertionResponse;
 
 $authenticatorAssertionResponse = $publicKeyCredential->getResponse();
 if (!$authenticatorAssertionResponse instanceof AuthenticatorAssertionResponse) {
@@ -297,13 +297,13 @@ declare(strict_types=1);
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use U2FAuthentication\Fido2\AttestationStatement\AttestationObjectLoader;
-use U2FAuthentication\Fido2\AttestationStatement\AttestationStatementSupportManager;
-use U2FAuthentication\Fido2\AttestationStatement\FidoU2FAttestationStatementSupport;
-use U2FAuthentication\Fido2\AttestationStatement\NoneAttestationStatementSupport;
-use U2FAuthentication\Fido2\AttestationStatement\PackedAttestationStatementSupport;
-use U2FAuthentication\Fido2\AuthenticatorAssertionResponseValidator;
-use U2FAuthentication\Fido2\PublicKeyCredentialLoader;
+use Webauthn\AttestationStatement\AttestationObjectLoader;
+use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
+use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\PublicKeyCredentialLoader;
 
 
 // Retrieve the Options passed to the device

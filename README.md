@@ -15,6 +15,17 @@ Webauthn Framework
 
 # Documentation
 
+## Library
+
+With this library, you can add multi-factor authentication like FIDO U2F does or add passwordless authentication support for your application using the new FIDO2 Webauthn specification.
+
+There are two steps to perform:
+
+* [Associate the device to your user (Public Key Credential Creation)](doc/library/PublicKeyCredentialCreation.md)
+* [Check authentication request (Public Key Credential Request)](doc/library/PublicKeyCredentialRequest.md)
+
+## Symfony Bundle
+
 *To be written*
 
 # Support
