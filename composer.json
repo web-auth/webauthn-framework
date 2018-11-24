@@ -38,9 +38,6 @@
         "thecodingmachine/safe": "^0.1",
         "beberlei/assert": "^3.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": "^7.4"
-    },
     "replace": {
         "web-authn/webauthn-lib": "self.version",
         "web-authn/webauthn-symfony-bundle": "self.version"
