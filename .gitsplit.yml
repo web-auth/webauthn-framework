@@ -1,0 +1,10 @@
+splits:
+    - prefix: "src/library"
+      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
+    - prefix: "src/symfony"
+      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
+
+origins:
+    - ^master$
+    - ^v\d+\.\d+$
+    - ^v\d+\.\d+\.\d+.*$

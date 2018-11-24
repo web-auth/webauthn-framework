@@ -1,0 +1,19 @@
+{
+    "timeout": 20,
+    "source": {
+        "directories": [
+            "src/library",
+            "src/symfony"
+        ],
+        "exclude": [
+            "src\/*\/tests"
+        ]
+    },
+    "mutators": {
+        "@default": true,
+        "MethodCallRemoval": false
+    },
+    "logs": {
+        "text": "infection-log.txt"
+    }
+}

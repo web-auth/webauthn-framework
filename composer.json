@@ -1,0 +1,56 @@
+{
+    "name": "web-auth/webauthn-framework",
+    "description": "FIDO2/Webauthn library for PHP and Symfony Bundle.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [],
+    "homepage": "https://github.com/web-auth/webauthn-framework",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },{
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/webauthn-framework/contributors"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\": "src/library/src/",
+            "Webauthn\\Bundle\\": "src/bundle/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webauthn\\Tests\\Functional\\": "src/library/tests/functional/",
+            "Webauthn\\Tests\\Unit\\": "src/library/tests/unit/",
+            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\Bundle\\Tests\\Unit\\": "src/symfony/tests/unit/"
+        }
+    },
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-mbstring": "*",
+        "spomky-labs/base64url": "^2.0",
+        "spomky-labs/cbor-php": "^1.0.2",
+        "thecodingmachine/safe": "^0.1",
+        "beberlei/assert": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4"
+    },
+    "replace": {
+        "web-authn/webauthn-lib": "self.version",
+        "web-authn/webauthn-symfony-bundle": "self.version"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
