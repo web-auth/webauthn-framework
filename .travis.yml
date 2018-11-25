@@ -28,5 +28,5 @@ script:
     - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_success:
-    - ./vendor/bin/coveralls --no-interaction
+    - ./vendor/bin/php-coveralls --no-interaction
     - ./vendor/bin/phpstan analyze --level max -c phpstan.neon src
