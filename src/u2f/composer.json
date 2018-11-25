@@ -1,0 +1,43 @@
+{
+    "name": "web-auth/u2f-lib",
+    "type": "library",
+    "license": "MIT",
+    "description": "FIDO U2F Support For PHP",
+    "keywords": ["FIDO", "U2F"],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/u2f-lib/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-mbstring": "*",
+        "spomky-labs/base64url": "^2.0",
+        "thecodingmachine/safe": "^0.1",
+        "beberlei/assert": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "U2F\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "U2F\\Tests\\Functional\\": "tests/functional/",
+            "U2F\\Tests\\Unit\\": "tests/unit/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

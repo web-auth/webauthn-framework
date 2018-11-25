@@ -15,14 +15,21 @@ Webauthn Framework
 
 # Documentation
 
-## Library
+## FIDO U2F Library
+
+FIDO U2F is an old protocol, but widely adopted by a lot of web services.
+It adds a very robust and easy to use second factor authentication method.
+
+The details for this lirary and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
+
+## Webauthn Library
 
 With this library, you can add multi-factor authentication like FIDO U2F does or add passwordless authentication support for your application using the new FIDO2 Webauthn specification.
 
 There are two steps to perform:
 
-* [Associate the device to your user (Public Key Credential Creation)](doc/library/PublicKeyCredentialCreation.md)
-* [Check authentication request (Public Key Credential Request)](doc/library/PublicKeyCredentialRequest.md)
+* [Associate the device to your user (Public Key Credential Creation)](doc/webauthn/PublicKeyCredentialCreation.md)
+* [Check authentication request (Public Key Credential Request)](doc/webauthn/PublicKeyCredentialRequest.md)
 
 ## Symfony Bundle
 

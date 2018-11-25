@@ -2,7 +2,7 @@
     "timeout": 20,
     "source": {
         "directories": [
-            "src/library",
+            "src/webauthn",
             "src/symfony"
         ],
         "exclude": [

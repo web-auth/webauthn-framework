@@ -16,14 +16,17 @@
     ],
     "autoload": {
         "psr-4": {
-            "Webauthn\\": "src/library/src/",
+            "U2F\\": "src/u2f/src/",
+            "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/bundle/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Webauthn\\Tests\\Functional\\": "src/library/tests/functional/",
-            "Webauthn\\Tests\\Unit\\": "src/library/tests/unit/",
+            "U2F\\Tests\\Functional\\": "src/u2f/tests/functional/",
+            "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
+            "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
+            "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
             "Webauthn\\Bundle\\Tests\\Unit\\": "src/symfony/tests/unit/"
         }
@@ -39,6 +42,7 @@
         "beberlei/assert": "^3.0"
     },
     "replace": {
+        "web-authn/u2f-lib": "self.version",
         "web-authn/webauthn-lib": "self.version",
         "web-authn/webauthn-symfony-bundle": "self.version"
     },

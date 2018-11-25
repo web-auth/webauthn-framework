@@ -11,17 +11,21 @@
         colors="true">
     <testsuites>
         <testsuite name="Test Suite">
-            <directory>./src/library/tests/</directory>
-            <directory>./src/symfony/tests/</directory>
+            <directory>./src/*/tests/</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <ini name="intl.default_locale" value="en" />
+        <ini name="intl.error_level" value="0" />
+        <ini name="memory_limit" value="-1" />
+    </php>
     <filter>
         <whitelist>
             <directory suffix=".php">./</directory>
             <exclude>
                 <directory>./vendor</directory>
-                <directory>./src/library/tests/</directory>
-                <directory>./src/symfony/tests/</directory>
+                <directory>./src/*/tests/</directory>
                 <directory suffix="Test.php">./src</directory>
             </exclude>
         </whitelist>
