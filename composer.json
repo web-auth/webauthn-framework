@@ -53,5 +53,10 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "require-dev": {
+        "php-coveralls/php-coveralls": "^2.0",
+        "phpstan/phpstan": "^0.10",
+        "phpunit/phpunit": "^7.0"
     }
 }

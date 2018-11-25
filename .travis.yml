@@ -21,7 +21,6 @@ matrix:
 before_script:
     - composer self-update
     - mkdir -p build/logs
-    - composer require --no-update --dev phpunit/phpunit:"^7.0" phpstan/phpstan:"^0.10" php-coveralls/php-coveralls:"^2.0"
     - if [[ $deps = low ]]; then composer update --no-interaction --prefer-lowest ; fi
     - if [[ !$deps ]]; then composer install --no-interaction ; fi
 
