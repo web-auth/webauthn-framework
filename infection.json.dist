@@ -2,6 +2,7 @@
     "timeout": 20,
     "source": {
         "directories": [
+            "src/u2f",
             "src/webauthn",
             "src/symfony"
         ],
