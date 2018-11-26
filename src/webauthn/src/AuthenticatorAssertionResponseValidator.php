@@ -37,7 +37,7 @@ class AuthenticatorAssertionResponseValidator
         Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
 
         /* @see 7.2.2 */
-        Assertion::null($authenticatorAssertionResponse->getUserHandle(), 'User Handle not supported.'); //TODO: implementation shall be done.
+        Assertion::noContent($authenticatorAssertionResponse->getUserHandle(), 'User Handle not supported.'); //TODO: implementation shall be done.
 
         /* @see 7.2.3 */
         Assertion::true($this->credentialRepository->has($credentialId), 'No credential public key available for the given credential ID.');

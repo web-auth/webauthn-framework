@@ -55,8 +55,10 @@
         "sort-packages": true
     },
     "require-dev": {
+        "behat/behat": "^3.5",
         "php-coveralls/php-coveralls": "^2.0",
         "phpstan/phpstan": "^0.10",
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^7.0",
+        "symfony/var-dumper": "^4.1"
     }
 }
