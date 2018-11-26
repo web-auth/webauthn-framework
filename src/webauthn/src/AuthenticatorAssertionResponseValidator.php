@@ -86,7 +86,7 @@ class AuthenticatorAssertionResponseValidator
         Assertion::false(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification() && !$authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
 
         /* @see 7.2.14 */
-        Assertion::eq(0, $publicKeyCredentialRequestOptions->getExtensions()->count(), 'Extensions not supported.');
+        Assertion::null($authenticatorAssertionResponse->getAuthenticatorData()->getExtensions(), 'Extensions not supported.');
 
         /** @see 7.2.15 */
         $getClientDataJSONHash = hash('sha256', $authenticatorAssertionResponse->getClientDataJSON()->getRawData(), true);

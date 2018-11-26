@@ -16,6 +16,7 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\Cose\Algorithms;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -106,11 +107,16 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $certificates = $attestationStatement->getTrustPath()->getCertificates();
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
-        //Check certificate CA chain and returns the Attestation Certificate
+        // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);
 
+        // Get the COSE algorithm identifier and the corresponding OpenSSL one
+        $coseAlgorithmIdentifier = \intval($attestationStatement->get('alg'));
+        $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
+
+        // Verification of the signature
         $signedData = $authenticatorData->getAuthData().$clientDataJSONHash;
-        $result = openssl_verify($signedData, $attestationStatement->get('sig'), $certificates[0], OPENSSL_ALGO_SHA256);
+        $result = openssl_verify($signedData, $attestationStatement->get('sig'), $certificates[0], $opensslAlgorithmIdentifier);
 
         return 1 === $result;
     }
