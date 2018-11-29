@@ -1,0 +1,39 @@
+{
+    "name": "web-auth/webauthn-symfony-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "description": "FIDO2/Webauthn Security Bundle For Symfony",
+    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/webauthn-symfony-bundle/contributors"
+        }
+    ],
+    "require": {
+        "symfony/config": "^4.1",
+        "symfony/dependency-injection": "^4.1",
+        "symfony/framework-bundle": "^4.1",
+        "web-auth/webauthn-lib": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\Bundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

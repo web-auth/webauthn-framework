@@ -12,6 +12,10 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__.'/src/u2f/tests')
     ->in(__DIR__.'/src/webauthn/src')
     ->in(__DIR__.'/src/webauthn/tests')
+    ->in(__DIR__.'/src/symfony/src')
+    ->in(__DIR__.'/src/symfony/tests')
+    ->in(__DIR__.'/src/symfony-security/src')
+    ->in(__DIR__.'/src/symfony-security/tests')
 ;
 
 return PhpCsFixer\Config::create()

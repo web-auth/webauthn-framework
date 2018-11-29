@@ -25,8 +25,13 @@ before_script:
     - if [[ !$deps ]]; then composer install --no-interaction ; fi
 
 script:
-    - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+    - ./vendor/bin/phpunit -c phpunit-libraries.xml.dist --coverage-php build/cov/coverage-libraries.cov
+    - ./vendor/bin/phpunit -c phpunit-symfony-bundle.xml.dist --coverage-php build/cov/coverage-symfony-bundle.cov
+    - ./vendor/bin/phpunit -c phpunit-symfony-security-bundle.xml.dist --coverage-php build/cov/coverage-symfony-security-bundle.cov
 
 after_success:
+    - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
     - ./vendor/bin/php-coveralls --no-interaction
+
+after:
     - ./vendor/bin/phpstan analyze --level max -c phpstan.neon src
