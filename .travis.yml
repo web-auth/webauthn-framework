@@ -21,6 +21,7 @@ matrix:
 before_script:
     - composer self-update
     - mkdir -p build/logs
+    - mkdir -p build/cov
     - if [[ $deps = low ]]; then composer update --no-interaction --prefer-lowest ; fi
     - if [[ !$deps ]]; then composer install --no-interaction ; fi
 
