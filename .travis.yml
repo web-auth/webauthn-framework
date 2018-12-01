@@ -26,9 +26,7 @@ before_script:
     - if [[ !$deps ]]; then composer install --no-interaction ; fi
 
 script:
-    - ./vendor/bin/phpunit -c phpunit-libraries.xml.dist --coverage-php build/cov/coverage-libraries.cov
-    - ./vendor/bin/phpunit -c phpunit-symfony-bundle.xml.dist --coverage-php build/cov/coverage-symfony-bundle.cov
-    - ./vendor/bin/phpunit -c phpunit-symfony-security-bundle.xml.dist --coverage-php build/cov/coverage-symfony-security-bundle.cov
+    - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
 
 after_success:
     - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov

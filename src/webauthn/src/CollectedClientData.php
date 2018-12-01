@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
 {

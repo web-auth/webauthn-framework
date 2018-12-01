@@ -16,7 +16,7 @@ namespace Webauthn\Tests\Unit;
 use Base64Url\Base64Url;
 use PHPUnit\Framework\TestCase;
 use Webauthn\CollectedClientData;
-use Webauthn\TokenBinding;
+use Webauthn\TokenBinding\TokenBinding;
 
 /**
  * @group unit

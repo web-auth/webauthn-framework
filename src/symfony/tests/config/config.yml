@@ -3,6 +3,9 @@ framework:
     secret: 'test'
     session:
         storage_id: 'session.storage.mock_file'
+    router:
+        resource: "%kernel.root_dir%/../config/routing.php"
+        strict_requirements: ~
     fragments:       ~
     http_method_override: true
 
@@ -10,7 +13,49 @@ services:
     _defaults:
         public: true
 
+    Webauthn\Bundle\Tests\Functional\UserProvider: ~
     Webauthn\Bundle\Tests\Functional\CredentialRepository: ~
+    Webauthn\Bundle\Tests\Functional\HomeController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\Bundle\Tests\Functional\SecurityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\Bundle\Tests\Functional\AdminController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+twig:
+    strict_variables: true
+    paths:
+        '%kernel.project_dir%/tests/templates': ~
 
 webauthn:
     credential_repository: 'Webauthn\Bundle\Tests\Functional\CredentialRepository'
+
+security:
+    role_hierarchy:
+        ROLE_GUEST:
+        ROLE_USER:  ROLE_GUEST
+        ROLE_ADMIN: ROLE_USER
+
+    providers:
+        default:
+            id: 'Webauthn\Bundle\Tests\Functional\UserProvider'
+
+    firewalls:
+        main:
+            anonymous: ~
+            webauthn:
+                login_path: /login
+                check_path: /login_check
+            logout:
+                path: /logout
+                target: /
+
+    access_control:
+        - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
+        - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
+        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

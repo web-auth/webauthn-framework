@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>Authentication page</title>
+</head>
+<body>
+<form method="post">
+    {% if error %}
+        <div id="_errors">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+    <h1>Please sign in</h1>
+    <input type="text" value="{{ last_username }}" name="_username" id="_username" required autofocus>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <button id="_submit" type="submit">Sign in</button>
+</form>
+</body>
+</html>

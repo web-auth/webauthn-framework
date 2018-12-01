@@ -14,23 +14,27 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\TokenBinding\TokenBindingHandler;
 
 class AuthenticatorAttestationResponseValidator
 {
     private $attestationStatementSupportManager;
     private $credentialRepository;
+    private $tokenBindingHandler;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler)
     {
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->credentialRepository = $credentialRepository;
+        $this->tokenBindingHandler = $tokenBindingHandler;
     }
 
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ?string $rpId = null): void
+    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): void
     {
         /** @see 7.1.1 */
         //Nothing to do
@@ -45,7 +49,7 @@ class AuthenticatorAttestationResponseValidator
         Assertion::true(hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
         /** @see 7.1.5 */
-        $rpId = $rpId ?? $publicKeyCredentialCreationOptions->getRp()->getId();
+        $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
         Assertion::notNull($rpId, 'No rpId.');
 
         $parsedRelyingPartyId = parse_url($C->getOrigin());
@@ -54,7 +58,9 @@ class AuthenticatorAttestationResponseValidator
         Assertion::false(null !== $rpId && $parsedRelyingPartyId['host'] !== $rpId, 'rpId mismatch.');
 
         /* @see 7.1.6 */
-        Assertion::null($C->getTokenBinding(), 'Token binding not supported.');
+        if ($C->getTokenBinding()) {
+            $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
+        }
 
         /** @see 7.1.7 */
         $getClientDataJSONHash = hash('sha256', $authenticatorAttestationResponse->getClientDataJSON()->getRawData(), true);

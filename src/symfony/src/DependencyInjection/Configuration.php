@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -36,6 +37,11 @@ final class Configuration implements ConfigurationInterface
                 ->scalarNode('credential_repository')
                     ->isRequired()
                     ->info('This repository is responsible of the credential storage')
+                ->end()
+                ->scalarNode('token_binding_support_handler')
+                    ->defaultValue(TokenBindingNotSupportedHandler::class)
+                    ->cannotBeEmpty()
+                    ->info('This handler will check the token binding header from the request')
                 ->end()
             ->end();
 

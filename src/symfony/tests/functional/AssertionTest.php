@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional;
 
 use Base64Url\Base64Url;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -22,6 +23,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
+/**
+ * @group functional
+ */
 class AssertionTest extends KernelTestCase
 {
     /**
@@ -56,10 +60,13 @@ class AssertionTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
         static::assertNull($response->getUserHandle());
 
+        $request = $this->prophesize(ServerRequestInterface::class);
+
         self::$kernel->getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
-            $publicKeyCredentialRequestOptions
+            $publicKeyCredentialRequestOptions,
+            $request->reveal()
         );
     }
 }

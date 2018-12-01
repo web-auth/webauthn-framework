@@ -31,6 +31,9 @@
             "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
         }
     },
+    "suggest": {
+        "symfony/security-bundle": "For firewall features"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"

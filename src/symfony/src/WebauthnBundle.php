@@ -13,10 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle;
 
+use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
+use Webauthn\Bundle\Security\Factory\WebauthnSecurityFactory;
 
 class WebauthnBundle extends Bundle
 {
@@ -28,5 +30,11 @@ class WebauthnBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new AttestationStatementSupportCompilerPass());
+
+        /* @var SecurityExtension $extension */
+        if ($container->hasExtension('security')) {
+            $extension = $container->getExtension('security');
+            $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
+        }
     }
 }

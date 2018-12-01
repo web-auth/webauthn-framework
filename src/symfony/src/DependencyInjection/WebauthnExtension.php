@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\CredentialRepository;
+use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class WebauthnExtension extends Extension
 {
@@ -42,11 +43,13 @@ final class WebauthnExtension extends Extension
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->setAlias(CredentialRepository::class, $config['credential_repository']);
+        $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(AttestationStatementSupportCompilerPass::TAG);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
+        $loader->load('security.php');
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)

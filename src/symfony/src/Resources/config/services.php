@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Webauthn\AttestationStatement;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\TokenBinding;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -34,4 +35,7 @@ return function (ContainerConfigurator $container) {
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
     $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
     $container->set(AttestationStatement\PackedAttestationStatementSupport::class);
+
+    $container->set(TokenBinding\IgnoreTokenBindingHandler::class);
+    $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
 };

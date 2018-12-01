@@ -18,8 +18,7 @@
         "psr-4": {
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
-            "Webauthn\\Bundle\\": "src/symfony/src/",
-            "Webauthn\\Security\\Bundle\\": "src/symfony-security/src/"
+            "Webauthn\\Bundle\\": "src/symfony/src/"
         }
     },
     "autoload-dev": {
@@ -28,8 +27,7 @@
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
-            "Webauthn\\Security\\Bundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/"
+            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/"
         }
     },
     "require": {
@@ -38,20 +36,22 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
+        "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
-        "spomky-labs/cbor-php": "^1.0.2",
         "spomky-labs/cbor-bundle": "^1.0@dev",
+        "spomky-labs/cbor-php": "^1.0.2",
         "symfony/config": "^4.1",
         "symfony/dependency-injection": "^4.1",
         "symfony/framework-bundle": "^4.1",
-        "symfony/security-bundle": "^4.1",
         "thecodingmachine/safe": "^0.1"
     },
     "replace": {
         "web-authn/u2f-lib": "self.version",
         "web-authn/webauthn-lib": "self.version",
-        "web-authn/webauthn-symfony-bundle": "self.version",
-        "web-authn/webauthn-symfony-security-bundle": "self.version"
+        "web-authn/webauthn-symfony-bundle": "self.version"
+    },
+    "suggest": {
+        "symfony/security-bundle": "For firewall features"
     },
     "extra": {
         "branch-alias": {
@@ -62,12 +62,14 @@
         "sort-packages": true
     },
     "require-dev": {
+        "symfony/security-bundle": "^4.1",
         "php-coveralls/php-coveralls": "^2.0",
         "phpstan/phpstan": "^0.10",
         "phpunit/phpcov": "^5.0",
         "phpunit/phpunit": "^7.0",
         "symfony/browser-kit": "^4.1",
         "symfony/phpunit-bridge": "^4.1",
+        "symfony/twig-bundle": "^4.1",
         "symfony/var-dumper": "^4.1"
     }
 }

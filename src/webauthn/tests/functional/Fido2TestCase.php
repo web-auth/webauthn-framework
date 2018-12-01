@@ -26,6 +26,8 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
+use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 /**
  * @group functional
@@ -60,7 +62,8 @@ abstract class Fido2TestCase extends TestCase
         if (!$this->authenticatorAttestationResponseValidator) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager(),
-                $credentialRepository
+                $credentialRepository,
+                new IgnoreTokenBindingHandler()
             );
         }
 
@@ -77,7 +80,8 @@ abstract class Fido2TestCase extends TestCase
         if (!$this->authenticatorAssertionResponseValidator) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
-                $this->getDecoder()
+                $this->getDecoder(),
+                new TokenBindingNotSupportedHandler()
             );
         }
 

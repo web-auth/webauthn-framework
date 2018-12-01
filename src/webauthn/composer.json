@@ -20,6 +20,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
+        "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-php": "^1.0.2",
         "thecodingmachine/safe": "^0.1",

@@ -15,13 +15,13 @@ namespace Webauthn\Tests\Unit;
 
 use Base64Url\Base64Url;
 use PHPUnit\Framework\TestCase;
-use Webauthn\TokenBinding;
+use Webauthn\TokenBinding\TokenBinding;
 
 /**
  * @group unit
  * @group Fido2
  *
- * @covers \Webauthn\TokenBinding
+ * @covers \Webauthn\TokenBinding\TokenBinding
  */
 class TokenBindingTest extends TestCase
 {
