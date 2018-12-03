@@ -16,6 +16,7 @@
         }
     ],
     "require": {
+        "spomky-labs/cbor-php": "^1.0.2",
         "symfony/config": "^4.1",
         "symfony/dependency-injection": "^4.1",
         "symfony/framework-bundle": "^4.1",

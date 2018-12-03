@@ -13,8 +13,10 @@ services:
     _defaults:
         public: true
 
-    Webauthn\Bundle\Tests\Functional\UserProvider: ~
+    Webauthn\Bundle\Tests\Functional\UserProvider:
+        autowire: true
     Webauthn\Bundle\Tests\Functional\CredentialRepository: ~
+    Webauthn\Bundle\Tests\Functional\UserRepository: ~
     Webauthn\Bundle\Tests\Functional\HomeController:
         autowire: true
         tags: ['controller.service_arguments']
@@ -48,7 +50,8 @@ security:
             anonymous: ~
             webauthn:
                 login_path: /login
-                check_path: /login_check
+                assertion_path: /login/assertion
+                check_path: /login/check
             logout:
                 path: /logout
                 target: /

@@ -23,7 +23,10 @@ $routes = new RouteCollection();
 $routes->add('app_login', new Route('/login', [
     '_controller' => [SecurityController::class, 'login'],
 ]));
-$routes->add('app_login_check', new Route('/login_check', [
+$routes->add('app_login_assertion', new Route('/login/assertion', [
+    '_controller' => [SecurityController::class, 'assertion'],
+]));
+$routes->add('app_login_check', new Route('/login/check', [
     '_controller' => [SecurityController::class, 'check'],
 ]));
 $routes->add('app_logout', new Route('/logout', [

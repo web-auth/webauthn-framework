@@ -14,8 +14,12 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Webauthn\PublicKeyCredentialDescriptor;
 
 interface CanHaveRegisteredSecurityDevices extends UserInterface
 {
+    /**
+     * @return PublicKeyCredentialDescriptor[]
+     */
     public function getSecurityDeviceCredentialIds(): iterable;
 }

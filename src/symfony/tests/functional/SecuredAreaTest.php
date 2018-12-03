@@ -35,6 +35,7 @@ class SecuredAreaTest extends WebTestCase
 
     /**
      * @test
+     * @group foo
      */
     public function aUserCanSetHisUsernameToTheLoginPage()
     {
@@ -42,16 +43,16 @@ class SecuredAreaTest extends WebTestCase
         $crawler = $client->request('GET', '/login', [], [], ['HTTPS' => 'on']);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        dump($client->getResponse()->getContent());
 
         $button = $crawler->selectButton('_submit');
         $form = $button->form();
         $client->submit($form, [
-            '_username' => 'root',
+            '_username' => 'admin',
         ]);
 
-        //$client->followRedirect();
-        //dump($client->getHistory());
-        //dump($client->getResponse()->getContent());
+        $client->followRedirect();
+
+        dump($client->getResponse()->headers->all());
+        dump($client->getResponse()->getContent());
     }
 }

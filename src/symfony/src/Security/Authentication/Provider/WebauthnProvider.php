@@ -23,64 +23,38 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Role\SwitchUserRole;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Webauthn\Bundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\Bundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
+use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnProvider implements AuthenticationProviderInterface
 {
-    private $hideUserNotFoundExceptions;
     private $userChecker;
     private $providerKey;
+    private $userProvider;
 
-    public function __construct(UserCheckerInterface $userChecker, string $providerKey)
+    public function __construct(UserCheckerInterface $userChecker, UserProviderInterface $userProvider, string $providerKey)
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
         $this->userChecker = $userChecker;
         $this->providerKey = $providerKey;
+        $this->userProvider = $userProvider;
     }
 
     public function authenticate(TokenInterface $token)
     {
-        dump($token);
-        if (!$this->supports($token)) {
-            throw new AuthenticationException('The token is not supported by this authentication provider.');
+        switch (true) {
+            case $token instanceof PreWebauthnToken:
+                return $this->processWithPreWebauthnToken($token);
+            case $token instanceof WebauthnToken:
+                return $this->processWithWebauthnToken($token);
+            default:
+                throw new AuthenticationException('The token is not supported by this authentication provider.');
         }
-
-        $username = $token->getUsername();
-        if ('' === $username || null === $username) {
-            $username = AuthenticationProviderInterface::USERNAME_NONE_PROVIDED;
-        }
-
-        try {
-            $user = $this->retrieveUser($username);
-        } catch (UsernameNotFoundException $e) {
-            $e->setUsername($username);
-
-            throw $e;
-        }
-
-        if (!$user instanceof CanHaveRegisteredSecurityDevices) {
-            throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
-        }
-
-        /*try {
-            $this->userChecker->checkPreAuth($user);
-            $this->checkAuthentication($user, $token);
-            $this->userChecker->checkPostAuth($user);
-        } catch (BadCredentialsException $e) {
-            if ($this->hideUserNotFoundExceptions) {
-                throw new BadCredentialsException('Bad credentials.', 0, $e);
-            }
-
-            throw $e;
-        }
-
-        $authenticatedToken = new WebauthnToken($user, $token->getCredentials(), $this->providerKey, $this->getRoles($user, $token));
-        $authenticatedToken->setAttributes($token->getAttributes());
-
-        return $authenticatedToken;*/
     }
 
     public function supports(TokenInterface $token)
@@ -103,8 +77,78 @@ class WebauthnProvider implements AuthenticationProviderInterface
         return $roles;
     }
 
-    private function retrieveUser($username): UserInterface
+    private function processWithWebauthnToken(WebauthnToken $token)
     {
+    }
+
+    private function processWithPreWebauthnToken(PreWebauthnToken $token): PreWebauthnToken
+    {
+        $username = $token->getUsername();
+        if (empty($username)) {
+            throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
+        }
+
+        try {
+            $user = $this->retrieveUser($username, $token);
+        } catch (UsernameNotFoundException $e) {
+            $e->setUsername($username);
+
+            throw $e;
+        }
+
+        if (!$user instanceof CanHaveRegisteredSecurityDevices || empty($user->getSecurityDeviceCredentialIds())) {
+            throw new AuthenticationServiceException('The user did not registered any security devices');
+        }
+
+        try {
+            $this->userChecker->checkPreAuth($user);
+        } catch (BadCredentialsException $e) {
+            throw $e;
+        }
+
+        $credentials = [];
+        foreach ($user->getSecurityDeviceCredentialIds() as $publicKeyCredentialDescriptor) {
+            Assertion::isInstanceOf($publicKeyCredentialDescriptor, PublicKeyCredentialDescriptor::class);
+            $credentials[] = $publicKeyCredentialDescriptor;
+        }
+
+        return  new PreWebauthnToken(
+            $username,
+            new PublicKeyCredentialRequestOptions(
+                $token->getCredentials()->getChallenge(),
+                $token->getCredentials()->getTimeout(),
+                $token->getCredentials()->getRpId(),
+                $credentials,
+                $token->getCredentials()->getUserVerification(),
+                $token->getCredentials()->getExtensions()
+            ),
+            $this->providerKey
+        );
+    }
+
+    private function retrieveUser($username, TokenInterface $token): UserInterface
+    {
+        $user = $token->getUser();
+        if ($user instanceof UserInterface) {
+            return $user;
+        }
+
+        try {
+            $user = $this->userProvider->loadUserByUsername($username);
+
+            if (!$user instanceof UserInterface) {
+                throw new AuthenticationServiceException('The user provider must return a UserInterface object.');
+            }
+
+            return $user;
+        } catch (UsernameNotFoundException $e) {
+            $e->setUsername($username);
+            throw $e;
+        } catch (\Exception $e) {
+            $e = new AuthenticationServiceException($e->getMessage(), 0, $e);
+            $e->setToken($token);
+            throw $e;
+        }
     }
 
     private function checkAuthentication(UserInterface $user, string $token): void

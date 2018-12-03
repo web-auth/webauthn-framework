@@ -31,8 +31,8 @@ class WebauthnBundle extends Bundle
     {
         $container->addCompilerPass(new AttestationStatementSupportCompilerPass());
 
-        /* @var SecurityExtension $extension */
         if ($container->hasExtension('security')) {
+            /* @var SecurityExtension $extension */
             $extension = $container->getExtension('security');
             $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
         }

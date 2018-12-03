@@ -46,4 +46,15 @@ class PreWebauthnToken extends AbstractToken
     {
         throw new \LogicException('This token cannot be authenticated.');
     }
+
+    public function serialize()
+    {
+        return serialize([$this->publicKeyCredentialRequestOptions, $this->providerKey, parent::serialize()]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list($this->publicKeyCredentialRequestOptions, $this->providerKey, $parentStr) = unserialize($serialized);
+        parent::unserialize($parentStr);
+    }
 }

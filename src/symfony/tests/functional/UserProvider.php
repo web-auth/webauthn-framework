@@ -13,19 +13,32 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class UserProvider implements UserProviderInterface
 {
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function loadUserByUsername($username)
     {
-        dump($username);
+        $user = $this->userRepository->findByUsername($username);
+        if (!$user) {
+            throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
+        }
+
+        return $user;
     }
 
     public function refreshUser(UserInterface $user)
     {
-        dump($user);
+        return $this->loadUserByUsername($user->getUsername());
     }
 
     public function supportsClass($class)
