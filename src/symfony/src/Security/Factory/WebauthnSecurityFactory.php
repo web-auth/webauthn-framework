@@ -19,7 +19,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
+use Webauthn\Bundle\Security\Authentication\Provider\MetaWebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -50,21 +50,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return 'webauthn';
     }
 
-    private $defaultSuccessHandlerOptions = [
-        'always_use_default_target_path' => false,
-        'default_target_path' => '/',
-        'login_path' => '/login',
-        'target_path_parameter' => '_target_path',
-        'use_referer' => false,
-    ];
-
-    private $defaultFailureHandlerOptions = [
-        'failure_path' => null,
-        'failure_forward' => false,
-        'login_path' => '/login',
-        'failure_path_parameter' => '_failure_path',
-    ];
-
     public function addConfiguration(NodeDefinition $node)
     {
         /* @var ArrayNodeDefinition $node */
@@ -72,8 +57,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('login_path')->defaultValue('/login')->end()
+                ->scalarNode('login_check_path')->defaultValue('/login_check')->end()
                 ->scalarNode('assertion_path')->defaultValue('/login_assertion')->end()
-                ->scalarNode('check_path')->defaultValue('/login_check')->end()
+                ->scalarNode('assertion_check_path')->defaultValue('/login_check_assertion')->end()
                 ->booleanNode('use_forward')->defaultFalse()->end()
                 ->booleanNode('require_previous_session')->defaultFalse()->end()
                 ->scalarNode('user_provider')->end()
@@ -81,6 +67,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('success_handler')->end()
                 ->scalarNode('failure_handler')->end()
                 ->scalarNode('username_parameter')->defaultValue('_username')->end()
+                ->scalarNode('assertion_parameter')->defaultValue('_assertion')->end()
                 ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
                 ->scalarNode('csrf_token_id')->defaultValue('authenticate')->end()
                 ->arrayNode('relaying_party')
@@ -103,49 +90,13 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $config['remember_me'];
     }
 
-    private function createAuthenticationSuccessHandler(ContainerBuilder $container, string $id, array $config)
-    {
-        $successHandlerId = 'security.authentication.success_handler.'.$id.'.'.str_replace('-', '_', $this->getKey());
-        $options = array_intersect_key($config, $this->defaultSuccessHandlerOptions);
-
-        if (isset($config['success_handler'])) {
-            $successHandler = $container->setDefinition($successHandlerId, new ChildDefinition('security.authentication.custom_success_handler'));
-            $successHandler->replaceArgument(0, new Reference($config['success_handler']));
-            $successHandler->replaceArgument(1, $options);
-            $successHandler->replaceArgument(2, $id);
-        } else {
-            $successHandler = $container->setDefinition($successHandlerId, new ChildDefinition('security.authentication.success_handler'));
-            $successHandler->addMethodCall('setOptions', [$options]);
-            $successHandler->addMethodCall('setProviderKey', [$id]);
-        }
-
-        return $successHandlerId;
-    }
-
-    private function createAuthenticationFailureHandler(ContainerBuilder $container, string $id, array $config)
-    {
-        $id = 'security.authentication.failure_handler.'.$id.'.'.str_replace('-', '_', $this->getKey());
-        $options = array_intersect_key($config, $this->defaultFailureHandlerOptions);
-
-        if (isset($config['failure_handler'])) {
-            $failureHandler = $container->setDefinition($id, new ChildDefinition('security.authentication.custom_failure_handler'));
-            $failureHandler->replaceArgument(0, new Reference($config['failure_handler']));
-            $failureHandler->replaceArgument(1, $options);
-        } else {
-            $failureHandler = $container->setDefinition($id, new ChildDefinition('security.authentication.failure_handler'));
-            $failureHandler->addMethodCall('setOptions', [$options]);
-        }
-
-        return $id;
-    }
-
     private function createAuthProvider(ContainerBuilder $container, string $id, array $config, string $userProviderId): string
     {
         $providerId = 'security.authentication.provider.webauthn.'.$id;
         $container
-            ->setDefinition($providerId, new ChildDefinition(WebauthnProvider::class))
-            ->setArgument(1, new Reference($userProviderId))
-            ->setArgument(2, $id)
+            ->setDefinition($providerId, new ChildDefinition(MetaWebauthnProvider::class))
+            ->setArgument(2, new Reference($userProviderId))
+            ->setArgument(3, $id)
         ;
 
         return $providerId;
@@ -155,9 +106,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         $listenerId = 'security.authentication.listener.webauthn';
         $listener = new ChildDefinition($listenerId);
-        $listener->replaceArgument(4, $id);
-        $listener->replaceArgument(5, new Reference($this->createAuthenticationSuccessHandler($container, $id, $config)));
-        $listener->replaceArgument(6, new Reference($this->createAuthenticationFailureHandler($container, $id, $config)));
+        $listener->replaceArgument(6, $id);
         $listener->replaceArgument(7, $config);
 
         $listenerId .= '.'.$id;

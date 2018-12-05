@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
+
 class PublicKeyCredentialParameters implements \JsonSerializable
 {
     public const ALGORITHM_ES256 = -7;
@@ -36,6 +38,19 @@ class PublicKeyCredentialParameters implements \JsonSerializable
     public function getAlg(): int
     {
         return $this->alg;
+    }
+
+    public static function createFromJson(array $json): self
+    {
+        Assertion::keyExists($json, 'type', 'Invalid input.');
+        Assertion::string($json['type'], 'Invalid input.');
+        Assertion::keyExists($json, 'alg', 'Invalid input.');
+        Assertion::integer($json['alg'], 'Invalid input.');
+
+        return new self(
+            $json['type'],
+            $json['alg']
+        );
     }
 
     public function jsonSerialize(): array

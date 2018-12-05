@@ -51,8 +51,5 @@ class SecuredAreaTest extends WebTestCase
         ]);
 
         $client->followRedirect();
-
-        dump($client->getResponse()->headers->all());
-        dump($client->getResponse()->getContent());
     }
 }

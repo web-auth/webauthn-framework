@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialCreationOptions implements \JsonSerializable
@@ -113,6 +114,38 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
     public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;
+    }
+
+    public static function createFromJson(array $json): self
+    {
+        Assertion::keyExists($json, 'rp', 'Invalid input.');
+        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input.');
+        Assertion::isArray($json['pubKeyCredParams'], 'Invalid input.');
+        Assertion::keyExists($json, 'challenge', 'Invalid input.');
+        Assertion::keyExists($json, 'attestation', 'Invalid input.');
+        Assertion::keyExists($json, 'user', 'Invalid input.');
+        Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input.');
+
+        $pubKeyCredParams = [];
+        foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {
+            $pubKeyCredParams[] = PublicKeyCredentialParameters::createFromJson($pubKeyCredParam);
+        }
+        $excludeCredentials = [];
+        foreach ($json['excludeCredentials'] as $excludeCredential) {
+            $excludeCredentials[] = PublicKeyCredentialDescriptor::createFromJson($excludeCredential);
+        }
+
+        return new self(
+            PublicKeyCredentialRpEntity::createFromJson($json['rp']),
+            PublicKeyCredentialUserEntity::createFromJson($json['user']),
+            \Safe\base64_decode($json['challenge'], true),
+            $pubKeyCredParams,
+            $json['timeout'] ?? null,
+            $excludeCredentials,
+            AuthenticatorSelectionCriteria::createFromJson($json['authenticatorSelection']),
+            $json['attestation'],
+            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : new AuthenticationExtensionsClientInputs()
+        );
     }
 
     public function jsonSerialize(): array

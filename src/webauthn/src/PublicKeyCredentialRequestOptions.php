@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialRequestOptions implements \JsonSerializable
@@ -80,6 +81,26 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
     public function getExtensions(): ?AuthenticationExtensionsClientInputs
     {
         return $this->extensions;
+    }
+
+    public static function createFromJson(array $json): self
+    {
+        Assertion::keyExists($json, 'challenge', 'Invalid input.');
+
+        $allowCredentials = [];
+        $allowCredentialList = $json['allowCredentials'] ?? [];
+        foreach ($allowCredentialList as $allowCredential) {
+            $allowCredentials[] = PublicKeyCredentialDescriptor::createFromJson($allowCredential);
+        }
+
+        return new self(
+            \Safe\base64_decode($json['challenge'], true),
+            $json['timeout'] ?? null,
+            $json['rpId'] ?? null,
+            $allowCredentials,
+            $json['userVerification'] ?? null,
+            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : null
+        );
     }
 
     public function jsonSerialize(): array

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
+
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
     private $id;
@@ -34,6 +36,20 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public function getDisplayName(): string
     {
         return $this->displayName;
+    }
+
+    public static function createFromJson(array $json): self
+    {
+        Assertion::keyExists($json, 'name', 'Invalid input.');
+        Assertion::keyExists($json, 'id', 'Invalid input.');
+        Assertion::keyExists($json, 'displayName', 'Invalid input.');
+
+        return new self(
+            $json['name'],
+            \Safe\base64_decode($json['id'], true),
+            $json['displayName'],
+            $json['icon'] ?? null
+        );
     }
 
     public function jsonSerialize(): array

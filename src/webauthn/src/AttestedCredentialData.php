@@ -48,17 +48,15 @@ class AttestedCredentialData implements \JsonSerializable
         return $this->credentialPublicKey;
     }
 
-    public static function createFromJson(string $json): self
+    public static function createFromJson(array $json): self
     {
-        $data = \Safe\json_decode($json, true);
-        Assertion::isArray($data, 'Invalid input.');
-        Assertion::keyExists($data, 'aaguid', 'Invalid input.');
-        Assertion::keyExists($data, 'credentialId', 'Invalid input.');
+        Assertion::keyExists($json, 'aaguid', 'Invalid input.');
+        Assertion::keyExists($json, 'credentialId', 'Invalid input.');
 
         return new self(
-            \Safe\base64_decode($data['aaguid'], true),
-            \Safe\base64_decode($data['credentialId'], true),
-            $data['credentialPublicKey'] ? \Safe\base64_decode($data['credentialPublicKey'], true) : null
+            \Safe\base64_decode($json['aaguid'], true),
+            \Safe\base64_decode($json['credentialId'], true),
+            isset($json['credentialPublicKey']) ? \Safe\base64_decode($json['credentialPublicKey'], true) : null
         );
     }
 

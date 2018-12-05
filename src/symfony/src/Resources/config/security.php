@@ -19,17 +19,17 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
-use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
+use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Security\Authentication\Provider\MetaWebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Firewall\WebauthnListener;
+use Webauthn\PublicKeyCredentialLoader;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 return function (ContainerConfigurator $container) {
-    $container->services()->set(WebauthnProvider::class)
+    $container->services()->set(MetaWebauthnProvider::class)
         ->abstract(true)
         ->private()
         ->arg(0, ref(UserCheckerInterface::class))
@@ -40,13 +40,13 @@ return function (ContainerConfigurator $container) {
         ->abstract(true)
         ->private()
         ->args([
+            ref(PublicKeyCredentialLoader::class),
+            ref(AuthenticatorAssertionResponseValidator::class),
             ref(TokenStorageInterface::class),
             ref(AuthenticationManagerInterface::class),
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
             '',
-            ref(AuthenticationSuccessHandlerInterface::class),
-            ref(AuthenticationFailureHandlerInterface::class),
             [],
             ref(LoggerInterface::class)->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),

@@ -46,5 +46,16 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
         static::assertEquals('user_verification', $publicKeyCredentialRequestOptions->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $publicKeyCredentialRequestOptions->getExtensions());
         static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', \Safe\json_encode($publicKeyCredentialRequestOptions));
+
+        $json = \Safe\json_decode('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', true);
+
+        $data = PublicKeyCredentialRequestOptions::createFromJson($json);
+        static::assertEquals('challenge', $data->getChallenge());
+        static::assertEquals(1000, $data->getTimeout());
+        static::assertEquals('rp_id', $data->getRpId());
+        static::assertEquals([$credential], $data->getAllowCredentials());
+        static::assertEquals('user_verification', $data->getUserVerification());
+        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
+        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', \Safe\json_encode($data));
     }
 }

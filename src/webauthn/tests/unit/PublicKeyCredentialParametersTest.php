@@ -34,5 +34,11 @@ class PublicKeyCredentialParametersTest extends TestCase
         static::assertEquals('type', $parameters->getType());
         static::assertEquals(100, $parameters->getAlg());
         static::assertEquals('{"type":"type","alg":100}', \Safe\json_encode($parameters));
+
+        $json = \Safe\json_decode('{"type":"type","alg":100}', true);
+        $data = PublicKeyCredentialParameters::createFromJson($json);
+        static::assertEquals('type', $data->getType());
+        static::assertEquals(100, $data->getAlg());
+        static::assertEquals('{"type":"type","alg":100}', \Safe\json_encode($data));
     }
 }

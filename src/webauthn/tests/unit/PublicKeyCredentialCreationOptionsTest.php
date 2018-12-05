@@ -36,9 +36,9 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed()
     {
         $rp = $this->prophesize(PublicKeyCredentialRpEntity::class);
-        $rp->jsonSerialize()->willReturn(['RP']);
+        $rp->jsonSerialize()->willReturn(['name' => 'RP']);
         $user = $this->prophesize(PublicKeyCredentialUserEntity::class);
-        $user->jsonSerialize()->willReturn(['USER']);
+        $user->jsonSerialize()->willReturn(['name' => 'USER', 'id' => 'aWQ=', 'displayName' => 'FOO BAR']);
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
@@ -64,6 +64,19 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
         static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
-        static::assertEquals('{"rp":["RP"],"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":["USER"],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', \Safe\json_encode($options));
+        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', \Safe\json_encode($options));
+
+        $json = \Safe\json_decode('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', true);
+        $data = PublicKeyCredentialCreationOptions::createFromJson($json);
+        static::assertEquals('challenge', $data->getChallenge());
+        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
+        static::assertEquals([$credential], $data->getExcludeCredentials());
+        static::assertEquals([$credentialParameters], $data->getPubKeyCredParams());
+        static::assertEquals('attestation', $data->getAttestation());
+        static::assertEquals(1000, $data->getTimeout());
+        static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $data->getRp());
+        static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $data->getUser());
+        static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $data->getAuthenticatorSelection());
+        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', \Safe\json_encode($data));
     }
 }

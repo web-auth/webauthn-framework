@@ -46,4 +46,9 @@ class PublicKeyCredential extends Credential
     {
         return new PublicKeyCredentialDescriptor($this->getType(), $this->getRawId(), $transport);
     }
+
+    public function __toString()
+    {
+        return \Safe\json_encode($this);
+    }
 }

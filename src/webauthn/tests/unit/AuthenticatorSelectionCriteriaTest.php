@@ -35,5 +35,12 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertEquals('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', \Safe\json_encode($authenticatorSelectionCriteria));
+
+        $json = \Safe\json_decode('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', true);
+        $data = AuthenticatorSelectionCriteria::createFromJson($json);
+        static::assertEquals('user_verification', $data->getUserVerification());
+        static::assertEquals('authenticator_attachment', $data->getAuthenticatorAttachment());
+        static::assertTrue($data->isRequireResidentKey());
+        static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', \Safe\json_encode($data));
     }
 }

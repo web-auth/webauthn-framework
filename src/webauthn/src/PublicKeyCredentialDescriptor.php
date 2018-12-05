@@ -61,17 +61,15 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
         return $this->transports;
     }
 
-    public static function createFromJson(string $json): self
+    public static function createFromJson(array $json): self
     {
-        $data = \Safe\json_decode($json, true);
-        Assertion::isArray($data, 'Invalid input.');
-        Assertion::keyExists($data, 'type', 'Invalid input.');
-        Assertion::keyExists($data, 'id', 'Invalid input.');
+        Assertion::keyExists($json, 'type', 'Invalid input.');
+        Assertion::keyExists($json, 'id', 'Invalid input.');
 
         return new self(
-            $data['type'],
-            \Safe\base64_decode($data['id'], true),
-            $data['transports'] ?? []
+            $json['type'],
+            \Safe\base64_decode($json['id'], true),
+            $json['transports'] ?? []
         );
     }
 

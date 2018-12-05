@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
+
 class AuthenticatorSelectionCriteria implements \JsonSerializable
 {
     public const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
@@ -49,6 +51,18 @@ class AuthenticatorSelectionCriteria implements \JsonSerializable
     public function getUserVerification(): string
     {
         return $this->userVerification;
+    }
+
+    public static function createFromJson(array $json): self
+    {
+        Assertion::keyExists($json, 'requireResidentKey', 'Invalid input.');
+        Assertion::keyExists($json, 'userVerification', 'Invalid input.');
+
+        return new self(
+            $json['authenticatorAttachment'] ?? null,
+            $json['requireResidentKey'],
+            $json['userVerification']
+        );
     }
 
     public function jsonSerialize()

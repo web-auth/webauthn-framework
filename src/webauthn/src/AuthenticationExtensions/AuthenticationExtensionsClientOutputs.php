@@ -25,6 +25,16 @@ class AuthenticationExtensionsClientOutputs implements \JsonSerializable, \Count
         $this->extensions[$extension->name()] = $extension;
     }
 
+    public static function createFromJson(array $json): self
+    {
+        $object = new self();
+        foreach ($json as $k => $v) {
+            $object->add(new AuthenticationExtension($k, $v));
+        }
+
+        return $object;
+    }
+
     public function jsonSerialize()
     {
         return $this->extensions;
