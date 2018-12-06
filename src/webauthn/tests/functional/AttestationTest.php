@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -60,15 +58,12 @@ class AttestationTest extends Fido2TestCase
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK', true))->willReturn(false);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = new Request([], [], [], [], [], ['HOST' => 'localhost']);
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 
@@ -98,15 +93,12 @@ class AttestationTest extends Fido2TestCase
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(false);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = new Request([], [], [], [], [], ['HOST' => 'localhost']);
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 
@@ -136,21 +128,18 @@ class AttestationTest extends Fido2TestCase
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==', true))->willReturn(false);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = new Request([], [], [], [], [], ['HOST' => 'localhost']);
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
@@ -201,15 +190,12 @@ class AttestationTest extends Fido2TestCase
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(false);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.morselli.fr');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = new Request([], [], [], [], [], ['HOST' => 'webauthn.morselli.fr']);
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);

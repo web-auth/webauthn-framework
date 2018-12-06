@@ -16,7 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
-use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 class AuthenticatorAssertionResponseValidator
@@ -35,7 +35,7 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request): void
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, Request $request): void
     {
         /* @see 7.2.1 */
         Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');

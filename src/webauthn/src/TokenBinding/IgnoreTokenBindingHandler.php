@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 final class IgnoreTokenBindingHandler implements TokenBindingHandler
 {
-    public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void
+    public function check(TokenBinding $tokenBinding, Request $request): void
     {
         //Does nothing
     }

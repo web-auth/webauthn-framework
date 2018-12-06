@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\TokenBinding;
 
 use Assert\Assertion;
-use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 {
-    public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void
+    public function check(TokenBinding $tokenBinding, Request $request): void
     {
         Assertion::true(TokenBinding::TOKEN_BINDING_STATUS_PRESENT !== $tokenBinding->getStatus(), 'Token binding not supported.');
     }
