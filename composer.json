@@ -39,10 +39,10 @@
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-bundle": "^1.0",
         "spomky-labs/cbor-php": "^1.0.2",
-        "symfony/config": "^4.1",
-        "symfony/dependency-injection": "^4.1",
-        "symfony/framework-bundle": "^4.1",
-        "symfony/http-foundation": "^4.1",
+        "symfony/config": "^4.2",
+        "symfony/dependency-injection": "^4.2",
+        "symfony/framework-bundle": "^4.2",
+        "symfony/http-foundation": "^4.2",
         "thecodingmachine/safe": "^0.1"
     },
     "replace": {
@@ -62,14 +62,14 @@
         "sort-packages": true
     },
     "require-dev": {
-        "symfony/security-bundle": "^4.1",
+        "symfony/security-bundle": "^4.2",
         "php-coveralls/php-coveralls": "^2.0",
         "phpstan/phpstan": "^0.10",
         "phpunit/phpcov": "^5.0",
         "phpunit/phpunit": "^7.0",
-        "symfony/browser-kit": "^4.1",
-        "symfony/phpunit-bridge": "^4.1",
-        "symfony/twig-bundle": "^4.1",
-        "symfony/var-dumper": "^4.1"
+        "symfony/browser-kit": "^4.2",
+        "symfony/phpunit-bridge": "^4.2",
+        "symfony/twig-bundle": "^4.2",
+        "symfony/var-dumper": "^4.2"
     }
 }
