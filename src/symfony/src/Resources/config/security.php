@@ -25,6 +25,7 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Security\Authentication\Provider\MetaWebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Firewall\WebauthnListener;
+use Webauthn\Bundle\Security\WebauthnUtils;
 use Webauthn\PublicKeyCredentialLoader;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
@@ -60,4 +61,10 @@ return function (ContainerConfigurator $container) {
         ->private()
         ->arg(0, ref(KernelInterface::class))
     ;
+
+    $container->services()->set(WebauthnUtils::class)
+        ->private()
+        ->args([
+            ref(\Symfony\Component\HttpFoundation\RequestStack::class),
+        ]);
 };

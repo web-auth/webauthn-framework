@@ -27,7 +27,6 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
-use Symfony\Component\Security\Core\Exception\SessionUnavailableException;
 use Symfony\Component\Security\Core\Role\SwitchUserRole;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -39,11 +38,11 @@ use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
+use Webauthn\Bundle\Security\WebauthnUtils;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -99,8 +98,15 @@ class WebauthnListener implements ListenerInterface
         $request = $event->getRequest();
 
         switch (true) {
+            // Cancel the process
+            case $token instanceof PreWebauthnToken && $this->providerKey === $token->getProviderKey() && $this->httpUtils->checkRequestPath($request, $this->options['abort_path']):
+                $this->tokenStorage->setToken(null);
+                $response = $this->httpUtils->createRedirectResponse($request, $this->options['login_path']);
+                $event->setResponse($response);
+
+                return;
             // The token is an instance of PreWebauthnToken and on the assertion path
-            case $token instanceof PreWebauthnToken && $this->httpUtils->checkRequestPath($request, $this->options['assertion_check_path']) && Request::METHOD_POST === $request->getMethod():
+            case $request->isMethod(Request::METHOD_POST) && $token instanceof PreWebauthnToken && $this->httpUtils->checkRequestPath($request, $this->options['assertion_check_path']):
                 return $this->handleCheckAssertionPath($event, $token);
             // The token is an instance of PreWebauthnToken and not on the assertion path
             case $token instanceof PreWebauthnToken && !$this->httpUtils->checkRequestPath($request, $this->options['assertion_path']) && $token->getProviderKey() === $this->providerKey:
@@ -115,7 +121,7 @@ class WebauthnListener implements ListenerInterface
 
                 return;
             //The username has been submitted
-            case $request->isMethod('POST') && $this->httpUtils->checkRequestPath($request, $this->options['login_check_path']):
+            case $request->isMethod(Request::METHOD_POST) && $this->httpUtils->checkRequestPath($request, $this->options['login_check_path']):
                 return $this->handleCheckUsernamePath($event);
             default:
                 return;
@@ -136,12 +142,8 @@ class WebauthnListener implements ListenerInterface
             $this->sessionStrategy->onAuthentication($request, $authenticatedToken);
             $response = $this->onAssertionSuccess($request, $authenticatedToken);
         } catch (AuthenticationException $e) {
-            dump('AuthenticationException $e');
-            dump($e->getFile(), $e->getLine(), $e->getMessage());
             $response = $this->onAssertionFailure($request, $e);
         } catch (\Exception $e) {
-            dump('\Exception $e');
-            dump($e->getFile(), $e->getLine(), $e->getMessage(), $e->getPrevious());
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -153,9 +155,6 @@ class WebauthnListener implements ListenerInterface
         $request = $event->getRequest();
         Assertion::true($request->hasSession(), 'This authentication method requires a session.');
         try {
-            /*if ($this->options['require_previous_session'] && !$request->hasPreviousSession()) {
-                throw new SessionUnavailableException('Your session has timed out, or you have disabled cookies.');
-            }*/
             $this->checkCsrfToken($request);
             $token = $this->processWithUsername($request);
             $request->getSession()->set(Security::LAST_USERNAME, $token->getUsername());
@@ -234,16 +233,6 @@ class WebauthnListener implements ListenerInterface
         $session->remove(Security::LAST_USERNAME);
 
         return $this->httpUtils->createRedirectResponse($request, $this->options['assertion_path']);
-
-        /*if (null !== $this->dispatcher) {
-            $loginEvent = new InteractiveLoginEvent($request, $token);
-            $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
-        }*/
-
-        //$response = $this->successHandler->onAuthenticationSuccess($request, $token);
-        /*if (null !== $this->rememberMeServices) {
-            $this->rememberMeServices->loginSuccess($request, $response, $token);
-        }*/
     }
 
     /**
@@ -263,17 +252,17 @@ class WebauthnListener implements ListenerInterface
         $session = $request->getSession();
         $session->remove(Security::AUTHENTICATION_ERROR);
 
-        return $this->httpUtils->createRedirectResponse($request, '/');
-
-        /*if (null !== $this->dispatcher) {
+        if (null !== $this->dispatcher) {
             $loginEvent = new InteractiveLoginEvent($request, $token);
             $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
-        }*/
+        }
 
-        //$response = $this->successHandler->onAuthenticationSuccess($request, $token);
-        /*if (null !== $this->rememberMeServices) {
+        $response = $this->httpUtils->createRedirectResponse($request, '/');
+        if (null !== $this->rememberMeServices) {
             $this->rememberMeServices->loginSuccess($request, $response, $token);
-        }*/
+        }
+
+        return $response;
     }
 
     private function processWithUsername(Request $request): PreWebauthnToken
@@ -292,20 +281,17 @@ class WebauthnListener implements ListenerInterface
 
         $request->getSession()->set(Security::LAST_USERNAME, $username);
 
-        return new PreWebauthnToken($username, new PublicKeyCredentialRequestOptions(
-            random_bytes($this->options['challenge_length']),
-            $this->options['timeout'],
-            $this->options['relaying_party']['id'],
-            [],
-            $this->options['user_verification'],
-            new AuthenticationExtensionsClientInputs()
-        ), $this->providerKey);
+        return new PreWebauthnToken($username, $this->providerKey);
     }
 
     private function processWithAssertion(Request $request, PreWebauthnToken $token): WebauthnToken
     {
         $assertion = $request->request->get($this->options['assertion_parameter']);
+        $PublicKeyCredentialRequestOptions = $request->getSession()->get(WebauthnUtils::PUBLIC_KEY_CREDENTIAL_REQUEST_OPTIONS);
 
+        if (!$PublicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions) {
+            throw new BadRequestHttpException('No public key credential request potions available for this session.');
+        }
         if (!\is_string($assertion)) {
             throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
         }
@@ -320,13 +306,13 @@ class WebauthnListener implements ListenerInterface
         $this->authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
             $response,
-            $token->getCredentials(),
+            $PublicKeyCredentialRequestOptions,
             (new DiactorosFactory())->createRequest($request)
         );
 
         $newToken = new WebauthnToken(
             $token->getUsername(),
-            $token->getCredentials(),
+            $PublicKeyCredentialRequestOptions,
             $publicKeyCredential->getPublicKeyCredentialDescriptor(),
             $this->providerKey,
             $this->getRoles($token->getUser(), $token)

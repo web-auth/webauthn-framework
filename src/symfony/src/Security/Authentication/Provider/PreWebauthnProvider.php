@@ -25,8 +25,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Webauthn\Bundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\Bundle\Security\Authentication\Token\PreWebauthnToken;
-use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialRequestOptions;
 
 class PreWebauthnProvider implements AuthenticationProviderInterface
 {
@@ -78,22 +76,8 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
             throw new AuthenticationServiceException($e->getMessage(), 0, $e);
         }
 
-        $credentials = [];
-        foreach ($user->getSecurityDeviceCredentialIds() as $publicKeyCredentialDescriptor) {
-            Assertion::isInstanceOf($publicKeyCredentialDescriptor, PublicKeyCredentialDescriptor::class);
-            $credentials[] = $publicKeyCredentialDescriptor;
-        }
-
         $authenticatedToken = new PreWebauthnToken(
             $username,
-            new PublicKeyCredentialRequestOptions(
-                $token->getCredentials()->getChallenge(),
-                $token->getCredentials()->getTimeout(),
-                $token->getCredentials()->getRpId(),
-                $credentials,
-                $token->getCredentials()->getUserVerification(),
-                $token->getCredentials()->getExtensions()
-            ),
             $this->providerKey,
             $user->getRoles()
         );

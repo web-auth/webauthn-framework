@@ -15,26 +15,23 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Webauthn\PublicKeyCredentialRequestOptions;
 
 class PreWebauthnToken extends AbstractToken
 {
-    private $publicKeyCredentialRequestOptions;
     private $providerKey;
 
-    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, string $providerKey, array $roles = [])
+    public function __construct(string $username, string $providerKeyDescriptor, array $roles = [])
     {
         parent::__construct($roles);
-        Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
+        Assertion::notEmpty($providerKeyDescriptor, '$providerKey must not be empty.');
 
         $this->setUser($username);
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
-        $this->providerKey = $providerKey;
+        $this->providerKey = $providerKeyDescriptor;
     }
 
     public function getCredentials()
     {
-        return $this->publicKeyCredentialRequestOptions;
+        return;
     }
 
     public function getProviderKey(): string
@@ -44,14 +41,12 @@ class PreWebauthnToken extends AbstractToken
 
     public function serialize()
     {
-        return serialize([\Safe\json_encode($this->publicKeyCredentialRequestOptions), $this->providerKey, parent::serialize()]);
+        return serialize([$this->providerKey, parent::serialize()]);
     }
 
     public function unserialize($serialized)
     {
-        list($publicKeyCredentialRequestOptions, $this->providerKey, $parentStr) = unserialize($serialized);
-        $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
-        $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
+        list($this->providerKey, $parentStr) = unserialize($serialized);
 
         parent::unserialize($parentStr);
     }

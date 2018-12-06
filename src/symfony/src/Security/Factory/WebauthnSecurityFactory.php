@@ -21,7 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\Bundle\Security\Authentication\Provider\MetaWebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
-use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
@@ -60,27 +59,13 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('login_check_path')->defaultValue('/login_check')->end()
                 ->scalarNode('assertion_path')->defaultValue('/login_assertion')->end()
                 ->scalarNode('assertion_check_path')->defaultValue('/login_check_assertion')->end()
-                ->booleanNode('use_forward')->defaultFalse()->end()
-                ->booleanNode('require_previous_session')->defaultFalse()->end()
+                ->scalarNode('abort_path')->defaultValue('/login_abort')->end()
                 ->scalarNode('user_provider')->end()
                 ->booleanNode('remember_me')->defaultTrue()->end()
-                ->scalarNode('success_handler')->end()
-                ->scalarNode('failure_handler')->end()
                 ->scalarNode('username_parameter')->defaultValue('_username')->end()
                 ->scalarNode('assertion_parameter')->defaultValue('_assertion')->end()
                 ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
                 ->scalarNode('csrf_token_id')->defaultValue('authenticate')->end()
-                ->arrayNode('relaying_party')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('id')->defaultNull()->end()
-                        ->scalarNode('name')->defaultValue('Webauthn Security')->end()
-                        ->scalarNode('icon')->defaultNull()->end()
-                    ->end()
-                ->end()
-                ->integerNode('timeout')->defaultValue(60000)->min(0)->end()
-                ->integerNode('challenge_length')->defaultValue(32)->min(16)->end()
-                ->scalarNode('user_verification')->defaultValue(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)->end()
             ->end()
         ;
     }
@@ -127,7 +112,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->setDefinition($entryPointId, new ChildDefinition(WebauthnEntryPoint::class))
             ->addArgument(new Reference('security.http_utils'))
             ->addArgument($config['login_path'])
-            ->addArgument($config['use_forward'])
         ;
 
         return $entryPointId;
