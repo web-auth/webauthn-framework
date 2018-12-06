@@ -15,16 +15,16 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Webauthn\PublicKeyCredential;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnToken extends AbstractToken
 {
     private $providerKey;
     private $publicKeyCredentialRequestOptions;
-    private $publicKeyCredential;
+    private $publicKeyCredentialDescriptor;
 
-    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredential $publicKeyCredential, string $providerKey, array $roles = [])
+    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, string $providerKey, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -32,7 +32,7 @@ class WebauthnToken extends AbstractToken
         $this->setUser($username);
         $this->providerKey = $providerKey;
         $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
-        $this->publicKeyCredential = $publicKeyCredential;
+        $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
     }
 
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
@@ -42,11 +42,28 @@ class WebauthnToken extends AbstractToken
 
     public function getCredentials()
     {
-        return $this->publicKeyCredential;
+        return $this->publicKeyCredentialDescriptor;
     }
 
     public function getProviderKey(): string
     {
         return $this->providerKey;
+    }
+
+    public function serialize()
+    {
+        return serialize([\Safe\json_encode($this->publicKeyCredentialRequestOptions), \Safe\json_encode($this->publicKeyCredentialDescriptor), $this->providerKey, parent::serialize()]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list($publicKeyCredentialRequestOptions, $publicKeyCredentialDescriptor, $this->providerKey, $parentStr) = unserialize($serialized);
+        $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
+        $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
+
+        $data = \Safe\json_decode($publicKeyCredentialDescriptor, true);
+        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromJson($data);
+
+        parent::unserialize($parentStr);
     }
 }
