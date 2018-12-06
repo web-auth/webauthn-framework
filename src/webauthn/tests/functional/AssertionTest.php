@@ -70,7 +70,7 @@ class AssertionTest extends Fido2TestCase
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal()
+            $request
         );
     }
 
@@ -109,7 +109,7 @@ class AssertionTest extends Fido2TestCase
         $credentialRepository->getCounterFor(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(100);
         $credentialRepository->updateCounterFor(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true), Argument::any())->shouldBeCalled();
 
-        $request = new Request([], [], [], [], [], ['HOST' => 'localhost']);
+        $request = new Request([], [], [], [], [], ['HTTP_HOST' => 'localhost']);
 
         $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getRawId(),

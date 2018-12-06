@@ -4,27 +4,36 @@
     <title>Authentication page</title>
 </head>
 <body>
-<form method="post" action="{{ path('app_login_check') }}" id="assertion_form">
+<h1>Interaction</h1>
+<p>Veuillez utiliser un des périphériques de sécurité associé à votre compte.</p>
+<p>Pour annuler la procédure, <a href="{{ path('app_login_abort') }}">suivez ce lien</a>.</p>
+<form method="post" id="assertion_form">
     <input type="hidden" value="" name="_assertion" id="_assertion">
+    <input type="hidden" name="_csrf_token" id="_csrf_token" value="{{ csrf_token('authenticate') }}">
 </form>
 <script>
+    "use strict";
+
     var publicKey = {{ publicKeyCredentialRequestOptions|json_encode|raw }};
 
     function arrayToBase64String(a) {
         return btoa(String.fromCharCode(...a));
     }
 
-    publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), c=>c.charCodeAt(0));
-    publicKey.allowCredentials = publicKey.allowCredentials.map(function(data) {
-        return {
-            'type': data.type,
-            'id': Uint8Array.from(atob(data.id), c=>c.charCodeAt(0)),
-            'transport': data.transports
-        };
-    });
+    publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), function(c){return c.charCodeAt(0);});
 
+    if (publicKey.allowCredentials !== undefined) {
+        publicKey.allowCredentials = publicKey.allowCredentials.map(function(data) {
+            return {
+                "type": data.type,
+                "id": Uint8Array.from(atob(data.id), function(c){return c.charCodeAt(0);})
+            };
+        });
+    }
+
+    console.log({publicKey});
     navigator.credentials.get({publicKey})
-        .then(data => {
+        .then(function (data) {
             var publicKeyCredential = {
                 id: data.id,
                 type: data.type,
@@ -36,10 +45,11 @@
                     userHandle: data.response.userHandle ? arrayToBase64String(new Uint8Array(data.response.userHandle)) : null
                 }
             };
-            var assertion = document.getElementById('_assertion');
-            assertion.value = btoa(JSON.stringify(publicKeyCredential));
-            document.getElementById('assertion_form').submit();
-        }, error => {
+            console.log(JSON.stringify(publicKeyCredential));
+            var assertion = document.getElementById("_assertion");
+            assertion.value = JSON.stringify(publicKeyCredential);
+            document.getElementById("assertion_form").submit();
+        }, function (error) {
             console.log(error); // Example: timeout, interaction refused...
         });
 </script>

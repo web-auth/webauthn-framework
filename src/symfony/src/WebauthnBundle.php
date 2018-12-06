@@ -20,7 +20,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportComp
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 use Webauthn\Bundle\Security\Factory\WebauthnSecurityFactory;
 
-class WebauthnBundle extends Bundle
+final class WebauthnBundle extends Bundle
 {
     public function getContainerExtension()
     {

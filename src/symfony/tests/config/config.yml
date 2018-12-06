@@ -50,8 +50,10 @@ security:
             anonymous: ~
             webauthn:
                 login_path: /login
+                login_check_path: /login
                 assertion_path: /login/assertion
-                check_path: /login/check
+                assertion_check_path: /login/assertion
+                abort_path: /login/abort
             logout:
                 path: /logout
                 target: /

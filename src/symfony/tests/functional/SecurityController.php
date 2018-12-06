@@ -15,27 +15,27 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Environment;
-use Webauthn\Bundle\Security\Authentication\Token\PreWebauthnToken;
+use Webauthn\Bundle\Security\WebauthnUtils;
 
 final class SecurityController
 {
     private $twig;
     private $tokenStorage;
-    private $authenticationUtils;
+    private $webauthnUtils;
 
-    public function __construct(Environment $twig, TokenStorageInterface $tokenStorage, AuthenticationUtils $authenticationUtils)
+    public function __construct(Environment $twig, TokenStorageInterface $tokenStorage, WebauthnUtils $webauthnUtils)
     {
         $this->twig = $twig;
         $this->tokenStorage = $tokenStorage;
-        $this->authenticationUtils = $authenticationUtils;
+        $this->webauthnUtils = $webauthnUtils;
     }
 
     public function login(): Response
     {
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
+        $error = $this->webauthnUtils->getLastAuthenticationError();
+        $lastUsername = $this->webauthnUtils->getLastUsername();
 
         $page = $this->twig->render('login.html.twig', [
             'last_username' => $lastUsername,
@@ -47,21 +47,23 @@ final class SecurityController
 
     public function assertion(): Response
     {
-        /** @var PreWebauthnToken $token */
-        $token = $this->tokenStorage->getToken();
-        $error = $this->authenticationUtils->getLastAuthenticationError();
+        /** @var UserInterface $user */
+        $user = $this->tokenStorage->getToken()->getUser();
+        $publicKeyCredentialRequestOptions = $this->webauthnUtils->generateRequestFor($user);
+        $error = $this->webauthnUtils->getLastAuthenticationError();
 
         $page = $this->twig->render('assertion.html.twig', [
             'error' => $error,
-            'publicKeyCredentialRequestOptions' => $token->getCredentials(),
+            'user' => $user,
+            'publicKeyCredentialRequestOptions' => $publicKeyCredentialRequestOptions,
         ]);
 
         return new Response($page);
     }
 
-    public function check(): Response
+    public function abort(): Response
     {
-        return new Response('Check');
+        return new Response('Abort');
     }
 
     public function logout(): Response

@@ -4,7 +4,7 @@
     <title>Authentication page</title>
 </head>
 <body>
-<form method="post" action="{{ path('app_login_assertion') }}">
+<form method="post">
     {% if error %}
         <div id="_errors">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}

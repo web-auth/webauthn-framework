@@ -66,7 +66,7 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_NONE, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $request = new Request([], [], [], [], [], ['HOST' => 'localhost']);
+        $request = new Request([], [], [], [], [], ['HTTP_HOST' => 'localhost']);
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),

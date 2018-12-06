@@ -66,7 +66,7 @@ class AssertionTest extends KernelTestCase
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal()
+            $request
         );
     }
 }
