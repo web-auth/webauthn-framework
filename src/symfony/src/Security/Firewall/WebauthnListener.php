@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -307,7 +306,7 @@ class WebauthnListener implements ListenerInterface
             $publicKeyCredential->getRawId(),
             $response,
             $PublicKeyCredentialRequestOptions,
-            (new DiactorosFactory())->createRequest($request)
+            $request
         );
 
         $newToken = new WebauthnToken(
