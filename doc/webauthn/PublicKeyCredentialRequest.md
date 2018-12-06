@@ -191,7 +191,7 @@ The only exception is that you have to instantiate a Authenticator Assertion Res
 ### Authenticator Assertion Response Validator
 
 The `Webauthn\AuthenticatorAssertionResponseValidator` class corresponds to the Authenticator Assertion Response Validator.
-This class requires the Credential Repository service and the CBOR Decoder service.
+This class requires the Credential Repository service, the CBOR Decoder service and a token binding handler.
 
 ```php
 <?php
@@ -202,7 +202,8 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
     $credentialIdRepository, // The Credential Repository service
-    $decoder                 // The CBOR Decoder service
+    $decoder,                // The CBOR Decoder service
+    $tokenBindingHandler     // The token binding handler  
 );
 ``` 
 
@@ -264,26 +265,19 @@ will check everything for you.
 
 declare(strict_types=1);
 
-$authenticatorAssertionResponse->check(
-    $authenticatorAssertionResponse,
-    $publicKeyCredentialRequestOptions
-);
-```
+use Symfony\Component\HttpFoundation\Request;
 
-If the Relaying Party ID is not set in the `$publicKeyCredentialRequestOptions` (i.e. uses the current domain),
-you MUST set it here as third argument.
-
-```php
-<?php
-
-declare(strict_types=1);
+$request = Request::createFromGlobals();
 
 $authenticatorAssertionResponse->check(
+    $publicKeyCredential->getRawId(),
     $authenticatorAssertionResponse,
     $publicKeyCredentialRequestOptions,
-    'foo.example.com'
+    $request
 );
 ```
+
+If the Relaying Party ID is not set in the `$publicKeyCredentialRequestOptions`, the host from the HTTP request will be used.
 
 If no exception is thrown, the response is valid and you can continue the authentication of the user:
 
@@ -297,6 +291,8 @@ declare(strict_types=1);
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Symfony\Component\HttpFoundation\Request;
+use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -304,6 +300,7 @@ use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 
 // Retrieve the Options passed to the device
@@ -324,7 +321,7 @@ $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
 $attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
 
 // Attestation Object Loader
-$attestationObjectLoader = new AttestationObjectLoader($decoder);
+$attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $decoder);
 
 // Public Key Credential Loader
 $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
@@ -332,13 +329,20 @@ $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoa
 // Credential Repository
 $credentialRepository = /** The Credential Repository of your application */;
 
+// The token binding handler
+$tokenBindnigHandler = new TokenBindingNotSupportedHandler();
+
 // Authenticator Assertion Response Validator
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
   $credentialIdRepository,
-  $decoder
+  $decoder,
+  $tokenBindnigHandler
 );
 
 try {
+    // We init the Symfony Request object
+    $request = Request::createFromGlobals();
+    
     // Load the data
     $publicKeyCredential = $publicKeyCredentialLoader->load($data);
     $response = $publicKeyCredential->getResponse();
@@ -348,10 +352,8 @@ try {
         throw new \RuntimeException('Not an authenticator assertion response');
     }
     
-    // Check the response against the request
-    $authenticatorAssertionResponseValidator->check($publicKeyCredential->getRawId(), $publicKeyCredential->getResponse(), $publicKeyCredentialRequestOptions);
-    // If you did not set an application ID (i.e. the domain), you MUST set it here
-    //$authenticatorAssertionResponseValidator->check($publicKeyCredential->getRawId(), $publicKeyCredential->getResponse(), $publicKeyCredentialRequestOptions, 'foo.example.com');
+    // Check the response against the attestation request
+    $authenticatorAssertionResponseValidator->check($publicKeyCredential->getRawId(), $publicKeyCredential->getResponse(), $publicKeyCredentialRequestOptions, $request);
     ?>
         <html>
         <head>

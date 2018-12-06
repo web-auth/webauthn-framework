@@ -34,7 +34,6 @@ It needs
 * an ID (optional): corresponds to the domain or sub-domain. If absent, the current domain is used.
 * an icon (optional)
 
-
 ```php
 <?php
 use Webauthn\PublicKeyCredentialRpEntity;
@@ -46,10 +45,12 @@ $rpEntity = new PublicKeyCredentialRpEntity(
 );
 ```
 
-The ID must be `null`, the domain or sub-domain **only** of your application.
+The ID can be `null`, the domain or sub-domain **only** of your application.
 **The scheme, port, path, user… are not allowed**.
 
 It could be `www.sub.domain.com`, `sub.domain.com`, `domain.com` but **not** `www.sub.domain.com:1337`, `https://domain.com:443`, `sub.domain.com/index`.
+
+*Even if it is optional, we highly recommend to set the ID here. Some browsers (e.g. Mozilla Firefox) we refuse to handle the request considering it is unsecured.*
 
 ## User Entity
 
@@ -343,6 +344,7 @@ You will need the following components before loading or verifying the data:
 
 * A credential repository
 * A CBOR Decoder (binary format used by the Webauthn protocol)
+* A token binding handler
 * An Attestation Statement Support Manager and at least one Attestation Statement Support object
 * An Attestation Object Loader
 * A Public Key Credential Loader
@@ -374,6 +376,24 @@ $decoder = new Decoder(new OtherObjectManager(), new TagObjectManager());
 ```
 
 That’s all!
+
+### Token Binding Handler
+
+The token binding handler is a service that will verify if the token binding set in the device response corresponds to 
+the one set in the request.
+
+As this feature is not fully implemented by the browsers, several handlers are provided by this library:
+
+* `Webauthn\TokenBinding\IgnoreTokenBindingHandler`: this handler will completely ignore the token binding
+* `Webauthn\TokenBinding\TokenBindingNotSupportedHandler`: with this handler, if a token binding is present, an exception is thrown
+
+We let you select the desired behaviour regarding this feature.
+
+For the record, associated specifications are:
+ 
+* [RFC8471](https://tools.ietf.org/html/rfc8471),
+* [RFC8472](https://tools.ietf.org/html/rfc8472),
+* [RFC8473](https://tools.ietf.org/html/rfc8473).
 
 ### Attestation Statement Support Manager
 
@@ -446,7 +466,8 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
-    $credentialRepository
+    $credentialRepository,
+    $tokenBindingHandler
 );
 ```
 
@@ -498,7 +519,10 @@ if (!$authenticatorAttestationResponse instanceof AuthenticatorAttestationRespon
 }
 ```
 
-The second step is the verification against the Public Key Creation Options we created earlier.
+The second step is the verification against
+
+* The Public Key Creation Options we created earlier,
+* The HTTP request
 
 The Authenticator Attestation Response Validator service (variable `$authenticatorAttestationResponseValidator`)
 will check everything for you: challenge, origin, attestation statement and much more.
@@ -508,26 +532,20 @@ will check everything for you: challenge, origin, attestation statement and much
 
 declare(strict_types=1);
 
-$authenticatorAttestationResponseValidator->check(
-    $authenticatorAttestationResponse,
-    $publicKeyCredentialCreationOptions
-);
-```
+use Symfony\Component\HttpFoundation\Request;
 
-If the Relaying Party Entity set in the `$publicKeyCredentialCreationOptions` have no ID (i.e. uses the current domain),
-you MUST set it here as third argument.
-
-```php
-<?php
-
-declare(strict_types=1);
+$request = Request::createFromGlobals();
 
 $authenticatorAttestationResponseValidator->check(
     $authenticatorAttestationResponse,
     $publicKeyCredentialCreationOptions,
-    'foo.example.com'
+    $request
 );
 ```
+
+If the Relaying Party Entity set in the `$publicKeyCredentialCreationOptions` have no ID, the host from the 
+request object will be used.
+
 
 If no exception is thrown, the response is valid and you can store and associate those to the user:
 
@@ -611,6 +629,7 @@ declare(strict_types=1);
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -619,7 +638,7 @@ use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
-
+use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 // Retrieve the PublicKeyCredentialCreationOptions object created earlier
 $publicKeyCredentialCreationOptions = /** This data depends on the way you store it */;
@@ -631,6 +650,9 @@ $data = /** This step depends on the way you transmit the data */;
 $otherObjectManager = new OtherObjectManager();
 $tagObjectManager = new TagObjectManager();
 $decoder = new Decoder($tagObjectManager, $otherObjectManager);
+
+// The token binding handler
+$tokenBindnigHandler = new TokenBindingNotSupportedHandler();
 
 // Attestation Statement Support Manager
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
@@ -650,10 +672,14 @@ $credentialRepository = /** The Credential Repository of your application */;
 // Authenticator Attestation Response Validator
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
-    $credentialRepository
+    $credentialRepository,
+    $tokenBindnigHandler
 );
 
 try {
+    // We init the Symfony Request object
+    $request = Request::createFromGlobals();
+    
     // Load the data
     $publicKeyCredential = $publicKeyCredentialLoader->load($data);
     $response = $publicKeyCredential->getResponse();
@@ -664,9 +690,7 @@ try {
     }
 
     // Check the response against the request
-    $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions);
-    // If you did not set an application ID (i.e. the domain) to the PublicKeyCredentialRpEntity, you MUST set it here
-    //$authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, 'foo.example.com');
+    $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
 } catch (\Throwable $exception) {
     ?>
     <html>
