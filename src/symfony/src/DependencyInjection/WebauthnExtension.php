@@ -17,13 +17,15 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\CredentialRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use Webauthn\Bundle\Doctrine\Type as DbalType;
 
-final class WebauthnExtension extends Extension
+final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
     private $alias;
 
@@ -55,5 +57,34 @@ final class WebauthnExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($this->alias);
+    }
+
+    public function prepend(ContainerBuilder $container)
+    {
+        $this->prependDoctrineTypes($container);
+    }
+
+    private function prependDoctrineTypes(ContainerBuilder $container): void
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!\is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
+            return;
+        }
+        $configs = $container->getExtensionConfig('doctrine');
+        if (empty($configs)) {
+            return;
+        }
+        $config = current($configs);
+        if (!isset($config['dbal'])) {
+            $config['dbal'] = [];
+        }
+        if (!isset($config['dbal']['types'])) {
+            $config['dbal']['types'] = [];
+        }
+        $config['dbal']['types'] += [
+            'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
+            'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
+        ];
+        $container->prependExtensionConfig('doctrine', $config);
     }
 }
