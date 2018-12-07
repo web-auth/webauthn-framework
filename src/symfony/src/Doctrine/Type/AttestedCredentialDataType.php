@@ -26,7 +26,9 @@ final class AttestedCredentialDataType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return AttestedCredentialData::createFromJson($value);
+        $json = \Safe\json_decode($value, true);
+
+        return AttestedCredentialData::createFromJson($json);
     }
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)

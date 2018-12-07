@@ -21,9 +21,9 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\CredentialRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
-use Webauthn\Bundle\Doctrine\Type as DbalType;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
@@ -84,6 +84,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $config['dbal']['types'] += [
             'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
             'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
+            'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);
     }

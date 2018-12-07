@@ -15,9 +15,9 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialDescriptorCollection;
 
-final class PublicKeyCredentialDescriptorType extends Type
+final class PublicKeyCredentialDescriptorCollectionType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -28,7 +28,7 @@ final class PublicKeyCredentialDescriptorType extends Type
     {
         $json = \Safe\json_decode($value, true);
 
-        return PublicKeyCredentialDescriptor::createFromJson($json);
+        return PublicKeyCredentialDescriptorCollection::createFromJson($json);
     }
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
