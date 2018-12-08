@@ -32,7 +32,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         if ($this->isRememberMeAware($config)) {
             $container
                 ->getDefinition($listenerId)
-                ->addTag('security.remember_me_aware', ['id' => $id, 'user_provider' => $userProviderId])
+                ->addTag('security.remember_me_aware', ['id' => $id, 'provider' => $userProviderId])
             ;
         }
 
