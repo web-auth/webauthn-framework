@@ -98,8 +98,10 @@ class WebauthnListener implements ListenerInterface
 
         switch (true) {
             // Cancel the process
-            case $token instanceof PreWebauthnToken && $this->providerKey === $token->getProviderKey() && $this->httpUtils->checkRequestPath($request, $this->options['abort_path']):
-                $this->tokenStorage->setToken(null);
+            case $this->httpUtils->checkRequestPath($request, $this->options['abort_path']):
+                if ($token instanceof PreWebauthnToken && $this->providerKey === $token->getProviderKey()) {
+                    $this->tokenStorage->setToken(null);
+                }
                 $response = $this->httpUtils->createRedirectResponse($request, $this->options['login_path']);
                 $event->setResponse($response);
 
@@ -267,6 +269,7 @@ class WebauthnListener implements ListenerInterface
     private function processWithUsername(Request $request): PreWebauthnToken
     {
         $username = $request->request->get($this->options['username_parameter']);
+        $rememberMe = $this->isRememberMeRequested($request);
 
         if (!\is_string($username)) {
             throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
@@ -280,7 +283,7 @@ class WebauthnListener implements ListenerInterface
 
         $request->getSession()->set(Security::LAST_USERNAME, $username);
 
-        return new PreWebauthnToken($username, $this->providerKey);
+        return new PreWebauthnToken($username, $this->providerKey, $rememberMe);
     }
 
     private function processWithAssertion(Request $request, PreWebauthnToken $token): WebauthnToken
@@ -334,5 +337,20 @@ class WebauthnListener implements ListenerInterface
         }
 
         return $roles;
+    }
+
+    private function isRememberMeRequested(Request $request): bool
+    {
+        if (null === $this->options['remember_me_parameter']) {
+            return false;
+        }
+
+        $parameter = $request->request->get($this->options['remember_me_parameter']);
+
+        if (null === $parameter && null !== $this->logger) {
+            $this->logger->debug('Did not send remember-me cookie.', array('parameter' => $this->options['remember_me_parameter']));
+        }
+
+        return 'true' === $parameter || 'on' === $parameter || '1' === $parameter || 'yes' === $parameter || true === $parameter;
     }
 }

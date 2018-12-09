@@ -61,7 +61,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('assertion_check_path')->defaultValue('/login_check_assertion')->end()
                 ->scalarNode('abort_path')->defaultValue('/login_abort')->end()
                 ->scalarNode('user_provider')->end()
-                ->booleanNode('remember_me')->defaultTrue()->end()
+                ->scalarNode('remember_me_parameter')->defaultNull()->end()
                 ->scalarNode('username_parameter')->defaultValue('_username')->end()
                 ->scalarNode('assertion_parameter')->defaultValue('_assertion')->end()
                 ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
@@ -72,7 +72,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 
     private function isRememberMeAware(array $config): bool
     {
-        return $config['remember_me'];
+        return $config['remember_me_parameter'] !== null;
     }
 
     private function createAuthProvider(ContainerBuilder $container, string $id, array $config, string $userProviderId): string

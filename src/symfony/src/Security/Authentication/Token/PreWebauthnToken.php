@@ -18,14 +18,16 @@ use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
 class PreWebauthnToken extends AbstractToken
 {
+    private $rememberMe;
     private $providerKey;
 
-    public function __construct(string $username, string $providerKeyDescriptor, array $roles = [])
+    public function __construct(string $username, string $providerKeyDescriptor, bool $rememberMe, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKeyDescriptor, '$providerKey must not be empty.');
 
         $this->setUser($username);
+        $this->rememberMe = $rememberMe;
         $this->providerKey = $providerKeyDescriptor;
     }
 
@@ -39,14 +41,19 @@ class PreWebauthnToken extends AbstractToken
         return $this->providerKey;
     }
 
+    public function isRememberMe(): bool
+    {
+        return $this->rememberMe;
+    }
+
     public function serialize()
     {
-        return serialize([$this->providerKey, parent::serialize()]);
+        return serialize([$this->rememberMe, $this->providerKey, parent::serialize()]);
     }
 
     public function unserialize($serialized)
     {
-        list($this->providerKey, $parentStr) = unserialize($serialized);
+        list($this->rememberMe, $this->providerKey, $parentStr) = unserialize($serialized);
 
         parent::unserialize($parentStr);
     }

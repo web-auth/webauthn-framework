@@ -79,6 +79,7 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
         $authenticatedToken = new PreWebauthnToken(
             $username,
             $this->providerKey,
+            $token->isRememberMe(),
             $user->getRoles()
         );
         $authenticatedToken->setUser($user);
