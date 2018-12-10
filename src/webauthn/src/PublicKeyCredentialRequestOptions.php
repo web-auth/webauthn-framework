@@ -47,7 +47,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
         $this->rpId = $rpId;
         $this->allowCredentials = array_values($allowCredentials);
         $this->userVerification = $userVerification;
-        $this->extensions = $extensions;
+        $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
     }
 
     public function getChallenge(): string
@@ -78,7 +78,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
         return $this->userVerification;
     }
 
-    public function getExtensions(): ?AuthenticationExtensionsClientInputs
+    public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;
     }
@@ -99,7 +99,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
             $json['rpId'] ?? null,
             $allowCredentials,
             $json['userVerification'] ?? null,
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : null
+            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : new AuthenticationExtensionsClientInputs()
         );
     }
 
@@ -121,7 +121,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
             $json['allowCredentials'] = $this->allowCredentials;
         }
 
-        if ($this->extensions && 0 !== $this->extensions->count()) {
+        if (0 !== $this->extensions->count()) {
             $json['extensions'] = $this->extensions;
         }
 

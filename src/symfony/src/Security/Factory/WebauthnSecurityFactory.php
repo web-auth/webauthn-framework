@@ -72,7 +72,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 
     private function isRememberMeAware(array $config): bool
     {
-        return $config['remember_me_parameter'] !== null;
+        return null !== $config['remember_me_parameter'];
     }
 
     private function createAuthProvider(ContainerBuilder $container, string $id, array $config, string $userProviderId): string

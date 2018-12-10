@@ -348,7 +348,7 @@ class WebauthnListener implements ListenerInterface
         $parameter = $request->request->get($this->options['remember_me_parameter']);
 
         if (null === $parameter && null !== $this->logger) {
-            $this->logger->debug('Did not send remember-me cookie.', array('parameter' => $this->options['remember_me_parameter']));
+            $this->logger->debug('Did not send remember-me cookie.', ['parameter' => $this->options['remember_me_parameter']]);
         }
 
         return 'true' === $parameter || 'on' === $parameter || '1' === $parameter || 'yes' === $parameter || true === $parameter;
