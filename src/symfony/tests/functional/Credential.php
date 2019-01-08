@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Webauthn\AttestedCredentialData;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Webauthn\Bundle\Tests\Functional\CredentialRepository")
