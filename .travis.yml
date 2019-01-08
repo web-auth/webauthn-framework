@@ -27,6 +27,8 @@ before_script:
 
 script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
+    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
+    - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist --coverage-php build/cov/coverage-symfony-security.cov
 
 after_success:
     - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov

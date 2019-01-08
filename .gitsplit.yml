@@ -5,6 +5,8 @@ splits:
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
     - prefix: "src/symfony"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
+    - prefix: "src/symfony-security"
+      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-security-bundle.git"
 
 origins:
     - ^master$

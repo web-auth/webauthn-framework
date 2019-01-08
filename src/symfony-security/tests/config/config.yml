@@ -1,0 +1,66 @@
+framework:
+    test: ~
+    secret: 'test'
+    session:
+        storage_id: 'session.storage.mock_file'
+    router:
+        resource: "%kernel.root_dir%/../config/routing.php"
+        strict_requirements: ~
+    fragments:       ~
+    http_method_override: true
+
+services:
+    _defaults:
+        public: true
+
+    Webauthn\SecurityBundle\Tests\Functional\UserProvider:
+        autowire: true
+    Webauthn\SecurityBundle\Tests\Functional\CredentialRepository: ~
+    Webauthn\SecurityBundle\Tests\Functional\UserRepository: ~
+    Webauthn\SecurityBundle\Tests\Functional\HomeController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\SecurityBundle\Tests\Functional\SecurityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\SecurityBundle\Tests\Functional\AdminController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+twig:
+    strict_variables: true
+    paths:
+        '%kernel.project_dir%/tests/templates': ~
+
+webauthn:
+    credential_repository: 'Webauthn\SecurityBundle\Tests\Functional\CredentialRepository'
+
+security:
+    role_hierarchy:
+        ROLE_GUEST:
+        ROLE_USER:  ROLE_GUEST
+        ROLE_ADMIN: ROLE_USER
+
+    providers:
+        default:
+            id: 'Webauthn\SecurityBundle\Tests\Functional\UserProvider'
+
+    firewalls:
+        main:
+            anonymous: ~
+            webauthn:
+                login_path: /login
+                login_check_path: /login
+                assertion_path: /login/assertion
+                assertion_check_path: /login/assertion
+                abort_path: /login/abort
+            logout:
+                path: /logout
+                target: /
+
+    access_control:
+        - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
+        - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
+        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

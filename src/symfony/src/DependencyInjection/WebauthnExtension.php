@@ -51,7 +51,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
-        $loader->load('security.php');
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)
@@ -60,11 +59,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     public function prepend(ContainerBuilder $container)
-    {
-        $this->prependDoctrineTypes($container);
-    }
-
-    private function prependDoctrineTypes(ContainerBuilder $container): void
     {
         $bundles = $container->getParameter('kernel.bundles');
         if (!\is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {

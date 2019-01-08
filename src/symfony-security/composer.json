@@ -1,5 +1,5 @@
 {
-    "name": "web-auth/webauthn-symfony-bundle",
+    "name": "web-auth/webauthn-symfony-security-bundle",
     "type": "symfony-bundle",
     "license": "MIT",
     "description": "FIDO2/Webauthn Security Bundle For Symfony",
@@ -12,29 +12,22 @@
         },
         {
             "name": "All contributors",
-            "homepage": "https://github.com/web-auth/webauthn-symfony-bundle/contributors"
+            "homepage": "https://github.com/web-auth/webauthn-symfony-security-bundle/contributors"
         }
     ],
     "require": {
-        "spomky-labs/cbor-bundle": "^1.0",
-        "spomky-labs/cbor-php": "^1.0.2",
-        "symfony/config": "^4.2",
-        "symfony/dependency-injection": "^4.2",
-        "symfony/framework-bundle": "^4.2",
-        "web-auth/webauthn-lib": "^1.0"
+        "symfony/security-bundle": "^4.2",
+        "web-auth/webauthn-symfony-bundle": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Webauthn\\Bundle\\": "src/"
+            "Webauthn\\SecurityBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
+            "Webauthn\\SecurityBundle\\Tests\\Functional\\": "tests/functional/"
         }
-    },
-    "suggest": {
-        "web-auth/webauthn-symfony-bundle": "For firewall features"
     },
     "extra": {
         "branch-alias": {

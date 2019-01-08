@@ -11,13 +11,16 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\SecurityBundle\Tests\Functional;
 
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
+use Webauthn\SecurityBundle\WebauthnSecurityBundle;
 
 final class AppKernel extends Kernel
 {
@@ -31,8 +34,11 @@ final class AppKernel extends Kernel
         return [
             new FrameworkBundle(),
             new SpomkyLabsCborBundle(),
+            new SecurityBundle(),
+            new TwigBundle(),
 
             new WebauthnBundle(),
+            new WebauthnSecurityBundle(),
         ];
     }
 

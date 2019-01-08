@@ -11,8 +11,7 @@
         colors="true">
     <testsuites>
         <testsuite name="Test Suite">
-            <directory>./src/u2f/tests/</directory>
-            <directory>./src/webauthn/tests/</directory>
+            <directory>./src/symfony-security/tests/</directory>
         </testsuite>
     </testsuites>
     <php>
@@ -20,7 +19,7 @@
         <ini name="intl.default_locale" value="en" />
         <ini name="intl.error_level" value="0" />
         <ini name="memory_limit" value="-1" />
-        <server name="KERNEL_CLASS" value="Webauthn\Bundle\Tests\Functional\AppKernel" />
+        <server name="KERNEL_CLASS" value="Webauthn\SecurityBundle\Tests\Functional\AppKernel" />
     </php>
     <filter>
         <whitelist>

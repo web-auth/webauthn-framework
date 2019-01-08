@@ -11,6 +11,14 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-use Symfony\Component\Routing\RouteCollection;
+namespace Webauthn\SecurityBundle\Tests\Functional;
 
-return new RouteCollection();
+use Symfony\Component\HttpFoundation\Response;
+
+final class HomeController
+{
+    public function home(): Response
+    {
+        return new Response('Home');
+    }
+}

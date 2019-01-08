@@ -18,7 +18,8 @@
         "psr-4": {
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
-            "Webauthn\\Bundle\\": "src/symfony/src/"
+            "Webauthn\\Bundle\\": "src/symfony/src/",
+            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
         }
     },
     "autoload-dev": {
@@ -27,7 +28,8 @@
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/"
+            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\SecurityBundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/"
         }
     },
     "require": {
@@ -43,15 +45,15 @@
         "symfony/dependency-injection": "^4.2",
         "symfony/framework-bundle": "^4.2",
         "symfony/http-foundation": "^4.2",
+        "symfony/security-bundle": "^4.2",
+        "symfony/twig-bundle": "^4.2",
         "thecodingmachine/safe": "^0.1"
     },
     "replace": {
         "web-authn/u2f-lib": "self.version",
         "web-authn/webauthn-lib": "self.version",
-        "web-authn/webauthn-symfony-bundle": "self.version"
-    },
-    "suggest": {
-        "symfony/security-bundle": "For firewall features"
+        "web-authn/webauthn-symfony-bundle": "self.version",
+        "web-authn/webauthn-symfony-security-bundle": "self.version"
     },
     "extra": {
         "branch-alias": {
@@ -62,14 +64,12 @@
         "sort-packages": true
     },
     "require-dev": {
-        "symfony/security-bundle": "^4.2",
         "php-coveralls/php-coveralls": "^2.0",
         "phpstan/phpstan": "^0.10",
         "phpunit/phpcov": "^5.0",
         "phpunit/phpunit": "^7.0",
         "symfony/browser-kit": "^4.2",
         "symfony/phpunit-bridge": "^4.2",
-        "symfony/twig-bundle": "^4.2",
         "symfony/var-dumper": "^4.2"
     }
 }
