@@ -10,7 +10,10 @@ This ID will be used for further authentication requests.
 # Creation Request
 
 To associate a device to a user, you need to instantiate a `Webauthn\PublicKeyCredentialCreationOptions` object.
-This object will need:
+
+This object is designed to be serialized into a JSON object. This behaviour will ease the integration into an HTML page (see example below) or when stored in a session.
+
+It will need:
 
 * The Relaying Party data (your application)
 * The User data
@@ -22,54 +25,55 @@ This object will need:
 * Attestation conveyance preference (optional)
 * Extensions (optional)
 
-The `PublicKeyCredentialCreationOptions` object and all objects below are designed to be easily serialized into a JSON object.
-This behaviour will ease the integration of your creation options e.g. when integrated into an HTML page (see example below).
+Let see step by step how to set a `PublicKeyCredentialCreationOptions` object.
 
 ## Relaying Party Entity
 
 The Relaying Party Entity corresponds to your application details.
 
-It needs 
-* a name (required): your application name
-* an ID (optional): corresponds to the domain or sub-domain. If absent, the current domain is used.
-* an icon (optional)
+Its arguments are:
+* a name (required): your application name (`My Secured Application`, `ACME Protection System V2`)
+* an ID (optional): this value corresponds to the domain or sub-domain. If `null`, the current domain is used.
+* an icon (optional): an URL to your application logo/icon. Can be `null`. This URL may be ignored by the browser.
+
+Example:
 
 ```php
 <?php
 use Webauthn\PublicKeyCredentialRpEntity;
 
 $rpEntity = new PublicKeyCredentialRpEntity(
-    'My Super Secured Application', //Name
-    'foo.example.com',              //ID
-    null                            //Icon
+    'My Super Secured Application',   //Name
+    'foo.example.com',                //ID
+    'https://www.example.co/logo.png' //Icon
 );
 ```
 
 The ID can be `null`, the domain or sub-domain **only** of your application.
-**The scheme, port, path, user… are not allowed**.
+**The scheme, userinfo, port, path, user… are not allowed**.
 
-It could be `www.sub.domain.com`, `sub.domain.com`, `domain.com` but **not** `www.sub.domain.com:1337`, `https://domain.com:443`, `sub.domain.com/index`.
+It could be `www.sub.domain.com`, `sub.domain.com`, `domain.com` but **not** `com`, `www.sub.domain.com:1337`, `https://domain.com:443`, `sub.domain.com/index`, `https://user:password@www.domain.com`.
 
-*Even if it is optional, we highly recommend to set the ID here. Some browsers (e.g. Mozilla Firefox) we refuse to handle the request considering it is unsecured.*
+*Even if it is optional, we highly recommend to set the ID here. Some browsers (e.g. Mozilla Firefox) may refuse to handle the request considering it is unsecured.*
 
 ## User Entity
 
 The User Entity needs the same information as the Relaying Party plus a display name:
 
-* a name (required): this value corresponds to the username. **This value must be unique**.
-* an ID (required): this user ID. **This value must be unique**.
+* a name (required): this value corresponds to the username. **This value must be unique** in your application.
+* an ID (required): this user ID. **This value must be unique** in your application.
 * a display name (required): a human-palatable name for the user account, intended only for display. For example, "Alex P. Müller" or "田中 倫".
-* an icon (optional)
+* an icon (optional): an URL to the user icon/avatar. Can be `null`. This URL may be ignored by the browser.
 
 ```php
 <?php
 use Webauthn\PublicKeyCredentialUserEntity;
 
 $userEntity = new PublicKeyCredentialUserEntity(
-    '@cypher-Angel-3000',                   //Name
-    '123e4567-e89b-12d3-a456-426655440000', //ID
-    'Mighty Mike',                          //Display name
-    null                                    //Icon
+    '@cypher-Angel-3000',                                                //Name
+    '123e4567-e89b-12d3-a456-426655440000',                              //ID
+    'Mighty Mike',                                                       //Display name
+    'https://foo.example.co/avatar/123e4567-e89b-12d3-a456-426655440000' //Icon
 );
 ```
 
@@ -77,6 +81,8 @@ $userEntity = new PublicKeyCredentialUserEntity(
 
 The challenge is a random string that contains enough entropy to make guessing them infeasible.
 It should be at least 16 bytes long.
+
+Some browsers may refuse short challenges considering they are not secured enough.
 
 ```php
 <?php
@@ -91,7 +97,6 @@ This list must contain at least one element.
 
 The order is very important. The authentication device will consider the first one in the list as the most important one.
 
-
 ```php
 <?php
 use Webauthn\PublicKeyCredentialParameters;
@@ -103,7 +108,7 @@ $publicKeyCredentialParameters = [
 ```
 
 **Please note that at the moment the algorithms supported by this library are very limited.**
-**We recommend to use only ES256.**
+**We recommend to use only ES256 and RS256.**
 
 ## Timeout
 
@@ -118,6 +123,10 @@ The user trying to register a device may have registered other devices.
 To limit the creation of multiple credentials for the same account on a single authenticator, you can then ignore these devices.
 
 The usage `Webauthn\PublicKeyCredentialDescriptor` class is described in the response processing section.
+
+You normally don't have to create these objects in your application.
+They are loaded from the credential repository or from a response object.
+The following lines are showed as an example.
 
 ```php
 <?php
@@ -141,9 +150,9 @@ $excludedCredentials =[
 
 The `Webauthn\AuthenticatorSelectionCriteria` object is intended to select the appropriate authenticators to participate in the creation operation.
 
-* Attachment: indicates if the device should be attached on the platform or not or if there is no requirement about it.
+* Attachment mode: indicates if the device should be attached on the platform or not or if there is no requirement about it (default: `null`).
 * Resident key: indicates if a resident key mandatory or not (default `false`).
-* User presence: requirements regarding the user verification. Eligible authenticators are filtered and only capable of satisfying this requirement will interact with the user.
+* User presence: requirements regarding the user verification. Eligible authenticators are filtered and only capable of satisfying this requirement will interact with the user (default: `'preferred'`).
 
 ```php
 <?php
@@ -177,13 +186,16 @@ Predefined constants are available through the `Webauthn\PublicKeyCredentialCrea
 * `PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT`
 * `PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT`
 
+
+**The browser may ignore the attestation conveyance mode** and return a response with an attestation of type `none`.
+
 ## Extensions
 
 The mechanism for generating public key credentials, as well as requesting and generating Authentication assertions,
 can be extended to suit particular use cases.
 Each case is addressed by defining a registration extension.
 
-**The extensions are not yet supported by this library, but is ready to handle them.**
+**The extensions are not fully supported by this library, but is ready to handle them.**
 
 The Following example is totally fictive.
 
