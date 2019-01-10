@@ -91,8 +91,8 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         $listenerId = 'security.authentication.listener.webauthn';
         $listener = new ChildDefinition($listenerId);
-        $listener->replaceArgument(6, $id);
-        $listener->replaceArgument(7, $config);
+        $listener->replaceArgument(7, $id);
+        $listener->replaceArgument(8, $config);
 
         $listenerId .= '.'.$id;
         $container->setDefinition($listenerId, $listener);

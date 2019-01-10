@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -41,6 +42,7 @@ return function (ContainerConfigurator $container) {
         ->abstract(true)
         ->private()
         ->args([
+            ref('webauthn_security.http_message_factory'),
             ref(PublicKeyCredentialLoader::class),
             ref(AuthenticatorAssertionResponseValidator::class),
             ref(TokenStorageInterface::class),

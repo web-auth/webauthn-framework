@@ -15,6 +15,7 @@ namespace Webauthn\SecurityBundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,7 +69,9 @@ class WebauthnListener implements ListenerInterface
 
     private $authenticatorAssertionResponseValidator;
 
-    public function __construct(PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, string $providerKey, array $options = [], LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfTokenManagerInterface $csrfTokenManager = null)
+    private $httpMessageFactory;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, string $providerKey, array $options = [], LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfTokenManagerInterface $csrfTokenManager = null)
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -84,6 +87,7 @@ class WebauthnListener implements ListenerInterface
         $this->tokenStorage = $tokenStorage;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
+        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     public function setRememberMeServices(RememberMeServicesInterface $rememberMeServices)
@@ -305,11 +309,13 @@ class WebauthnListener implements ListenerInterface
             throw new AuthenticationException('Invalid assertion');
         }
 
+        $psr7Request = $this->httpMessageFactory->createRequest($request);
+
         $this->authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
             $response,
             $PublicKeyCredentialRequestOptions,
-            $request
+            $psr7Request
         );
 
         $newToken = new WebauthnToken(

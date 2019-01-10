@@ -16,6 +16,7 @@
         }
     ],
     "require": {
+        "symfony/psr-http-message-bridge": "^1.1",
         "symfony/security-bundle": "^4.2",
         "web-auth/webauthn-symfony-bundle": "^1.0"
     },

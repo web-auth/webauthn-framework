@@ -17,6 +17,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\Config\Definition\Processor;
 
 final class WebauthnSecurityExtension extends Extension
 {
@@ -34,7 +35,17 @@ final class WebauthnSecurityExtension extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
+        $processor = new Processor();
+        $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
+
+        $container->setAlias('webauthn_security.http_message_factory', $config['http_message_factory']);
+
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('security.php');
+    }
+
+    public function getConfiguration(array $config, ContainerBuilder $container)
+    {
+        return new Configuration($this->alias);
     }
 }

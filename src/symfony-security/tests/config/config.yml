@@ -27,10 +27,15 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
+    Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory: ~
+
 twig:
     strict_variables: true
     paths:
         '%kernel.project_dir%/tests/templates': ~
+
+webauthn_security:
+    http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory'
 
 webauthn:
     credential_repository: 'Webauthn\SecurityBundle\Tests\Functional\CredentialRepository'
