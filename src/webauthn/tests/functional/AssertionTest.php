@@ -15,7 +15,8 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Prophecy\Argument;
-use Symfony\Component\HttpFoundation\Request;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -64,13 +65,13 @@ class AssertionTest extends Fido2TestCase
         $credentialRepository->getCounterFor(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(100);
         $credentialRepository->updateCounterFor(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), Argument::any())->shouldBeCalled();
 
-        $request = new Request();
+        $request = $this->prophesize(ServerRequestInterface::class);
 
         $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request
+            $request->reveal()
         );
     }
 
@@ -109,13 +110,16 @@ class AssertionTest extends Fido2TestCase
         $credentialRepository->getCounterFor(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(100);
         $credentialRepository->updateCounterFor(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true), Argument::any())->shouldBeCalled();
 
-        $request = new Request([], [], [], [], [], ['HTTP_HOST' => 'localhost']);
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('localhost');
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
 
         $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request
+            $request->reveal()
         );
     }
 }

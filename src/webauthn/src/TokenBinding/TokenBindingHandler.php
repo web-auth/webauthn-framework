@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
-use Symfony\Component\HttpFoundation\Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface TokenBindingHandler
 {
-    public function check(TokenBinding $tokenBinding, Request $request): void;
+    public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void;
 }

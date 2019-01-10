@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Symfony\Component\HttpFoundation\Request;
+use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -34,7 +34,7 @@ class AuthenticatorAttestationResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, Request $request): void
+    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): void
     {
         /** @see 7.1.1 */
         //Nothing to do
@@ -49,7 +49,7 @@ class AuthenticatorAttestationResponseValidator
         Assertion::true(hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
         /** @see 7.1.5 */
-        $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getHost();
+        $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
         Assertion::notNull($rpId, 'No rpId.');
 
         $parsedRelyingPartyId = parse_url($C->getOrigin());
