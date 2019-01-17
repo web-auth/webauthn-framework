@@ -21,8 +21,19 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 class AuthenticatorAssertionResponseValidator
 {
+    /**
+     * @var CredentialRepository
+     */
     private $credentialRepository;
+
+    /**
+     * @var Decoder
+     */
     private $decoder;
+
+    /**
+     * @var TokenBindingHandler
+     */
     private $tokenBindingHandler;
 
     public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler)
@@ -77,7 +88,7 @@ class AuthenticatorAssertionResponseValidator
         Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */
-        if ($C->getTokenBinding()) {
+        if (null !== $C->getTokenBinding()) {
             $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
         }
 

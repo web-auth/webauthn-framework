@@ -37,7 +37,7 @@ class AttestationTest extends KernelTestCase
     /**
      * @test
      */
-    public function anAttestationResponseCanBeLoadedAndVerified()
+    public function anAttestationResponseCanBeLoadedAndVerified(): void
     {
         self::bootKernel();
 

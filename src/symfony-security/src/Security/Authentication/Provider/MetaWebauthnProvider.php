@@ -22,7 +22,14 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class MetaWebauthnProvider implements AuthenticationProviderInterface
 {
+    /**
+     * @var PreWebauthnProvider
+     */
     private $preWebauthnProvider;
+
+    /**
+     * @var WebauthnProvider
+     */
     private $webauthnProvider;
 
     public function __construct(UserCheckerInterface $userChecker, UserProviderInterface $userProvider, string $providerKey)
@@ -33,7 +40,7 @@ class MetaWebauthnProvider implements AuthenticationProviderInterface
         $this->webauthnProvider = new WebauthnProvider($providerKey);
     }
 
-    public function authenticate(TokenInterface $token)
+    public function authenticate(TokenInterface $token): TokenInterface
     {
         switch (true) {
             case $this->preWebauthnProvider->supports($token):
@@ -45,7 +52,7 @@ class MetaWebauthnProvider implements AuthenticationProviderInterface
         }
     }
 
-    public function supports(TokenInterface $token)
+    public function supports(TokenInterface $token): bool
     {
         return $this->preWebauthnProvider->supports($token) || $this->webauthnProvider->supports($token);
     }

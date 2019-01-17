@@ -21,6 +21,9 @@ use Symfony\Component\Config\Definition\Processor;
 
 final class WebauthnSecurityExtension extends Extension
 {
+    /**
+     * @var string
+     */
     private $alias;
 
     public function __construct(string $alias)
@@ -28,12 +31,18 @@ final class WebauthnSecurityExtension extends Extension
         $this->alias = $alias;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAlias()
     {
         return $this->alias;
     }
 
-    public function load(array $configs, ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
@@ -44,6 +53,9 @@ final class WebauthnSecurityExtension extends Extension
         $loader->load('security.php');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($this->alias);

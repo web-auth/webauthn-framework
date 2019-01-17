@@ -21,8 +21,19 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 final class WebauthnEntryPoint implements AuthenticationEntryPointInterface
 {
+    /**
+     * @var string
+     */
     private $loginPath;
+
+    /**
+     * @var HttpKernelInterface
+     */
     private $httpKernel;
+
+    /**
+     * @var HttpUtils
+     */
     private $httpUtils;
 
     public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, string $loginPath)
@@ -32,6 +43,9 @@ final class WebauthnEntryPoint implements AuthenticationEntryPointInterface
         $this->loginPath = $loginPath;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function start(Request $request, AuthenticationException $authException = null)
     {
         return $this->httpUtils->createRedirectResponse($request, $this->loginPath);

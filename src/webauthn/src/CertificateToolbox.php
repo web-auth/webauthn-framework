@@ -28,9 +28,6 @@ class CertificateToolbox
 
         $certificates = [];
         $currentCertParsed = openssl_x509_parse($currentCert);
-        $purpose = X509_PURPOSE_ANY;
-        $file = \Safe\tmpfile();
-        $path = stream_get_meta_data($file)['uri'];
         while ($nextCertAsPem = next($x5c)) {
             $certificates[] = $currentCert;
             $currentCertIssuer = \Safe\json_encode($currentCertParsed['issuer']);
@@ -40,20 +37,13 @@ class CertificateToolbox
 
             Assertion::eq($currentCertIssuer, $nextCertAsPemSubject, 'Invalid certificate chain.');
 
-            \Safe\rewind($file);
-            \Safe\fwrite($file, $nextCertAsPem);
-            $result = openssl_x509_checkpurpose($currentCert, $purpose, [$path]);
-            Assertion::eq(1, $result, 'Invalid certificate chain.');
-
             Assertion::keyExists($nextCertParsed, 'extensions', 'Invalid certificate chain.');
             Assertion::keyExists($nextCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
             Assertion::startsWith($nextCertParsed['extensions']['basicConstraints'], 'CA:TRUE', 'Invalid certificate chain.');
-            $purpose = X509_PURPOSE_CRL_SIGN;
             $currentCert = $nextCertAsPem;
             $currentCertParsed = $nextCertParsed;
         }
-        \Safe\fclose($file);
-        $certificates[] = $nextCertAsPem;
+        $certificates[] = $currentCert;
 
         //We check the last certificate is a root certificate
         $currentCertIssuer = \Safe\json_encode($currentCertParsed['issuer']);

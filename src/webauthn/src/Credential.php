@@ -18,8 +18,14 @@ namespace Webauthn;
  */
 abstract class Credential
 {
+    /**
+     * @var string
+     */
     private $id;
 
+    /**
+     * @var string
+     */
     private $type;
 
     public function __construct(string $id, string $type)

@@ -17,12 +17,24 @@ use Base64Url\Base64Url;
 
 class RegisteredKey implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
     private $version;
 
+    /**
+     * @var KeyHandler
+     */
     private $keyHandler;
 
+    /**
+     * @var PublicKey
+     */
     private $publicKey;
 
+    /**
+     * @var string
+     */
     private $attestationCertificate;
 
     public function __construct(string $version, KeyHandler $keyHandler, PublicKey $publicKey, string $attestationCertificate)
@@ -86,7 +98,7 @@ class RegisteredKey implements \JsonSerializable
         return $this->attestationCertificate;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'version' => $this->version,

@@ -24,7 +24,16 @@ use Webauthn\SecurityBundle\Security\EntryPoint\WebauthnEntryPoint;
 
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
-    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId)
+    /**
+     * @param ContainerBuilder $container
+     * @param string $id
+     * @param array $config
+     * @param string $userProviderId
+     * @param string $defaultEntryPointId
+     *
+     * @return array
+     */
+    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId): array
     {
         $authProviderId = $this->createAuthProvider($container, $id, $config, $userProviderId);
         $entryPointId = $this->createEntryPoint($container, $id, $config);
@@ -39,17 +48,26 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return [$authProviderId, $listenerId, $entryPointId];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getPosition()
     {
         return 'form';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getKey()
     {
         return 'webauthn';
     }
 
-    public function addConfiguration(NodeDefinition $node)
+    /**
+     * {@inheritdoc}
+     */
+    public function addConfiguration(NodeDefinition $node): void
     {
         /* @var ArrayNodeDefinition $node */
         $node

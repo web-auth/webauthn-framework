@@ -33,7 +33,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
     /**
      * @test
      */
-    public function theExtensionsCanBeLoaded()
+    public function theExtensionsCanBeLoaded(): void
     {
         $cbor = new MapObject([
             new MapItem(new ByteStringObject('loc'), new TrueObject()),
@@ -51,7 +51,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid extension object
      */
-    public function theCBORObjectIsInvalid()
+    public function theCBORObjectIsInvalid(): void
     {
         $cbor = new ByteStringObject('loc');
 
@@ -63,7 +63,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid extension key
      */
-    public function theMapKeyIsNotAString()
+    public function theMapKeyIsNotAString(): void
     {
         $cbor = new MapObject([
             new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-100)), new TrueObject()),

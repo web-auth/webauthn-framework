@@ -28,8 +28,19 @@ use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 
 class PreWebauthnProvider implements AuthenticationProviderInterface
 {
+    /**
+     * @var UserCheckerInterface
+     */
     private $userChecker;
+
+    /**
+     * @var string
+     */
     private $providerKey;
+
+    /**
+     * @var UserProviderInterface
+     */
     private $userProvider;
 
     public function __construct(UserCheckerInterface $userChecker, UserProviderInterface $userProvider, string $providerKey)
@@ -41,7 +52,10 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
         $this->userProvider = $userProvider;
     }
 
-    public function authenticate(TokenInterface $token)
+    /**
+     * {@inheritdoc}
+     */
+    public function authenticate(TokenInterface $token): TokenInterface
     {
         if (!$this->supports($token)) {
             throw new AuthenticationException('The token is not supported by this authentication provider.');
@@ -49,8 +63,11 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
 
         return $this->processWithPreWebauthnToken($token);
     }
+    /**
+     * {@inheritdoc}
+     */
 
-    public function supports(TokenInterface $token)
+    public function supports(TokenInterface $token): bool
     {
         return $token instanceof PreWebauthnToken && $this->providerKey === $token->getProviderKey();
     }
@@ -58,13 +75,13 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
     private function processWithPreWebauthnToken(PreWebauthnToken $token): PreWebauthnToken
     {
         $username = $token->getUsername();
-        if (empty($username)) {
+        if (!\is_string($username) || '' === $username) {
             throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
         }
 
         $user = $this->retrieveUser($username, $token);
 
-        if (!$user instanceof CanHaveRegisteredSecurityDevices || empty($user->getSecurityDeviceCredentialIds())) {
+        if (!$user instanceof CanHaveRegisteredSecurityDevices || 0 === count($user->getSecurityDeviceCredentialIds())) {
             throw new AuthenticationServiceException('The user did not registered any security devices');
         }
 
@@ -87,7 +104,7 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
         return $authenticatedToken;
     }
 
-    private function retrieveUser($username, TokenInterface $token): UserInterface
+    private function retrieveUser(string $username, TokenInterface $token): UserInterface
     {
         $user = $token->getUser();
         if ($user instanceof UserInterface) {

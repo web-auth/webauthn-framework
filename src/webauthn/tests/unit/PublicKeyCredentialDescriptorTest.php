@@ -27,7 +27,7 @@ class PublicKeyCredentialDescriptorTest extends TestCase
     /**
      * @test
      */
-    public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed(): void
     {
         $descriptor = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
 

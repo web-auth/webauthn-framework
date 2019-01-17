@@ -25,21 +25,29 @@ class Credential
     /**
      * @ORM\Id
      * @ORM\Column(type="string", length=255)
+     *
+     * @var string
      */
     private $id;
 
     /**
      * @ORM\Column(type="blob", length=255)
+     *
+     * @var string
      */
     private $credential_id;
 
     /**
      * @ORM\Column(type="attested_credential_data")
+     *
+     * @var AttestedCredentialData
      */
     private $attested_credential_data;
 
     /**
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $counter;
 

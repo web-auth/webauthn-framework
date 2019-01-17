@@ -32,7 +32,7 @@ class AssertionTest extends KernelTestCase
     /**
      * @test
      */
-    public function anAssertionResponseCanBeLoadedAndVerified()
+    public function anAssertionResponseCanBeLoadedAndVerified(): void
     {
         self::bootKernel();
 

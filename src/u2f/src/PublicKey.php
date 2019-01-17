@@ -17,6 +17,9 @@ use Base64Url\Base64Url;
 
 class PublicKey implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
     private $value;
 
     public function __construct(string $publicKey)

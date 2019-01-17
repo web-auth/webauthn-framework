@@ -29,7 +29,7 @@ class AuthenticationExtensionsClientTest extends TestCase
      *
      * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtension
      */
-    public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed()
+    public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
 
@@ -43,7 +43,7 @@ class AuthenticationExtensionsClientTest extends TestCase
      *
      * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs
      */
-    public function theAuthenticationExtensionsClientInputsCanManageExtensions()
+    public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
 
@@ -62,7 +62,7 @@ class AuthenticationExtensionsClientTest extends TestCase
      *
      * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs
      */
-    public function theAuthenticationExtensionsClientOutputsCanManageExtensions()
+    public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
 

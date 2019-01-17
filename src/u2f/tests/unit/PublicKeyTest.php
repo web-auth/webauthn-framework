@@ -24,7 +24,7 @@ final class PublicKeyTest extends TestCase
     /**
      * @test
      */
-    public function aPublicKeyCanBeCreatedAndSerialized()
+    public function aPublicKeyCanBeCreatedAndSerialized(): void
     {
         $key = new PublicKey(
             'foo'

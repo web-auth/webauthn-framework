@@ -22,13 +22,19 @@ class TokenBinding
     public const TOKEN_BINDING_STATUS_SUPPORTED = 'supported';
     public const TOKEN_BINDING_STATUS_NOT_SUPPORTED = 'not-supported';
 
+    /**
+     * @var string
+     */
     private $status;
 
+    /**
+     * @var string|null
+     */
     private $id;
 
     public function __construct(string $status, ?string $id)
     {
-        Assertion::false(self::TOKEN_BINDING_STATUS_PRESENT === $status && !$id, 'The member "id" is required when status is "present"');
+        Assertion::false(self::TOKEN_BINDING_STATUS_PRESENT === $status && null === $id, 'The member "id" is required when status is "present"');
         $this->status = $status;
         $this->id = $id;
     }

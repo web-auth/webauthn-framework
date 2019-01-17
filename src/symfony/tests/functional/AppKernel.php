@@ -21,12 +21,18 @@ use Webauthn\Bundle\WebauthnBundle;
 
 final class AppKernel extends Kernel
 {
-    public function __construct(string $environment, bool $debug)
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(string $environment)
     {
         parent::__construct($environment, false);
     }
 
-    public function registerBundles()
+    /**
+     * {@inheritdoc}
+     */
+    public function registerBundles(): array
     {
         return [
             new FrameworkBundle(),
@@ -36,7 +42,10 @@ final class AppKernel extends Kernel
         ];
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    /**
+     * {@inheritdoc}
+     */
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__.'/../config/config.yml');
     }

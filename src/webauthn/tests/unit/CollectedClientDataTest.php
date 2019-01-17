@@ -29,7 +29,7 @@ class CollectedClientDataTest extends TestCase
     /**
      * @test
      */
-    public function anCollectedClientDataCanBeCreatedAndValueAccessed()
+    public function anCollectedClientDataCanBeCreatedAndValueAccessed(): void
     {
         $collectedClientData = new CollectedClientData(
             'raw_data',

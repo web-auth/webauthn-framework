@@ -24,8 +24,14 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
     public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
     public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
+    /**
+     * @var string
+     */
     private $type;
 
+    /**
+     * @var string
+     */
     private $id;
 
     /**
@@ -73,13 +79,13 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $json = [
             'type' => $this->type,
             'id' => base64_encode($this->id),
         ];
-        if (!empty($this->transports)) {
+        if (0 !== \count($this->transports)) {
             $json['transports'] = $this->transports;
         }
 

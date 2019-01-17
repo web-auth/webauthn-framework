@@ -20,8 +20,19 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnToken extends AbstractToken
 {
+    /**
+     * @var string
+     */
     private $providerKey;
+
+    /**
+     * @var PublicKeyCredentialRequestOptions
+     */
     private $publicKeyCredentialRequestOptions;
+
+    /**
+     * @var PublicKeyCredentialDescriptor
+     */
     private $publicKeyCredentialDescriptor;
 
     public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, string $providerKey, array $roles = [])
@@ -40,7 +51,7 @@ class WebauthnToken extends AbstractToken
         return $this->publicKeyCredentialRequestOptions;
     }
 
-    public function getCredentials()
+    public function getCredentials(): PublicKeyCredentialDescriptor
     {
         return $this->publicKeyCredentialDescriptor;
     }
@@ -50,12 +61,15 @@ class WebauthnToken extends AbstractToken
         return $this->providerKey;
     }
 
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([\Safe\json_encode($this->publicKeyCredentialRequestOptions), \Safe\json_encode($this->publicKeyCredentialDescriptor), $this->providerKey, parent::serialize()]);
     }
 
-    public function unserialize($serialized)
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized): self
     {
         list($publicKeyCredentialRequestOptions, $publicKeyCredentialDescriptor, $this->providerKey, $parentStr) = unserialize($serialized);
         $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);

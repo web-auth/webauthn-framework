@@ -25,10 +25,19 @@ class AuthenticatorSelectionCriteria implements \JsonSerializable
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
+    /**
+     * @var string|null
+     */
     private $authenticatorAttachment;
 
+    /**
+     * @var bool
+     */
     private $requireResidentKey;
 
+    /**
+     * @var string
+     */
     private $userVerification;
 
     public function __construct(?string $authenticatorAttachment = null, bool $requireResidentKey = false, string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED)
@@ -65,13 +74,13 @@ class AuthenticatorSelectionCriteria implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $json = [
             'requireResidentKey' => $this->requireResidentKey,
             'userVerification' => $this->userVerification,
         ];
-        if ($this->authenticatorAttachment) {
+        if (null !== $this->authenticatorAttachment) {
             $json['authenticatorAttachment'] = $this->authenticatorAttachment;
         }
 

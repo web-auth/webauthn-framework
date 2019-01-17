@@ -19,11 +19,34 @@ use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
 {
+    /**
+     * @var string
+     */
     private $rawData;
+
+    /**
+     * @var array
+     */
     private $data;
+
+    /**
+     * @var string
+     */
     private $type;
+
+    /**
+     * @var string
+     */
     private $challenge;
+
+    /**
+     * @var string
+     */
     private $origin;
+
+    /**
+     * @var TokenBinding
+     */
     private $tokenBinding;
 
     public function __construct(string $rawData, array $data)
@@ -105,7 +128,7 @@ class CollectedClientData
         ];
     }
 
-    private function requiredData($key, bool $isB64 = false): callable
+    private function requiredData(string $key, bool $isB64 = false): callable
     {
         return function ($json) use ($key, $isB64) {
             if (!array_key_exists($key, $json)) {
@@ -116,7 +139,7 @@ class CollectedClientData
         };
     }
 
-    private function optionalData($key): callable
+    private function optionalData(string $key): callable
     {
         return function ($json) use ($key) {
             if (!array_key_exists($key, $json)) {

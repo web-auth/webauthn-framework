@@ -30,7 +30,7 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
     /**
      * @test
      */
-    public function anPublicKeyCredentialRequestOptionsCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialRequestOptionsCanBeCreatedAndValueAccessed(): void
     {
         $extensions = new AuthenticationExtensionsClientInputs();
         $extensions->add(new AuthenticationExtension('foo', 'bar'));

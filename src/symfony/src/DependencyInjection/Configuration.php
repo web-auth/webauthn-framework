@@ -19,6 +19,9 @@ use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 final class Configuration implements ConfigurationInterface
 {
+    /**
+     * @var string
+     */
     private $alias;
 
     public function __construct(string $alias)
@@ -26,6 +29,9 @@ final class Configuration implements ConfigurationInterface
         $this->alias = $alias;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('webauthn');

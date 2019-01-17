@@ -20,16 +20,34 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
  */
 class AuthenticatorData
 {
+    /**
+     * @var string
+     */
     private $authData;
 
+    /**
+     * @var string
+     */
     private $rpIdHash;
 
+    /**
+     * @var string
+     */
     private $flags;
 
+    /**
+     * @var int
+     */
     private $signCount;
 
+    /**
+     * @var AttestedCredentialData|null
+     */
     private $attestedCredentialData;
 
+    /**
+     * @var AuthenticationExtensionsClientOutputs|null
+     */
     private $extensions;
 
     private const FLAG_UP = 0b00000001;
@@ -61,22 +79,22 @@ class AuthenticatorData
 
     public function isUserPresent(): bool
     {
-        return \ord($this->flags) & self::FLAG_UP ? true : false;
+        return 0 !== (\ord($this->flags) & self::FLAG_UP) ? true : false;
     }
 
     public function isUserVerified(): bool
     {
-        return \ord($this->flags) & self::FLAG_UV ? true : false;
+        return 0 !== (\ord($this->flags) & self::FLAG_UV) ? true : false;
     }
 
     public function hasAttestedCredentialData(): bool
     {
-        return \ord($this->flags) & self::FLAG_AT ? true : false;
+        return 0 !== (\ord($this->flags) & self::FLAG_AT) ? true : false;
     }
 
     public function hasExtensions(): bool
     {
-        return \ord($this->flags) & self::FLAG_ED ? true : false;
+        return 0 !== (\ord($this->flags) & self::FLAG_ED) ? true : false;
     }
 
     public function getReservedForFutureUse1(): int

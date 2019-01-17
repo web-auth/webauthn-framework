@@ -18,7 +18,14 @@ use Webauthn\CredentialRepository as CredentialRepositoryInterface;
 
 final class CredentialRepository implements CredentialRepositoryInterface
 {
+    /**
+     * @var array
+     */
     private $credentials;
+
+    /**
+     * @var array
+     */
     private $counters;
 
     public function __construct()

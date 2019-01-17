@@ -30,7 +30,7 @@ final class RegistrationRequestTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid registered keys list.
      */
-    public function theRegistrationRequestDoesNotContainValidRegisteredKeys()
+    public function theRegistrationRequestDoesNotContainValidRegisteredKeys(): void
     {
         new RegistrationRequest('https://twofactors:4043', ['bad value']);
     }
@@ -38,7 +38,7 @@ final class RegistrationRequestTest extends TestCase
     /**
      * @test
      */
-    public function iCanCreateARegistrationRequestAndUseIt()
+    public function iCanCreateARegistrationRequestAndUseIt(): void
     {
         $registered_key = new RegisteredKey(
             'U2F_V2',
@@ -56,9 +56,9 @@ final class RegistrationRequestTest extends TestCase
         static::assertArrayHasKey('registerRequests', $request->jsonSerialize());
         static::assertArrayHasKey('registeredKeys', $request->jsonSerialize());
         static::assertArrayHasKey('appId', $request->jsonSerialize());
-        static::assertInternalType('array', $request->jsonSerialize()['registerRequests']);
+        static::assertIsArray($request->jsonSerialize()['registerRequests']);
         static::assertEquals(1, \count($request->jsonSerialize()['registerRequests']));
-        static::assertInternalType('array', $request->jsonSerialize()['registeredKeys']);
+        static::assertIsArray($request->jsonSerialize()['registeredKeys']);
         static::assertEquals(1, \count($request->jsonSerialize()['registeredKeys']));
         static::assertEquals([Base64Url::encode('foo') => $registered_key], $request->getRegisteredKeys());
     }

@@ -29,7 +29,7 @@ class NoneAttestationStatementSupportTest extends TestCase
     /**
      * @test
      */
-    public function theAttestationStatementIsNotValid()
+    public function theAttestationStatementIsNotValid(): void
     {
         $support = new NoneAttestationStatementSupport();
 
@@ -44,7 +44,7 @@ class NoneAttestationStatementSupportTest extends TestCase
     /**
      * @test
      */
-    public function theAttestationStatementIsValid()
+    public function theAttestationStatementIsValid(): void
     {
         $support = new NoneAttestationStatementSupport();
 

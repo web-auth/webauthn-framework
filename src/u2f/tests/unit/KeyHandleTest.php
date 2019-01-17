@@ -24,7 +24,7 @@ final class KeyHandleTest extends TestCase
     /**
      * @test
      */
-    public function aKeyHandleCanBeCreatedAndSerialized()
+    public function aKeyHandleCanBeCreatedAndSerialized(): void
     {
         $handle = new KeyHandler(
             'foo'

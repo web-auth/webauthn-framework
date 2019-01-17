@@ -15,8 +15,14 @@ namespace Webauthn\AuthenticationExtensions;
 
 class AuthenticationExtension implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var mixed
+     */
     private $value;
 
     public function __construct(string $name, $value)

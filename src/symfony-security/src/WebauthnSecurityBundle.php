@@ -21,12 +21,18 @@ use Webauthn\SecurityBundle\Security\Factory\WebauthnSecurityFactory;
 
 final class WebauthnSecurityBundle extends Bundle
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getContainerExtension()
     {
         return new WebauthnSecurityExtension('webauthn_security');
     }
 
-    public function build(ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function build(ContainerBuilder $container): void
     {
         if ($container->hasExtension('security')) {
             /* @var SecurityExtension $extension */

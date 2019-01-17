@@ -27,7 +27,7 @@ final class ClientDataTest extends TestCase
      * @expectedException \Safe\Exceptions\JsonException
      * @expectedExceptionMessage Syntax error
      */
-    public function theClientDataIsNotBase64UrlEncoded()
+    public function theClientDataIsNotBase64UrlEncoded(): void
     {
         new ClientData(
             'foo'
@@ -39,7 +39,7 @@ final class ClientDataTest extends TestCase
      * @expectedException \Safe\Exceptions\JsonException
      * @expectedExceptionMessage Syntax error
      */
-    public function theClientDataIsNotAnArray()
+    public function theClientDataIsNotAnArray(): void
     {
         new ClientData(
             Base64Url::encode('foo')
@@ -51,19 +51,19 @@ final class ClientDataTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid client data.
      */
-    public function theClientDataDoesNotContainTheMandatoryKeys()
+    public function theClientDataDoesNotContainTheMandatoryKeys(): void
     {
         new ClientData(
-            Base64Url::encode(json_encode([]))
+            Base64Url::encode(\Safe\json_encode([]))
         );
     }
 
     /**
      * @test
      */
-    public function theClientDataIsValid()
+    public function theClientDataIsValid(): void
     {
-        $data = json_encode([
+        $data = \Safe\json_encode([
             'typ' => 'foo',
             'challenge' => Base64Url::encode('bar'),
             'origin' => 'here',

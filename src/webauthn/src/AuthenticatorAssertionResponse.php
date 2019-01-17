@@ -18,10 +18,19 @@ namespace Webauthn;
  */
 class AuthenticatorAssertionResponse extends AuthenticatorResponse
 {
+    /**
+     * @var AuthenticatorData
+     */
     private $authenticatorData;
 
+    /**
+     * @var string
+     */
     private $signature;
 
+    /**
+     * @var string|null
+     */
     private $userHandle;
 
     public function __construct(CollectedClientData $clientDataJSON, AuthenticatorData $authenticatorData, string $signature, ?string $userHandle)

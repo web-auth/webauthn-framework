@@ -27,7 +27,7 @@ class PublicKeyCredentialParametersTest extends TestCase
     /**
      * @test
      */
-    public function anPublicKeyCredentialParametersCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialParametersCanBeCreatedAndValueAccessed(): void
     {
         $parameters = new PublicKeyCredentialParameters('type', 100);
 

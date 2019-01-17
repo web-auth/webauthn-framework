@@ -24,12 +24,12 @@ use Webauthn\SecurityBundle\WebauthnSecurityBundle;
 
 final class AppKernel extends Kernel
 {
-    public function __construct(string $environment, bool $debug)
+    public function __construct(string $environment)
     {
         parent::__construct($environment, false);
     }
 
-    public function registerBundles()
+    public function registerBundles(): array
     {
         return [
             new FrameworkBundle(),
@@ -42,7 +42,7 @@ final class AppKernel extends Kernel
         ];
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__.'/../config/config.yml');
     }

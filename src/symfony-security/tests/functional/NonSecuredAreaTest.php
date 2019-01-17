@@ -23,7 +23,7 @@ class NonSecuredAreaTest extends WebTestCase
     /**
      * @test
      */
-    public function aClientWantsToAccessOnNonSecuredResource()
+    public function aClientWantsToAccessOnNonSecuredResource(): void
     {
         $client = static::createClient();
         $client->request('GET', '/', [], [], ['HTTPS' => 'on']);

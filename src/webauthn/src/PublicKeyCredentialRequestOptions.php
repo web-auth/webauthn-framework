@@ -22,10 +22,19 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
+    /**
+     * @var string
+     */
     private $challenge;
 
+    /**
+     * @var int|null
+     */
     private $timeout;
 
+    /**
+     * @var string|null
+     */
     private $rpId;
 
     /**
@@ -33,8 +42,14 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
      */
     private $allowCredentials;
 
+    /**
+     * @var string|null
+     */
     private $userVerification;
 
+    /**
+     * @var AuthenticationExtensionsClientInputs
+     */
     private $extensions;
 
     /**
@@ -109,15 +124,15 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
             'challenge' => base64_encode($this->challenge),
         ];
 
-        if ($this->rpId) {
+        if (null !== $this->rpId) {
             $json['rpId'] = $this->rpId;
         }
 
-        if ($this->userVerification) {
+        if (null !== $this->userVerification) {
             $json['userVerification'] = $this->userVerification;
         }
 
-        if (!empty($this->allowCredentials)) {
+        if (0 !== \count($this->allowCredentials)) {
             $json['allowCredentials'] = $this->allowCredentials;
         }
 

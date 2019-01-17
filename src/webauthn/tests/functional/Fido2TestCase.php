@@ -36,7 +36,7 @@ use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 abstract class Fido2TestCase extends TestCase
 {
     /**
-     * @var null|PublicKeyCredentialLoader
+     * @var PublicKeyCredentialLoader|null
      */
     private $publicKeyCredentialLoader;
 
@@ -53,7 +53,7 @@ abstract class Fido2TestCase extends TestCase
     }
 
     /**
-     * @var null|AuthenticatorAttestationResponseValidator
+     * @var AuthenticatorAttestationResponseValidator|null
      */
     private $authenticatorAttestationResponseValidator;
 
@@ -71,7 +71,7 @@ abstract class Fido2TestCase extends TestCase
     }
 
     /**
-     * @var null|AuthenticatorAssertionResponseValidator
+     * @var AuthenticatorAssertionResponseValidator|null
      */
     private $authenticatorAssertionResponseValidator;
 
@@ -89,7 +89,7 @@ abstract class Fido2TestCase extends TestCase
     }
 
     /**
-     * @var null|Decoder
+     * @var Decoder|null
      */
     private $decoder;
 
@@ -106,7 +106,7 @@ abstract class Fido2TestCase extends TestCase
     }
 
     /**
-     * @var null|AttestationStatementSupportManager
+     * @var AttestationStatementSupportManager|null
      */
     private $attestationStatementSupportManager;
 
@@ -125,7 +125,7 @@ abstract class Fido2TestCase extends TestCase
     }
 
     /**
-     * @var null|AttestationObjectLoader
+     * @var AttestationObjectLoader|null
      */
     private $attestationObjectLoader;
 

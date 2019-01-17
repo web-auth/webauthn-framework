@@ -19,6 +19,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class UserProvider implements UserProviderInterface
 {
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
 
     public function __construct(UserRepository $userRepository)
@@ -26,22 +29,28 @@ final class UserProvider implements UserProviderInterface
         $this->userRepository = $userRepository;
     }
 
-    public function loadUserByUsername($username)
+    /**
+     * {@inheritdoc}
+     */
+    public function loadUserByUsername($username): UserInterface
     {
         $user = $this->userRepository->findByUsername($username);
-        if (!$user) {
-            throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
+        if (null === $user) {
+            throw new UsernameNotFoundException(\Safe\sprintf('The user with username "%s" cannot be found', $username));
         }
 
         return $user;
     }
 
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): UserInterface
     {
         return $this->loadUserByUsername($user->getUsername());
     }
 
-    public function supportsClass($class)
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsClass($class): bool
     {
         return $class instanceof User;
     }

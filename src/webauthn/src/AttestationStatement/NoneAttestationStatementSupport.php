@@ -33,6 +33,6 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        return empty($attestationStatement->getAttStmt());
+        return 0 === \count($attestationStatement->getAttStmt());
     }
 }

@@ -22,7 +22,7 @@ class AttestationStatementSupportManager
      */
     private $attestationStatementSupports = [];
 
-    public function add(AttestationStatementSupport $attestationStatementSupport)
+    public function add(AttestationStatementSupport $attestationStatementSupport): void
     {
         $this->attestationStatementSupports[$attestationStatementSupport->name()] = $attestationStatementSupport;
     }

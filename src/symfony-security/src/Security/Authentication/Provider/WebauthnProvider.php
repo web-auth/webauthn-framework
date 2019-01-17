@@ -21,6 +21,9 @@ use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
 
 class WebauthnProvider implements AuthenticationProviderInterface
 {
+    /**
+     * @var string
+     */
     private $providerKey;
 
     public function __construct(string $providerKey)
@@ -30,7 +33,10 @@ class WebauthnProvider implements AuthenticationProviderInterface
         $this->providerKey = $providerKey;
     }
 
-    public function authenticate(TokenInterface $token)
+    /**
+     * {@inheritdoc}
+     */
+    public function authenticate(TokenInterface $token): WebauthnToken
     {
         if (!$this->supports($token)) {
             throw new AuthenticationException('The token is not supported by this authentication provider.');
@@ -39,12 +45,15 @@ class WebauthnProvider implements AuthenticationProviderInterface
         return $this->processWithWebauthnToken($token);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function supports(TokenInterface $token)
     {
         return $token instanceof WebauthnToken && $this->providerKey === $token->getProviderKey();
     }
 
-    private function processWithWebauthnToken(WebauthnToken $token)
+    private function processWithWebauthnToken(WebauthnToken $token): WebauthnToken
     {
         $token->setAuthenticated(true);
 

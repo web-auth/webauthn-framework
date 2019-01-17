@@ -24,12 +24,24 @@ class AttestationStatement
     public const TYPE_ATTCA = 'attca';
     public const TYPE_ECDAA = 'ecdaa';
 
+    /**
+     * @var string
+     */
     private $fmt;
 
+    /**
+     * @var array
+     */
     private $attStmt;
 
+    /**
+     * @var TrustPath
+     */
     private $trustPath;
 
+    /**
+     * @var string
+     */
     private $type;
 
     public function __construct(string $fmt, array $attStmt, string $type, TrustPath $trustPath)

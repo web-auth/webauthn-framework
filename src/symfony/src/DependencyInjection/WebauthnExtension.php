@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,6 +28,9 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
+    /**
+     * @var string
+     */
     private $alias;
 
     public function __construct(string $alias)
@@ -34,12 +38,18 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $this->alias = $alias;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAlias()
     {
         return $this->alias;
     }
 
-    public function load(array $configs, ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
@@ -53,19 +63,25 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
     }
 
-    public function prepend(ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container): void
     {
         $bundles = $container->getParameter('kernel.bundles');
         if (!\is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
             return;
         }
         $configs = $container->getExtensionConfig('doctrine');
-        if (empty($configs)) {
+        if (0 === \count($configs)) {
             return;
         }
         $config = current($configs);

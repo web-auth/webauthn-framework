@@ -17,6 +17,9 @@ use Assert\Assertion;
 
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
+    /**
+     * @var string|null
+     */
     private $id;
 
     public function __construct(string $name, ?string $id = null, ?string $icon = null)
@@ -44,7 +47,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
-        if ($this->id) {
+        if (null !== $this->id) {
             $json['id'] = $this->id;
         }
 

@@ -21,8 +21,19 @@ use Webauthn\SecurityBundle\Security\WebauthnUtils;
 
 final class SecurityController
 {
+    /**
+     * @var Environment
+     */
     private $twig;
+
+    /**
+     * @var TokenStorageInterface
+     */
     private $tokenStorage;
+
+    /**
+     * @var WebauthnUtils
+     */
     private $webauthnUtils;
 
     public function __construct(Environment $twig, TokenStorageInterface $tokenStorage, WebauthnUtils $webauthnUtils)

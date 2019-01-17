@@ -30,7 +30,7 @@ final class SignatureRequestTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid registered keys list.
      */
-    public function theSignatureRequestDoesNotContainValidRegisteredKeys()
+    public function theSignatureRequestDoesNotContainValidRegisteredKeys(): void
     {
         new SignatureRequest('https://twofactors:4043', ['foo']);
     }
@@ -40,7 +40,7 @@ final class SignatureRequestTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Unsupported key handle.
      */
-    public function theSignatureRequestDoesNotContainTheRegisteredKey()
+    public function theSignatureRequestDoesNotContainTheRegisteredKey(): void
     {
         $request = new SignatureRequest('https://twofactors:4043', []);
         $request->getRegisteredKey(new KeyHandler('foo'));
@@ -49,7 +49,7 @@ final class SignatureRequestTest extends TestCase
     /**
      * @test
      */
-    public function iCanCreateASignatureRequestAndUseIt()
+    public function iCanCreateASignatureRequestAndUseIt(): void
     {
         $key_handle = new KeyHandler(Base64Url::decode('Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ'));
         $registered_key = new RegisteredKey(

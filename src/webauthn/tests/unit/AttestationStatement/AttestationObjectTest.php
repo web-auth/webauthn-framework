@@ -29,7 +29,7 @@ class AttestationObjectTest extends TestCase
     /**
      * @test
      */
-    public function anAttestationObjectCanBeCreated()
+    public function anAttestationObjectCanBeCreated(): void
     {
         $attestationStatement = $this->prophesize(AttestationStatement::class);
         $authenticatorData = $this->prophesize(AuthenticatorData::class);

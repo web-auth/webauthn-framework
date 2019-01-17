@@ -33,7 +33,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
     /**
      * @test
      */
-    public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
         $rp = $this->prophesize(PublicKeyCredentialRpEntity::class);
         $rp->jsonSerialize()->willReturn(['name' => 'RP']);

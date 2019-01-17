@@ -18,8 +18,19 @@ use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 
 final class User implements UserInterface, CanHaveRegisteredSecurityDevices
 {
+    /**
+     * @var string
+     */
     private $username;
+
+    /**
+     * @var array
+     */
     private $roles;
+
+    /**
+     * @var array
+     */
     private $registered_devices;
 
     public function __construct(string $username, array $roles, array $registered_devices)
@@ -34,27 +45,27 @@ final class User implements UserInterface, CanHaveRegisteredSecurityDevices
         yield from $this->registered_devices;
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles + ['ROLE_USER'];
     }
 
-    public function getPassword()
+    public function getPassword(): void
     {
         return;
     }
 
-    public function getSalt()
+    public function getSalt(): void
     {
         return;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
     }
 }

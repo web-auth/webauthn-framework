@@ -28,7 +28,14 @@ class WebauthnUtils
 {
     public const PUBLIC_KEY_CREDENTIAL_REQUEST_OPTIONS = '_webauthn.public_key_credential_request_options';
 
+    /**
+     * @var AuthenticationUtils
+     */
     private $authenticationUtils;
+
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
 
     public function __construct(RequestStack $requestStack)

@@ -28,7 +28,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theRegistrationRequestContainsAnError()
+    public function theRegistrationRequestContainsAnError(): void
     {
         new RegistrationResponse([
             'errorCode' => 1,
@@ -40,7 +40,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function thereIsNoClientData()
+    public function thereIsNoClientData(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -54,7 +54,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theClientDataIsInvalid()
+    public function theClientDataIsInvalid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -69,7 +69,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theVersionIsMissing()
+    public function theVersionIsMissing(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -83,7 +83,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theVersionIsInvalid()
+    public function theVersionIsInvalid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -98,7 +98,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Unsupported protocol version.
      */
-    public function theVersionIsNotSupported()
+    public function theVersionIsNotSupported(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -113,7 +113,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theRegistrationDataIsMissing()
+    public function theRegistrationDataIsMissing(): void
     {
         new RegistrationResponse([
             'version' => 'U2F_V2',
@@ -127,7 +127,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theRegistrationDataIsInvalid()
+    public function theRegistrationDataIsInvalid(): void
     {
         new RegistrationResponse([
             'registrationData' => 123,
@@ -142,7 +142,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theTypeIsNotSupported()
+    public function theTypeIsNotSupported(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
@@ -157,7 +157,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad reserved byte.
      */
-    public function theReservedByteIsNotValid()
+    public function theReservedByteIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => Base64Url::encode("\x00"),
@@ -172,7 +172,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad public key length.
      */
-    public function thePublicKeyLengthIsNotValid()
+    public function thePublicKeyLengthIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => Base64Url::encode("\x05-------"),
@@ -187,7 +187,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad key handle length.
      */
-    public function theKeyHandleLengthOctetIsNotValid()
+    public function theKeyHandleLengthOctetIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6',
@@ -202,7 +202,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad key handle length.
      */
-    public function theKeyHandleLengthIsNotValid()
+    public function theKeyHandleLengthIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6AA',
@@ -217,7 +217,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad key handle.
      */
-    public function theKeyHandleIsNotValid()
+    public function theKeyHandleIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFw',
@@ -232,7 +232,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad certificate header.
      */
-    public function theCertificateHeaderIsNotValid()
+    public function theCertificateHeaderIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwgg',
@@ -247,7 +247,7 @@ final class RegistrationResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Bad certificate.
      */
-    public function theCertificateIsNotValid()
+    public function theCertificateIsNotValid(): void
     {
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJp',
@@ -260,7 +260,7 @@ final class RegistrationResponseTest extends TestCase
     /**
      * @test
      */
-    public function iCanLoadAValidRegistrationResponse()
+    public function iCanLoadAValidRegistrationResponse(): void
     {
         $response = new RegistrationResponse(
             $this->getValidRegistrationResponse()
@@ -293,7 +293,7 @@ final class RegistrationResponseTest extends TestCase
 'kyco1l6HANI/1E+fcZsx4H9ZpE/Q6/NpxrWD19/ej61EMeP+eIWk2aPIOg=='.PHP_EOL.
 '-----END PUBLIC KEY-----'.PHP_EOL, $response->getRegisteredKey()->getPublicKeyAsPem());
         static::assertEquals('U2F_V2', $response->getRegisteredKey()->getVersion());
-        static::assertEquals('{"version":"U2F_V2","keyHandle":"Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ","publicKey":"BFeWllSolex8diHswKHW6z7KmtrMypMnKNZehwDSP9RPn3GbMeB_WaRP0Ovzaca1g9ff3o-tRDHj_niFpNmjyDo","attestationCertificate":"-----BEGIN CERTIFICATE-----\nMIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXVi\naWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAw\nWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2Vy\naWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE\/bjes6HtcOtj\nbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS\/vCgkH7Rfzv\/wp1NMhuc+KhKLOqg\nOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEw\nCwYJKoZIhvcNAQELA4IBAQB+0\/tszCUgE\/gvIYwqN9pgMdIOfzCB2vyusSj8f5sj\nORS\/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3\/vULJw4CifiE\nNvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9\npnAgWPwfLYebUwER6mDobGPxf6WUTMg\/CqJphIs+44imwJ5rBZU\/y7j0foOifgBy\npjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6\/djkawTKQpDYVAtjS4hhYe\ndYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk\n-----END CERTIFICATE-----\n"}', json_encode($response->getRegisteredKey()));
+        static::assertEquals('{"version":"U2F_V2","keyHandle":"Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ","publicKey":"BFeWllSolex8diHswKHW6z7KmtrMypMnKNZehwDSP9RPn3GbMeB_WaRP0Ovzaca1g9ff3o-tRDHj_niFpNmjyDo","attestationCertificate":"-----BEGIN CERTIFICATE-----\nMIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXVi\naWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAw\nWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2Vy\naWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE\/bjes6HtcOtj\nbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS\/vCgkH7Rfzv\/wp1NMhuc+KhKLOqg\nOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEw\nCwYJKoZIhvcNAQELA4IBAQB+0\/tszCUgE\/gvIYwqN9pgMdIOfzCB2vyusSj8f5sj\nORS\/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3\/vULJw4CifiE\nNvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9\npnAgWPwfLYebUwER6mDobGPxf6WUTMg\/CqJphIs+44imwJ5rBZU\/y7j0foOifgBy\npjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6\/djkawTKQpDYVAtjS4hhYe\ndYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk\n-----END CERTIFICATE-----\n"}', \Safe\json_encode($response->getRegisteredKey()));
 
         static::assertEquals(Base64Url::decode('MEQCIA4dcXtjZKxh8oEELHW1G7CA6Oa8yvfLhhXbUZ55AHDBAiALnm_l9BtY-u18FNyUXfP_WwCYhQZ808b01on0VLYlJg'), $response->getSignature());
 
@@ -306,7 +306,7 @@ final class RegistrationResponseTest extends TestCase
     /**
      * @test
      */
-    public function theChallengeInTheRequestDoesNotMatchTheChallengeInTheClientData()
+    public function theChallengeInTheRequestDoesNotMatchTheChallengeInTheClientData(): void
     {
         $response = new RegistrationResponse(
             $this->getValidRegistrationResponse()
@@ -321,7 +321,7 @@ final class RegistrationResponseTest extends TestCase
     /**
      * @test
      */
-    public function theApplicationIdInTheRequestDoesNotMatchTheApplicationIdInTheClientData()
+    public function theApplicationIdInTheRequestDoesNotMatchTheApplicationIdInTheClientData(): void
     {
         $response = new RegistrationResponse(
             $this->getValidRegistrationResponse()

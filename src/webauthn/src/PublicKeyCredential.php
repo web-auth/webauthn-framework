@@ -18,8 +18,14 @@ namespace Webauthn;
  */
 class PublicKeyCredential extends Credential
 {
+    /**
+     * @var string
+     */
     private $rawId;
 
+    /**
+     * @var AuthenticatorResponse
+     */
     private $response;
 
     public function __construct(string $id, string $type, string $rawId, AuthenticatorResponse $response)

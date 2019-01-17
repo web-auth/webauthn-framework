@@ -24,6 +24,9 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport
 {
+    /**
+     * @var Decoder
+     */
     private $decoder;
 
     public function __construct(Decoder $decoder)
@@ -82,8 +85,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     private function checkCertificate(?string $publicKey): void
     {
-        $resource = openssl_pkey_get_public($publicKey);
-        Assertion::isResource($resource, 'The certificate in the attestation statement is not valid.');
+        try {
+            $resource = \Safe\openssl_pkey_get_public($publicKey);
+        } catch (\Throwable $throwable) {
+            throw new \InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
+        }
         $details = openssl_pkey_get_details($resource);
         Assertion::keyExists($details, 'ec', 'The certificate in the attestation statement is not valid.');
         Assertion::keyExists($details['ec'], 'curve_name', 'The certificate in the attestation statement is not valid.');

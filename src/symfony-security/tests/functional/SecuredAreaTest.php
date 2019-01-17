@@ -23,7 +23,7 @@ class SecuredAreaTest extends WebTestCase
     /**
      * @test
      */
-    public function aClientIsRedirectedIfUserIsNotAuthenticated()
+    public function aClientIsRedirectedIfUserIsNotAuthenticated(): void
     {
         $client = static::createClient();
         $client->request('GET', '/admin', [], [], ['HTTPS' => 'on']);
@@ -37,7 +37,7 @@ class SecuredAreaTest extends WebTestCase
      * @test
      * @group foo
      */
-    public function aUserCanSetHisUsernameToTheLoginPage()
+    public function aUserCanSetHisUsernameToTheLoginPage(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/login', [], [], ['HTTPS' => 'on']);

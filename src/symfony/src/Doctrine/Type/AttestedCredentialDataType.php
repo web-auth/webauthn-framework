@@ -19,11 +19,17 @@ use Webauthn\AttestedCredentialData;
 
 final class AttestedCredentialDataType extends Type
 {
+    /**
+     * {@inheritdoc}
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return \Safe\json_encode($value);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         $json = \Safe\json_decode($value, true);
@@ -31,11 +37,17 @@ final class AttestedCredentialDataType extends Type
         return AttestedCredentialData::createFromJson($json);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return 'attested_credential_data';

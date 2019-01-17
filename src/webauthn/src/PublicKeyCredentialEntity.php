@@ -15,8 +15,14 @@ namespace Webauthn;
 
 abstract class PublicKeyCredentialEntity implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string|null
+     */
     private $icon;
 
     public function __construct(string $name, ?string $icon)
@@ -40,7 +46,7 @@ abstract class PublicKeyCredentialEntity implements \JsonSerializable
         $json = [
             'name' => $this->name,
         ];
-        if ($this->icon) {
+        if (null !== $this->icon) {
             $json['icon'] = $this->icon;
         }
 

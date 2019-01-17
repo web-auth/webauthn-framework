@@ -27,7 +27,14 @@ class AttestationObjectLoader
     private const FLAG_AT = 0b01000000;
     private const FLAG_ED = 0b10000000;
 
+    /**
+     * @var Decoder
+     */
     private $decoder;
+
+    /**
+     * @var AttestationStatementSupportManager
+     */
     private $attestationStatementSupportManager;
 
     public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, Decoder $decoder)
@@ -57,7 +64,7 @@ class AttestationObjectLoader
         $signCount = unpack('N', $signCount)[1];
 
         $attestedCredentialData = null;
-        if (\ord($flags) & self::FLAG_AT) {
+        if (0 !== (\ord($flags) & self::FLAG_AT)) {
             $aaguid = $authDataStream->read(16);
             $credentialLength = $authDataStream->read(2);
             $credentialLength = unpack('n', $credentialLength)[1];
@@ -68,7 +75,7 @@ class AttestationObjectLoader
         }
 
         $extension = null;
-        if (\ord($flags) & self::FLAG_ED) {
+        if (0 !== (\ord($flags) & self::FLAG_ED)) {
             $extension = $this->decoder->decode($authDataStream);
             $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
         }

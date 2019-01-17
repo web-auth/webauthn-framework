@@ -29,7 +29,7 @@ class AttestationStatementSupportManagerTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The attestation statement format "bar" is not supported.
      */
-    public function theAttestationFormatIsNotSupported()
+    public function theAttestationFormatIsNotSupported(): void
     {
         $manager = new AttestationStatementSupportManager();
         $manager->get('bar');

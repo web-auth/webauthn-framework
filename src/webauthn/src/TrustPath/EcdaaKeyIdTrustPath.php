@@ -15,6 +15,9 @@ namespace Webauthn\TrustPath;
 
 class EcdaaKeyIdTrustPath implements TrustPath
 {
+    /**
+     * @var string
+     */
     private $ecdaaKeyId;
 
     public function __construct(string $ecdaaKeyId)

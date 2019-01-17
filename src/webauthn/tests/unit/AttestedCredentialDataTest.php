@@ -27,7 +27,7 @@ class AttestedCredentialDataTest extends TestCase
     /**
      * @test
      */
-    public function anAttestedCredentialDataCanBeCreatedAndValueAccessed()
+    public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(): void
     {
         $attestedCredentialData = new AttestedCredentialData('aauid', 'credential_id', 'credential_public_key');
 

@@ -18,6 +18,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 
 final class UserRepository
 {
+    /**
+     * @var User[]
+     */
     private $users;
 
     public function __construct()

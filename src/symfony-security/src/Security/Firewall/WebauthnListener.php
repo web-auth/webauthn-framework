@@ -48,16 +48,49 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnListener implements ListenerInterface
 {
+    /**
+     * @var CsrfTokenManagerInterface
+     */
     private $csrfTokenManager;
+
+    /**
+     * @var TokenStorageInterface
+     */
     private $tokenStorage;
 
+    /**
+     * @var array
+     */
     private $options;
+
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var AuthenticationManagerInterface
+     */
     private $authenticationManager;
+
+    /**
+     * @var string
+     */
     private $providerKey;
+
+    /**
+     * @var HttpUtils
+     */
     private $httpUtils;
 
+    /**
+     * @var SessionAuthenticationStrategyInterface
+     */
     private $sessionStrategy;
+
+    /**
+     * @var EventDispatcherInterface
+     */
     private $dispatcher;
 
     /**
@@ -65,10 +98,19 @@ class WebauthnListener implements ListenerInterface
      */
     private $rememberMeServices;
 
+    /**
+     * @var PublicKeyCredentialLoader
+     */
     private $publicKeyCredentialLoader;
 
+    /**
+     * @var AuthenticatorAssertionResponseValidator
+     */
     private $authenticatorAssertionResponseValidator;
 
+    /**
+     * @var HttpMessageFactoryInterface
+     */
     private $httpMessageFactory;
 
     public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, string $providerKey, array $options = [], LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfTokenManagerInterface $csrfTokenManager = null)
@@ -90,12 +132,15 @@ class WebauthnListener implements ListenerInterface
         $this->httpMessageFactory = $httpMessageFactory;
     }
 
-    public function setRememberMeServices(RememberMeServicesInterface $rememberMeServices)
+    public function setRememberMeServices(RememberMeServicesInterface $rememberMeServices): void
     {
         $this->rememberMeServices = $rememberMeServices;
     }
 
-    public function handle(GetResponseEvent $event)
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(GetResponseEvent $event): void
     {
         $token = $this->tokenStorage->getToken();
         $request = $event->getRequest();
@@ -112,7 +157,9 @@ class WebauthnListener implements ListenerInterface
                 return;
             // The token is an instance of PreWebauthnToken and on the assertion path
             case $request->isMethod(Request::METHOD_POST) && $token instanceof PreWebauthnToken && $this->httpUtils->checkRequestPath($request, $this->options['assertion_check_path']):
-                return $this->handleCheckAssertionPath($event, $token);
+                $this->handleCheckAssertionPath($event, $token);
+
+                return;
             // The token is an instance of PreWebauthnToken and not on the assertion path
             case $token instanceof PreWebauthnToken && !$this->httpUtils->checkRequestPath($request, $this->options['assertion_path']) && $token->getProviderKey() === $this->providerKey:
                 $response = $this->httpUtils->createRedirectResponse($request, $this->options['assertion_path']);
@@ -127,13 +174,15 @@ class WebauthnListener implements ListenerInterface
                 return;
             //The username has been submitted
             case $request->isMethod(Request::METHOD_POST) && $this->httpUtils->checkRequestPath($request, $this->options['login_check_path']):
-                return $this->handleCheckUsernamePath($event);
+                $this->handleCheckUsernamePath($event);
+
+                return;
             default:
                 return;
         }
     }
 
-    private function handleCheckAssertionPath(GetResponseEvent $event, PreWebauthnToken $token)
+    private function handleCheckAssertionPath(GetResponseEvent $event, PreWebauthnToken $token): void
     {
         $request = $event->getRequest();
         Assertion::true($request->hasSession(), 'This authentication method requires a session.');
@@ -155,7 +204,7 @@ class WebauthnListener implements ListenerInterface
         $event->setResponse($response);
     }
 
-    private function handleCheckUsernamePath(GetResponseEvent $event)
+    private function handleCheckUsernamePath(GetResponseEvent $event): void
     {
         $request = $event->getRequest();
         Assertion::true($request->hasSession(), 'This authentication method requires a session.');
@@ -175,7 +224,7 @@ class WebauthnListener implements ListenerInterface
         $event->setResponse($response);
     }
 
-    private function checkCsrfToken(Request $request)
+    private function checkCsrfToken(Request $request): void
     {
         if (null !== $this->csrfTokenManager) {
             $csrfToken = $request->request->get($this->options['csrf_parameter']);
@@ -276,7 +325,7 @@ class WebauthnListener implements ListenerInterface
         $rememberMe = $this->isRememberMeRequested($request);
 
         if (!\is_string($username)) {
-            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
+            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
         }
 
         $username = trim($username);
@@ -299,7 +348,7 @@ class WebauthnListener implements ListenerInterface
             throw new BadRequestHttpException('No public key credential request potions available for this session.');
         }
         if (!\is_string($assertion)) {
-            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
+            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
         }
 
         $assertion = trim($assertion);

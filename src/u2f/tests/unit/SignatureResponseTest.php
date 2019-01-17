@@ -32,7 +32,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theSignatureRequestContainsAnError()
+    public function theSignatureRequestContainsAnError(): void
     {
         new SignatureResponse([
             'errorCode' => 1,
@@ -44,7 +44,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theClientDataIsMissing()
+    public function theClientDataIsMissing(): void
     {
         new SignatureResponse([
             'keyHandle' => 'Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ',
@@ -57,7 +57,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theKeyHandleIsMissing()
+    public function theKeyHandleIsMissing(): void
     {
         new SignatureResponse([
             'clientData' => 'eyJ0eXAiOiJuYXZpZ2F0b3IuaWQuZ2V0QXNzZXJ0aW9uIiwiY2hhbGxlbmdlIjoiRi16a3NSaDV0aHpLeVpSNk8wRnI3UXhsWi14RVg5X21OSDhIM2NIbl9QbyIsIm9yaWdpbiI6Imh0dHBzOi8vdHdvZmFjdG9yczo0MDQzIiwiY2lkX3B1YmtleSI6InVudXNlZCJ9',
@@ -70,7 +70,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theSignatureDataIsMissing()
+    public function theSignatureDataIsMissing(): void
     {
         new SignatureResponse([
             'keyHandle' => 'Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ',
@@ -83,7 +83,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theTypeOfResponseIsInvalid()
+    public function theTypeOfResponseIsInvalid(): void
     {
         new SignatureResponse([
             'keyHandle' => 'Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ',
@@ -97,7 +97,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theUserPresenceByteIsInvalid()
+    public function theUserPresenceByteIsInvalid(): void
     {
         new SignatureResponse([
             'keyHandle' => 'Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ',
@@ -111,7 +111,7 @@ final class SignatureResponseTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid response.
      */
-    public function theCounterBytesAreInvalid()
+    public function theCounterBytesAreInvalid(): void
     {
         new SignatureResponse([
             'keyHandle' => 'Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ',
@@ -123,7 +123,7 @@ final class SignatureResponseTest extends TestCase
     /**
      * @test
      */
-    public function iCanCreateASignatureResponseAndUseIt()
+    public function iCanCreateASignatureResponseAndUseIt(): void
     {
         $response = new SignatureResponse(
             $this->getValidSignatureResponse()
@@ -162,7 +162,7 @@ final class SignatureResponseTest extends TestCase
     /**
      * @test
      */
-    public function theChallengeInTheRequestDoesNotMatchTheChallengeInTheClientData()
+    public function theChallengeInTheRequestDoesNotMatchTheChallengeInTheClientData(): void
     {
         $response = new SignatureResponse(
             $this->getValidSignatureResponse()
@@ -190,7 +190,7 @@ final class SignatureResponseTest extends TestCase
     /**
      * @test
      */
-    public function theApplicationIdInTheRequestDoesNotMatchTheApplicationIdInTheClientData()
+    public function theApplicationIdInTheRequestDoesNotMatchTheApplicationIdInTheClientData(): void
     {
         $response = new SignatureResponse(
             $this->getValidSignatureResponse()
@@ -218,7 +218,7 @@ final class SignatureResponseTest extends TestCase
     /**
      * @test
      */
-    public function theCounterIsInvalid()
+    public function theCounterIsInvalid(): void
     {
         $response = new SignatureResponse(
             $this->getValidSignatureResponse()

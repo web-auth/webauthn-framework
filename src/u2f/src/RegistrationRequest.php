@@ -20,8 +20,14 @@ class RegistrationRequest implements \JsonSerializable
 {
     private const PROTOCOL_VERSION = 'U2F_V2';
 
+    /**
+     * @var string
+     */
     private $applicationId;
 
+    /**
+     * @var string
+     */
     private $challenge;
 
     /**

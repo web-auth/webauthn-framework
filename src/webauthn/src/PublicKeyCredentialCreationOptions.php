@@ -22,10 +22,19 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT = 'direct';
 
+    /**
+     * @var PublicKeyCredentialRpEntity
+     */
     private $rp;
 
+    /**
+     * @var PublicKeyCredentialUserEntity
+     */
     private $user;
 
+    /**
+     * @var string
+     */
     private $challenge;
 
     /**
@@ -33,6 +42,9 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
      */
     private $pubKeyCredParams;
 
+    /**
+     * @var int|null
+     */
     private $timeout;
 
     /**
@@ -40,10 +52,19 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
      */
     private $excludeCredentials;
 
+    /**
+     * @var AuthenticatorSelectionCriteria
+     */
     private $authenticatorSelection;
 
+    /**
+     * @var string
+     */
     private $attestation;
 
+    /**
+     * @var AuthenticationExtensionsClientInputs
+     */
     private $extensions;
 
     /**
@@ -159,7 +180,7 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
             'authenticatorSelection' => $this->authenticatorSelection,
         ];
 
-        if (!empty($this->excludeCredentials)) {
+        if (0 !== \count($this->excludeCredentials)) {
             $json['excludeCredentials'] = $this->excludeCredentials;
         }
 

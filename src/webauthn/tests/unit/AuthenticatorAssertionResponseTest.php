@@ -29,7 +29,7 @@ class AuthenticatorAssertionResponseTest extends TestCase
     /**
      * @test
      */
-    public function anAuthenticatorAssertionResponseCanBeCreatedAndValueAccessed()
+    public function anAuthenticatorAssertionResponseCanBeCreatedAndValueAccessed(): void
     {
         $clientDataJSON = $this->prophesize(CollectedClientData::class);
         $authenticatorData = $this->prophesize(AuthenticatorData::class);

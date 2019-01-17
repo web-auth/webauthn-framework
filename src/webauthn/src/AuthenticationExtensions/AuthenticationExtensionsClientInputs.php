@@ -20,7 +20,7 @@ class AuthenticationExtensionsClientInputs implements \JsonSerializable, \Counta
      */
     private $extensions = [];
 
-    public function add(AuthenticationExtension $extension)
+    public function add(AuthenticationExtension $extension): void
     {
         $this->extensions[$extension->name()] = $extension;
     }
@@ -35,17 +35,17 @@ class AuthenticationExtensionsClientInputs implements \JsonSerializable, \Counta
         return $object;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->extensions;
     }
 
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->extensions);
     }
 
-    public function count($mode = COUNT_NORMAL): int
+    public function count(int $mode = COUNT_NORMAL): int
     {
         return \count($this->extensions, $mode);
     }

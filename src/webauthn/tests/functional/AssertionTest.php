@@ -33,7 +33,7 @@ class AssertionTest extends Fido2TestCase
     /**
      * @test
      */
-    public function anAssertionCanBeVerified()
+    public function anAssertionCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
             \Safe\base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
@@ -78,7 +78,7 @@ class AssertionTest extends Fido2TestCase
     /**
      * @test
      */
-    public function anAssertionWithTokenBindingCanBeVerified()
+    public function anAssertionWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
             \Safe\base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true),

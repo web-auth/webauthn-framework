@@ -20,8 +20,14 @@ class PublicKeyCredentialParameters implements \JsonSerializable
     public const ALGORITHM_ES256 = -7;
     public const ALGORITHM_RS256 = -257;
 
+    /**
+     * @var string
+     */
     private $type;
 
+    /**
+     * @var int
+     */
     private $alg;
 
     public function __construct(string $type, int $alg)

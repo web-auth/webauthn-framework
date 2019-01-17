@@ -15,6 +15,9 @@ namespace Webauthn;
 
 class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Countable, \IteratorAggregate
 {
+    /**
+     * @var PublicKeyCredentialDescriptor[]
+     */
     private $publicKeyCredentialDescriptors = [];
 
     public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): void
@@ -36,22 +39,22 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
         unset($this->publicKeyCredentialDescriptors['id']);
     }
 
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->publicKeyCredentialDescriptors);
     }
 
-    public function count(int $mode = COUNT_NORMAL)
+    public function count(int $mode = COUNT_NORMAL): int
     {
         return \count($this->publicKeyCredentialDescriptors, $mode);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_values($this->publicKeyCredentialDescriptors);
     }
 
-    public static function createFromJson(array $json)
+    public static function createFromJson(array $json): self
     {
         $collection = new self();
         foreach ($json as $item) {

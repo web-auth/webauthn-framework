@@ -18,7 +18,14 @@ use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
 class PreWebauthnToken extends AbstractToken
 {
+    /**
+     * @var bool
+     */
     private $rememberMe;
+
+    /**
+     * @var string
+     */
     private $providerKey;
 
     public function __construct(string $username, string $providerKeyDescriptor, bool $rememberMe, array $roles = [])
@@ -31,7 +38,7 @@ class PreWebauthnToken extends AbstractToken
         $this->providerKey = $providerKeyDescriptor;
     }
 
-    public function getCredentials()
+    public function getCredentials(): void
     {
         return;
     }
@@ -46,12 +53,15 @@ class PreWebauthnToken extends AbstractToken
         return $this->rememberMe;
     }
 
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([$this->rememberMe, $this->providerKey, parent::serialize()]);
     }
 
-    public function unserialize($serialized)
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized): self
     {
         list($this->rememberMe, $this->providerKey, $parentStr) = unserialize($serialized);
 

@@ -29,7 +29,7 @@ class EntityTest extends TestCase
      * @covers \Webauthn\PublicKeyCredentialEntity
      * @covers \Webauthn\PublicKeyCredentialUserEntity
      */
-    public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
     {
         $user = new PublicKeyCredentialUserEntity('name', 'id', 'display_name', 'icon');
 
@@ -46,7 +46,7 @@ class EntityTest extends TestCase
      * @covers \Webauthn\PublicKeyCredentialEntity
      * @covers \Webauthn\PublicKeyCredentialRpEntity
      */
-    public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed()
+    public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
         $rp = new PublicKeyCredentialRpEntity('name', 'id', 'icon');
 

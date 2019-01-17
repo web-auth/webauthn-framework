@@ -20,10 +20,19 @@ use Assert\Assertion;
  */
 class AttestedCredentialData implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
     private $aaguid;
 
+    /**
+     * @var string
+     */
     private $credentialId;
 
+    /**
+     * @var string|null
+     */
     private $credentialPublicKey;
 
     public function __construct(string $aaguid, string $credentialId, ?string $credentialPublicKey)
@@ -60,7 +69,7 @@ class AttestedCredentialData implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $result = [
             'aaguid' => base64_encode($this->aaguid),

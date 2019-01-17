@@ -27,7 +27,7 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
     /**
      * @test
      */
-    public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed()
+    public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
     {
         $authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria('authenticator_attachment', true, 'user_verification');
 

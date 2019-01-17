@@ -13,10 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use CBOR\ByteStringObject;
-use CBOR\MapItem;
-use CBOR\MapObject;
-use CBOR\OtherObject\TrueObject;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -33,7 +29,7 @@ class AuthenticatorDataTest extends TestCase
     /**
      * @test
      */
-    public function anAuthenticatorDataCanBeCreatedAndValueAccessed()
+    public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
         $attestedCredentialData = $this->prophesize(AttestedCredentialData::class);
         $extensions = $this->prophesize(AuthenticationExtensionsClientOutputs::class);
@@ -51,14 +47,5 @@ class AuthenticatorDataTest extends TestCase
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
         static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $authenticatorData->getExtensions());
-    }
-
-    private function buildExtensions(): MapObject
-    {
-        $map = new MapObject([
-            new MapItem(new ByteStringObject('loc'), new TrueObject()),
-        ]);
-
-        return $map;
     }
 }

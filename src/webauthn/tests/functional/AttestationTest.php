@@ -37,7 +37,7 @@ class AttestationTest extends Fido2TestCase
     /**
      * @test
      */
-    public function aNoneAttestationCanBeVerified()
+    public function aNoneAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
@@ -75,7 +75,7 @@ class AttestationTest extends Fido2TestCase
     /**
      * @test
      */
-    public function aFidoU2FAttestationCanBeVerified()
+    public function aFidoU2FAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
@@ -113,7 +113,7 @@ class AttestationTest extends Fido2TestCase
     /**
      * @test
      */
-    public function aPackedAttestationCanBeVerified()
+    public function aPackedAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
@@ -178,7 +178,7 @@ class AttestationTest extends Fido2TestCase
     /**
      * @test
      */
-    public function anAttestationWithTokenBindingCanBeVerified()
+    public function anAttestationWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),

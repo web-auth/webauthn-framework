@@ -20,12 +20,18 @@ use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 
 final class WebauthnBundle extends Bundle
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getContainerExtension()
     {
         return new WebauthnExtension('webauthn');
     }
 
-    public function build(ContainerBuilder $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new AttestationStatementSupportCompilerPass());
     }
