@@ -69,7 +69,7 @@ class WebauthnToken extends AbstractToken
     /**
      * @param string $serialized
      */
-    public function unserialize($serialized): self
+    public function unserialize($serialized): void
     {
         list($publicKeyCredentialRequestOptions, $publicKeyCredentialDescriptor, $this->providerKey, $parentStr) = unserialize($serialized);
         $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);

@@ -61,7 +61,7 @@ class PreWebauthnToken extends AbstractToken
     /**
      * @param string $serialized
      */
-    public function unserialize($serialized): self
+    public function unserialize($serialized): void
     {
         list($this->rememberMe, $this->providerKey, $parentStr) = unserialize($serialized);
 
