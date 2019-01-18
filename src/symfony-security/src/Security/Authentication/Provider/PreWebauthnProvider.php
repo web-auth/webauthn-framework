@@ -23,6 +23,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 
@@ -81,7 +82,11 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
 
         $user = $this->retrieveUser($username, $token);
 
-        if (!$user instanceof CanHaveRegisteredSecurityDevices || 0 === count($user->getSecurityDeviceCredentialIds())) {
+        if (!$user instanceof CanHaveRegisteredSecurityDevices) {
+            throw new AuthenticationServiceException('The user did not registered any security devices');
+        }
+        $credentialIds = array_map(function (PublicKeyCredentialDescriptor $descriptor) {return $descriptor->getId();}, $user->getSecurityDeviceCredentialIds());
+        if (0 === count($credentialIds)) {
             throw new AuthenticationServiceException('The user did not registered any security devices');
         }
 
