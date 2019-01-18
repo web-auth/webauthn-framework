@@ -85,7 +85,10 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
         if (!$user instanceof CanHaveRegisteredSecurityDevices) {
             throw new AuthenticationServiceException('The user did not registered any security devices');
         }
-        $credentialIds = array_map(function (PublicKeyCredentialDescriptor $descriptor) {return $descriptor->getId();}, $user->getSecurityDeviceCredentialIds());
+        $credentialIds = [];
+        foreach ($user->getSecurityDeviceCredentialIds() as $descriptor) {
+            $credentialIds[] = $descriptor->getId();
+        }
         if (0 === count($credentialIds)) {
             throw new AuthenticationServiceException('The user did not registered any security devices');
         }
