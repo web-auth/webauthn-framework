@@ -45,11 +45,6 @@ class CertificateToolbox
         }
         $certificates[] = $currentCert;
 
-        //We check the last certificate is a root certificate
-        $currentCertIssuer = \Safe\json_encode($currentCertParsed['issuer']);
-        $currentCertSubject = \Safe\json_encode($currentCertParsed['subject']);
-        Assertion::eq($currentCertIssuer, $currentCertSubject, 'Invalid certificate chain.');
-
         // We check that the last certificate is a CA certificate
         Assertion::keyExists($currentCertParsed, 'extensions', 'Invalid certificate chain.');
         Assertion::keyExists($currentCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
