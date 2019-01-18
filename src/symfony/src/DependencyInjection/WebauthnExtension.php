@@ -56,6 +56,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->setAlias(CredentialRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
+        $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
+        $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(AttestationStatementSupportCompilerPass::TAG);
 

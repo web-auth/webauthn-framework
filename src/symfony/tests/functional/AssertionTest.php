@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -68,5 +69,30 @@ class AssertionTest extends KernelTestCase
             $publicKeyCredentialRequestOptions,
             $request->reveal()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
+    {
+        self::bootKernel();
+
+        $allowedCredentials = [
+            new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
+            ),
+        ];
+
+        /** @var PublicKeyCredentialRequestOptionsFactory $factory */
+        $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
+        $options = $factory->create('foo', $allowedCredentials);
+
+        static::assertEquals(30000, $options->getTimeout());
+        static::assertEquals('demo.webauth.app', $options->getRpId());
+        static::assertEquals($allowedCredentials, $options->getAllowCredentials());
+        static::assertEquals('required', $options->getUserVerification());
+        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
     }
 }

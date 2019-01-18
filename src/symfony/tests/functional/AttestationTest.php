@@ -21,6 +21,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -77,5 +78,30 @@ class AttestationTest extends KernelTestCase
             $publicKeyCredentialCreationOptions,
             $request->reveal()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
+    {
+        self::bootKernel();
+
+        /** @var PublicKeyCredentialCreationOptionsFactory $factory */
+        $factory = self::$kernel->getContainer()->get(PublicKeyCredentialCreationOptionsFactory::class);
+        $options = $factory->create(
+            'foo',
+            new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity')
+        );
+
+        static::assertEquals(64, mb_strlen($options->getChallenge(), '8bit'));
+        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
+        static::assertEquals([], $options->getExcludeCredentials());
+        static::assertEquals(2, \count($options->getPubKeyCredParams()));
+        static::assertEquals('direct', $options->getAttestation());
+        static::assertEquals(30000, $options->getTimeout());
+        static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
+        static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
+        static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
     }
 }

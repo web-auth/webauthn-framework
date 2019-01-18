@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Webauthn\AttestationStatement;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\TokenBinding;
 
@@ -25,9 +28,19 @@ return function (ContainerConfigurator $container) {
 
     $container->set(AuthenticatorAttestationResponseValidator::class)
         ->public();
-    $container->set(\Webauthn\AuthenticatorAssertionResponseValidator::class)
+    $container->set(AuthenticatorAssertionResponseValidator::class)
         ->public();
     $container->set(PublicKeyCredentialLoader::class)
+        ->public();
+    $container->set(PublicKeyCredentialCreationOptionsFactory::class)
+        ->args([
+            '%webauthn.creation_profiles%',
+        ])
+        ->public();
+    $container->set(PublicKeyCredentialRequestOptionsFactory::class)
+        ->args([
+            '%webauthn.request_profiles%',
+        ])
         ->public();
 
     $container->set(AttestationStatement\AttestationObjectLoader::class);

@@ -18,3 +18,29 @@ services:
 
 webauthn:
     credential_repository: 'Webauthn\Bundle\Tests\Functional\CredentialRepository'
+    creation_profiles:
+        foo:
+            public_key_credential_parameters:
+                - !php/const Webauthn\PublicKeyCredentialParameters::ALGORITHM_ES256
+                - !php/const Webauthn\PublicKeyCredentialParameters::ALGORITHM_RS256
+            extensions:
+                foo: 'bar'
+            rp:
+                name: 'My application'
+                id: 'demo.webauth.app'
+                icon: 'https://demo.webauth.app/assets/app.png'
+            challenge_length: 64
+            timeout: 30000
+            authenticator_selection_criteria:
+                attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM
+                require_resident_key: true
+                user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
+            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+    request_profiles:
+        foo:
+            extensions:
+                foo: 'bar'
+            rp_id: 'demo.webauth.app'
+            challenge_length: 64
+            timeout: 30000
+            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
