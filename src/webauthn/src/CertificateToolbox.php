@@ -26,13 +26,11 @@ class CertificateToolbox
             return;
         }
 
-        $certificates = [];
         $currentCertParsed = openssl_x509_parse($currentCert);
-        while ($nextCertAsPem = next($x5c)) {
-            $certificates[] = $currentCert;
+        while ($cert = next($x5c)) {
             $currentCertIssuer = \Safe\json_encode($currentCertParsed['issuer']);
 
-            $nextCertParsed = openssl_x509_parse($nextCertAsPem);
+            $nextCertParsed = openssl_x509_parse($cert);
             $nextCertAsPemSubject = \Safe\json_encode($nextCertParsed['subject']);
 
             Assertion::eq($currentCertIssuer, $nextCertAsPemSubject, 'Invalid certificate chain.');
@@ -40,15 +38,8 @@ class CertificateToolbox
             Assertion::keyExists($nextCertParsed, 'extensions', 'Invalid certificate chain.');
             Assertion::keyExists($nextCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
             Assertion::startsWith($nextCertParsed['extensions']['basicConstraints'], 'CA:TRUE', 'Invalid certificate chain.');
-            $currentCert = $nextCertAsPem;
             $currentCertParsed = $nextCertParsed;
         }
-        $certificates[] = $currentCert;
-
-        // We check that the last certificate is a CA certificate
-        Assertion::keyExists($currentCertParsed, 'extensions', 'Invalid certificate chain.');
-        Assertion::keyExists($currentCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
-        Assertion::eq($currentCertParsed['extensions']['basicConstraints'], 'CA:TRUE', 'Invalid certificate chain.');
     }
 
     public static function convertDERToPEM(string $publicKey): string
