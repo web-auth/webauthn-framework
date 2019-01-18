@@ -18,6 +18,16 @@ You should go to [the main repository](https://github.com/web-auth/webauthn-fram
 
 The official documentation is available at https://github.com/web-auth/webauthn-framework 
 
+# Missing Features
+
+* Attestation Statement Formats:
+    * [Android SafetyNet Attestation Statement Format](https://www.w3.org/TR/webauthn/#android-safetynet-attestation)
+    * [Android Key Attestation Statement Format](https://www.w3.org/TR/webauthn/#android-key-attestation)
+    * [TPM Attestation Statement Format](https://www.w3.org/TR/webauthn/#tpm-attestation)
+    * [ECDAA and SelfAttestation for Packed Attestation Format](https://www.w3.org/TR/webauthn/#packed-attestation)
+* Token Binding support (see [#2](https://github.com/web-auth/webauthn-framework/issues/2))
+* [Extension support](https://www.w3.org/TR/webauthn/#extensions) is implemented but not fully tested
+
 # Support
 
 I bring solutions to your problems and answer your questions.
