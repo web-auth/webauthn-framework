@@ -1,15 +1,25 @@
 FIDO Universal 2nd Factor (U2F)
 ===============================
 
+# Installation
+
+Install the library with Composer:
+
+```sh
+composer require web-authn/u2f-lib
+```
+
+# Usage
+
 This library can handle U2F requests and responses for both registration and signature verification processes.
 
 The registration process allows a user to register a new token. This token will compute a challenge and, if succeeded, the key handler can be associated to the user account.
 
 The signature verification process will ask a user to sign a challenge. If the challenge is correcly signed with one of a registered key, then the user can be considered as authenticated.
 
-# Registration
+## Registration
 
-## Request Creation
+### Request Creation
 
 The `RegistrationRequest` class will prepare the registration request for a given application ID.
 
@@ -65,7 +75,7 @@ $_SESSION['u2f_registration_request'] = $registrationRequest;
 </html> 
 ```
 
-## Response Handling
+### Response Handling
 
 The U2F device will compute the challenge sent in the previous step and will issue a registration response.
 The way you receive this response is out of scope of this library. For example, it can be done through a POST request body, a request header or in the query string.
@@ -115,7 +125,7 @@ If the variable `$isValid` is `true`, you can safely associate the registered ke
 
 **TODO: DATA TO BE STORED SHOULD BE DESCRIBED.**
 
-### Device Registration Restrictions
+#### Device Registration Restrictions
 
 You can get the attestation certificate from the registered key object (method `$registeredKey->getAttestationCertificate()`)
 and check information like the manufacturer, the manufacture date or the serial number of the device contained in the certificate.
@@ -123,9 +133,9 @@ and check information like the manufacturer, the manufacture date or the serial 
 If the manufacturer provides root certificates (devices [manufactured by Yubico](https://developers.yubico.com/U2F/Attestation_and_Metadata/)),
 you can verify the attestation certificate validity.
 
-# Signature
+## Signature
 
-## Request Creation
+### Request Creation
 
 
 The `SignatureRequest` class will prepare the signature request for a given application ID and registered devices.
@@ -172,7 +182,7 @@ $_SESSION['u2f_signature_request'] = $signatureRequest;
 </html> 
 ```
 
-## Response Handling
+### Response Handling
 
 The U2F device will compute the challenge sent in the previous step and will issue a signature response.
 The way you receive this response is out of scope of this library. For example, it can be done through a POST request body, a request header or in the query string.
@@ -207,14 +217,14 @@ $isValid = $signatureResponse->isValid($signatureRequest);
 
 If the variable `$isValid` is `true`, you can complete the user authentication.
 
-### User Presence
+#### User Presence
 
 The presence of the user may be important in your security strategy.
 You can check if he/she was present during the signature process.
 
 The method `$signatureResponse->isUserPresent()` will return `true` if present, otherwise `false`.
 
-### Counter Support
+#### Counter Support
 
 Most of the U2F devices count the number of signatures to prevent the use of cloned devices.
 We highly recommend you to enable tfe counter support for the registered keys.
