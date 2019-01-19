@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -38,10 +39,16 @@ class WebauthnUtils
      */
     private $requestStack;
 
-    public function __construct(RequestStack $requestStack)
+    /**
+     * @var PublicKeyCredentialRequestOptionsFactory
+     */
+    private $publicKeyCredentialRequestOptionsFactory;
+
+    public function __construct(PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
         $this->authenticationUtils = new AuthenticationUtils($requestStack);
+        $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
     }
 
     public function getLastAuthenticationError(bool $clearSession = true): ?AuthenticationException
@@ -54,10 +61,38 @@ class WebauthnUtils
         return $this->authenticationUtils->getLastUsername();
     }
 
-    public function generateRequestFor(UserInterface $user, int $challengeLength = 16, int $timeout = 60000, string $rpId = null, string $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
+    public function generateRequestFromProfile(string $key, UserInterface $user): PublicKeyCredentialRequestOptions
+    {
+        $allowedCredentials = $this->getAllowedCredentials($user);
+
+        return $this->publicKeyCredentialRequestOptionsFactory->create($key, $allowedCredentials);
+    }
+
+    public function generateRequest(UserInterface $user, int $challengeLength = 16, int $timeout = 60000, string $rpId = null, string $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
     {
         Assertion::min($timeout, 1, 'Invalid timeout');
         Assertion::min($challengeLength, 1, 'Invalid challenge length');
+        $allowedCredentials = $this->getAllowedCredentials($user);
+
+        $request = $this->getRequest();
+        $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
+            random_bytes($challengeLength),
+            $timeout,
+            $rpId ?? $request->getHost(),
+            $allowedCredentials,
+            $userVerification,
+            $extensions
+        );
+        $request->getSession()->set(self::PUBLIC_KEY_CREDENTIAL_REQUEST_OPTIONS, $publicKeyCredentialRequestOptions);
+
+        return $publicKeyCredentialRequestOptions;
+    }
+
+    /**
+     * @return PublicKeyCredentialDescriptor[]
+     */
+    private function getAllowedCredentials(UserInterface $user): array
+    {
         if (!$user instanceof CanHaveRegisteredSecurityDevices) {
             throw new \InvalidArgumentException('The user must implement the interface "Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices"');
         }
@@ -68,18 +103,7 @@ class WebauthnUtils
             $credentials[] = $publicKeyCredentialDescriptor;
         }
 
-        $request = $this->getRequest();
-        $PublicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
-            random_bytes($challengeLength),
-            $timeout,
-            $rpId ?? $request->getHost(),
-            $credentials,
-            $userVerification,
-            $extensions
-        );
-        $request->getSession()->set(self::PUBLIC_KEY_CREDENTIAL_REQUEST_OPTIONS, $PublicKeyCredentialRequestOptions);
-
-        return $PublicKeyCredentialRequestOptions;
+        return $credentials;
     }
 
     private function getRequest(): Request

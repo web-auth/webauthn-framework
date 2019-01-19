@@ -60,7 +60,7 @@ final class SecurityController
     {
         /** @var UserInterface $user */
         $user = $this->tokenStorage->getToken()->getUser();
-        $publicKeyCredentialRequestOptions = $this->webauthnUtils->generateRequestFor($user);
+        $publicKeyCredentialRequestOptions = $this->webauthnUtils->generateRequest($user);
         $error = $this->webauthnUtils->getLastAuthenticationError();
 
         $page = $this->twig->render('assertion.html.twig', [
