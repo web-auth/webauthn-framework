@@ -83,7 +83,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         return "\x04".$publicKey[-2].$publicKey[-3];
     }
 
-    private function checkCertificate(?string $publicKey): void
+    private function checkCertificate(string $publicKey): void
     {
         try {
             $resource = \Safe\openssl_pkey_get_public($publicKey);

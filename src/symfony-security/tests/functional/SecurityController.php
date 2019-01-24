@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle\Tests\Functional;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -56,13 +57,13 @@ final class SecurityController
         return new Response($page);
     }
 
-    public function assertion(): Response
+    public function assertion(Request $request): Response
     {
         /** @var UserInterface $user */
         $user = $this->tokenStorage->getToken()->getUser();
         $publicKeyCredentialRequestOptions = $this->webauthnUtils->generateRequest($user);
+        $request->getSession()->set('_webauthn.public_key_credential_request_options', $publicKeyCredentialRequestOptions);
         $error = $this->webauthnUtils->getLastAuthenticationError();
-
         $page = $this->twig->render('assertion.html.twig', [
             'error' => $error,
             'user' => $user,

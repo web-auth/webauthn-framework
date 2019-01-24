@@ -45,7 +45,7 @@ class CollectedClientData
     private $origin;
 
     /**
-     * @var TokenBinding
+     * @var null|array
      */
     private $tokenBinding;
 
@@ -85,7 +85,7 @@ class CollectedClientData
 
     public function getTokenBinding(): ?TokenBinding
     {
-        return $this->tokenBinding ? TokenBinding::createFormArray($this->tokenBinding) : null;
+        return null === $this->tokenBinding ? null : TokenBinding::createFormArray($this->tokenBinding);
     }
 
     public function getRawData(): string
@@ -106,6 +106,9 @@ class CollectedClientData
         return array_key_exists($key, $this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function get(string $key)
     {
         if (!$this->has($key)) {

@@ -61,7 +61,7 @@ class AuthenticatorAssertionResponseValidator
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
 
-        $credentialPublicKey = $this->decoder->decode(
+        $credentialPublicKeyStream = $this->decoder->decode(
             new StringStream($credentialPublicKey)
         );
 
@@ -109,7 +109,7 @@ class AuthenticatorAssertionResponseValidator
         $getClientDataJSONHash = hash('sha256', $authenticatorAssertionResponse->getClientDataJSON()->getRawData(), true);
 
         /* @see 7.2.16 */
-        $coseKey = $credentialPublicKey->getNormalizedData();
+        $coseKey = $credentialPublicKeyStream->getNormalizedData();
         $key = "\04".$coseKey[-2].$coseKey[-3];
         Assertion::eq(1, openssl_verify($authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash, $authenticatorAssertionResponse->getSignature(), $this->getPublicKeyAsPem($key), OPENSSL_ALGO_SHA256), 'Invalid signature.');
 

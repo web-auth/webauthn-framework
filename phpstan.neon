@@ -1,6 +1,7 @@
 parameters:
     excludes_analyse:
         - %currentWorkingDirectory%/src/*/tests/*
+        - %currentWorkingDirectory%/src/*/var/*
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

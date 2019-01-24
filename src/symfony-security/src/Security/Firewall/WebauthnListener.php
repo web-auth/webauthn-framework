@@ -342,10 +342,10 @@ class WebauthnListener implements ListenerInterface
     private function processWithAssertion(Request $request, PreWebauthnToken $token): WebauthnToken
     {
         $assertion = $request->request->get($this->options['assertion_parameter']);
-        $PublicKeyCredentialRequestOptions = $request->getSession()->get(WebauthnUtils::PUBLIC_KEY_CREDENTIAL_REQUEST_OPTIONS);
+        $PublicKeyCredentialRequestOptions = $request->getSession()->get($this->options['assertion_session_parameter']);
 
         if (!$PublicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions) {
-            throw new BadRequestHttpException('No public key credential request potions available for this session.');
+            throw new BadRequestHttpException('No public key credential request options available for this session.');
         }
         if (!\is_string($assertion)) {
             throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));

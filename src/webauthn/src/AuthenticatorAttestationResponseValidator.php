@@ -65,8 +65,7 @@ class AuthenticatorAttestationResponseValidator
 
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::true(array_key_exists('host', $parsedRelyingPartyId) && \is_string($parsedRelyingPartyId['host']), 'Invalid origin rpId.');
-
-        Assertion::false(null !== $rpId && $parsedRelyingPartyId['host'] !== $rpId, 'rpId mismatch.');
+        Assertion::false($parsedRelyingPartyId['host'] !== $rpId, 'rpId mismatch.');
 
         /* @see 7.1.6 */
         if (null !== $C->getTokenBinding()) {
@@ -103,7 +102,10 @@ class AuthenticatorAttestationResponseValidator
         /** @see 7.1.15 */
         /** @see 7.1.16 */
         /** @see 7.1.17 */
-        $credentialId = $attestationObject->getAuthData()->getAttestedCredentialData()->getCredentialId();
+        Assertion::true($attestationObject->getAuthData()->hasAttestedCredentialData(), 'There is no attested credential data.');
+        $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
+        Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
+        $credentialId = $attestedCredentialData->getCredentialId();
         Assertion::false($this->credentialRepository->has($credentialId), 'The credential ID already exists.');
 
         /* @see 7.1.18 */

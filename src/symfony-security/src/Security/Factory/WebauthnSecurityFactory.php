@@ -82,6 +82,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('remember_me_parameter')->defaultNull()->end()
                 ->scalarNode('username_parameter')->defaultValue('_username')->end()
                 ->scalarNode('assertion_parameter')->defaultValue('_assertion')->end()
+                ->scalarNode('assertion_session_parameter')->defaultValue('_webauthn.public_key_credential_request_options')->end()
                 ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
                 ->scalarNode('csrf_token_id')->defaultValue('authenticate')->end()
             ->end()
