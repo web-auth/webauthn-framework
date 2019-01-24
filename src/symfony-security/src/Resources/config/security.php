@@ -67,6 +67,7 @@ return function (ContainerConfigurator $container) {
     $container->services()->set(WebauthnUtils::class)
         ->private()
         ->args([
+            ref(\Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory::class),
             ref(\Symfony\Component\HttpFoundation\RequestStack::class),
         ]);
 };
