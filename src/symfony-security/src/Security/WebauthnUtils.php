@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\SecurityBundle\Security;
 
 use Assert\Assertion;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -32,12 +33,18 @@ class WebauthnUtils
     private $authenticationUtils;
 
     /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
      * @var PublicKeyCredentialRequestOptionsFactory
      */
     private $publicKeyCredentialRequestOptionsFactory;
 
     public function __construct(PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, RequestStack $requestStack)
     {
+        $this->requestStack = $requestStack;
         $this->authenticationUtils = new AuthenticationUtils($requestStack);
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
     }
@@ -65,10 +72,12 @@ class WebauthnUtils
         Assertion::min($challengeLength, 1, 'Invalid challenge length');
         $allowedCredentials = $this->getAllowedCredentials($user);
 
+        $request = $this->getRequest();
+
         return new PublicKeyCredentialRequestOptions(
             random_bytes($challengeLength),
             $timeout,
-            $rpId,
+            $rpId ?? $request->getHost(),
             $allowedCredentials,
             $userVerification,
             $extensions
@@ -91,5 +100,15 @@ class WebauthnUtils
         }
 
         return $credentials;
+    }
+
+    private function getRequest(): Request
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (null === $request) {
+            throw new \LogicException('Request should exist so it can be processed for error.');
+        }
+
+        return $request;
     }
 }
