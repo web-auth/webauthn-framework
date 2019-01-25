@@ -16,6 +16,7 @@ namespace Webauthn\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 
 final class WebauthnBundle extends Bundle
@@ -34,5 +35,6 @@ final class WebauthnBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new AttestationStatementSupportCompilerPass());
+        $container->addCompilerPass(new ExtensionOutputCheckerCompilerPass());
     }
 }

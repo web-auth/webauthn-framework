@@ -172,7 +172,6 @@ class AttestationTest extends Fido2TestCase
         static::assertEquals(124, $authenticatorData->getSignCount());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
-        static::assertNull($authenticatorData->getExtensions());
     }
 
     /**
@@ -231,6 +230,5 @@ class AttestationTest extends Fido2TestCase
         static::assertEquals(146, $authenticatorData->getSignCount());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
-        static::assertNull($authenticatorData->getExtensions());
     }
 }

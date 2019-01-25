@@ -17,6 +17,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
 use Psr\Http\Message\ServerRequestInterface;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 class AuthenticatorAssertionResponseValidator
@@ -36,11 +37,17 @@ class AuthenticatorAssertionResponseValidator
      */
     private $tokenBindingHandler;
 
-    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler)
+    /**
+     * @var ExtensionOutputCheckerHandler
+     */
+    private $extensionOutputCheckerHandler;
+
+    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
         $this->tokenBindingHandler = $tokenBindingHandler;
+        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
     }
 
     /**
@@ -103,7 +110,10 @@ class AuthenticatorAssertionResponseValidator
         Assertion::false(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification() && !$authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
 
         /* @see 7.2.14 */
-        Assertion::null($authenticatorAssertionResponse->getAuthenticatorData()->getExtensions(), 'Extensions not supported.');
+        $extensions = $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions();
+        if (null !== $extensions) {
+            $this->extensionOutputCheckerHandler->check($extensions);
+        }
 
         /** @see 7.2.15 */
         $getClientDataJSONHash = hash('sha256', $authenticatorAssertionResponse->getClientDataJSON()->getRawData(), true);

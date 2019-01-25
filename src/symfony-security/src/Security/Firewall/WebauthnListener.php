@@ -371,6 +371,12 @@ class WebauthnListener implements ListenerInterface
             $token->getUsername(),
             $PublicKeyCredentialRequestOptions,
             $publicKeyCredential->getPublicKeyCredentialDescriptor(),
+            $response->getAuthenticatorData()->isUserPresent(),
+            $response->getAuthenticatorData()->isUserVerified(),
+            $response->getAuthenticatorData()->getReservedForFutureUse1(),
+            $response->getAuthenticatorData()->getReservedForFutureUse2(),
+            $response->getAuthenticatorData()->getSignCount(),
+            $response->getAuthenticatorData()->getExtensions(),
             $this->providerKey,
             $this->getRoles($token->getUser(), $token)
         );

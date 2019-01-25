@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Webauthn\AttestationStatement;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
@@ -43,6 +44,7 @@ return function (ContainerConfigurator $container) {
         ])
         ->public();
 
+    $container->set(ExtensionOutputCheckerHandler::class);
     $container->set(AttestationStatement\AttestationObjectLoader::class);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);

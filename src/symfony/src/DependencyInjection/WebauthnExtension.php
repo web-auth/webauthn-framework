@@ -21,7 +21,9 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\CredentialRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -60,6 +62,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(AttestationStatementSupportCompilerPass::TAG);
+        $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
