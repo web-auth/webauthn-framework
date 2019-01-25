@@ -15,6 +15,7 @@ namespace Webauthn\SecurityBundle\Security\Authentication\Token;
 
 use Assert\Assertion;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -35,7 +36,37 @@ class WebauthnToken extends AbstractToken
      */
     private $publicKeyCredentialDescriptor;
 
-    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, string $providerKey, array $roles = [])
+    /**
+     * @var bool
+     */
+    private $isUserPresent;
+
+    /**
+     * @var bool
+     */
+    private $isUserVerified;
+
+    /**
+     * @var int
+     */
+    private $signCount;
+
+    /**
+     * @var AuthenticationExtensionsClientOutputs
+     */
+    private $extensions;
+
+    /**
+     * @var int
+     */
+    private $reservedForFutureUse1;
+
+    /**
+     * @var int
+     */
+    private $reservedForFutureUse2;
+
+    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -44,6 +75,12 @@ class WebauthnToken extends AbstractToken
         $this->providerKey = $providerKey;
         $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
         $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
+        $this->isUserPresent = $isUserPresent;
+        $this->isUserVerified = $isUserVerified;
+        $this->signCount = $signCount;
+        $this->extensions = $extensions;
+        $this->reservedForFutureUse1 = $reservedForFutureUse1;
+        $this->reservedForFutureUse2 = $reservedForFutureUse2;
     }
 
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
@@ -56,6 +93,36 @@ class WebauthnToken extends AbstractToken
         return $this->publicKeyCredentialDescriptor;
     }
 
+    public function isUserPresent(): bool
+    {
+        return $this->isUserPresent;
+    }
+
+    public function isUserVerified(): bool
+    {
+        return $this->isUserVerified;
+    }
+
+    public function getReservedForFutureUse1(): int
+    {
+        return $this->reservedForFutureUse1;
+    }
+
+    public function getReservedForFutureUse2(): int
+    {
+        return $this->reservedForFutureUse2;
+    }
+
+    public function getSignCount(): int
+    {
+        return $this->signCount;
+    }
+
+    public function isExtensions(): AuthenticationExtensionsClientOutputs
+    {
+        return $this->extensions;
+    }
+
     public function getProviderKey(): string
     {
         return $this->providerKey;
@@ -63,7 +130,18 @@ class WebauthnToken extends AbstractToken
 
     public function serialize(): string
     {
-        return serialize([\Safe\json_encode($this->publicKeyCredentialRequestOptions), \Safe\json_encode($this->publicKeyCredentialDescriptor), $this->providerKey, parent::serialize()]);
+        return serialize([
+            \Safe\json_encode($this->publicKeyCredentialRequestOptions),
+            \Safe\json_encode($this->publicKeyCredentialDescriptor),
+            $this->isUserPresent,
+            $this->isUserVerified,
+            $this->reservedForFutureUse1,
+            $this->reservedForFutureUse2,
+            $this->signCount,
+            $this->extensions,
+            $this->providerKey,
+            parent::serialize()
+        ]);
     }
 
     /**
@@ -71,12 +149,26 @@ class WebauthnToken extends AbstractToken
      */
     public function unserialize($serialized): void
     {
-        list($publicKeyCredentialRequestOptions, $publicKeyCredentialDescriptor, $this->providerKey, $parentStr) = unserialize($serialized);
+        list(
+            $publicKeyCredentialRequestOptions,
+            $publicKeyCredentialDescriptor,
+            $this->isUserPresent,
+            $this->isUserVerified,
+            $this->reservedForFutureUse1,
+            $this->reservedForFutureUse2,
+            $this->signCount,
+            $extensions,
+            $this->providerKey,
+            $parentStr
+        ) = unserialize($serialized);
         $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
         $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
 
         $data = \Safe\json_decode($publicKeyCredentialDescriptor, true);
         $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromJson($data);
+
+        $data = \Safe\json_decode($extensions, true);
+        $this->extensions = AuthenticationExtensionsClientOutputs::createFromJson($data);
 
         parent::unserialize($parentStr);
     }
