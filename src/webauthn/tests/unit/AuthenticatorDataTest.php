@@ -46,6 +46,6 @@ class AuthenticatorDataTest extends TestCase
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
-        static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $authenticatorData->getExtensions());
+        static::assertNull($authenticatorData->getExtensions());
     }
 }

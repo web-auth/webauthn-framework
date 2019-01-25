@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 class AuthenticatorAttestationResponseValidator
@@ -35,11 +36,17 @@ class AuthenticatorAttestationResponseValidator
      */
     private $tokenBindingHandler;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler)
+    /**
+     * @var ExtensionOutputCheckerHandler
+     */
+    private $extensionOutputCheckerHandler;
+
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->credentialRepository = $credentialRepository;
         $this->tokenBindingHandler = $tokenBindingHandler;
+        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
     }
 
     /**
@@ -89,7 +96,10 @@ class AuthenticatorAttestationResponseValidator
         Assertion::false(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification() && !$attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
 
         /* @see 7.1.12 */
-        Assertion::null($attestationObject->getAuthData()->getExtensions(), 'Extensions not supported.');
+        $extensions = $attestationObject->getAuthData()->getExtensions();
+        if (null !== $extensions) {
+            $this->extensionOutputCheckerHandler->check($extensions);
+        }
 
         /** @see 7.1.13 */
         $fmt = $attestationObject->getAttStmt()->getFmt();

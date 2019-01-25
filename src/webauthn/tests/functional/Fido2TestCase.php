@@ -22,6 +22,7 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CredentialRepository;
@@ -63,7 +64,8 @@ abstract class Fido2TestCase extends TestCase
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager(),
                 $credentialRepository,
-                new IgnoreTokenBindingHandler()
+                new IgnoreTokenBindingHandler(),
+                new ExtensionOutputCheckerHandler()
             );
         }
 
@@ -81,7 +83,8 @@ abstract class Fido2TestCase extends TestCase
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
                 $this->getDecoder(),
-                new TokenBindingNotSupportedHandler()
+                new TokenBindingNotSupportedHandler(),
+                new ExtensionOutputCheckerHandler()
             );
         }
 
