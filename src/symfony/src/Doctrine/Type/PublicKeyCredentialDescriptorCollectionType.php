@@ -50,6 +50,6 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
      */
     public function getName()
     {
-        return 'public_key_credential_descriptor';
+        return 'public_key_credential_descriptor_collection';
     }
 }
