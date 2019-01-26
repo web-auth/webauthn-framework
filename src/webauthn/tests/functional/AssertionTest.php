@@ -28,7 +28,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
  * @group functional
  * @group Fido2
  */
-class AssertionTest extends Fido2TestCase
+class AssertionTest extends AbstractTestCase
 {
     /**
      * @test

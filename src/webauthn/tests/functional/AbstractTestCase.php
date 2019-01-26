@@ -16,7 +16,10 @@ namespace Webauthn\Tests\Functional;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Http\Client\HttpClient;
+use Http\Mock\Client;
 use PHPUnit\Framework\TestCase;
+use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -29,12 +32,13 @@ use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use Zend\Diactoros\RequestFactory;
 
 /**
  * @group functional
  * @group Fido2
  */
-abstract class Fido2TestCase extends TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
      * @var PublicKeyCredentialLoader|null
@@ -58,11 +62,11 @@ abstract class Fido2TestCase extends TestCase
      */
     private $authenticatorAttestationResponseValidator;
 
-    protected function getAuthenticatorAttestationResponseValidator(CredentialRepository $credentialRepository): AuthenticatorAttestationResponseValidator
+    protected function getAuthenticatorAttestationResponseValidator(CredentialRepository $credentialRepository, HttpClient $client): AuthenticatorAttestationResponseValidator
     {
         if (!$this->authenticatorAttestationResponseValidator) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
-                $this->getAttestationStatementSupportManager(),
+                $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
                 new IgnoreTokenBindingHandler(),
                 new ExtensionOutputCheckerHandler()
@@ -108,23 +112,21 @@ abstract class Fido2TestCase extends TestCase
         return $this->decoder;
     }
 
-    /**
-     * @var AttestationStatementSupportManager|null
-     */
-    private $attestationStatementSupportManager;
-
-    private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
+    private function getAttestationStatementSupportManager(?HttpClient $client = null): AttestationStatementSupportManager
     {
-        if (!$this->attestationStatementSupportManager) {
-            $this->attestationStatementSupportManager = new AttestationStatementSupportManager();
-            $this->attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-            $this->attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
-                $this->getDecoder()
-            ));
-            $this->attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
-        }
+        $attestationStatementSupportManager = new AttestationStatementSupportManager();
+        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
+            new RequestFactory(),
+            $client ?? new Client(),
+            'AIzaSyBY5wESbKdU_9o-O9qb_SCuCAGxNGx6hIE'
+        ));
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
+            $this->getDecoder()
+        ));
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
 
-        return $this->attestationStatementSupportManager;
+        return $attestationStatementSupportManager;
     }
 
     /**
