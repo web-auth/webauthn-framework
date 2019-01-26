@@ -39,7 +39,7 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "php-http/httplug": "^1.0",
-        "php-http/httplug-bundle": "^1.7",
+        "php-http/httplug-bundle": "^1.0",
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-bundle": "^1.0",

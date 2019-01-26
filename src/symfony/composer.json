@@ -16,6 +16,7 @@
         }
     ],
     "require": {
+        "php-http/httplug-bundle": "^1.0",
         "spomky-labs/cbor-bundle": "^1.0",
         "spomky-labs/cbor-php": "^1.0.2",
         "symfony/config": "^4.2",
