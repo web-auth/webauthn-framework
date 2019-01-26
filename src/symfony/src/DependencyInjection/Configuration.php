@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -38,6 +39,7 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder($this->alias);
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $this->getRootNode($treeBuilder, $this->alias);
 
         $rootNode
@@ -51,6 +53,19 @@ final class Configuration implements ConfigurationInterface
                     ->defaultValue(TokenBindingNotSupportedHandler::class)
                     ->cannotBeEmpty()
                     ->info('This handler will check the token binding header from the request')
+                ->end()
+                ->arrayNode('android_safetynet')
+                    ->canBeEnabled()
+                    ->children()
+                        ->scalarNode('http_client')
+                            ->isRequired()
+                            ->info('HttpPlug Client')
+                        ->end()
+                        ->scalarNode('api_key')
+                            ->isRequired()
+                            ->info('API key from Google API and Services. See https://console.developers.google.com/apis/library to get it.')
+                        ->end()
+                    ->end()
                 ->end()
                 ->arrayNode('creation_profiles')
                     ->treatFalseLike([])
