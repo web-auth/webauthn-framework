@@ -3,7 +3,11 @@ Webauthn Symfony Bundle
 
 # Installation
 
-Install the bundle with Composer: `web-authn/webauthn-symfony-bundle`
+Install the bundle with Composer:
+
+```sh
+composer require web-authn/webauthn-symfony-bundle
+```
 
 If you are using Symfony Flex then the bundle will automatically be installed.
 Otherwise you need to add it in your `AppKernel.php` file:
@@ -32,12 +36,14 @@ This bundle needs classes and sevices to work:
 ## Credential
 
 A credential corresponds to the attested data received from a device and the current counter.
-Hereafter an example using Doctrine ORM. This entity can be enhanced and may also have a `name` or `description` to ease the management of this credential by the user or the administrator of your application.
+Hereafter an example using Doctrine ORM. This entity can be enhanced and may also have a `name`, `description`, last usage timestamp or any other application specific fields to ease the management of this credential by the user or the administrator of your application.
 
-Please note that:
+Please note that no relationship between the credential and your user is present in this example. You may need to add such information (`OneToMany`/`ManyToOne` relationship).
 
-* The class `Webauthn\AttestedCredentialData` has a Doctrine Type `attested_credential_data` and can easily be stored/retreived from your database.
-* No relationship between the credential and your user is present in this example. You may need to add such information (`OneToMany`/`ManyToOne` relationship).
+This bundle also provides Doctrine types to ease the integration with your favorite ORM:
+    * Class `Webauthn\AttestedCredentialData` => Doctrine Type `attested_credential_data`
+    * Class `Webauthn\PublicKeyCredentialDescriptor` => Doctrine Type `public_key_credential_descriptor`
+    * Class `Webauthn\PublicKeyCredentialDescriptorCollection` => Doctrine Type `public_key_credential_descriptor_collection`
 
 ```php
 <?php
@@ -50,6 +56,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Webauthn\AttestedCredentialData;
 
 /**
+ * It is very important to define a custom repository.
+ * This repository is showed in the next section.
  * @ORM\Entity(repositoryClass="App\Entity\CredentialRepository")
  * @ORM\Table(name="credentials",indexes={@Index(name="search_idx", columns={"credential_id"})})
  */
@@ -84,7 +92,7 @@ class Credential
      */
     private $counter;
 
-    public function __construct(string uid, AttestedCredentialData $attested_credential_data, int $counter)
+    public function __construct(string $id, AttestedCredentialData $attested_credential_data, int $counter)
     {
         $this->id = $id;
         $this->credential_id = $attested_credential_data->getCredentialId();
@@ -116,8 +124,8 @@ class Credential
 
 ## Credential Repository
 
-The credential repository must implement `Webauthn\CredentialRepository`.
-In this following example, we will use Doctrine and retreive/save Credential objects defined earlier.
+The credential repository will save and retrieve the credentials on-demand. It must implement `Webauthn\CredentialRepository`.
+In this following example, we will use Doctrine to manage `Credential` objects defined earlier.
 
 Feel free to add methods e.g. to get credentials associated to a user.
 
@@ -248,4 +256,9 @@ webauthn:
 
 # Usage
 
-[TO BE CONTINUED]
+## Registering New Credentials
+
+## User Authentication
+
+# Creation Request/Attestation Request Profiles
+
