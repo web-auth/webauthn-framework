@@ -51,7 +51,7 @@ If you really love that project and the work I have done or if you want I priori
 # Contributing
 
 Requests for new features, bug fixed and all other ideas to make this framework useful are welcome.
-If you feel comfortable writing code, you could try to fix [opened issues where help is wanted](https://github.com/web-auth/webauthn-framework/labels/help+wanted) or [those that are easy to fix](https://github.com/web-auth/webauthn-framework/labels/easy-pick).
+If you feel comfortable writing code, you could try to fix [opened issues where help is wanted](https://github.com/web-auth/webauthn-framework/issues?q=label%3A%22help+wanted%22) or [those that are easy to fix](https://github.com/web-auth/webauthn-framework/labels/easy-pick).
 
 Do not forget to [follow these best practices](.github/CONTRIBUTING.md).
 
