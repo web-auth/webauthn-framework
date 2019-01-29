@@ -53,18 +53,32 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request): void
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): void
     {
         /* @see 7.2.1 */
-        Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
+        if (0 !== \count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
+            Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
+        }
 
         /* @see 7.2.2 */
-        Assertion::noContent($authenticatorAssertionResponse->getUserHandle(), 'User Handle not supported.'); //TODO: implementation shall be done.
+        Assertion::true($this->credentialRepository->has($credentialId), 'The credential ID is invalid.');
 
         /* @see 7.2.3 */
-        Assertion::true($this->credentialRepository->has($credentialId), 'No credential public key available for the given credential ID.');
-
         $attestedCredentialData = $this->credentialRepository->get($credentialId);
+        $credentialUserHandle = $this->credentialRepository->getUserHandleFor($credentialId);
+        $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
+
+        /* @see 7.2.2 User Handle*/
+        if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
+            Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
+            if ($responseUserHandle) {
+                Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+            }
+        } else {
+            Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
+            Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+        }
+
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
 
@@ -74,7 +88,7 @@ class AuthenticatorAssertionResponseValidator
 
         /** @see 7.2.4 */
         /** @see 7.2.5 */
-        //Nothing to do. Use of objets directly
+        //Nothing to do. Use of objects directly
 
         /** @see 7.2.6 */
         $C = $authenticatorAssertionResponse->getClientDataJSON();
@@ -86,12 +100,9 @@ class AuthenticatorAssertionResponseValidator
         Assertion::true(hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
         /** @see 7.2.9 */
-        $rpId = $rpId ?? $publicKeyCredentialRequestOptions->getRpId();
-        Assertion::notNull($rpId, 'No rpId.');
-
+        $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::true(array_key_exists('host', $parsedRelyingPartyId) && \is_string($parsedRelyingPartyId['host']), 'Invalid origin rpId.');
-
         Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */

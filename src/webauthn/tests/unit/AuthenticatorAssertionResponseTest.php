@@ -38,7 +38,7 @@ class AuthenticatorAssertionResponseTest extends TestCase
             $clientDataJSON->reveal(),
             $authenticatorData->reveal(),
             'signature',
-            'user_handle'
+            base64_encode('user_handle')
         );
 
         static::assertInstanceOf(CollectedClientData::class, $authenticatorAssertionResponse->getClientDataJSON());
