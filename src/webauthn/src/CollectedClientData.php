@@ -45,7 +45,7 @@ class CollectedClientData
     private $origin;
 
     /**
-     * @var null|array
+     * @var array|null
      */
     private $tokenBinding;
 
@@ -106,9 +106,6 @@ class CollectedClientData
         return array_key_exists($key, $this->data);
     }
 
-    /**
-     * @return mixed
-     */
     public function get(string $key)
     {
         if (!$this->has($key)) {

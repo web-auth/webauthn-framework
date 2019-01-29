@@ -14,15 +14,38 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use CBOR\Decoder;
+use CBOR\MapObject;
+use CBOR\StringStream;
+use Cose\Algorithm\Mac\Mac;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\Signature;
+use Cose\Algorithms;
+use Cose\Key\Key;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\Cose\Algorithms;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
+    /**
+     * @var Decoder
+     */
+    private $decoder;
+
+    /**
+     * @var Manager
+     */
+    private $algorithmManager;
+
+    public function __construct(Decoder $decoder, Manager $algorithmManager)
+    {
+        $this->decoder = $decoder;
+        $this->algorithmManager = $algorithmManager;
+    }
+
     public function name(): string
     {
         return 'packed';
@@ -128,6 +151,22 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithSelfAttestation(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        throw new \RuntimeException('Self attestation not supported');
+        $publicKey = $this->decoder->decode(new StringStream($authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()));
+        Assertion::isInstanceOf($publicKey, MapObject::class, 'The attestated credential data does not contain a valid public key.');
+        $publicKey = $publicKey->getNormalizedData();
+        Assertion::isArray($publicKey, 'The attestated credential data does not contain a valid public key.');
+        $publicKey = new Key($publicKey);
+        Assertion::eq($publicKey->alg(), \intval($attestationStatement->get('alg')), 'The algorithm of the attestation statement and the key are not identical.');
+
+        $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
+
+        $algorithm = $this->algorithmManager->get(\intval($attestationStatement->get('alg')));
+        switch (true) {
+            case $algorithm instanceof Signature:
+            case $algorithm instanceof Mac:
+                return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
+            default:
+                throw new \RuntimeException('Invalid algorithm');
+        }
     }
 }
