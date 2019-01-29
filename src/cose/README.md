@@ -5,7 +5,7 @@ COSE Support for PHP
 
 # Installation
 
-Install the library with Composer: `composer require web-auth/webauthn-lib`.
+Install the library with Composer: `composer require web-auth/cose-lib`.
 
 # Contribution
 
