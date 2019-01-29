@@ -46,7 +46,7 @@ final class CredentialRepository implements CredentialRepositoryInterface
             'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==' => 100,
         ];
         $this->userHandlers = [
-            'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==' => null,
+            'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==' => 'foo',
         ];
     }
 
@@ -64,7 +64,7 @@ final class CredentialRepository implements CredentialRepositoryInterface
         return $this->credentials[base64_encode($credentialId)];
     }
 
-    public function getUserHandleFor(string $credentialId): ?string
+    public function getUserHandleFor(string $credentialId): string
     {
         if (!$this->has($credentialId)) {
             throw new \InvalidArgumentException('Not found');

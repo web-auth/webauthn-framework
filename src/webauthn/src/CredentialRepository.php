@@ -19,7 +19,7 @@ interface CredentialRepository
 
     public function get(string $credentialId): AttestedCredentialData;
 
-    public function getUserHandleFor(string $credentialId): ?string;
+    public function getUserHandleFor(string $credentialId): string;
 
     public function getCounterFor(string $credentialId): int;
 
