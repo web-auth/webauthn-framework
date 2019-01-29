@@ -38,7 +38,6 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
 {
     /**
      * @test
-     * @group FOO
      */
     public function anAndroidSafetyNetAttestationCanBeVerified(): void
     {

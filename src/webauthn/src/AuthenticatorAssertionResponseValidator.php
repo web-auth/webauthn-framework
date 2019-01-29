@@ -51,7 +51,7 @@ class AuthenticatorAssertionResponseValidator
     }
 
     /**
-     * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
+     * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request): void
     {
