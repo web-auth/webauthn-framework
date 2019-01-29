@@ -55,6 +55,7 @@ class AssertionTest extends Fido2TestCase
 
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(true);
+        $credentialRepository->getUserHandleFor(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn('foo');
         $credentialRepository->get(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(
             new AttestedCredentialData(
                 \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
@@ -71,7 +72,8 @@ class AssertionTest extends Fido2TestCase
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal()
+            $request->reveal(),
+            'foo'
         );
     }
 
@@ -100,6 +102,7 @@ class AssertionTest extends Fido2TestCase
 
         $credentialRepository = $this->prophesize(CredentialRepository::class);
         $credentialRepository->has(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(true);
+        $credentialRepository->getUserHandleFor(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn('foo');
         $credentialRepository->get(\Safe\base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(
             new AttestedCredentialData(
                 \Safe\base64_decode('+KAR84wKTRWABhcRH57cfQ==', true),
@@ -119,7 +122,58 @@ class AssertionTest extends Fido2TestCase
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal()
+            $request->reveal(),
+            'foo'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function anAssertionWithUserHandleCanBeVerified(): void
+    {
+        $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
+            \Safe\base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true),
+            60000,
+            'spomky-webauthn.herokuapp.com',
+            [
+                new PublicKeyCredentialDescriptor(
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    \Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true)
+                ),
+            ],
+            PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            new AuthenticationExtensionsClientInputs()
+        );
+
+        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{"id":"ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj_uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty_LiInWWJlov","type":"public-key","rawId":"ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov","response":{"authenticatorData":"tIXbbgSILsWHHbR0Fjkl96X4ROZYLvVtOopBWCQoAqpFXFBJyQAAAAAAAAAAAAAAAAAAAAAATgA6mHxVl4rHDgjjwnfTi4gbUhoZXrTTypUjhC0tDbsI/7gs3/bN7ay1CvaHJDvMWvIwQGHSosS2WDgHs8tBSYldW50wrcvy4iJ1liZaL6UBAgMmIAEhWCAIpUDJSoLScguLRDKBEc32v682i6RPjy6SFZnFTBj2QSJYIG8DS0CpphjyFyZB9xyCTrKDsr/S5iX5hhidWLRdP/7B","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJ3S2xXN1MzRUVOSGxjRjJOZ1loZFVKZlJKZUN2QXZsYmstTWxsdnhvMEhBIiwib3JpZ2luIjoiaHR0cHM6Ly9zcG9ta3ktd2ViYXV0aG4uaGVyb2t1YXBwLmNvbSIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ==","signature":"MEQCIBnVPX8inAXIxXAsMdF6nW6nZJa36G1O+G9JXiauenxBAiBU4MQoRWxiXGn0TcKTkRJafZ58KLqeCJiB2VFAplwPJA==","userHandle":"YWJmYzhmZGYtMDdmNi00NWE5LWFiZWMtZmExOTIyNzViMjc2"}}');
+
+        static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
+
+        $credentialRepository = $this->prophesize(CredentialRepository::class);
+        $credentialRepository->has(\Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(true);
+        $credentialRepository->getUserHandleFor(\Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn('abfc8fdf-07f6-45a9-abec-fa192275b276');
+        $credentialRepository->get(\Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(
+            new AttestedCredentialData(
+                \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+                \Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
+                \Safe\base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
+            )
+        );
+        $credentialRepository->getCounterFor(\Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(100);
+        $credentialRepository->updateCounterFor(\Safe\base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true), Argument::any())->shouldBeCalled();
+
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
+
+        $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
+            $publicKeyCredential->getRawId(),
+            $publicKeyCredential->getResponse(),
+            $publicKeyCredentialRequestOptions,
+            $request->reveal(),
+            null
         );
     }
 }

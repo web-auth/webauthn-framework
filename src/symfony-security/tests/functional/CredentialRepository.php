@@ -28,6 +28,11 @@ final class CredentialRepository implements CredentialRepositoryInterface
      */
     private $counters;
 
+    /**
+     * @var array
+     */
+    private $userHandlers;
+
     public function __construct()
     {
         $this->credentials = [
@@ -39,6 +44,9 @@ final class CredentialRepository implements CredentialRepositoryInterface
         ];
         $this->counters = [
             'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==' => 100,
+        ];
+        $this->userHandlers = [
+            'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==' => null,
         ];
     }
 
@@ -54,6 +62,15 @@ final class CredentialRepository implements CredentialRepositoryInterface
         }
 
         return $this->credentials[base64_encode($credentialId)];
+    }
+
+    public function getUserHandleFor(string $credentialId): ?string
+    {
+        if (!$this->has($credentialId)) {
+            throw new \InvalidArgumentException('Not found');
+        }
+
+        return array_key_exists(base64_encode($credentialId), $this->userHandlers) ? $this->userHandlers[base64_encode($credentialId)]: null;
     }
 
     public function getCounterFor(string $credentialId): int
