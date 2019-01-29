@@ -16,6 +16,7 @@
     ],
     "autoload": {
         "psr-4": {
+            "Cose\\": "src/cose/src/",
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
@@ -24,6 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Cose\\Tests\\Unit\\": "src/cose/tests/functional/",
             "U2F\\Tests\\Functional\\": "src/u2f/tests/functional/",
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
@@ -51,6 +53,7 @@
         "thecodingmachine/safe": "^0.1"
     },
     "replace": {
+        "web-authn/cose-lib": "self.version",
         "web-authn/u2f-lib": "self.version",
         "web-authn/webauthn-lib": "self.version",
         "web-authn/webauthn-symfony-bundle": "self.version",

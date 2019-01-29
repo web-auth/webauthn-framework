@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Cose\Algorithm\Algorithm;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -23,6 +24,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\CredentialRepository;
@@ -63,9 +65,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(AttestationStatementSupportCompilerPass::TAG);
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
+        $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
+        $loader->load('cose.php');
     }
 
     /**

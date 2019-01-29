@@ -22,7 +22,7 @@ class ExtensionOutputError extends \Exception
      */
     private $authenticationExtension;
 
-    public function __construct(AuthenticationExtension $authenticationExtension, string $message = "", int $code = 0, Throwable $previous = null)
+    public function __construct(AuthenticationExtension $authenticationExtension, string $message = '', int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->authenticationExtension = $authenticationExtension;

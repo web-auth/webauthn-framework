@@ -25,9 +25,6 @@ class AuthenticationExtension implements \JsonSerializable
      */
     private $value;
 
-    /**
-     * @param mixed $value
-     */
     public function __construct(string $name, $value)
     {
         $this->name = $name;
@@ -39,17 +36,11 @@ class AuthenticationExtension implements \JsonSerializable
         return $this->name;
     }
 
-    /**
-     * @return mixed
-     */
     public function value()
     {
         return $this->value;
     }
 
-    /**
-     * @return mixed
-     */
     public function jsonSerialize()
     {
         return $this->value;

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;

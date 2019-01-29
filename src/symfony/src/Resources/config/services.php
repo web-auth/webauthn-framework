@@ -11,15 +11,17 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
+use CBOR\Decoder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Webauthn\AttestationStatement;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\TokenBinding;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -49,7 +51,11 @@ return function (ContainerConfigurator $container) {
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
     $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
-    $container->set(AttestationStatement\PackedAttestationStatementSupport::class);
+    $container->set(AttestationStatement\PackedAttestationStatementSupport::class)
+        ->args([
+            ref(Decoder::class),
+            ref('webauthn.cose.algorithm.manager'),
+        ]);
 
     $container->set(TokenBinding\IgnoreTokenBindingHandler::class);
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);

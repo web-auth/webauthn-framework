@@ -16,6 +16,15 @@ namespace Webauthn\Tests\Functional;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\ECDSA\ES384;
+use Cose\Algorithm\Signature\ECDSA\ES512;
+use Cose\Algorithm\Signature\EdDSA\EdDSA;
+use Cose\Algorithm\Signature\RSA\RS1;
+use Cose\Algorithm\Signature\RSA\RS256;
+use Cose\Algorithm\Signature\RSA\RS384;
+use Cose\Algorithm\Signature\RSA\RS512;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -121,10 +130,35 @@ abstract class Fido2TestCase extends TestCase
             $this->attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
                 $this->getDecoder()
             ));
-            $this->attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
+            $this->attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
+                $this->getDecoder(),
+                $this->getAlgorithmManager()
+            ));
         }
 
         return $this->attestationStatementSupportManager;
+    }
+
+    /**
+     * @var AttestationObjectLoader|null
+     */
+    private $algorithmManager;
+
+    private function getAlgorithmManager(): Manager
+    {
+        if (!$this->algorithmManager) {
+            $this->algorithmManager = new Manager();
+            $this->algorithmManager->add(new ES256());
+            $this->algorithmManager->add(new ES384());
+            $this->algorithmManager->add(new ES512());
+            $this->algorithmManager->add(new RS1());
+            $this->algorithmManager->add(new RS256());
+            $this->algorithmManager->add(new RS384());
+            $this->algorithmManager->add(new RS512());
+            $this->algorithmManager->add(new EdDSA());
+        }
+
+        return $this->algorithmManager;
     }
 
     /**
