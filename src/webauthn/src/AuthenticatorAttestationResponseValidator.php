@@ -109,9 +109,9 @@ class AuthenticatorAttestationResponseValidator
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
         Assertion::true($attestationStatementSupport->isValid($getClientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
-        /** @see 7.1.15 */
-        /** @see 7.1.16 */
-        /** @see 7.1.17 */
+        /* @see 7.1.15 */
+        /* @see 7.1.16 */
+        /* @see 7.1.17 */
         Assertion::true($attestationObject->getAuthData()->hasAttestedCredentialData(), 'There is no attested credential data.');
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
