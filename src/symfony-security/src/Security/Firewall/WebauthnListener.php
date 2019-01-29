@@ -42,7 +42,6 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
-use Webauthn\SecurityBundle\Security\WebauthnUtils;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -364,7 +363,8 @@ class WebauthnListener implements ListenerInterface
             $publicKeyCredential->getRawId(),
             $response,
             $PublicKeyCredentialRequestOptions,
-            $psr7Request
+            $psr7Request,
+            $token->getUser()->getUserHandle()
         );
 
         $newToken = new WebauthnToken(

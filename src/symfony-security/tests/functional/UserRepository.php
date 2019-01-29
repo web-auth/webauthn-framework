@@ -26,7 +26,7 @@ final class UserRepository
     public function __construct()
     {
         $this->users = [
-            'admin' => new User('admin', ['ROLE_ADMIN', 'ROLE_USER'], [new PublicKeyCredentialDescriptor(
+            'admin' => new User('uuid', 'admin', ['ROLE_ADMIN', 'ROLE_USER'], [new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true)
             )]),
