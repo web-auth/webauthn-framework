@@ -79,4 +79,34 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $data->getAuthenticatorSelection());
         static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', \Safe\json_encode($data));
     }
+
+    /**
+     * @test
+     */
+    public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
+    {
+      $rp = $this->prophesize(PublicKeyCredentialRpEntity::class);
+      $rp->jsonSerialize()->willReturn(['name' => 'RP']);
+      $user = $this->prophesize(PublicKeyCredentialUserEntity::class);
+      $user->jsonSerialize()->willReturn(['name' => 'USER', 'id' => 'aWQ=', 'displayName' => 'FOO BAR']);
+
+      $credentialParameters = new PublicKeyCredentialParameters('type', -100);
+
+      $options = new PublicKeyCredentialCreationOptions(
+          $rp->reveal(),
+          $user->reveal(),
+          'challenge',
+          [$credentialParameters],
+          1000,
+          [],
+          new AuthenticatorSelectionCriteria(),
+          'attestation',
+          new AuthenticationExtensionsClientInputs()
+      );
+
+      $json = \Safe\json_encode($options);
+      static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}', $json);
+      $data = PublicKeyCredentialCreationOptions::createFromJson(\Safe\json_decode($json, true));
+      static::assertEquals([], $data->getExcludeCredentials());
+    }
 }
