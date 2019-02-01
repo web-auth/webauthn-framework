@@ -36,7 +36,7 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
             return;
         }
 
-        unset($this->publicKeyCredentialDescriptors['id']);
+        unset($this->publicKeyCredentialDescriptors[$id]);
     }
 
     public function getIterator(): \Iterator
