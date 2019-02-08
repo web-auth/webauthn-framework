@@ -22,8 +22,9 @@ before_install:
 install: travis_retry composer install
 
 script:
-    - ./vendor/bin/phpunit --group=unit
-    - ./vendor/bin/phpunit --group=functional
+    - ./vendor/bin/phpunit -c phpunit.xml.dist
+    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
+    - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist
 
 jobs:
     allow_failures:
