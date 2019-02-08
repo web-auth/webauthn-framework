@@ -76,8 +76,8 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
     private function processWithPreWebauthnToken(PreWebauthnToken $token): PreWebauthnToken
     {
         $username = $token->getUsername();
-        if (!\is_string($username) || '' === $username) {
-            throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
+        if ('' === $username) {
+            throw new AuthenticationServiceException('Invalid username.');
         }
 
         $user = $this->retrieveUser($username, $token);
@@ -121,9 +121,6 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
 
         try {
             $user = $this->userProvider->loadUserByUsername($username);
-            if (!$user instanceof UserInterface) {
-                throw new UsernameNotFoundException('The user provider must return a UserInterface object.');
-            }
 
             return $user;
         } catch (UsernameNotFoundException $e) {

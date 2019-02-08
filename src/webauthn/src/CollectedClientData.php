@@ -106,6 +106,9 @@ class CollectedClientData
         return array_key_exists($key, $this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function get(string $key)
     {
         if (!$this->has($key)) {

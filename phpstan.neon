@@ -1,8 +1,12 @@
 parameters:
     level: 7
+    paths:
+        - src
     excludes_analyse:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
+    ignoreErrors:
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::addDefaultsIfNotSet\(\)#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

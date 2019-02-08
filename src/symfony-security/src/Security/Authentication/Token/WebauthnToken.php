@@ -160,7 +160,7 @@ class WebauthnToken extends AbstractToken
             $extensions,
             $this->providerKey,
             $parentStr
-        ) = unserialize($serialized);
+        ) = unserialize($serialized, self::class);
         $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
         $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
 

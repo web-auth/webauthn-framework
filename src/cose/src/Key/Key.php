@@ -34,6 +34,9 @@ class Key
         $this->data = $data;
     }
 
+    /**
+     * @return int|string
+     */
     public function type()
     {
         return $this->data[self::TYPE];
@@ -41,7 +44,7 @@ class Key
 
     public function alg(): int
     {
-        return \intval($this->get(self::ALG));
+        return (int) $this->get(self::ALG);
     }
 
     public function getData(): array
@@ -49,11 +52,14 @@ class Key
         return $this->data;
     }
 
-    public function has(int $key)
+    public function has(int $key): bool
     {
         return array_key_exists($key, $this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function get(int $key)
     {
         Assertion::keyExists($this->data, $key, \Safe\sprintf('The key has no data at index %d', $key));
