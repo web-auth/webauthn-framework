@@ -45,10 +45,13 @@ class Asn1
         $len = \mb_strlen($bytes, '8bit');
 
         // Remove leading zero bytes
-        for ($i = 0; $i < ($len - 1); ++$i) {
+        $i = 0;
+        while ($i < ($len - 1)) {
+
             if (0 !== \ord($bytes[$i])) {
                 break;
             }
+            ++$i;
         }
         if (0 !== $i) {
             $bytes = \mb_substr($bytes, $i);

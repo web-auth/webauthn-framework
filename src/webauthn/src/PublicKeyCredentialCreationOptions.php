@@ -152,8 +152,10 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
             $pubKeyCredParams[] = PublicKeyCredentialParameters::createFromJson($pubKeyCredParam);
         }
         $excludeCredentials = [];
-        foreach ($json['excludeCredentials'] as $excludeCredential) {
-            $excludeCredentials[] = PublicKeyCredentialDescriptor::createFromJson($excludeCredential);
+        if(isset($json['excludeCredentials'])) {
+          foreach ($json['excludeCredentials'] as $excludeCredential) {
+              $excludeCredentials[] = PublicKeyCredentialDescriptor::createFromJson($excludeCredential);
+          }
         }
 
         return new self(
