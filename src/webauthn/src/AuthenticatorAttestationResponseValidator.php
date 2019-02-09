@@ -71,7 +71,9 @@ class AuthenticatorAttestationResponseValidator
         Assertion::notNull($rpId, 'No rpId.');
 
         $parsedRelyingPartyId = parse_url($C->getOrigin());
-        Assertion::true(array_key_exists('host', $parsedRelyingPartyId) && \is_string($parsedRelyingPartyId['host']), 'Invalid origin rpId.');
+        Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
+        Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
+        Assertion::string($parsedRelyingPartyId['host'], 'Invalid origin rpId.');
         Assertion::false($parsedRelyingPartyId['host'] !== $rpId, 'rpId mismatch.');
 
         /* @see 7.1.6 */

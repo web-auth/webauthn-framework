@@ -1,39 +1,58 @@
+sudo: false
 language: php
 
-sudo: required
+php:
+    - 7.1
+    - 7.2
+    - 7.3
+    - nightly
 
 cache:
     directories:
-        - "$HOME/.composer/cache"
-        - "vendor"
-
-matrix:
-    allow_failures:
-        - php: nightly
-    fast_finish: true
-    include:
-        - php: 7.1
-          env: deps=low
-        - php: 7.1
-        - php: 7.2
-        - php: 7.3
-        - php: nightly
+        - $HOME/.composer/cache
+        - vendor
 
 before_script:
-    - composer self-update
     - mkdir -p build/logs
     - mkdir -p build/cov
-    - if [[ $deps = low ]]; then composer update --no-interaction --prefer-lowest ; fi
-    - if [[ !$deps ]]; then composer install --no-interaction ; fi
+
+before_install:
+    - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
+
+install: travis_retry composer install
 
 script:
-    - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
-    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
-    - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist --coverage-php build/cov/coverage-symfony-security.cov
+    - ./vendor/bin/phpunit -c phpunit.xml.dist
+    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
+    - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist
 
-after_success:
-    - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
-    - ./vendor/bin/php-coveralls --no-interaction
+jobs:
+    allow_failures:
+        - php: nightly
 
-after:
-    - ./vendor/bin/phpstan analyze --level max -c phpstan.neon src
+    include:
+        - stage: Metrics and quality
+          env: COVERAGE
+          before_script:
+              - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+              - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
+          script:
+              - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
+              - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
+              - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist --coverage-php build/cov/coverage-symfony-security.cov
+          after_script:
+              - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
+              - ./vendor/bin/php-coveralls --no-interaction
+
+        - stage: Metrics and quality
+          env: STATIC_ANALYSIS
+          script:
+              - ./vendor/bin/phpstan analyse
+
+        - stage: Security Check
+          env: SECURITY_CHECK
+          before_script:
+              - wget -c https://get.sensiolabs.org/security-checker.phar
+              - chmod +x security-checker.phar
+          script:
+              - ./security-checker.phar security:check
