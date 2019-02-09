@@ -36,7 +36,8 @@
         }
     },
     "suggest": {
-        "web-auth/webauthn-symfony-bundle": "For firewall features"
+        "web-auth/webauthn-symfony-security-bundle": "For firewall features",
+        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)"
     },
     "extra": {
         "branch-alias": {

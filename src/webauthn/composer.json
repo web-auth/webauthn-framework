@@ -39,6 +39,9 @@
             "Webauthn\\Tests\\Unit\\": "tests/unit/"
         }
     },
+    "suggest": {
+        "php-http/httplug": "For Android SafetyNet support (highly recommended)"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"

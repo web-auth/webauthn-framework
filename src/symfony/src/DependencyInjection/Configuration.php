@@ -55,7 +55,7 @@ final class Configuration implements ConfigurationInterface
                     ->info('This handler will check the token binding header from the request')
                 ->end()
                 ->arrayNode('android_safetynet')
-                    ->isRequired()
+                    ->canBeEnabled()
                     ->children()
                         ->scalarNode('http_client')
                             ->isRequired()

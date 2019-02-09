@@ -54,6 +54,7 @@ webauthn_security:
 webauthn:
     credential_repository: 'Webauthn\SecurityBundle\Tests\Functional\CredentialRepository'
     android_safetynet:
+        enabled: true
         api_key: 'api_key'
         http_client: 'httplug.client.mock'
 
