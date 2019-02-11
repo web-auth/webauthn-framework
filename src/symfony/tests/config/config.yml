@@ -13,11 +13,27 @@ services:
     _defaults:
         public: true
 
+    httplug.client.mock:
+        class: 'Http\Mock\Client'
+
+    httplug.client.default: '@httplug.client.mock'
+
     Webauthn\Bundle\Tests\Functional\CredentialRepository:
         autowire: true
 
+httplug:
+    profiling: false
+    discovery:
+        client: false
+        async_client: false
+
+
 webauthn:
     credential_repository: 'Webauthn\Bundle\Tests\Functional\CredentialRepository'
+    android_safetynet:
+        enabled: true
+        api_key: 'api_key'
+        http_client: 'httplug.client.mock'
     creation_profiles:
         foo:
             public_key_credential_parameters:

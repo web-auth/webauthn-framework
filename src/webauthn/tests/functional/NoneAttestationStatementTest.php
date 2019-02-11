@@ -28,7 +28,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * @group functional
  * @group Fido2
  */
-class NoneAttestationStatementTest extends Fido2TestCase
+class NoneAttestationStatementTest extends AbstractTestCase
 {
     /**
      * @test

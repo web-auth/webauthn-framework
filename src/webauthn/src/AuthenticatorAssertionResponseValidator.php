@@ -51,7 +51,7 @@ class AuthenticatorAssertionResponseValidator
     }
 
     /**
-     * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
+     * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): void
     {
@@ -69,7 +69,7 @@ class AuthenticatorAssertionResponseValidator
         $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
 
         /* @see 7.2.2 User Handle*/
-        if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
+        if (null !== $userHandle) { //If the user was identified before the authentication ceremony was initiated,
             Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
             if ($responseUserHandle) {
                 Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');

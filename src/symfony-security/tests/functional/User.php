@@ -21,6 +21,11 @@ final class User implements UserInterface, CanHaveRegisteredSecurityDevices
     /**
      * @var string
      */
+    private $id;
+
+    /**
+     * @var string
+     */
     private $username;
 
     /**
@@ -33,8 +38,9 @@ final class User implements UserInterface, CanHaveRegisteredSecurityDevices
      */
     private $registered_devices;
 
-    public function __construct(string $username, array $roles, array $registered_devices)
+    public function __construct(string $id, string $username, array $roles, array $registered_devices)
     {
+        $this->id = $id;
         $this->username = $username;
         $this->roles = $roles;
         $this->registered_devices = $registered_devices;
@@ -43,6 +49,11 @@ final class User implements UserInterface, CanHaveRegisteredSecurityDevices
     public function getSecurityDeviceCredentialIds(): iterable
     {
         yield from $this->registered_devices;
+    }
+
+    public function getUserHandle(): string
+    {
+        return $this->id;
     }
 
     public function getRoles(): array

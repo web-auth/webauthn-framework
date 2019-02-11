@@ -42,7 +42,6 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
-use Webauthn\SecurityBundle\Security\WebauthnUtils;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -360,12 +359,27 @@ class WebauthnListener implements ListenerInterface
 
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
-        $this->authenticatorAssertionResponseValidator->check(
-            $publicKeyCredential->getRawId(),
-            $response,
-            $PublicKeyCredentialRequestOptions,
-            $psr7Request
-        );
+        try {
+            $this->authenticatorAssertionResponseValidator->check(
+                $publicKeyCredential->getRawId(),
+                $response,
+                $PublicKeyCredentialRequestOptions,
+                $psr7Request,
+                $token->getUser()->getUserHandle()
+            );
+        } catch (\Throwable $throwable) {
+            if (null !== $this->logger) {
+                $this->logger->error(\Safe\sprintf(
+                    'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
+                    $assertion,
+                    json_encode($PublicKeyCredentialRequestOptions),
+                    $throwable->getMessage(),
+                    $throwable->getFile(),
+                    $throwable->getLine()
+                ));
+            }
+            throw new AuthenticationException('Invalid assertion', 0, $throwable);
+        }
 
         $newToken = new WebauthnToken(
             $token->getUsername(),

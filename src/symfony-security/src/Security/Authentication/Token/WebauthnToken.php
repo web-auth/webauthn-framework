@@ -52,7 +52,7 @@ class WebauthnToken extends AbstractToken
     private $signCount;
 
     /**
-     * @var AuthenticationExtensionsClientOutputs
+     * @var AuthenticationExtensionsClientOutputs|null
      */
     private $extensions;
 
@@ -66,7 +66,7 @@ class WebauthnToken extends AbstractToken
      */
     private $reservedForFutureUse2;
 
-    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
+    public function __construct(string $username, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -118,7 +118,7 @@ class WebauthnToken extends AbstractToken
         return $this->signCount;
     }
 
-    public function isExtensions(): AuthenticationExtensionsClientOutputs
+    public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {
         return $this->extensions;
     }
@@ -160,15 +160,18 @@ class WebauthnToken extends AbstractToken
             $extensions,
             $this->providerKey,
             $parentStr
-        ) = unserialize($serialized);
+            ) = unserialize($serialized);
         $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
         $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
 
         $data = \Safe\json_decode($publicKeyCredentialDescriptor, true);
         $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromJson($data);
 
-        $data = \Safe\json_decode($extensions, true);
-        $this->extensions = AuthenticationExtensionsClientOutputs::createFromJson($data);
+        $this->extensions = null;
+        if (null !== $extensions) {
+            $data = \Safe\json_decode($extensions, true);
+            $this->extensions = AuthenticationExtensionsClientOutputs::createFromJson($data);
+        }
 
         parent::unserialize($parentStr);
     }

@@ -23,7 +23,6 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 
@@ -76,8 +75,8 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
     private function processWithPreWebauthnToken(PreWebauthnToken $token): PreWebauthnToken
     {
         $username = $token->getUsername();
-        if (!\is_string($username) || '' === $username) {
-            throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
+        if ('' === $username) {
+            throw new AuthenticationServiceException('Invalid username.');
         }
 
         $user = $this->retrieveUser($username, $token);
@@ -88,9 +87,6 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
         $credentialIds = [];
         foreach ($user->getSecurityDeviceCredentialIds() as $descriptor) {
             $credentialIds[] = $descriptor->getId();
-        }
-        if (0 === count($credentialIds)) {
-            throw new AuthenticationServiceException('The user did not registered any security devices');
         }
 
         try {
@@ -121,9 +117,6 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
 
         try {
             $user = $this->userProvider->loadUserByUsername($username);
-            if (!$user instanceof UserInterface) {
-                throw new UsernameNotFoundException('The user provider must return a UserInterface object.');
-            }
 
             return $user;
         } catch (UsernameNotFoundException $e) {

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Http\HttplugBundle\HttplugBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -37,6 +38,7 @@ final class AppKernel extends Kernel
         return [
             new FrameworkBundle(),
             new SpomkyLabsCborBundle(),
+            new HttplugBundle(),
 
             new WebauthnBundle(),
         ];

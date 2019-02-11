@@ -35,7 +35,6 @@ class SecuredAreaTest extends WebTestCase
 
     /**
      * @test
-     * @group foo
      */
     public function aUserCanSetHisUsernameToTheLoginPage(): void
     {

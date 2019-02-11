@@ -119,6 +119,6 @@ class AuthenticatorData
 
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {
-        return $this->extensions && $this->hasExtensions() ? $this->extensions : null;
+        return null !== $this->extensions && $this->hasExtensions() ? $this->extensions : null;
     }
 }

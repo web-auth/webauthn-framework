@@ -17,11 +17,15 @@ use Assert\Assertion;
 
 class Manager
 {
+    /**
+     * @var Algorithm[]
+     */
     private $algorithms = [];
 
     public function add(Algorithm $algorithm): void
     {
-        $this->algorithms[$algorithm->identifier()] = $algorithm;
+        $identifier = $algorithm->identifier();
+        $this->algorithms[$identifier] = $algorithm;
     }
 
     public function getAlgorithms(): iterable

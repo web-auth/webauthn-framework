@@ -32,7 +32,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * @group functional
  * @group Fido2
  */
-class AttestationStatementWithTokenBindingTest extends Fido2TestCase
+class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 {
     /**
      * @test

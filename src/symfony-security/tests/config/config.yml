@@ -29,6 +29,20 @@ services:
 
     Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory: ~
 
+    httplug.client.mock:
+        class: 'Http\Mock\Client'
+
+    httplug.client.default: '@httplug.client.mock'
+
+    Webauthn\Bundle\Tests\Functional\CredentialRepository:
+        autowire: true
+
+httplug:
+    profiling: false
+    discovery:
+        client: false
+        async_client: false
+
 twig:
     strict_variables: true
     paths:
@@ -39,6 +53,10 @@ webauthn_security:
 
 webauthn:
     credential_repository: 'Webauthn\SecurityBundle\Tests\Functional\CredentialRepository'
+    android_safetynet:
+        enabled: true
+        api_key: 'api_key'
+        http_client: 'httplug.client.mock'
 
 security:
     role_hierarchy:

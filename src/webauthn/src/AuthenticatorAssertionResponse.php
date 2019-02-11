@@ -56,6 +56,7 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         if (null === $this->userHandle || '' === $this->userHandle) {
             return $this->userHandle;
         }
+
         return \Safe\base64_decode($this->userHandle, true);
     }
 }
