@@ -6,7 +6,7 @@ Webauthn Framework
 
 [![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=master)](https://travis-ci.org/web-auth/webauthn-framework)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a/big.png)](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a)
+[![SymfonyInsight](https://insight.symfony.com/projects/d8864944-e653-4f43-b054-ed4615068b06/big.svg)](https://insight.symfony.com/projects/d8864944-e653-4f43-b054-ed4615068b06)
 
 [![Latest Stable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/stable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Total Downloads](https://poser.pugx.org/web-auth/webauthn-framework/downloads.png)](https://packagist.org/packages/web-auth/webauthn-framework)

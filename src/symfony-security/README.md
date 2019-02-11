@@ -1,11 +1,12 @@
-FIDO2/Webauthn Bundle for Symfony
-=================================
+FIDO2/Webauthn Security Bundle for Symfony
+==========================================
 
-**FIDO2/Webauthn Bundle for Symfony** is a **Symfony Bundle** that will help you to manage attestation or assertion requests and responses computed by security devices.
+**FIDO2/Webauthn Security Bundle for Symfony** is a **Symfony Bundle** that will provide a firewall based on Webauthn.
+Your users will be able to authenticate using their security devices.
 
 # Installation
 
-Install the library with Composer: `composer require web-auth/webauthn-symfony-bundle`.
+Install the library with Composer: `composer require web-auth/webauthn-symfony-security-bundle`.
 
 # Contribution
 
