@@ -47,7 +47,6 @@ class Asn1
         // Remove leading zero bytes
         $i = 0;
         while ($i < ($len - 1)) {
-
             if (0 !== \ord($bytes[$i])) {
                 break;
             }

@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
 final class CoseAlgorithmCompilerPass implements CompilerPassInterface
 {

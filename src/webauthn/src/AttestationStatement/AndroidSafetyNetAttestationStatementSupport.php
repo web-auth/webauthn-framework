@@ -14,9 +14,12 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use Http\Client\Exception;
 use Http\Client\HttpClient;
 use Http\Discovery\MessageFactoryDiscovery;
 use Jose\Component\Core\Converter\StandardConverter;
+use Jose\Component\Core\Util\JsonConverter;
+use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -69,6 +72,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::keyExists($jwsHeader, 'x5c', 'The response in the attestation statement must contain a "x5c" header.');
         Assertion::notEmpty($jwsHeader['x5c'], 'The "x5c" parameter in the attestation statement response must contain at least one certificate.');
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
+        $parsedCertificate = openssl_x509_parse(current($certificates));
+        Assertion::isArray($parsedCertificate, 'Invalid attestation object');
+        Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
+        Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
+        Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
 
         $attestation['attStmt']['jws'] = $jws;
 
@@ -81,22 +89,38 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        $uri = \Safe\sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
-        $requestBody = \Safe\sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-        $request = $this->messageFactory->createRequest('POST', $uri);
-        $request = $request->withHeader('content-type', 'application/json');
-        $request->getBody()->write($requestBody);
+        try {
+            /** @var JWS $jws */
+            $jws = $attestationStatement->get('jws');
+            $payload = JsonConverter::decode($jws->getPayload());
+            Assertion::isArray($payload, 'Invalid attestation object');
+            Assertion::keyExists($payload, 'nonce', 'Invalid attestation object');
+            Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object');
 
-        $response = $this->client->sendRequest($request);
-        if (!$this->isResponseSuccess($response)) {
+            Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object');
+            Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object');
+
+            $uri = \Safe\sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
+            $requestBody = \Safe\sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
+            $request = $this->messageFactory->createRequest('POST', $uri);
+            $request = $request->withHeader('content-type', 'application/json');
+            $request->getBody()->write($requestBody);
+
+            $response = $this->client->sendRequest($request);
+            if (!$this->isResponseSuccess($response)) {
+                return false;
+            }
+            $responseBody = $this->getResponseBody($response);
+            $responseBodyJson = \Safe\json_decode($responseBody, true);
+            Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
+            Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
+
+            return $responseBodyJson['isValidSignature'];
+        } catch (\Throwable $throwable) {
+            return false;
+        } catch (Exception $throwable) {
             return false;
         }
-        $responseBody = $this->getResponseBody($response);
-        $responseBodyJson = \Safe\json_decode($responseBody, true);
-        Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
-        Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
-
-        return $responseBodyJson['isValidSignature'];
     }
 
     private function getResponseBody(ResponseInterface $response): string
@@ -116,7 +140,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function isResponseSuccess(ResponseInterface $response): bool
     {
-        if ($response->getStatusCode() !== 200 || !$response->hasHeader('content-type')) {
+        if (200 !== $response->getStatusCode() || !$response->hasHeader('content-type')) {
             return false;
         }
 
@@ -132,7 +156,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private function convertCertificatesToPem(array $certificates): array
     {
         foreach ($certificates as $k => $v) {
-            $tmp = '-----BEGIN CERTIFICATE----'.PHP_EOL;
+            $tmp = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
             $tmp .= chunk_split($v, 64, PHP_EOL);
             $tmp .= '-----END CERTIFICATE-----'.PHP_EOL;
             $certificates[$k] = $tmp;

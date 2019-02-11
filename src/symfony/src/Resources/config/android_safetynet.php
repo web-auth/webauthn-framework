@@ -12,8 +12,8 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Webauthn\AttestationStatement;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use Webauthn\AttestationStatement;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
