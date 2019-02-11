@@ -22,7 +22,7 @@
         "symfony/config": "^4.2",
         "symfony/dependency-injection": "^4.2",
         "symfony/framework-bundle": "^4.2",
-        "web-auth/webauthn-lib": "^1.0",
+        "web-auth/webauthn-lib": "^1.1",
         "web-token/jwt-signature": "^1.3"
     },
     "autoload": {
@@ -41,7 +41,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "v1.0": "1.0.x-dev",
+            "v1.1": "1.1.x-dev"
         }
     }
 }

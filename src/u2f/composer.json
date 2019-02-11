@@ -31,13 +31,13 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "U2F\\Tests\\Functional\\": "tests/functional/",
             "U2F\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "v1.0": "1.0.x-dev",
+            "v1.1": "1.1.x-dev"
         }
     }
 }
