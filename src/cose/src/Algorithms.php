@@ -14,12 +14,65 @@ declare(strict_types=1);
 namespace Cose;
 
 use Assert\Assertion;
+use Cose\Algorithm\Algorithm;
+use Cose\Algorithm\Mac;
+use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\RSA;
 
+/**
+ * @see https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+ */
 abstract class Algorithms
 {
+    public const COSE_ALGORITHM_AES_CCM_64_128_256 = 33;
+    public const COSE_ALGORITHM_AES_CCM_64_128_128 = 32;
+    public const COSE_ALGORITHM_AES_CCM_16_128_256 = 31;
+    public const COSE_ALGORITHM_AES_CCM_16_128_128 = 30;
+    public const COSE_ALGORITHM_AES_MAC_256_128 = 26;
+    public const COSE_ALGORITHM_AES_MAC_128_128 = 25;
+    public const COSE_ALGORITHM_CHACHA20_POLY1305 = 24;
+    public const COSE_ALGORITHM_AES_MAC_256_64 = 15;
+    public const COSE_ALGORITHM_AES_MAC_128_64 = 14;
+    public const COSE_ALGORITHM_AES_CCM_64_64_256 = 13;
+    public const COSE_ALGORITHM_AES_CCM_64_64_128 = 12;
+    public const COSE_ALGORITHM_AES_CCM_16_64_256 = 11;
+    public const COSE_ALGORITHM_AES_CCM_16_64_128 = 10;
+    public const COSE_ALGORITHM_HS512 = 7;
+    public const COSE_ALGORITHM_HS384 = 6;
+    public const COSE_ALGORITHM_HS256 = 5;
+    public const COSE_ALGORITHM_HS256_64 = 4;
+    public const COSE_ALGORITHM_A256GCM = 3;
+    public const COSE_ALGORITHM_A192GCM = 2;
+    public const COSE_ALGORITHM_A128GCM = 1;
+    public const COSE_ALGORITHM_A128KW = -3;
+    public const COSE_ALGORITHM_A192KW = -4;
+    public const COSE_ALGORITHM_A256KW = -5;
+    public const COSE_ALGORITHM_DIRECT = -6;
     public const COSE_ALGORITHM_ES256 = -7;
+    public const COSE_ALGORITHM_EdDSA = -8;
+    public const COSE_ALGORITHM_DIRECT_HKDF_SHA_256 = -10;
+    public const COSE_ALGORITHM_DIRECT_HKDF_SHA_512 = -11;
+    public const COSE_ALGORITHM_DIRECT_HKDF_AES_128 = -12;
+    public const COSE_ALGORITHM_DIRECT_HKDF_AES_256 = -13;
+    public const COSE_ALGORITHM_ECDH_ES_HKDF_256 = -25;
+    public const COSE_ALGORITHM_ECDH_ES_HKDF_512 = -26;
+    public const COSE_ALGORITHM_ECDH_SS_HKDF_256 = -27;
+    public const COSE_ALGORITHM_ECDH_SS_HKDF_512 = -28;
+    public const COSE_ALGORITHM_ECDH_ES_A128KW = -29;
+    public const COSE_ALGORITHM_ECDH_ES_A192KW = -30;
+    public const COSE_ALGORITHM_ECDH_ES_A256KW = -31;
+    public const COSE_ALGORITHM_ECDH_SS_A128KW = -32;
+    public const COSE_ALGORITHM_ECDH_SS_A192KW = -33;
+    public const COSE_ALGORITHM_ECDH_SS_A256KW = -34;
     public const COSE_ALGORITHM_ES384 = -35;
     public const COSE_ALGORITHM_ES512 = -36;
+    public const COSE_ALGORITHM_PS256 = -37;
+    public const COSE_ALGORITHM_PS384 = -38;
+    public const COSE_ALGORITHM_PS512 = -39;
+    public const COSE_ALGORITHM_RSAES_OAEP = -40;
+    public const COSE_ALGORITHM_RSAES_OAEP_256 = -41;
+    public const COSE_ALGORITHM_RSAES_OAEP_512 = -42;
     public const COSE_ALGORITHM_RS256 = -257;
     public const COSE_ALGORITHM_RS384 = -258;
     public const COSE_ALGORITHM_RS512 = -259;
@@ -40,5 +93,35 @@ abstract class Algorithms
         Assertion::keyExists(self::COSE_ALGORITHM_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
 
         return self::COSE_ALGORITHM_MAP[$algorithmIdentifier];
+    }
+
+    public static function getAlgorithm(int $identifier): Algorithm
+    {
+        $algs = static::getAlgorithms();
+        Assertion::keyExists($algs, $identifier, 'The specified algorithm identifier is not supported');
+
+        return $algs[$identifier];
+    }
+
+    /**
+     * @return Algorithm[]
+     */
+    public static function getAlgorithms(): array
+    {
+        return [
+            Mac\HS256::identifier() => new Mac\HS256(),
+            Mac\HS384::identifier() => new Mac\HS384(),
+            Mac\HS512::identifier() => new Mac\HS512(),
+            RSA\RS256::identifier() => new RSA\RS256(),
+            RSA\RS384::identifier() => new RSA\RS384(),
+            RSA\RS512::identifier() => new RSA\RS512(),
+            RSA\PS256::identifier() => new RSA\PS256(),
+            RSA\PS384::identifier() => new RSA\PS384(),
+            RSA\PS512::identifier() => new RSA\PS512(),
+            ECDSA\ES256::identifier() => new ECDSA\ES256(),
+            ECDSA\ES384::identifier() => new ECDSA\ES384(),
+            ECDSA\ES512::identifier() => new ECDSA\ES512(),
+            EdDSA\EdDSA::identifier() => new EdDSA\EdDSA(),
+        ];
     }
 }

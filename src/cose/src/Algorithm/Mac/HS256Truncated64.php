@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Mac;
 
+use Cose\Algorithms;
+
 final class HS256Truncated64 extends Hmac
 {
     public static function identifier(): int
     {
-        return 4;
+        return Algorithms::COSE_ALGORITHM_HS256_64;
     }
 
     protected function getHashAlgorithm(): string
