@@ -135,7 +135,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $this->checkCertificate($certificates[0], $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
-        $coseAlgorithmIdentifier = \intval($attestationStatement->get('alg'));
+        $coseAlgorithmIdentifier = (int) $attestationStatement->get('alg');
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         // Verification of the signature
@@ -157,11 +157,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $publicKey = $publicKey->getNormalizedData();
         Assertion::isArray($publicKey, 'The attestated credential data does not contain a valid public key.');
         $publicKey = new Key($publicKey);
-        Assertion::eq($publicKey->alg(), \intval($attestationStatement->get('alg')), 'The algorithm of the attestation statement and the key are not identical.');
+        Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
 
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
 
-        $algorithm = $this->algorithmManager->get(\intval($attestationStatement->get('alg')));
+        $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         switch (true) {
             case $algorithm instanceof Signature:
             case $algorithm instanceof Mac:
