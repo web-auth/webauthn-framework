@@ -33,9 +33,6 @@ class SignatureRequest implements \JsonSerializable
      */
     private $registeredKeys = [];
 
-    /**
-     * @param RegisteredKey[] $registeredKeys
-     */
     public function __construct(string $applicationId, array $registeredKeys)
     {
         $this->applicationId = $applicationId;

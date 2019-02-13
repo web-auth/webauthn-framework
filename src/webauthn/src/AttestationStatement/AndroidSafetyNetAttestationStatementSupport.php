@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Http\Client\Exception;
 use Http\Client\HttpClient;
 use Http\Discovery\MessageFactoryDiscovery;
+use Http\Message\MessageFactory;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
@@ -32,10 +33,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      * @var string
      */
     private $apiKey;
+
     /**
-     * @var RequestFactoryInterface
+     * @var MessageFactory
      */
     private $messageFactory;
+
     /**
      * @var HttpClient
      */

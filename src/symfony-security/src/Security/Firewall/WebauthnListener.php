@@ -372,7 +372,7 @@ class WebauthnListener implements ListenerInterface
                 $this->logger->error(\Safe\sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
                     $assertion,
-                    json_encode($PublicKeyCredentialRequestOptions),
+                    \Safe\json_encode($PublicKeyCredentialRequestOptions),
                     $throwable->getMessage(),
                     $throwable->getFile(),
                     $throwable->getLine()

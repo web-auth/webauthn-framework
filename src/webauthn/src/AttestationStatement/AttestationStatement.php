@@ -92,6 +92,9 @@ class AttestationStatement
         return array_key_exists($key, $this->attStmt);
     }
 
+    /**
+     * @return mixed
+     */
     public function get(string $key)
     {
         Assertion::true($this->has($key), \Safe\sprintf('The attestation statement has no key "%s".', $key));
