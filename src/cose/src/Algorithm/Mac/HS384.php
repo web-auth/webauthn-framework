@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Mac;
 
+use Cose\Algorithms;
+
 final class HS384 extends Hmac
 {
     public static function identifier(): int
     {
-        return 6;
+        return Algorithms::COSE_ALGORITHM_HS384;
     }
 
     protected function getHashAlgorithm(): string

@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
+use Cose\Algorithms;
+
 final class RS512 extends RSA
 {
     public static function identifier(): int
     {
-        return -259;
+        return Algorithms::COSE_ALGORITHM_RS512;
     }
 
     protected function getHashAlgorithm(): int

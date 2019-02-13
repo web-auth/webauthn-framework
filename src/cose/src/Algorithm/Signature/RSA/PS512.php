@@ -11,24 +11,20 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Cose\Algorithm\Signature\ECDSA;
+namespace Cose\Algorithm\Signature\RSA;
 
 use Cose\Algorithms;
+use Jose\Component\Core\Util\Hash;
 
-final class ES512 extends ECDSA
+final class PS512 extends PSSRSA
 {
     public static function identifier(): int
     {
-        return Algorithms::COSE_ALGORITHM_ES512;
+        return Algorithms::COSE_ALGORITHM_PS512;
     }
 
-    protected function getHashAlgorithm(): int
+    protected function getHashAlgorithm(): Hash
     {
-        return OPENSSL_ALGO_SHA512;
-    }
-
-    protected function getCurve(): int
-    {
-        return 3;
+        return Hash::sha512();
     }
 }

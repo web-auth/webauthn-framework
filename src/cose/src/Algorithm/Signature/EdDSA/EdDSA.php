@@ -15,6 +15,7 @@ namespace Cose\Algorithm\Signature\EdDSA;
 
 use Assert\Assertion;
 use Cose\Algorithm\Signature\Signature;
+use Cose\Algorithms;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 
@@ -50,7 +51,7 @@ final class EdDSA implements Signature
 
     public static function identifier(): int
     {
-        return -8;
+        return Algorithms::COSE_ALGORITHM_EdDSA;
     }
 
     private function handleKey(Key $key): OkpKey
