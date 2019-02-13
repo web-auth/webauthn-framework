@@ -119,6 +119,42 @@ class RsaKey extends Key
         return $this->get(self::DATA_TI);
     }
 
+    public function hasPrimes(): bool
+    {
+        return $this->has(self::DATA_P) && $this->has(self::DATA_Q);
+    }
+
+    public function primes(): array
+    {
+        return [
+            $this->p(),
+            $this->q(),
+        ];
+    }
+
+    public function hasExponents(): bool
+    {
+        return $this->has(self::DATA_DP) && $this->has(self::DATA_DQ);
+    }
+
+    public function exponents(): array
+    {
+        return [
+            $this->dP(),
+            $this->dQ(),
+        ];
+    }
+
+    public function hasCoefficient(): bool
+    {
+        return $this->has(self::DATA_QI);
+    }
+
+    public function isPublic(): bool
+    {
+        return !$this->isPrivate();
+    }
+
     public function isPrivate(): bool
     {
         return array_key_exists(self::DATA_D, $this->getData());

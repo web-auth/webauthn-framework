@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\ECDSA;
 
+use Cose\Algorithms;
+
 final class ES384 extends ECDSA
 {
     public static function identifier(): int
     {
-        return -35;
+        return Algorithms::COSE_ALGORITHM_ES384;
     }
 
     protected function getHashAlgorithm(): int
