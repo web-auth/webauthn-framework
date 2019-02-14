@@ -24,7 +24,7 @@ class Manager
 
     public function add(Algorithm $algorithm): void
     {
-        $identifier = $algorithm->identifier();
+        $identifier = $algorithm::identifier();
         $this->algorithms[$identifier] = $algorithm;
     }
 
