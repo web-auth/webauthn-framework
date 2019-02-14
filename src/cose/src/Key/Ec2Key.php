@@ -54,7 +54,7 @@ class Ec2Key extends Key
         Assertion::keyExists($data, self::DATA_Y, 'Invalid EC2 key. The y coordinate is missing');
         Assertion::length($data[self::DATA_X], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for x coordinate', null, '8bit');
         Assertion::length($data[self::DATA_Y], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for y coordinate', null, '8bit');
-        Assertion::inArray((int)$data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
+        Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
     }
 
     public function x(): string

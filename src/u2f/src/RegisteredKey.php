@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace U2F;
 
+use Assert\Assertion;
 use Base64Url\Base64Url;
 
 class RegisteredKey implements \JsonSerializable
@@ -52,13 +53,15 @@ class RegisteredKey implements \JsonSerializable
     {
         try {
             $json = \Safe\json_decode($data, true, 512, $options);
-            extract($json);
+            foreach (['version', 'keyHandle', 'publicKey', 'attestationCertificate'] as $key) {
+                Assertion::keyExists($json, $key, \Safe\sprintf('The key "%s" is missing', $key));
+            }
 
             return new self(
-                $version,
-                new KeyHandler(Base64Url::decode($keyHandle)),
-                new PublicKey(Base64Url::decode($publicKey)),
-                $attestationCertificate
+                $json['version'],
+                new KeyHandler(Base64Url::decode($json['keyHandle'])),
+                new PublicKey(Base64Url::decode($json['publicKey'])),
+                $json['attestationCertificate']
             );
         } catch (\Throwable $e) {
             throw new \InvalidArgumentException('Invalid data', 0, $e);

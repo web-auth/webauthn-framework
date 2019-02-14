@@ -60,13 +60,15 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
+        $trustPath = $attestationStatement->getTrustPath();
+        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
         $dataToVerify .= $authenticatorData->getAttestedCredentialData()->getCredentialId();
         $dataToVerify .= $this->extractPublicKey($authenticatorData->getAttestedCredentialData()->getCredentialPublicKey());
 
-        return 1 === openssl_verify($dataToVerify, $attestationStatement->get('sig'), $attestationStatement->getTrustPath()->getCertificates()[0], OPENSSL_ALGO_SHA256);
+        return 1 === openssl_verify($dataToVerify, $attestationStatement->get('sig'), $trustPath->getCertificates()[0], OPENSSL_ALGO_SHA256);
     }
 
     private function extractPublicKey(?string $publicKey): string
