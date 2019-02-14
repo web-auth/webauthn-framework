@@ -11,6 +11,8 @@ parameters:
         - '#Call to function method_exists\(\) with Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder and (.*) will always evaluate to true\.#'
         - '#Parameter \#1 \$serialized \(string\) of method (.*)::unserialize\(\) should be contravariant with parameter \$serialized \(mixed\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\AbstractToken::unserialize\(\)#'
         - '#Offset (.*) does not exist on array\(\)|array\((.*)\)\.#'
+        - '#Instantiation of deprecated class Jose\\Component\\Core\\Converter\\StandardConverter\.#'
+        - '#Call to method find\(\) of deprecated class Http\\Discovery\\MessageFactoryDiscovery\.#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
