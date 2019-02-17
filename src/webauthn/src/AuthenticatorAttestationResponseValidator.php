@@ -46,7 +46,7 @@ class AuthenticatorAttestationResponseValidator
      */
     private $publicKeyCredentialSourceRepository;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
     {
         if (null === $credentialRepository && null === $publicKeyCredentialSourceRepository) {
             throw new \InvalidArgumentException('Either the Credential Repository or the Public Key Credential Source Repository has to be set');
