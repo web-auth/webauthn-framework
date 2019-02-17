@@ -39,6 +39,11 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         $this->manager = $manager;
     }
 
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->manager;
+    }
+
     public function save(PublicKeyCredentialSource $publicKeyCredentialSource, bool $flush = true): void
     {
         $this->manager->persist($publicKeyCredentialSource);
