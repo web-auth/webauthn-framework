@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
@@ -35,7 +37,8 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('webauthn_security');
-        $rootNode = $treeBuilder->root($this->alias);
+        /** @var ArrayNodeDefinition $rootNode */
+        $rootNode = $this->getRootNode($treeBuilder, $this->alias);
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -47,5 +50,14 @@ final class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    private function getRootNode(TreeBuilder $treeBuilder, string $name): NodeDefinition
+    {
+        if (!\method_exists($treeBuilder, 'getRootNode')) {
+            return $treeBuilder->root($name);
+        }
+
+        return $treeBuilder->getRootNode();
     }
 }

@@ -95,7 +95,6 @@ class WebauthnUtils
 
         $credentials = [];
         foreach ($user->getSecurityDeviceCredentialIds() as $publicKeyCredentialDescriptor) {
-            Assertion::isInstanceOf($publicKeyCredentialDescriptor, PublicKeyCredentialDescriptor::class, \Safe\sprintf('Invalid credential. Must be of type "Webauthn\PublicKeyCredentialDescriptor", got "%s".', \gettype($publicKeyCredentialDescriptor)));
             $credentials[] = $publicKeyCredentialDescriptor;
         }
 

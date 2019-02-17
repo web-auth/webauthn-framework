@@ -40,6 +40,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\PublicKeyCredentialLoader;
@@ -360,19 +361,22 @@ class WebauthnListener implements ListenerInterface
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
         try {
+            $user = $token->getUser();
+            Assertion::isInstanceOf($user, CanHaveRegisteredSecurityDevices::class, 'Invalid user class');
+
             $this->authenticatorAssertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
                 $PublicKeyCredentialRequestOptions,
                 $psr7Request,
-                $token->getUser()->getUserHandle()
+                $user->getUserHandle()
             );
         } catch (\Throwable $throwable) {
             if (null !== $this->logger) {
                 $this->logger->error(\Safe\sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
                     $assertion,
-                    json_encode($PublicKeyCredentialRequestOptions),
+                    \Safe\json_encode($PublicKeyCredentialRequestOptions),
                     $throwable->getMessage(),
                     $throwable->getFile(),
                     $throwable->getLine()
@@ -392,16 +396,17 @@ class WebauthnListener implements ListenerInterface
             $response->getAuthenticatorData()->getSignCount(),
             $response->getAuthenticatorData()->getExtensions(),
             $this->providerKey,
-            $this->getRoles($token->getUser(), $token)
+            $this->getRoles($token)
         );
         $newToken->setUser($token->getUser());
 
         return $newToken;
     }
 
-    private function getRoles(UserInterface $user, TokenInterface $token): array
+    private function getRoles(TokenInterface $token): array
     {
-        $roles = $user->getRoles();
+        $user = $token->getUser();
+        $roles = $user instanceof UserInterface ? $user->getRoles() : [];
 
         foreach ($token->getRoles() as $role) {
             if ($role instanceof SwitchUserRole) {

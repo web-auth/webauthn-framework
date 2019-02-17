@@ -4,23 +4,45 @@ Webauthn Framework
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/web-auth/webauthn-framework/badge.svg?branch=master)](https://coveralls.io/github/web-auth/webauthn-framework?branch=master)
 
-[![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=master)](https://travis-ci.org/web-auth/webauthn-framework)
+[![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=v1.1)](https://travis-ci.org/web-auth/webauthn-framework)
 
-[![SymfonyInsight](https://insight.symfony.com/projects/d8864944-e653-4f43-b054-ed4615068b06/big.svg)](https://insight.symfony.com/projects/d8864944-e653-4f43-b054-ed4615068b06)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a/big.png)](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a)
 
 [![Latest Stable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/stable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Total Downloads](https://poser.pugx.org/web-auth/webauthn-framework/downloads.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Latest Unstable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/unstable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![License](https://poser.pugx.org/web-auth/webauthn-framework/license.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 
+Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web applications, for the purpose of strongly authenticating users.
+
+This framework contains PHP libraries and Symfony bundle to allow developpers to integrate that authentication mechanism into their web applications.
+
+# Supported features
+
+- Attestation Types
+  - [x] basic attestation
+  - [x] self attestation
+  - [x] private CA attestation
+  - [ ] elliptic curve direct anonymous attestation (optional)
+- Attestation Formats
+  - [x] packed attestation
+  - [ ] TPM attestation
+  - [ ] Android key attestation (optional) 
+  - [x] FIDO U2F attestation
+  - [x] Android Safetynet attestation
+- Communication Channel Requirements
+  - [ ] TokenBinding support (optional)
+- Extensions
+  - [x] registration and authentication support without extension
+  - [x] extension support
+  - [ ] appid extension support (optional)
+- Cose Algorithms
+  - [x] RS1, RS256, RS384, RS512
+  - [x] PS256, PS384, PS512
+  - [x] ES256, ES384, ES512
+  - [x] EdDSA
+
 # Documentation
-
-## FIDO U2F Library
-
-FIDO U2F is an old protocol, but widely adopted by a lot of web services.
-It adds a very robust and easy to use second factor authentication method.
-
-The details for this lirary and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
 
 ## Webauthn Library
 
@@ -39,6 +61,19 @@ This framework provides two bundles:
 
 * **Webauthn Bundle**: this bundle uses the webauthn library to register services and attestation format supports. [The documentation can be found here](doc/symfony/index.md)
 * **Webauthn Security Bundle**: this bundle adds a new firewall based on webauthn. You will be able to authenticate your users with their username and FIDO2 compatbile devices. [The documentation can be found here](doc/symfony-security/index.md)
+
+## Other libraries
+
+### FIDO U2F
+
+FIDO U2F is an old protocol, but widely adopted by a lot of web services.
+It adds a very robust and easy to use second factor authentication method.
+
+The details for this lirary and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
+
+### Cose Key
+
+TO BE WRITTEN
 
 # Support
 

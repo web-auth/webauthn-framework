@@ -51,10 +51,10 @@ class CollectedClientData
 
     public function __construct(string $rawData, array $data)
     {
-        $validators = $this->dataValidators();
-        foreach ($validators as $parameter => $validator) {
-            $this->$parameter = $validator($data);
-        }
+        $this->type = $this->findData($data, 'type');
+        $this->challenge = $this->findData($data, 'challenge', true, true);
+        $this->origin = $this->findData($data, 'origin');
+        $this->tokenBinding = $this->findData($data, 'tokenBinding', false);
         $this->rawData = $rawData;
         $this->data = $data;
     }
@@ -119,37 +119,18 @@ class CollectedClientData
     }
 
     /**
-     * @return callable[]
+     * @return mixed
      */
-    private function dataValidators(): array
+    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)
     {
-        return [
-            'type' => $this->requiredData('type'),
-            'challenge' => $this->requiredData('challenge', true),
-            'origin' => $this->requiredData('origin'),
-            'tokenBinding' => $this->optionalData('tokenBinding'),
-        ];
-    }
-
-    private function requiredData(string $key, bool $isB64 = false): callable
-    {
-        return function ($json) use ($key, $isB64) {
-            if (!array_key_exists($key, $json)) {
+        if (!array_key_exists($key, $json)) {
+            if ($isRequired) {
                 throw new \InvalidArgumentException(\Safe\sprintf('The key "%s" is missing', $key));
             }
 
-            return $isB64 ? Base64Url::decode($json[$key]) : $json[$key];
-        };
-    }
+            return;
+        }
 
-    private function optionalData(string $key): callable
-    {
-        return function ($json) use ($key) {
-            if (!array_key_exists($key, $json)) {
-                return;
-            }
-
-            return $json[$key];
-        };
+        return $isB64 ? Base64Url::decode($json[$key]) : $json[$key];
     }
 }

@@ -71,7 +71,7 @@ class AuthenticatorAssertionResponseValidator
         /* @see 7.2.2 User Handle*/
         if (null !== $userHandle) { //If the user was identified before the authentication ceremony was initiated,
             Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
-            if ($responseUserHandle) {
+            if (null !== $responseUserHandle) {
                 Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
             }
         } else {
@@ -102,7 +102,7 @@ class AuthenticatorAssertionResponseValidator
         /** @see 7.2.9 */
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $parsedRelyingPartyId = parse_url($C->getOrigin());
-        Assertion::true(array_key_exists('host', $parsedRelyingPartyId) && \is_string($parsedRelyingPartyId['host']), 'Invalid origin rpId.');
+        Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
         Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */

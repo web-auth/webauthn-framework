@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle;
 
+use Assert\Assertion;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -35,8 +36,8 @@ final class WebauthnSecurityBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         if ($container->hasExtension('security')) {
-            /* @var SecurityExtension $extension */
             $extension = $container->getExtension('security');
+            Assertion::isInstanceOf($extension, SecurityExtension::class, 'The security extension is missing or invalid');
             $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
         }
     }
