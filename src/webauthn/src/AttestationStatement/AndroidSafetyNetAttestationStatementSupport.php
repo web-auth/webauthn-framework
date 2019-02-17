@@ -17,11 +17,11 @@ use Assert\Assertion;
 use Http\Client\Exception;
 use Http\Client\HttpClient;
 use Http\Discovery\MessageFactoryDiscovery;
+use Http\Message\MessageFactory;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -32,10 +32,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      * @var string
      */
     private $apiKey;
+
     /**
-     * @var RequestFactoryInterface
+     * @var MessageFactory
      */
     private $messageFactory;
+
     /**
      * @var HttpClient
      */
@@ -92,7 +94,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         try {
             /** @var JWS $jws */
             $jws = $attestationStatement->get('jws');
-            $payload = JsonConverter::decode($jws->getPayload());
+            $payload = $jws->getPayload();
+            Assertion::notNull($payload, 'Invalid attestation object');
+            $payload = JsonConverter::decode($payload);
             Assertion::isArray($payload, 'Invalid attestation object');
             Assertion::keyExists($payload, 'nonce', 'Invalid attestation object');
             Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object');

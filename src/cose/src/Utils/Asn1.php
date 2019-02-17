@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Cose\Utils;
 
+/**
+ * @deprecated This class will be removed in v2.0. Please use fgrosse/phpasn1 classes instead
+ */
 class Asn1
 {
     private static function length(int $len): string

@@ -48,15 +48,13 @@ class ClientData
         $this->rawData = Base64Url::decode($clientData);
         $clientData = \Safe\json_decode($this->rawData, true);
         Assertion::isArray($clientData, 'Invalid client data.');
-
-        $diff = array_diff_key(get_class_vars(self::class), $clientData);
-        unset($diff['rawData'], $diff['cid_pubkey']);
-
-        Assertion::noContent($diff, 'Invalid client data.');
-
-        foreach ($clientData as $k => $v) {
-            $this->$k = $v;
+        foreach (['typ', 'challenge', 'origin'] as $key) {
+            Assertion::keyExists($clientData, $key, 'Invalid client data.');
         }
+        $this->typ = $clientData['typ'];
+        $this->challenge = $clientData['challenge'];
+        $this->origin = $clientData['origin'];
+        $this->cid_pubkey = $clientData['cid_pubkey'] ?? 'unused';
     }
 
     public function getRawData(): string

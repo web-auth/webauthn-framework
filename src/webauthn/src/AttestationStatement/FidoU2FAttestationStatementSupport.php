@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Assert\Assert;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
@@ -46,10 +45,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assert::that($certificates)
-            ->isArray('The attestation statement value "x5c" must be a list with one certificate.')
-            ->count(1, 'The attestation statement value "x5c" must be a list with one certificate.')
-            ->all()->string('The attestation statement value "x5c" must be a list with one certificate.');
+        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
+        Assertion::count($certificates, 1, 'The attestation statement value "x5c" must be a list with one certificate.');
+        Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
 
         reset($certificates);
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
@@ -60,13 +58,15 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
+        $trustPath = $attestationStatement->getTrustPath();
+        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
         $dataToVerify .= $authenticatorData->getAttestedCredentialData()->getCredentialId();
         $dataToVerify .= $this->extractPublicKey($authenticatorData->getAttestedCredentialData()->getCredentialPublicKey());
 
-        return 1 === openssl_verify($dataToVerify, $attestationStatement->get('sig'), $attestationStatement->getTrustPath()->getCertificates()[0], OPENSSL_ALGO_SHA256);
+        return 1 === openssl_verify($dataToVerify, $attestationStatement->get('sig'), $trustPath->getCertificates()[0], OPENSSL_ALGO_SHA256);
     }
 
     private function extractPublicKey(?string $publicKey): string

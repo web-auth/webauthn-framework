@@ -42,9 +42,9 @@ class CertificateToolbox
         }
     }
 
-    public static function convertDERToPEM(string $publicKey): string
+    public static function convertDERToPEM(string $certificate): string
     {
-        $derCertificate = self::unusedBytesFix($publicKey);
+        $derCertificate = self::unusedBytesFix($certificate);
         $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
         $pemCert .= chunk_split(base64_encode($derCertificate), 64, PHP_EOL);
         $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
@@ -52,24 +52,24 @@ class CertificateToolbox
         return $pemCert;
     }
 
-    public static function convertAllDERToPEM(array $publicKeys): array
+    public static function convertAllDERToPEM(array $certificates): array
     {
         $certs = [];
-        foreach ($publicKeys as $publicKey) {
+        foreach ($certificates as $publicKey) {
             $certs[] = self::convertDERToPEM($publicKey);
         }
 
         return $certs;
     }
 
-    private static function unusedBytesFix(string $derCertificate): string
+    private static function unusedBytesFix(string $certificate): string
     {
-        $certificateHash = hash('sha256', $derCertificate);
+        $certificateHash = hash('sha256', $certificate);
         if (\in_array($certificateHash, self::getCertificateHashes(), true)) {
-            $derCertificate[mb_strlen($derCertificate, '8bit') - 257] = "\0";
+            $certificate[mb_strlen($certificate, '8bit') - 257] = "\0";
         }
 
-        return $derCertificate;
+        return $certificate;
     }
 
     /**
