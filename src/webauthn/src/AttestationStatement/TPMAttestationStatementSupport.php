@@ -197,8 +197,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        $certificates = $attestationStatement->getTrustPath()->getCertificates();
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        $trustPath = $attestationStatement->getTrustPath();
+        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+
+        $certificates = $trustPath->getCertificates();
+        Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);
