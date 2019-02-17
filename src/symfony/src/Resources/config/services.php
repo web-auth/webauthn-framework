@@ -51,6 +51,7 @@ return function (ContainerConfigurator $container) {
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
     $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
+    $container->set(AttestationStatement\AndroidKeyAttestationStatementSupport::class);
     $container->set(AttestationStatement\PackedAttestationStatementSupport::class)
         ->args([
             ref(Decoder::class),

@@ -45,7 +45,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($attestation, 'The attestation statement value "x5c" must be a list with one certificate.');
+        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
         Assertion::count($certificates, 1, 'The attestation statement value "x5c" must be a list with one certificate.');
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
 
