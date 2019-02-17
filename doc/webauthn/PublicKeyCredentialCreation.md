@@ -413,16 +413,20 @@ For the record, associated specifications are:
 
 ### Attestation Statement Support Manager
 
-At the moment, only 4 Attestation Statement types are supported:
+All 5 Attestation Statement types described in the specification are supported:
 
 * none
 * fido-u2f
 * packed
 * android key
+* android safety net
+* trusted platform module
 
 We highly recommend to use them all.
 
-You just have to instantiate the classes and add these to the dedicated manager (`Webauthn\AttestationStatement\AttestationStatementSupportManager` class).
+You have to instantiate the classes and add these to the dedicated manager (`Webauthn\AttestationStatement\AttestationStatementSupportManager` class).
+
+*/!\ Android SafetyNet Attestation Statement requires an HTTP Client (see http://docs.php-http.org/en/latest/) and an API key (see https://developer.android.com/training/safetynet/attestation).*
 
 ```php
 <?php
@@ -433,16 +437,20 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
+use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
 $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
+$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($httpClient, 'GOOGLE_SAFETYNET_API_KEY'));
 $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
+$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 
 // Cose Algorithm Manager
 $coseAlgorithmManager = new Manager();
@@ -689,10 +697,13 @@ use Cose\Algorithm\Signature\RSA;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
+use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -726,6 +737,9 @@ $tokenBindnigHandler = new TokenBindingNotSupportedHandler();
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
 $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
+$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($httpClient, 'GOOGLE_SAFETYNET_API_KEY'));
+$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
+$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 
 // Attestation Object Loader

@@ -80,7 +80,7 @@ class AuthenticatorAttestationResponseValidator
         }
 
         /** @see 7.1.7 */
-        $getClientDataJSONHash = hash('sha256', $authenticatorAttestationResponse->getClientDataJSON()->getRawData(), true);
+        $clientDataJSONHash = hash('sha256', $authenticatorAttestationResponse->getClientDataJSON()->getRawData(), true);
 
         /** @see 7.1.8 */
         $attestationObject = $authenticatorAttestationResponse->getAttestationObject();
@@ -107,7 +107,7 @@ class AuthenticatorAttestationResponseValidator
 
         /** @see 7.1.14 */
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
-        Assertion::true($attestationStatementSupport->isValid($getClientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
+        Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
         /* @see 7.1.15 */
         /* @see 7.1.16 */

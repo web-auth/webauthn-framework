@@ -35,6 +35,7 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -139,6 +140,7 @@ abstract class AbstractTestCase extends TestCase
             $this->getDecoder(),
             $this->getAlgorithmManager()
         ));
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 
         return $attestationStatementSupportManager;
     }

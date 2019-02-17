@@ -25,10 +25,10 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
   - [x] private CA attestation
   - [ ] elliptic curve direct anonymous attestation (optional)
 - Attestation Formats
-  - [x] packed attestation
-  - [ ] TPM attestation
-  - [x] Android key attestation (optional) 
   - [x] FIDO U2F attestation
+  - [x] packed attestation
+  - [x] TPM attestation
+  - [x] Android key attestation (optional) 
   - [x] Android Safetynet attestation
 - Communication Channel Requirements
   - [ ] TokenBinding support (optional)

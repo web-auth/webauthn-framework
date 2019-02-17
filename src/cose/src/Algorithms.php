@@ -88,6 +88,16 @@ abstract class Algorithms
         self::COSE_ALGORITHM_RS1 => OPENSSL_ALGO_SHA1,
     ];
 
+    public const COSE_HASH_MAP = [
+        self::COSE_ALGORITHM_ES256 => 'sha256',
+        self::COSE_ALGORITHM_ES384 => 'sha384',
+        self::COSE_ALGORITHM_ES512 => 'sha512',
+        self::COSE_ALGORITHM_RS256 => 'sha256',
+        self::COSE_ALGORITHM_RS384 => 'sha384',
+        self::COSE_ALGORITHM_RS512 => 'sha512',
+        self::COSE_ALGORITHM_RS1 => 'sha1',
+    ];
+
     public static function getOpensslAlgorithmFor(int $algorithmIdentifier): int
     {
         Assertion::keyExists(self::COSE_ALGORITHM_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
@@ -95,6 +105,13 @@ abstract class Algorithms
         return self::COSE_ALGORITHM_MAP[$algorithmIdentifier];
     }
 
+    public static function getHashAlgorithmFor(int $algorithmIdentifier): string
+    {
+        Assertion::keyExists(self::COSE_HASH_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
+
+        return self::COSE_HASH_MAP[$algorithmIdentifier];
+    }
+  
     public static function getAlgorithm(int $identifier): Algorithm
     {
         $algs = static::getAlgorithms();
