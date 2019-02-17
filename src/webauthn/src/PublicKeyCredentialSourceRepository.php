@@ -11,14 +11,11 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\TrustPath;
+namespace Webauthn;
 
-final class EmptyTrustPath extends AbstractTrustPath
+interface PublicKeyCredentialSourceRepository
 {
-    public function jsonSerialize(): array
-    {
-        return [
-            'type' => 'empty',
-        ];
-    }
+    public function get(string $credentialId): ?PublicKeyCredentialSource;
+
+    public function save(PublicKeyCredentialSource $publicKeyCredentialSource): void;
 }

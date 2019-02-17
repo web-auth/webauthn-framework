@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-class EcdaaKeyIdTrustPath implements TrustPath
+class EcdaaKeyIdTrustPath extends AbstractTrustPath
 {
     /**
      * @var string
@@ -28,5 +28,13 @@ class EcdaaKeyIdTrustPath implements TrustPath
     public function getEcdaaKeyId(): string
     {
         return $this->ecdaaKeyId;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'type' => 'ecdaa_key_id',
+            'ecdaaKeyId' => $this->ecdaaKeyId,
+        ];
     }
 }

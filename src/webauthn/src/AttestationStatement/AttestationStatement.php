@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
 
-class AttestationStatement
+class AttestationStatement implements \JsonSerializable
 {
     public const TYPE_NONE = 'none';
     public const TYPE_BASIC = 'basic';
@@ -110,5 +111,31 @@ class AttestationStatement
     public function getType(): string
     {
         return $this->type;
+    }
+
+    public static function createFromJson(array $data): self
+    {
+        foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
+            Assertion::keyExists($data, $key, \Safe\sprintf('The key "%s" is missing', $key));
+        }
+
+        return new self(
+            $data['fmt'],
+            $data['attStmt'],
+            $data['type'],
+            AbstractTrustPath::createFromJson($data['trustPath'])
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        Assertion::isInstanceOf($this->trustPath, AbstractTrustPath::class, 'This method is reserved for specific classes');
+
+        return [
+            'fmt' => $this->fmt,
+            'attStmt' => $this->attStmt,
+            'trustPath' => $this->trustPath,
+            'type' => $this->type,
+        ];
     }
 }
