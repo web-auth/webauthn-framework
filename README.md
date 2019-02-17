@@ -27,7 +27,7 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 - Attestation Formats
   - [x] packed attestation
   - [ ] TPM attestation
-  - [ ] Android key attestation (optional) 
+  - [x] Android key attestation (optional) 
   - [x] FIDO U2F attestation
   - [x] Android Safetynet attestation
 - Communication Channel Requirements
