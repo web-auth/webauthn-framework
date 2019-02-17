@@ -23,7 +23,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 class AuthenticatorAssertionResponseValidator
 {
     /**
-     * @var CredentialRepository
+     * @var CredentialRepository|null
      */
     private $credentialRepository;
 
@@ -42,12 +42,21 @@ class AuthenticatorAssertionResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    /**
+     * @var PublicKeyCredentialSourceRepository|null
+     */
+    private $publicKeyCredentialSourceRepository;
+
+    public function __construct(?CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
     {
+        if (null === $credentialRepository && null === $publicKeyCredentialSourceRepository) {
+            throw new \InvalidArgumentException('Either the Credential Repository or the Public Key Credential Source Repository has to be set');
+        }
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
+        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
     /**
@@ -61,11 +70,11 @@ class AuthenticatorAssertionResponseValidator
         }
 
         /* @see 7.2.2 */
-        Assertion::true($this->credentialRepository->has($credentialId), 'The credential ID is invalid.');
+        Assertion::true($this->has($credentialId), 'The credential ID is invalid.');
 
         /* @see 7.2.3 */
-        $attestedCredentialData = $this->credentialRepository->get($credentialId);
-        $credentialUserHandle = $this->credentialRepository->getUserHandleFor($credentialId);
+        $attestedCredentialData = $this->get($credentialId);
+        $credentialUserHandle = $this->getUserHandleFor($credentialId);
         $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
 
         /* @see 7.2.2 User Handle*/
@@ -135,11 +144,11 @@ class AuthenticatorAssertionResponseValidator
         Assertion::eq(1, openssl_verify($authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash, $authenticatorAssertionResponse->getSignature(), $this->getPublicKeyAsPem($key), OPENSSL_ALGO_SHA256), 'Invalid signature.');
 
         /* @see 7.2.17 */
-        $storedCounter = $this->credentialRepository->getCounterFor($credentialId);
+        $storedCounter = $this->getCounterFor($credentialId);
         $currentCounter = $authenticatorAssertionResponse->getAuthenticatorData()->getSignCount();
         Assertion::greaterThan($currentCounter, $storedCounter, 'Invalid counter.');
 
-        $this->credentialRepository->updateCounterFor($credentialId, $currentCounter);
+        $this->updateCounterFor($credentialId, $currentCounter);
 
         /* @see 7.2.18 */
     }
@@ -166,5 +175,64 @@ class AuthenticatorAssertionResponseValidator
         }
 
         return false;
+    }
+
+    private function has(string $credentialId): bool
+    {
+        if (null !== $this->publicKeyCredentialSourceRepository) {
+            return null !== $this->publicKeyCredentialSourceRepository->find($credentialId);
+        }
+
+        return $this->credentialRepository->has($credentialId);
+    }
+
+    private function get(string $credentialId): AttestedCredentialData
+    {
+        if (null !== $this->publicKeyCredentialSourceRepository) {
+            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+            Assertion::notNull($credentialSource);
+
+            return $credentialSource->getAttestedCredentialData();
+        }
+
+        return $this->credentialRepository->get($credentialId);
+    }
+
+    private function getUserHandleFor(string $credentialId): string
+    {
+        if (null !== $this->publicKeyCredentialSourceRepository) {
+            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+            Assertion::notNull($credentialSource);
+
+            return $credentialSource->getUserHandle();
+        }
+
+        return $this->credentialRepository->getUserHandleFor($credentialId);
+    }
+
+    private function getCounterFor(string $credentialId): int
+    {
+        if (null !== $this->publicKeyCredentialSourceRepository) {
+            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+            Assertion::notNull($credentialSource);
+
+            return $credentialSource->getCounter();
+        }
+
+        return $this->credentialRepository->getCounterFor($credentialId);
+    }
+
+    public function updateCounterFor(string $credentialId, int $newCounter): void
+    {
+        if (null !== $this->publicKeyCredentialSourceRepository) {
+            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+            Assertion::notNull($credentialSource);
+            $credentialSource->setCounter($newCounter);
+            $this->publicKeyCredentialSourceRepository->save($credentialSource);
+
+            return;
+        }
+
+        $this->credentialRepository->updateCounterFor($credentialId, $newCounter);
     }
 }

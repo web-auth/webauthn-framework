@@ -75,6 +75,8 @@
     },
     "require-dev": {
         "doctrine/dbal": "^2.9",
+        "doctrine/doctrine-bundle": "^1.10",
+        "doctrine/orm": "^2.6",
         "php-coveralls/php-coveralls": "^2.0",
         "php-http/httplug": "^1.0",
         "php-http/httplug-bundle": "^1.0",

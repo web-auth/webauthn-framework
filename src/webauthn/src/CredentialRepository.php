@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+/**
+ * @deprecated Will be removed in v2.0. Please use \Webauthn\PublicKeyCredentialSourceRepository instead
+ */
 interface CredentialRepository
 {
     public function has(string $credentialId): bool;

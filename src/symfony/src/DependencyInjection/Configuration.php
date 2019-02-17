@@ -44,10 +44,21 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->addDefaultsIfNotSet()
+            ->validate()
+                ->ifTrue(function (array $data) {
+                    return null === $data['credential_source_repository'] && null === $data['credential_repository'];
+                })
+                ->thenInvalid('Either "credential_repository" or "credential_source_repository" must be set. Not both.')
+            ->end()
             ->children()
                 ->scalarNode('credential_repository')
-                    ->isRequired()
+                    ->setDeprecated('Will be removed in v2.0. Use "credential_source_repository" instead')
+                    ->defaultNull()
                     ->info('This repository is responsible of the credential storage')
+                ->end()
+                ->scalarNode('credential_source_repository')
+                    ->defaultNull()
+                    ->info('This repository is responsible of the credential source storage. Will replace "credential_repository" in v2.0')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
                     ->defaultValue(TokenBindingNotSupportedHandler::class)

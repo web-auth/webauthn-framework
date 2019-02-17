@@ -31,7 +31,7 @@ class PublicKeyCredentialSource
     private $publicKeyCredentialDescriptor;
 
     /**
-     * @var AttestationStatement
+     * @var AttestationStatement|null
      */
     private $attestationStatement;
 
@@ -50,8 +50,9 @@ class PublicKeyCredentialSource
      */
     private $counter;
 
-    public function __construct(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, AttestationStatement $attestationStatement, AttestedCredentialData $attestedCredentialData, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, ?AttestationStatement $attestationStatement, AttestedCredentialData $attestedCredentialData, string $userHandle, int $counter)
     {
+        $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
         $this->attestationStatement = $attestationStatement;
         $this->attestedCredentialData = $attestedCredentialData;
@@ -59,12 +60,17 @@ class PublicKeyCredentialSource
         $this->counter = $counter;
     }
 
+    public function getPublicKeyCredentialId(): string
+    {
+        return $this->publicKeyCredentialId;
+    }
+
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
         return $this->publicKeyCredentialDescriptor;
     }
 
-    public function getAttestationStatement(): AttestationStatement
+    public function getAttestationStatement(): ?AttestationStatement
     {
         return $this->attestationStatement;
     }

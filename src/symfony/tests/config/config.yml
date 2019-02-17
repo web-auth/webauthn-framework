@@ -18,7 +18,7 @@ services:
 
     httplug.client.default: '@httplug.client.mock'
 
-    Webauthn\Bundle\Tests\Functional\CredentialRepository:
+    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
 httplug:
@@ -29,7 +29,7 @@ httplug:
 
 
 webauthn:
-    credential_repository: 'Webauthn\Bundle\Tests\Functional\CredentialRepository'
+    credential_source_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
     android_safetynet:
         enabled: true
         api_key: 'api_key'

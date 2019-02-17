@@ -47,7 +47,7 @@ final class WebauthnBundle extends Bundle
     private function registerMappings(ContainerBuilder $container): void
     {
         $mappings = [
-            realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
+            \Safe\realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
         ];
         if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));
