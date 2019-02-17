@@ -14,7 +14,11 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
-use Cose\Utils\Asn1;
+use FG\ASN1\Universal\BitString;
+use FG\ASN1\Universal\Integer;
+use FG\ASN1\Universal\NullObject;
+use FG\ASN1\Universal\ObjectIdentifier;
+use FG\ASN1\Universal\Sequence;
 
 class RsaKey extends Key
 {
@@ -163,20 +167,31 @@ class RsaKey extends Key
     public function asPem(): string
     {
         Assertion::false($this->isPrivate(), 'Unsupported for private keys.');
-        $der =
-            Asn1::sequence(
-                Asn1::sequence(
-                    Asn1::oid("\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01"). // OID 1.2.840.113549.1.1.1 rsaEncryption
-                    Asn1::nullValue()
-                ).
-                Asn1::bitString(
-                    Asn1::sequence(
-                        Asn1::unsignedInteger($this->n()).
-                        Asn1::unsignedInteger($this->e())
-                    )
-                )
-            );
+        $bitSring = new Sequence(
+            new Integer($this->fromBase64ToInteger($this->n())),
+            new Integer($this->fromBase64ToInteger($this->e()))
+        );
 
-        return Asn1::pem('PUBLIC KEY', $der);
+        $der = new Sequence(
+            new Sequence(
+                new ObjectIdentifier('1.2.840.113549.1.1.1'),
+                new NullObject()
+            ),
+            new BitString(\bin2hex($bitSring->getBinary()))
+        );
+
+        return $this->pem('PUBLIC KEY', $der->getBinary());
+    }
+
+    private function fromBase64ToInteger(string $value): string
+    {
+        return gmp_strval(gmp_init(current(unpack('H*', $value)), 16), 10);
+    }
+
+    private function pem(string $type, string $der): string
+    {
+        return \Safe\sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
+            chunk_split(base64_encode($der), 64, "\n").
+            \Safe\sprintf("-----END %s-----\n", mb_strtoupper($type));
     }
 }

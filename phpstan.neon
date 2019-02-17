@@ -13,6 +13,7 @@ parameters:
         - '#Offset (.*) does not exist on array\(\)|array\((.*)\)\.#'
         - '#Instantiation of deprecated class Jose\\Component\\Core\\Converter\\StandardConverter\.#'
         - '#Call to method find\(\) of deprecated class Http\\Discovery\\MessageFactoryDiscovery\.#'
+        - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

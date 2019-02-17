@@ -17,7 +17,14 @@ use Assert\Assertion;
 
 class PublicKeyCredentialParameters implements \JsonSerializable
 {
+    /**
+     * @deprecated Will be removed in v2.0. Use \Cose\Algorithms::COSE_ALGORITHM_ES256 instead
+     */
     public const ALGORITHM_ES256 = -7;
+
+    /**
+     * @deprecated Will be removed in v2.0. Use \Cose\Algorithms::COSE_ALGORITHM_RS256 instead
+     */
     public const ALGORITHM_RS256 = -257;
 
     /**

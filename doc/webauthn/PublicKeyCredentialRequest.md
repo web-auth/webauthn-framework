@@ -201,9 +201,10 @@ declare(strict_types=1);
 use Webauthn\AuthenticatorAssertionResponseValidator;
 
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-    $credentialIdRepository, // The Credential Repository service
-    $decoder,                // The CBOR Decoder service
-    $tokenBindingHandler     // The token binding handler  
+    $credentialIdRepository,       // The Credential Repository service
+    $decoder,                      // The CBOR Decoder service
+    $tokenBindingHandler,          // The token binding handler
+    $extensionOutputCheckerHandler // The extension output checker handler  
 );
 ``` 
 
@@ -291,6 +292,11 @@ declare(strict_types=1);
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\RSA;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -298,6 +304,7 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
@@ -305,6 +312,15 @@ use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 // Retrieve the Options passed to the device
 $publicKeyCredentialRequestOptions = /** This data depends on the way you store it */;
+
+// Cose Algorithm Manager
+$coseAlgorithmManager = new Manager();
+$coseAlgorithmManager->add(new ECDSA\ES256());
+$coseAlgorithmManager->add(new ECDSA\ES512());
+$coseAlgorithmManager->add(new EdDSA\EdDSA());
+$coseAlgorithmManager->add(new RSA\RS1());
+$coseAlgorithmManager->add(new RSA\RS256());
+$coseAlgorithmManager->add(new RSA\RS512());
 
 // Retrieve de data sent by the device
 $data = /** This step depends on the way you transmit the data */;
@@ -318,7 +334,7 @@ $decoder = new Decoder($tagObjectManager, $otherObjectManager);
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
 $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-$attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
+$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 
 // Attestation Object Loader
 $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $decoder);
@@ -332,16 +348,21 @@ $credentialRepository = /** The Credential Repository of your application */;
 // The token binding handler
 $tokenBindnigHandler = new TokenBindingNotSupportedHandler();
 
+// Extension Output Checker Handler
+$extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+
 // Authenticator Assertion Response Validator
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-  $credentialIdRepository,
+  $credentialRepository,
   $decoder,
-  $tokenBindnigHandler
+  $tokenBindnigHandler,
+  $extensionOutputCheckerHandler
 );
 
 try {
-    // We init the Symfony Request object
-    $request = Request::createFromGlobals();
+    // We init the PSR7 Request object
+    $symfonyRequest = Request::createFromGlobals();
+    $psr7Request = (new DiactorosFactory())->createRequest($symfonyRequest);
     
     // Load the data
     $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -353,7 +374,13 @@ try {
     }
     
     // Check the response against the attestation request
-    $authenticatorAssertionResponseValidator->check($publicKeyCredential->getRawId(), $publicKeyCredential->getResponse(), $publicKeyCredentialRequestOptions, $request);
+    $authenticatorAssertionResponseValidator->check(
+        $publicKeyCredential->getRawId(),
+        $publicKeyCredential->getResponse(),
+        $publicKeyCredentialRequestOptions,
+        $psr7Request,
+        null // User handle
+        );
     ?>
         <html>
         <head>

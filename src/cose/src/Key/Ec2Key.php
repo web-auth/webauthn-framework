@@ -14,7 +14,9 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
-use Cose\Utils\Asn1;
+use FG\ASN1\Universal\BitString;
+use FG\ASN1\Universal\ObjectIdentifier;
+use FG\ASN1\Universal\Sequence;
 
 class Ec2Key extends Key
 {
@@ -33,10 +35,10 @@ class Ec2Key extends Key
     private const DATA_Y = -3;
     private const DATA_D = -4;
 
-    private const CURVE_OID = [
-        self::CURVE_P256 => "\x2A\x86\x48\xCE\x3D\x03\x01\x07", // 1.2.840.10045.3.1.7 NIST P-256 / secp256r1
-        self::CURVE_P384 => "\x2B\x81\x04\x00\x22", // 1.3.132.0.34 NIST P-384 / secp384r1
-        self::CURVE_P521 => "\x2B\x81\x04\x00\x23", // 1.3.132.0.35 NIST P-521 / secp521r1
+    private const NAMED_CURVE_OID = [
+        self::CURVE_P256 => '1.2.840.10045.3.1.7', // NIST P-256 / secp256r1
+        self::CURVE_P384 => '1.3.132.0.34', // NIST P-384 / secp384r1
+        self::CURVE_P521 => '1.3.132.0.35', // NIST P-521 / secp521r1
     ];
 
     private const CURVE_KEY_LENGTH = [
@@ -87,27 +89,32 @@ class Ec2Key extends Key
     public function asPEM(): string
     {
         Assertion::false($this->isPrivate(), 'Unsupported for private keys.');
-        $der =
-            Asn1::sequence(
-                Asn1::sequence(
-                    Asn1::oid("\x2A\x86\x48\xCE\x3D\x02\x01"). // OID 1.2.840.10045.2.1 ecPublicKey
-                    Asn1::oid($this->getCurveOid())
-                ).
-                Asn1::bitString(
-                    $this->getUncompressedCoordinates()
-                )
-            );
 
-        return Asn1::pem('PUBLIC KEY', $der);
+        $der = new Sequence(
+            new Sequence(
+                new ObjectIdentifier('1.2.840.10045.2.1'),
+                new ObjectIdentifier($this->getCurveOid())
+            ),
+            new BitString(\bin2hex($this->getUncompressedCoordinates()))
+        );
+
+        return $this->pem('PUBLIC KEY', $der->getBinary());
     }
 
     private function getCurveOid(): string
     {
-        return self::CURVE_OID[$this->curve()];
+        return self::NAMED_CURVE_OID[$this->curve()];
     }
 
     public function getUncompressedCoordinates(): string
     {
         return "\x04".$this->x().$this->y();
+    }
+
+    private function pem(string $type, string $der): string
+    {
+        return \Safe\sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
+            chunk_split(base64_encode($der), 64, "\n").
+            \Safe\sprintf("-----END %s-----\n", mb_strtoupper($type));
     }
 }

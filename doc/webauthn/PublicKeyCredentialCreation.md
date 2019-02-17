@@ -99,11 +99,13 @@ The order is very important. The authentication device will consider the first o
 
 ```php
 <?php
+
+use Cose\Algorithms;
 use Webauthn\PublicKeyCredentialParameters;
 
 $publicKeyCredentialParameters = [
-    new PublicKeyCredentialParameters('public-key', PublicKeyCredentialParameters::ALGORITHM_ES256),
-    new PublicKeyCredentialParameters('public-key', PublicKeyCredentialParameters::ALGORITHM_RS256),
+    new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
+    new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS256),
 ];
 ```
 
@@ -219,6 +221,7 @@ The following example is a possible Public Key Creation page for a dummy user "@
 
 declare(strict_types=1);
 
+use Cose\Algorithms;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -248,7 +251,7 @@ $challenge = random_bytes(32);
 
 // Public Key Credential Parameters
 $publicKeyCredentialParametersList = [
-    new PublicKeyCredentialParameters('public-key', PublicKeyCredentialParameters::ALGORITHM_ES256),
+    new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
 ];
 
 // Timeout
@@ -361,6 +364,7 @@ You will need the following components before loading or verifying the data:
 * An Attestation Object Loader
 * A Public Key Credential Loader
 * An Authenticator Attestation Response Validator
+* An Extension Output Checker Handler
 
 That’s a lot off classes! But don’t worry, as their configuration is the same for all your application, you just have to set them once.
 
@@ -384,7 +388,7 @@ use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 
-$decoder = new Decoder(new OtherObjectManager(), new TagObjectManager());
+$decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
 ```
 
 That’s all!
@@ -409,11 +413,12 @@ For the record, associated specifications are:
 
 ### Attestation Statement Support Manager
 
-At the moment, only 3 Attestation Statement types are supported:
+At the moment, only 4 Attestation Statement types are supported:
 
 * none
 * fido-u2f
 * packed
+* android key
 
 We highly recommend to use them all.
 
@@ -424,6 +429,11 @@ You just have to instantiate the classes and add these to the dedicated manager 
 
 declare(strict_types=1);
 
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\RSA;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -432,7 +442,18 @@ use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
 $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-$attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
+$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
+
+// Cose Algorithm Manager
+$coseAlgorithmManager = new Manager();
+$coseAlgorithmManager->add(new ECDSA\ES256());
+$coseAlgorithmManager->add(new ECDSA\ES512());
+$coseAlgorithmManager->add(new EdDSA\EdDSA());
+$coseAlgorithmManager->add(new RSA\RS1());
+$coseAlgorithmManager->add(new RSA\RS256());
+$coseAlgorithmManager->add(new RSA\RS512());
+
+$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 ```
 
 *Please note that at the moment the `packed` attestation statement does not support ECDAA and self attestation statements.
@@ -467,6 +488,25 @@ use Webauthn\PublicKeyCredentialLoader;
 $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
 ```
 
+### Extension Output Checker Handler
+
+If you use extensions, you may need to check the value returned by the security devices.
+This behaviour is handled by an Extension Output Checker Manager.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+
+$extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+```
+
+You can add as many extension checker as you want.
+Each extension checker must implement `Webauthn\AuthenticationExtensions\ExtensionOutputChecker`
+and throw a `Webauthn\AuthenticationExtensions\ExtensionOutputError` in case of an error.
+
 ### Authenticator Attestation Response Validator
 
 ```php
@@ -479,7 +519,8 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
     $credentialRepository,
-    $tokenBindingHandler
+    $tokenBindingHandler,
+    $extensionOutputCheckerHandler
 );
 ```
 
@@ -641,12 +682,18 @@ declare(strict_types=1);
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\RSA;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
@@ -657,6 +704,15 @@ $publicKeyCredentialCreationOptions = /** This data depends on the way you store
 
 // Retrieve de data sent by the device
 $data = /** This step depends on the way you transmit the data */;
+
+// Cose Algorithm Manager
+$coseAlgorithmManager = new Manager();
+$coseAlgorithmManager->add(new ECDSA\ES256());
+$coseAlgorithmManager->add(new ECDSA\ES512());
+$coseAlgorithmManager->add(new EdDSA\EdDSA());
+$coseAlgorithmManager->add(new RSA\RS1());
+$coseAlgorithmManager->add(new RSA\RS256());
+$coseAlgorithmManager->add(new RSA\RS512());
 
 // Create a CBOR Decoder object
 $otherObjectManager = new OtherObjectManager();
@@ -670,7 +726,7 @@ $tokenBindnigHandler = new TokenBindingNotSupportedHandler();
 $attestationStatementSupportManager = new AttestationStatementSupportManager();
 $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-$attestationStatementSupportManager->add(new PackedAttestationStatementSupport());
+$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 
 // Attestation Object Loader
 $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $decoder);
@@ -681,16 +737,21 @@ $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoa
 // Credential Repository
 $credentialRepository = /** The Credential Repository of your application */;
 
+// Extension Output Checker Handler
+$extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+
 // Authenticator Attestation Response Validator
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
     $credentialRepository,
-    $tokenBindnigHandler
+    $tokenBindnigHandler,
+    $extensionOutputCheckerHandler
 );
 
 try {
-    // We init the Symfony Request object
-    $request = Request::createFromGlobals();
+    // We init the PSR7 Request object
+    $symfonyRequest = Request::createFromGlobals();
+    $psr7Request = (new DiactorosFactory())->createRequest($symfonyRequest);
     
     // Load the data
     $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -702,7 +763,7 @@ try {
     }
 
     // Check the response against the request
-    $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
+    $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
 } catch (\Throwable $exception) {
     ?>
     <html>

@@ -28,6 +28,7 @@ use Cose\Algorithm\Signature\RSA\RS512;
 use Http\Client\HttpClient;
 use Http\Mock\Client;
 use PHPUnit\Framework\TestCase;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -124,6 +125,9 @@ abstract class AbstractTestCase extends TestCase
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(
+            $this->getDecoder()
+        ));
         $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
             $client ?? new Client(),
             'api_key'

@@ -37,8 +37,8 @@ webauthn:
     creation_profiles:
         foo:
             public_key_credential_parameters:
-                - !php/const Webauthn\PublicKeyCredentialParameters::ALGORITHM_ES256
-                - !php/const Webauthn\PublicKeyCredentialParameters::ALGORITHM_RS256
+                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
+                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
             extensions:
                 foo: 'bar'
             rp:
