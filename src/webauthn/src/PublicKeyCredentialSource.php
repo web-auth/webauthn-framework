@@ -26,9 +26,14 @@ class PublicKeyCredentialSource
     private $publicKeyCredentialId;
 
     /**
-     * @var PublicKeyCredentialDescriptor
+     * @var string
      */
-    private $publicKeyCredentialDescriptor;
+    private $type;
+
+    /**
+     * @var string[]
+     */
+    private $transports;
 
     /**
      * @var AttestationStatement|null
@@ -36,9 +41,14 @@ class PublicKeyCredentialSource
     private $attestationStatement;
 
     /**
-     * @var AttestedCredentialData
+     * @var string
      */
-    private $attestedCredentialData;
+    private $aaguid;
+
+    /**
+     * @var string
+     */
+    private $credentialPublicKey;
 
     /**
      * @var string
@@ -50,12 +60,14 @@ class PublicKeyCredentialSource
      */
     private $counter;
 
-    public function __construct(string $publicKeyCredentialId, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, ?AttestationStatement $attestationStatement, AttestedCredentialData $attestedCredentialData, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, ?AttestationStatement $attestationStatement, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
-        $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
+        $this->type = $type;
+        $this->transports = $transports;
         $this->attestationStatement = $attestationStatement;
-        $this->attestedCredentialData = $attestedCredentialData;
+        $this->aaguid = $aaguid;
+        $this->credentialPublicKey = $credentialPublicKey;
         $this->userHandle = $userHandle;
         $this->counter = $counter;
     }
@@ -67,7 +79,11 @@ class PublicKeyCredentialSource
 
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
-        return $this->publicKeyCredentialDescriptor;
+        return new PublicKeyCredentialDescriptor(
+            $this->type,
+            $this->publicKeyCredentialId,
+            $this->transports
+        );
     }
 
     public function getAttestationStatement(): ?AttestationStatement
@@ -77,7 +93,11 @@ class PublicKeyCredentialSource
 
     public function getAttestedCredentialData(): AttestedCredentialData
     {
-        return $this->attestedCredentialData;
+        return new AttestedCredentialData(
+            $this->aaguid,
+            $this->publicKeyCredentialId,
+            $this->credentialPublicKey
+        );
     }
 
     public function getUserHandle(): string

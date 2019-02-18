@@ -29,17 +29,11 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $pkcs1 = new PublicKeyCredentialSource(
             \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-            new PublicKeyCredentialDescriptor(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-                []
-            ),
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            [],
             null,
-            new AttestedCredentialData(
-                \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
-                \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-                \Safe\base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
-            ),
+            \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+            \Safe\base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
             'foo',
             100
         );
