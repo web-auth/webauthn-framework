@@ -48,7 +48,7 @@ final class Configuration implements ConfigurationInterface
                 ->ifTrue(function (array $data) {
                     return null === $data['credential_source_repository'] && null === $data['credential_repository'];
                 })
-                ->thenInvalid('Either "credential_repository" or "credential_source_repository" must be set. Not both.')
+                ->thenInvalid('Either "credential_repository" or "credential_source_repository" must be set.')
             ->end()
             ->children()
                 ->scalarNode('credential_repository')
