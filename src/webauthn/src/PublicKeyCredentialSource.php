@@ -36,7 +36,7 @@ class PublicKeyCredentialSource
     private $transports;
 
     /**
-     * @var AttestationStatement|null
+     * @var AttestationStatement
      */
     private $attestationStatement;
 
@@ -60,7 +60,7 @@ class PublicKeyCredentialSource
      */
     private $counter;
 
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, ?AttestationStatement $attestationStatement, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, AttestationStatement $attestationStatement, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
@@ -86,7 +86,7 @@ class PublicKeyCredentialSource
         );
     }
 
-    public function getAttestationStatement(): ?AttestationStatement
+    public function getAttestationStatement(): AttestationStatement
     {
         return $this->attestationStatement;
     }
