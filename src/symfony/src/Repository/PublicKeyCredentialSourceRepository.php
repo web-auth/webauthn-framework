@@ -27,6 +27,11 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
      */
     private $manager;
 
+    /**
+     * @var string
+     */
+    private $class;
+
     public function __construct(ManagerRegistry $registry, string $class)
     {
         $manager = $registry->getManagerForClass($class);
@@ -35,7 +40,16 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             $class
         ));
 
+        $this->class = $class;
         $this->manager = $manager;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getClass(): string
+    {
+        return $this->class;
     }
 
     protected function getEntityManager(): EntityManagerInterface
@@ -56,7 +70,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         $qb = $this->manager->createQueryBuilder();
 
         return $qb->select('c')
-            ->from(PublicKeyCredentialSource::class, 'c')
+            ->from($this->getClass(), 'c')
             ->where('c.publicKeyCredentialId = :publicKeyCredentialId')
             ->setParameter(':publicKeyCredentialId', $publicKeyCredentialId)
             ->setMaxResults(1)
