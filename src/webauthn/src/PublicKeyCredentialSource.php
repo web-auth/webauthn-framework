@@ -98,6 +98,29 @@ class PublicKeyCredentialSource
         );
     }
 
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTransports(): array
+    {
+        return $this->transports;
+    }
+
+    public function getAaguid(): string
+    {
+        return $this->aaguid;
+    }
+
+    public function getCredentialPublicKey(): string
+    {
+        return $this->credentialPublicKey;
+    }
+
     public function getUserHandle(): string
     {
         return $this->userHandle;

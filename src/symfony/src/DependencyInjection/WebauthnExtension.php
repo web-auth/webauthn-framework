@@ -113,7 +113,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $config['dbal']['types'] = [];
         }
         $config['dbal']['types'] += [
-            'attestation_statement' => DbalType\AttestationStatementType::class,
             'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
             'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
             'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
