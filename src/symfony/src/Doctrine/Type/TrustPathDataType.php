@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\AttestedCredentialData;
 use Webauthn\TrustPath\AbstractTrustPath;
 
 final class TrustPathDataType extends Type
