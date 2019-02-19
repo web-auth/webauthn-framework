@@ -77,7 +77,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $qb->select('c')
             ->from($this->getClass(), 'c')
             ->where('c.publicKeyCredentialId = :publicKeyCredentialId')
-            ->setParameter(':publicKeyCredentialId', $publicKeyCredentialId)
+            ->setParameter(':publicKeyCredentialId', base64_encode($publicKeyCredentialId))
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()
@@ -86,7 +86,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function has(string $credentialId): bool
     {
-        return null !== $this->find(base64_encode($credentialId));
+        return null !== $this->find($credentialId);
     }
 
     public function get(string $credentialId): AttestedCredentialData
