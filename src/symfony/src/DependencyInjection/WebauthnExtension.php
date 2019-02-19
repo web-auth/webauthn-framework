@@ -28,7 +28,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\CredentialRepository;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
@@ -63,12 +62,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
-        if (null !== $config['credential_repository']) {
-            $container->setAlias(CredentialRepository::class, $config['credential_repository']);
-        }
-        if (null !== $config['credential_source_repository']) {
-            $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_source_repository']);
-        }
+        $container->setAlias(CredentialRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
@@ -117,6 +111,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             'base64' => DbalType\Base64BinaryDataType::class,
             'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
             'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
+            'trust_path' => DbalType\TrustPathDataType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);
     }

@@ -13,10 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle\Tests\Functional;
 
+use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\TrustPath\EmptyTrustPath;
 
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
 {
@@ -31,7 +33,8 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
-            \Safe\base64_decode('o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ', true),
+            AttestationStatement::TYPE_NONE,
+            new EmptyTrustPath(),
             \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
             \Safe\base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
             'foo',
@@ -54,5 +57,49 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         $this->credentials[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
     }
 
+    public function has(string $credentialId): bool
+    {
+        return null !== $this->find($credentialId);
+    }
 
+    public function get(string $credentialId): AttestedCredentialData
+    {
+        $credential = $this->find($credentialId);
+        if (null === $credential) {
+            throw new \InvalidArgumentException('Invalid credential ID');
+        }
+
+        return $credential->getAttestedCredentialData();
+    }
+
+    public function getUserHandleFor(string $credentialId): string
+    {
+        $credential = $this->find($credentialId);
+        if (null === $credential) {
+            throw new \InvalidArgumentException('Invalid credential ID');
+        }
+
+        return $credential->getUserHandle();
+    }
+
+    public function getCounterFor(string $credentialId): int
+    {
+        $credential = $this->find($credentialId);
+        if (null === $credential) {
+            throw new \InvalidArgumentException('Invalid credential ID');
+        }
+
+        return $credential->getCounter();
+    }
+
+    public function updateCounterFor(string $credentialId, int $newCounter): void
+    {
+        $credential = $this->find($credentialId);
+        if (null === $credential) {
+            throw new \InvalidArgumentException('Invalid credential ID');
+        }
+
+        $credential->setCounter($newCounter);
+        $this->save($credential);
+    }
 }

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Webauthn\TrustPath\TrustPath;
+
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
  */
@@ -36,7 +38,12 @@ class PublicKeyCredentialSource
     /**
      * @var string
      */
-    private $attestationObject;
+    private $attestationType;
+
+    /**
+     * @var TrustPath
+     */
+    private $trustPath;
 
     /**
      * @var string
@@ -58,16 +65,17 @@ class PublicKeyCredentialSource
      */
     private $counter;
 
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationObject, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
         $this->transports = $transports;
-        $this->attestationObject = $attestationObject;
         $this->aaguid = $aaguid;
         $this->credentialPublicKey = $credentialPublicKey;
         $this->userHandle = $userHandle;
         $this->counter = $counter;
+        $this->attestationType = $attestationType;
+        $this->trustPath = $trustPath;
     }
 
     public function getPublicKeyCredentialId(): string
@@ -84,9 +92,14 @@ class PublicKeyCredentialSource
         );
     }
 
-    public function getAttestationObject(): string
+    public function getAttestationType(): string
     {
-        return $this->attestationObject;
+        return $this->attestationType;
+    }
+
+    public function getTrustPath(): TrustPath
+    {
+        return $this->trustPath;
     }
 
     public function getAttestedCredentialData(): AttestedCredentialData

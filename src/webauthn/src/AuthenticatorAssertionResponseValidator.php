@@ -42,21 +42,12 @@ class AuthenticatorAssertionResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository|null
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    public function __construct(?CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
+    public function __construct(?CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
-        if (null === $credentialRepository && null === $publicKeyCredentialSourceRepository) {
-            throw new \InvalidArgumentException('Either the Credential Repository or the Public Key Credential Source Repository has to be set');
-        }
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
     /**
@@ -179,8 +170,8 @@ class AuthenticatorAssertionResponseValidator
 
     private function has(string $credentialId): bool
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            return null !== $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            return null !== $this->credentialRepository->find($credentialId);
         }
 
         return $this->credentialRepository->has($credentialId);
@@ -188,8 +179,8 @@ class AuthenticatorAssertionResponseValidator
 
     private function get(string $credentialId): AttestedCredentialData
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            $credentialSource = $this->credentialRepository->find($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getAttestedCredentialData();
@@ -200,8 +191,8 @@ class AuthenticatorAssertionResponseValidator
 
     private function getUserHandleFor(string $credentialId): string
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            $credentialSource = $this->credentialRepository->find($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getUserHandle();
@@ -212,8 +203,8 @@ class AuthenticatorAssertionResponseValidator
 
     private function getCounterFor(string $credentialId): int
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            $credentialSource = $this->credentialRepository->find($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getCounter();
@@ -224,11 +215,11 @@ class AuthenticatorAssertionResponseValidator
 
     public function updateCounterFor(string $credentialId, int $newCounter): void
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            $credentialSource = $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            $credentialSource = $this->credentialRepository->find($credentialId);
             Assertion::notNull($credentialSource);
             $credentialSource->setCounter($newCounter);
-            $this->publicKeyCredentialSourceRepository->save($credentialSource);
+            $this->credentialRepository->save($credentialSource);
 
             return;
         }

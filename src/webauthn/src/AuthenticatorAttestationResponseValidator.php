@@ -41,21 +41,12 @@ class AuthenticatorAttestationResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository|null
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
-        if (null === $credentialRepository && null === $publicKeyCredentialSourceRepository) {
-            throw new \InvalidArgumentException('Either the Credential Repository or the Public Key Credential Source Repository has to be set');
-        }
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->credentialRepository = $credentialRepository;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
     /**
@@ -144,8 +135,8 @@ class AuthenticatorAttestationResponseValidator
 
     private function has(string $credentialId): bool
     {
-        if (null !== $this->publicKeyCredentialSourceRepository) {
-            return null !== $this->publicKeyCredentialSourceRepository->find($credentialId);
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            return null !== $this->credentialRepository->find($credentialId);
         }
 
         return $this->credentialRepository->has($credentialId);

@@ -24,8 +24,6 @@ services:
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
-
-
 doctrine:
     dbal:
         driver: 'pdo_mysql'
@@ -56,7 +54,7 @@ httplug:
 
 
 webauthn:
-    credential_source_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
+    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
     android_safetynet:
         enabled: true
         api_key: 'api_key'

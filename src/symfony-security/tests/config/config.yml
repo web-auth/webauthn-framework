@@ -78,7 +78,7 @@ webauthn_security:
     http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory'
 
 webauthn:
-    credential_source_repository: 'Webauthn\SecurityBundle\Tests\Functional\PublicKeyCredentialSourceRepository'
+    credential_repository: 'Webauthn\SecurityBundle\Tests\Functional\PublicKeyCredentialSourceRepository'
     android_safetynet:
         enabled: true
         api_key: 'api_key'

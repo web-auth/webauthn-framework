@@ -15,15 +15,17 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Webauthn\AttestedCredentialData;
+use Webauthn\TrustPath\AbstractTrustPath;
 
-final class Base64BinaryDataType extends Type
+final class TrustPathDataType extends Type
 {
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return base64_encode($value);
+        return \Safe\json_encode($value);
     }
 
     /**
@@ -31,7 +33,9 @@ final class Base64BinaryDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return \Safe\base64_decode($value, true);
+        $json = \Safe\json_decode($value, true);
+
+        return AbstractTrustPath::createFromJson($json);
     }
 
     /**
@@ -39,7 +43,7 @@ final class Base64BinaryDataType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
@@ -47,6 +51,6 @@ final class Base64BinaryDataType extends Type
      */
     public function getName()
     {
-        return 'base64';
+        return 'trust_path';
     }
 }
