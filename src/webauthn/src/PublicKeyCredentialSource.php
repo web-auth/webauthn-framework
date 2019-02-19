@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Webauthn\AttestationStatement\AttestationStatement;
-
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
  */
@@ -36,9 +34,9 @@ class PublicKeyCredentialSource
     private $transports;
 
     /**
-     * @var AttestationStatement
+     * @var string
      */
-    private $attestationStatement;
+    private $attestationObject;
 
     /**
      * @var string
@@ -60,12 +58,12 @@ class PublicKeyCredentialSource
      */
     private $counter;
 
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, AttestationStatement $attestationStatement, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationObject, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
         $this->transports = $transports;
-        $this->attestationStatement = $attestationStatement;
+        $this->attestationObject = $attestationObject;
         $this->aaguid = $aaguid;
         $this->credentialPublicKey = $credentialPublicKey;
         $this->userHandle = $userHandle;
@@ -86,9 +84,9 @@ class PublicKeyCredentialSource
         );
     }
 
-    public function getAttestationStatement(): AttestationStatement
+    public function getAttestationObject(): string
     {
-        return $this->attestationStatement;
+        return $this->attestationObject;
     }
 
     public function getAttestedCredentialData(): AttestedCredentialData
