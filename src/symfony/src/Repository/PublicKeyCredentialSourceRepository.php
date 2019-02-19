@@ -35,6 +35,10 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
+        Assertion::isInstanceOf($class, PublicKeyCredentialSource::class, \Safe\sprintf(
+            'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
+            $class
+        ));
         $manager = $registry->getManagerForClass($class);
         Assertion::isInstanceOf($manager, EntityManagerInterface::class, \Safe\sprintf(
             'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity’s metadata.',
@@ -82,7 +86,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function has(string $credentialId): bool
     {
-        return null !== $this->find($credentialId);
+        return null !== $this->find(base64_encode($credentialId));
     }
 
     public function get(string $credentialId): AttestedCredentialData
