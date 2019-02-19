@@ -39,7 +39,7 @@ class CertificateTrustPath extends AbstractTrustPath
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'certificate',
+            'type' => 'x5c',
             'x5c' => $this->certificates,
         ];
     }
