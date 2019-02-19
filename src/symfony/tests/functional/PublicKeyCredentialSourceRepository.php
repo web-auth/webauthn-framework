@@ -57,11 +57,17 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         $this->credentials[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
     }
 
+    /**
+     * @deprecated Will be removed in v2.0. Please use the method find instead
+     */
     public function has(string $credentialId): bool
     {
         return null !== $this->find($credentialId);
     }
 
+    /**
+     * @deprecated Will be removed in v2.0. Please use the method find instead
+     */
     public function get(string $credentialId): AttestedCredentialData
     {
         $credential = $this->find($credentialId);
@@ -72,6 +78,9 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         return $credential->getAttestedCredentialData();
     }
 
+    /**
+     * @deprecated Will be removed in v2.0. Please use the method find instead
+     */
     public function getUserHandleFor(string $credentialId): string
     {
         $credential = $this->find($credentialId);
@@ -82,6 +91,9 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         return $credential->getUserHandle();
     }
 
+    /**
+     * @deprecated Will be removed in v2.0. Please use the method find instead
+     */
     public function getCounterFor(string $credentialId): int
     {
         $credential = $this->find($credentialId);
@@ -92,6 +104,9 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         return $credential->getCounter();
     }
 
+    /**
+     * @deprecated Will be removed in v2.0. Please use the method save instead
+     */
     public function updateCounterFor(string $credentialId, int $newCounter): void
     {
         $credential = $this->find($credentialId);
