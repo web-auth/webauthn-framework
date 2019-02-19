@@ -15,6 +15,7 @@ parameters:
         - '#Call to method find\(\) of deprecated class Http\\Discovery\\MessageFactoryDiscovery\.#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Fetching class constant class of deprecated class Webauthn\\CredentialRepository\.#'
+        - '#Interface Webauthn\\PublicKeyCredentialSourceRepository extends deprecated interface Webauthn\\CredentialRepository\.#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
