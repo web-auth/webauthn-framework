@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
+use Assert\Assertion;
+
 class AuthenticationExtensionsClientInputs implements \JsonSerializable, \Countable, \IteratorAggregate
 {
     /**
@@ -33,6 +35,21 @@ class AuthenticationExtensionsClientInputs implements \JsonSerializable, \Counta
         }
 
         return $object;
+    }
+
+    public function has(string $key): bool
+    {
+        return array_key_exists($key, $this->extensions);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function get(string $key)
+    {
+        Assertion::true($this->has($key), \Safe\sprintf('The extension with key "%s" is not available', $key));
+
+        return $this->extensions[$key];
     }
 
     public function jsonSerialize(): array
