@@ -180,7 +180,7 @@ class AuthenticatorAssertionResponseValidator
                 return $rpId;
             case !$authenticationExtensionsClientOutputs->has('appid'):
                 return $rpId;
-            case false === $authenticationExtensionsClientOutputs->get('appid'):
+            case true !== $authenticationExtensionsClientOutputs->get('appid'):
                 return $rpId;
             default:
                 return $authenticationExtensionsClientInputs->get('appid');
