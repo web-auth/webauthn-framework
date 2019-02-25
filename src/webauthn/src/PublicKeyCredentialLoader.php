@@ -42,9 +42,8 @@ class PublicKeyCredentialLoader
         $this->decoder = $decoder;
     }
 
-    public function load(string $data): PublicKeyCredential
+    public function loadJson(array $json): PublicKeyCredential
     {
-        $json = \Safe\json_decode($data, true);
         Assertion::keyExists($json, 'id');
         Assertion::keyExists($json, 'rawId');
         Assertion::keyExists($json, 'response');
@@ -61,6 +60,13 @@ class PublicKeyCredentialLoader
         );
 
         return $publicKeyCredential;
+    }
+
+    public function load(string $data): PublicKeyCredential
+    {
+        $json = \Safe\json_decode($data, true);
+
+        return $this->loadJson($json);
     }
 
     private function createResponse(array $response): AuthenticatorResponse
