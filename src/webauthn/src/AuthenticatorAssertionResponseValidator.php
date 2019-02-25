@@ -17,6 +17,8 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
 use Psr\Http\Message\ServerRequestInterface;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -111,6 +113,7 @@ class AuthenticatorAssertionResponseValidator
         }
 
         /** @see 7.2.11 */
+        $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
         $rpIdHash = hash('sha256', $rpId, true);
         Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
@@ -166,5 +169,21 @@ class AuthenticatorAssertionResponseValidator
         }
 
         return false;
+    }
+
+    private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
+    {
+        switch (true) {
+            case !$authenticationExtensionsClientInputs->has('appid'):
+                return $rpId;
+            case null === $authenticationExtensionsClientOutputs:
+                return $rpId;
+            case !$authenticationExtensionsClientOutputs->has('appid'):
+                return $rpId;
+            case true !== $authenticationExtensionsClientOutputs->get('appid'):
+                return $rpId;
+            default:
+                return $authenticationExtensionsClientInputs->get('appid');
+        }
     }
 }
