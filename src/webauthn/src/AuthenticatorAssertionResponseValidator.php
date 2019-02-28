@@ -102,10 +102,16 @@ class AuthenticatorAssertionResponseValidator
         Assertion::true(hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
         /** @see 7.2.9 */
-        $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
+        $rpId = $publicKeyCredentialRequestOptions->getRpId();
+        $rpId_or_host = $rpId ?? $request->getUri()->getHost();
         $parsedRelyingPartyId = parse_url($C->getOrigin());
+        Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
+
+        if ($parsedRelyingPartyId['host'] != $request->getUri()->getHost()) {
+            Assertion::notEmpty($rpId, 'rpId is mandatory when host doesn\'t match');
+            Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
+        }
 
         /* @see 7.2.10 */
         if (null !== $C->getTokenBinding()) {
@@ -113,8 +119,8 @@ class AuthenticatorAssertionResponseValidator
         }
 
         /** @see 7.2.11 */
-        $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
-        $rpIdHash = hash('sha256', $rpId, true);
+        $facetId = $this->getFacetId($rpId_or_host, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
+        $rpIdHash = hash('sha256', $rpId_or_host, true);
         Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
         /* @see 7.2.12 */
