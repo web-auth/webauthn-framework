@@ -35,7 +35,7 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 - Extensions
   - [x] registration and authentication support without extension
   - [x] extension support
-  - [ ] appid extension support (optional)
+  - [x] appid extension support (optional)
 - Cose Algorithms
   - [x] RS1, RS256, RS384, RS512
   - [x] PS256, PS384, PS512
