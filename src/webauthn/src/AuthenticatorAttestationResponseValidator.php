@@ -71,6 +71,8 @@ class AuthenticatorAttestationResponseValidator
 
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
+        Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
+        Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
         $clientDataRpId = $parsedRelyingPartyId['host'];
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');

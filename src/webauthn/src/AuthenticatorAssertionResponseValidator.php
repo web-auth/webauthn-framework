@@ -104,6 +104,8 @@ class AuthenticatorAssertionResponseValidator
         /** @see 7.2.9 */
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $parsedRelyingPartyId = parse_url($C->getOrigin());
+        Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
+        Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
         $clientDataRpId = $parsedRelyingPartyId['host'];
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
