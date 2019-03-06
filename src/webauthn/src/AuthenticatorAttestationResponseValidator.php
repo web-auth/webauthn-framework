@@ -27,7 +27,7 @@ class AuthenticatorAttestationResponseValidator
     private $attestationStatementSupportManager;
 
     /**
-     * @var CredentialRepository|null
+     * @var CredentialRepository
      */
     private $credentialRepository;
 
@@ -41,7 +41,7 @@ class AuthenticatorAttestationResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->credentialRepository = $credentialRepository;

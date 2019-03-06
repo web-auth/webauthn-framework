@@ -25,7 +25,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 class AuthenticatorAssertionResponseValidator
 {
     /**
-     * @var CredentialRepository|null
+     * @var CredentialRepository
      */
     private $credentialRepository;
 
@@ -44,7 +44,7 @@ class AuthenticatorAssertionResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(?CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
