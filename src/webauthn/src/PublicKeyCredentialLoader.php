@@ -73,11 +73,11 @@ class PublicKeyCredentialLoader
     {
         Assertion::keyExists($response, 'clientDataJSON');
         switch (true) {
-            case array_key_exists('attestationObject', $response):
+            case \array_key_exists('attestationObject', $response):
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
                 return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);
-            case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
+            case \array_key_exists('authenticatorData', $response) && \array_key_exists('signature', $response):
                 $authData = Base64Url::decode($response['authenticatorData']);
 
                 $authDataStream = new StringStream($authData);

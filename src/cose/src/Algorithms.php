@@ -111,7 +111,7 @@ abstract class Algorithms
 
         return self::COSE_HASH_MAP[$algorithmIdentifier];
     }
-  
+
     public static function getAlgorithm(int $identifier): Algorithm
     {
         $algs = static::getAlgorithms();

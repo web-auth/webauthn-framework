@@ -55,7 +55,7 @@ class SignatureResponse
 
     public function __construct(array $data)
     {
-        Assertion::false(array_key_exists('errorCode', $data) && 0 !== $data['errorCode'], 'Invalid response.');
+        Assertion::false(\array_key_exists('errorCode', $data) && 0 !== $data['errorCode'], 'Invalid response.');
 
         $this->keyHandle = $this->retrieveKeyHandle($data);
         $this->clientData = $this->retrieveClientData($data);
@@ -90,21 +90,21 @@ class SignatureResponse
 
     private function retrieveKeyHandle(array $data): KeyHandler
     {
-        Assertion::false(!array_key_exists('keyHandle', $data) || !\is_string($data['keyHandle']), 'Invalid response.');
+        Assertion::false(!\array_key_exists('keyHandle', $data) || !\is_string($data['keyHandle']), 'Invalid response.');
 
         return new KeyHandler(Base64Url::decode($data['keyHandle']));
     }
 
     private function retrieveClientData(array $data): ClientData
     {
-        Assertion::false(!array_key_exists('clientData', $data) || !\is_string($data['clientData']), 'Invalid response.');
+        Assertion::false(!\array_key_exists('clientData', $data) || !\is_string($data['clientData']), 'Invalid response.');
 
         return new ClientData($data['clientData']);
     }
 
     private function extractSignatureData(array $data): array
     {
-        Assertion::false(!array_key_exists('signatureData', $data) || !\is_string($data['signatureData']), 'Invalid response.');
+        Assertion::false(!\array_key_exists('signatureData', $data) || !\is_string($data['signatureData']), 'Invalid response.');
 
         $stream = \Safe\fopen('php://memory', 'r+');
         $signatureData = Base64Url::decode($data['signatureData']);

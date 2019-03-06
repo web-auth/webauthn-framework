@@ -92,7 +92,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function prepend(ContainerBuilder $container): void
     {
         $bundles = $container->getParameter('kernel.bundles');
-        if (!\is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
+        if (!\is_array($bundles) || !\array_key_exists('DoctrineBundle', $bundles)) {
             return;
         }
         $configs = $container->getExtensionConfig('doctrine');
