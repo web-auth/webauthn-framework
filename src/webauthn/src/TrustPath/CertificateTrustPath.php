@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-class CertificateTrustPath implements TrustPath
+class CertificateTrustPath extends AbstractTrustPath
 {
     /**
      * @var string[]
@@ -34,5 +34,13 @@ class CertificateTrustPath implements TrustPath
     public function getCertificates(): array
     {
         return $this->certificates;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'type' => 'x5c',
+            'x5c' => $this->certificates,
+        ];
     }
 }

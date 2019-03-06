@@ -121,9 +121,29 @@ class AuthenticatorAttestationResponseValidator
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
         $credentialId = $attestedCredentialData->getCredentialId();
-        Assertion::false($this->credentialRepository->has($credentialId), 'The credential ID already exists.');
+        Assertion::false($this->has($credentialId), 'The credential ID already exists.');
 
         /* @see 7.1.18 */
         /* @see 7.1.19 */
+    }
+
+    private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool
+    {
+        foreach ($allowedCredentials as $allowedCredential) {
+            if (hash_equals($allowedCredential->getId(), $credentialId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function has(string $credentialId): bool
+    {
+        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
+            return null !== $this->credentialRepository->find($credentialId);
+        }
+
+        return $this->credentialRepository->has($credentialId);
     }
 }

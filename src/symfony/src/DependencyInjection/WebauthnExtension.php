@@ -108,8 +108,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
         $config['dbal']['types'] += [
             'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
+            'base64' => DbalType\Base64BinaryDataType::class,
             'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
             'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
+            'trust_path' => DbalType\TrustPathDataType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);
     }
