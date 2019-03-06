@@ -72,7 +72,10 @@ class AuthenticatorAttestationResponseValidator
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
+        $clientDataRpId = $parsedRelyingPartyId['host'];
+        Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+        $rpIdLength = mb_strlen($rpId);
+        Assertion::eq(mb_substr($rpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 
         /* @see 7.1.6 */
         if (null !== $C->getTokenBinding()) {

@@ -42,9 +42,8 @@ class PublicKeyCredentialLoader
         $this->decoder = $decoder;
     }
 
-    public function load(string $data): PublicKeyCredential
+    public function loadArray(array $json): PublicKeyCredential
     {
-        $json = \Safe\json_decode($data, true);
         Assertion::keyExists($json, 'id');
         Assertion::keyExists($json, 'rawId');
         Assertion::keyExists($json, 'response');
@@ -63,15 +62,22 @@ class PublicKeyCredentialLoader
         return $publicKeyCredential;
     }
 
+    public function load(string $data): PublicKeyCredential
+    {
+        $json = \Safe\json_decode($data, true);
+
+        return $this->loadArray($json);
+    }
+
     private function createResponse(array $response): AuthenticatorResponse
     {
         Assertion::keyExists($response, 'clientDataJSON');
         switch (true) {
-            case array_key_exists('attestationObject', $response):
+            case \array_key_exists('attestationObject', $response):
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
                 return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);
-            case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
+            case \array_key_exists('authenticatorData', $response) && \array_key_exists('signature', $response):
                 $authData = Base64Url::decode($response['authenticatorData']);
 
                 $authDataStream = new StringStream($authData);

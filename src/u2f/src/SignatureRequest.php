@@ -50,7 +50,7 @@ class SignatureRequest implements \JsonSerializable
 
     public function hasRegisteredKey(KeyHandler $keyHandle): bool
     {
-        return array_key_exists(Base64Url::encode($keyHandle->getValue()), $this->registeredKeys);
+        return \array_key_exists(Base64Url::encode($keyHandle->getValue()), $this->registeredKeys);
     }
 
     public function getRegisteredKey(KeyHandler $keyHandle): RegisteredKey

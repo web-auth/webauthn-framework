@@ -38,7 +38,7 @@ class RegistrationResponse
 
     public function __construct(array $data)
     {
-        Assertion::false(array_key_exists('errorCode', $data) && 0 !== $data['errorCode'], 'Invalid response.');
+        Assertion::false(\array_key_exists('errorCode', $data) && 0 !== $data['errorCode'], 'Invalid response.');
 
         $this->checkVersion($data);
         $clientData = $this->retrieveClientData($data);
@@ -67,7 +67,7 @@ class RegistrationResponse
 
     private function retrieveClientData(array $data): ClientData
     {
-        if (!array_key_exists('clientData', $data) || !\is_string($data['clientData'])) {
+        if (!\array_key_exists('clientData', $data) || !\is_string($data['clientData'])) {
             throw new \InvalidArgumentException('Invalid response.');
         }
 
@@ -76,13 +76,13 @@ class RegistrationResponse
 
     private function checkVersion(array $data): void
     {
-        Assertion::false(!array_key_exists('version', $data) || !\is_string($data['version']), 'Invalid response.');
+        Assertion::false(!\array_key_exists('version', $data) || !\is_string($data['version']), 'Invalid response.');
         Assertion::false(!\in_array($data['version'], self::SUPPORTED_PROTOCOL_VERSIONS, true), 'Unsupported protocol version.');
     }
 
     private function extractKeyData(array $data): array
     {
-        Assertion::false(!array_key_exists('registrationData', $data) || !\is_string($data['registrationData']), 'Invalid response.');
+        Assertion::false(!\array_key_exists('registrationData', $data) || !\is_string($data['registrationData']), 'Invalid response.');
         $stream = \Safe\fopen('php://memory', 'r+');
         $registrationData = Base64Url::decode($data['registrationData']);
         \Safe\fwrite($stream, $registrationData);

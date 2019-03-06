@@ -71,7 +71,7 @@ class Ec2Key extends Key
 
     public function isPrivate(): bool
     {
-        return array_key_exists(self::DATA_D, $this->getData());
+        return \array_key_exists(self::DATA_D, $this->getData());
     }
 
     public function d(): string
