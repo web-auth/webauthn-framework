@@ -43,7 +43,7 @@ class TokenBinding
     {
         Assertion::keyExists($json, 'status', 'The member "status" is required');
         $status = $json['status'];
-        $id = array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
+        $id = \array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
 
         return new self($status, $id);
     }

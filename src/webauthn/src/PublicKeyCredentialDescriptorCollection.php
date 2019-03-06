@@ -27,7 +27,7 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
 
     public function has(string $id): bool
     {
-        return array_key_exists($id, $this->publicKeyCredentialDescriptors);
+        return \array_key_exists($id, $this->publicKeyCredentialDescriptors);
     }
 
     public function remove(string $id): void

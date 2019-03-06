@@ -77,8 +77,8 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         Assertion::isInstanceOf($publicKey, MapObject::class, 'The attestated credential data does not contain a valid public key.');
 
         $publicKey = $publicKey->getNormalizedData();
-        Assertion::false(!array_key_exists(-2, $publicKey) || !\is_string($publicKey[-2]) || 32 !== mb_strlen($publicKey[-2], '8bit'), 'The public key of the attestation statement is not valid.');
-        Assertion::false(!array_key_exists(-3, $publicKey) || !\is_string($publicKey[-3]) || 32 !== mb_strlen($publicKey[-3], '8bit'), 'The public key of the attestation statement is not valid.');
+        Assertion::false(!\array_key_exists(-2, $publicKey) || !\is_string($publicKey[-2]) || 32 !== mb_strlen($publicKey[-2], '8bit'), 'The public key of the attestation statement is not valid.');
+        Assertion::false(!\array_key_exists(-3, $publicKey) || !\is_string($publicKey[-3]) || 32 !== mb_strlen($publicKey[-3], '8bit'), 'The public key of the attestation statement is not valid.');
 
         return "\x04".$publicKey[-2].$publicKey[-3];
     }

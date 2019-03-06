@@ -105,7 +105,10 @@ class AuthenticatorAssertionResponseValidator
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        Assertion::eq($parsedRelyingPartyId['host'], $rpId, 'rpId mismatch.');
+        $clientDataRpId = $parsedRelyingPartyId['host'];
+        Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+        $rpIdLength = mb_strlen($rpId);
+        Assertion::eq(mb_substr($rpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */
         if (null !== $C->getTokenBinding()) {

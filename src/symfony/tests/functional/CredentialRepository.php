@@ -52,7 +52,7 @@ final class CredentialRepository implements CredentialRepositoryInterface
 
     public function has(string $credentialId): bool
     {
-        return array_key_exists(base64_encode($credentialId), $this->credentials);
+        return \array_key_exists(base64_encode($credentialId), $this->credentials);
     }
 
     public function get(string $credentialId): AttestedCredentialData
@@ -70,7 +70,7 @@ final class CredentialRepository implements CredentialRepositoryInterface
             throw new \InvalidArgumentException('Not found');
         }
 
-        return array_key_exists(base64_encode($credentialId), $this->userHandlers) ? $this->userHandlers[base64_encode($credentialId)] : null;
+        return \array_key_exists(base64_encode($credentialId), $this->userHandlers) ? $this->userHandlers[base64_encode($credentialId)] : null;
     }
 
     public function getCounterFor(string $credentialId): int

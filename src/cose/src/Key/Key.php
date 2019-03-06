@@ -71,7 +71,7 @@ class Key
 
     public function has(int $key): bool
     {
-        return array_key_exists($key, $this->data);
+        return \array_key_exists($key, $this->data);
     }
 
     /**

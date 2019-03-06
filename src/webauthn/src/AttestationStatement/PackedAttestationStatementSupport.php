@@ -56,9 +56,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::keyExists($attestation['attStmt'], 'alg', 'The attestation statement value "alg" is missing.');
         Assertion::string($attestation['attStmt']['sig'], 'The attestation statement value "sig" is missing.');
         switch (true) {
-            case array_key_exists('x5c', $attestation['attStmt']):
+            case \array_key_exists('x5c', $attestation['attStmt']):
                 return $this->loadBasicType($attestation);
-            case array_key_exists('ecdaaKeyId', $attestation['attStmt']):
+            case \array_key_exists('ecdaaKeyId', $attestation['attStmt']):
                 return $this->loadEcdaaType($attestation['attStmt']);
             default:
                 return $this->loadEmptyType($attestation);

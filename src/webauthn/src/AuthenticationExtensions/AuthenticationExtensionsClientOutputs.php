@@ -39,7 +39,7 @@ class AuthenticationExtensionsClientOutputs implements \JsonSerializable, \Count
 
     public function has(string $key): bool
     {
-        return array_key_exists($key, $this->extensions);
+        return \array_key_exists($key, $this->extensions);
     }
 
     /**
