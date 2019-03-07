@@ -36,6 +36,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
     }
@@ -55,6 +56,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], 'displayName: This value should not be blank.');
     }
@@ -75,6 +77,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], 'displayName: This value should be of type string.');
     }
@@ -95,6 +98,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
     }
@@ -121,6 +125,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], '');
 

@@ -35,7 +35,8 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         $data = \Safe\json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
+        static::assertEquals('failed', $data['status']);
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
     }
@@ -55,6 +56,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals('failed', $data['status']);
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
     }
@@ -75,6 +77,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals('ok', $data['status']);
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], '');
 

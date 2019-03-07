@@ -88,7 +88,7 @@ final class AssertionRequestController
 
             return new JsonResponse($data);
         } catch (\Throwable $throwable) {
-            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()]);
+            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
 
