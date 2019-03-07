@@ -35,7 +35,7 @@ class Loader implements LoaderInterface
     {
         $controllerId = \Safe\sprintf('%s:__invoke', $name);
         $defaults = ['_controller' => $controllerId];
-        $route = new Route($pattern, $defaults, [], [], $host, [/*'https'*/], [Request::METHOD_POST]);
+        $route = new Route($pattern, $defaults, [], [], $host, ['https'], [Request::METHOD_POST]);
         $this->routes->add(\Safe\sprintf('webauthn_%s', $name), $route);
     }
 

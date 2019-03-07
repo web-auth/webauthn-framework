@@ -32,7 +32,6 @@ final class AttestationStatementSupportCompilerPass implements CompilerPassInter
         }
 
         $definition = $container->getDefinition(AttestationStatementSupportManager::class);
-
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $attributes) {
             $definition->addMethodCall('add', [new Reference($id)]);

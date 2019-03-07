@@ -30,7 +30,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         $content = [
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, 'https://locahost/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
         $response = $client->getResponse();
         $data = \Safe\json_decode($response->getContent(), true);
 
@@ -50,7 +50,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'username' => 123,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, 'https://locahost/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
         $response = $client->getResponse();
         $data = \Safe\json_decode($response->getContent(), true);
 
@@ -71,7 +71,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'userVerification' => PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, 'https://locahost/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
         $response = $client->getResponse();
         $data = \Safe\json_decode($response->getContent(), true);
 
