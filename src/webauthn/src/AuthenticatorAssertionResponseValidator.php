@@ -110,7 +110,7 @@ class AuthenticatorAssertionResponseValidator
         $clientDataRpId = $parsedRelyingPartyId['host'];
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
         $rpIdLength = mb_strlen($rpId);
-        Assertion::eq(mb_substr($rpId, -$rpIdLength), $rpId, 'rpId mismatch.');
+        Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */
         if (null !== $C->getTokenBinding()) {
