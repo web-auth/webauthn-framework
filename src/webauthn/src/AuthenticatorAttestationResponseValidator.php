@@ -141,7 +141,7 @@ class AuthenticatorAttestationResponseValidator
     private function has(string $credentialId): bool
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            return null !== $this->credentialRepository->find($credentialId);
+            return null !== $this->credentialRepository->findOneByCredentialId($credentialId);
         }
 
         return $this->credentialRepository->has($credentialId);

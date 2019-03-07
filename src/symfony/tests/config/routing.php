@@ -11,6 +11,8 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-use Symfony\Component\Routing\RouteCollection;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return new RouteCollection();
+return function (RoutingConfigurator $routes) {
+    $routes->import('.', 'webauthn');
+};

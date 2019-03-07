@@ -18,6 +18,7 @@ use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
@@ -43,7 +44,12 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         $this->save($pkcs1);
     }
 
-    public function find(string $credentialId): ?PublicKeyCredentialSource
+    public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
+    {
+        return 'foo' === $publicKeyCredentialUserEntity->getId() ? $this->credentials : [];
+    }
+
+    public function findOneByCredentialId(string $credentialId): ?PublicKeyCredentialSource
     {
         if (!\array_key_exists(base64_encode($credentialId), $this->credentials)) {
             return null;
@@ -62,7 +68,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
      */
     public function has(string $credentialId): bool
     {
-        return null !== $this->find($credentialId);
+        return null !== $this->findOneByCredentialId($credentialId);
     }
 
     /**
@@ -70,7 +76,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
      */
     public function get(string $credentialId): AttestedCredentialData
     {
-        $credential = $this->find($credentialId);
+        $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
             throw new \InvalidArgumentException('Invalid credential ID');
         }
@@ -83,7 +89,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
      */
     public function getUserHandleFor(string $credentialId): string
     {
-        $credential = $this->find($credentialId);
+        $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
             throw new \InvalidArgumentException('Invalid credential ID');
         }
@@ -96,7 +102,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
      */
     public function getCounterFor(string $credentialId): int
     {
-        $credential = $this->find($credentialId);
+        $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
             throw new \InvalidArgumentException('Invalid credential ID');
         }
@@ -109,7 +115,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
      */
     public function updateCounterFor(string $credentialId, int $newCounter): void
     {
-        $credential = $this->find($credentialId);
+        $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
             throw new \InvalidArgumentException('Invalid credential ID');
         }

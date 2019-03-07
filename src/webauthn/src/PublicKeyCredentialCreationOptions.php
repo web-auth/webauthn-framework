@@ -139,13 +139,13 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'rp', 'Invalid input.');
-        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input.');
-        Assertion::isArray($json['pubKeyCredParams'], 'Invalid input.');
-        Assertion::keyExists($json, 'challenge', 'Invalid input.');
-        Assertion::keyExists($json, 'attestation', 'Invalid input.');
-        Assertion::keyExists($json, 'user', 'Invalid input.');
-        Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input.');
+        Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
+        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
+        Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
+        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
+        Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
+        Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
+        Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input. "authenticatorSelection" is missing.');
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {

@@ -46,9 +46,9 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'name', 'Invalid input.');
-        Assertion::keyExists($json, 'id', 'Invalid input.');
-        Assertion::keyExists($json, 'displayName', 'Invalid input.');
+        Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
+        Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
+        Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
 
         return new self(
             $json['name'],

@@ -59,8 +59,8 @@ class AttestedCredentialData implements \JsonSerializable
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'aaguid', 'Invalid input.');
-        Assertion::keyExists($json, 'credentialId', 'Invalid input.');
+        Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
+        Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
 
         return new self(
             \Safe\base64_decode($json['aaguid'], true),

@@ -55,10 +55,10 @@ class PublicKeyCredentialParameters implements \JsonSerializable
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'type', 'Invalid input.');
-        Assertion::string($json['type'], 'Invalid input.');
-        Assertion::keyExists($json, 'alg', 'Invalid input.');
-        Assertion::integer($json['alg'], 'Invalid input.');
+        Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
+        Assertion::string($json['type'], 'Invalid input. "type" is not a string.');
+        Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
+        Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
 
         return new self(
             $json['type'],

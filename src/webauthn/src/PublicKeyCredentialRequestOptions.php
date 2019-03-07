@@ -100,7 +100,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'challenge', 'Invalid input.');
+        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
 
         $allowCredentials = [];
         $allowCredentialList = $json['allowCredentials'] ?? [];

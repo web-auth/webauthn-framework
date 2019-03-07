@@ -35,7 +35,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'name', 'Invalid input.');
+        Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
 
         return new self(
             $json['name'],
