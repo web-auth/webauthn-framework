@@ -61,7 +61,9 @@ final class AttestationResponseController
             $psr7Factory = new DiactorosFactory();
             $psr7Request = $psr7Factory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
-            $publicKeyCredential = $this->publicKeyCredentialLoader->load($request->getContent());
+            $content = $request->getContent();
+            Assertion::string($content, 'Invalid data');
+            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
             $publicKeyCredentialCreationOptions = $request->getSession()->get('__WEBAUTHN_ATTESTATION_REQUEST__');

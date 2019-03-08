@@ -69,7 +69,7 @@ class AuthenticatorAttestationResponseValidator
         /** @see 7.1.5 */
         $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
 
-        $parsedRelyingPartyId = parse_url($C->getOrigin());
+        $parsedRelyingPartyId = \Safe\parse_url($C->getOrigin());
         Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
         Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
         Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
@@ -125,17 +125,6 @@ class AuthenticatorAttestationResponseValidator
 
         /* @see 7.1.18 */
         /* @see 7.1.19 */
-    }
-
-    private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool
-    {
-        foreach ($allowedCredentials as $allowedCredential) {
-            if (hash_equals($allowedCredential->getId(), $credentialId)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function has(string $credentialId): bool

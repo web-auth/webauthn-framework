@@ -73,7 +73,9 @@ final class AttestationRequestController
     {
         try {
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
-            $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($request->getContent());
+            $content = $request->getContent();
+            Assertion::string($content, 'Invalid data');
+            $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $excludedCredentials = $this->getCredentials($userEntity);
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;

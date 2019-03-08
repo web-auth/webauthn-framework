@@ -72,7 +72,9 @@ final class AssertionRequestController
     {
         try {
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
-            $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($request->getContent());
+            $content = $request->getContent();
+            Assertion::string($content, 'Invalid data');
+            $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
