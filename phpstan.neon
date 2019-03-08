@@ -8,6 +8,7 @@ parameters:
     ignoreErrors:
         - '#Parameter \#2 $id of method Symfony\\Component\\DependencyInjection\\ContainerBuilder::setAlias\(\) expects string|Symfony\\Component\\DependencyInjection\\Alias, Webauthn\\PublicKeyCredentialSourceRepository given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+        - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
         - '#Call to function method_exists\(\) with Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder and (.*) will always evaluate to true\.#'
         - '#Parameter \#1 \$serialized \(string\) of method (.*)::unserialize\(\) should be contravariant with parameter \$serialized \(mixed\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\AbstractToken::unserialize\(\)#'
         - '#Instantiation of deprecated class Jose\\Component\\Core\\Converter\\StandardConverter\.#'
