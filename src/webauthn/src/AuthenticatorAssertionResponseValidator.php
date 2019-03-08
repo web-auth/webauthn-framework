@@ -103,13 +103,13 @@ class AuthenticatorAssertionResponseValidator
 
         /** @see 7.2.9 */
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
-        $parsedRelyingPartyId = parse_url($C->getOrigin());
+        $rpIdLength = mb_strlen($rpId);
+        $parsedRelyingPartyId = \Safe\parse_url($C->getOrigin());
         Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
         Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
         $clientDataRpId = $parsedRelyingPartyId['host'];
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
-        $rpIdLength = mb_strlen($rpId);
         Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 
         /* @see 7.2.10 */
@@ -179,7 +179,7 @@ class AuthenticatorAssertionResponseValidator
     private function has(string $credentialId): bool
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            return null !== $this->credentialRepository->find($credentialId);
+            return null !== $this->credentialRepository->findOneByCredentialId($credentialId);
         }
 
         return $this->credentialRepository->has($credentialId);
@@ -188,7 +188,7 @@ class AuthenticatorAssertionResponseValidator
     private function get(string $credentialId): AttestedCredentialData
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            $credentialSource = $this->credentialRepository->find($credentialId);
+            $credentialSource = $this->credentialRepository->findOneByCredentialId($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getAttestedCredentialData();
@@ -200,7 +200,7 @@ class AuthenticatorAssertionResponseValidator
     private function getUserHandleFor(string $credentialId): string
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            $credentialSource = $this->credentialRepository->find($credentialId);
+            $credentialSource = $this->credentialRepository->findOneByCredentialId($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getUserHandle();
@@ -212,7 +212,7 @@ class AuthenticatorAssertionResponseValidator
     private function getCounterFor(string $credentialId): int
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            $credentialSource = $this->credentialRepository->find($credentialId);
+            $credentialSource = $this->credentialRepository->findOneByCredentialId($credentialId);
             Assertion::notNull($credentialSource);
 
             return $credentialSource->getCounter();
@@ -224,7 +224,7 @@ class AuthenticatorAssertionResponseValidator
     public function updateCounterFor(string $credentialId, int $newCounter): void
     {
         if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            $credentialSource = $this->credentialRepository->find($credentialId);
+            $credentialSource = $this->credentialRepository->findOneByCredentialId($credentialId);
             Assertion::notNull($credentialSource);
             $credentialSource->setCounter($newCounter);
             $this->credentialRepository->save($credentialSource);

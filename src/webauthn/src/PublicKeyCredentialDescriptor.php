@@ -69,8 +69,8 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
 
     public static function createFromJson(array $json): self
     {
-        Assertion::keyExists($json, 'type', 'Invalid input.');
-        Assertion::keyExists($json, 'id', 'Invalid input.');
+        Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
+        Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
 
         return new self(
             $json['type'],

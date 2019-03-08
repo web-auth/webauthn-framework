@@ -30,7 +30,7 @@ final class PublicKeyCredentialRequestOptionsFactory
         $this->profiles = $profiles;
     }
 
-    public function create(string $key, array $allowCredentials): PublicKeyCredentialRequestOptions
+    public function create(string $key, array $allowCredentials, ?string $userVerification = null): PublicKeyCredentialRequestOptions
     {
         Assertion::keyExists($this->profiles, $key, \Safe\sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
@@ -40,7 +40,7 @@ final class PublicKeyCredentialRequestOptionsFactory
             $profile['timeout'],
             $profile['rp_id'],
             $allowCredentials,
-            $profile['user_verification'],
+            $userVerification ?? $profile['user_verification'],
             $this->createExtensions($profile)
         );
     }

@@ -21,6 +21,9 @@ services:
 
     httplug.client.default: '@httplug.client.mock'
 
+    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository:
+        autowire: true
+
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
@@ -55,6 +58,7 @@ httplug:
 
 webauthn:
     credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
+    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
     android_safetynet:
         enabled: true
         api_key: 'api_key'
@@ -77,6 +81,13 @@ webauthn:
                 require_resident_key: true
                 user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
             attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+        default:
+            public_key_credential_parameters:
+                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
+                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA
+            rp:
+                name: 'My other application'
+                id: 'webauth.app'
     request_profiles:
         foo:
             extensions:
@@ -85,3 +96,21 @@ webauthn:
             challenge_length: 64
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
+    transport_binding_profile:
+        creation:
+            default:
+                profile_name: 'foo'
+                request_path: '/attestation/options'
+                response_path: '/attestation/result'
+                host: 'test.com'
+            with_host:
+                profile_name: 'default'
+                request_path: '/attestation/options'
+                response_path: '/attestation/result'
+                host: 'webauth.app'
+        request:
+            default:
+                profile_name: 'foo'
+                request_path: '/assertion/options'
+                response_path: '/assertion/result'
+                host: 'test.com'

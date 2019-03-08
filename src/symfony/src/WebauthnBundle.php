@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 
@@ -40,6 +41,7 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new AttestationStatementSupportCompilerPass());
         $container->addCompilerPass(new ExtensionOutputCheckerCompilerPass());
         $container->addCompilerPass(new CoseAlgorithmCompilerPass());
+        $container->addCompilerPass(new DynamicRouteCompilerPass());
 
         $this->registerMappings($container);
     }

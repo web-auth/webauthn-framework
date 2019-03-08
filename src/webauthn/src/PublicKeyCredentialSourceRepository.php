@@ -15,7 +15,12 @@ namespace Webauthn;
 
 interface PublicKeyCredentialSourceRepository extends CredentialRepository
 {
-    public function find(string $publicKeyCredentialId): ?PublicKeyCredentialSource;
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource;
+
+    /**
+     * @return PublicKeyCredentialSource[]
+     */
+    public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array;
 
     public function save(PublicKeyCredentialSource $publicKeyCredentialSource): void;
 }
