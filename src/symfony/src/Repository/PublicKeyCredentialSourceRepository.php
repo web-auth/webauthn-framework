@@ -81,7 +81,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $qb->select('c')
             ->from($this->getClass(), 'c')
             ->where('c.userHandle = :userHandle')
-            ->setParameter(':userHandle', base64_encode($publicKeyCredentialUserEntity->getId()))
+            ->setParameter(':userHandle', $publicKeyCredentialUserEntity->getId())
             ->getQuery()
             ->execute()
             ;
