@@ -63,7 +63,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $this->manager;
     }
 
-    public function save(PublicKeyCredentialSource $publicKeyCredentialSource, bool $flush = true): void
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource, bool $flush = true): void
     {
         $this->manager->persist($publicKeyCredentialSource);
         if ($flush) {
@@ -144,6 +144,6 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         }
 
         $credential->setCounter($newCounter);
-        $this->save($credential);
+        $this->saveCredentialSource($credential);
     }
 }

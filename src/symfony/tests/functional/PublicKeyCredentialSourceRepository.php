@@ -41,7 +41,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             'foo',
             100
         );
-        $this->save($pkcs1);
+        $this->saveCredentialSource($pkcs1);
     }
 
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
@@ -58,7 +58,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         return $this->credentials[base64_encode($credentialId)];
     }
 
-    public function save(PublicKeyCredentialSource $publicKeyCredentialSource): void
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $this->credentials[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
     }
@@ -121,6 +121,6 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         }
 
         $credential->setCounter($newCounter);
-        $this->save($credential);
+        $this->saveCredentialSource($credential);
     }
 }

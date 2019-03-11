@@ -227,7 +227,7 @@ class AuthenticatorAssertionResponseValidator
             $credentialSource = $this->credentialRepository->findOneByCredentialId($credentialId);
             Assertion::notNull($credentialSource);
             $credentialSource->setCounter($newCounter);
-            $this->credentialRepository->save($credentialSource);
+            $this->credentialRepository->saveCredentialSource($credentialSource);
 
             return;
         }

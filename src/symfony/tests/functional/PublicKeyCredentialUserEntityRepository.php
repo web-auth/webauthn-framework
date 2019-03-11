@@ -28,12 +28,12 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         ];
     }
 
-    public function find(string $username): ?PublicKeyCredentialUserEntity
+    public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
     {
         return $this->users[$username] ?? null;
     }
 
-    public function create(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
+    public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
     {
         return new PublicKeyCredentialUserEntity(
             $username,
@@ -43,7 +43,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         );
     }
 
-    public function save(PublicKeyCredentialUserEntity $userEntity): void
+    public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         $this->users[$userEntity->getName()] = $userEntity;
     }

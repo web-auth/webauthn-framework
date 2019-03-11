@@ -86,7 +86,7 @@ final class AssertionRequestController
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
             );
-            $request->getSession()->set('__WEBAUTHN_ASSERTION_REQUEST__', ['options' => $publicKeyCredentialRequestOptions, 'userHandle' => $userEntity->getId()]);
+            $request->getSession()->set('__WEBAUTHN_ASSERTION_REQUEST__', ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
 
             return new JsonResponse($data);
         } catch (\Throwable $throwable) {
@@ -109,7 +109,7 @@ final class AssertionRequestController
     private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
-        $userEntity = $this->userEntityRepository->find($username);
+        $userEntity = $this->userEntityRepository->findOneByUsername($username);
         Assertion::notNull($userEntity, 'User not found');
 
         return $userEntity;

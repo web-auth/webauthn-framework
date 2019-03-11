@@ -22,5 +22,5 @@ interface PublicKeyCredentialSourceRepository extends CredentialRepository
      */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array;
 
-    public function save(PublicKeyCredentialSource $publicKeyCredentialSource): void;
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void;
 }

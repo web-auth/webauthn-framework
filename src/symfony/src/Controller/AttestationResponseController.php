@@ -23,6 +23,7 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseController
@@ -64,12 +65,27 @@ final class AttestationResponseController
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            /** @var AuthenticatorAttestationResponse $response */
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
+            /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
             $publicKeyCredentialCreationOptions = $request->getSession()->get('__WEBAUTHN_ATTESTATION_REQUEST__');
             $request->getSession()->remove('__WEBAUTHN_ATTESTATION_REQUEST__');
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
             $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+            $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
+            $credentialSource = new PublicKeyCredentialSource(
+                $publicKeyCredential->getId(),
+                $publicKeyCredential->getType(),
+                [],
+                $response->getAttestationObject()->getAttStmt()->getType(),
+                $response->getAttestationObject()->getAttStmt()->getTrustPath(),
+                $response->getAttestationObject()->getAuthData()->getAttestedCredentialData()->getAaguid(),
+                $response->getAttestationObject()->getAuthData()->getAttestedCredentialData()->getCredentialPublicKey(),
+                $publicKeyCredentialCreationOptions->getUser()->getId(),
+                $response->getAttestationObject()->getAuthData()->getSignCount()
+            );
+            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (\Throwable $throwable) {

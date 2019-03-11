@@ -116,9 +116,9 @@ final class AttestationRequestController
     private function getUserEntity(ServerPublicKeyCredentialCreationOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
-        $userEntity = $this->userEntityRepository->find($username);
+        $userEntity = $this->userEntityRepository->findOneByUsername($username);
         if (null === $userEntity) {
-            $userEntity = $this->userEntityRepository->create($username, $creationOptionsRequest->displayName, null);
+            $userEntity = $this->userEntityRepository->createUserEntity($username, $creationOptionsRequest->displayName, null);
         }
 
         return $userEntity;

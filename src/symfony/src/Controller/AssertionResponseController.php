@@ -24,6 +24,7 @@ use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AssertionResponseController
 {
@@ -66,17 +67,17 @@ final class AssertionResponseController
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
-            $data = $request->getSession()->get('__WEBAUTHN_ATTESTATION_REQUEST__');
-            $request->getSession()->remove('__WEBAUTHN_ATTESTATION_REQUEST__');
+            $data = $request->getSession()->get('__WEBAUTHN_ASSERTION_REQUEST__');
+            $request->getSession()->remove('__WEBAUTHN_ASSERTION_REQUEST__');
             Assertion::isArray($data, 'Unable to find the public key credential creation options');
             Assertion::keyExists($data, 'options', 'Unable to find the public key credential creation options');
             $publicKeyCredentialRequestOptions = $data['options'];
             Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential creation options');
-            Assertion::keyExists($data, 'userHandle', 'Unable to find the public key credential creation options');
-            $userHandle = $data['userHandle'];
-            Assertion::string($userHandle, 'Unable to find the public key credential creation options');
-            Assertion::notEmpty($userHandle, 'Unable to find the public key credential creation options');
-            $this->assertionResponseValidator->check($publicKeyCredential->getId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userHandle);
+            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential creation options');
+            $userEntity = $data['userEntity'];
+            Assertion::isInstanceOf(PublicKeyCredentialUserEntity::class, $userEntity, 'Unable to find the public key credential creation options');
+            Assertion::notEmpty($userEntity, 'Unable to find the public key credential creation options');
+            $this->assertionResponseValidator->check($publicKeyCredential->getId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntity->getId());
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (\Throwable $throwable) {
