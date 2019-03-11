@@ -555,7 +555,7 @@ $authenticatorAttestationResponseValidator->check(
 );
 ```
 
-If the Relaying Party Entity set in the `$publicKeyCredentialCreationOptions` have no ID, the host from the 
+If the Relying Party Entity set in the `$publicKeyCredentialCreationOptions` have no ID, the host from the 
 request object will be used.
 
 
