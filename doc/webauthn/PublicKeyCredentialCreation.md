@@ -15,7 +15,7 @@ This object is designed to be serialized into a JSON object. This behaviour will
 
 It will need:
 
-* The Relaying Party data (your application)
+* The Relying Party data (your application)
 * The User data
 * A challenge (random binary string)
 * A list of supported public key parameters (at least one)
@@ -27,9 +27,9 @@ It will need:
 
 Let see step by step how to set a `PublicKeyCredentialCreationOptions` object.
 
-## Relaying Party Entity
+## Relying Party Entity
 
-The Relaying Party Entity corresponds to your application details.
+The Relying Party Entity corresponds to your application details.
 
 Its arguments are:
 * a name (required): your application name (`My Secured Application`, `ACME Protection System V2`)
@@ -58,7 +58,7 @@ It could be `www.sub.domain.com`, `sub.domain.com`, `domain.com` but **not** `co
 
 ## User Entity
 
-The User Entity needs the same information as the Relaying Party plus a display name:
+The User Entity needs the same information as the Relying Party plus a display name:
 
 * a name (required): this value corresponds to the username. **This value must be unique** in your application.
 * an ID (required): this user ID. **This value must be unique** in your application.
