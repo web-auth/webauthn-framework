@@ -40,6 +40,7 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "fgrosse/phpasn1": "^2.1",
+        "nyholm/psr7": "^1.1",
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-bundle": "^1.0",
@@ -94,7 +95,6 @@
         "symfony/serializer": "^4.2",
         "symfony/validator": "^4.2",
         "symfony/var-dumper": "^4.2",
-        "thecodingmachine/phpstan-safe-rule": "^0.1.0",
-        "zendframework/zend-diactoros": "^2.1"
+        "thecodingmachine/phpstan-safe-rule": "^0.1.0"
     }
 }

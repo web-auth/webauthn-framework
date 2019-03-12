@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,16 +60,15 @@ final class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            $psr7Factory = new DiactorosFactory();
-            $psr7Request = $psr7Factory->createRequest($request);
+            $psr17Factory = new Psr17Factory();
+            $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
+            $psr7Request = $psrHttpFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
-            /** @var AuthenticatorAttestationResponse $response */
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
-            /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
             $publicKeyCredentialCreationOptions = $request->getSession()->get('__WEBAUTHN_ATTESTATION_REQUEST__');
             $request->getSession()->remove('__WEBAUTHN_ATTESTATION_REQUEST__');
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');

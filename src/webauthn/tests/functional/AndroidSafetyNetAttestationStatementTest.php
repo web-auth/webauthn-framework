@@ -16,6 +16,7 @@ namespace Webauthn\Tests\Functional;
 use Base64Url\Base64Url;
 use Cose\Algorithms;
 use Http\Mock\Client;
+use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
@@ -29,7 +30,6 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use Zend\Diactoros\Response;
 
 /**
  * @group functional
