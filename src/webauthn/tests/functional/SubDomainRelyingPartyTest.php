@@ -23,7 +23,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
  * @group functional
  * @group Fido2
  */
-class SubDomainRelayingPartyTest extends AbstractTestCase
+class SubDomainRelyingPartyTest extends AbstractTestCase
 {
     /**
      * @test

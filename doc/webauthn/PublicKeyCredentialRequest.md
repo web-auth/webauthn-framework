@@ -18,7 +18,7 @@ This object will need:
 
 * A challenge (random binary string)
 * A timeout (optional)
-* The Relaying Party ID i.e. your application domain (optional)
+* The Relying Party ID i.e. your application domain (optional)
 * A list with at least one registered Public Key Credential Descriptors
 * The user presence requirement (optional)
 * Extensions (optional)
@@ -107,7 +107,7 @@ $registeredPublicKeyCredentialDescriptors = …;
 $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
     random_bytes(32),                                                           // Challenge
     60000,                                                                      // Timeout
-    'foo.example.com',                                                          // Relaying Party ID
+    'foo.example.com',                                                          // Relying Party ID
     $registeredPublicKeyCredentialDescriptors,                                  // Registered PublicKeyCredentialDescriptor classes
     PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, // User verification requirement
     $extensions
@@ -278,7 +278,7 @@ $authenticatorAssertionResponse->check(
 );
 ```
 
-If the Relaying Party ID is not set in the `$publicKeyCredentialRequestOptions`, the host from the HTTP request will be used.
+If the Relying Party ID is not set in the `$publicKeyCredentialRequestOptions`, the host from the HTTP request will be used.
 
 If no exception is thrown, the response is valid and you can continue the authentication of the user:
 
