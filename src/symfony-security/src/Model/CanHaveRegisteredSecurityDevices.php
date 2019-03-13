@@ -22,6 +22,4 @@ interface CanHaveRegisteredSecurityDevices extends UserInterface
      * @return PublicKeyCredentialDescriptor[]
      */
     public function getSecurityDeviceCredentialIds(): iterable;
-
-    public function getUserHandle(): string;
 }

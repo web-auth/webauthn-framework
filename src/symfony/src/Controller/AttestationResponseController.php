@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,20 +48,24 @@ final class AttestationResponseController
      */
     private $attestationResponseValidator;
 
-    public function __construct(PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository)
+    /**
+     * @var HttpMessageFactoryInterface
+     */
+    private $httpMessageFactory;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository)
     {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
+        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     public function __invoke(Request $request): Response
     {
         try {
-            $psr17Factory = new Psr17Factory();
-            $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
-            $psr7Request = $psrHttpFactory->createRequest($request);
+            $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');

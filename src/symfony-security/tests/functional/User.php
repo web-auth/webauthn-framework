@@ -51,11 +51,6 @@ final class User implements UserInterface, CanHaveRegisteredSecurityDevices
         yield from $this->registered_devices;
     }
 
-    public function getUserHandle(): string
-    {
-        return $this->id;
-    }
-
     public function getRoles(): array
     {
         return $this->roles + ['ROLE_USER'];

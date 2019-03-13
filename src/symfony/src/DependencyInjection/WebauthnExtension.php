@@ -17,6 +17,7 @@ use Cose\Algorithm\Algorithm;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -84,7 +85,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
         $loader->load('cose.php');
-        $loader->load('transport_binding_profile.php');
+
+        $this->loadTransportBindingProfile($container, $loader, $config);
 
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
@@ -94,6 +96,19 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
             $loader->load('android_safetynet.php');
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+    {
+        return new Configuration($this->alias);
+    }
+
+    public function loadTransportBindingProfile(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    {
+        $loader->load('transport_binding_profile.php');
 
         foreach ($config['transport_binding_profile']['creation'] as $name => $profileConfig) {
             $attestationRequestControllerId = \Safe\sprintf('webauthn.controller.transport_binding_profile.creation.request.%s', $name);
@@ -128,14 +143,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionResponseController->addTag('controller.service_arguments');
             $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
-    {
-        return new Configuration($this->alias);
     }
 
     /**

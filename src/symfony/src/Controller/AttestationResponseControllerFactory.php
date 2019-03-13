@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -55,8 +56,12 @@ final class AttestationResponseControllerFactory
      * @var AuthenticatorAttestationResponseValidator
      */
     private $attestationResponseValidator;
+    /**
+     * @var HttpMessageFactoryInterface
+     */
+    private $httpMessageFactory;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -65,6 +70,7 @@ final class AttestationResponseControllerFactory
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->attestationResponseValidator = $attestationResponseValidator;
+        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     public function createAttestationRequestController(string $profile): AttestationRequestController
@@ -82,6 +88,7 @@ final class AttestationResponseControllerFactory
     public function createAttestationResponseController(): AttestationResponseController
     {
         return new AttestationResponseController(
+            $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->userEntityRepository,

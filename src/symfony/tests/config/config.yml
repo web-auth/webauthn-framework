@@ -27,6 +27,15 @@ services:
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
+    Nyholm\Psr7\Factory\Psr17Factory: ~
+    Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface:
+        class: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
+        arguments:
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+
 doctrine:
     dbal:
         driver: 'pdo_mysql'

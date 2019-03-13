@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -55,8 +56,12 @@ final class AssertionResponseControllerFactory
      * @var AuthenticatorAssertionResponseValidator
      */
     private $attestationResponseValidator;
+    /**
+     * @var HttpMessageFactoryInterface
+     */
+    private $httpMessageFactory;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -65,6 +70,7 @@ final class AssertionResponseControllerFactory
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->attestationResponseValidator = $attestationResponseValidator;
+        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     public function createAssertionRequestController(string $profile): AssertionRequestController
@@ -82,6 +88,7 @@ final class AssertionResponseControllerFactory
     public function createAssertionResponseController(): AssertionResponseController
     {
         return new AssertionResponseController(
+            $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->userEntityRepository,
