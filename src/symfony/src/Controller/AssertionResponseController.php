@@ -53,13 +53,19 @@ final class AssertionResponseController
      */
     private $httpMessageFactory;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository)
+    /**
+     * @var string
+     */
+    private $sessionParameterName;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName)
     {
+        $this->httpMessageFactory = $httpMessageFactory;
         $this->assertionResponseValidator = $assertionResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->httpMessageFactory = $httpMessageFactory;
+        $this->sessionParameterName = $sessionParameterName;
     }
 
     public function __invoke(Request $request): Response
@@ -72,8 +78,8 @@ final class AssertionResponseController
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
-            $data = $request->getSession()->get('__WEBAUTHN_ASSERTION_REQUEST__');
-            $request->getSession()->remove('__WEBAUTHN_ASSERTION_REQUEST__');
+            $data = $request->getSession()->get($this->sessionParameterName);
+            $request->getSession()->remove($this->sessionParameterName);
             Assertion::isArray($data, 'Unable to find the public key credential creation options');
             Assertion::keyExists($data, 'options', 'Unable to find the public key credential creation options');
             $publicKeyCredentialRequestOptions = $data['options'];

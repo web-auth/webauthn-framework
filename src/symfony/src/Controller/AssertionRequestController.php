@@ -57,8 +57,12 @@ final class AssertionRequestController
      * @var PublicKeyCredentialSourceRepository
      */
     private $credentialSourceRepository;
+    /**
+     * @var string
+     */
+    private $sessionParameterName;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -66,6 +70,7 @@ final class AssertionRequestController
         $this->profile = $profile;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
+        $this->sessionParameterName = $sessionParameterName;
     }
 
     public function __invoke(Request $request): Response
@@ -86,7 +91,7 @@ final class AssertionRequestController
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
             );
-            $request->getSession()->set('__WEBAUTHN_ASSERTION_REQUEST__', ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
+            $request->getSession()->set($this->sessionParameterName, ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
 
             return new JsonResponse($data);
         } catch (\Throwable $throwable) {

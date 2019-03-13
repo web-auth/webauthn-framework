@@ -73,7 +73,7 @@ final class AssertionResponseControllerFactory
         $this->httpMessageFactory = $httpMessageFactory;
     }
 
-    public function createAssertionRequestController(string $profile): AssertionRequestController
+    public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
     {
         return new AssertionRequestController(
             $this->serializer,
@@ -81,18 +81,20 @@ final class AssertionResponseControllerFactory
             $this->userEntityRepository,
             $this->credentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
-            $profile
+            $profile,
+            $sessionParameterName
         );
     }
 
-    public function createAssertionResponseController(): AssertionResponseController
+    public function createAssertionResponseController(string $sessionParameterName): AssertionResponseController
     {
         return new AssertionResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->userEntityRepository,
-            $this->credentialSourceRepository
+            $this->credentialSourceRepository,
+            $sessionParameterName
         );
     }
 }

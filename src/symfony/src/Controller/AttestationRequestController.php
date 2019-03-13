@@ -58,8 +58,12 @@ final class AttestationRequestController
      * @var PublicKeyCredentialSourceRepository
      */
     private $credentialSourceRepository;
+    /**
+     * @var string
+     */
+    private $sessionParameterName;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -67,6 +71,7 @@ final class AttestationRequestController
         $this->profile = $profile;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
+        $this->sessionParameterName = $sessionParameterName;
     }
 
     public function __invoke(Request $request): Response
@@ -93,7 +98,7 @@ final class AttestationRequestController
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
             );
-            $request->getSession()->set('__WEBAUTHN_ATTESTATION_REQUEST__', $publicKeyCredentialCreationOptions);
+            $request->getSession()->set($this->sessionParameterName, $publicKeyCredentialCreationOptions);
 
             return new JsonResponse($data);
         } catch (\Throwable $throwable) {

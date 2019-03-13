@@ -73,7 +73,7 @@ final class AttestationResponseControllerFactory
         $this->httpMessageFactory = $httpMessageFactory;
     }
 
-    public function createAttestationRequestController(string $profile): AttestationRequestController
+    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
     {
         return new AttestationRequestController(
             $this->serializer,
@@ -81,18 +81,20 @@ final class AttestationResponseControllerFactory
             $this->userEntityRepository,
             $this->credentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
-            $profile
+            $profile,
+            $sessionParameterName
         );
     }
 
-    public function createAttestationResponseController(): AttestationResponseController
+    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
     {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->userEntityRepository,
-            $this->credentialSourceRepository
+            $this->credentialSourceRepository,
+            $sessionParameterName
         );
     }
 }

@@ -52,14 +52,19 @@ final class AttestationResponseController
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+    /**
+     * @var string
+     */
+    private $sessionParameterName;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName)
     {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->httpMessageFactory = $httpMessageFactory;
+        $this->sessionParameterName = $sessionParameterName;
     }
 
     public function __invoke(Request $request): Response
@@ -72,8 +77,8 @@ final class AttestationResponseController
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
-            $publicKeyCredentialCreationOptions = $request->getSession()->get('__WEBAUTHN_ATTESTATION_REQUEST__');
-            $request->getSession()->remove('__WEBAUTHN_ATTESTATION_REQUEST__');
+            $publicKeyCredentialCreationOptions = $request->getSession()->get($this->sessionParameterName);
+            $request->getSession()->remove($this->sessionParameterName);
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
             $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
