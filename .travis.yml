@@ -24,6 +24,7 @@ install: travis_retry composer install
 script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist
     - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
+    - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist
     - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist
 
 jobs:
