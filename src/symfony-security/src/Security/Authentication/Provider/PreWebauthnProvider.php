@@ -16,7 +16,6 @@ namespace Webauthn\SecurityBundle\Security\Authentication\Provider;
 use Assert\Assertion;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -82,10 +81,6 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
 
         if (!$user instanceof CanHaveRegisteredSecurityDevices) {
             throw new AuthenticationServiceException('The user did not registered any security devices');
-        }
-        $credentialIds = [];
-        foreach ($user->getSecurityDeviceCredentialIds() as $descriptor) {
-            $credentialIds[] = $descriptor->getId();
         }
 
         try {
