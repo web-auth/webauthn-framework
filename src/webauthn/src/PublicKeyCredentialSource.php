@@ -81,7 +81,6 @@ class PublicKeyCredentialSource
 
     public static function createFromPublicKeyCredential(PublicKeyCredential $publicKeyCredential, string $userHandle): self
     {
-        /** @var AuthenticatorAttestationResponse $response */
         $response = $publicKeyCredential->getResponse();
         Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'This method is only available with public key credential containing an authenticator attestation response.');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
