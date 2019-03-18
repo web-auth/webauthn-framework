@@ -82,16 +82,9 @@ final class AttestationResponseController
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
             $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
-            $credentialSource = new PublicKeyCredentialSource(
-                $publicKeyCredential->getId(),
-                $publicKeyCredential->getType(),
-                [],
-                $response->getAttestationObject()->getAttStmt()->getType(),
-                $response->getAttestationObject()->getAttStmt()->getTrustPath(),
-                $response->getAttestationObject()->getAuthData()->getAttestedCredentialData()->getAaguid(),
-                $response->getAttestationObject()->getAuthData()->getAttestedCredentialData()->getCredentialPublicKey(),
-                $publicKeyCredentialCreationOptions->getUser()->getId(),
-                $response->getAttestationObject()->getAuthData()->getSignCount()
+            $credentialSource = PublicKeyCredentialSource::createFromPublicKeyCredential(
+                $publicKeyCredential,
+                $publicKeyCredentialCreationOptions->getUser()->getId()
             );
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
