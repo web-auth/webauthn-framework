@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Controller;
+namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,16 +19,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\Bundle\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
+use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class AttestationRequestController
+final class AssertionRequestController
 {
     /**
      * @var SerializerInterface
@@ -36,9 +35,9 @@ final class AttestationRequestController
     private $serializer;
 
     /**
-     * @var PublicKeyCredentialCreationOptionsFactory
+     * @var PublicKeyCredentialRequestOptionsFactory
      */
-    private $publicKeyCredentialCreationOptionsFactory;
+    private $publicKeyCredentialRequestOptionsFactory;
 
     /**
      * @var string
@@ -63,11 +62,11 @@ final class AttestationRequestController
      */
     private $sessionParameterName;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
+        $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
         $this->profile = $profile;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
@@ -80,25 +79,19 @@ final class AttestationRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
+            $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $excludedCredentials = $this->getCredentials($userEntity);
-            $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
-            if (\is_array($authenticatorSelection)) {
-                $authenticatorSelection = AuthenticatorSelectionCriteria::createFromJson($authenticatorSelection);
-            }
-            $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
+            $allowedCredentials = $this->getCredentials($userEntity);
+            $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
-                $userEntity,
-                $excludedCredentials,
-                $authenticatorSelection,
-                $creationOptionsRequest->attestation
+                $allowedCredentials,
+                $creationOptionsRequest->userVerification
             );
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
-                $publicKeyCredentialCreationOptions->jsonSerialize()
+                $publicKeyCredentialRequestOptions->jsonSerialize()
             );
-            $request->getSession()->set($this->sessionParameterName, $publicKeyCredentialCreationOptions);
+            $request->getSession()->set($this->sessionParameterName, ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
 
             return new JsonResponse($data);
         } catch (\Throwable $throwable) {
@@ -118,21 +111,19 @@ final class AttestationRequestController
         }, $credentialSources);
     }
 
-    private function getUserEntity(ServerPublicKeyCredentialCreationOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
+    private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
         $userEntity = $this->userEntityRepository->findOneByUsername($username);
-        if (null === $userEntity) {
-            $userEntity = $this->userEntityRepository->createUserEntity($username, $creationOptionsRequest->displayName, null);
-        }
+        Assertion::notNull($userEntity, 'User not found');
 
         return $userEntity;
     }
 
-    private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest
+    private function getServerPublicKeyCredentialRequestOptionsRequest(string $content): ServerPublicKeyCredentialRequestOptionsRequest
     {
-        $data = $this->serializer->deserialize($content, ServerPublicKeyCredentialCreationOptionsRequest::class, 'json');
-        Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
+        $data = $this->serializer->deserialize($content, ServerPublicKeyCredentialRequestOptionsRequest::class, 'json');
+        Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (\count($errors) > 0) {
             $messages = [];

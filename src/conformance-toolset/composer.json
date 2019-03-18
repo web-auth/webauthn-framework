@@ -1,0 +1,38 @@
+{
+    "name": "web-auth/conformance-toolset",
+    "type": "library",
+    "license": "MIT",
+    "description": "FIDO2/Webauthn Conformance Toolset",
+    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/conformance-toolset/contributors"
+        }
+    ],
+    "require": {
+        "symfony/psr-http-message-bridge": "^1.1",
+        "web-auth/webauthn-symfony-bundle": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\ConformanceToolset\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webauthn\\ConformanceToolset\\Tests\\Functional\\": "tests/functional/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "v1.0": "1.0.x-dev",
+            "v1.1": "1.1.x-dev"
+        }
+    }
+}

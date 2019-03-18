@@ -12,9 +12,9 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Webauthn\Bundle\Controller\AssertionResponseControllerFactory;
-use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 use Webauthn\Bundle\Routing\Loader;
+use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
+use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()

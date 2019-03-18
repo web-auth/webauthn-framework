@@ -26,18 +26,18 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
-use Webauthn\Bundle\Controller\AssertionRequestController;
-use Webauthn\Bundle\Controller\AssertionResponseController;
-use Webauthn\Bundle\Controller\AssertionResponseControllerFactory;
-use Webauthn\Bundle\Controller\AttestationRequestController;
-use Webauthn\Bundle\Controller\AttestationResponseController;
-use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\ConformanceToolset\Controller\AssertionRequestController;
+use Webauthn\ConformanceToolset\Controller\AssertionResponseController;
+use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
+use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
+use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
+use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -108,6 +108,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
     public function loadTransportBindingProfile(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
+        if (!class_exists(AttestationRequestController::class)) {
+            return;
+        }
+
         $loader->load('transport_binding_profile.php');
 
         foreach ($config['transport_binding_profile']['creation'] as $name => $profileConfig) {

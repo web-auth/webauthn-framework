@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Dto;
+namespace Webauthn\ConformanceToolset\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Webauthn\PublicKeyCredentialCreationOptions;

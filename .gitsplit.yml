@@ -5,6 +5,8 @@ splits:
       target: "https://${GH_TOKEN}@github.com/web-auth/u2f-lib.git"
     - prefix: "src/webauthn"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
+    - prefix: "src/conformance-toolset"
+      target: "https://${GH_TOKEN}@github.com/web-auth/conformance-toolset.git"
     - prefix: "src/symfony"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
     - prefix: "src/symfony-security"

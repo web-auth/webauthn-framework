@@ -11,18 +11,18 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Controller;
+namespace Webauthn\ConformanceToolset\Controller;
 
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
-final class AssertionResponseControllerFactory
+final class AttestationResponseControllerFactory
 {
     /**
      * @var SerializerInterface
@@ -30,9 +30,9 @@ final class AssertionResponseControllerFactory
     private $serializer;
 
     /**
-     * @var PublicKeyCredentialRequestOptionsFactory
+     * @var PublicKeyCredentialCreationOptionsFactory
      */
-    private $publicKeyCredentialRequestOptionsFactory;
+    private $publicKeyCredentialCreationOptionsFactory;
 
     /**
      * @var ValidatorInterface
@@ -53,7 +53,7 @@ final class AssertionResponseControllerFactory
      */
     private $publicKeyCredentialLoader;
     /**
-     * @var AuthenticatorAssertionResponseValidator
+     * @var AuthenticatorAttestationResponseValidator
      */
     private $attestationResponseValidator;
     /**
@@ -61,11 +61,11 @@ final class AssertionResponseControllerFactory
      */
     private $httpMessageFactory;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-        $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
+        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
@@ -73,22 +73,22 @@ final class AssertionResponseControllerFactory
         $this->httpMessageFactory = $httpMessageFactory;
     }
 
-    public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
+    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
     {
-        return new AssertionRequestController(
+        return new AttestationRequestController(
             $this->serializer,
             $this->validator,
             $this->userEntityRepository,
             $this->credentialSourceRepository,
-            $this->publicKeyCredentialRequestOptionsFactory,
+            $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $sessionParameterName
         );
     }
 
-    public function createAssertionResponseController(string $sessionParameterName): AssertionResponseController
+    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
     {
-        return new AssertionResponseController(
+        return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,

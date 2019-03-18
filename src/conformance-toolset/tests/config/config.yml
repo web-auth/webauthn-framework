@@ -6,6 +6,9 @@ framework:
     secret: 'test'
     session:
         storage_id: 'session.storage.mock_file'
+    router:
+        resource: "%kernel.root_dir%/../config/routing.php"
+        strict_requirements: ~
     fragments:       ~
     http_method_override: true
 
@@ -18,10 +21,10 @@ services:
 
     httplug.client.default: '@httplug.client.mock'
 
-    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository:
+    Webauthn\ConformanceToolset\Tests\Functional\PublicKeyCredentialUserEntityRepository:
         autowire: true
 
-    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
+    Webauthn\ConformanceToolset\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
     Nyholm\Psr7\Factory\Psr17Factory: ~
@@ -52,7 +55,7 @@ doctrine:
                 is_bundle: false
                 type: annotation
                 dir: '%kernel.project_dir%/'
-                prefix: 'Webauthn\Bundle\Tests\Functional'
+                prefix: 'Webauthn\ConformanceToolset\Tests\Functional'
                 alias: App
 
 httplug:
@@ -63,8 +66,8 @@ httplug:
 
 
 webauthn:
-    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
-    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
+    credential_repository: 'Webauthn\ConformanceToolset\Tests\Functional\PublicKeyCredentialSourceRepository'
+    user_repository: 'Webauthn\ConformanceToolset\Tests\Functional\PublicKeyCredentialUserEntityRepository'
     android_safetynet:
         enabled: true
         api_key: 'api_key'

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Controller;
+namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;

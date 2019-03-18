@@ -20,6 +20,7 @@
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
+            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
             "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
         }
     },
@@ -30,6 +31,7 @@
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\ConformanceToolset\\Tests\\Functional\\": "src/conformance-toolset/tests/functional/",
             "Webauthn\\SecurityBundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/"
         }
     },
@@ -57,6 +59,7 @@
         "web-authn/cose-lib": "self.version",
         "web-authn/u2f-lib": "self.version",
         "web-authn/webauthn-lib": "self.version",
+        "web-auth/conformance-toolset": "self.version",
         "web-authn/webauthn-symfony-bundle": "self.version",
         "web-authn/webauthn-symfony-security-bundle": "self.version"
     },
