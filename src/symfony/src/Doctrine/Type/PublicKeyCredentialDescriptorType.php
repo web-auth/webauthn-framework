@@ -32,9 +32,7 @@ final class PublicKeyCredentialDescriptorType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $json = \Safe\json_decode($value, true);
-
-        return PublicKeyCredentialDescriptor::createFromJson($json);
+        return PublicKeyCredentialDescriptor::createFromString($value);
     }
 
     /**

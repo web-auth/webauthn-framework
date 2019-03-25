@@ -137,7 +137,23 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
         return $this->extensions;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
         Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
@@ -149,25 +165,25 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {
-            $pubKeyCredParams[] = PublicKeyCredentialParameters::createFromJson($pubKeyCredParam);
+            $pubKeyCredParams[] = PublicKeyCredentialParameters::createFromArray($pubKeyCredParam);
         }
         $excludeCredentials = [];
         if (isset($json['excludeCredentials'])) {
             foreach ($json['excludeCredentials'] as $excludeCredential) {
-                $excludeCredentials[] = PublicKeyCredentialDescriptor::createFromJson($excludeCredential);
+                $excludeCredentials[] = PublicKeyCredentialDescriptor::createFromArray($excludeCredential);
             }
         }
 
         return new self(
-            PublicKeyCredentialRpEntity::createFromJson($json['rp']),
-            PublicKeyCredentialUserEntity::createFromJson($json['user']),
+            PublicKeyCredentialRpEntity::createFromArray($json['rp']),
+            PublicKeyCredentialUserEntity::createFromArray($json['user']),
             \Safe\base64_decode($json['challenge'], true),
             $pubKeyCredParams,
             $json['timeout'] ?? null,
             $excludeCredentials,
-            AuthenticatorSelectionCriteria::createFromJson($json['authenticatorSelection']),
+            AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']),
             $json['attestation'],
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : new AuthenticationExtensionsClientInputs()
+            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs()
         );
     }
 

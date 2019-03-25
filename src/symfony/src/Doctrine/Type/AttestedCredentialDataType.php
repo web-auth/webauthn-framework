@@ -34,7 +34,7 @@ final class AttestedCredentialDataType extends Type
     {
         $json = \Safe\json_decode($value, true);
 
-        return AttestedCredentialData::createFromJson($json);
+        return AttestedCredentialData::createFromArray($json);
     }
 
     /**

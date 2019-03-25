@@ -36,8 +36,7 @@ class PublicKeyCredentialDescriptorTest extends TestCase
         static::assertEquals(['transport'], $descriptor->getTransports());
         static::assertEquals('{"type":"type","id":"aWQ=","transports":["transport"]}', \Safe\json_encode($descriptor));
 
-        $json = \Safe\json_decode('{"type":"type","id":"aWQ=","transports":["transport"]}', true);
-        $created = PublicKeyCredentialDescriptor::createFromJson($json);
+        $created = PublicKeyCredentialDescriptor::createFromString('{"type":"type","id":"aWQ=","transports":["transport"]}');
         static::assertEquals($descriptor, $created);
     }
 }

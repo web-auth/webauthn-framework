@@ -34,7 +34,7 @@ final class TrustPathDataType extends Type
     {
         $json = \Safe\json_decode($value, true);
 
-        return AbstractTrustPath::createFromJson($json);
+        return AbstractTrustPath::createFromArray($json);
     }
 
     /**

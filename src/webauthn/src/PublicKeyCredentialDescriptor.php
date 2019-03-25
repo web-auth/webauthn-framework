@@ -67,7 +67,23 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
         return $this->transports;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
