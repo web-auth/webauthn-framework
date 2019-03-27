@@ -56,15 +56,15 @@ class PreWebauthnProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token): TokenInterface
     {
-        Assertion::isInstanceOf($token, PreWebauthnToken::class,'The token is not supported by this authentication provider.');
+        Assertion::isInstanceOf($token, PreWebauthnToken::class, 'The token is not supported by this authentication provider.');
         Assertion::eq($this->providerKey, $token->getProviderKey(), 'The token is not supported by this authentication provider.');
 
         return $this->processWithPreWebauthnToken($token);
     }
+
     /**
      * {@inheritdoc}
      */
-
     public function supports(TokenInterface $token): bool
     {
         return $token instanceof PreWebauthnToken && $this->providerKey === $token->getProviderKey();

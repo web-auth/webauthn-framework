@@ -51,7 +51,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
 
     public function findOneByCredentialId(string $credentialId): ?PublicKeyCredentialSource
     {
-        if (!array_key_exists(base64_encode($credentialId), $this->credentials)) {
+        if (!\array_key_exists(base64_encode($credentialId), $this->credentials)) {
             return null;
         }
 

@@ -26,10 +26,10 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
      * @param ContainerBuilder $container
-     * @param string $id
-     * @param array $config
-     * @param string $userProviderId
-     * @param string $defaultEntryPointId
+     * @param string           $id
+     * @param array            $config
+     * @param string           $userProviderId
+     * @param string           $defaultEntryPointId
      *
      * @return array
      */

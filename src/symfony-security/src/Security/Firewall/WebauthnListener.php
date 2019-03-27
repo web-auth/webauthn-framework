@@ -40,12 +40,12 @@ use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Model\HasUserHandle;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
-use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebauthnListener implements ListenerInterface
 {

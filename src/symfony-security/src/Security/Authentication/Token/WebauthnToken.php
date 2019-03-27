@@ -140,7 +140,7 @@ class WebauthnToken extends AbstractToken
             $this->signCount,
             $this->extensions,
             $this->providerKey,
-            parent::serialize()
+            parent::serialize(),
         ]);
     }
 

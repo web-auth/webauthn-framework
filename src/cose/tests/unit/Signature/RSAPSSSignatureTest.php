@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Cose\Tests\Unit\Signature;
 
 use Base64Url\Base64Url;
+use Cose\Algorithm\Signature\RSA\PS384;
 use Cose\Algorithms;
 use Cose\Key\RsaKey;
-use Cose\Algorithm\Signature\RSA\PS384;
 use PHPUnit\Framework\TestCase;
 
 /**

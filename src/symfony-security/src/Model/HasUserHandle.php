@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\SecurityBundle\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
-use Webauthn\PublicKeyCredentialDescriptor;
 
 interface HasUserHandle extends UserInterface
 {

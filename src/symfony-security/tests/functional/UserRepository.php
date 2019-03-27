@@ -35,7 +35,7 @@ final class UserRepository
 
     public function findByUsername(string $username): ?UserInterface
     {
-        if (array_key_exists($username, $this->users)) {
+        if (\array_key_exists($username, $this->users)) {
             return $this->users[$username];
         }
 

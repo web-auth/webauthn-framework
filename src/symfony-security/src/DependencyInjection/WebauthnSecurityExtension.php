@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\SecurityBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\Config\Definition\Processor;
 
 final class WebauthnSecurityExtension extends Extension
 {
