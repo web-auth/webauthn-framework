@@ -98,14 +98,30 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
         return $this->extensions;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
 
         $allowCredentials = [];
         $allowCredentialList = $json['allowCredentials'] ?? [];
         foreach ($allowCredentialList as $allowCredential) {
-            $allowCredentials[] = PublicKeyCredentialDescriptor::createFromJson($allowCredential);
+            $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
         return new self(
@@ -114,7 +130,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
             $json['rpId'] ?? null,
             $allowCredentials,
             $json['userVerification'] ?? null,
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromJson($json['extensions']) : new AuthenticationExtensionsClientInputs()
+            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs()
         );
     }
 

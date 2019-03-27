@@ -27,7 +27,23 @@ class AuthenticationExtensionsClientOutputs implements \JsonSerializable, \Count
         $this->extensions[$extension->name()] = $extension;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         $object = new self();
         foreach ($json as $k => $v) {

@@ -37,7 +37,7 @@ class AttestedCredentialDataTest extends TestCase
         static::assertEquals('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', \Safe\json_encode($attestedCredentialData));
 
         $json = \Safe\json_decode('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', true);
-        $created = AttestedCredentialData::createFromJson($json);
+        $created = AttestedCredentialData::createFromArray($json);
         static::assertEquals($attestedCredentialData, $created);
     }
 }

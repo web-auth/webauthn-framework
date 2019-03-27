@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
+
 class AuthenticatorSelectionCriteria implements \JsonSerializable
 {
     public const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
@@ -60,7 +62,23 @@ class AuthenticatorSelectionCriteria implements \JsonSerializable
         return $this->userVerification;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         return new self(
             $json['authenticatorAttachment'] ?? null,

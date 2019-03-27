@@ -85,7 +85,7 @@ final class AttestationRequestController
             $excludedCredentials = $this->getCredentials($userEntity);
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
-                $authenticatorSelection = AuthenticatorSelectionCriteria::createFromJson($authenticatorSelection);
+                $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
             }
             $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
                 $this->profile,

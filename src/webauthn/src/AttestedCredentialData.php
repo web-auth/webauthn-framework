@@ -57,7 +57,15 @@ class AttestedCredentialData implements \JsonSerializable
         return $this->credentialPublicKey;
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');

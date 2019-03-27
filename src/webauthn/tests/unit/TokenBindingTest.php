@@ -40,7 +40,7 @@ class TokenBindingTest extends TestCase
      * @test
      * @dataProvider dataCreationFromArray
      */
-    public function aTokenBindingCanBeCreatedFromJsonObject(array $data, ?array $exception, ?string $expectedStatus, ?string $expectedId): void
+    public function aTokenBindingCanBeCreatedFromArrayObject(array $data, ?array $exception, ?string $expectedStatus, ?string $expectedId): void
     {
         if (null !== $exception) {
             static::expectException($exception['class']);
