@@ -6,7 +6,7 @@ Webauthn Symfony Bundle
 Install the bundle with Composer:
 
 ```sh
-composer require web-authn/webauthn-symfony-bundle
+composer require web-auth/webauthn-symfony-bundle
 ```
 
 If you are using Symfony Flex then the bundle will automatically be installed.
