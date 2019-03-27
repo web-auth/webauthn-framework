@@ -6,7 +6,7 @@ FIDO Universal 2nd Factor (U2F)
 Install the library with Composer:
 
 ```sh
-composer require web-authn/u2f-lib
+composer require web-auth/u2f-lib
 ```
 
 # Usage
