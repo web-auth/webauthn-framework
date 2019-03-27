@@ -56,12 +56,12 @@
         "web-token/jwt-signature": "^1.3.1"
     },
     "replace": {
-        "web-authn/cose-lib": "self.version",
-        "web-authn/u2f-lib": "self.version",
-        "web-authn/webauthn-lib": "self.version",
+        "web-auth/cose-lib": "self.version",
+        "web-auth/u2f-lib": "self.version",
+        "web-auth/webauthn-lib": "self.version",
         "web-auth/conformance-toolset": "self.version",
-        "web-authn/webauthn-symfony-bundle": "self.version",
-        "web-authn/webauthn-symfony-security-bundle": "self.version"
+        "web-auth/webauthn-symfony-bundle": "self.version",
+        "web-auth/webauthn-symfony-security-bundle": "self.version"
     },
     "extra": {
         "branch-alias": {
