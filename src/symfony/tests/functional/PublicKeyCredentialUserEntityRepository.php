@@ -33,6 +33,11 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         return $this->users[$username] ?? null;
     }
 
+    public function findOneByUserHandle(string $userHandle): ?PublicKeyCredentialUserEntity
+    {
+        return 'foo' === $userHandle ? $this->users['username'] : null;
+    }
+
     public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
     {
         return new PublicKeyCredentialUserEntity(

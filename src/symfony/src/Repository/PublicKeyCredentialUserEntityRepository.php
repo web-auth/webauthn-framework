@@ -19,6 +19,8 @@ interface PublicKeyCredentialUserEntityRepository
 {
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity;
 
+    public function findOneByUserHandle(string $userHandle): ?PublicKeyCredentialUserEntity;
+
     public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity;
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void;
