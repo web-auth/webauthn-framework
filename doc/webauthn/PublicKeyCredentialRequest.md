@@ -3,7 +3,7 @@ Public Key Credential Request
 
 The Public Key Credential Request process supposes you have a user that registered at least one device.
 For this user, you can get a list of Public Key Credential Descriptors with unique Public Key Credential ID.
-And for each Public Key Credential ID, your repository can retrieve the Attested Credential Data and the current counter.
+And for each Public Key Credential ID, your repository can retrieve the Public Key Credential Source that contains the needed data.
 
 During this step, your application will send a challenge to the list of registered devices of the user.
 The device will resolve this challenge by adding information and digitally signing the data.
@@ -191,7 +191,7 @@ The only exception is that you have to instantiate a Authenticator Assertion Res
 ### Authenticator Assertion Response Validator
 
 The `Webauthn\AuthenticatorAssertionResponseValidator` class corresponds to the Authenticator Assertion Response Validator.
-This class requires the Credential Repository service, the CBOR Decoder service and a token binding handler.
+This class requires the ~~Credential Repository~~ Public Key Credential Source Repository service, the CBOR Decoder service and a token binding handler.
 
 ```php
 <?php
@@ -201,10 +201,10 @@ declare(strict_types=1);
 use Webauthn\AuthenticatorAssertionResponseValidator;
 
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-    $credentialIdRepository,       // The Credential Repository service
-    $decoder,                      // The CBOR Decoder service
-    $tokenBindingHandler,          // The token binding handler
-    $extensionOutputCheckerHandler // The extension output checker handler  
+    $publicKeyCredentialSourceRepository,  // The Credential Repository service
+    $decoder,                              // The CBOR Decoder service
+    $tokenBindingHandler,                  // The token binding handler
+    $extensionOutputCheckerHandler         // The extension output checker handler  
 );
 ``` 
 
@@ -342,8 +342,8 @@ $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupp
 // Public Key Credential Loader
 $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
 
-// Credential Repository
-$credentialRepository = /** The Credential Repository of your application */;
+// Public Key Credential Source Repository
+$publicKeyCredentialSourceRepository = /** The Public Key Credential Source Repository of your application */;
 
 // The token binding handler
 $tokenBindnigHandler = new TokenBindingNotSupportedHandler();
@@ -353,7 +353,7 @@ $extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
 
 // Authenticator Assertion Response Validator
 $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-  $credentialRepository,
+  $publicKeyCredentialSourceRepository,
   $decoder,
   $tokenBindnigHandler,
   $extensionOutputCheckerHandler

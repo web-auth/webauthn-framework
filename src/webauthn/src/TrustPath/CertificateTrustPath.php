@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-class CertificateTrustPath extends AbstractTrustPath
+final class CertificateTrustPath extends AbstractTrustPath
 {
     /**
      * @var string[]
      */
-    private $certificates;
+    protected $certificates;
 
     /**
      * @param string[] $certificates

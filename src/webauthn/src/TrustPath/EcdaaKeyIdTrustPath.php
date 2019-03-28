@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-class EcdaaKeyIdTrustPath extends AbstractTrustPath
+final class EcdaaKeyIdTrustPath extends AbstractTrustPath
 {
     /**
      * @var string
      */
-    private $ecdaaKeyId;
+    protected $ecdaaKeyId;
 
     public function __construct(string $ecdaaKeyId)
     {

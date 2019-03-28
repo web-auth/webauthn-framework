@@ -27,21 +27,24 @@ public function registerBundles()
 
 # Create Classes
 
-This bundle needs classes and sevices to work:
+This bundle needs classes and services to work:
 
 * The credential object: it represents a credential from a security device,
-* The credential repository: it will manage all credentials,
+* The Public Key Credential Source Repository: it will manage all credential sources,
 * The token binding handler: security feature from the [RFC8471](https://tools.ietf.org/html/rfc8471).
 
-## Credential
+## Public Key Credential Source
 
-A credential corresponds to the attested data received from a device and the current counter.
+### The Entity
+
+A Public Key Credential Source objects contains all the necessary information corresponds related to attested data received from a device.
 Hereafter an example using Doctrine ORM. This entity can be enhanced and may also have a `name`, `description`, last usage timestamp or any other application specific fields to ease the management of this credential by the user or the administrator of your application.
 
 Please note that no relationship between the credential and your user is present in this example. You may need to add such information (`OneToMany`/`ManyToOne` relationship).
 
 This bundle also provides Doctrine types to ease the integration with your favorite ORM:
     * Class `Webauthn\AttestedCredentialData` => Doctrine Type `attested_credential_data`
+    * Class `Webauthn\Base64BinaryDataType` => Doctrine Type `base64`
     * Class `Webauthn\PublicKeyCredentialDescriptor` => Doctrine Type `public_key_credential_descriptor`
     * Class `Webauthn\PublicKeyCredentialDescriptorCollection` => Doctrine Type `public_key_credential_descriptor_collection`
 
@@ -53,81 +56,88 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Webauthn\AttestedCredentialData;
+use Webauthn\PublicKeyCredentialSource as BasePublicKeyCredentialSource;
 
 /**
- * It is very important to define a custom repository.
- * This repository is showed in the next section.
- * @ORM\Entity(repositoryClass="App\Entity\CredentialRepository")
- * @ORM\Table(name="credentials",indexes={@Index(name="search_idx", columns={"credential_id"})})
+ * @ORM\Table(name="public_key_credential_sources")
+ * @ORM\Entity(repositoryClass="App\Repository\PublicKeyCredentialSourceRepository")
  */
-class Credential
+class PublicKeyCredentialSource extends BasePublicKeyCredentialSource
 {
     /**
      * @var string
-     *
      * @ORM\Id
-     * @ORM\Column(type="string", length=255)
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="blob", length=255)
-     */
-    private $credential_id;
-
-    /**
-     * @var AttestedCredentialData
-     *
-     * @ORM\Column(type="attested_credential_data")
-     */
-    private $attested_credential_data;
-
-    /**
-     * @var int
-     *
+     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $counter;
-
-    public function __construct(string $id, AttestedCredentialData $attested_credential_data, int $counter)
-    {
-        $this->id = $id;
-        $this->credential_id = $attested_credential_data->getCredentialId();
-        $this->attested_credential_data = $attested_credential_data;
-        $this->counter = $counter;
-    }
+    private $id;
 
     public function getId(): string
     {
         return $this->id;
     }
+}
+```
 
-    public function getAttestedCredentialData(): AttestedCredentialData
+### The Repository
+
+The repository will save and retrieve the credentials on-demand. It must implement `Webauthn\PublicKeyCredentialSourceRepository`.
+To ease the integration into your application, the bundle provides a concrete class that uses Doctrine you can extend.
+
+In this following example, we extend that class and add a method to get all credentials for a specific user handle.
+
+Feel free to add your own methods.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\PublicKeyCredentialSource;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepository as BasePublicKeyCredentialSourceRepository;
+
+final class PublicKeyCredentialSourceRepository extends BasePublicKeyCredentialSourceRepository
+{
+    public function __construct(ManagerRegistry $registry)
     {
-        return $this->attested_credential_data;
+        parent::__construct($registry, PublicKeyCredentialSource::class);
     }
 
-    public function getCounter(): int
+    /**
+     * @return PublicKeyCredentialSource[]
+     */
+    public function allForUser(PublicKeyCredentialUserEntity $user): array
     {
-        return $this->counter;
-    }
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-    public function setCounter(int $counter): void
-    {
-        $this->counter = $counter;
+        return $qb->select('c')
+            ->from($this->getClass(), 'c')
+            ->where('c.userHandle = :user_handle')
+            ->setParameter(':user_handle', $user->getId())
+            ->getQuery()
+            ->execute()
+        ;
     }
 }
 ```
 
-## Credential Repository
+## Public Key Credential User Entity
 
-The credential repository will save and retrieve the credentials on-demand. It must implement `Webauthn\CredentialRepository`.
-In this following example, we will use Doctrine to manage `Credential` objects defined earlier.
+### The Entity
 
-Feel free to add methods e.g. to get credentials associated to a user.
+The user entity is the user in the Webauthn scope.
+But in a Symfony application context, you don’t want to manage several user entities. 
+This entity must extend the class `Webauthn\PublicKeyCredentialUserEntity`.
+
+Hereafter an example of user entity class that implements the interface provided by the Symfony Security component.
+Feel free to add the necessary setters as well as other fields you need (creation date, last update at…).
+
+**Please note that the ID of the user IS NOT generated by Doctrine.**
+We highly recommend you to use UUIDs.
 
 ```php
 <?php
@@ -136,14 +146,123 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Webauthn\PublicKeyCredentialUserEntity;
+
+/**
+ * @ORM\Table(name="users")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity("username")
+ */
+class User extends PublicKeyCredentialUserEntity implements UserInterface
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="string", length=255)
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Length(max = 100)
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Length(max = 100)
+     */
+    private $displayName;
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    private $roles;
+
+    /**
+     * @var PublicKeyCredentialSource[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\PublicKeyCredentialSource")
+     * @ORM\JoinTable(name="users_user_handles",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_handle", referencedColumnName="id", unique=true)}
+     *      )
+     */
+    private $publicKeyCredentialSources;
+
+    public function __construct(string $id, string $username, string $displayName, array $roles)
+    {
+        parent::__construct($username, $id, $displayName);
+        $this->id = $id;
+        $this->username = $username;
+        $this->roles = $roles;
+        $this->publicKeyCredentialSources = new ArrayCollection();
+        $this->displayName = $displayName;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getRoles(): array
+    {
+        return array_unique($this->roles + ['ROLE_USER']);
+    }
+
+    public function getPassword()
+    {
+    }
+
+    public function getSalt()
+    {
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->displayName;
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    /**
+     * @return PublicKeyCredentialSource[]
+     */
+    public function getPublicKeyCredentialSources(): array
+    {
+        return $this->publicKeyCredentialSources->getValues();
+    }
+}
+```
+
+### The Repository
+
+The repository must implement the interface `Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository`.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
-use Webauthn\AttestedCredentialData;
-use Webauthn\CredentialRepository as CredentialRepositoryInterface;
 
-final class CredentialRepository implements CredentialRepositoryInterface, ServiceEntityRepositoryInterface
+final class UserRepository implements ServiceEntityRepositoryInterface
 {
     /**
      * @var EntityManagerInterface
@@ -152,84 +271,61 @@ final class CredentialRepository implements CredentialRepositoryInterface, Servi
 
     public function __construct(ManagerRegistry $registry)
     {
-        $manager = $registry->getManagerForClass(Credential::class);
+        $manager = $registry->getManagerForClass(User::class);
 
         if (null === $manager) {
             throw new LogicException(sprintf(
                 'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity’s metadata.',
-                Credential::class
+                User::class
             ));
         }
 
         $this->manager = $manager;
     }
 
-    // MANDATORY: this function saves a Credential object in the database
-    public function save(Credential $credential): void
+    public function save(User $user): void
     {
-        $this->manager->persist($credential);
+        $this->manager->persist($user);
         $this->manager->flush();
     }
 
-    // MANDATORY: this function check if the credential ID is managed
-    public function has(string $credentialId): bool
-    {
-        return null !== $this->find($credentialId);
-    }
-
-    // MANDATORY: this function retreive the Credential object based on the credential ID
-    public function get(string $credentialId): AttestedCredentialData
-    {
-        $credential = $this->find($credentialId);
-        if (!$credential instanceof Credential) {
-            throw new \InvalidArgumentException('Not found');
-        }
-
-        return $credential->getAttestedCredentialData();
-    }
-
-    // This function prepare and execute a query to find a credential 
-    public function find(string $credentialId): ?Credential
+    public function findOneByUsername(string $username): ?User
     {
         $qb = $this->manager->createQueryBuilder();
 
-        return $qb->select('c')
-            ->from(Credential::class, 'c')
-            ->where('c.credential_id = :credential_id')
-            ->setParameter(':credential_id', $credentialId)
+        return $qb->select('u')
+            ->from(User::class, 'u')
+            ->where('u.username = :username')
+            ->setParameter(':username', $username)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
 
-    // MANDATORY: this function retreive the current counter for the given credential ID
-    public function getCounterFor(string $credentialId): int
+    public function findOneByUserHandle(string $userHandle): ?User
     {
-        $credential = $this->find($credentialId);
-        if (!$credential instanceof Credential) {
-            throw new \InvalidArgumentException('Not found');
-        }
+        $qb = $this->manager->createQueryBuilder();
 
-        return $credential->getCounter();
-    }
-
-    // MANDATORY: this function update the current counter for the given credential ID
-    public function updateCounterFor(string $credentialId, int $newCounter): void
-    {
-        $credential = $this->find($credentialId);
-        if (!$credential instanceof Credential) {
-            throw new \InvalidArgumentException('Not found');
-        }
-
-        $credential->setCounter($newCounter);
-        $this->manager->persist($credential);
-        $this->manager->flush();
+        return $qb->select('u')
+            ->from(User::class, 'u')
+            ->where('u.user_handle = :user_handle')
+            ->setParameter(':user_handle', $userHandle)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 }
 ```
+# Configuration
 
-## Token Binding Handler
+```yaml
+webauthn:
+    credential_repository: 'App\Repository\PublicKeyCredentialSourceRepository'
+```
+
+# Token Binding Handler
 
 The [RFC8471](https://tools.ietf.org/html/rfc8471) adds a security feature to bind the response from a security device with the current TLS session. With this feature, it is more complicated for an attacker to perform replay attacks.
 
@@ -250,11 +346,13 @@ In your application configuration, you have to add a `webauthn` section:
 ```yaml
 #...
 webauthn:
-    credential_repository: 'App\Entity\CredentialRepository'
+    credential_repository: 'App\Entity\PublicKeyCredentialSourceRepository'
     token_binding_support_handler: 'Webauthn\TokenBinding\IgnoreTokenBindingHandler' # Default is 'Webauthn\TokenBinding\TokenBindingNotSupportedHandler'
 ```
 
 # Usage
+
+Now that the entity and the 
 
 ## Registering New Credentials
 

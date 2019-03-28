@@ -357,7 +357,7 @@ There are two steps to perform with this object:
 
 You will need the following components before loading or verifying the data:
 
-* A credential repository
+* ~~A credential repository~~ A Public Key Credential Source Repository
 * A CBOR Decoder (binary format used by the Webauthn protocol)
 * A token binding handler
 * An Attestation Statement Support Manager and at least one Attestation Statement Support object
@@ -368,12 +368,22 @@ You will need the following components before loading or verifying the data:
 
 That’s a lot off classes! But don’t worry, as their configuration is the same for all your application, you just have to set them once.
 
-### Credential Repository
+### ~~Credential Repository~~ Public Key Credential Source Repository
 
-This repository must implement `Webauthn\CredentialRepository`.
-It will retrieve the credentials, key IDs and update devices counters when needed.
+> Note: the interface `Webauthn\CredentialRepository` is deprecated and will be removed in v2.0. Please use `Webauthn\PublicKeyCredentialSourceRepository` instead.
 
-You can implement the mrequired methods the way you want: Doctrine ORM, file storage…
+With v2.0, the following methods will become useless and may be removed:
+
+* public function has(string $credentialId): bool;
+* public function get(string $credentialId): AttestedCredentialData;
+* public function getUserHandleFor(string $credentialId): string;
+* public function getCounterFor(string $credentialId): int;
+* public function updateCounterFor(string $credentialId, int $newCounter): void;
+
+The Public Key Credential Source Repository must implement `Webauthn\PublicKeyCredentialSourceRepository`.
+It will retrieve the credential source and update them when needed.
+
+You can implement the required methods the way you want: Doctrine ORM, file storage…
 
 ### CBOR Decoder
 
@@ -453,18 +463,19 @@ $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSuppo
 $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 
 // Cose Algorithm Manager
+// /!\ You should use at least ES256 and RS256 algorithms. Other algorithms may be added.
 $coseAlgorithmManager = new Manager();
 $coseAlgorithmManager->add(new ECDSA\ES256());
-$coseAlgorithmManager->add(new ECDSA\ES512());
-$coseAlgorithmManager->add(new EdDSA\EdDSA());
-$coseAlgorithmManager->add(new RSA\RS1());
+//$coseAlgorithmManager->add(new ECDSA\ES512());
+//$coseAlgorithmManager->add(new EdDSA\EdDSA());
+//$coseAlgorithmManager->add(new RSA\RS1());
 $coseAlgorithmManager->add(new RSA\RS256());
-$coseAlgorithmManager->add(new RSA\RS512());
+//$coseAlgorithmManager->add(new RSA\RS512());
 
 $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 ```
 
-*Please note that at the moment the `packed` attestation statement does not support ECDAA and self attestation statements.
+> Please note that at the moment the `packed` attestation statement does not support ECDAA and self attestation statements.
 
 ### Attestation Object Loader
 
@@ -526,7 +537,7 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
-    $credentialRepository,
+    $publicKeyCredentialSourceRepository,
     $tokenBindingHandler,
     $extensionOutputCheckerHandler
 );
@@ -661,7 +672,7 @@ Possible transports are:
 * `PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL`: internal (embed device)
 * `PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC`: NFC (Near Field Communication)
 
-**Be careful when using transport values: if you select a wrong mode, the device won’t be usable if used with another mode.**
+**Be careful when using transport values: if you select a wrong mode, the device won’t be usable anymore.**
 
 ### Attested Credential Data
 
@@ -749,7 +760,7 @@ $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupp
 $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
 
 // Credential Repository
-$credentialRepository = /** The Credential Repository of your application */;
+$publicKeyCredentialSourceRepository = /** The Credential Repository of your application */;
 
 // Extension Output Checker Handler
 $extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
@@ -757,7 +768,7 @@ $extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
 // Authenticator Attestation Response Validator
 $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
     $attestationStatementSupportManager,
-    $credentialRepository,
+    $publicKeyCredentialSourceRepository,
     $tokenBindnigHandler,
     $extensionOutputCheckerHandler
 );
@@ -793,7 +804,16 @@ try {
     exit();
 }
 
-// Everything is OK here. You can get the PublicKeyCredentialDescriptor.
+// Everything is OK here.
+
+// You can get the Public Key Credential Source. This object should be persisted using the Public Key Credential Source repository 
+$publicKeyCredentialSource = \Webauthn\PublicKeyCredentialSource::createFromPublicKeyCredential(
+    $publicKeyCredential,
+    $publicKeyCredentialCreationOptions->getUser()->getId()
+);
+
+
+//You can also get the PublicKeyCredentialDescriptor.
 $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
 
 // Normally this condition should be true. Just make sure you received the credential data
