@@ -20,12 +20,12 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $displayName;
+    protected $displayName;
 
     public function __construct(string $name, string $id, string $displayName, ?string $icon = null)
     {

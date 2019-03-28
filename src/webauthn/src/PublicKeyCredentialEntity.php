@@ -18,12 +18,12 @@ abstract class PublicKeyCredentialEntity implements \JsonSerializable
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string|null
      */
-    private $icon;
+    protected $icon;
 
     public function __construct(string $name, ?string $icon)
     {

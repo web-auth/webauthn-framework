@@ -21,12 +21,12 @@ abstract class Credential
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     public function __construct(string $id, string $type)
     {

@@ -27,17 +27,17 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string[]
      */
-    private $transports;
+    protected $transports;
 
     /**
      * @param string[] $transports

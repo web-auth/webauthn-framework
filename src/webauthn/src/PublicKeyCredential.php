@@ -21,12 +21,12 @@ class PublicKeyCredential extends Credential
     /**
      * @var string
      */
-    private $rawId;
+    protected $rawId;
 
     /**
      * @var AuthenticatorResponse
      */
-    private $response;
+    protected $response;
 
     public function __construct(string $id, string $type, string $rawId, AuthenticatorResponse $response)
     {

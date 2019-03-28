@@ -23,32 +23,32 @@ class AuthenticatorData
     /**
      * @var string
      */
-    private $authData;
+    protected $authData;
 
     /**
      * @var string
      */
-    private $rpIdHash;
+    protected $rpIdHash;
 
     /**
      * @var string
      */
-    private $flags;
+    protected $flags;
 
     /**
      * @var int
      */
-    private $signCount;
+    protected $signCount;
 
     /**
      * @var AttestedCredentialData|null
      */
-    private $attestedCredentialData;
+    protected $attestedCredentialData;
 
     /**
      * @var AuthenticationExtensionsClientOutputs|null
      */
-    private $extensions;
+    protected $extensions;
 
     private const FLAG_UP = 0b00000001;
     private const FLAG_RFU1 = 0b00000010;

@@ -24,47 +24,47 @@ class PublicKeyCredentialSource
     /**
      * @var string
      */
-    private $publicKeyCredentialId;
+    protected $publicKeyCredentialId;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var string[]
      */
-    private $transports;
+    protected $transports;
 
     /**
      * @var string
      */
-    private $attestationType;
+    protected $attestationType;
 
     /**
      * @var TrustPath
      */
-    private $trustPath;
+    protected $trustPath;
 
     /**
      * @var string
      */
-    private $aaguid;
+    protected $aaguid;
 
     /**
      * @var string
      */
-    private $credentialPublicKey;
+    protected $credentialPublicKey;
 
     /**
      * @var string
      */
-    private $userHandle;
+    protected $userHandle;
 
     /**
      * @var int
      */
-    private $counter;
+    protected $counter;
 
     public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {

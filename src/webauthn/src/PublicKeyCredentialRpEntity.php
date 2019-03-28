@@ -20,7 +20,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     /**
      * @var string|null
      */
-    private $id;
+    protected $id;
 
     public function __construct(string $name, ?string $id = null, ?string $icon = null)
     {
