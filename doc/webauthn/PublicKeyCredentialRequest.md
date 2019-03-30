@@ -173,7 +173,9 @@ What you receive must be a JSON object that looks like as follow:
     "rawId":"KVb8CnwDjpgAo[…]rQ23usxVHA8QJZi3L9GZLsAtkcVvWObA==",
     "response":{
         "clientDataJSON":"eyJjaGFsbGVuZ2UiOiJQbk1hVjBVTS[…]1iUkdHLUc4Y3BDSdGUifQ==",
-        "attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSj[…]YcGhf"
+        "authenticatorData":"",
+        "signature":"",
+        "userHandle":""
     }
 }
 ```

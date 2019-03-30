@@ -373,7 +373,7 @@ That’s a lot off classes! But don’t worry, as their configuration is the sam
 This repository must implement `Webauthn\CredentialRepository`.
 It will retrieve the credentials, key IDs and update devices counters when needed.
 
-You can implement the mrequired methods the way you want: Doctrine ORM, file storage…
+You can implement the required methods the way you want: Doctrine ORM, file storage…
 
 ### CBOR Decoder
 
