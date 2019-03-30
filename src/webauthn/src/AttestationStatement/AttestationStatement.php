@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -113,7 +113,15 @@ class AttestationStatement implements \JsonSerializable
         return $this->type;
     }
 
-    public static function createFromJson(array $data): self
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
+    public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
             Assertion::keyExists($data, $key, \Safe\sprintf('The key "%s" is missing', $key));
@@ -123,7 +131,7 @@ class AttestationStatement implements \JsonSerializable
             $data['fmt'],
             $data['attStmt'],
             $data['type'],
-            AbstractTrustPath::createFromJson($data['trustPath'])
+            AbstractTrustPath::createFromArray($data['trustPath'])
         );
     }
 

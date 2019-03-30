@@ -5,13 +5,15 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
  */
 
 namespace Webauthn;
+
+use Assert\Assertion;
 
 class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Countable, \IteratorAggregate
 {
@@ -54,11 +56,27 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
         return array_values($this->publicKeyCredentialDescriptors);
     }
 
+    /**
+     * @deprecated will be removed in v2.0. Use "createFromArray" instead
+     */
     public static function createFromJson(array $json): self
+    {
+        return self::createFromArray($json);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $json): self
     {
         $collection = new self();
         foreach ($json as $item) {
-            $collection->add(PublicKeyCredentialDescriptor::createFromJson($item));
+            $collection->add(PublicKeyCredentialDescriptor::createFromArray($item));
         }
 
         return $collection;

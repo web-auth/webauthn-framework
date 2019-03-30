@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -23,32 +23,32 @@ class AuthenticatorData
     /**
      * @var string
      */
-    private $authData;
+    protected $authData;
 
     /**
      * @var string
      */
-    private $rpIdHash;
+    protected $rpIdHash;
 
     /**
      * @var string
      */
-    private $flags;
+    protected $flags;
 
     /**
      * @var int
      */
-    private $signCount;
+    protected $signCount;
 
     /**
      * @var AttestedCredentialData|null
      */
-    private $attestedCredentialData;
+    protected $attestedCredentialData;
 
     /**
      * @var AuthenticationExtensionsClientOutputs|null
      */
-    private $extensions;
+    protected $extensions;
 
     private const FLAG_UP = 0b00000001;
     private const FLAG_RFU1 = 0b00000010;

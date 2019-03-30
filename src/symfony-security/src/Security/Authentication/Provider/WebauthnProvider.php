@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -16,7 +16,6 @@ namespace Webauthn\SecurityBundle\Security\Authentication\Provider;
 use Assert\Assertion;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
 
 class WebauthnProvider implements AuthenticationProviderInterface
@@ -38,7 +37,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token): WebauthnToken
     {
-        Assertion::isInstanceOf($token, WebauthnToken::class,'The token is not supported by this authentication provider.');
+        Assertion::isInstanceOf($token, WebauthnToken::class, 'The token is not supported by this authentication provider.');
         Assertion::eq($this->providerKey, $token->getProviderKey(), 'The token is not supported by this authentication provider.');
 
         return $this->processWithWebauthnToken($token);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -140,7 +140,7 @@ class WebauthnToken extends AbstractToken
             $this->signCount,
             $this->extensions,
             $this->providerKey,
-            parent::serialize()
+            parent::serialize(),
         ]);
     }
 
@@ -161,16 +161,12 @@ class WebauthnToken extends AbstractToken
             $this->providerKey,
             $parentStr
             ) = unserialize($serialized);
-        $data = \Safe\json_decode($publicKeyCredentialRequestOptions, true);
-        $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromJson($data);
-
-        $data = \Safe\json_decode($publicKeyCredentialDescriptor, true);
-        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromJson($data);
+        $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString($publicKeyCredentialRequestOptions);
+        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
 
         $this->extensions = null;
         if (null !== $extensions) {
-            $data = \Safe\json_decode($extensions, true);
-            $this->extensions = AuthenticationExtensionsClientOutputs::createFromJson($data);
+            $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
         }
 
         parent::unserialize($parentStr);

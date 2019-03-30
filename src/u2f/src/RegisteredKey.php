@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -47,25 +47,36 @@ class RegisteredKey implements \JsonSerializable
     }
 
     /**
-     * @return RegisteredKey
+     * @deprecated will be removed in v2.0. Use "createFromArray" or "createFromString" instead
      */
-    public static function createFromJson(string $data, int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE): self
+    public static function createFromJson(string $json, int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE): self
     {
-        try {
-            $json = \Safe\json_decode($data, true, 512, $options);
-            foreach (['version', 'keyHandle', 'publicKey', 'attestationCertificate'] as $key) {
-                Assertion::keyExists($json, $key, \Safe\sprintf('The key "%s" is missing', $key));
-            }
+        $data = \Safe\json_decode($json, true, 512, $options);
+        Assertion::isArray($data, 'Invalid data');
 
-            return new self(
-                $json['version'],
-                new KeyHandler(Base64Url::decode($json['keyHandle'])),
-                new PublicKey(Base64Url::decode($json['publicKey'])),
-                $json['attestationCertificate']
-            );
-        } catch (\Throwable $e) {
-            throw new \InvalidArgumentException('Invalid data', 0, $e);
+        return self::createFromArray($data);
+    }
+
+    public static function createFromString(string $data): self
+    {
+        $data = \Safe\json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
+    }
+
+    public static function createFromArray(array $data): self
+    {
+        foreach (['version', 'keyHandle', 'publicKey', 'attestationCertificate'] as $key) {
+            Assertion::keyExists($data, $key, \Safe\sprintf('The key "%s" is missing', $key));
         }
+
+        return new self(
+            $data['version'],
+            new KeyHandler(Base64Url::decode($data['keyHandle'])),
+            new PublicKey(Base64Url::decode($data['publicKey'])),
+            $data['attestationCertificate']
+        );
     }
 
     public function getVersion(): string

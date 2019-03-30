@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -21,9 +21,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 
 class WebauthnUtils
 {

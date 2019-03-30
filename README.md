@@ -53,7 +53,7 @@ There are two steps to perform:
 * [Associate the device to your user (Public Key Credential Creation)](doc/webauthn/PublicKeyCredentialCreation.md)
 * [Check authentication request (Public Key Credential Request)](doc/webauthn/PublicKeyCredentialRequest.md)
 
-Install the library with Composer: `composer require web-authn/webauthn-lib`.
+Install the library with Composer: `composer require web-auth/webauthn-lib`.
 
 ## Symfony Bundles
 

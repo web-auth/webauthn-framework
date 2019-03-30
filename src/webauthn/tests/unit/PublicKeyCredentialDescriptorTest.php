@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -36,8 +36,7 @@ class PublicKeyCredentialDescriptorTest extends TestCase
         static::assertEquals(['transport'], $descriptor->getTransports());
         static::assertEquals('{"type":"type","id":"aWQ=","transports":["transport"]}', \Safe\json_encode($descriptor));
 
-        $json = \Safe\json_decode('{"type":"type","id":"aWQ=","transports":["transport"]}', true);
-        $created = PublicKeyCredentialDescriptor::createFromJson($json);
+        $created = PublicKeyCredentialDescriptor::createFromString('{"type":"type","id":"aWQ=","transports":["transport"]}');
         static::assertEquals($descriptor, $created);
     }
 }

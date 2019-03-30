@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -66,8 +66,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
         static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', \Safe\json_encode($options));
 
-        $json = \Safe\json_decode('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}', true);
-        $data = PublicKeyCredentialCreationOptions::createFromJson($json);
+        $data = PublicKeyCredentialCreationOptions::createFromString('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"timeout":1000}');
         static::assertEquals('challenge', $data->getChallenge());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
         static::assertEquals([$credential], $data->getExcludeCredentials());
@@ -106,7 +105,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
 
         $json = \Safe\json_encode($options);
         static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"attestation","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}', $json);
-        $data = PublicKeyCredentialCreationOptions::createFromJson(\Safe\json_decode($json, true));
+        $data = PublicKeyCredentialCreationOptions::createFromString($json);
         static::assertEquals([], $data->getExcludeCredentials());
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -20,9 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -85,7 +85,7 @@ final class AttestationRequestController
             $excludedCredentials = $this->getCredentials($userEntity);
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
-                $authenticatorSelection = AuthenticatorSelectionCriteria::createFromJson($authenticatorSelection);
+                $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
             }
             $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
                 $this->profile,

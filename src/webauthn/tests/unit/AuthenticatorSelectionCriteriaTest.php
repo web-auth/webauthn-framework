@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -36,8 +36,7 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', \Safe\json_encode($authenticatorSelectionCriteria));
 
-        $json = \Safe\json_decode('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', true);
-        $data = AuthenticatorSelectionCriteria::createFromJson($json);
+        $data = AuthenticatorSelectionCriteria::createFromString('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}');
         static::assertEquals('user_verification', $data->getUserVerification());
         static::assertEquals('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());

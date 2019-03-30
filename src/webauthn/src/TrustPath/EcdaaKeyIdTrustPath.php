@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Spomky-Labs
+ * Copyright (c) 2014-2019 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-class EcdaaKeyIdTrustPath extends AbstractTrustPath
+final class EcdaaKeyIdTrustPath extends AbstractTrustPath
 {
     /**
      * @var string
      */
-    private $ecdaaKeyId;
+    protected $ecdaaKeyId;
 
     public function __construct(string $ecdaaKeyId)
     {
