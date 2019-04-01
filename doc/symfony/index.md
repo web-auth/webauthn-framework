@@ -499,7 +499,6 @@ webauthn:
         http_client: 'httplug.client.safetynet'
 ```
 
-
 # Token Binding Handler
 
 The [RFC8471](https://tools.ietf.org/html/rfc8471) adds a security feature to bind the response from a security device with the current TLS session. With this feature, it is more complicated for an attacker to perform replay attacks.
@@ -514,9 +513,7 @@ Available handlers (Symfony services):
 
 See also [#2](https://github.com/web-auth/webauthn-framework/issues/2) for more information.
 
-# Configure the Bundle
-
-In your application configuration, you have to add a `webauthn` section:
+Configuration example:
 
 ```yaml
 #...
