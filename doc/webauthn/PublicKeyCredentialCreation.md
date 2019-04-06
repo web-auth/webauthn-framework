@@ -626,7 +626,7 @@ If no exception is thrown, the response is valid and you can store and associate
 
 The way you store and associate these objects to the user is out of scope of this library.
 
-These to objects implement `\JsonSerializable` and have a static method `createFromJson(string $json)`.
+These two objects implement `\JsonSerializable` and have a static method `createFromJson(string $json)`.
 This will allow you to serialize the objects into JSON and easily go back an object.
 
 ### Public Key Descriptor
