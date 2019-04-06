@@ -390,7 +390,7 @@ webauthn:
             public_key_credential_parameters: # Mandatory. Algorithms ES256 and RS256 should be included. In order of preference
                 - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
                 - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
-            rp: # Relying Praty information
+            rp: # Relying Party information
                 name: 'My application' # Name of the relying party
                 id: 'demo.webauth.app' # ID of the relying party (i.e. the domain)
                 icon: 'https://demo.webauth.app/assets/app.png' # Optional icon. May be ignored by the browser
@@ -400,7 +400,7 @@ webauthn:
                 attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM
                 require_resident_key: true
                 user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
-            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT # Optional. No preference by default.
             extensions: # Optional. See https://www.w3.org/TR/webauthn/#extensions
                 exts: true
                 uvi: true
@@ -412,6 +412,7 @@ Let say you want to register a new user account and ask that user to use its sec
 ```php
 <?php
 
+use App\Repository\UserRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 
@@ -419,7 +420,7 @@ use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 $userRepository = $this->container->get(UserRepository::class);
 
 /** @var PublicKeyCredentialCreationOptionsFactory $factory */
-$factory = $this->container->get(UserRepository::class);
+$factory = $this->container->get(PublicKeyCredentialCreationOptionsFactory::class);
 
 $userEntity = $userRepository->createUserEntity('username', 'John Doe');
 
@@ -499,7 +500,6 @@ webauthn:
         http_client: 'httplug.client.safetynet'
 ```
 
-
 # Token Binding Handler
 
 The [RFC8471](https://tools.ietf.org/html/rfc8471) adds a security feature to bind the response from a security device with the current TLS session. With this feature, it is more complicated for an attacker to perform replay attacks.
@@ -514,9 +514,7 @@ Available handlers (Symfony services):
 
 See also [#2](https://github.com/web-auth/webauthn-framework/issues/2) for more information.
 
-# Configure the Bundle
-
-In your application configuration, you have to add a `webauthn` section:
+Configuration example:
 
 ```yaml
 #...
