@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 /**
- * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
  */
 class StatusReport implements \JsonSerializable
 {
@@ -143,6 +142,13 @@ class StatusReport implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
+            'status' => $this->status,
+            'effectiveDate' => $this->effectiveDate,
+            'certificate' => $this->certificate,
+            'url' => $this->url,
+            'certificationDescriptor' => $this->certificationDescriptor,
+            'certificateNumber' => $this->certificateNumber,
+            'certificationPolicyVersion' => $this->certificationPolicyVersion,
         ];
     }
 }
