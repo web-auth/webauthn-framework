@@ -14,8 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\JsonSecurityBundle\Security\Authentication\Token;
 
 use Assert\Assertion;
+use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\JsonSecurityBundle\Security\Voter\IsUserPresentVoter;
+use Webauthn\JsonSecurityBundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -85,6 +88,11 @@ class WebauthnToken extends AbstractToken
 
     public function getCredentials(): PublicKeyCredentialDescriptor
     {
+        return $this->getPublicKeyCredentialDescriptor();
+    }
+
+    public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
+    {
         return $this->publicKeyCredentialDescriptor;
     }
 
@@ -131,8 +139,8 @@ class WebauthnToken extends AbstractToken
     public function serialize(): string
     {
         return serialize([
-            \Safe\json_encode($this->publicKeyCredentialDescriptor),
-            \Safe\json_encode($this->publicKeyCredentialRequestOptions),
+            json_encode($this->publicKeyCredentialDescriptor),
+            json_encode($this->publicKeyCredentialRequestOptions),
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,
@@ -142,6 +150,19 @@ class WebauthnToken extends AbstractToken
             $this->providerKey,
             parent::serialize(),
         ]);
+    }
+
+    public function getAttributes()
+    {
+        $attributes = parent::getAttributes();
+        if ($this->isUserVerified) {
+            $attributes[] = IsUserVerifiedVoter::IS_USER_VERIFIED;
+        }
+        if ($this->isUserPresent) {
+            $attributes[] = IsUserPresentVoter::IS_USER_PRESENT;
+        }
+
+        return $attributes;
     }
 
     /**

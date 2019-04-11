@@ -28,6 +28,8 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\JsonSecurityBundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\JsonSecurityBundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\JsonSecurityBundle\Security\Firewall\WebauthnListener;
+use Webauthn\JsonSecurityBundle\Security\Voter\IsUserPresentVoter;
+use Webauthn\JsonSecurityBundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
@@ -65,5 +67,15 @@ return function (ContainerConfigurator $container) {
     $container->services()->set(WebauthnEntryPoint::class)
         ->abstract()
         ->private()
+    ;
+
+    $container->services()->set(IsUserPresentVoter::class)
+        ->private()
+        ->tag('security.voter')
+    ;
+
+    $container->services()->set(IsUserVerifiedVoter::class)
+        ->private()
+        ->tag('security.voter')
     ;
 };

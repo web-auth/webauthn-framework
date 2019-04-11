@@ -18,7 +18,6 @@ use Http\HttplugBundle\HttplugBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
@@ -37,7 +36,6 @@ final class AppKernel extends Kernel
             new FrameworkBundle(),
             new SpomkyLabsCborBundle(),
             new SecurityBundle(),
-            new TwigBundle(),
             new HttplugBundle(),
             new DoctrineBundle(),
 

@@ -101,5 +101,11 @@ class SecuredAreaTest extends WebTestCase
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         static::assertEquals('{"status":"ok","errorMessage":""}', $client->getResponse()->getContent());
         static::assertTrue($session->has('_security_main'));
+        static::assertTrue($client->getResponse()->headers->has('set-cookie'));
+
+        $client->request('GET', '/admin', [], [], ['HTTPS' => 'on']);
+
+        static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        static::assertEquals('["Hello admin"]', $client->getResponse()->getContent());
     }
 }

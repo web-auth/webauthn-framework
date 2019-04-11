@@ -55,11 +55,6 @@ httplug:
         client: false
         async_client: false
 
-twig:
-    strict_variables: true
-    paths:
-        '%kernel.project_dir%/tests/templates': ~
-
 doctrine:
     dbal:
         # configure these for your database server

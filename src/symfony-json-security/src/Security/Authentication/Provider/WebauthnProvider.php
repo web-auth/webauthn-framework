@@ -67,9 +67,9 @@ class WebauthnProvider implements AuthenticationProviderInterface
         );
 
         $authenticatedToken->setUser($user);
-        $token->setAuthenticated(true);
+        $authenticatedToken->setAuthenticated(true);
 
-        return $token;
+        return $authenticatedToken;
     }
 
     /**
