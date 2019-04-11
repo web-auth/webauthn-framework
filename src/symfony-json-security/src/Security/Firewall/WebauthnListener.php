@@ -305,6 +305,7 @@ class WebauthnListener implements ListenerInterface
         }
 
         $assertion = $request->getContent();
+        Assertion::string($assertion, 'Invalid assertion');
         $assertion = trim($assertion);
         $publicKeyCredential = $this->publicKeyCredentialLoader->load($assertion);
         $response = $publicKeyCredential->getResponse();
