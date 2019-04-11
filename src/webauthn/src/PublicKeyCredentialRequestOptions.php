@@ -14,9 +14,12 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\base64_decode;
+use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
-class PublicKeyCredentialRequestOptions implements \JsonSerializable
+class PublicKeyCredentialRequestOptions implements JsonSerializable
 {
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
@@ -108,7 +111,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -125,7 +128,7 @@ class PublicKeyCredentialRequestOptions implements \JsonSerializable
         }
 
         return new self(
-            \Safe\base64_decode($json['challenge'], true),
+            base64_decode($json['challenge'], true),
             $json['timeout'] ?? null,
             $json['rpId'] ?? null,
             $allowCredentials,

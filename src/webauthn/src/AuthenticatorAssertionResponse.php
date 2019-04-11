@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function Safe\base64_decode;
+
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
  */
@@ -57,6 +59,6 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
             return $this->userHandle;
         }
 
-        return \Safe\base64_decode($this->userHandle, true);
+        return base64_decode($this->userHandle, true);
     }
 }

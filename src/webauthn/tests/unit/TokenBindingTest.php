@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Webauthn\TokenBinding\TokenBinding;
 
@@ -77,7 +78,7 @@ class TokenBindingTest extends TestCase
                     'status' => TokenBinding::TOKEN_BINDING_STATUS_PRESENT,
                 ],
                 'exception' => [
-                    'class' => \InvalidArgumentException::class,
+                    'class' => InvalidArgumentException::class,
                     'message' => 'The member "id" is required when status is "present"',
                 ],
                 'expectedStatus' => null,
@@ -87,7 +88,7 @@ class TokenBindingTest extends TestCase
                 'data' => [
                 ],
                 'exception' => [
-                    'class' => \InvalidArgumentException::class,
+                    'class' => InvalidArgumentException::class,
                     'message' => 'The member "status" is required',
                 ],
                 'expectedStatus' => null,
@@ -98,7 +99,7 @@ class TokenBindingTest extends TestCase
                     'status' => TokenBinding::TOKEN_BINDING_STATUS_PRESENT,
                 ],
                 'exception' => [
-                    'class' => \InvalidArgumentException::class,
+                    'class' => InvalidArgumentException::class,
                     'message' => 'The member "id" is required when status is "present"',
                 ],
                 'expectedStatus' => null,

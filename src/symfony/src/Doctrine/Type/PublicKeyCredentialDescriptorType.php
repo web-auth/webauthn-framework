@@ -15,8 +15,8 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\PublicKeyCredentialDescriptor;
 use function Safe\json_encode;
+use Webauthn\PublicKeyCredentialDescriptor;
 
 final class PublicKeyCredentialDescriptorType extends Type
 {

@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
+use function Safe\sprintf;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use function Safe\sprintf;
 
 final class PublicKeyCredentialRequestOptionsFactory
 {

@@ -15,6 +15,7 @@ namespace Webauthn\JsonSecurityBundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use function Safe\json_encode;
 use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -211,7 +212,7 @@ class WebauthnListener implements ListenerInterface
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();
             }
-            throw new \RuntimeException(implode("\n", $messages));
+            throw new RuntimeException(implode("\n", $messages));
         }
 
         return $data;

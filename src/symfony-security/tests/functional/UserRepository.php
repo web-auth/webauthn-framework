@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle\Tests\Functional;
 
+use function Safe\base64_decode;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Webauthn\PublicKeyCredentialDescriptor;
-use function Safe\base64_decode;
 
 final class UserRepository
 {

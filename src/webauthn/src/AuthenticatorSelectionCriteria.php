@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\json_decode;
 
-class AuthenticatorSelectionCriteria implements \JsonSerializable
+class AuthenticatorSelectionCriteria implements JsonSerializable
 {
     public const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
     public const AUTHENTICATOR_ATTACHMENT_PLATFORM = 'platform';
@@ -72,7 +74,7 @@ class AuthenticatorSelectionCriteria implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

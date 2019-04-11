@@ -13,9 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
+use Exception;
 use Throwable;
 
-class ExtensionOutputError extends \Exception
+class ExtensionOutputError extends Exception
 {
     /**
      * @var AuthenticationExtension

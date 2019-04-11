@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Tests\Functional\Profile;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Request;
 use function Safe\json_decode;
 use function Safe\json_encode;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @group functional

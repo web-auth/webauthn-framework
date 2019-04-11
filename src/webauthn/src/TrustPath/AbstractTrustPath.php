@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use JsonSerializable;
 
-abstract class AbstractTrustPath implements TrustPath, \JsonSerializable
+abstract class AbstractTrustPath implements TrustPath, JsonSerializable
 {
     /**
      * @deprecated will be removed in v2.0. Use "createFromArray" instead
@@ -40,7 +42,7 @@ abstract class AbstractTrustPath implements TrustPath, \JsonSerializable
 
                 return new CertificateTrustPath($data['x5c']);
             default:
-                throw new \InvalidArgumentException('The trust path type is invalid');
+                throw new InvalidArgumentException('The trust path type is invalid');
         }
     }
 }

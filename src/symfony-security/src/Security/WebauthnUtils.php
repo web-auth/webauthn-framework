@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\SecurityBundle\Security;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -90,7 +92,7 @@ class WebauthnUtils
     private function getAllowedCredentials(UserInterface $user): array
     {
         if (!$user instanceof CanHaveRegisteredSecurityDevices) {
-            throw new \InvalidArgumentException('The user must implement the interface "Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices"');
+            throw new InvalidArgumentException('The user must implement the interface "Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices"');
         }
 
         $credentials = [];
@@ -105,7 +107,7 @@ class WebauthnUtils
     {
         $request = $this->requestStack->getCurrentRequest();
         if (null === $request) {
-            throw new \LogicException('Request should exist so it can be processed for error.');
+            throw new LogicException('Request should exist so it can be processed for error.');
         }
 
         return $request;

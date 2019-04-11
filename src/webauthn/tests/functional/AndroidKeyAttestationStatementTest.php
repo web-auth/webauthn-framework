@@ -17,6 +17,8 @@ use Base64Url\Base64Url;
 use Cose\Algorithms;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
+use function Safe\hex2bin;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -43,7 +45,7 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
-            \Safe\base64_decode('Tf65bS6D5temh2BwvptqgBPb25iZDRxjwC5ans91IIJDrcrOpnWTK4LVgFjeUV4GDMe44w8SI5NsZssIXTUvDg==', true),
+            base64_decode('Tf65bS6D5temh2BwvptqgBPb25iZDRxjwC5ans91IIJDrcrOpnWTK4LVgFjeUV4GDMe44w8SI5NsZssIXTUvDg==', true),
             [
                 new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
             ],
@@ -67,7 +69,7 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
         $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(\Safe\base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))->willReturn(false);
+        $credentialRepository->has(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))->willReturn(false);
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('webauthn.org');
@@ -82,15 +84,15 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 
-        static::assertEquals(\Safe\base64_decode('AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c', true), Base64Url::decode($publicKeyCredential->getId()));
-        static::assertEquals(\Safe\base64_decode('AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c', true), $publicKeyCredentialDescriptor->getId());
+        static::assertEquals(base64_decode('AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c', true), Base64Url::decode($publicKeyCredential->getId()));
+        static::assertEquals(base64_decode('AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c', true), $publicKeyCredentialDescriptor->getId());
         static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredentialDescriptor->getType());
         static::assertEquals(['usb'], $publicKeyCredentialDescriptor->getTransports());
 
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
 
-        static::assertEquals(\Safe\hex2bin('9569088f1ecee3232954035dbd10d7cae391305a2751b559bb8fd7cbb229bdd4'), $authenticatorData->getRpIdHash());
+        static::assertEquals(hex2bin('9569088f1ecee3232954035dbd10d7cae391305a2751b559bb8fd7cbb229bdd4'), $authenticatorData->getRpIdHash());
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());

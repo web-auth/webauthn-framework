@@ -17,11 +17,12 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+use function Safe\sprintf;
 use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function Safe\sprintf;
 
 class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, ServiceEntityRepositoryInterface
 {
@@ -111,7 +112,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getAttestedCredentialData();
@@ -121,7 +122,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getUserHandle();
@@ -131,7 +132,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getCounter();
@@ -141,7 +142,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         $credential->setCounter($newCounter);

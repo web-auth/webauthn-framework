@@ -14,9 +14,12 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\base64_decode;
+use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
-class PublicKeyCredentialCreationOptions implements \JsonSerializable
+class PublicKeyCredentialCreationOptions implements JsonSerializable
 {
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
@@ -147,7 +150,7 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -177,7 +180,7 @@ class PublicKeyCredentialCreationOptions implements \JsonSerializable
         return new self(
             PublicKeyCredentialRpEntity::createFromArray($json['rp']),
             PublicKeyCredentialUserEntity::createFromArray($json['user']),
-            \Safe\base64_decode($json['challenge'], true),
+            base64_decode($json['challenge'], true),
             $pubKeyCredParams,
             $json['timeout'] ?? null,
             $excludeCredentials,

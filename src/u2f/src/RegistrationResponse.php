@@ -15,6 +15,12 @@ namespace U2F;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use InvalidArgumentException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\rewind;
 
 class RegistrationResponse
 {
@@ -68,7 +74,7 @@ class RegistrationResponse
     private function retrieveClientData(array $data): ClientData
     {
         if (!\array_key_exists('clientData', $data) || !\is_string($data['clientData'])) {
-            throw new \InvalidArgumentException('Invalid response.');
+            throw new InvalidArgumentException('Invalid response.');
         }
 
         return new ClientData($data['clientData']);
@@ -83,44 +89,44 @@ class RegistrationResponse
     private function extractKeyData(array $data): array
     {
         Assertion::false(!\array_key_exists('registrationData', $data) || !\is_string($data['registrationData']), 'Invalid response.');
-        $stream = \Safe\fopen('php://memory', 'r+');
+        $stream = fopen('php://memory', 'r+');
         $registrationData = Base64Url::decode($data['registrationData']);
-        \Safe\fwrite($stream, $registrationData);
-        \Safe\rewind($stream);
+        fwrite($stream, $registrationData);
+        rewind($stream);
 
-        $reservedByte = \Safe\fread($stream, 1);
+        $reservedByte = fread($stream, 1);
         try {
             // 1 byte reserved with value x05
             Assertion::eq("\x05", $reservedByte, 'Bad reserved byte.');
 
-            $publicKey = \Safe\fread($stream, self::PUBLIC_KEY_LENGTH); // 65 bytes for the public key
+            $publicKey = fread($stream, self::PUBLIC_KEY_LENGTH); // 65 bytes for the public key
             Assertion::eq(self::PUBLIC_KEY_LENGTH, mb_strlen($publicKey, '8bit'), 'Bad public key length.');
 
-            $keyHandleLength = \Safe\fread($stream, 1); // 1 byte for the key handle length
+            $keyHandleLength = fread($stream, 1); // 1 byte for the key handle length
             Assertion::notEq(0, \ord($keyHandleLength), 'Bad key handle length.');
 
-            $keyHandle = \Safe\fread($stream, \ord($keyHandleLength)); // x bytes for the key handle
+            $keyHandle = fread($stream, \ord($keyHandleLength)); // x bytes for the key handle
             Assertion::eq(mb_strlen($keyHandle, '8bit'), \ord($keyHandleLength), 'Bad key handle.');
 
-            $certHeader = \Safe\fread($stream, 4); // 4 bytes for the certificate header
+            $certHeader = fread($stream, 4); // 4 bytes for the certificate header
             Assertion::eq(4, mb_strlen($certHeader, '8bit'), 'Bad certificate header.');
 
             $highOrder = \ord($certHeader[2]) << 8;
             $lowOrder = \ord($certHeader[3]);
             $certLength = $highOrder + $lowOrder;
-            $certBody = \Safe\fread($stream, $certLength); // x bytes for the certificate
+            $certBody = fread($stream, $certLength); // x bytes for the certificate
             Assertion::eq(mb_strlen($certBody, '8bit'), $certLength, 'Bad certificate.');
         } catch (\Throwable $throwable) {
-            \Safe\fclose($stream);
+            fclose($stream);
             throw $throwable;
         }
 
         $pemCert = $this->convertDERToPEM($certHeader.$certBody);
         $signature = ''; // The rest is the signature
         while (!feof($stream)) {
-            $signature .= \Safe\fread($stream, 1024);
+            $signature .= fread($stream, 1024);
         }
-        \Safe\fclose($stream);
+        fclose($stream);
 
         return [
             new PublicKey($publicKey),

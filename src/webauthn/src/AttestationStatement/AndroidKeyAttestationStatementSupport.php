@@ -24,6 +24,10 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
+use InvalidArgumentException;
+use function Safe\hex2bin;
+use function Safe\openssl_pkey_get_public;
+use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -49,7 +53,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['sig', 'x5c', 'alg'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
@@ -80,7 +84,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
     {
         try {
-            $resource = \Safe\openssl_pkey_get_public($certificate);
+            $resource = openssl_pkey_get_public($certificate);
             $details = openssl_pkey_get_details($resource);
 
             //Check that authData publicKey matches the public key in the attestation certificate
@@ -109,7 +113,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             //Check that attestationChallenge is set to the clientDataHash.
             Assertion::keyExists($objects, 4, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
             Assertion::isInstanceOf($objects[4], OctetString::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            Assertion::eq($clientDataHash, \Safe\hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
+            Assertion::eq($clientDataHash, hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
 
             //Check that both teeEnforced and softwareEnforced structures don’t contain allApplications(600) tag.
             Assertion::keyExists($objects, 6, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
@@ -122,7 +126,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             Assertion::isInstanceOf($teeEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
             $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
         } catch (\Throwable $throwable) {
-            throw new \InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
+            throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
         }
     }
 

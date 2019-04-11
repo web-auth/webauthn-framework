@@ -15,6 +15,7 @@ namespace U2F\Tests\Unit;
 
 use Base64Url\Base64Url;
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use U2F\ClientData;
 
 /**
@@ -54,7 +55,7 @@ final class ClientDataTest extends TestCase
     public function theClientDataDoesNotContainTheMandatoryKeys(): void
     {
         new ClientData(
-            Base64Url::encode(\Safe\json_encode([]))
+            Base64Url::encode(json_encode([]))
         );
     }
 
@@ -63,7 +64,7 @@ final class ClientDataTest extends TestCase
      */
     public function theClientDataIsValid(): void
     {
-        $data = \Safe\json_encode([
+        $data = json_encode([
             'typ' => 'foo',
             'challenge' => Base64Url::encode('bar'),
             'origin' => 'here',

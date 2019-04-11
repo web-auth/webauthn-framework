@@ -23,6 +23,8 @@ use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Message\ResponseInterface;
+use function Safe\json_decode;
+use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -67,7 +69,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['ver', 'response'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $jws = $this->jwsSerializer->unserialize($attestation['attStmt']['response']);
         $jwsHeader = $jws->getSignature(0)->getProtectedHeader();
@@ -104,8 +106,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object');
             Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object');
 
-            $uri = \Safe\sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
-            $requestBody = \Safe\sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
+            $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
+            $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
             $request = $this->messageFactory->createRequest('POST', $uri);
             $request = $request->withHeader('content-type', 'application/json');
             $request->getBody()->write($requestBody);
@@ -115,7 +117,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
                 return false;
             }
             $responseBody = $this->getResponseBody($response);
-            $responseBodyJson = \Safe\json_decode($responseBody, true);
+            $responseBodyJson = json_decode($responseBody, true);
             Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
             Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
 

@@ -15,8 +15,9 @@ namespace U2F;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use JsonSerializable;
 
-class RegistrationRequest implements \JsonSerializable
+class RegistrationRequest implements JsonSerializable
 {
     private const PROTOCOL_VERSION = 'U2F_V2';
 

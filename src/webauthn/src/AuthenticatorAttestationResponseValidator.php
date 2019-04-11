@@ -15,6 +15,8 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
+use function Safe\parse_url;
+use function Safe\sprintf;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -69,8 +71,8 @@ class AuthenticatorAttestationResponseValidator
         /** @see 7.1.5 */
         $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
 
-        $parsedRelyingPartyId = \Safe\parse_url($C->getOrigin());
-        Assertion::isArray($parsedRelyingPartyId, \Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
+        $parsedRelyingPartyId = parse_url($C->getOrigin());
+        Assertion::isArray($parsedRelyingPartyId, sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
         Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
         Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');

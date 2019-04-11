@@ -15,9 +15,9 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\AttestedCredentialData;
 use function Safe\json_decode;
 use function Safe\json_encode;
+use Webauthn\AttestedCredentialData;
 
 final class AttestedCredentialDataType extends Type
 {

@@ -15,9 +15,9 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\TrustPath\AbstractTrustPath;
 use function Safe\json_decode;
 use function Safe\json_encode;
+use Webauthn\TrustPath\AbstractTrustPath;
 
 final class TrustPathDataType extends Type
 {

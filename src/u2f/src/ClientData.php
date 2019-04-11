@@ -15,6 +15,7 @@ namespace U2F;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function Safe\json_decode;
 
 class ClientData
 {
@@ -46,7 +47,7 @@ class ClientData
     public function __construct(string $clientData)
     {
         $this->rawData = Base64Url::decode($clientData);
-        $clientData = \Safe\json_decode($this->rawData, true);
+        $clientData = json_decode($this->rawData, true);
         Assertion::isArray($clientData, 'Invalid client data.');
         foreach (['typ', 'challenge', 'origin'] as $key) {
             Assertion::keyExists($clientData, $key, 'Invalid client data.');

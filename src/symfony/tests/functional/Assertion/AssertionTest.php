@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional\Assertion;
 
 use Base64Url\Base64Url;
 use Psr\Http\Message\ServerRequestInterface;
+use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -37,7 +38,7 @@ class AssertionTest extends KernelTestCase
         self::bootKernel();
 
         $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
-            \Safe\base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
+            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
             60000,
             'localhost',
             [
@@ -54,7 +55,7 @@ class AssertionTest extends KernelTestCase
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(\Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), $descriptor->getId());
+        static::assertEquals(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), $descriptor->getId());
         static::assertEquals([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();

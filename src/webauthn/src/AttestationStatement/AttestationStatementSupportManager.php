@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use function Safe\sprintf;
 
 class AttestationStatementSupportManager
 {
@@ -34,7 +35,7 @@ class AttestationStatementSupportManager
 
     public function get(string $name): AttestationStatementSupport
     {
-        Assertion::true($this->has($name), \Safe\sprintf('The attestation statement format "%s" is not supported.', $name));
+        Assertion::true($this->has($name), sprintf('The attestation statement format "%s" is not supported.', $name));
 
         return $this->attestationStatementSupports[$name];
     }

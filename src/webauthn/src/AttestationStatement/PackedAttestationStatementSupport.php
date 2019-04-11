@@ -21,6 +21,8 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
 use Cose\Key\Key;
+use InvalidArgumentException;
+use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -76,7 +78,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             case $trustPath instanceof EmptyTrustPath:
                 return $this->processWithSelfAttestation($clientDataJSONHash, $attestationStatement, $authenticatorData);
             default:
-                throw new \InvalidArgumentException('Unsupported attestation statement');
+                throw new InvalidArgumentException('Unsupported attestation statement');
         }
     }
 
@@ -150,7 +152,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithECDAA(): bool
     {
-        throw new \RuntimeException('ECDAA not supported');
+        throw new RuntimeException('ECDAA not supported');
     }
 
     private function processWithSelfAttestation(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
@@ -172,7 +174,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             case $algorithm instanceof Signature:
                 return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
             default:
-                throw new \RuntimeException('Invalid algorithm');
+                throw new RuntimeException('Invalid algorithm');
         }
     }
 }

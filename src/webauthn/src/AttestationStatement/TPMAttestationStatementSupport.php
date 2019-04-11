@@ -17,6 +17,10 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use CBOR\StringStream;
 use Cose\Algorithms;
+use DateTimeImmutable;
+use InvalidArgumentException;
+use RuntimeException;
+use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
@@ -33,7 +37,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         Assertion::keyNotExists($attestation['attStmt'], 'ecdaaKeyId', 'ECDAA not supported');
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
         }
         Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
 
@@ -69,7 +73,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             case $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath:
                 return $this->processWithECDAA();
             default:
-                throw new \InvalidArgumentException('Unsupported attestation statement');
+                throw new InvalidArgumentException('Unsupported attestation statement');
         }
     }
 
@@ -158,7 +162,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                     'kdf' => $stream->read(2),
                 ];
             default:
-                throw new \InvalidArgumentException('Unsupported type');
+                throw new InvalidArgumentException('Unsupported type');
         }
     }
 
@@ -191,7 +195,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             case '000d':
                 return 'sha512'; //: "TPM_ALG_SHA512",
             default:
-                throw new \InvalidArgumentException('Unsupported hash algorithm');
+                throw new InvalidArgumentException('Unsupported hash algorithm');
         }
     }
 
@@ -229,13 +233,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         // Check period of validity
         Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
         Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
-        $startDate = (new \DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
-        Assertion::true($startDate < new \DateTimeImmutable(), 'Invalid certificate start date.');
+        $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
+        Assertion::true($startDate < new DateTimeImmutable(), 'Invalid certificate start date.');
 
         Assertion::keyExists($parsed, 'validTo_time_t', 'Invalid certificate end date.');
         Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
-        $endDate = (new \DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
-        Assertion::true($endDate > new \DateTimeImmutable(), 'Invalid certificate end date.');
+        $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
+        Assertion::true($endDate > new DateTimeImmutable(), 'Invalid certificate end date.');
 
         //Check extensions
         Assertion::false(!isset($parsed['extensions']) || !\is_array($parsed['extensions']), 'Certificate extensions are missing');
@@ -255,6 +259,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function processWithECDAA(): bool
     {
-        throw new \RuntimeException('ECDAA not supported');
+        throw new RuntimeException('ECDAA not supported');
     }
 }

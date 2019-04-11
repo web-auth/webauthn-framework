@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\JsonSecurityBundle\Tests\Functional;
 
+use function Safe\sprintf;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use function Safe\sprintf;
 
 final class UserProvider implements UserProviderInterface
 {

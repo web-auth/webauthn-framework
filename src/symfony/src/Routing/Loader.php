@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Routing;
 
+use function Safe\sprintf;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use function Safe\sprintf;
 
 class Loader implements LoaderInterface
 {

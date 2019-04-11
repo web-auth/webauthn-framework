@@ -15,6 +15,8 @@ namespace Webauthn\SecurityBundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
+use function Safe\json_encode;
+use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,8 +48,6 @@ use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Model\HasUserHandle;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
-use function Safe\sprintf;
-use function Safe\json_encode;
 
 class WebauthnListener implements ListenerInterface
 {

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Tests\Functional;
 
+use InvalidArgumentException;
+use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -20,7 +22,6 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
-use function Safe\base64_decode;
 
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
 {
@@ -79,7 +80,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getAttestedCredentialData();
@@ -92,7 +93,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getUserHandle();
@@ -105,7 +106,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getCounter();
@@ -118,7 +119,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         $credential->setCounter($newCounter);
