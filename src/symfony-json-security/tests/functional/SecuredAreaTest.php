@@ -54,7 +54,6 @@ class SecuredAreaTest extends WebTestCase
 
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $json = json_decode($client->getResponse()->getContent(), true);
-        static::assertEquals('ok', $json['status']);
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);

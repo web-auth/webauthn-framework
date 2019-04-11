@@ -63,12 +63,14 @@
         "web-auth/webauthn-lib": "self.version",
         "web-auth/conformance-toolset": "self.version",
         "web-auth/webauthn-symfony-bundle": "self.version",
-        "web-auth/webauthn-symfony-security-bundle": "self.version"
+        "web-auth/webauthn-symfony-security-bundle": "self.version",
+        "web-auth/webauthn-symfony-json-security-bundle": "self.version"
     },
     "extra": {
         "branch-alias": {
             "v1.0": "1.0.x-dev",
-            "v1.1": "1.1.x-dev"
+            "v1.1": "1.1.x-dev",
+            "v1.2": "1.2.x-dev"
         }
     },
     "config": {

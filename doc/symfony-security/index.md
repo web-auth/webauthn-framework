@@ -27,7 +27,7 @@ public function registerBundles()
 
 # Bundle Configuration
 
-The bundle needs an HTTP messagefactory service to convert Symfony Requests into Psr7 Requests.
+The bundle needs a HTTP message factory service to convert Symfony Requests into Psr7 Requests.
 We recommend you to install [nyholm/psr7](https://github.com/Nyholm/psr7) or any other library compatible with [the Symfony Psr7 bridge](https://symfony.com/doc/current/components/psr7.html).
 
 Hereafter the bundle configuration using the library above.

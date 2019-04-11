@@ -191,13 +191,9 @@ class WebauthnListener implements ListenerInterface
                 $allowedCredentials,
                 $creationOptionsRequest->userVerification
             );
-            $data = array_merge(
-                ['status' => 'ok', 'errorMessage' => ''],
-                $publicKeyCredentialRequestOptions->jsonSerialize()
-            );
             $request->getSession()->set($this->options['session_parameter'], ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
 
-            $response = new JsonResponse($data);
+            $response = new JsonResponse($publicKeyCredentialRequestOptions->jsonSerialize());
         } catch (\Exception $e) {
             $response = $this->onAssertionFailure(new AuthenticationException($e->getMessage(), 0, $e));
         }
