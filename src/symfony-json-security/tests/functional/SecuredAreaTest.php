@@ -101,7 +101,5 @@ class SecuredAreaTest extends WebTestCase
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         static::assertEquals('{"status":"ok","errorMessage":""}', $client->getResponse()->getContent());
         static::assertTrue($session->has('_security_main'));
-        $token = unserialize($session->get('_security_main'));
-        dump($token);
     }
 }
