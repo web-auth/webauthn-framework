@@ -21,6 +21,7 @@ use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function Safe\sprintf;
 
 class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, ServiceEntityRepositoryInterface
 {
@@ -36,12 +37,12 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
-        Assertion::subclassOf($class, PublicKeyCredentialSource::class, \Safe\sprintf(
+        Assertion::subclassOf($class, PublicKeyCredentialSource::class, sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class
         ));
         $manager = $registry->getManagerForClass($class);
-        Assertion::isInstanceOf($manager, EntityManagerInterface::class, \Safe\sprintf(
+        Assertion::isInstanceOf($manager, EntityManagerInterface::class, sprintf(
             'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity’s metadata.',
             $class
         ));

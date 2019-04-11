@@ -80,7 +80,7 @@ security:
     firewalls:
         main:
             …
-            webauthn: # The Webauthn firewall
+            webauthn_json: # The Webauthn firewall
                 profile: 'default' # required. See above
                 login_path: /login # default
                 options_path: /login/options # default

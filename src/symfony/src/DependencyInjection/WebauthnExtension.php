@@ -41,6 +41,7 @@ use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use function Safe\sprintf;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
@@ -115,7 +116,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('transport_binding_profile.php');
 
         foreach ($config['transport_binding_profile']['creation'] as $name => $profileConfig) {
-            $attestationRequestControllerId = \Safe\sprintf('webauthn.controller.transport_binding_profile.creation.request.%s', $name);
+            $attestationRequestControllerId = sprintf('webauthn.controller.transport_binding_profile.creation.request.%s', $name);
             $attestationRequestController = new Definition(AttestationRequestController::class);
             $attestationRequestController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationRequestController']);
             $attestationRequestController->setArguments([$profileConfig['profile_name'], $profileConfig['session_parameter_name']]);
@@ -123,7 +124,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationRequestController->addTag('controller.service_arguments');
             $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
 
-            $attestationResponseControllerId = \Safe\sprintf('webauthn.controller.transport_binding_profile.creation.response.%s', $name);
+            $attestationResponseControllerId = sprintf('webauthn.controller.transport_binding_profile.creation.response.%s', $name);
             $attestationResponseController = new Definition(AttestationResponseController::class);
             $attestationResponseController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
             $attestationResponseController->setArguments([$profileConfig['session_parameter_name']]);
@@ -133,7 +134,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
 
         foreach ($config['transport_binding_profile']['request'] as $name => $profileConfig) {
-            $assertionRequestControllerId = \Safe\sprintf('webauthn.controller.transport_binding_profile.request.request.%s', $name);
+            $assertionRequestControllerId = sprintf('webauthn.controller.transport_binding_profile.request.request.%s', $name);
             $assertionRequestController = new Definition(AssertionRequestController::class);
             $assertionRequestController->setFactory([new Reference(AssertionResponseControllerFactory::class), 'createAssertionRequestController']);
             $assertionRequestController->setArguments([$profileConfig['profile_name'], $profileConfig['session_parameter_name']]);
@@ -141,7 +142,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionRequestController->addTag('controller.service_arguments');
             $container->setDefinition($assertionRequestControllerId, $assertionRequestController);
 
-            $assertionResponseControllerId = \Safe\sprintf('webauthn.controller.transport_binding_profile.request.response.%s', $name);
+            $assertionResponseControllerId = sprintf('webauthn.controller.transport_binding_profile.request.response.%s', $name);
             $assertionResponseController = new Definition(AssertionResponseController::class);
             $assertionResponseController->setFactory([new Reference(AssertionResponseControllerFactory::class), 'createAssertionResponseController']);
             $assertionResponseController->setArguments([$profileConfig['session_parameter_name']]);

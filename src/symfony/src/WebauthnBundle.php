@@ -21,6 +21,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
+use function Safe\realpath;
 
 final class WebauthnBundle extends Bundle
 {
@@ -49,7 +50,7 @@ final class WebauthnBundle extends Bundle
     private function registerMappings(ContainerBuilder $container): void
     {
         $mappings = [
-            \Safe\realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
+            realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
         ];
         if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));

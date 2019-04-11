@@ -46,6 +46,8 @@ use Webauthn\SecurityBundle\Model\CanHaveRegisteredSecurityDevices;
 use Webauthn\SecurityBundle\Model\HasUserHandle;
 use Webauthn\SecurityBundle\Security\Authentication\Token\PreWebauthnToken;
 use Webauthn\SecurityBundle\Security\Authentication\Token\WebauthnToken;
+use function Safe\sprintf;
+use function Safe\json_encode;
 
 class WebauthnListener implements ListenerInterface
 {
@@ -326,7 +328,7 @@ class WebauthnListener implements ListenerInterface
         $rememberMe = $this->isRememberMeRequested($request);
 
         if (!\is_string($username)) {
-            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
+            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
         }
 
         $username = trim($username);
@@ -349,7 +351,7 @@ class WebauthnListener implements ListenerInterface
             throw new BadRequestHttpException('No public key credential request options available for this session.');
         }
         if (!\is_string($assertion)) {
-            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
+            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
         }
 
         $assertion = trim($assertion);
@@ -374,10 +376,10 @@ class WebauthnListener implements ListenerInterface
             );
         } catch (\Throwable $throwable) {
             if (null !== $this->logger) {
-                $this->logger->error(\Safe\sprintf(
+                $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
                     $assertion,
-                    \Safe\json_encode($PublicKeyCredentialRequestOptions),
+                    json_encode($PublicKeyCredentialRequestOptions),
                     $throwable->getMessage(),
                     $throwable->getFile(),
                     $throwable->getLine()

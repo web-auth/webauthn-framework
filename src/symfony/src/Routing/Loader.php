@@ -18,6 +18,7 @@ use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use function Safe\sprintf;
 
 class Loader implements LoaderInterface
 {
@@ -33,10 +34,10 @@ class Loader implements LoaderInterface
 
     public function add(string $pattern, ?string $host, string $name): void
     {
-        $controllerId = \Safe\sprintf('%s:__invoke', $name);
+        $controllerId = sprintf('%s:__invoke', $name);
         $defaults = ['_controller' => $controllerId];
         $route = new Route($pattern, $defaults, [], [], $host, ['https'], [Request::METHOD_POST]);
-        $this->routes->add(\Safe\sprintf('webauthn_%s', $name), $route);
+        $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 
     public function load($resource, $type = null): RouteCollection

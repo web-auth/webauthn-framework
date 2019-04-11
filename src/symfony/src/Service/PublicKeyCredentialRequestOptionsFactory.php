@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use function Safe\sprintf;
 
 final class PublicKeyCredentialRequestOptionsFactory
 {
@@ -32,7 +33,7 @@ final class PublicKeyCredentialRequestOptionsFactory
 
     public function create(string $key, array $allowCredentials, ?string $userVerification = null): PublicKeyCredentialRequestOptions
     {
-        Assertion::keyExists($this->profiles, $key, \Safe\sprintf('The profile with key "%s" does not exist.', $key));
+        Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
         return new PublicKeyCredentialRequestOptions(

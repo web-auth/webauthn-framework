@@ -22,6 +22,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function Safe\sprintf;
 
 final class PublicKeyCredentialCreationOptionsFactory
 {
@@ -37,7 +38,7 @@ final class PublicKeyCredentialCreationOptionsFactory
 
     public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestation = null): PublicKeyCredentialCreationOptions
     {
-        Assertion::keyExists($this->profiles, $key, \Safe\sprintf('The profile with key "%s" does not exist.', $key));
+        Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
         return new PublicKeyCredentialCreationOptions(

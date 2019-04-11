@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
+use function Safe\openssl_sign;
 
 abstract class RSA implements Signature
 {
@@ -25,7 +26,7 @@ abstract class RSA implements Signature
         $key = $this->handleKey($key);
         Assertion::true($key->isPrivate(), 'The key is not private');
 
-        \Safe\openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm());
+        openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm());
 
         return $signature;
     }
