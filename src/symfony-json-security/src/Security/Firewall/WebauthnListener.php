@@ -321,7 +321,7 @@ class WebauthnListener implements ListenerInterface
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $psr7Request,
-                $userEntity->getName()
+                $userEntity->getId()
             );
         } catch (\Throwable $throwable) {
             if (null !== $this->logger) {
