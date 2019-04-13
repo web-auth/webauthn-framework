@@ -40,7 +40,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             new EmptyTrustPath(),
             base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
             base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
-            'admin',
+            'foo',
             100
         );
         $this->saveCredentialSource($pkcs1);
