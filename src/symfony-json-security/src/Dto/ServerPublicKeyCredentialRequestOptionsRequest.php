@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\JsonSecurityBundle\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class ServerPublicKeyCredentialRequestOptionsRequest
 {
@@ -25,12 +24,4 @@ final class ServerPublicKeyCredentialRequestOptionsRequest
      * @Assert\NotBlank
      */
     public $username;
-
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\Choice({PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED})
-     */
-    public $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 }

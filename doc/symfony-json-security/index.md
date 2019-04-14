@@ -97,12 +97,9 @@ security:
 
 Prior to the authentication of the user, you must get PublicKey Credential Request Options.
 To do so, send a POST request to the `options_path` configured above. The body of this request is a JSON object that
-must contain at least a `username` member with the name of the user being authenticated.
+must contain a `username` member with the name of the user being authenticated.
 
 **It is mandatory to set the Content-Type header to `application/json`**.
-
-Additionally, you can indicate whether the user should be verified or not using the member `userVerification"` with one of the 
-following value: `preferred`, `required`, `discouraged` (default is `preferred`).
 
 Example:
 --------
@@ -115,8 +112,7 @@ fetch('/login/options', {
         'Content-Type' : 'application/json'
     },
     body: JSON.stringify({
-        "username": "johndoe@example.com",
-        "userVerification": "required"
+        "username": "johndoe@example.com"
     })
 }).then(function (response) {
     return response.json();

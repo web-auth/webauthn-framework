@@ -56,6 +56,7 @@ return function (ContainerConfigurator $container) {
             ref(AuthenticationManagerInterface::class),
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
+            ref('webauthn_json_security.fake_user_entity_provider')->nullOnInvalid(),
             '',
             [],
             ref(LoggerInterface::class)->nullOnInvalid(),

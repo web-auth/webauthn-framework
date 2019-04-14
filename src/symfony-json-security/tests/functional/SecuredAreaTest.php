@@ -69,6 +69,33 @@ class SecuredAreaTest extends WebTestCase
     /**
      * @test
      */
+    public function aClientCanSubmitUsernameToGetWebauthnOptionsEvenIfTheUsernameIsNotKnown(): void
+    {
+        $body = [
+            'username' => 'john.doe',
+        ];
+        $client = static::createClient();
+        $client->request('POST', '/login/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], json_encode($body));
+
+        static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $json = json_decode($client->getResponse()->getContent(), true);
+        static::assertArrayHasKey('challenge', $json);
+        static::assertArrayHasKey('rpId', $json);
+        static::assertArrayHasKey('userVerification', $json);
+        static::assertArrayHasKey('allowCredentials', $json);
+        static::assertArrayHasKey('extensions', $json);
+        static::assertArrayHasKey('timeout', $json);
+
+        static::assertArrayHasKey('set-cookie', $client->getResponse()->headers->all());
+        $session = $client->getContainer()->get('session');
+        static::assertTrue($session->has('WEBAUTHN_PUBLIC_KEY_REQUEST_OPTIONS'));
+        $options = $session->get('WEBAUTHN_PUBLIC_KEY_REQUEST_OPTIONS');
+        dump($options);
+    }
+
+    /**
+     * @test
+     */
     public function aUserCannotBeBeAuthenticatedInAbsenceOfOptions(): void
     {
         $client = static::createClient();

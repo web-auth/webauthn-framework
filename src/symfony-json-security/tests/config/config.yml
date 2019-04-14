@@ -48,6 +48,7 @@ services:
         autowire: true
     Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialUserEntityRepository:
         autowire: true
+    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider: ~
 
 httplug:
     profiling: false
@@ -80,6 +81,7 @@ doctrine:
 
 webauthn_json_security:
     http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
+    fake_user_entity_provider: 'Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
 
 webauthn:
     credential_repository: 'Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialSourceRepository'

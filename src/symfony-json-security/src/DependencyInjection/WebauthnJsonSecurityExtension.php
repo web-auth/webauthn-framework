@@ -49,6 +49,9 @@ final class WebauthnJsonSecurityExtension extends Extension
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->setAlias('webauthn_json_security.http_message_factory', $config['http_message_factory']);
+        if (null !== $config['fake_user_entity_provider']) {
+            $container->setAlias('webauthn_json_security.fake_user_entity_provider', $config['fake_user_entity_provider']);
+        }
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('security.php');

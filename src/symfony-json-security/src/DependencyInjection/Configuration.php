@@ -45,6 +45,10 @@ final class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->info('Converts Symfony Requests into PSR7 Requests. Must implement Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface.')
                 ->end()
+                ->scalarNode('fake_user_entity_provider')
+                    ->defaultNull()
+                    ->info('To avoid username enumeration, this provider will generate fake user entities and associate fake credentials.')
+                ->end()
             ->end();
 
         return $treeBuilder;
