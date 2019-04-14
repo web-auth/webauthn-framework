@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Tests\Functional;
 
+use InvalidArgumentException;
+use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -31,13 +33,13 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     public function __construct()
     {
         $pkcs1 = new PublicKeyCredentialSource(
-            \Safe\base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
+            base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
             AttestationStatement::TYPE_NONE,
             new EmptyTrustPath(),
-            \Safe\base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
-            \Safe\base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
+            base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+            base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
             'foo',
             100
         );
@@ -78,7 +80,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getAttestedCredentialData();
@@ -91,7 +93,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getUserHandle();
@@ -104,7 +106,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getCounter();
@@ -117,7 +119,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         $credential->setCounter($newCounter);

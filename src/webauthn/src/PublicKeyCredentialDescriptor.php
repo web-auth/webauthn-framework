@@ -14,8 +14,11 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\base64_decode;
+use function Safe\json_decode;
 
-class PublicKeyCredentialDescriptor implements \JsonSerializable
+class PublicKeyCredentialDescriptor implements JsonSerializable
 {
     public const CREDENTIAL_TYPE_PUBLIC_KEY = 'public-key';
 
@@ -77,7 +80,7 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -90,7 +93,7 @@ class PublicKeyCredentialDescriptor implements \JsonSerializable
 
         return new self(
             $json['type'],
-            \Safe\base64_decode($json['id'], true),
+            base64_decode($json['id'], true),
             $json['transports'] ?? []
         );
     }

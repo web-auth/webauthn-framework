@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function Safe\json_encode;
 
 class CertificateToolbox
 {
@@ -28,10 +29,10 @@ class CertificateToolbox
 
         $currentCertParsed = openssl_x509_parse($currentCert);
         while ($cert = next($x5c)) {
-            $currentCertIssuer = \Safe\json_encode($currentCertParsed['issuer']);
+            $currentCertIssuer = json_encode($currentCertParsed['issuer']);
 
             $nextCertParsed = openssl_x509_parse($cert);
-            $nextCertAsPemSubject = \Safe\json_encode($nextCertParsed['subject']);
+            $nextCertAsPemSubject = json_encode($nextCertParsed['subject']);
 
             Assertion::eq($currentCertIssuer, $nextCertAsPemSubject, 'Invalid certificate chain.');
 

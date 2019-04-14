@@ -18,6 +18,8 @@ use Http\Mock\Client;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
+use function Safe\hex2bin;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -68,7 +70,7 @@ class TPMAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
         $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(\Safe\base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true))->willReturn(false);
+        $credentialRepository->has(base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true))->willReturn(false);
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('webauthn.org');
@@ -90,15 +92,15 @@ class TPMAttestationStatementTest extends AbstractTestCase
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 
-        static::assertEquals(\Safe\base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true), Base64Url::decode($publicKeyCredential->getId()));
-        static::assertEquals(\Safe\base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true), $publicKeyCredentialDescriptor->getId());
+        static::assertEquals(base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true), Base64Url::decode($publicKeyCredential->getId()));
+        static::assertEquals(base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true), $publicKeyCredentialDescriptor->getId());
         static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredentialDescriptor->getType());
         static::assertEquals(['usb'], $publicKeyCredentialDescriptor->getTransports());
 
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
 
-        static::assertEquals(\Safe\hex2bin('9569088f1ecee3232954035dbd10d7cae391305a2751b559bb8fd7cbb229bdd4'), $authenticatorData->getRpIdHash());
+        static::assertEquals(hex2bin('9569088f1ecee3232954035dbd10d7cae391305a2751b559bb8fd7cbb229bdd4'), $authenticatorData->getRpIdHash());
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());

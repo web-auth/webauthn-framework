@@ -13,6 +13,11 @@ declare(strict_types=1);
 
 namespace Cose\Utils;
 
+use function intdiv;
+use function mb_strlen;
+use function mb_substr;
+use function Safe\sprintf;
+
 /**
  * @deprecated This class will be removed in v2.0. Please use fgrosse/phpasn1 classes instead
  */
@@ -27,25 +32,25 @@ class Asn1
         $lenBytes = '';
         while ($len > 0) {
             $lenBytes = \chr($len % 256).$lenBytes;
-            $len = \intdiv($len, 256);
+            $len = intdiv($len, 256);
         }
 
-        return \chr(0x80 | \mb_strlen($lenBytes, '8bit')).$lenBytes;
+        return \chr(0x80 | mb_strlen($lenBytes, '8bit')).$lenBytes;
     }
 
     public static function sequence(string $contents): string
     {
-        return "\x30".self::length(\mb_strlen($contents, '8bit')).$contents;
+        return "\x30".self::length(mb_strlen($contents, '8bit')).$contents;
     }
 
     public static function oid(string $encoded): string
     {
-        return "\x06".self::length(\mb_strlen($encoded, '8bit')).$encoded;
+        return "\x06".self::length(mb_strlen($encoded, '8bit')).$encoded;
     }
 
     public static function unsignedInteger(string $bytes): string
     {
-        $len = \mb_strlen($bytes, '8bit');
+        $len = mb_strlen($bytes, '8bit');
 
         // Remove leading zero bytes
         $i = 0;
@@ -56,7 +61,7 @@ class Asn1
             ++$i;
         }
         if (0 !== $i) {
-            $bytes = \mb_substr($bytes, $i);
+            $bytes = mb_substr($bytes, $i);
         }
 
         // If most significant bit is set, prefix with another zero to prevent it being seen as negative number
@@ -64,12 +69,12 @@ class Asn1
             $bytes = "\x00".$bytes;
         }
 
-        return "\x02".self::length(\mb_strlen($bytes, '8bit')).$bytes;
+        return "\x02".self::length(mb_strlen($bytes, '8bit')).$bytes;
     }
 
     public static function bitString(string $bytes): string
     {
-        $len = \mb_strlen($bytes, '8bit') + 1;
+        $len = mb_strlen($bytes, '8bit') + 1;
 
         return "\x03".self::length($len)."\x00".$bytes;
     }
@@ -81,8 +86,8 @@ class Asn1
 
     public static function pem(string $type, string $der): string
     {
-        return \Safe\sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
+        return sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
             chunk_split(base64_encode($der), 64, "\n").
-            \Safe\sprintf("-----END %s-----\n", mb_strtoupper($type));
+            sprintf("-----END %s-----\n", mb_strtoupper($type));
     }
 }

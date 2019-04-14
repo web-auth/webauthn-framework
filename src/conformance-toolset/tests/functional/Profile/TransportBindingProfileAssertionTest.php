@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Tests\Functional\Profile;
 
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -30,9 +32,9 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         $content = [
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals('failed', $data['status']);
@@ -50,9 +52,9 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'username' => 123,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals('failed', $data['status']);
@@ -71,9 +73,9 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'userVerification' => PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals('ok', $data['status']);

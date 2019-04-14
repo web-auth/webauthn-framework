@@ -14,12 +14,16 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use Base64Url\Base64Url;
+use JsonSerializable;
+use function Safe\sprintf;
+use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
  */
-class PublicKeyCredentialSource
+class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
      * @var string
@@ -171,5 +175,44 @@ class PublicKeyCredentialSource
     public function setCounter(int $counter): void
     {
         $this->counter = $counter;
+    }
+
+    public static function createFromArray(array $data): self
+    {
+        $keys = array_keys(get_class_vars(self::class));
+        foreach ($keys as $key) {
+            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+        }
+
+        try {
+            return new self(
+                Base64Url::decode($data['publicKeyCredentialId']),
+                $data['type'],
+                $data['transports'],
+                $data['attestationType'],
+                AbstractTrustPath::createFromArray($data['trustPath']),
+                Base64Url::decode($data['aaguid']),
+                $data['credentialPublicKey'],
+                Base64Url::decode($data['userHandle']),
+                $data['counter']
+            );
+        } catch (\Throwable $throwable) {
+            throw new \InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
+        }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'publicKeyCredentialId' => Base64Url::encode($this->publicKeyCredentialId),
+            'type' => $this->type,
+            'transports' => $this->transports,
+            'attestationType' => $this->attestationType,
+            'trustPath' => $this->trustPath,
+            'aaguid' => Base64Url::encode($this->aaguid),
+            'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
+            'userHandle' => Base64Url::encode($this->userHandle),
+            'counter' => $this->counter,
+        ];
     }
 }

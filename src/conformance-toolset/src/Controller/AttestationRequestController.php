@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -139,7 +140,7 @@ final class AttestationRequestController
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();
             }
-            throw new \RuntimeException(implode("\n", $messages));
+            throw new RuntimeException(implode("\n", $messages));
         }
 
         return $data;

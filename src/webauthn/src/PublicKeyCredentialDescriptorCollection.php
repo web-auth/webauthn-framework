@@ -13,9 +13,16 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use ArrayIterator;
 use Assert\Assertion;
+use function count;
+use Countable;
+use Iterator;
+use IteratorAggregate;
+use JsonSerializable;
+use function Safe\json_decode;
 
-class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Countable, \IteratorAggregate
+class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
      * @var PublicKeyCredentialDescriptor[]
@@ -41,9 +48,9 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
         unset($this->publicKeyCredentialDescriptors[$id]);
     }
 
-    public function getIterator(): \Iterator
+    public function getIterator(): Iterator
     {
-        return new \ArrayIterator($this->publicKeyCredentialDescriptors);
+        return new ArrayIterator($this->publicKeyCredentialDescriptors);
     }
 
     public function count(int $mode = COUNT_NORMAL): int
@@ -66,7 +73,7 @@ class PublicKeyCredentialDescriptorCollection implements \JsonSerializable, \Cou
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

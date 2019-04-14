@@ -16,6 +16,7 @@ namespace Webauthn\Bundle\Tests\Functional\Attestation;
 use Cose\Algorithms;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -45,7 +46,7 @@ class PackedAttestationStatementTest extends KernelTestCase
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
-            \Safe\base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
+            base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
             [
                 new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
             ],
@@ -60,7 +61,7 @@ class PackedAttestationStatementTest extends KernelTestCase
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(\Safe\base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true), $descriptor->getId());
+        static::assertEquals(base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true), $descriptor->getId());
         static::assertEquals([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();

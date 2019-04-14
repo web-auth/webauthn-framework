@@ -15,6 +15,7 @@ namespace Webauthn\Tests\Functional;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -36,7 +37,7 @@ class SubDomainRelyingPartyTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
         $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(\Safe\base64_decode('+cGSjQwC4UBTsh2Mw6guep2uTdLXOExla3QJrVpByOkEWJaOljo54PWOazmHtxBuV5DeysX7qjohoGYK2YibdA==', true))->willReturn(false);
+        $credentialRepository->has(base64_decode('+cGSjQwC4UBTsh2Mw6guep2uTdLXOExla3QJrVpByOkEWJaOljo54PWOazmHtxBuV5DeysX7qjohoGYK2YibdA==', true))->willReturn(false);
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('localhost');

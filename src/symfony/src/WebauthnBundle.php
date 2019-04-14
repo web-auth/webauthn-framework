@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use function Safe\realpath;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
@@ -49,7 +50,7 @@ final class WebauthnBundle extends Bundle
     private function registerMappings(ContainerBuilder $container): void
     {
         $mappings = [
-            \Safe\realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
+            realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webauthn',
         ];
         if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));

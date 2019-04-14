@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace U2F;
 
 use Base64Url\Base64Url;
+use JsonSerializable;
 
-class PublicKey implements \JsonSerializable
+class PublicKey implements JsonSerializable
 {
     /**
      * @var string

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -37,7 +38,7 @@ class EntityTest extends TestCase
         static::assertEquals('display_name', $user->getDisplayName());
         static::assertEquals('icon', $user->getIcon());
         static::assertEquals('id', $user->getId());
-        static::assertEquals('{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}', \Safe\json_encode($user));
+        static::assertEquals('{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}', json_encode($user));
     }
 
     /**
@@ -53,6 +54,6 @@ class EntityTest extends TestCase
         static::assertEquals('name', $rp->getName());
         static::assertEquals('icon', $rp->getIcon());
         static::assertEquals('id', $rp->getId());
-        static::assertEquals('{"name":"name","icon":"icon","id":"id"}', \Safe\json_encode($rp));
+        static::assertEquals('{"name":"name","icon":"icon","id":"id"}', json_encode($rp));
     }
 }

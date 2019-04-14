@@ -1,0 +1,121 @@
+parameters:
+    env(DATABASE_URL): ''
+
+framework:
+    test: ~
+    secret: 'test'
+    session:
+        cookie_secure: true
+        cookie_httponly: true
+        storage_id: 'session.storage.mock_file'
+    router:
+        resource: "%kernel.root_dir%/../config/routing.php"
+        strict_requirements: ~
+    fragments:       ~
+    http_method_override: true
+
+services:
+    _defaults:
+        public: true
+
+    Webauthn\JsonSecurityBundle\Tests\Functional\UserProvider:
+        autowire: true
+    Webauthn\JsonSecurityBundle\Tests\Functional\UserRepository: ~
+    Webauthn\JsonSecurityBundle\Tests\Functional\HomeController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\JsonSecurityBundle\Tests\Functional\SecurityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\JsonSecurityBundle\Tests\Functional\AdminController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+    Nyholm\Psr7\Factory\Psr17Factory: ~
+    Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory:
+        arguments:
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@Nyholm\Psr7\Factory\Psr17Factory'
+
+    httplug.client.mock:
+        class: 'Http\Mock\Client'
+
+    httplug.client.default: '@httplug.client.mock'
+
+    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialSourceRepository:
+        autowire: true
+    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialUserEntityRepository:
+        autowire: true
+    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider: ~
+
+httplug:
+    profiling: false
+    discovery:
+        client: false
+        async_client: false
+
+doctrine:
+    dbal:
+        # configure these for your database server
+        driver: 'pdo_mysql'
+        server_version: '5.7'
+        charset: utf8mb4
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+
+        url: '%env(resolve:DATABASE_URL)%'
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/'
+                prefix: 'Webauthn\JsonSecurityBundle\Tests\Functional'
+                alias: App
+
+webauthn_json_security:
+    http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
+    fake_user_entity_provider: 'Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
+
+webauthn:
+    credential_repository: 'Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialSourceRepository'
+    user_repository: 'Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
+    android_safetynet:
+        enabled: true
+        api_key: 'api_key'
+        http_client: 'httplug.client.mock'
+    request_profiles:
+        default:
+            extensions:
+                foo: 'bar'
+            rp_id: 'localhost'
+            challenge_length: 32
+            timeout: 30000
+            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
+
+security:
+    providers:
+        default:
+            id: 'Webauthn\JsonSecurityBundle\Tests\Functional\UserProvider'
+
+    firewalls:
+        main:
+            anonymous: ~
+            webauthn_json:
+                profile: 'default'
+            logout:
+                path: /logout
+                target: /
+
+    access_control:
+        - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
+        - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
+        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

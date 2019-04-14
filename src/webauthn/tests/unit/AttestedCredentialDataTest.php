@@ -14,13 +14,15 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\AttestedCredentialData;
 
 /**
  * @group unit
  * @group Fido2
  *
- * @covers \Webauthn\AttestedCredentialData
+ * @covers \AttestedCredentialData
  */
 class AttestedCredentialDataTest extends TestCase
 {
@@ -34,9 +36,9 @@ class AttestedCredentialDataTest extends TestCase
         static::assertEquals('aauid', $attestedCredentialData->getAaguid());
         static::assertEquals('credential_id', $attestedCredentialData->getCredentialId());
         static::assertEquals('credential_public_key', $attestedCredentialData->getCredentialPublicKey());
-        static::assertEquals('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', \Safe\json_encode($attestedCredentialData));
+        static::assertEquals('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', json_encode($attestedCredentialData));
 
-        $json = \Safe\json_decode('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', true);
+        $json = json_decode('{"aaguid":"YWF1aWQ=","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', true);
         $created = AttestedCredentialData::createFromArray($json);
         static::assertEquals($attestedCredentialData, $created);
     }

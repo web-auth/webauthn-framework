@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function Safe\json_encode;
+
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
  */
@@ -55,6 +57,6 @@ class PublicKeyCredential extends Credential
 
     public function __toString()
     {
-        return \Safe\json_encode($this);
+        return json_encode($this);
     }
 }
