@@ -15,6 +15,11 @@ namespace U2F;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\rewind;
 
 class SignatureResponse
 {
@@ -106,26 +111,26 @@ class SignatureResponse
     {
         Assertion::false(!\array_key_exists('signatureData', $data) || !\is_string($data['signatureData']), 'Invalid response.');
 
-        $stream = \Safe\fopen('php://memory', 'r+');
+        $stream = fopen('php://memory', 'r+');
         $signatureData = Base64Url::decode($data['signatureData']);
-        \Safe\fwrite($stream, $signatureData);
-        \Safe\rewind($stream);
+        fwrite($stream, $signatureData);
+        rewind($stream);
 
         try {
-            $userPresenceByte = \Safe\fread($stream, 1);
+            $userPresenceByte = fread($stream, 1);
             Assertion::eq(1, mb_strlen($userPresenceByte, '8bit'), 'Invalid response.');
             $userPresence = (bool) \ord($userPresenceByte);
 
-            $counterBytes = \Safe\fread($stream, 4);
+            $counterBytes = fread($stream, 4);
             Assertion::eq(4, mb_strlen($counterBytes, '8bit'), 'Invalid response.');
             $counter = unpack('Nctr', $counterBytes)['ctr'];
             $signature = '';
             while (!feof($stream)) {
-                $signature .= \Safe\fread($stream, 1024);
+                $signature .= fread($stream, 1024);
             }
-            \Safe\fclose($stream);
+            fclose($stream);
         } catch (\Throwable $throwable) {
-            \Safe\fclose($stream);
+            fclose($stream);
             throw $throwable;
         }
 

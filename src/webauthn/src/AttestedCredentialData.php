@@ -14,11 +14,13 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\base64_decode;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
  */
-class AttestedCredentialData implements \JsonSerializable
+class AttestedCredentialData implements JsonSerializable
 {
     /**
      * @var string
@@ -71,9 +73,9 @@ class AttestedCredentialData implements \JsonSerializable
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
 
         return new self(
-            \Safe\base64_decode($json['aaguid'], true),
-            \Safe\base64_decode($json['credentialId'], true),
-            isset($json['credentialPublicKey']) ? \Safe\base64_decode($json['credentialPublicKey'], true) : null
+            base64_decode($json['aaguid'], true),
+            base64_decode($json['credentialId'], true),
+            isset($json['credentialPublicKey']) ? base64_decode($json['credentialPublicKey'], true) : null
         );
     }
 

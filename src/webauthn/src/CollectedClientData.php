@@ -15,6 +15,9 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use InvalidArgumentException;
+use function Safe\json_decode;
+use function Safe\sprintf;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -62,7 +65,7 @@ class CollectedClientData
     public static function createFormJson(string $data): self
     {
         $rawData = Base64Url::decode($data);
-        $json = \Safe\json_decode($rawData, true);
+        $json = json_decode($rawData, true);
         Assertion::isArray($json, 'Invalid collected client data');
 
         return new self($rawData, $json);
@@ -112,7 +115,7 @@ class CollectedClientData
     public function get(string $key)
     {
         if (!$this->has($key)) {
-            throw new \InvalidArgumentException(\Safe\sprintf('The key "%s" is missing', $key));
+            throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
         }
 
         return $this->data[$key];
@@ -125,7 +128,7 @@ class CollectedClientData
     {
         if (!\array_key_exists($key, $json)) {
             if ($isRequired) {
-                throw new \InvalidArgumentException(\Safe\sprintf('The key "%s" is missing', $key));
+                throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
             }
 
             return;

@@ -18,6 +18,8 @@ use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\StringStream;
+use InvalidArgumentException;
+use function Safe\json_decode;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -64,7 +66,7 @@ class PublicKeyCredentialLoader
 
     public function load(string $data): PublicKeyCredential
     {
-        $json = \Safe\json_decode($data, true);
+        $json = json_decode($data, true);
 
         return $this->loadArray($json);
     }
@@ -111,7 +113,7 @@ class PublicKeyCredentialLoader
                     $response['userHandle'] ?? null
                 );
             default:
-                throw new \InvalidArgumentException();
+                throw new InvalidArgumentException('Unable to create the response object');
         }
     }
 }

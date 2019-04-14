@@ -19,6 +19,7 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
+use function Safe\sprintf;
 
 class RsaKey extends Key
 {
@@ -190,8 +191,8 @@ class RsaKey extends Key
 
     private function pem(string $type, string $der): string
     {
-        return \Safe\sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
+        return sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
             chunk_split(base64_encode($der), 64, "\n").
-            \Safe\sprintf("-----END %s-----\n", mb_strtoupper($type));
+            sprintf("-----END %s-----\n", mb_strtoupper($type));
     }
 }

@@ -17,6 +17,9 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\StringStream;
+use InvalidArgumentException;
+use function Safe\openssl_pkey_get_public;
+use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -42,7 +45,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['sig', 'x5c'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, \Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
@@ -86,9 +89,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     private function checkCertificate(string $publicKey): void
     {
         try {
-            $resource = \Safe\openssl_pkey_get_public($publicKey);
+            $resource = openssl_pkey_get_public($publicKey);
         } catch (\Throwable $throwable) {
-            throw new \InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
+            throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
         }
         $details = openssl_pkey_get_details($resource);
         Assertion::keyExists($details, 'ec', 'The certificate in the attestation statement is not valid.');

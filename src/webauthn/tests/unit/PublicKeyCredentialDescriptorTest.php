@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 /**
@@ -34,7 +35,7 @@ class PublicKeyCredentialDescriptorTest extends TestCase
         static::assertEquals('type', $descriptor->getType());
         static::assertEquals('id', $descriptor->getId());
         static::assertEquals(['transport'], $descriptor->getTransports());
-        static::assertEquals('{"type":"type","id":"aWQ=","transports":["transport"]}', \Safe\json_encode($descriptor));
+        static::assertEquals('{"type":"type","id":"aWQ=","transports":["transport"]}', json_encode($descriptor));
 
         $created = PublicKeyCredentialDescriptor::createFromString('{"type":"type","id":"aWQ=","transports":["transport"]}');
         static::assertEquals($descriptor, $created);

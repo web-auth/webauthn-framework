@@ -15,8 +15,11 @@ namespace U2F;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use JsonSerializable;
+use function Safe\json_decode;
+use function Safe\sprintf;
 
-class RegisteredKey implements \JsonSerializable
+class RegisteredKey implements JsonSerializable
 {
     /**
      * @var string
@@ -51,7 +54,7 @@ class RegisteredKey implements \JsonSerializable
      */
     public static function createFromJson(string $json, int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE): self
     {
-        $data = \Safe\json_decode($json, true, 512, $options);
+        $data = json_decode($json, true, 512, $options);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -59,7 +62,7 @@ class RegisteredKey implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -68,7 +71,7 @@ class RegisteredKey implements \JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['version', 'keyHandle', 'publicKey', 'attestationCertificate'] as $key) {
-            Assertion::keyExists($data, $key, \Safe\sprintf('The key "%s" is missing', $key));
+            Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
         }
 
         return new self(

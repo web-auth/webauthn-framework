@@ -15,6 +15,8 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\AttestedCredentialData;
 
 final class AttestedCredentialDataType extends Type
@@ -24,7 +26,7 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return \Safe\json_encode($value);
+        return json_encode($value);
     }
 
     /**
@@ -32,7 +34,7 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $json = \Safe\json_decode($value, true);
+        $json = json_decode($value, true);
 
         return AttestedCredentialData::createFromArray($json);
     }

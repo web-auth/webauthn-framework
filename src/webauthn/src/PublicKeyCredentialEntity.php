@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-abstract class PublicKeyCredentialEntity implements \JsonSerializable
+use JsonSerializable;
+
+abstract class PublicKeyCredentialEntity implements JsonSerializable
 {
     /**
      * @var string

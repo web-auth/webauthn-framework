@@ -17,6 +17,8 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+use function Safe\sprintf;
 use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
@@ -36,12 +38,12 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
-        Assertion::subclassOf($class, PublicKeyCredentialSource::class, \Safe\sprintf(
+        Assertion::subclassOf($class, PublicKeyCredentialSource::class, sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class
         ));
         $manager = $registry->getManagerForClass($class);
-        Assertion::isInstanceOf($manager, EntityManagerInterface::class, \Safe\sprintf(
+        Assertion::isInstanceOf($manager, EntityManagerInterface::class, sprintf(
             'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity’s metadata.',
             $class
         ));
@@ -110,7 +112,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getAttestedCredentialData();
@@ -120,7 +122,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getUserHandle();
@@ -130,7 +132,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         return $credential->getCounter();
@@ -140,7 +142,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
     {
         $credential = $this->findOneByCredentialId($credentialId);
         if (null === $credential) {
-            throw new \InvalidArgumentException('Invalid credential ID');
+            throw new InvalidArgumentException('Invalid credential ID');
         }
 
         $credential->setCounter($newCounter);

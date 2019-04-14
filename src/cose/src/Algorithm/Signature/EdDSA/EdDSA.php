@@ -18,6 +18,11 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
+use InvalidArgumentException;
+use function sodium_crypto_sign_detached;
+use function sodium_crypto_sign_secretkey;
+use function sodium_crypto_sign_seed_keypair;
+use function sodium_crypto_sign_verify_detached;
 
 final class EdDSA implements Signature
 {
@@ -26,14 +31,14 @@ final class EdDSA implements Signature
         $key = $this->handleKey($key);
         Assertion::true($key->isPrivate(), 'The key is not private');
 
-        $keyPair = \sodium_crypto_sign_seed_keypair($key->d());
-        $secretKey = \sodium_crypto_sign_secretkey($keyPair);
+        $keyPair = sodium_crypto_sign_seed_keypair($key->d());
+        $secretKey = sodium_crypto_sign_secretkey($keyPair);
 
         switch ($key->curve()) {
             case OkpKey::CURVE_ED25519:
-                return \sodium_crypto_sign_detached($data, $secretKey);
+                return sodium_crypto_sign_detached($data, $secretKey);
             default:
-                throw new \InvalidArgumentException('Unsupported curve');
+                throw new InvalidArgumentException('Unsupported curve');
         }
     }
 
@@ -43,9 +48,9 @@ final class EdDSA implements Signature
 
         switch ($key->curve()) {
             case OkpKey::CURVE_ED25519:
-                return \sodium_crypto_sign_verify_detached($signature, $data, $key->x());
+                return sodium_crypto_sign_verify_detached($signature, $data, $key->x());
             default:
-                throw new \InvalidArgumentException('Unsupported curve');
+                throw new InvalidArgumentException('Unsupported curve');
         }
     }
 

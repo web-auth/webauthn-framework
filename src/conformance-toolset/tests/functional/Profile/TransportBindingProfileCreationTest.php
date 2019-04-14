@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Tests\Functional\Profile;
 
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -30,9 +32,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'displayName' => 'FOO',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -50,9 +52,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'username' => 'foo',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -71,9 +73,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'displayName' => 123,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -92,9 +94,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'displayName' => 'FOO',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -119,9 +121,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'attestation' => 'indirect',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
@@ -147,9 +149,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'authenticatorSelection' => ['requireResidentKey' => true],
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauth.app'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauth.app'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
@@ -174,9 +176,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'displayName' => 'FOO',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], \Safe\json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        $data = \Safe\json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');

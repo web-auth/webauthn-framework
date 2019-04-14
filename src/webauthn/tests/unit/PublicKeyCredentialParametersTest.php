@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialParameters;
 
 /**
@@ -33,11 +34,11 @@ class PublicKeyCredentialParametersTest extends TestCase
 
         static::assertEquals('type', $parameters->getType());
         static::assertEquals(100, $parameters->getAlg());
-        static::assertEquals('{"type":"type","alg":100}', \Safe\json_encode($parameters));
+        static::assertEquals('{"type":"type","alg":100}', json_encode($parameters));
 
         $data = PublicKeyCredentialParameters::createFromString('{"type":"type","alg":100}');
         static::assertEquals('type', $data->getType());
         static::assertEquals(100, $data->getAlg());
-        static::assertEquals('{"type":"type","alg":100}', \Safe\json_encode($data));
+        static::assertEquals('{"type":"type","alg":100}', json_encode($data));
     }
 }

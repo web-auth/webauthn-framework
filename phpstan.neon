@@ -6,7 +6,7 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
-        - '#Parameter \#2 $id of method Symfony\\Component\\DependencyInjection\\ContainerBuilder::setAlias\(\) expects string|Symfony\\Component\\DependencyInjection\\Alias, Webauthn\\PublicKeyCredentialSourceRepository given\.#'
+        - '#Parameter (.*) of method Symfony\\Component\\DependencyInjection\\ContainerBuilder::setAlias\(\) expects string|Symfony\\Component\\DependencyInjection\\Alias, Webauthn\\PublicKeyCredentialSourceRepository given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
         - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
         - '#Call to function method_exists\(\) with Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder and (.*) will always evaluate to true\.#'
@@ -16,7 +16,7 @@ parameters:
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Fetching class constant class of deprecated class Webauthn\\CredentialRepository\.#'
         - '#Interface Webauthn\\PublicKeyCredentialSourceRepository extends deprecated interface Webauthn\\CredentialRepository\.#'
-        - '#Parameter \#7 $credentialPublicKey of class Webauthn\\PublicKeyCredentialSource constructor expects string, string|null given\.#'
+        - '#Parameter (.*) of class Webauthn\\PublicKeyCredentialSource constructor expects string, string|null given\.#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

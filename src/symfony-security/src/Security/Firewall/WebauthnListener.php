@@ -15,6 +15,8 @@ namespace Webauthn\SecurityBundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
+use function Safe\json_encode;
+use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -326,7 +328,7 @@ class WebauthnListener implements ListenerInterface
         $rememberMe = $this->isRememberMeRequested($request);
 
         if (!\is_string($username)) {
-            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
+            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['username_parameter'], \gettype($username)));
         }
 
         $username = trim($username);
@@ -349,7 +351,7 @@ class WebauthnListener implements ListenerInterface
             throw new BadRequestHttpException('No public key credential request options available for this session.');
         }
         if (!\is_string($assertion)) {
-            throw new BadRequestHttpException(\Safe\sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
+            throw new BadRequestHttpException(sprintf('The key "%s" must be a string, "%s" given.', $this->options['assertion_parameter'], \gettype($assertion)));
         }
 
         $assertion = trim($assertion);
@@ -374,10 +376,10 @@ class WebauthnListener implements ListenerInterface
             );
         } catch (\Throwable $throwable) {
             if (null !== $this->logger) {
-                $this->logger->error(\Safe\sprintf(
+                $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
                     $assertion,
-                    \Safe\json_encode($PublicKeyCredentialRequestOptions),
+                    json_encode($PublicKeyCredentialRequestOptions),
                     $throwable->getMessage(),
                     $throwable->getFile(),
                     $throwable->getLine()

@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
-class AuthenticationExtension implements \JsonSerializable
+use JsonSerializable;
+
+class AuthenticationExtension implements JsonSerializable
 {
     /**
      * @var string

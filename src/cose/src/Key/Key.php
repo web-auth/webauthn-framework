@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
+use function Safe\sprintf;
 
 class Key
 {
@@ -79,7 +80,7 @@ class Key
      */
     public function get(int $key)
     {
-        Assertion::keyExists($this->data, $key, \Safe\sprintf('The key has no data at index %d', $key));
+        Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 
         return $this->data[$key];
     }

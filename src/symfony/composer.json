@@ -36,13 +36,15 @@
         }
     },
     "suggest": {
-        "web-auth/webauthn-symfony-security-bundle": "For firewall features",
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)"
+        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)",
+        "web-auth/webauthn-symfony-security-bundle": "Symfony firewall using templating and forms",
+        "web-auth/webauthn-symfony-json-security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "extra": {
         "branch-alias": {
             "v1.0": "1.0.x-dev",
-            "v1.1": "1.1.x-dev"
+            "v1.1": "1.1.x-dev",
+            "v1.2": "1.2.x-dev"
         }
     }
 }

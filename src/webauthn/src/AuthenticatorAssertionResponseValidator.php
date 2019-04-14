@@ -17,6 +17,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
 use Psr\Http\Message\ServerRequestInterface;
+use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -104,7 +105,7 @@ class AuthenticatorAssertionResponseValidator
         /** @see 7.2.9 */
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $rpIdLength = mb_strlen($rpId);
-        $parsedRelyingPartyId = \Safe\parse_url($C->getOrigin());
+        $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
         Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
         Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');

@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JsonSerializable;
+use function Safe\json_decode;
 
-class PublicKeyCredentialParameters implements \JsonSerializable
+class PublicKeyCredentialParameters implements JsonSerializable
 {
     /**
      * @deprecated Will be removed in v2.0. Use \Cose\Algorithms::COSE_ALGORITHM_ES256 instead
@@ -63,7 +65,7 @@ class PublicKeyCredentialParameters implements \JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = \Safe\json_decode($data, true);
+        $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\SecurityBundle\Tests\Functional;
 
+use function Safe\sprintf;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -36,7 +37,7 @@ final class UserProvider implements UserProviderInterface
     {
         $user = $this->userRepository->findByUsername($username);
         if (null === $user) {
-            throw new UsernameNotFoundException(\Safe\sprintf('The user with username "%s" cannot be found', $username));
+            throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
         }
 
         return $user;

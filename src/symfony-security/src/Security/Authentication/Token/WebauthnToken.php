@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\SecurityBundle\Security\Authentication\Token;
 
 use Assert\Assertion;
+use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -131,8 +132,8 @@ class WebauthnToken extends AbstractToken
     public function serialize(): string
     {
         return serialize([
-            \Safe\json_encode($this->publicKeyCredentialRequestOptions),
-            \Safe\json_encode($this->publicKeyCredentialDescriptor),
+            json_encode($this->publicKeyCredentialRequestOptions),
+            json_encode($this->publicKeyCredentialDescriptor),
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,

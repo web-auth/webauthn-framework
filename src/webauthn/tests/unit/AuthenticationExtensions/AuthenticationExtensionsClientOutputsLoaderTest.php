@@ -19,6 +19,7 @@ use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
 use CBOR\SignedIntegerObject;
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -43,7 +44,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
         static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
         static::assertCount(1, $extensions);
-        static::assertEquals('{"loc":true}', \Safe\json_encode($extensions));
+        static::assertEquals('{"loc":true}', json_encode($extensions));
     }
 
     /**

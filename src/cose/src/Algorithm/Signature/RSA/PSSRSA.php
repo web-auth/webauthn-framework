@@ -13,11 +13,21 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
+use function ceil;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
+use function hash_equals;
+use InvalidArgumentException;
 use Jose\Component\Core\Util\BigInteger;
 use Jose\Component\Core\Util\Hash;
+use function mb_strlen;
+use function mb_substr;
+use function pack;
+use function random_bytes;
+use RuntimeException;
+use function str_pad;
+use function str_repeat;
 
 /**
  * @internal
@@ -27,7 +37,7 @@ abstract class PSSRSA implements Signature
     public function sign(string $data, Key $key): string
     {
         $key = $this->handleKey($key);
-        $modulusLength = \mb_strlen($key->n(), '8bit');
+        $modulusLength = mb_strlen($key->n(), '8bit');
 
         $em = self::encodeEMSAPSS($data, 8 * $modulusLength - 1, $this->getHashAlgorithm());
         $message = BigInteger::createFromBinaryString($em);
@@ -39,10 +49,10 @@ abstract class PSSRSA implements Signature
     public function verify(string $data, Key $key, string $signature): bool
     {
         $key = $this->handleKey($key);
-        $modulusLength = \mb_strlen($key->n(), '8bit');
+        $modulusLength = mb_strlen($key->n(), '8bit');
 
-        if (\mb_strlen($signature, '8bit') !== $modulusLength) {
-            throw new \InvalidArgumentException();
+        if (mb_strlen($signature, '8bit') !== $modulusLength) {
+            throw new InvalidArgumentException('Invalid modulus length');
         }
         $s2 = BigInteger::createFromBinaryString($signature);
         $m2 = $this->exponentiate($key, $s2);
@@ -62,11 +72,11 @@ abstract class PSSRSA implements Signature
     private function convertIntegerToOctetString(BigInteger $x, int $xLen): string
     {
         $x = $x->toBytes();
-        if (\mb_strlen($x, '8bit') > $xLen) {
-            throw new \RuntimeException();
+        if (mb_strlen($x, '8bit') > $xLen) {
+            throw new RuntimeException('Unable to convert the integer');
         }
 
-        return \str_pad($x, $xLen, \chr(0), STR_PAD_LEFT);
+        return str_pad($x, $xLen, \chr(0), STR_PAD_LEFT);
     }
 
     /**
@@ -75,13 +85,13 @@ abstract class PSSRSA implements Signature
     private function getMGF1(string $mgfSeed, int $maskLen, Hash $mgfHash): string
     {
         $t = '';
-        $count = \ceil($maskLen / $mgfHash->getLength());
+        $count = ceil($maskLen / $mgfHash->getLength());
         for ($i = 0; $i < $count; ++$i) {
-            $c = \pack('N', $i);
+            $c = pack('N', $i);
             $t .= $mgfHash->hash($mgfSeed.$c);
         }
 
-        return \mb_substr($t, 0, $maskLen, '8bit');
+        return mb_substr($t, 0, $maskLen, '8bit');
     }
 
     /**
@@ -93,12 +103,12 @@ abstract class PSSRSA implements Signature
         $sLen = $hash->getLength();
         $mHash = $hash->hash($message);
         if ($emLen <= $hash->getLength() + $sLen + 2) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
         }
-        $salt = \random_bytes($sLen);
+        $salt = random_bytes($sLen);
         $m2 = "\0\0\0\0\0\0\0\0".$mHash.$salt;
         $h = $hash->hash($m2);
-        $ps = \str_repeat(\chr(0), $emLen - $sLen - $hash->getLength() - 2);
+        $ps = str_repeat(\chr(0), $emLen - $sLen - $hash->getLength() - 2);
         $db = $ps.\chr(1).$salt;
         $dbMask = self::getMGF1($h, $emLen - $hash->getLength() - 1, $hash);
         $maskedDB = $db ^ $dbMask;
@@ -116,32 +126,32 @@ abstract class PSSRSA implements Signature
         $sLen = $hash->getLength();
         $mHash = $hash->hash($m);
         if ($emLen < $hash->getLength() + $sLen + 2) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
-        if ($em[\mb_strlen($em, '8bit') - 1] !== \chr(0xBC)) {
-            throw new \InvalidArgumentException();
+        if ($em[mb_strlen($em, '8bit') - 1] !== \chr(0xBC)) {
+            throw new InvalidArgumentException();
         }
-        $maskedDB = \mb_substr($em, 0, -$hash->getLength() - 1, '8bit');
-        $h = \mb_substr($em, -$hash->getLength() - 1, $hash->getLength(), '8bit');
+        $maskedDB = mb_substr($em, 0, -$hash->getLength() - 1, '8bit');
+        $h = mb_substr($em, -$hash->getLength() - 1, $hash->getLength(), '8bit');
         $temp = \chr(0xFF << ($emBits & 7));
         if ((~$maskedDB[0] & $temp) !== $temp) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
         $dbMask = self::getMGF1($h, $emLen - $hash->getLength() - 1, $hash/*MGF*/);
         $db = $maskedDB ^ $dbMask;
         $db[0] = ~\chr(0xFF << ($emBits & 7)) & $db[0];
         $temp = $emLen - $hash->getLength() - $sLen - 2;
-        if (\mb_substr($db, 0, $temp, '8bit') !== \str_repeat(\chr(0), $temp)) {
-            throw new \InvalidArgumentException();
+        if (mb_substr($db, 0, $temp, '8bit') !== str_repeat(\chr(0), $temp)) {
+            throw new InvalidArgumentException();
         }
         if (1 !== \ord($db[$temp])) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
-        $salt = \mb_substr($db, $temp + 1, null, '8bit'); // should be $sLen long
+        $salt = mb_substr($db, $temp + 1, null, '8bit'); // should be $sLen long
         $m2 = "\0\0\0\0\0\0\0\0".$mHash.$salt;
         $h2 = $hash->hash($m2);
 
-        return \hash_equals($h, $h2);
+        return hash_equals($h, $h2);
     }
 
     /**
@@ -151,7 +161,7 @@ abstract class PSSRSA implements Signature
     public function exponentiate(RsaKey $key, BigInteger $c): BigInteger
     {
         if ($c->compare(BigInteger::createFromDecimal(0)) < 0 || $c->compare(BigInteger::createFromBinaryString($key->n())) > 0) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
         }
         if ($key->isPublic() || !$key->hasPrimes() || !$key->hasExponents() || !$key->hasCoefficient()) {
             return $c->modPow(BigInteger::createFromBinaryString($key->e()), BigInteger::createFromBinaryString($key->n()));

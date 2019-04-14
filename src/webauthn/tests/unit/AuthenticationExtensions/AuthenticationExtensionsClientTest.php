@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -35,7 +36,7 @@ class AuthenticationExtensionsClientTest extends TestCase
 
         static::assertEquals('name', $extension->name());
         static::assertEquals(['value'], $extension->value());
-        static::assertEquals('["value"]', \Safe\json_encode($extension));
+        static::assertEquals('["value"]', json_encode($extension));
     }
 
     /**
@@ -51,7 +52,7 @@ class AuthenticationExtensionsClientTest extends TestCase
         $inputs->add($extension);
 
         static::assertEquals(1, $inputs->count());
-        static::assertEquals('{"name":["value"]}', \Safe\json_encode($inputs));
+        static::assertEquals('{"name":["value"]}', json_encode($inputs));
         foreach ($inputs as $k => $input) {
             static::assertInstanceOf(AuthenticationExtension::class, $input);
         }
@@ -70,7 +71,7 @@ class AuthenticationExtensionsClientTest extends TestCase
         $inputs->add($extension);
 
         static::assertEquals(1, $inputs->count());
-        static::assertEquals('{"name":["value"]}', \Safe\json_encode($inputs));
+        static::assertEquals('{"name":["value"]}', json_encode($inputs));
         foreach ($inputs as $k => $input) {
             static::assertInstanceOf(AuthenticationExtension::class, $input);
         }

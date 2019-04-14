@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function Safe\base64_decode;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
@@ -60,7 +61,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
         return new self(
             $json['name'],
-            \Safe\base64_decode($json['id'], true),
+            base64_decode($json['id'], true),
             $json['displayName'],
             $json['icon'] ?? null
         );
