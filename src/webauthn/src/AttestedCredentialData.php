@@ -53,8 +53,8 @@ class AttestedCredentialData implements JsonSerializable
     public function getAaguidAsUuid(): string
     {
         $data = bin2hex($this->aaguid);
-        
-        return preg_replace("/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/", "$1-$2-$3-$4-$5", $data);
+
+        return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $data);
     }
 
     public function getCredentialId(): string
