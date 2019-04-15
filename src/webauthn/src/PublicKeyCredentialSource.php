@@ -157,6 +157,13 @@ class PublicKeyCredentialSource implements JsonSerializable
         return $this->aaguid;
     }
 
+    public function getAaguidAsUuid(): string
+    {
+        $string = unpack("h*", $this->aaguid);
+        
+        return preg_replace("/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/", "$1-$2-$3-$4-$5", $string);
+    }
+    
     public function getCredentialPublicKey(): string
     {
         return $this->credentialPublicKey;
