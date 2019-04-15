@@ -15,7 +15,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JsonSerializable;
-use function Safe\bin2hex;
 use function Safe\base64_decode;
 use function Safe\preg_replace;
 
