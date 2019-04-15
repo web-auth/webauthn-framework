@@ -20,6 +20,7 @@
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
+            "Webauthn\\MetadataService\\": "src/metadata-service/src/",
             "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
             "Webauthn\\SecurityBundle\\": "src/symfony-security/src/",
             "Webauthn\\JsonSecurityBundle\\": "src/symfony-json-security/src/"
@@ -32,6 +33,7 @@
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\MetadataService\\Tests\\Functional\\": "src/metadata-service/tests/functional/",
             "Webauthn\\ConformanceToolset\\Tests\\Functional\\": "src/conformance-toolset/tests/functional/",
             "Webauthn\\SecurityBundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/",
             "Webauthn\\JsonSecurityBundle\\Tests\\Functional\\": "src/symfony-json-security/tests/functional/"

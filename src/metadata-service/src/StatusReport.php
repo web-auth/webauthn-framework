@@ -13,9 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-/**
- */
-class StatusReport implements \JsonSerializable
+class StatusReport
 {
     /**
      * @var string
@@ -64,19 +62,9 @@ class StatusReport implements \JsonSerializable
         return $this->status;
     }
 
-    public function setStatus(string $status): void
-    {
-        $this->status = $status;
-    }
-
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
-    }
-
-    public function setEffectiveDate(?string $effectiveDate): void
-    {
-        $this->effectiveDate = $effectiveDate;
     }
 
     public function getCertificate(): ?string
@@ -84,19 +72,9 @@ class StatusReport implements \JsonSerializable
         return $this->certificate;
     }
 
-    public function setCertificate(?string $certificate): void
-    {
-        $this->certificate = $certificate;
-    }
-
     public function getUrl(): ?string
     {
         return $this->url;
-    }
-
-    public function setUrl(?string $url): void
-    {
-        $this->url = $url;
     }
 
     public function getCertificationDescriptor(): ?string
@@ -104,19 +82,9 @@ class StatusReport implements \JsonSerializable
         return $this->certificationDescriptor;
     }
 
-    public function setCertificationDescriptor(?string $certificationDescriptor): void
-    {
-        $this->certificationDescriptor = $certificationDescriptor;
-    }
-
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
-    }
-
-    public function setCertificateNumber(?string $certificateNumber): void
-    {
-        $this->certificateNumber = $certificateNumber;
     }
 
     public function getCertificationPolicyVersion(): ?string
@@ -124,31 +92,23 @@ class StatusReport implements \JsonSerializable
         return $this->certificationPolicyVersion;
     }
 
-    public function setCertificationPolicyVersion(?string $certificationPolicyVersion): void
-    {
-        $this->certificationPolicyVersion = $certificationPolicyVersion;
-    }
-
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
     }
 
-    public function setCertificationRequirementsVersion(?string $certificationRequirementsVersion): void
+    public static function createFromArray(array $data): self
     {
-        $this->certificationRequirementsVersion = $certificationRequirementsVersion;
-    }
+        $object = new self();
+        $object->status = $data['status'] ?? null;
+        $object->effectiveDate = $data['effectiveDate'] ?? null;
+        $object->certificate = $data['certificate'] ?? null;
+        $object->url = $data['url'] ?? null;
+        $object->certificationDescriptor = $data['certificationDescriptor'] ?? null;
+        $object->certificateNumber = $data['certificateNumber'] ?? null;
+        $object->certificationPolicyVersion = $data['certificationPolicyVersion'] ?? null;
+        $object->certificationRequirementsVersion = $data['certificationRequirementsVersion'] ?? null;
 
-    public function jsonSerialize(): array
-    {
-        return [
-            'status' => $this->status,
-            'effectiveDate' => $this->effectiveDate,
-            'certificate' => $this->certificate,
-            'url' => $this->url,
-            'certificationDescriptor' => $this->certificationDescriptor,
-            'certificateNumber' => $this->certificateNumber,
-            'certificationPolicyVersion' => $this->certificationPolicyVersion,
-        ];
+        return $object;
     }
 }

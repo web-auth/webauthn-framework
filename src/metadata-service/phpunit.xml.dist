@@ -11,10 +11,7 @@
         colors="true">
     <testsuites>
         <testsuite name="Test Suite">
-            <directory>./src/cose/tests/</directory>
-            <directory>./src/u2f/tests/</directory>
-            <directory>./src/webauthn/tests/</directory>
-            <directory>./src/metadata-service/tests/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
     <php>
@@ -22,20 +19,14 @@
         <ini name="intl.default_locale" value="en" />
         <ini name="intl.error_level" value="0" />
         <ini name="memory_limit" value="-1" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
     </php>
     <filter>
         <whitelist>
             <directory suffix=".php">./</directory>
             <exclude>
                 <directory>./vendor</directory>
-                <directory>./src/*/var/</directory>
-                <directory>./src/*/tests/</directory>
-                <directory suffix="Test.php">./src</directory>
+                <directory>./tests/</directory>
             </exclude>
         </whitelist>
     </filter>
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
 </phpunit>

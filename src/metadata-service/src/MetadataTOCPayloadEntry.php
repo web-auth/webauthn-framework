@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-/**
- */
-class MetadataTOCPayloadEntry implements \JsonSerializable
+use Assert\Assertion;
+
+class MetadataTOCPayloadEntry
 {
     /**
      * @var string|null
@@ -48,7 +48,7 @@ class MetadataTOCPayloadEntry implements \JsonSerializable
     private $biometricStatusReports;
 
     /**
-     * @var string
+     * @var StatusReport[]
      */
     private $statusReports;
 
@@ -72,32 +72,14 @@ class MetadataTOCPayloadEntry implements \JsonSerializable
         return $this->aaid;
     }
 
-    public function setAaid(?string $aaid): void
-    {
-        $this->aaid = $aaid;
-    }
-
     public function getAaguid(): ?string
     {
         return $this->aaguid;
     }
 
-    public function setAaguid(?string $aaguid): void
-    {
-        $this->aaguid = $aaguid;
-    }
-
-    /**
-     * @return string[]
-     */
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
-    }
-
-    public function setAttestationCertificateKeyIdentifiers(array $attestationCertificateKeyIdentifiers): void
-    {
-        $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
     }
 
     public function getHash(): ?string
@@ -105,42 +87,22 @@ class MetadataTOCPayloadEntry implements \JsonSerializable
         return $this->hash;
     }
 
-    public function setHash(?string $hash): void
-    {
-        $this->hash = $hash;
-    }
-
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    public function setUrl(?string $url): void
-    {
-        $this->url = $url;
-    }
-
-    /**
-     * @return BiometricStatusReport[]
-     */
     public function getBiometricStatusReports(): array
     {
         return $this->biometricStatusReports;
     }
 
-    public function addBiometricStatusReports(BiometricStatusReport $biometricStatusReport): void
-    {
-        $this->biometricStatusReports[] = $biometricStatusReport;
-    }
-
-    public function getStatusReports(): string
+    /**
+     * @return StatusReport[]
+     */
+    public function getStatusReports(): array
     {
         return $this->statusReports;
-    }
-
-    public function setStatusReports(string $statusReports): void
-    {
-        $this->statusReports = $statusReports;
     }
 
     public function getTimeOfLastStatusChange(): string
@@ -148,19 +110,9 @@ class MetadataTOCPayloadEntry implements \JsonSerializable
         return $this->timeOfLastStatusChange;
     }
 
-    public function setTimeOfLastStatusChange(string $timeOfLastStatusChange): void
-    {
-        $this->timeOfLastStatusChange = $timeOfLastStatusChange;
-    }
-
     public function getRogueListURL(): string
     {
         return $this->rogueListURL;
-    }
-
-    public function setRogueListURL(string $rogueListURL): void
-    {
-        $this->rogueListURL = $rogueListURL;
     }
 
     public function getRogueListHash(): string
@@ -168,14 +120,26 @@ class MetadataTOCPayloadEntry implements \JsonSerializable
         return $this->rogueListHash;
     }
 
-    public function setRogueListHash(string $rogueListHash): void
+    public static function createFromArray(array $data): self
     {
-        $this->rogueListHash = $rogueListHash;
-    }
+        $object = new self();
+        $object->aaid = $data['aaid'] ?? null;
+        $object->aaguid = $data['aaguid'] ?? null;
+        $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? null;
+        $object->hash = $data['hash'] ?? null;
+        $object->url = $data['url'] ?? null;
+        $object->biometricStatusReports = isset($data['biometricStatusReports']) ? BiometricStatusReport::createFromArray($data['biometricStatusReports']) : null;
+        $object->statusReports = [];
+        if (isset($data['statusReports'])) {
+            Assertion::isArray($data['statusReports'], 'Invalid status report');
+            foreach ($data['statusReports'] as $k => $statusReport) {
+                $object->statusReports[$k] = StatusReport::createFromArray($statusReport);
+            }
+        }
+        $object->timeOfLastStatusChange = $data['timeOfLastStatusChange'] ?? null;
+        $object->rogueListURL = $data['rogueListURL'] ?? null;
+        $object->rogueListHash = $data['rogueListHash'] ?? null;
 
-    public function jsonSerialize(): array
-    {
-        return [
-        ];
+        return $object;
     }
 }

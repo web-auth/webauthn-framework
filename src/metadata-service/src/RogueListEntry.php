@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class RogueListEntry implements \JsonSerializable
+class RogueListEntry
 {
     /**
      * @var string
@@ -29,24 +29,17 @@ class RogueListEntry implements \JsonSerializable
         return $this->sk;
     }
 
-    public function setSk(string $sk): void
-    {
-        $this->sk = $sk;
-    }
-
     public function getDate(): string
     {
         return $this->date;
     }
 
-    public function setDate(string $date): void
+    public static function createFromArray(array $data): self
     {
-        $this->date = $date;
-    }
+        $object = new self();
+        $object->sk = $data['sk'] ?? null;
+        $object->date = $data['date'] ?? null;
 
-    public function jsonSerialize(): array
-    {
-        return [
-        ];
+        return $object;
     }
 }

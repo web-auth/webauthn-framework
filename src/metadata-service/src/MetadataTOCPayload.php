@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class MetadataTOCPayload implements \JsonSerializable
+class MetadataTOCPayload
 {
     /**
      * @var string|null
@@ -40,29 +40,14 @@ class MetadataTOCPayload implements \JsonSerializable
         return $this->legalHeader;
     }
 
-    public function setLegalHeader(?string $legalHeader): void
-    {
-        $this->legalHeader = $legalHeader;
-    }
-
     public function getNo(): int
     {
         return $this->no;
     }
 
-    public function setNo(int $no): void
-    {
-        $this->no = $no;
-    }
-
     public function getNextUpdate(): string
     {
         return $this->nextUpdate;
-    }
-
-    public function setNextUpdate(string $nextUpdate): void
-    {
-        $this->nextUpdate = $nextUpdate;
     }
 
     /**
@@ -73,14 +58,19 @@ class MetadataTOCPayload implements \JsonSerializable
         return $this->entries;
     }
 
-    public function addEntry(MetadataTOCPayloadEntry $entry): void
+    public static function createFromArray(array $data): self
     {
-        $this->entries[] = $entry;
-    }
+        $object = new self();
+        $object->legalHeader = $data['legalHeader'] ?? null;
+        $object->nextUpdate = $data['nextUpdate'] ?? null;
+        $object->no = $data['no'] ?? null;
+        $object->entries = [];
+        if (isset($data['entries'])) {
+            foreach ($data['entries'] as $k => $entry) {
+                $object->entries[$k] = MetadataTOCPayloadEntry::createFromArray($entry);
+            }
+        }
 
-    public function jsonSerialize(): array
-    {
-        return [
-        ];
+        return $object;
     }
 }
