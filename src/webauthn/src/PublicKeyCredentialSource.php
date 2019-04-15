@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use JsonSerializable;
 use function Safe\sprintf;
+use function Safe\preg_replace;
 use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
 
