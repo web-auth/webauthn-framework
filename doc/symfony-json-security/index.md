@@ -152,3 +152,79 @@ fetch('/assertion/result', {
     console.log({ 'status': 'failed', 'error': err });
 })
 ```
+
+# Fake User Entities And Credentials
+
+Let's imagine a malicious application that sends several POST requests to the options path with different usernames.
+The firewall will respond with an error 401 if the username does not exist or generate a `PublicKeyCredentialRequestOptions` object if it does.
+Thus the malicious app will be capable of establishing a a list of usernames and associated credentials.
+
+To avoid that usernames enumeration, you have to create a fake user provider that implements `Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider` and generate user entities and associate credentials on demand.
+You have to ensure that, for a given username, the fake data is always the same by using a persistent storage or caching system, otherwise the malicious app could understand this is fake data.
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace App\Provider;
+
+use Faker\Factory; // See https://github.com/fzaninotto/Faker
+use Psr\Cache\CacheItemPoolInterface; // See PSR 6
+use Ramsey\Uuid\Uuid; // See https://github.com/ramsey/uuid
+use Webauthn\JsonSecurityBundle\Model\PublicKeyCredentialFakeUserEntity;
+use Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider;
+use Webauthn\PublicKeyCredentialDescriptor;
+
+final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCredentialUserEntityProvider
+{
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
+    
+    public function __construct(CacheItemPoolInterface $cacheItemPool)
+    {
+       $this->cacheItemPool = $cacheItemPool;
+    }
+    
+    public function getFakeUserEntityFor(string $username): PublicKeyCredentialFakeUserEntity
+    {
+        $cacheItem = $this->cacheItemPool->getItem('FAKE_USER_ENTITIES/'.$username): //We check in the cache system
+        if ($cacheItem->isHit()) { // If found, we return the data
+            return $cacheItem->get();
+        }
+        
+        $fakeUserEntity = $this->generateFakeUserEntityFor($username); // Otherwise we create a new fake user
+        $cacheItem->set($fakeUserEntity); // We store it in the cache system
+        $this->cacheItemPool->save($cacheItem);
+        
+        return $fakeUserEntity; // We return the data
+    }
+    
+    public function generateFakeUserEntityFor(string $username): PublicKeyCredentialFakeUserEntity
+    {
+        $nbCredentials = random_int(1, 6); // We define a random number of credentials
+        $credential = [];
+        for(int $i = 0; $i < $nbCredentials; ++$i) {
+            $credential[] = new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                random_bytes(32)
+            );
+        }
+        $factory = Factory::create();
+        
+        return new PublicKeyCredentialFakeUserEntity(
+            $username, // The username
+            Uuid::uuid4()->toString(), // A random UUID
+            $factory->name, // A fake name
+        );
+    }
+}
+```
+
+This class can now be declared as a service and set in the bundle configuration:
+
+```yaml
+webauthn_json_security:
+    fake_user_entity_provider: 'App\Provider\PublicKeyCredentialFakeUserEntityProvider'
+```
