@@ -61,17 +61,17 @@ class MetadataServiceCaller
         if (null !== $this->cacheItemPool) {
             $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayloadntry-'.$aaguid);
             if ($cacheItem->isHit()) {
-                dump('From cache!');
-                $payload = $this->getMetadataTOCPayloadFromCache();
+                $payload = $cacheItem->get();
             } else {
                 $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($aaguid);
                 $cacheItem->set($payload);
                 $this->cacheItemPool->save($cacheItem);
-                dump('Stored in cache!');
             }
         } else {
             $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($aaguid);
         }
+
+        dump($payload);
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
@@ -80,7 +80,7 @@ class MetadataServiceCaller
             $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayload');
             if ($cacheItem->isHit()) {
                 dump('From cache!');
-                $payload = $this->getMetadataTOCPayloadFromCache();
+                $payload = $cacheItem->get();
             } else {
                 $payload = $this->getMetadataTOCPayloadFromMetadataService();
                 $cacheItem->set($payload);
@@ -108,22 +108,25 @@ class MetadataServiceCaller
         $cacheItem->expiresAt($expiresAt);
     }
 
-    private function getMetadataTOCPayloadFromCache(): ?string
-    {
-        if (null === $this->cacheItemPool) {
-            return null;
-        }
-        $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayload');
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
-        return null;
-    }
-
     private function getMetadataTOCPayloadEntryFromMetadataService(string $aaguid): string
     {
         $uri = sprintf('%s/metadata/%s/?token=%s', self::SERVICE_URI, $aaguid, $this->token);
+        $content = $this->callMetadataService($uri);
+
+        return $content;
+    }
+
+    private function getMetadataTOCPayloadFromMetadataService(): string
+    {
+        $uri = sprintf('%s/?token=%s', self::SERVICE_URI, $this->token);
+        $content = $this->callMetadataService($uri);
+        $payload = $this->getJwsPayload($content);
+
+        return $payload;
+    }
+
+    private function callMetadataService(string $uri): string
+    {
         $request = $this->requestFactory->createRequest('GET', $uri);
         $response = $this->httpClient->sendRequest($request);
         Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
@@ -131,14 +134,8 @@ class MetadataServiceCaller
         return $response->getBody()->getContents();
     }
 
-    private function getMetadataTOCPayloadFromMetadataService(): string
+    private function getJwsPayload(string $token): string
     {
-        $uri = sprintf('%s/?token=%s', self::SERVICE_URI, $this->token);
-        $request = $this->requestFactory->createRequest('GET', $uri);
-        $response = $this->httpClient->sendRequest($request);
-        Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
-
-        $token = $response->getBody()->getContents();
         $jws = (new CompactSerializer(new StandardConverter()))->unserialize($token);
         Assertion::eq(1, $jws->countSignatures(), 'Invalid response from the metadata service. Only one signature shall be present.');
         $signature = $jws->getSignature(0);
@@ -154,6 +151,6 @@ class MetadataServiceCaller
         $isValid = $algorithm->verify($key, $signature->getEncodedProtectedHeader().'.'.$jws->getEncodedPayload(), $signature->getSignature());
         Assertion::true($isValid, 'Invalid response from the metadata service. The token signature is invalid.');
 
-        return $payload;
+        return $jws->getPayload();
     }
 }
