@@ -25,6 +25,10 @@
         "web-auth/webauthn-lib": "^1.1",
         "web-token/jwt-signature": "^1.3"
     },
+    "require-dev": {
+        "fzaninotto/faker": "^1.8",
+        "ramsey/uuid": "^3.8"
+    },
     "autoload": {
         "psr-4": {
             "Webauthn\\Bundle\\": "src/"
