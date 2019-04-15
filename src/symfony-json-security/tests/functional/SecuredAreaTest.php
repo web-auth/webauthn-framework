@@ -78,7 +78,8 @@ class SecuredAreaTest extends WebTestCase
         $client->request('POST', '/login/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], json_encode($body));
 
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $json = json_decode($client->getResponse()->getContent(), true);
+        $responseContent = $client->getResponse()->getContent();
+        $json = json_decode($responseContent, true);
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
@@ -97,6 +98,13 @@ class SecuredAreaTest extends WebTestCase
         static::assertEquals('{"status":"error","errorMessage":"Invalid assertion"}', $client->getResponse()->getContent());
         static::assertFalse($session->has('_security_main'));
         static::assertFalse($client->getResponse()->headers->has('set-cookie'));
+
+        $client->request('POST', '/login/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], json_encode($body));
+
+        static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $responseContent = $client->getResponse()->getContent();
+        $newJson = json_decode($responseContent, true);
+        static::assertEquals($json['allowCredentials'], $newJson['allowCredentials']);
     }
 
     /**

@@ -48,7 +48,8 @@ services:
         autowire: true
     Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialUserEntityRepository:
         autowire: true
-    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider: ~
+    Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
+        autowire: true
 
 httplug:
     profiling: false

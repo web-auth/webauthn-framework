@@ -13,23 +13,56 @@ declare(strict_types=1);
 
 namespace Webauthn\JsonSecurityBundle\Tests\Functional;
 
+use Faker\Factory;
+use Psr\Cache\CacheItemPoolInterface;
+use Ramsey\Uuid\Uuid;
 use Webauthn\JsonSecurityBundle\Model\PublicKeyCredentialFakeUserEntity;
 use Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCredentialUserEntityProvider
 {
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
+
+    public function __construct(CacheItemPoolInterface $cacheItemPool)
+    {
+        $this->cacheItemPool = $cacheItemPool;
+    }
+
     public function getFakeUserEntityFor(string $username): PublicKeyCredentialFakeUserEntity
     {
+        $cacheItem = $this->cacheItemPool->getItem('FAKE_USER_ENTITIES-'.$username);
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $fakeUserEntity = $this->generateFakeUserEntityFor($username);
+        $cacheItem->set($fakeUserEntity);
+        $this->cacheItemPool->save($cacheItem);
+
+        return $fakeUserEntity;
+    }
+
+    public function generateFakeUserEntityFor(string $username): PublicKeyCredentialFakeUserEntity
+    {
+        $nbCredentials = random_int(1, 6);
+        $credentials = [];
+        for($i = 0; $i < $nbCredentials; ++$i) {
+            $credentials[] = new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                random_bytes(32)
+            );
+        }
+        $factory = Factory::create();
+
         return new PublicKeyCredentialFakeUserEntity(
             $username,
-            hash('sha256', $username, true),
-            'Fake User '.$username,
-            [
-                new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, hash('sha256', $username.'Key #1', true)),
-                new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, hash('sha256', $username.'Key #2', true)),
-                new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, hash('sha256', $username.'Key #3', true)),
-            ]
+            Uuid::uuid4()->toString(),
+            $factory->name,
+            $credentials
         );
     }
 }
