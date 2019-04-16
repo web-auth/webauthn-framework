@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use JsonSerializable;
+use function Safe\preg_replace;
 use function Safe\sprintf;
 use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
@@ -155,6 +156,13 @@ class PublicKeyCredentialSource implements JsonSerializable
     public function getAaguid(): string
     {
         return $this->aaguid;
+    }
+
+    public function getAaguidAsUuid(): string
+    {
+        $data = bin2hex($this->aaguid);
+
+        return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $data);
     }
 
     public function getCredentialPublicKey(): string
