@@ -22,6 +22,7 @@ use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use function Safe\base64_decode;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
@@ -56,22 +57,28 @@ class MetadataServiceCaller
         $this->cacheItemPool = $cacheItemPool;
     }
 
-    public function getMetadataTOCPayloadEntry(string $aaguid): void
+    public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
     {
         if (null !== $this->cacheItemPool) {
-            $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayloadntry-'.$aaguid);
+            $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayloadntry-'.$entry->getAaguid());
             if ($cacheItem->isHit()) {
                 $payload = $cacheItem->get();
             } else {
-                $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($aaguid);
+                $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
                 $cacheItem->set($payload);
                 $this->cacheItemPool->save($cacheItem);
             }
         } else {
-            $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($aaguid);
+            $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
         }
+        try {
+            $json = base64_decode($payload, true);
+            $data = json_decode($json, true);
 
-        dump($payload);
+            return MetadataStatement::createFromArray($data);
+        } catch (\Throwable $throwable) {
+            throw new \InvalidArgumentException(sprintf('Unable to load the metadata statement of AAGUID "%s"', $entry->getAaguid()), $throwable->getCode(), $throwable);
+        }
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
@@ -79,18 +86,15 @@ class MetadataServiceCaller
         if (null !== $this->cacheItemPool) {
             $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayload');
             if ($cacheItem->isHit()) {
-                dump('From cache!');
                 $payload = $cacheItem->get();
             } else {
                 $payload = $this->getMetadataTOCPayloadFromMetadataService();
                 $cacheItem->set($payload);
                 $this->cacheItemPool->save($cacheItem);
-                dump('Stored in cache!');
             }
         } else {
             $payload = $this->getMetadataTOCPayloadFromMetadataService();
         }
-
         $data = MetadataTOCPayload::createFromArray(json_decode($payload, true));
         $this->storeInCache($payload, $data->getNextUpdate());
 
@@ -108,9 +112,11 @@ class MetadataServiceCaller
         $cacheItem->expiresAt($expiresAt);
     }
 
-    private function getMetadataTOCPayloadEntryFromMetadataService(string $aaguid): string
+    private function getMetadataTOCPayloadEntryFromMetadataService(MetadataTOCPayloadEntry $entry): string
     {
-        $uri = sprintf('%s/metadata/%s/?token=%s', self::SERVICE_URI, $aaguid, $this->token);
+        $url = $entry->getUrl();
+        Assertion::notNull($url, 'No URL provided for the entry');
+        $uri = sprintf('%s?token=%s', $entry->getUrl(), $this->token);
         $content = $this->callMetadataService($uri);
 
         return $content;

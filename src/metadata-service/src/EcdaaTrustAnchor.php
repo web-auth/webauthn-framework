@@ -45,6 +45,35 @@ class EcdaaTrustAnchor
      */
     private $G1Curve;
 
+    public function getX(): string
+    {
+        return $this->X;
+    }
+
+    public function getY(): string
+    {
+        return $this->Y;
+    }
+
+    public function getC(): string
+    {
+        return $this->c;
+    }
+
+    public function getSx(): string
+    {
+        return $this->sx;
+    }
+
+    public function getSy(): string
+    {
+        return $this->sy;
+    }
+
+    public function getG1Curve(): string
+    {
+        return $this->G1Curve;
+    }
 
     public static function createFromArray(array $data): self
     {
@@ -54,6 +83,7 @@ class EcdaaTrustAnchor
         $object->c = $c['data'] ?? null;
         $object->sx = $data['sx'] ?? null;
         $object->sy = $data['sy'] ?? null;
+        $object->G1Curve = $data['G1Curve'] ?? null;
 
         return $object;
     }

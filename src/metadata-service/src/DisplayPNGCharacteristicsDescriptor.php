@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use Assert\Assertion;
+
 class DisplayPNGCharacteristicsDescriptor
 {
     /**
-     * @var int
+     * @var float
      */
     private $width;
 
     /**
-     * @var
+     * @var float
      */
     private $height;
 
@@ -51,18 +53,71 @@ class DisplayPNGCharacteristicsDescriptor
     private $interlace;
 
     /**
-     * @var rgbPaletteEntry[]
+     * @var RgbPaletteEntry[]
      */
-    private $plte;
+    private $plte = [];
 
+    public function getWidth(): float
+    {
+        return $this->width;
+    }
+
+    public function getHeight(): float
+    {
+        return $this->height;
+    }
+
+    public function getBitDepth(): string
+    {
+        return $this->bitDepth;
+    }
+
+    public function getColorType(): string
+    {
+        return $this->colorType;
+    }
+
+    public function getCompression(): string
+    {
+        return $this->compression;
+    }
+
+    public function getFilter(): string
+    {
+        return $this->filter;
+    }
+
+    public function getInterlace(): string
+    {
+        return $this->interlace;
+    }
+
+    /**
+     * @return RgbPaletteEntry[]
+     */
+    public function getPlte(): array
+    {
+        return $this->plte;
+    }
 
     public static function createFromArray(array $data): self
     {
         $object = new self();
-        $object->id = $data['id'] ?? null;
-        $object->tag = $data['tag'] ?? null;
-        $object->data = $data['data'] ?? null;
-        $object->fail_if_unknown = $data['fail_if_unknown'] ?? null;
+        $object->width = $data['width'] ?? null;
+        $object->compression = $data['compression'] ?? null;
+        $object->height = $data['height'] ?? null;
+        $object->bitDepth = $data['bitDepth'] ?? null;
+        $object->colorType = $data['colorType'] ?? null;
+        $object->compression = $data['compression'] ?? null;
+        $object->filter = $data['filter'] ?? null;
+        $object->interlace = $data['interlace'] ?? null;
+        if (isset($data['plte'])) {
+            $plte = $data['plte'];
+            Assertion::isArray($plte, 'Invalid "plte" parameter');
+            foreach ($plte as $item) {
+                $object->plte[] = RgbPaletteEntry::createFromArray($item);
+            }
+        }
 
         return $object;
     }
