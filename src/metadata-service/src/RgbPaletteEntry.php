@@ -50,7 +50,7 @@ class RgbPaletteEntry
         $object = new self();
         $object->r = $data['r'] ?? null;
         $object->g = $data['g'] ?? null;
-        $object->b = $b['data'] ?? null;
+        $object->b = $data['b'] ?? null;
 
         return $object;
     }
