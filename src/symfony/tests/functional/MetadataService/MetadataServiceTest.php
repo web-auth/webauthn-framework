@@ -18,7 +18,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Webauthn\MetadataService\MetadataServiceCaller;
+use Webauthn\MetadataService\MetadataService;
 
 /**
  * @group functional
@@ -51,7 +51,7 @@ class MetadataServiceTest extends KernelTestCase
             return $response->reveal();
         });
 
-        $service = self::$kernel->getContainer()->get(MetadataServiceCaller::class);
+        $service = self::$kernel->getContainer()->get(MetadataService::class);
         $data = $service->getMetadataTOCPayload();
         $entries = $data->getEntries();
         static::assertCount(30, $entries);

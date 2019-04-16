@@ -24,7 +24,7 @@ use function Safe\base64_decode;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
-class MetadataServiceCaller
+class MetadataService
 {
     private const SERVICE_URI = 'https://mds2.fidoalliance.org';
     /**

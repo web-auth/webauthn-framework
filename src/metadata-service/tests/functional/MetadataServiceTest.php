@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Webauthn\MetadataService\MetadataServiceCaller;
+use Webauthn\MetadataService\MetadataService;
 
 /**
  * @group functional
@@ -35,7 +35,7 @@ class MetadataServiceTest extends TestCase
      */
     public function theTocCanBeRetrieved(): void
     {
-        $service = new MetadataServiceCaller(
+        $service = new MetadataService(
             $this->getClient(),
             new Psr17Factory(),
             '--TOKEN--'

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
-use Webauthn\MetadataService\MetadataServiceCaller;
+use Webauthn\MetadataService\MetadataService;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -21,7 +21,7 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
-    $container->set(MetadataServiceCaller::class)
+    $container->set(MetadataService::class)
         ->public()
         ->args([
             ref('webauthn.metadata_service.http_client'),
