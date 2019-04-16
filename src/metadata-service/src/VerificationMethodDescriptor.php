@@ -21,17 +21,17 @@ class VerificationMethodDescriptor
     private $userVerification;
 
     /**
-     * @var CodeAccuracyDescriptor
+     * @var CodeAccuracyDescriptor|null
      */
     private $caDesc;
 
     /**
-     * @var BiometricAccuracyDescriptor
+     * @var BiometricAccuracyDescriptor|null
      */
     private $baDesc;
 
     /**
-     * @var PatternAccuracyDescriptor
+     * @var PatternAccuracyDescriptor|null
      */
     private $paDesc;
 
@@ -40,17 +40,17 @@ class VerificationMethodDescriptor
         return $this->userVerification;
     }
 
-    public function getCaDesc(): CodeAccuracyDescriptor
+    public function getCaDesc(): ?CodeAccuracyDescriptor
     {
         return $this->caDesc;
     }
 
-    public function getBaDesc(): BiometricAccuracyDescriptor
+    public function getBaDesc(): ?BiometricAccuracyDescriptor
     {
         return $this->baDesc;
     }
 
-    public function getPaDesc(): PatternAccuracyDescriptor
+    public function getPaDesc(): ?PatternAccuracyDescriptor
     {
         return $this->paDesc;
     }

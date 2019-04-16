@@ -16,12 +16,12 @@ namespace Webauthn\MetadataService;
 class BiometricAccuracyDescriptor
 {
     /**
-     * @var float
+     * @var float|null
      */
     private $selfAttestedFRR;
 
     /**
-     * @var float
+     * @var float|null
      */
     private $selfAttestedFAR;
 
@@ -43,7 +43,7 @@ class BiometricAccuracyDescriptor
     /**
      * @return float
      */
-    public function getSelfAttestedFRR(): float
+    public function getSelfAttestedFRR(): ?float
     {
         return $this->selfAttestedFRR;
     }
@@ -51,7 +51,7 @@ class BiometricAccuracyDescriptor
     /**
      * @return float
      */
-    public function getSelfAttestedFAR(): float
+    public function getSelfAttestedFAR(): ?float
     {
         return $this->selfAttestedFAR;
     }

@@ -102,12 +102,12 @@ class MetadataStatement
     private $keyProtection;
 
     /**
-     * @var bool
+     * @var bool|null
      */
     private $isKeyRestricted;
 
     /**
-     * @var bool
+     * @var bool|null
      */
     private $isFreshUserVerificationRequired;
 
@@ -132,7 +132,7 @@ class MetadataStatement
     private $attachmentHint;
 
     /**
-     * @var bool
+     * @var bool|null
      */
     private $isSecondFactorOnly;
 
@@ -149,7 +149,7 @@ class MetadataStatement
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
      */
-    private $tcDisplayPNGCharacteristics;
+    private $tcDisplayPNGCharacteristics = [];
 
     /**
      * @var string[]
@@ -277,14 +277,14 @@ class MetadataStatement
         return $this->keyProtection;
     }
 
-    public function isKeyRestricted(): bool
+    public function isKeyRestricted(): ?bool
     {
-        return $this->isKeyRestricted;
+        return (bool) $this->isKeyRestricted;
     }
 
-    public function isFreshUserVerificationRequired(): bool
+    public function isFreshUserVerificationRequired(): ?bool
     {
-        return $this->isFreshUserVerificationRequired;
+        return (bool) $this->isFreshUserVerificationRequired;
     }
 
     public function getMatcherProtection(): float
@@ -307,9 +307,9 @@ class MetadataStatement
         return $this->attachmentHint;
     }
 
-    public function isSecondFactorOnly(): bool
+    public function isSecondFactorOnly(): ?bool
     {
-        return $this->isSecondFactorOnly;
+        return (bool) $this->isSecondFactorOnly;
     }
 
     public function getTcDisplay(): float
@@ -410,8 +410,8 @@ class MetadataStatement
                 $object->tcDisplayPNGCharacteristics[] = DisplayPNGCharacteristicsDescriptor::createFromArray($tcDisplayPNGCharacteristic);
             }
         }
-        $object->attestationRootCertificates = $data['attestationRootCertificates'] ?? null;
-        $object->ecdaaTrustAnchors = $data['ecdaaTrustAnchors'] ?? null;
+        $object->attestationRootCertificates = $data['attestationRootCertificates'] ?? [];
+        $object->ecdaaTrustAnchors = $data['ecdaaTrustAnchors'] ?? [];
         $object->icon = $data['icon'] ?? null;
         if (isset($data['supportedExtensions'])) {
             $supportedExtensions = $data['supportedExtensions'];
