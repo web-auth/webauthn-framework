@@ -17,6 +17,7 @@ use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -27,7 +28,7 @@ use Webauthn\MetadataService\MetadataServiceCaller;
  * @group Fido2
  * @group TOC
  */
-class MetadataServiceTest extends AbstractTestCase
+class MetadataServiceTest extends TestCase
 {
     /**
      * @test

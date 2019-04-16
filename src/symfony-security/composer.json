@@ -1,4 +1,4 @@
-    {
+{
     "name": "web-auth/webauthn-symfony-security-bundle",
     "type": "symfony-bundle",
     "license": "MIT",

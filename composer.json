@@ -91,7 +91,6 @@
         "fzaninotto/faker": "^1.8",
         "nyholm/psr7": "^1.1",
         "php-coveralls/php-coveralls": "^2.0",
-        "php-http/curl-client": "^1.0",
         "php-http/httplug": "^1.0",
         "php-http/httplug-bundle": "^1.0",
         "php-http/mock-client": "^1.0",
