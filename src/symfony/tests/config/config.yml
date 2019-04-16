@@ -123,3 +123,8 @@ webauthn:
                 response_path: '/assertion/result'
                 host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__'
+    metadata_service:
+        enabled: true
+        token: '--TOKEN--'
+        http_client: 'httplug.client.mock'
+        request_factory: 'Nyholm\Psr7\Factory\Psr17Factory'
