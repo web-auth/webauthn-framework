@@ -44,9 +44,6 @@ $metadataService = new MetadataService(
     '--ACCESS TOKEN--'
 );
 $toc = $metadataService->getMetadataTOCPayload();
-$entries = $toc->getEntries();
-
-$metadataStatement = $metadataService->getMetadataStatementFor($entries[0]);
 ```
 
 # Usage
