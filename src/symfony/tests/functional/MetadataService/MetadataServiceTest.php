@@ -13,30 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
-use Cose\Algorithms;
-use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
-use Http\Mock\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
-use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\MetadataService\MetadataServiceCaller;
-use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialParameters;
-use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialUserEntity;
-use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * @group functional

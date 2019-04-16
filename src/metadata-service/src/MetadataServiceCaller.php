@@ -14,13 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use DateTimeImmutable;
 use Http\Client\HttpClient;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\base64_decode;
 use function Safe\json_decode;
@@ -44,72 +42,28 @@ class MetadataServiceCaller
      */
     private $token;
 
-    /**
-     * @var CacheItemPoolInterface|null
-     */
-    private $cacheItemPool;
-
-    public function __construct(HttpClient $httpClient, RequestFactoryInterface $requestFactory, string $token, ?CacheItemPoolInterface $cacheItemPool = null)
+    public function __construct(HttpClient $httpClient, RequestFactoryInterface $requestFactory, string $token)
     {
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
         $this->token = $token;
-        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
     {
-        if (null !== $this->cacheItemPool) {
-            $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayloadntry-'.$entry->getAaguid());
-            if ($cacheItem->isHit()) {
-                $payload = $cacheItem->get();
-            } else {
-                $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
-                $cacheItem->set($payload);
-                $this->cacheItemPool->save($cacheItem);
-            }
-        } else {
-            $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
-        }
-        try {
-            $json = base64_decode($payload, true);
-            $data = json_decode($json, true);
+        $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
+        $json = base64_decode($payload, true);
+        $data = json_decode($json, true);
 
-            return MetadataStatement::createFromArray($data);
-        } catch (\Throwable $throwable) {
-            throw new \InvalidArgumentException(sprintf('Unable to load the metadata statement of AAGUID "%s"', $entry->getAaguid()), $throwable->getCode(), $throwable);
-        }
+        return MetadataStatement::createFromArray($data);
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
     {
-        if (null !== $this->cacheItemPool) {
-            $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayload');
-            if ($cacheItem->isHit()) {
-                $payload = $cacheItem->get();
-            } else {
-                $payload = $this->getMetadataTOCPayloadFromMetadataService();
-                $cacheItem->set($payload);
-                $this->cacheItemPool->save($cacheItem);
-            }
-        } else {
-            $payload = $this->getMetadataTOCPayloadFromMetadataService();
-        }
+        $payload = $this->getMetadataTOCPayloadFromMetadataService();
         $data = MetadataTOCPayload::createFromArray(json_decode($payload, true));
-        $this->storeInCache($payload, $data->getNextUpdate());
 
         return $data;
-    }
-
-    private function storeInCache(string $payload, string $nextUpdate): void
-    {
-        if (null === $this->cacheItemPool) {
-            return;
-        }
-        $expiresAt = new DateTimeImmutable($nextUpdate);
-        $cacheItem = $this->cacheItemPool->getItem('MetadataTOCPayload');
-        $cacheItem->set($payload);
-        $cacheItem->expiresAt($expiresAt);
     }
 
     private function getMetadataTOCPayloadEntryFromMetadataService(MetadataTOCPayloadEntry $entry): string
@@ -117,18 +71,16 @@ class MetadataServiceCaller
         $url = $entry->getUrl();
         Assertion::notNull($url, 'No URL provided for the entry');
         $uri = sprintf('%s?token=%s', $entry->getUrl(), $this->token);
-        $content = $this->callMetadataService($uri);
 
-        return $content;
+        return $this->callMetadataService($uri);
     }
 
     private function getMetadataTOCPayloadFromMetadataService(): string
     {
         $uri = sprintf('%s/?token=%s', self::SERVICE_URI, $this->token);
         $content = $this->callMetadataService($uri);
-        $payload = $this->getJwsPayload($content);
 
-        return $payload;
+        return $this->getJwsPayload($content);
     }
 
     private function callMetadataService(string $uri): string

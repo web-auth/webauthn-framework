@@ -27,6 +27,5 @@ return function (ContainerConfigurator $container) {
             ref('webauthn.metadata_service.http_client'),
             ref('webauthn.metadata_service.request_factory'),
             '%webauthn.metadata_service.token%',
-            ref('webauthn.metadata_service.caching_service')->nullOnInvalid(),
         ]);
 };
