@@ -13,6 +13,8 @@ splits:
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-security-bundle.git"
     - prefix: "src/symfony-json-security"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-json-security-bundle.git"
+    - prefix: "src/metadata-service"
+      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-metadata-service.git"
 
 origins:
     - ^master$

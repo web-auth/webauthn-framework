@@ -90,6 +90,11 @@ webauthn:
         http_client: 'httplug.client.mock'
 
 security:
+    role_hierarchy:
+        ROLE_GUEST:
+        ROLE_USER:  ROLE_GUEST
+        ROLE_ADMIN: ROLE_USER
+
     providers:
         default:
             id: 'Webauthn\SecurityBundle\Tests\Functional\UserProvider'
