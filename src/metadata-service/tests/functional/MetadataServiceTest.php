@@ -21,7 +21,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Webauthn\MetadataService\MetadataServiceCaller;
-use Webauthn\MetadataService\MetadataStatement;
 
 /**
  * @group functional
@@ -48,7 +47,6 @@ class MetadataServiceTest extends AbstractTestCase
         static::assertEquals(13, $data->getNo());
         static::assertEquals('Metadata Legal Header: Version 1.00.　Date: May 21, 2018.  To access, view and use any Metadata Statements or the TOC file (“METADATA”) from the MDS, You must be bound by the latest FIDO Alliance Metadata Usage Terms that can be found at http://mds2.fidoalliance.org/ . If you already have a valid token, access the above URL attaching your token such as http://mds2.fidoalliance.org?token=YOUR-VALID-TOKEN.  If You have not entered into the agreement, please visit the registration site found at http://fidoalliance.org/MDS/ and enter into the agreement and obtain a valid token.  You must not redistribute this file to any third party. Removal of this Legal Header or modifying any part of this file renders this file invalid.  The integrity of this file as originally provided from the MDS is validated by the hash value of this file that is recorded in the MDS. The use of invalid files is strictly prohibited. If the version number for the Legal Header is updated from Version 1.00, the METADATA below may also be updated or may not be available. Please use the METADATA with the Legal Header with the latest version number.  Dated: 2018-05-21 Version LH-1.00', $data->getLegalHeader());
 
-        $availableMethods = get_class_methods(MetadataStatement::class);
         foreach ($entries as $entry) {
             if ('77010bd7-212a-4fc9-b236-d2ca5e9d4084' !== $entry->getAaguid()) { //The statement of this authenticator seems to be malformed
                 $ms = $service->getMetadataStatementFor($entry);
