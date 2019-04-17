@@ -17,6 +17,7 @@ parameters:
         - '#Fetching class constant class of deprecated class Webauthn\\CredentialRepository\.#'
         - '#Interface Webauthn\\PublicKeyCredentialSourceRepository extends deprecated interface Webauthn\\CredentialRepository\.#'
         - '#Parameter (.*) of class Webauthn\\PublicKeyCredentialSource constructor expects string, string|null given\.#'
+        - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

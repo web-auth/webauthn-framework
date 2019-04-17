@@ -28,6 +28,10 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\JsonSecurityBundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\JsonSecurityBundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\JsonSecurityBundle\Security\Firewall\WebauthnListener;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultFailureHandler;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultRequestOptionsHandler;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultSuccessHandler;
+use Webauthn\JsonSecurityBundle\Security\Storage\SessionStorage;
 use Webauthn\JsonSecurityBundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\JsonSecurityBundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialLoader;
@@ -57,8 +61,12 @@ return function (ContainerConfigurator $container) {
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
             ref('webauthn_json_security.fake_user_entity_provider')->nullOnInvalid(),
-            '',
-            [],
+            '', // Provider key
+            [], // Options
+            null, // Authentication success handler
+            null, // Authentication failure handler
+            null, // Request Options handler
+            null, // Request Options Storage
             ref(LoggerInterface::class)->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
         ])
@@ -68,6 +76,9 @@ return function (ContainerConfigurator $container) {
     $container->services()->set(WebauthnEntryPoint::class)
         ->abstract()
         ->private()
+        ->args([
+            null, // Authentication failure handler
+        ])
     ;
 
     $container->services()->set(IsUserPresentVoter::class)
@@ -78,5 +89,21 @@ return function (ContainerConfigurator $container) {
     $container->services()->set(IsUserVerifiedVoter::class)
         ->private()
         ->tag('security.voter')
+    ;
+
+    $container->services()->set(DefaultSuccessHandler::class)
+        ->private()
+    ;
+
+    $container->services()->set(DefaultFailureHandler::class)
+        ->private()
+    ;
+
+    $container->services()->set(SessionStorage::class)
+        ->private()
+    ;
+
+    $container->services()->set(DefaultRequestOptionsHandler::class)
+        ->private()
     ;
 };
