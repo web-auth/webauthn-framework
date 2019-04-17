@@ -73,7 +73,7 @@ webauthn:
 
 # Firewall Configuration
 
-In the following example, we consider you already have user provider.
+Hereafter the minimal configuration for the firewall.
 
 ```yaml
 security:
@@ -82,9 +82,6 @@ security:
             …
             webauthn_json: # The Webauthn firewall
                 profile: 'default' # required. See above
-                login_path: /login # default
-                options_path: /login/options # default
-                session_parameter: 'WEBAUTHN_PUBLIC_KEY_REQUEST_OPTIONS' # default
 
     access_control:
         - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
@@ -96,8 +93,9 @@ security:
 ## Get Options
 
 Prior to the authentication of the user, you must get PublicKey Credential Request Options.
-To do so, send a POST request to the `options_path` configured above. The body of this request is a JSON object that
-must contain a `username` member with the name of the user being authenticated.
+To do so, send a POST request to the `options_path` option. The default path is set to `/login/options`.
+
+The body of this request is a JSON object that must contain a `username` member with the name of the user being authenticated.
 
 **It is mandatory to set the Content-Type header to `application/json`**.
 
@@ -126,10 +124,29 @@ fetch('/login/options', {
 In case of success, you receive a valid [PublicKeyCredentialRequestOptions](https://www.w3.org/TR/webauthn/#assertion-options) as per the Webauthn specification.
 You can then ask the user to interact with its security devices to be authenticated.
 
+You can change that path is needed:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                profile: 'default' # required. See above
+                options_path: /security/authentication/options
+
+    access_control:
+        - { path: ^/security,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+
+```
+
+
 ## User Assertion
 
 When the user touched is security device, you will receive a response from it.
-You just have to send a POST request to the `login_path` configured above. The body of this request is the response of the security device.
+You just have to send a POST request to the `login_path`. The default path is set to `/login`.
+
+The body of this request is the response of the security device.
 
 **It is mandatory to set the Content-Type header to `application/json`**.
 
@@ -153,13 +170,130 @@ fetch('/assertion/result', {
 })
 ```
 
+You can change that path is needed:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                profile: 'default' # required. See above
+                login_path: /security/authentication/login
+
+    access_control:
+        - { path: ^/security,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+```
+
+## Handlers
+
+You can customize the responses returned by the firewall by using a custom handler.
+This could be useful when using an access token manager (e.g. [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle))
+or to add other parameters to the response.
+
+There are 3 types of responses and handlers:
+
+* Request options,
+* Authentication Success,
+* Authentication Failure,
+
+### Request Options Handler
+
+This handler is called when a client sends a valid POST request to the `options_path`.
+The default Request Options Handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultRequestOptionsHandler`.
+It returns a JSON Response with the Public Key Credential Request Options objects in its body. 
+
+Your custom handler have to implement the interface `Webauthn\JsonSecurityBundle\Security\Handler\RequestOptionsHandler`
+and be declared as a container service.
+
+When done, you can set your new service in the firewall configuration:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                …
+                request_options_handler: 'App\Handler\MyCustomRequestOptionsHandler'
+```
+
+### Authentication Success Handler
+
+This handler is called when a client sends a valid assertion from the authenticator.
+The default handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultSuccessHandler`.
+
+Your custom handler have to implement the interface `Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface`
+and be declared as a container service.
+
+When done, you can set your new service in the firewall configuration:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                …
+                success_handler: 'App\Handler\MyCustomAuthenticationSuccessHandler'
+```
+
+### Authentication Failure Handler
+
+This handler is called when an error occurred during the authentication process.
+The default handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultFailureHandler`.
+
+Your custom handler have to implement the interface `Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface`
+and be declared as a container service.
+
+When done, you can set your new service in the firewall configuration:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                …
+                failure_handler: 'App\Handler\MyCustomAuthenticationFailureHandler'
+```
+
+## Request Options Storage
+
+Webauthn authentication is a 2 steps round trip authentication:
+
+* Request options issuance
+* Authenticator assertion verification
+
+It is needed to store the request options and the user entity associated to it to verify the authenticator assertions.
+
+By default, the firewall uses `Webauthn\JsonSecurityBundle\Security\Storage\SessionStorage`.
+This storage system stores the data in a session.
+
+If this behaviour does not fit on your needs (e.g. you want to use a database),
+you can implement a custom data storage for that purpose.
+Your custom storage system have to implement `Webauthn\JsonSecurityBundle\Security\Storage\RequestOptionsStorage`
+and declared as a container service.
+
+When done, you can set your new service in the firewall configuration:
+
+```yaml
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                …
+                request_options_storage: 'App\Handler\MyCustomRequestOptionsStorage'
+```
+
 # Fake User Entities And Credentials
 
 Let's imagine a malicious application that sends several POST requests to the options path with different usernames.
 The firewall will respond with an error 401 if the username does not exist or generate a `PublicKeyCredentialRequestOptions` object if it does.
-Thus the malicious app will be capable of establishing a a list of usernames and associated credentials.
+Thus the malicious app will be capable of establishing a username list and associated credentials.
 
-To avoid that usernames enumeration, you have to create a fake user provider that implements `Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider` and generate user entities and associate credentials on demand.
+To avoid that username enumeration, you can create an optional fake user provider that implements `Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider` and generate user entities and associate credentials on demand.
 You have to ensure that, for a given username, the fake data is always the same by using a persistent storage or caching system, otherwise the malicious app could understand this is fake data.
 
 ```php
@@ -217,7 +351,7 @@ final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCr
             $username, // The username
             Uuid::uuid4()->toString(), // A random UUID
             $factory->name, // A fake name
-            $credentials
+            $credentials // The list of fake credentials
         );
     }
 }

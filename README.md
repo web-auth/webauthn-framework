@@ -1,12 +1,10 @@
 Webauthn Framework
 ==================
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/web-auth/webauthn-framework/badge.svg?branch=master)](https://coveralls.io/github/web-auth/webauthn-framework?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/badges/quality-score.png?b=v1.2)](https://scrutinizer-ci.com/g/web-auth/webauthn-framework/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/web-auth/webauthn-framework/badge.svg?branch=v1.2)](https://coveralls.io/github/web-auth/webauthn-framework?branch=master)
 
-[![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=v1.1)](https://travis-ci.org/web-auth/webauthn-framework)
-
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a/big.png)](https://insight.sensiolabs.com/projects/b7efa68f-8962-41cf-a2e3-4444426bc95a)
+[![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=v1.2)](https://travis-ci.org/web-auth/webauthn-framework)
 
 [![Latest Stable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/stable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Total Downloads](https://poser.pugx.org/web-auth/webauthn-framework/downloads.png)](https://packagist.org/packages/web-auth/webauthn-framework)

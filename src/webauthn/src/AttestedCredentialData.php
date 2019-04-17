@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use JsonSerializable;
 use function Safe\base64_decode;
+use function Safe\preg_replace;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
@@ -47,6 +48,13 @@ class AttestedCredentialData implements JsonSerializable
     public function getAaguid(): string
     {
         return $this->aaguid;
+    }
+
+    public function getAaguidAsUuid(): string
+    {
+        $data = bin2hex($this->aaguid);
+
+        return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $data);
     }
 
     public function getCredentialId(): string
