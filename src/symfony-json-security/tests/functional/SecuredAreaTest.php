@@ -95,7 +95,7 @@ class SecuredAreaTest extends WebTestCase
         $client->request('POST', '/login', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], $assertion);
 
         static::assertEquals(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
-        static::assertEquals('{"status":"error","errorMessage":"Invalid assertion"}', $client->getResponse()->getContent());
+        static::assertEquals('{"status":"error","errorMessage":"Invalid assertion","errorCode":0}', $client->getResponse()->getContent());
         static::assertFalse($session->has('_security_main'));
         static::assertFalse($client->getResponse()->headers->has('set-cookie'));
 
@@ -118,7 +118,7 @@ class SecuredAreaTest extends WebTestCase
         $client->request('POST', '/login', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], $assertion);
 
         static::assertEquals(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
-        static::assertEquals('{"status":"error","errorMessage":"No public key credential request options available for this session."}', $client->getResponse()->getContent());
+        static::assertEquals('{"status":"error","errorMessage":"No public key credential request options available for this session.","errorCode":0}', $client->getResponse()->getContent());
     }
 
     /**
@@ -153,9 +153,11 @@ class SecuredAreaTest extends WebTestCase
         $client->request('POST', '/login', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], $assertion);
 
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        static::assertEquals('{"status":"ok","errorMessage":""}', $client->getResponse()->getContent());
+        static::assertEquals('{"status":"ok","errorMessage":"","username":"admin"}', $client->getResponse()->getContent());
         static::assertTrue($session->has('_security_main'));
         static::assertTrue($client->getResponse()->headers->has('set-cookie'));
+
+        dump($session->all());
 
         $client->request('GET', '/admin', [], [], ['HTTPS' => 'on']);
 

@@ -50,7 +50,7 @@ final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCr
     {
         $nbCredentials = random_int(1, 6);
         $credentials = [];
-        for($i = 0; $i < $nbCredentials; ++$i) {
+        for ($i = 0; $i < $nbCredentials; ++$i) {
             $credentials[] = new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 random_bytes(32)

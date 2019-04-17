@@ -30,6 +30,8 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Http\HttpUtils;
@@ -135,7 +137,17 @@ class WebauthnListener implements ListenerInterface
      */
     private $fakePublicKeyCredentialUserEntityProvider;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, ?FakePublicKeyCredentialUserEntityProvider $fakePublicKeyCredentialSourceRepository, string $providerKey, array $options = [], LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
+    /**
+     * @var AuthenticationSuccessHandlerInterface
+     */
+    private $authenticationSuccessHandler;
+
+    /**
+     * @var AuthenticationFailureHandlerInterface
+     */
+    private $authenticationFailureHandler;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, ?FakePublicKeyCredentialUserEntityProvider $fakePublicKeyCredentialSourceRepository, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -157,6 +169,8 @@ class WebauthnListener implements ListenerInterface
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
         $this->validator = $validator;
         $this->fakePublicKeyCredentialUserEntityProvider = $fakePublicKeyCredentialSourceRepository;
+        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
+        $this->authenticationFailureHandler = $authenticationFailureHandler;
     }
 
     /**
@@ -189,8 +203,8 @@ class WebauthnListener implements ListenerInterface
 
     private function onOptionsPath(GetResponseEvent $event): void
     {
+        $request = $event->getRequest();
         try {
-            $request = $event->getRequest();
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
@@ -211,7 +225,7 @@ class WebauthnListener implements ListenerInterface
             $request->getSession()->set($this->options['session_parameter'], ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
             $response = new JsonResponse($publicKeyCredentialRequestOptions->jsonSerialize());
         } catch (\Exception $e) {
-            $response = $this->onAssertionFailure(new AuthenticationException($e->getMessage(), 0, $e));
+            $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
         $event->setResponse($response);
@@ -245,15 +259,15 @@ class WebauthnListener implements ListenerInterface
             $this->sessionStrategy->onAuthentication($request, $authenticatedToken);
             $response = $this->onAssertionSuccess($request, $authenticatedToken);
         } catch (AuthenticationException $e) {
-            $response = $this->onAssertionFailure($e);
+            $response = $this->onAssertionFailure($request, $e);
         } catch (\Exception $e) {
-            $response = $this->onAssertionFailure(new AuthenticationException($e->getMessage(), 0, $e));
+            $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
         $event->setResponse($response);
     }
 
-    private function onAssertionFailure(AuthenticationException $failed): Response
+    private function onAssertionFailure(Request $request, AuthenticationException $failed): Response
     {
         if (null !== $this->logger) {
             $this->logger->info('Webauthn authentication request failed.', ['exception' => $failed]);
@@ -264,12 +278,13 @@ class WebauthnListener implements ListenerInterface
             $this->tokenStorage->setToken(null);
         }
 
-        $data = [
-            'status' => 'error',
-            'errorMessage' => $failed->getMessage(),
-        ];
+        $response = $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
 
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$response instanceof Response) {
+            throw new RuntimeException('Authentication Failure Handler did not return a Response.');
+        }
+
+        return $response;
     }
 
     /**
@@ -291,12 +306,13 @@ class WebauthnListener implements ListenerInterface
             $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
         }
 
-        $data = [
-            'status' => 'ok',
-            'errorMessage' => '',
-        ];
+        $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
 
-        return new JsonResponse($data, Response::HTTP_OK);
+        if (!$response instanceof Response) {
+            throw new RuntimeException('Authentication Success Handler did not return a Response.');
+        }
+
+        return $response;
     }
 
     private function processWithAssertion(Request $request): WebauthnToken

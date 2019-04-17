@@ -28,6 +28,8 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\JsonSecurityBundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\JsonSecurityBundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\JsonSecurityBundle\Security\Firewall\WebauthnListener;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultFailureHandler;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\JsonSecurityBundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\JsonSecurityBundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialLoader;
@@ -57,8 +59,10 @@ return function (ContainerConfigurator $container) {
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
             ref('webauthn_json_security.fake_user_entity_provider')->nullOnInvalid(),
-            '',
-            [],
+            '', // Provider key
+            [], // Options
+            null, //Success handler
+            null, //Failure handler
             ref(LoggerInterface::class)->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
         ])
@@ -78,5 +82,13 @@ return function (ContainerConfigurator $container) {
     $container->services()->set(IsUserVerifiedVoter::class)
         ->private()
         ->tag('security.voter')
+    ;
+
+    $container->services()->set(DefaultSuccessHandler::class)
+        ->private()
+    ;
+
+    $container->services()->set(DefaultFailureHandler::class)
+        ->private()
     ;
 };

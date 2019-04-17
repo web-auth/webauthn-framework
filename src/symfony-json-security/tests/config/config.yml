@@ -50,6 +50,8 @@ services:
         autowire: true
     Webauthn\JsonSecurityBundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
         autowire: true
+    Webauthn\JsonSecurityBundle\Tests\Functional\FailureHandler: ~
+    Webauthn\JsonSecurityBundle\Tests\Functional\SuccessHandler: ~
 
 httplug:
     profiling: false
@@ -110,6 +112,8 @@ security:
             anonymous: ~
             webauthn_json:
                 profile: 'default'
+                success_handler: 'Webauthn\JsonSecurityBundle\Tests\Functional\SuccessHandler'
+                failure_handler: 'Webauthn\JsonSecurityBundle\Tests\Functional\FailureHandler'
             logout:
                 path: /logout
                 target: /

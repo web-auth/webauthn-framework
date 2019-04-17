@@ -21,6 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\JsonSecurityBundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\JsonSecurityBundle\Security\EntryPoint\WebauthnEntryPoint;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultFailureHandler;
+use Webauthn\JsonSecurityBundle\Security\Handler\DefaultSuccessHandler;
 
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
@@ -72,6 +74,8 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('login_path')->defaultValue('/login')->end()
                 ->scalarNode('session_parameter')->defaultValue('WEBAUTHN_PUBLIC_KEY_REQUEST_OPTIONS')->end()
                 ->scalarNode('user_provider')->defaultNull()->end()
+                ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
+                ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
             ->end()
         ;
     }
@@ -93,6 +97,8 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $listener = new ChildDefinition($listenerId);
         $listener->replaceArgument(13, $id);
         $listener->replaceArgument(14, $config);
+        $listener->replaceArgument(15, new Reference($config['success_handler']));
+        $listener->replaceArgument(16, new Reference($config['failure_handler']));
 
         $listenerId .= '.'.$id;
         $container->setDefinition($listenerId, $listener);
