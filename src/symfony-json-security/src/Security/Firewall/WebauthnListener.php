@@ -21,7 +21,6 @@ use function Safe\json_encode;
 use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -47,9 +46,11 @@ use Webauthn\JsonSecurityBundle\Dto\ServerPublicKeyCredentialRequestOptionsReque
 use Webauthn\JsonSecurityBundle\Model\PublicKeyCredentialFakeUserEntity;
 use Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider;
 use Webauthn\JsonSecurityBundle\Security\Authentication\Token\WebauthnToken;
+use Webauthn\JsonSecurityBundle\Security\Handler\RequestOptionsHandler;
+use Webauthn\JsonSecurityBundle\Security\Storage\RequestOptionsStorage;
+use Webauthn\JsonSecurityBundle\Security\Storage\StoredData;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -147,7 +148,16 @@ class WebauthnListener implements ListenerInterface
      */
     private $authenticationFailureHandler;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, ?FakePublicKeyCredentialUserEntityProvider $fakePublicKeyCredentialSourceRepository, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
+    /**
+     * @var RequestOptionsStorage
+     */
+    private $requestOptionsStorage;
+    /**
+     * @var RequestOptionsHandler
+     */
+    private $requestOptionsHandler;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, ?FakePublicKeyCredentialUserEntityProvider $fakePublicKeyCredentialSourceRepository, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $requestOptionsHandler, RequestOptionsStorage $requestOptionsStorage, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -171,6 +181,8 @@ class WebauthnListener implements ListenerInterface
         $this->fakePublicKeyCredentialUserEntityProvider = $fakePublicKeyCredentialSourceRepository;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
         $this->authenticationFailureHandler = $authenticationFailureHandler;
+        $this->requestOptionsStorage = $requestOptionsStorage;
+        $this->requestOptionsHandler = $requestOptionsHandler;
     }
 
     /**
@@ -222,8 +234,8 @@ class WebauthnListener implements ListenerInterface
                 $this->options['profile'],
                 $allowedCredentials
             );
-            $request->getSession()->set($this->options['session_parameter'], ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
-            $response = new JsonResponse($publicKeyCredentialRequestOptions->jsonSerialize());
+            $this->requestOptionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity));
+            $response = $this->requestOptionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
         } catch (\Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
@@ -317,21 +329,9 @@ class WebauthnListener implements ListenerInterface
 
     private function processWithAssertion(Request $request): WebauthnToken
     {
-        $sessionValue = $request->getSession()->remove($this->options['session_parameter']);
-        if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
-        }
+        $storedData = $this->requestOptionsStorage->get($request);
 
-        $publicKeyCredentialRequestOptions = $sessionValue['options'];
-        $userEntity = $sessionValue['userEntity'];
-
-        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
-        }
-        if (!$userEntity instanceof PublicKeyCredentialUserEntity) {
-            throw new BadRequestHttpException('No user entity available for this session.');
-        }
-        if ($userEntity instanceof PublicKeyCredentialFakeUserEntity) {
+        if ($storedData->getPublicKeyCredentialUserEntity() instanceof PublicKeyCredentialFakeUserEntity) {
             throw new BadRequestHttpException('Invalid assertion');
         }
 
@@ -353,16 +353,16 @@ class WebauthnListener implements ListenerInterface
             $this->authenticatorAssertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
-                $publicKeyCredentialRequestOptions,
+                $storedData->getPublicKeyCredentialRequestOptions(),
                 $psr7Request,
-                $userEntity->getId()
+                $storedData->getPublicKeyCredentialUserEntity()->getId()
             );
         } catch (\Throwable $throwable) {
             if (null !== $this->logger) {
                 $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
                     $assertion,
-                    json_encode($publicKeyCredentialRequestOptions),
+                    json_encode($storedData->getPublicKeyCredentialRequestOptions()),
                     $throwable->getMessage(),
                     $throwable->getFile(),
                     $throwable->getLine()
@@ -372,8 +372,8 @@ class WebauthnListener implements ListenerInterface
         }
 
         $token = new WebauthnToken(
-            $userEntity->getName(),
-            $publicKeyCredentialRequestOptions,
+            $storedData->getPublicKeyCredentialUserEntity()->getName(),
+            $storedData->getPublicKeyCredentialRequestOptions(),
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
             $response->getAuthenticatorData()->isUserPresent(),
             $response->getAuthenticatorData()->isUserVerified(),

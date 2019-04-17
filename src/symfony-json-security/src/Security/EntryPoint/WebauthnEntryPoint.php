@@ -13,24 +13,31 @@ declare(strict_types=1);
 
 namespace Webauthn\JsonSecurityBundle\Security\EntryPoint;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
 final class WebauthnEntryPoint implements AuthenticationEntryPointInterface
 {
     /**
+     * @var AuthenticationFailureHandlerInterface
+     */
+    private $failureHandler;
+
+    public function __construct(AuthenticationFailureHandlerInterface $failureHandler)
+    {
+        $this->failureHandler = $failureHandler;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $data = [
-            'status' => 'error',
-            'errorMessage' => 'Authentication Required',
-        ];
+        $exception = $authException ?? new AuthenticationException('Authentication Required');
 
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        return $this->failureHandler->onAuthenticationFailure($request, $exception);
     }
 }
