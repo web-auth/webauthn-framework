@@ -98,7 +98,8 @@ webauthn:
 
 ## Usage
 
-When enabled, the public service `Webauthn\MetadataService\MetadataService` is available:
+When enabled, the public service `Webauthn\MetadataService\MetadataService` is available.
+With this service, you can send requests to the metadata service as shown above.
 
 ```php
 <?php
@@ -106,3 +107,19 @@ When enabled, the public service `Webauthn\MetadataService\MetadataService` is a
 use Webauthn\MetadataService\MetadataService;
 $metadataService = $container->get(MetadataService::class);
 ```
+
+# Other Metadata Services
+
+Manufacturers may decide to manage their own Metadata Services and therefore the metadata statements of their authenticators
+may be available only in a dedicated repository.
+
+The `MetadataService` class allows you to send requests to these custom services using the following methods:
+
+* `getMetadataTOCPayloadAt(string $uri, ?HttpClient $client = null): MetadataTOCPayload`
+* `getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?HttpClient $client = null): MetadataStatement`
+
+The parameters are:
+
+* `string $uri`: the URI to send the request to.
+* `bool $isBase64UrlEncoded`: if the response from the metadata service is encoded in base64 (url safe), set the value to `true`.
+* `HttpClient $client`: if for some reasons you need to use another client (e.g. the service requires client/user authentication), just set your custom client.
