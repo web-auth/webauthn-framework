@@ -97,7 +97,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
             $loader->load('android_safetynet.php');
         }
-        if (true === $config['android_safetynet']['enabled']) {
+        if (true === $config['metadata_service']['enabled']) {
             $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
             $container->setAlias('webauthn.metadata_service.request_factory', $config['metadata_service']['request_factory']);
             $container->setParameter('webauthn.metadata_service.token', $config['metadata_service']['token']);
