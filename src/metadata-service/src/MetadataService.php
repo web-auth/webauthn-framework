@@ -56,22 +56,21 @@ class MetadataService
         return $this->getMetadataStatementAt($uri, true);
     }
 
-    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded): MetadataStatement
+    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?HttpClient $client = null): MetadataStatement
     {
-        $payload = $this->callMetadataService($uri);
+        $payload = $this->callMetadataService($uri, $client);
         $json = $isBase64UrlEncoded ? Base64Url::decode($payload, true) : $payload;
         $data = json_decode($json, true);
 
         return MetadataStatement::createFromArray($data);
     }
 
-    public function getMetadataTOCPayloadAt(string $uri): MetadataTOCPayload
+    public function getMetadataTOCPayloadAt(string $uri, ?HttpClient $client = null): MetadataTOCPayload
     {
-        $content = $this->callMetadataService($uri);
+        $content = $this->callMetadataService($uri, $client);
         $payload = $this->getJwsPayload($content);
-        $data = MetadataTOCPayload::createFromArray(json_decode($payload, true));
 
-        return $data;
+        return MetadataTOCPayload::createFromArray(json_decode($payload, true));
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
@@ -81,10 +80,11 @@ class MetadataService
         return $this->getMetadataTOCPayloadAt($uri);
     }
 
-    private function callMetadataService(string $uri): string
+    private function callMetadataService(string $uri, ?HttpClient $client): string
     {
+        $client = $client ?? $this->httpClient;
         $request = $this->requestFactory->createRequest('GET', $uri);
-        $response = $this->httpClient->sendRequest($request);
+        $response = $client->sendRequest($request);
         Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
 
         return $response->getBody()->getContents();
