@@ -14,13 +14,13 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use Base64Url\Base64Url;
 use Http\Client\HttpClient;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Message\RequestFactoryInterface;
-use function Safe\base64_decode;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
@@ -52,7 +52,7 @@ class MetadataService
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
     {
         $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
-        $json = base64_decode($payload, true);
+        $json = Base64Url::decode($payload, true);
         $data = json_decode($json, true);
 
         return MetadataStatement::createFromArray($data);
