@@ -16,31 +16,31 @@ namespace Webauthn\MetadataService;
 class PatternAccuracyDescriptor
 {
     /**
-     * @var float
+     * @var int
      */
     private $minComplexity;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $maxRetries;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $blockSlowdown;
 
-    public function getMinComplexity(): float
+    public function getMinComplexity(): int
     {
         return $this->minComplexity;
     }
 
-    public function getMaxRetries(): ?float
+    public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
-    public function getBlockSlowdown(): ?float
+    public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;
     }

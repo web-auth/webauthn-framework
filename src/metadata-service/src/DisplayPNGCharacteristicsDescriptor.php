@@ -18,12 +18,12 @@ use Assert\Assertion;
 class DisplayPNGCharacteristicsDescriptor
 {
     /**
-     * @var float
+     * @var int
      */
     private $width;
 
     /**
-     * @var float
+     * @var int
      */
     private $height;
 
@@ -57,12 +57,12 @@ class DisplayPNGCharacteristicsDescriptor
      */
     private $plte = [];
 
-    public function getWidth(): float
+    public function getWidth(): int
     {
         return $this->width;
     }
 
-    public function getHeight(): float
+    public function getHeight(): int
     {
         return $this->height;
     }

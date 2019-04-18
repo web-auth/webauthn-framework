@@ -17,6 +17,62 @@ use Assert\Assertion;
 
 class MetadataStatement
 {
+    public const KEY_PROTECTION_SOFTWARE = 0x0001;
+    public const KEY_PROTECTION_HARDWARE = 0x0002;
+    public const KEY_PROTECTION_TEE = 0x0004;
+    public const KEY_PROTECTION_SECURE_ELEMENT = 0x0008;
+    public const KEY_PROTECTION_REMOTE_HANDLE = 0x0010;
+
+    public const MATCHER_PROTECTION_SOFTWARE = 0x0001;
+    public const MATCHER_PROTECTION_TEE = 0x0002;
+    public const MATCHER_PROTECTION_ON_CHIP = 0x0004;
+
+    public const ATTACHMENT_HINT_INTERNAL = 0x0001;
+    public const ATTACHMENT_HINT_EXTERNAL = 0x0002;
+    public const ATTACHMENT_HINT_WIRED = 0x0004;
+    public const ATTACHMENT_HINT_WIRELESS = 0x0008;
+    public const ATTACHMENT_HINT_NFC = 0x0010;
+    public const ATTACHMENT_HINT_BLUETOOTH = 0x0020;
+    public const ATTACHMENT_HINT_NETWORK = 0x0040;
+    public const ATTACHMENT_HINT_READY = 0x0080;
+    public const ATTACHMENT_HINT_WIFI_DIRECT = 0x0100;
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 0x0001;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 0x0002;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 0x0004;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 0x0008;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 0x0010;
+
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 0x0001;
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 0x0002;
+    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 0x0003;
+    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 0x0004;
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 0x0005;
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 0x0006;
+    public const ALG_SIGN_SM2_SM3_RAW = 0x0007;
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 0x0008;
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 0x0009;
+    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 0x000A;
+    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 0x000B;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 0x000C;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 0x000D;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 0x000E;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 0x000F;
+    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 0x0010;
+    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 0x0011;
+    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 0x0012;
+
+    public const ALG_KEY_ECC_X962_RAW = 0x0100;
+    public const ALG_KEY_ECC_X962_DER = 0x0101;
+    public const ALG_KEY_RSA_2048_RAW = 0x0102;
+    public const ALG_KEY_RSA_2048_DER = 0x0103;
+    public const ALG_KEY_COSE = 0x0104;
+
+    public const ATTESTATION_BASIC_FULL = 0x3E07;
+    public const ATTESTATION_BASIC_SURROGATE = 0x3E08;
+    public const ATTESTATION_ECDAA = 0x3E09;
+    public const ATTESTATION_ATTCA = 0x3E0A;
+
     /**
      * @var string|null
      */
@@ -47,7 +103,7 @@ class MetadataStatement
     private $alternativeDescriptions;
 
     /**
-     * @var float
+     * @var int
      */
     private $authenticatorVersion;
 
@@ -67,27 +123,27 @@ class MetadataStatement
     private $assertionScheme;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $authenticationAlgorithm;
 
     /**
-     * @var float[]
+     * @var int[]
      */
     private $authenticationAlgorithms;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $publicKeyAlgAndEncoding;
 
     /**
-     * @var float[]
+     * @var int[]
      */
     private $publicKeyAlgAndEncodings;
 
     /**
-     * @var float[]
+     * @var int[]
      */
     private $attestationTypes;
 
@@ -97,7 +153,7 @@ class MetadataStatement
     private $userVerificationDetails;
 
     /**
-     * @var float
+     * @var int
      */
     private $keyProtection;
 
@@ -112,12 +168,12 @@ class MetadataStatement
     private $isFreshUserVerificationRequired;
 
     /**
-     * @var float
+     * @var int
      */
     private $matcherProtection;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $cryptoStrength;
 
@@ -127,7 +183,7 @@ class MetadataStatement
     private $operatingEnv;
 
     /**
-     * @var float
+     * @var int
      */
     private $attachmentHint;
 
@@ -137,7 +193,7 @@ class MetadataStatement
     private $isSecondFactorOnly;
 
     /**
-     * @var float
+     * @var int
      */
     private $tcDisplay;
 
@@ -207,7 +263,7 @@ class MetadataStatement
         return $this->alternativeDescriptions;
     }
 
-    public function getAuthenticatorVersion(): float
+    public function getAuthenticatorVersion(): int
     {
         return $this->authenticatorVersion;
     }
@@ -230,26 +286,26 @@ class MetadataStatement
         return $this->assertionScheme;
     }
 
-    public function getAuthenticationAlgorithm(): ?float
+    public function getAuthenticationAlgorithm(): ?int
     {
         return $this->authenticationAlgorithm;
     }
 
     /**
-     * @return float[]
+     * @return int[]
      */
     public function getAuthenticationAlgorithms(): array
     {
         return $this->authenticationAlgorithms;
     }
 
-    public function getPublicKeyAlgAndEncoding(): ?float
+    public function getPublicKeyAlgAndEncoding(): ?int
     {
         return $this->publicKeyAlgAndEncoding;
     }
 
     /**
-     * @return float[]
+     * @return int[]
      */
     public function getPublicKeyAlgAndEncodings(): array
     {
@@ -257,7 +313,7 @@ class MetadataStatement
     }
 
     /**
-     * @return float[]
+     * @return int[]
      */
     public function getAttestationTypes(): array
     {
@@ -272,7 +328,7 @@ class MetadataStatement
         return $this->userVerificationDetails;
     }
 
-    public function getKeyProtection(): float
+    public function getKeyProtection(): int
     {
         return $this->keyProtection;
     }
@@ -287,12 +343,12 @@ class MetadataStatement
         return (bool) $this->isFreshUserVerificationRequired;
     }
 
-    public function getMatcherProtection(): float
+    public function getMatcherProtection(): int
     {
         return $this->matcherProtection;
     }
 
-    public function getCryptoStrength(): ?float
+    public function getCryptoStrength(): ?int
     {
         return $this->cryptoStrength;
     }
@@ -302,7 +358,7 @@ class MetadataStatement
         return $this->operatingEnv;
     }
 
-    public function getAttachmentHint(): float
+    public function getAttachmentHint(): int
     {
         return $this->attachmentHint;
     }
@@ -312,7 +368,7 @@ class MetadataStatement
         return (bool) $this->isSecondFactorOnly;
     }
 
-    public function getTcDisplay(): float
+    public function getTcDisplay(): int
     {
         return $this->tcDisplay;
     }

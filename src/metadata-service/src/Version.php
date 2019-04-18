@@ -16,21 +16,21 @@ namespace Webauthn\MetadataService;
 class Version
 {
     /**
-     * @var float
+     * @var int
      */
     private $major;
 
     /**
-     * @var float
+     * @var int
      */
     private $minor;
 
-    public function getMajor(): float
+    public function getMajor(): int
     {
         return $this->major;
     }
 
-    public function getMinor(): float
+    public function getMinor(): int
     {
         return $this->minor;
     }

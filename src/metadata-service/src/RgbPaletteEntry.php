@@ -16,31 +16,31 @@ namespace Webauthn\MetadataService;
 class RgbPaletteEntry
 {
     /**
-     * @var float
+     * @var int
      */
     private $r;
 
     /**
-     * @var float
+     * @var int
      */
     private $g;
 
     /**
-     * @var float
+     * @var int
      */
     private $b;
 
-    public function getR(): float
+    public function getR(): int
     {
         return $this->r;
     }
 
-    public function getG(): float
+    public function getG(): int
     {
         return $this->g;
     }
 
-    public function getB(): float
+    public function getB(): int
     {
         return $this->b;
     }

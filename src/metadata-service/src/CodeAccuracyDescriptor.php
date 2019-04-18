@@ -16,41 +16,41 @@ namespace Webauthn\MetadataService;
 class CodeAccuracyDescriptor
 {
     /**
-     * @var float
+     * @var int
      */
     private $base;
 
     /**
-     * @var float
+     * @var int
      */
     private $minLength;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $maxRetries;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $blockSlowdown;
 
-    public function getBase(): float
+    public function getBase(): int
     {
         return $this->base;
     }
 
-    public function getMinLength(): float
+    public function getMinLength(): int
     {
         return $this->minLength;
     }
 
-    public function getMaxRetries(): ?float
+    public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
-    public function getBlockSlowdown(): ?float
+    public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;
     }

@@ -16,66 +16,66 @@ namespace Webauthn\MetadataService;
 class BiometricAccuracyDescriptor
 {
     /**
-     * @var float|null
+     * @var int|null
      */
     private $selfAttestedFRR;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $selfAttestedFAR;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $maxTemplates;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $maxRetries;
 
     /**
-     * @var float|null
+     * @var int|null
      */
     private $blockSlowdown;
 
     /**
-     * @return float
+     * @return int
      */
-    public function getSelfAttestedFRR(): ?float
+    public function getSelfAttestedFRR(): ?int
     {
         return $this->selfAttestedFRR;
     }
 
     /**
-     * @return float
+     * @return int
      */
-    public function getSelfAttestedFAR(): ?float
+    public function getSelfAttestedFAR(): ?int
     {
         return $this->selfAttestedFAR;
     }
 
     /**
-     * @return float|null
+     * @return int|null
      */
-    public function getMaxTemplates(): ?float
+    public function getMaxTemplates(): ?int
     {
         return $this->maxTemplates;
     }
 
     /**
-     * @return float|null
+     * @return int|null
      */
-    public function getMaxRetries(): ?float
+    public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
     /**
-     * @return float|null
+     * @return int|null
      */
-    public function getBlockSlowdown(): ?float
+    public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;
     }

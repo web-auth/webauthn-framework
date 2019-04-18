@@ -51,36 +51,34 @@ class MetadataService
 
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
     {
-        $payload = $this->getMetadataTOCPayloadEntryFromMetadataService($entry);
-        $json = Base64Url::decode($payload, true);
+        $uri = sprintf('%s?token=%s', $entry->getUrl(), $this->token);
+
+        return $this->getMetadataStatementAt($uri, true);
+    }
+
+    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded): MetadataStatement
+    {
+        $payload = $this->callMetadataService($uri);
+        $json = $isBase64UrlEncoded ? Base64Url::decode($payload, true) : $payload;
         $data = json_decode($json, true);
 
         return MetadataStatement::createFromArray($data);
     }
 
-    public function getMetadataTOCPayload(): MetadataTOCPayload
+    public function getMetadataTOCPayloadAt(string $uri): MetadataTOCPayload
     {
-        $payload = $this->getMetadataTOCPayloadFromMetadataService();
+        $content = $this->callMetadataService($uri);
+        $payload = $this->getJwsPayload($content);
         $data = MetadataTOCPayload::createFromArray(json_decode($payload, true));
 
         return $data;
     }
 
-    private function getMetadataTOCPayloadEntryFromMetadataService(MetadataTOCPayloadEntry $entry): string
-    {
-        $url = $entry->getUrl();
-        Assertion::notNull($url, 'No URL provided for the entry');
-        $uri = sprintf('%s?token=%s', $entry->getUrl(), $this->token);
-
-        return $this->callMetadataService($uri);
-    }
-
-    private function getMetadataTOCPayloadFromMetadataService(): string
+    public function getMetadataTOCPayload(): MetadataTOCPayload
     {
         $uri = sprintf('%s/?token=%s', self::SERVICE_URI, $this->token);
-        $content = $this->callMetadataService($uri);
 
-        return $this->getJwsPayload($content);
+        return $this->getMetadataTOCPayloadAt($uri);
     }
 
     private function callMetadataService(string $uri): string
