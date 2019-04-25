@@ -51,7 +51,7 @@ final class Configuration implements ConfigurationInterface
                     ->info('This repository is responsible of the credential storage')
                 ->end()
                 ->scalarNode('user_repository')
-                    ->defaultNull()
+                    ->isRequired()
                     ->info('This repository is responsible of the user storage. It is mandatory when using the transport binding profile feature')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
@@ -150,6 +150,7 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
+        $this->appendFirewall($rootNode);
         if (class_exists(AttestationRequestController::class)) {
             $this->appendTokenTransportBinding($rootNode);
         }
@@ -224,6 +225,25 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ->end();
+    }
+
+    private function appendFirewall(ArrayNodeDefinition $node): void
+    {
+        $node->children()
+            ->arrayNode('firewall')
+                ->canBeEnabled()
+                ->children()
+                    ->scalarNode('http_message_factory')
+                        ->isRequired()
+                        ->info('Converts Symfony Requests into PSR7 Requests. Must implement Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface.')
+                    ->end()
+                    ->scalarNode('fake_user_entity_provider')
+                        ->defaultNull()
+                        ->info('To avoid username enumeration, this provider will generate fake user entities and associate fake credentials.')
                     ->end()
                 ->end()
             ->end()

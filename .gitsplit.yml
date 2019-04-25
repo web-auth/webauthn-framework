@@ -9,10 +9,6 @@ splits:
       target: "https://${GH_TOKEN}@github.com/web-auth/conformance-toolset.git"
     - prefix: "src/symfony"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
-    - prefix: "src/symfony-security"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-security-bundle.git"
-    - prefix: "src/symfony-json-security"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-json-security-bundle.git"
 
 origins:
     - ^master$

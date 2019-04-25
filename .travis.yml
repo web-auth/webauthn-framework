@@ -24,7 +24,6 @@ script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist
     - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
     - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-symfony-json-security.xml.dist
 
 jobs:
     allow_failures:
@@ -40,7 +39,6 @@ jobs:
               - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
               - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
               - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist --coverage-php build/cov/coverage-conformance-toolset.cov
-              - ./vendor/bin/phpunit -c phpunit-symfony-json-security.xml.dist --coverage-php build/cov/coverage-symfony-json-security.cov
           after_script:
               - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
               - ./vendor/bin/php-coveralls --no-interaction
