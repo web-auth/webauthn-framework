@@ -59,7 +59,7 @@ jobs:
               - wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O php-cs-fixer
               - chmod a+x php-cs-fixer
           script:
-              - php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no
+              - ./php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no
 
         - stage: Security Check
           env: SECURITY_CHECK
