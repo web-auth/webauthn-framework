@@ -29,9 +29,9 @@ class AuthenticatorAttestationResponseValidator
     private $attestationStatementSupportManager;
 
     /**
-     * @var CredentialRepository
+     * @var PublicKeyCredentialSourceRepository
      */
-    private $credentialRepository;
+    private $publicKeyCredentialSource;
 
     /**
      * @var TokenBindingHandler
@@ -43,10 +43,10 @@ class AuthenticatorAttestationResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, CredentialRepository $credentialRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
-        $this->credentialRepository = $credentialRepository;
+        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
     }
@@ -123,18 +123,9 @@ class AuthenticatorAttestationResponseValidator
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
         $credentialId = $attestedCredentialData->getCredentialId();
-        Assertion::false($this->has($credentialId), 'The credential ID already exists.');
+        Assertion::null($this->publicKeyCredentialSource->findOneByCredentialId($credentialId), 'The credential ID already exists.');
 
         /* @see 7.1.18 */
         /* @see 7.1.19 */
-    }
-
-    private function has(string $credentialId): bool
-    {
-        if ($this->credentialRepository instanceof PublicKeyCredentialSourceRepository) {
-            return null !== $this->credentialRepository->findOneByCredentialId($credentialId);
-        }
-
-        return $this->credentialRepository->has($credentialId);
     }
 }

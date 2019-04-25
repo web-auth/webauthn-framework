@@ -20,16 +20,6 @@ use function Safe\json_decode;
 class PublicKeyCredentialParameters implements JsonSerializable
 {
     /**
-     * @deprecated Will be removed in v2.0. Use \Cose\Algorithms::COSE_ALGORITHM_ES256 instead
-     */
-    public const ALGORITHM_ES256 = -7;
-
-    /**
-     * @deprecated Will be removed in v2.0. Use \Cose\Algorithms::COSE_ALGORITHM_RS256 instead
-     */
-    public const ALGORITHM_RS256 = -257;
-
-    /**
      * @var string
      */
     private $type;
@@ -53,14 +43,6 @@ class PublicKeyCredentialParameters implements JsonSerializable
     public function getAlg(): int
     {
         return $this->alg;
-    }
-
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
     }
 
     public static function createFromString(string $data): self

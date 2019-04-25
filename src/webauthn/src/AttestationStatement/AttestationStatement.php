@@ -115,14 +115,6 @@ class AttestationStatement implements JsonSerializable
         return $this->type;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
-    }
-
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {

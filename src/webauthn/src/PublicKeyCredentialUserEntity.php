@@ -45,14 +45,6 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return $this->displayName;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
-    }
-
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
