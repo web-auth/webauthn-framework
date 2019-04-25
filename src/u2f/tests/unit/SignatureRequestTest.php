@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace U2F\Tests\Unit;
 
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use U2F\KeyHandler;
 use U2F\PublicKey;
@@ -27,21 +28,21 @@ final class SignatureRequestTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid registered keys list.
      */
     public function theSignatureRequestDoesNotContainValidRegisteredKeys(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid registered keys list.');
         new SignatureRequest('https://twofactors:4043', ['foo']);
     }
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unsupported key handle.
      */
     public function theSignatureRequestDoesNotContainTheRegisteredKey(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported key handle.');
         $request = new SignatureRequest('https://twofactors:4043', []);
         $request->getRegisteredKey(new KeyHandler('foo'));
     }

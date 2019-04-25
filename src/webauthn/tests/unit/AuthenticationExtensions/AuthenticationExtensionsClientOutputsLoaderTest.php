@@ -18,6 +18,7 @@ use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
 use CBOR\SignedIntegerObject;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_encode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -49,11 +50,11 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid extension object
      */
     public function theCBORObjectIsInvalid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid extension object');
         $cbor = new ByteStringObject('loc');
 
         AuthenticationExtensionsClientOutputsLoader::load($cbor);
@@ -61,11 +62,11 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid extension key
      */
     public function theMapKeyIsNotAString(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid extension key');
         $cbor = new MapObject([
             new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-100)), new TrueObject()),
         ]);
