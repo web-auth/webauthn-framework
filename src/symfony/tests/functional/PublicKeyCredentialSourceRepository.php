@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
-use InvalidArgumentException;
 use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
@@ -63,66 +61,5 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $this->credentials[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. Please use the method find instead
-     */
-    public function has(string $credentialId): bool
-    {
-        return null !== $this->findOneByCredentialId($credentialId);
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. Please use the method find instead
-     */
-    public function get(string $credentialId): AttestedCredentialData
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getAttestedCredentialData();
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. Please use the method find instead
-     */
-    public function getUserHandleFor(string $credentialId): string
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getUserHandle();
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. Please use the method find instead
-     */
-    public function getCounterFor(string $credentialId): int
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getCounter();
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. Please use the method save instead
-     */
-    public function updateCounterFor(string $credentialId, int $newCounter): void
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        $credential->setCounter($newCounter);
-        $this->saveCredentialSource($credential);
     }
 }

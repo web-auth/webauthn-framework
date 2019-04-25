@@ -377,17 +377,7 @@ You will need the following components before loading or verifying the data:
 
 That’s a lot off classes! But don’t worry, as their configuration is the same for all your application, you just have to set them once.
 
-### ~~Credential Repository~~ Public Key Credential Source Repository
-
-> Note: the interface `Webauthn\CredentialRepository` is deprecated and will be removed in v2.0. Please use `Webauthn\PublicKeyCredentialSourceRepository` instead.
-
-With v2.0, the following methods will become useless and may be removed:
-
-* public function has(string $credentialId): bool;
-* public function get(string $credentialId): AttestedCredentialData;
-* public function getUserHandleFor(string $credentialId): string;
-* public function getCounterFor(string $credentialId): int;
-* public function updateCounterFor(string $credentialId, int $newCounter): void;
+### Public Key Credential Source Repository
 
 The Public Key Credential Source Repository must implement `Webauthn\PublicKeyCredentialSourceRepository`.
 It will retrieve the credential source and update them when needed.
