@@ -164,7 +164,7 @@ security:
     firewalls:
         main:
             anonymous: ~
-            webauthn_json:
+            webauthn:
                 profile: 'default'
                 request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
                 success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
