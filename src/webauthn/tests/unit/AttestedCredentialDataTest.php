@@ -22,7 +22,7 @@ use Webauthn\AttestedCredentialData;
  * @group unit
  * @group Fido2
  *
- * @covers \AttestedCredentialData
+ * @covers \Webauthn\AttestedCredentialData
  */
 class AttestedCredentialDataTest extends TestCase
 {
