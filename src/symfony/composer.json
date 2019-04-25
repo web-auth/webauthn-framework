@@ -27,7 +27,9 @@
     },
     "require-dev": {
         "fzaninotto/faker": "^1.8",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.8",
+        "symfony/psr-http-message-bridge": "^1.1",
+        "symfony/security-bundle": "^4.2",
     },
     "autoload": {
         "psr-4": {
@@ -42,7 +44,7 @@
     "suggest": {
         "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)",
         "web-auth/webauthn-symfony-security-bundle": "Symfony firewall using templating and forms",
-        "web-auth/webauthn-symfony-json-security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
+        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "extra": {
         "branch-alias": {

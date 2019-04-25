@@ -14,6 +14,7 @@
             <directory>./src/cose/tests/</directory>
             <directory>./src/u2f/tests/</directory>
             <directory>./src/webauthn/tests/</directory>
+            <directory>./src/symfony/tests/</directory>
         </testsuite>
     </testsuites>
     <php>
