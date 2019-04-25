@@ -77,6 +77,15 @@ $userEntity = new PublicKeyCredentialUserEntity(
 );
 ```
 
+Recommendations
+---------------
+
+To avoid username enumeration, you may implement counter-measures to prevent leaks of user information and associated authenticator IDs.
+
+* During the registration ceremony, disallow registration of usernames that are syntactically valid e-mail addresses.
+* During the authentication ceremony, if the submitted username does not exist, continue the ceremony by invoking `navigator.credentials.get()` using a syntactically valid `PublicKeyCredentialRequestOptions` object that is populated with plausible imaginary values.
+
+
 ## Challenge
 
 The challenge is a random string that contains enough entropy to make guessing them infeasible.
