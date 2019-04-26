@@ -97,12 +97,12 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
             $loader->load('android_safetynet.php');
         }
+        $loader->load('security.php');
         if (true === $config['firewall']['enabled']) {
             $container->setAlias('webauthn.firewall.http_message_factory', $config['firewall']['http_message_factory']);
             if (null !== $config['firewall']['fake_user_entity_provider']) {
                 $container->setAlias('webauthn.firewall.fake_user_entity_provider', $config['firewall']['fake_user_entity_provider']);
             }
-            $loader->load('security.php');
         }
     }
 
