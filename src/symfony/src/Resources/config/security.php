@@ -48,7 +48,7 @@ return function (ContainerConfigurator $container) {
         ->abstract()
         ->private()
         ->args([
-            ref('webauthn.firewall.http_message_factory'),
+            '', // HTTP Message Factory
             ref(SerializerInterface::class),
             ref(ValidatorInterface::class),
             ref(PublicKeyCredentialRequestOptionsFactory::class),
@@ -60,7 +60,7 @@ return function (ContainerConfigurator $container) {
             ref(AuthenticationManagerInterface::class),
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
-            ref('webauthn.firewall.fake_user_entity_provider')->nullOnInvalid(),
+            null, // Fake user provider
             '', // Provider key
             [], // Options
             null, // Authentication success handler
