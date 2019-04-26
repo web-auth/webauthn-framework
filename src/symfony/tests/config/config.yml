@@ -151,10 +151,6 @@ webauthn:
                 response_path: '/assertion/result'
                 host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__'
-    firewall:
-        enabled: true
-        http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
-        fake_user_entity_provider: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
 
 security:
     providers:
@@ -169,6 +165,8 @@ security:
                 request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
                 success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
                 failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
+                http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
+                fake_user_entity_provider: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
             logout:
                 path: /logout
                 target: /
