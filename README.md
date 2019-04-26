@@ -55,10 +55,10 @@ Install the library with Composer: `composer require web-auth/webauthn-lib`.
 
 ## Symfony Bundles
 
-This framework provides two bundles:
+This framework provides a [Symfony bundle](doc/symfony/index.md) to store, load and verify the data from the authenticators.
 
-* **Webauthn Bundle**: this bundle uses the webauthn library to register services and attestation format supports. [The documentation can be found here](doc/symfony/index.md)
-* **Webauthn Json Security Bundle**: this bundle adds a new firewall based on webauthn. You will be able to authenticate your users with their username and FIDO2 compatible devices. [The documentation can be found here](doc/symfony-json-security/index.md)
+This bundle also includes [a firewall based on webauthn](doc/symfony/firewall.md) that will help you to protect the routes.
+You will be able to authenticate your users with their username and FIDO2 compatible authenticators. 
 
 ## Other libraries
 

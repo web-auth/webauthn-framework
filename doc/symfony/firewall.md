@@ -1,29 +1,5 @@
-Webauthn Symfony Json Security Bundle
-=====================================
-
-# Installation
-
-Install the bundle with Composer:
-
-```sh
-composer require web-auth/webauthn-symfony-json-security-bundle
-```
-
-If you are using Symfony Flex then the bundle will automatically be installed.
-Otherwise you need to add it in your `AppKernel.php` file:
-
-```php
-<?php
-// app/AppKernel.php
-
-public function registerBundles()
-{
-    $bundles = [
-        // ...
-        new Webauthn\JsonSecurityBundle\WebauthnJsonSecurityBundle(),
-    ];
-}
-```
+Symfony Security Firewall
+=========================
 
 # Bundle Configuration
 
@@ -43,9 +19,6 @@ services:
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
-            - 
-webauthn_json_security:
-    http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
 ```
 
 # Bundle Configuration
@@ -80,12 +53,12 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 profile: 'default' # required. See above
+                http_message_factory: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
 
     access_control:
         - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-
 ```
 
 # User Authentication
@@ -132,7 +105,7 @@ security:
         main:
             …
             webauthn_json: # The Webauthn firewall
-                profile: 'default' # required. See above
+                …
                 options_path: /security/authentication/options
 
     access_control:
@@ -178,7 +151,7 @@ security:
         main:
             …
             webauthn_json: # The Webauthn firewall
-                profile: 'default' # required. See above
+                …
                 login_path: /security/authentication/login
 
     access_control:
@@ -200,10 +173,10 @@ There are 3 types of responses and handlers:
 ### Request Options Handler
 
 This handler is called when a client sends a valid POST request to the `options_path`.
-The default Request Options Handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultRequestOptionsHandler`.
+The default Request Options Handler is `Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler`.
 It returns a JSON Response with the Public Key Credential Request Options objects in its body. 
 
-Your custom handler have to implement the interface `Webauthn\JsonSecurityBundle\Security\Handler\RequestOptionsHandler`
+Your custom handler have to implement the interface `Webauthn\Bundle\Security\Handler\RequestOptionsHandler`
 and be declared as a container service.
 
 When done, you can set your new service in the firewall configuration:
@@ -221,7 +194,7 @@ security:
 ### Authentication Success Handler
 
 This handler is called when a client sends a valid assertion from the authenticator.
-The default handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultSuccessHandler`.
+The default handler is `Webauthn\Bundle\Security\Handler\DefaultSuccessHandler`.
 
 Your custom handler have to implement the interface `Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface`
 and be declared as a container service.
@@ -241,7 +214,7 @@ security:
 ### Authentication Failure Handler
 
 This handler is called when an error occurred during the authentication process.
-The default handler is `Webauthn\JsonSecurityBundle\Security\Handler\DefaultFailureHandler`.
+The default handler is `Webauthn\Bundle\Security\Handler\DefaultFailureHandler`.
 
 Your custom handler have to implement the interface `Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface`
 and be declared as a container service.
@@ -267,12 +240,12 @@ Webauthn authentication is a 2 steps round trip authentication:
 
 It is needed to store the request options and the user entity associated to it to verify the authenticator assertions.
 
-By default, the firewall uses `Webauthn\JsonSecurityBundle\Security\Storage\SessionStorage`.
+By default, the firewall uses `Webauthn\Bundle\Security\Storage\SessionStorage`.
 This storage system stores the data in a session.
 
 If this behaviour does not fit on your needs (e.g. you want to use a database),
 you can implement a custom data storage for that purpose.
-Your custom storage system have to implement `Webauthn\JsonSecurityBundle\Security\Storage\RequestOptionsStorage`
+Your custom storage system have to implement `Webauthn\Bundle\Security\Storage\RequestOptionsStorage`
 and declared as a container service.
 
 When done, you can set your new service in the firewall configuration:
@@ -293,7 +266,7 @@ Let's imagine a malicious application that sends several POST requests to the op
 The firewall will respond with an error 401 if the username does not exist or generate a `PublicKeyCredentialRequestOptions` object if it does.
 Thus the malicious app will be capable of establishing a username list and associated credentials.
 
-To avoid that username enumeration, you can create an optional fake user provider that implements `Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider` and generate user entities and associate credentials on demand.
+To avoid that username enumeration, you can create an optional fake user provider that implements `Webauthn\Bundle\Provider\FakePublicKeyCredentialUserEntityProvider` and generate user entities and associate credentials on demand.
 You have to ensure that, for a given username, the fake data is always the same by using a persistent storage or caching system, otherwise the malicious app could understand this is fake data.
 
 ```php
@@ -305,8 +278,8 @@ namespace App\Provider;
 use Faker\Factory; // See https://github.com/fzaninotto/Faker
 use Psr\Cache\CacheItemPoolInterface; // See PSR 6
 use Ramsey\Uuid\Uuid; // See https://github.com/ramsey/uuid
-use Webauthn\JsonSecurityBundle\Model\PublicKeyCredentialFakeUserEntity;
-use Webauthn\JsonSecurityBundle\Provider\FakePublicKeyCredentialUserEntityProvider;
+use Webauthn\Bundle\Model\PublicKeyCredentialFakeUserEntity;
+use Webauthn\Bundle\Provider\FakePublicKeyCredentialUserEntityProvider;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCredentialUserEntityProvider
@@ -357,9 +330,33 @@ final class PublicKeyCredentialFakeUserEntityProvider implements FakePublicKeyCr
 }
 ```
 
-This class can now be declared as a service and set in the bundle configuration:
+When done, you can set your new service in the firewall configuration:
 
 ```yaml
-webauthn_json_security:
-    fake_user_entity_provider: 'App\Provider\PublicKeyCredentialFakeUserEntityProvider'
+security:
+    firewalls:
+        main:
+            …
+            webauthn_json: # The Webauthn firewall
+                …
+                fake_user_entity_provider: 'App\Provider\PublicKeyCredentialFakeUserEntityProvider'
+```
+
+# Authentication Attributes
+
+The security token returned by the firewall sets some attributes depending on the assertion and the capabilities of the authenticator.
+The attributes are:
+
+* `IS_USER_PRESENT`: the user was present during the authentication ceremony. This attribute is usually set by Webauthn authenticators
+* `IS_USER_VERIFIED`: the user was verified by the authenticator. Verification may be performed by several means including biometrics ones (fingerprint, iris, facial recognition…)
+
+You can then set constraints to the access controls.
+
+```yaml
+security:
+    firewalls:
+      …
+    access_control:
+        - { path: ^/profile,  roles: IS_AUTHENTICATED_FULLY, requires_channel: https }
+        - { path: ^/admin,  roles: IS_USER_VERIFIED, requires_channel: https }
 ```
