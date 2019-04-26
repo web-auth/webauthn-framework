@@ -104,7 +104,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 options_path: /security/authentication/options
 
@@ -150,7 +150,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 login_path: /security/authentication/login
 
@@ -186,7 +186,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 request_options_handler: 'App\Handler\MyCustomRequestOptionsHandler'
 ```
@@ -206,7 +206,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 success_handler: 'App\Handler\MyCustomAuthenticationSuccessHandler'
 ```
@@ -226,7 +226,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 failure_handler: 'App\Handler\MyCustomAuthenticationFailureHandler'
 ```
@@ -255,7 +255,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 request_options_storage: 'App\Handler\MyCustomRequestOptionsStorage'
 ```
@@ -337,7 +337,7 @@ security:
     firewalls:
         main:
             …
-            webauthn_json: # The Webauthn firewall
+            webauthn: # The Webauthn firewall
                 …
                 fake_user_entity_provider: 'App\Provider\PublicKeyCredentialFakeUserEntityProvider'
 ```
