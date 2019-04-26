@@ -150,7 +150,6 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
-        $this->appendFirewall($rootNode);
         if (class_exists(AttestationRequestController::class)) {
             $this->appendTokenTransportBinding($rootNode);
         }
@@ -225,25 +224,6 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ->end();
-    }
-
-    private function appendFirewall(ArrayNodeDefinition $node): void
-    {
-        $node->children()
-            ->arrayNode('firewall')
-                ->canBeEnabled()
-                ->children()
-                    ->scalarNode('http_message_factory')
-                        ->isRequired()
-                        ->info('Converts Symfony Requests into PSR7 Requests. Must implement Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface.')
-                    ->end()
-                    ->scalarNode('fake_user_entity_provider')
-                        ->defaultNull()
-                        ->info('To avoid username enumeration, this provider will generate fake user entities and associate fake credentials.')
                     ->end()
                 ->end()
             ->end()
