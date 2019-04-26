@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace U2F\Tests\Unit;
 
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use U2F\KeyHandler;
 use U2F\PublicKey;
@@ -27,11 +28,11 @@ final class RegistrationRequestTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid registered keys list.
      */
     public function theRegistrationRequestDoesNotContainValidRegisteredKeys(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid registered keys list.');
         new RegistrationRequest('https://twofactors:4043', ['bad value']);
     }
 

@@ -39,7 +39,6 @@ use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -75,10 +74,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
-        $container->setAlias(CredentialRepository::class, $config['credential_repository']);
-        if (is_subclass_of($config['credential_repository'], PublicKeyCredentialSourceRepository::class)) {
-            $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
-        }
+        $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
@@ -86,6 +82,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
         $loader->load('cose.php');
+        $loader->load('security.php');
 
         $this->loadTransportBindingProfile($container, $loader, $config);
 

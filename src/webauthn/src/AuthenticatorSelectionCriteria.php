@@ -64,14 +64,6 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this->userVerification;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
-    }
-
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);

@@ -21,9 +21,10 @@ use function Safe\base64_decode;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSource;
+use Webauthn\PublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -54,18 +55,19 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(true);
-        $credentialRepository->getUserHandleFor(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn('foo');
-        $credentialRepository->get(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(
-            new AttestedCredentialData(
-                base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
-                base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-                base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
-            )
-        );
-        $credentialRepository->getCounterFor(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn(100);
-        $credentialRepository->updateCounterFor(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), Argument::any())->shouldBeCalled();
+        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
+        $publicKeyCredentialSource->getUserHandle()->willReturn('foo');
+        $publicKeyCredentialSource->getCounter()->willReturn(100);
+        $publicKeyCredentialSource->setCounter(Argument::is(123))->will(function () {});
+        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
+            base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+            base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
+            base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
+        ));
+
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn($publicKeyCredentialSource->reveal());
+        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function () {});
 
         $request = $this->prophesize(ServerRequestInterface::class);
 
@@ -101,18 +103,19 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(true);
-        $credentialRepository->getUserHandleFor(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn('foo');
-        $credentialRepository->get(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(
-            new AttestedCredentialData(
-                base64_decode('+KAR84wKTRWABhcRH57cfQ==', true),
-                base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
-                base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
-            )
-        );
-        $credentialRepository->getCounterFor(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn(100);
-        $credentialRepository->updateCounterFor(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true), Argument::any())->shouldBeCalled();
+        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
+        $publicKeyCredentialSource->getUserHandle()->willReturn('foo');
+        $publicKeyCredentialSource->getCounter()->willReturn(100);
+        $publicKeyCredentialSource->setCounter(Argument::is(148))->will(function () {});
+        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
+            base64_decode('+KAR84wKTRWABhcRH57cfQ==', true),
+            base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
+            base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
+        ));
+
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn($publicKeyCredentialSource->reveal());
+        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function () {});
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('localhost');
@@ -151,18 +154,19 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(true);
-        $credentialRepository->getUserHandleFor(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn('abfc8fdf-07f6-45a9-abec-fa192275b276');
-        $credentialRepository->get(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(
-            new AttestedCredentialData(
-                base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
-                base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
-                base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
-            )
-        );
-        $credentialRepository->getCounterFor(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn(100);
-        $credentialRepository->updateCounterFor(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true), Argument::any())->shouldBeCalled();
+        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
+        $publicKeyCredentialSource->getUserHandle()->willReturn('abfc8fdf-07f6-45a9-abec-fa192275b276');
+        $publicKeyCredentialSource->getCounter()->willReturn(100);
+        $publicKeyCredentialSource->setCounter(Argument::is(1548765641))->will(function () {});
+        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
+            base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+            base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
+            base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
+        ));
+
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn($publicKeyCredentialSource->reveal());
+        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function () {});
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');

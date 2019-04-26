@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-interface PublicKeyCredentialSourceRepository extends CredentialRepository
+interface PublicKeyCredentialSourceRepository
 {
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource;
 

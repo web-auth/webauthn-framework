@@ -16,18 +16,20 @@
         }
     ],
     "require": {
-        "php-http/httplug-bundle": "^1.0",
         "spomky-labs/cbor-bundle": "^1.0",
         "spomky-labs/cbor-php": "^1.0.2",
         "symfony/config": "^4.2",
         "symfony/dependency-injection": "^4.2",
         "symfony/framework-bundle": "^4.2",
         "web-auth/webauthn-lib": "^1.1",
-        "web-token/jwt-signature": "^1.3"
+        "web-token/jwt-signature": "^1.3",
+        "symfony/psr-http-message-bridge": "^1.1"
     },
     "require-dev": {
+        "php-http/httplug-bundle": "^1.0",
         "fzaninotto/faker": "^1.8",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.8",
+        "symfony/security-bundle": "^4.2"
     },
     "autoload": {
         "psr-4": {
@@ -41,14 +43,14 @@
     },
     "suggest": {
         "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)",
-        "web-auth/webauthn-symfony-security-bundle": "Symfony firewall using templating and forms",
-        "web-auth/webauthn-symfony-json-security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
+        "symfony/security-bundle": "Symfony firewall based on Webauthn"
     },
     "extra": {
         "branch-alias": {
             "v1.0": "1.0.x-dev",
             "v1.1": "1.1.x-dev",
-            "v1.2": "1.2.x-dev"
+            "v1.2": "1.2.x-dev",
+            "v2.0": "2.0.x-dev"
         }
     }
 }

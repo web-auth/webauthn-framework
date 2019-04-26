@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
@@ -46,7 +46,8 @@
         "branch-alias": {
             "v1.0": "1.0.x-dev",
             "v1.1": "1.1.x-dev",
-            "v1.2": "1.2.x-dev"
+            "v1.2": "1.2.x-dev",
+            "v2.0": "2.0.x-dev"
         }
     }
 }

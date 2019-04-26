@@ -39,8 +39,8 @@ use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
@@ -72,7 +72,7 @@ abstract class AbstractTestCase extends TestCase
      */
     private $authenticatorAttestationResponseValidator;
 
-    protected function getAuthenticatorAttestationResponseValidator(CredentialRepository $credentialRepository, ?HttpClient $client = null): AuthenticatorAttestationResponseValidator
+    protected function getAuthenticatorAttestationResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository, ?HttpClient $client = null): AuthenticatorAttestationResponseValidator
     {
         if (!$this->authenticatorAttestationResponseValidator) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
@@ -91,7 +91,7 @@ abstract class AbstractTestCase extends TestCase
      */
     private $authenticatorAssertionResponseValidator;
 
-    protected function getAuthenticatorAssertionResponseValidator(CredentialRepository $credentialRepository): AuthenticatorAssertionResponseValidator
+    protected function getAuthenticatorAssertionResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository): AuthenticatorAssertionResponseValidator
     {
         if (!$this->authenticatorAssertionResponseValidator) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(

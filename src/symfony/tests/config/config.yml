@@ -8,6 +8,8 @@ framework:
         storage_id: 'session.storage.mock_file'
     fragments:       ~
     http_method_override: true
+    router:
+        resource: "%kernel.root_dir%/../config/routing.php"
 
 services:
     _defaults:
@@ -32,6 +34,25 @@ services:
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
+
+    Webauthn\Bundle\Tests\Functional\UserProvider:
+        autowire: true
+    Webauthn\Bundle\Tests\Functional\UserRepository: ~
+    Webauthn\Bundle\Tests\Functional\HomeController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\Bundle\Tests\Functional\SecurityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+    Webauthn\Bundle\Tests\Functional\AdminController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
+        autowire: true
+    Webauthn\Bundle\Tests\Functional\FailureHandler: ~
+    Webauthn\Bundle\Tests\Functional\SuccessHandler: ~
+    Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
 
 doctrine:
     dbal:
@@ -102,6 +123,13 @@ webauthn:
             challenge_length: 64
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
+        default:
+            extensions:
+                foo: 'bar'
+            rp_id: 'localhost'
+            challenge_length: 32
+            timeout: 30000
+            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
     transport_binding_profile:
         creation:
             default:
@@ -123,3 +151,29 @@ webauthn:
                 response_path: '/assertion/result'
                 host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__'
+
+security:
+    providers:
+        default:
+            id: 'Webauthn\Bundle\Tests\Functional\UserProvider'
+
+    firewalls:
+        main:
+            anonymous: ~
+            webauthn:
+                profile: 'default'
+                request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
+                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
+                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
+                http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
+                fake_user_entity_provider: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
+            logout:
+                path: /logout
+                target: /
+
+    access_control:
+        - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
+        - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
+        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

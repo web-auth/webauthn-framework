@@ -2,7 +2,6 @@ sudo: false
 language: php
 
 php:
-    - 7.1
     - 7.2
     - 7.3
     - nightly
@@ -23,10 +22,6 @@ install: travis_retry composer install
 
 script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-symfony-json-security.xml.dist
 
 jobs:
     allow_failures:
@@ -40,10 +35,6 @@ jobs:
               - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
           script:
               - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
-              - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
-              - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist --coverage-php build/cov/coverage-conformance-toolset.cov
-              - ./vendor/bin/phpunit -c phpunit-symfony-security.xml.dist --coverage-php build/cov/coverage-symfony-security.cov
-              - ./vendor/bin/phpunit -c phpunit-symfony-json-security.xml.dist --coverage-php build/cov/coverage-symfony-json-security.cov
           after_script:
               - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
               - ./vendor/bin/php-coveralls --no-interaction

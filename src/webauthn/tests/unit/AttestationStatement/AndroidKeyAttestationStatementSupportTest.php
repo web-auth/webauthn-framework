@@ -16,6 +16,7 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 
@@ -29,11 +30,11 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "sig" is missing.
      */
     public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
         $support = new AndroidKeyAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('android-key', $support->name());
@@ -45,11 +46,11 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "x5c" is missing.
      */
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
         $support = new AndroidKeyAttestationStatementSupport($this->getDecoder());
         static::assertFalse($support->load([
             'fmt' => 'android-key',
@@ -61,11 +62,11 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "alg" is missing.
      */
     public function theAttestationStatementDoesNotContainTheRequiredAlgorithmParameter(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "alg" is missing.');
         $support = new AndroidKeyAttestationStatementSupport($this->getDecoder());
         static::assertFalse($support->load([
             'fmt' => 'android-key',
@@ -78,11 +79,11 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "x5c" must be a list with at least one certificate.
      */
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with at least one certificate.');
         $support = new AndroidKeyAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('android-key', $support->name());

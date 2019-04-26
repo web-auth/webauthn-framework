@@ -51,7 +51,7 @@ final class Configuration implements ConfigurationInterface
                     ->info('This repository is responsible of the credential storage')
                 ->end()
                 ->scalarNode('user_repository')
-                    ->defaultNull()
+                    ->isRequired()
                     ->info('This repository is responsible of the user storage. It is mandatory when using the transport binding profile feature')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
