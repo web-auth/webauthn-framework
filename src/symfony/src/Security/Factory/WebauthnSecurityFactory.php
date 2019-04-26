@@ -18,7 +18,6 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
@@ -70,7 +69,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         /* @var ArrayNodeDefinition $node */
         $node
-            ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('profile')->isRequired()->end()
                 ->scalarNode('options_path')->defaultValue('/login/options')->end()
@@ -102,7 +100,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $listenerId = 'security.authentication.listener.webauthn.json';
         $listener = new ChildDefinition($listenerId);
         $listener->replaceArgument(0, new Reference($config['http_message_factory']));
-        $listener->replaceArgument(12, new Reference($config['fake_user_entity_provider'], ContainerInterface::NULL_ON_INVALID_REFERENCE));
+        $listener->replaceArgument(12, null === $config['fake_user_entity_provider'] ? null : new Reference($config['fake_user_entity_provider']));
         $listener->replaceArgument(13, $id);
         $listener->replaceArgument(14, $config);
         $listener->replaceArgument(15, new Reference($config['success_handler']));

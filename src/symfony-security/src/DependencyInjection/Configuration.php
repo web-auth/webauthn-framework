@@ -40,7 +40,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode = $this->getRootNode($treeBuilder, $this->alias);
 
         $rootNode
-            ->setDeprecated('This bundle will be abandoned ')
+            ->setDeprecated('This bundle will be abandoned. Please use the firewall included in the main bundle')
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('http_message_factory')
