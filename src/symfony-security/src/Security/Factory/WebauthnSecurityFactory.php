@@ -71,7 +71,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         /* @var ArrayNodeDefinition $node */
         $node
-            ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('login_path')->defaultValue('/login')->end()
                 ->scalarNode('login_check_path')->defaultValue('/login_check')->end()

@@ -14,7 +14,9 @@ declare(strict_types=1);
 namespace U2F\Tests\Unit;
 
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Safe\Exceptions\JsonException;
 use function Safe\json_encode;
 use U2F\ClientData;
 
@@ -25,11 +27,11 @@ final class ClientDataTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \Safe\Exceptions\JsonException
-     * @expectedExceptionMessage Syntax error
      */
     public function theClientDataIsNotBase64UrlEncoded(): void
     {
+        $this->expectException(JsonException::class);
+        $this->expectExceptionMessage('Syntax error');
         new ClientData(
             'foo'
         );
@@ -37,11 +39,11 @@ final class ClientDataTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Safe\Exceptions\JsonException
-     * @expectedExceptionMessage Syntax error
      */
     public function theClientDataIsNotAnArray(): void
     {
+        $this->expectException(JsonException::class);
+        $this->expectExceptionMessage('Syntax error');
         new ClientData(
             Base64Url::encode('foo')
         );
@@ -49,11 +51,11 @@ final class ClientDataTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid client data.
      */
     public function theClientDataDoesNotContainTheMandatoryKeys(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid client data.');
         new ClientData(
             Base64Url::encode(json_encode([]))
         );

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace U2F\Tests\Unit;
 
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use U2F\RegistrationRequest;
 use U2F\RegistrationResponse;
@@ -25,11 +26,11 @@ final class RegistrationResponseTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theRegistrationRequestContainsAnError(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'errorCode' => 1,
         ]);
@@ -37,11 +38,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function thereIsNoClientData(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'version' => 'U2F_V2',
@@ -51,11 +52,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theClientDataIsInvalid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'version' => 'U2F_V2',
@@ -66,11 +67,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theVersionIsMissing(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'challenge' => '3lp3lcuYSHo3yrGfuLvQ5NEd-LWDTHRVaDIKXfBvh8s',
@@ -80,11 +81,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theVersionIsInvalid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'version' => 123,
@@ -95,11 +96,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unsupported protocol version.
      */
     public function theVersionIsNotSupported(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported protocol version.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'version' => 'U2F_V1',
@@ -110,11 +111,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theRegistrationDataIsMissing(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'version' => 'U2F_V2',
             'challenge' => '3lp3lcuYSHo3yrGfuLvQ5NEd-LWDTHRVaDIKXfBvh8s',
@@ -124,11 +125,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theRegistrationDataIsInvalid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 123,
             'version' => 'U2F_V2',
@@ -139,11 +140,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid response.
      */
     public function theTypeIsNotSupported(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKDEmMCQGA1UEAwwdWXViaWNvIFUyRiBFRSBTZXJpYWwgOTU4MTUwMzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT9uN6zoe1w62NsBm62AGmWpflw_LXbiPw7MF1B5ZZvDBtUuFL-8KCQftF_O__CnU0yG5z4qEos6qA4yr011ZjeoyYwJDAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEuMTALBgkqhkiG9w0BAQsDggEBAH7T-2zMJSAT-C8hjCo32mAx0g5_MIHa_K6xKPx_myM5FL-2TWE18XziIfp2T0U-8Sc6jOlllWRCuy8eR0g_c33LyYtYU3f-9QsnDgKJ-IQ28a3PSbJiHuXjAt9VW5q3QnLgafkYFJs97E8SIosQwPiN42r1inS7RCuFrgBTZL2mcCBY_B8th5tTARHqYOhsY_F_pZRMyD8KommEiz7jiKbAnmsFlT_LuPR-g6J-AHKmPDKtZIZOkm1xEvoZl_eDllb7syvo94idDwFFUZonr92ORrBMpCkNhUC2NLiGFh51iMhimdzdZDXRZ4o6bwp0gpxN0_cMNSTR3fFteK3SG2QwRAIgDh1xe2NkrGHygQQsdbUbsIDo5rzK98uGFdtRnnkAcMECIAueb-X0G1j67XwU3JRd8_9bAJiFBnzTxvTWifRUtiUm',
             'version' => 'U2F_V2',
@@ -154,11 +155,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad reserved byte.
      */
     public function theReservedByteIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad reserved byte.');
         new RegistrationResponse([
             'registrationData' => Base64Url::encode("\x00"),
             'version' => 'U2F_V2',
@@ -169,11 +170,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad public key length.
      */
     public function thePublicKeyLengthIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad public key length.');
         new RegistrationResponse([
             'registrationData' => Base64Url::encode("\x05-------"),
             'version' => 'U2F_V2',
@@ -184,11 +185,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad key handle length.
      */
     public function theKeyHandleLengthOctetIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad key handle length.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6',
             'version' => 'U2F_V2',
@@ -199,11 +200,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad key handle length.
      */
     public function theKeyHandleLengthIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad key handle length.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6AA',
             'version' => 'U2F_V2',
@@ -214,11 +215,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad key handle.
      */
     public function theKeyHandleIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad key handle.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFw',
             'version' => 'U2F_V2',
@@ -229,11 +230,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad certificate header.
      */
     public function theCertificateHeaderIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad certificate header.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwgg',
             'version' => 'U2F_V2',
@@ -244,11 +245,11 @@ final class RegistrationResponseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Bad certificate.
      */
     public function theCertificateIsNotValid(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Bad certificate.');
         new RegistrationResponse([
             'registrationData' => 'BQRXlpZUqJXsfHYh7MCh1us-yprazMqTJyjWXocA0j_UT59xmzHgf1mkT9Dr82nGtYPX396PrUQx4_54haTZo8g6QFrNackWqHMDTcWCFyB7bYzjtetvJFUNhCuhFVWf8FirNPPfq7M09n5Ep0n5uFesFfa8s9vivFZuRbP6-3LQHKEwggItMIIBF6ADAgECAgQFtgV5MAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJp',
             'version' => 'U2F_V2',

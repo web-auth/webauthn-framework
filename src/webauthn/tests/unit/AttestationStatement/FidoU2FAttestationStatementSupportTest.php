@@ -21,6 +21,7 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\SignedIntegerObject;
 use CBOR\Tag\TagObjectManager;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
@@ -41,11 +42,11 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "sig" is missing.
      */
     public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('fido-u2f', $support->name());
@@ -57,11 +58,11 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "x5c" is missing.
      */
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
@@ -73,11 +74,11 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The attestation statement value "x5c" must be a list with one certificate.
      */
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with one certificate.');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('fido-u2f', $support->name());
@@ -92,11 +93,11 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The certificate in the attestation statement is not valid.
      */
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The certificate in the attestation statement is not valid.');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('fido-u2f', $support->name());
