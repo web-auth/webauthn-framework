@@ -82,6 +82,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
         $loader->load('cose.php');
+        $loader->load('security.php');
 
         $this->loadTransportBindingProfile($container, $loader, $config);
 
@@ -92,13 +93,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
             $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
             $loader->load('android_safetynet.php');
-        }
-        if (true === $config['firewall']['enabled']) {
-            $container->setAlias('webauthn.firewall.http_message_factory', $config['firewall']['http_message_factory']);
-            if (null !== $config['firewall']['fake_user_entity_provider']) {
-                $container->setAlias('webauthn.firewall.fake_user_entity_provider', $config['firewall']['fake_user_entity_provider']);
-            }
-            $loader->load('security.php');
         }
     }
 
