@@ -15,6 +15,7 @@
             <directory>./src/u2f/tests/</directory>
             <directory>./src/webauthn/tests/</directory>
             <directory>./src/symfony/tests/</directory>
+            <directory>./src/conformance-toolset/tests/</directory>
         </testsuite>
     </testsuites>
     <php>
