@@ -19,7 +19,7 @@ use Webauthn\Bundle\Tests\Functional\SecurityController;
 return function (RoutingConfigurator $routes) {
     $routes->import('.', 'webauthn');
 
-// Security
+    // Security
     $routes->add('app_login', '/login')
         ->controller([SecurityController::class, 'login'])
         ->methods(['POST'])
@@ -35,13 +35,13 @@ return function (RoutingConfigurator $routes) {
         ->methods(['POST'])
     ;
 
-// Home
+    // Home
     $routes->add('app_home', '/')
         ->controller([HomeController::class, 'home'])
         ->methods(['GET'])
     ;
 
-// Admin
+    // Admin
     $routes->add('app_admin', '/admin')
         ->controller([AdminController::class, 'admin'])
         ->methods(['GET'])
