@@ -22,7 +22,6 @@ install: travis_retry composer install
 
 script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist
-    - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist
     - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist
 
 jobs:
@@ -37,7 +36,6 @@ jobs:
               - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
           script:
               - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
-              - ./vendor/bin/phpunit -c phpunit-symfony.xml.dist --coverage-php build/cov/coverage-symfony.cov
               - ./vendor/bin/phpunit -c phpunit-conformance-toolset.xml.dist --coverage-php build/cov/coverage-conformance-toolset.cov
           after_script:
               - ./vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
