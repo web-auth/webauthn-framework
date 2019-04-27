@@ -5,12 +5,12 @@
             "src"
         ],
         "excludes": [
-            "src/*/tests"
+            "src/**/tests",
+            "src/**/var"
         ]
     },
     "mutators": {
-        "@default": true,
-        "@function_signature": true
+        "@default": true
     },
     "logs": {
         "text": "infection-log.txt"
