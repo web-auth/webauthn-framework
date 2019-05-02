@@ -59,7 +59,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     public function getKey(): string
     {
-        return 'webauthn';
+        return 'webauthn_json';
     }
 
     /**
