@@ -20,6 +20,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\SecurityBundle\DependencyInjection\WebauthnSecurityExtension;
 use Webauthn\SecurityBundle\Security\Factory\WebauthnSecurityFactory;
 
+/**
+ * @deprecated Will be removed in v2.0. Please use the firewall provided in "web-auth/webauthn-symfony-bundle".
+ */
 final class WebauthnSecurityBundle extends Bundle
 {
     /**

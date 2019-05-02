@@ -1,5 +1,14 @@
 Webauthn Symfony Security Bundle
 ================================
+----
+
+<p align="center">:warning::warning::warning:</p>
+
+**This bundle is deprecated in v1.2 and will be removed in v2.0**
+**Please use te firewall provided in the main Symfony bundle**
+
+<p align="center">:warning::warning::warning:</p>
+
 
 # Installation
 

@@ -21,8 +21,7 @@
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
             "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
-            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/",
-            "Webauthn\\JsonSecurityBundle\\": "src/symfony-json-security/src/"
+            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
         }
     },
     "autoload-dev": {
@@ -33,8 +32,7 @@
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
             "Webauthn\\ConformanceToolset\\Tests\\Functional\\": "src/conformance-toolset/tests/functional/",
-            "Webauthn\\SecurityBundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/",
-            "Webauthn\\JsonSecurityBundle\\Tests\\Functional\\": "src/symfony-json-security/tests/functional/"
+            "Webauthn\\SecurityBundle\\Tests\\Functional\\": "src/symfony-security/tests/functional/"
         }
     },
     "require": {
