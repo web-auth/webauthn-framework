@@ -10,7 +10,7 @@ To use this firewall, you must have configured:
 * a request profile
 * a PSR-7 message factory service
 
-Additionally, your Symfony application must have a [user provider service]().
+Additionally, your Symfony application must have a [user provider service](https://symfony.com/doc/current/security/user_provider.html).
 
 The Public Key Credential Source and User Entity Repositories are described in the [bundle configuration page](./index.md).
 
