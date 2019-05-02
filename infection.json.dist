@@ -2,17 +2,15 @@
     "timeout": 20,
     "source": {
         "directories": [
-            "src/u2f",
-            "src/webauthn",
-            "src/symfony"
+            "./src"
         ],
-        "exclude": [
-            "src\/*\/tests"
+        "excludes": [
+            "./src/*/tests",
+            "./src/*/.var"
         ]
     },
     "mutators": {
-        "@default": true,
-        "MethodCallRemoval": false
+        "@default": true
     },
     "logs": {
         "text": "infection-log.txt"
