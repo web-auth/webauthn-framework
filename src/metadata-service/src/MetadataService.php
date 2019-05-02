@@ -59,7 +59,7 @@ class MetadataService
     public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?HttpClient $client = null): MetadataStatement
     {
         $payload = $this->callMetadataService($uri, $client);
-        $json = $isBase64UrlEncoded ? Base64Url::decode($payload, true) : $payload;
+        $json = $isBase64UrlEncoded ? Base64Url::decode($payload) : $payload;
         $data = json_decode($json, true);
 
         return MetadataStatement::createFromArray($data);

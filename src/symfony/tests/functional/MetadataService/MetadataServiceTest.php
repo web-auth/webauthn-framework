@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Tests\Functional\Attestation;
+namespace Webauthn\Bundle\Tests\Functional\MetadataService;
 
 use Http\Message\RequestMatcher\RequestMatcher;
 use Psr\Http\Message\RequestInterface;
@@ -84,7 +84,7 @@ class MetadataServiceTest extends KernelTestCase
         $service = self::$kernel->getContainer()->get(MetadataService::class);
         $ms = $service->getMetadataStatementAt('https://raw.githubusercontent.com/solokeys/solo/2.1.0/metadata/Solo-FIDO2-CTAP2-Authenticator.json', false);
 
-        /** @var MetadataStatement $ms */
+        /* @var MetadataStatement $ms */
         static::assertEquals('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->getAAguid());
         static::assertEquals('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->getDescription());
         static::assertEquals([], $ms->getAlternativeDescriptions());

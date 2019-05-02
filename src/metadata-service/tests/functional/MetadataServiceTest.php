@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Tests\Functional;
+namespace Webauthn\MetadataService\Tests\Functional;
 
 use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
