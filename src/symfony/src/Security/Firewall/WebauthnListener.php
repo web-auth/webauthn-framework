@@ -372,7 +372,7 @@ class WebauthnListener implements ListenerInterface
         }
 
         $token = new WebauthnToken(
-            $storedData->getPublicKeyCredentialUserEntity()->getName(),
+            $storedData->getPublicKeyCredentialUserEntity(),
             $storedData->getPublicKeyCredentialRequestOptions(),
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
             $response->getAuthenticatorData()->isUserPresent(),
