@@ -59,8 +59,8 @@ This framework provides two bundles:
 
 * **Webauthn Bundle**: this bundle uses the webauthn library to register services and attestation format supports. [The documentation can be found here](doc/symfony/index.md)
 * Firewalls: 
-    * **Webauthn Security Bundle**: this bundle adds a new firewall based on webauthn. You will be able to authenticate your users with their username and FIDO2 compatible devices. [The documentation can be found here](doc/symfony-security/index.md)
-    * **Webauthn Json Security Bundle**: same as the previous one, except that it is designed for script clients waiting for a JSON API. [The documentation can be found here](doc/symfony-json-security/index.md)
+    * **Webauthn Security Bundle**: this bundle adds a new firewall based on webauthn. You will be able to authenticate your users with their username and FIDO2 compatible devices. [The documentation can be found here](doc/symfony-security/index.md).
+    * **Webauthn Json Security Bundle**: same as the previous one, except that it is designed for script clients waiting for a JSON API. [The documentation can be found here](doc/symfony/firewall.md)
 
 ## Other libraries
 
