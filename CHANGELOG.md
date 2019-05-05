@@ -1,8 +1,8 @@
 CHANGELOG
 =========
 
-*Only major and minor versions are listed.*
-*Patch versions may be added in the future* 
+*For versions 1.x, only major and minor versions are listed.*
+*Patch version details are available for other releases.* 
 
 Version 1.2
 -----------
