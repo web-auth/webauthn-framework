@@ -20,6 +20,7 @@ use function Safe\fopen;
 use function Safe\fread;
 use function Safe\fwrite;
 use function Safe\rewind;
+use Throwable;
 
 class SignatureResponse
 {
@@ -129,7 +130,7 @@ class SignatureResponse
                 $signature .= fread($stream, 1024);
             }
             fclose($stream);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             fclose($stream);
             throw $throwable;
         }

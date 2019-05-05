@@ -18,6 +18,7 @@ use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
@@ -91,7 +92,7 @@ final class AssertionResponseController
             $this->assertionResponseValidator->check($publicKeyCredential->getId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntity->getId());
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

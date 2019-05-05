@@ -20,6 +20,7 @@ use CBOR\StringStream;
 use InvalidArgumentException;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -90,7 +91,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         try {
             $resource = openssl_pkey_get_public($publicKey);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
         }
         $details = openssl_pkey_get_details($resource);

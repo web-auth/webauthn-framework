@@ -40,6 +40,7 @@ use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
+use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
@@ -374,7 +375,7 @@ class WebauthnListener implements ListenerInterface
                 $psr7Request,
                 $user instanceof HasUserHandle ? $user->getUserHandle() : null
             );
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             if (null !== $this->logger) {
                 $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',

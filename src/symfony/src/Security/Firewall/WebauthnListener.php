@@ -38,6 +38,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -357,7 +358,7 @@ class WebauthnListener implements ListenerInterface
                 $psr7Request,
                 $storedData->getPublicKeyCredentialUserEntity()->getId()
             );
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             if (null !== $this->logger) {
                 $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',

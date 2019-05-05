@@ -15,9 +15,11 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use InvalidArgumentException;
 use JsonSerializable;
 use function Safe\preg_replace;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
 
@@ -204,8 +206,8 @@ class PublicKeyCredentialSource implements JsonSerializable
                 Base64Url::decode($data['userHandle']),
                 $data['counter']
             );
-        } catch (\Throwable $throwable) {
-            throw new \InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
+        } catch (Throwable $throwable) {
+            throw new InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
         }
     }
 
