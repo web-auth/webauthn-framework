@@ -22,13 +22,13 @@
         "symfony/dependency-injection": "^4.2",
         "symfony/framework-bundle": "^4.2",
         "web-auth/webauthn-lib": "^1.1",
-        "web-token/jwt-signature": "^1.3",
-        "symfony/psr-http-message-bridge": "^1.1"
+        "web-token/jwt-signature": "^1.3.7"
     },
     "require-dev": {
         "php-http/httplug-bundle": "^1.0",
         "fzaninotto/faker": "^1.8",
         "ramsey/uuid": "^3.8",
+        "symfony/psr-http-message-bridge": "^1.1",
         "symfony/security-bundle": "^4.2"
     },
     "autoload": {
@@ -43,7 +43,7 @@
     },
     "suggest": {
         "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)",
-        "symfony/security-bundle": "Symfony firewall based on Webauthn"
+        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "extra": {
         "branch-alias": {

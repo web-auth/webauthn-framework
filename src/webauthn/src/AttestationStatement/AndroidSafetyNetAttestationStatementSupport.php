@@ -14,17 +14,16 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Http\Client\Exception;
 use Http\Client\HttpClient;
-use Http\Discovery\MessageFactoryDiscovery;
-use Http\Message\MessageFactory;
-use Jose\Component\Core\Converter\StandardConverter;
+use Http\Discovery\Psr17FactoryDiscovery;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -36,7 +35,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private $apiKey;
 
     /**
-     * @var MessageFactory
+     * @var RequestFactoryInterface
      */
     private $messageFactory;
 
@@ -52,11 +51,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function __construct(HttpClient $client, string $apiKey)
     {
-        $this->jwsSerializer = new CompactSerializer(
-            new StandardConverter()
-        );
+        $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
-        $this->messageFactory = MessageFactoryDiscovery::find();
+        $this->messageFactory = Psr17FactoryDiscovery::findRequestFactory();
         $this->client = $client;
     }
 
@@ -122,9 +119,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
 
             return $responseBodyJson['isValidSignature'];
-        } catch (\Throwable $throwable) {
-            return false;
-        } catch (Exception $throwable) {
+        } catch (Throwable $throwable) {
             return false;
         }
     }
@@ -151,7 +146,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
 
         foreach ($response->getHeader('content-type') as $header) {
-            if ('application/json' === mb_substr($header, 0, 16)) {
+            if (0 === mb_strpos($header, 'application/json')) {
                 return true;
             }
         }

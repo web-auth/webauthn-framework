@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -95,7 +96,7 @@ final class AssertionRequestController
             $request->getSession()->set($this->sessionParameterName, ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
 
             return new JsonResponse($data);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

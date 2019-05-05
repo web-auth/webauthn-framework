@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -102,7 +103,7 @@ final class AttestationRequestController
             $request->getSession()->set($this->sessionParameterName, $publicKeyCredentialCreationOptions);
 
             return new JsonResponse($data);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

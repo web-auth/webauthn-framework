@@ -122,7 +122,7 @@ class CollectedClientData
     }
 
     /**
-     * @return mixed
+     * @return mixed|null
      */
     private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)
     {

@@ -19,6 +19,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Throwable;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
 class WebauthnProvider implements AuthenticationProviderInterface
@@ -48,7 +49,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
         try {
             $this->userChecker->checkPreAuth($user);
             $this->userChecker->checkPostAuth($user);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw new AuthenticationException('The Webauthn authentication failed.', $throwable->getCode(), $throwable);
         }
 
