@@ -11,8 +11,6 @@ parameters:
         - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
         - '#Call to function method_exists\(\) with Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder and (.*) will always evaluate to true\.#'
         - '#Parameter \#1 \$serialized \(string\) of method (.*)::unserialize\(\) should be contravariant with parameter \$serialized \(mixed\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\AbstractToken::unserialize\(\)#'
-        - '#Instantiation of deprecated class Jose\\Component\\Core\\Converter\\StandardConverter\.#'
-        - '#Call to method find\(\) of deprecated class Http\\Discovery\\MessageFactoryDiscovery\.#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Fetching class constant class of deprecated class Webauthn\\CredentialRepository\.#'
         - '#Interface Webauthn\\PublicKeyCredentialSourceRepository extends deprecated interface Webauthn\\CredentialRepository\.#'
