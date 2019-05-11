@@ -14,11 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Http\Client\HttpClient;
-use Http\Discovery\Psr17FactoryDiscovery;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use function Safe\json_decode;
@@ -37,10 +36,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     /**
      * @var RequestFactoryInterface
      */
-    private $messageFactory;
+    private $requestFactory;
 
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     private $client;
 
@@ -49,11 +48,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $jwsSerializer;
 
-    public function __construct(HttpClient $client, string $apiKey)
+    public function __construct(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory)
     {
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
-        $this->messageFactory = Psr17FactoryDiscovery::findRequestFactory();
+        $this->requestFactory = $requestFactory;
         $this->client = $client;
     }
 
@@ -105,7 +104,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
             $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
             $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-            $request = $this->messageFactory->createRequest('POST', $uri);
+            $request = $this->requestFactory->createRequest('POST', $uri);
             $request = $request->withHeader('content-type', 'application/json');
             $request->getBody()->write($requestBody);
 

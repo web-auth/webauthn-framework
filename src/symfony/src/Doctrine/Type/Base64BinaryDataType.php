@@ -22,7 +22,7 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return base64_encode($value);
     }
@@ -38,7 +38,7 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
     }
@@ -46,8 +46,16 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'base64';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }

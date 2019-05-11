@@ -42,7 +42,7 @@
         }
     },
     "suggest": {
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)",
+        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application",
         "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "extra": {

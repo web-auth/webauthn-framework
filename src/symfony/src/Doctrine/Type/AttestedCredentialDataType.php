@@ -24,7 +24,7 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return json_encode($value);
     }
@@ -32,7 +32,7 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): AttestedCredentialData
     {
         $json = json_decode($value, true);
 
@@ -42,7 +42,7 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
@@ -50,8 +50,16 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'attested_credential_data';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }
