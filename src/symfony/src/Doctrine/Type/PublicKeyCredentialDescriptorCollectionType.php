@@ -23,7 +23,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return json_encode($value);
     }
@@ -31,7 +31,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): PublicKeyCredentialDescriptorCollection
     {
         return PublicKeyCredentialDescriptorCollection::createFromString($value);
     }
@@ -39,7 +39,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
@@ -47,8 +47,16 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'public_key_credential_descriptor_collection';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }

@@ -40,7 +40,7 @@
         }
     },
     "suggest": {
-        "php-http/httplug": "For Android SafetyNet support (highly recommended)"
+        "php-http/httplug": "For Android SafetyNet support"
     },
     "extra": {
         "branch-alias": {
