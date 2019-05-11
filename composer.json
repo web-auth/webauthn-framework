@@ -42,6 +42,7 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "fgrosse/phpasn1": "^2.1",
+        "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-bundle": "^1.0",
@@ -75,8 +76,8 @@
         "sort-packages": true
     },
     "suggest": {
-        "php-http/httplug": "For Android SafetyNet support (highly recommended)",
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application (highly recommended)"
+        "php-http/httplug": "For Android SafetyNet support",
+        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application"
     },
     "require-dev": {
         "doctrine/dbal": "^2.9",
