@@ -30,7 +30,7 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): string
     {
         return base64_decode($value, true);
     }
