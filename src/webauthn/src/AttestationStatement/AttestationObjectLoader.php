@@ -72,7 +72,7 @@ class AttestationObjectLoader
             $credentialPublicKey = $this->decoder->decode($authDataStream);
             try {
                 $this->decoder->decode(new StringStream((string) $credentialPublicKey));
-            }catch (\Throwable $throwable) {
+            } catch (\Throwable $throwable) {
                 throw $throwable;
             }
             Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');

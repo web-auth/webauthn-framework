@@ -55,8 +55,8 @@ class AuthenticatorAssertionResponseValidator
 
     public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager = null)
     {
-        if(null === $algorithmManager) {
-            @trigger_error('Passing `null` for the Cose Algorithm manager is deprecated since version 1.2 and will be forbidden in 2.0.', E_USER_DEPRECATED);;
+        if (null === $algorithmManager) {
+            @trigger_error('Passing `null` for the Cose Algorithm manager is deprecated since version 1.2 and will be forbidden in 2.0.', E_USER_DEPRECATED);
         }
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
