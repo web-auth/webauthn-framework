@@ -16,7 +16,11 @@ namespace Webauthn;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\Signature;
+use Cose\Key\Key;
 use Psr\Http\Message\ServerRequestInterface;
+use function Safe\hex2bin;
 use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -45,12 +49,18 @@ class AuthenticatorAssertionResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    /**
+     * @var Manager|null
+     */
+    private $algorithmManager;
+
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
     {
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->decoder = $decoder;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
+        $this->algorithmManager = $algorithmManager;
     }
 
     /**
@@ -85,6 +95,9 @@ class AuthenticatorAssertionResponseValidator
 
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
+        if ('a401030339010020590256' === mb_substr(bin2hex($credentialPublicKey), 0, 22, '8bit')) { // Fix wrong RSA key encoding
+            $credentialPublicKey = hex2bin('a401030339010020590100'.mb_substr(bin2hex($credentialPublicKey), 22, null, '8bit'));
+        }
 
         $credentialPublicKeyStream = $this->decoder->decode(
             new StringStream($credentialPublicKey)
@@ -140,9 +153,12 @@ class AuthenticatorAssertionResponseValidator
         $getClientDataJSONHash = hash('sha256', $authenticatorAssertionResponse->getClientDataJSON()->getRawData(), true);
 
         /* @see 7.2.16 */
-        $coseKey = $credentialPublicKeyStream->getNormalizedData();
-        $key = "\04".$coseKey[-2].$coseKey[-3];
-        Assertion::eq(1, openssl_verify($authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash, $authenticatorAssertionResponse->getSignature(), $this->getPublicKeyAsPem($key), OPENSSL_ALGO_SHA256), 'Invalid signature.');
+        $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash;
+        $signature = $authenticatorAssertionResponse->getSignature();
+        $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
+        $algorithm = $this->algorithmManager->get($coseKey->alg());
+        Assertion::isInstanceOf($algorithm, Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
+        Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
 
         /* @see 7.2.17 */
         $storedCounter = $publicKeyCredentialSource->getCounter();

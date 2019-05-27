@@ -99,7 +99,8 @@ abstract class AbstractTestCase extends TestCase
                 $credentialRepository,
                 $this->getDecoder(),
                 new TokenBindingNotSupportedHandler(),
-                new ExtensionOutputCheckerHandler()
+                new ExtensionOutputCheckerHandler(),
+                $this->getAlgorithmManager()
             );
         }
 

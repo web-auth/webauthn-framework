@@ -18,6 +18,8 @@ use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\StringStream;
+use function Safe\hex2bin;
+use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
@@ -70,6 +72,15 @@ class AttestationObjectLoader
             $credentialLength = unpack('n', $credentialLength)[1];
             $credentialId = $authDataStream->read($credentialLength);
             $credentialPublicKey = $this->decoder->decode($authDataStream);
+            try {
+                $credentialPublicKeyAsString = (string) $credentialPublicKey;
+                if ('a401030339010020590256' === mb_substr(bin2hex($credentialPublicKeyAsString), 0, 22, '8bit')) { // Fix wrong RSA key encoding
+                    $credentialPublicKeyAsString = hex2bin('a401030339010020590100'.mb_substr(bin2hex($credentialPublicKeyAsString), 22, null, '8bit'));
+                }
+                $this->decoder->decode(new StringStream($credentialPublicKeyAsString));
+            } catch (Throwable $throwable) {
+                throw $throwable;
+            }
             Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');
             $attestedCredentialData = new AttestedCredentialData($aaguid, $credentialId, (string) $credentialPublicKey);
         }
