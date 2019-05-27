@@ -69,7 +69,7 @@ This framework provides two bundles:
 FIDO U2F is an old protocol, but widely adopted by a lot of web services.
 It adds a very robust and easy to use second factor authentication method.
 
-The details for this lirary and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
+The details for this library and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
 
 ### Cose Key
 
