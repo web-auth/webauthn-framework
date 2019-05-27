@@ -16,6 +16,9 @@ namespace Webauthn;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\StringStream;
+use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\Signature;
+use Cose\Key\Key;
 use Psr\Http\Message\ServerRequestInterface;
 use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -45,12 +48,21 @@ class AuthenticatorAssertionResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    /**
+     * @var Manager|null
+     */
+    private $algorithmManager;
+
+    public function __construct(CredentialRepository $credentialRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager = null)
     {
+        if(null === $algorithmManager) {
+            @trigger_error('Passing `null` for the Cose Algorithm manager is deprecated since version 1.2 and will be forbidden in 2.0.', E_USER_DEPRECATED);;
+        }
         $this->credentialRepository = $credentialRepository;
         $this->decoder = $decoder;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
+        $this->algorithmManager = $algorithmManager;
     }
 
     /**
@@ -84,7 +96,6 @@ class AuthenticatorAssertionResponseValidator
 
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
-
         $credentialPublicKeyStream = $this->decoder->decode(
             new StringStream($credentialPublicKey)
         );
@@ -139,9 +150,18 @@ class AuthenticatorAssertionResponseValidator
         $getClientDataJSONHash = hash('sha256', $authenticatorAssertionResponse->getClientDataJSON()->getRawData(), true);
 
         /* @see 7.2.16 */
-        $coseKey = $credentialPublicKeyStream->getNormalizedData();
-        $key = "\04".$coseKey[-2].$coseKey[-3];
-        Assertion::eq(1, openssl_verify($authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash, $authenticatorAssertionResponse->getSignature(), $this->getPublicKeyAsPem($key), OPENSSL_ALGO_SHA256), 'Invalid signature.');
+        $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash;
+        $signature = $authenticatorAssertionResponse->getSignature();
+        if (null === $this->algorithmManager) {
+            $coseKey = $credentialPublicKeyStream->getNormalizedData();
+            $key = "\04".$coseKey[-2].$coseKey[-3];
+            Assertion::eq(1, openssl_verify($dataToVerify, $signature, $this->getPublicKeyAsPem($key), OPENSSL_ALGO_SHA256), 'Invalid signature.');
+        } else {
+            $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
+            $algorithm = $this->algorithmManager->get($coseKey->alg());
+            Assertion::isInstanceOf($algorithm, Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
+            Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
+        }
 
         /* @see 7.2.17 */
         $storedCounter = $this->getCounterFor($credentialId);

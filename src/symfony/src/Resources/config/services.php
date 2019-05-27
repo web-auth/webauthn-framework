@@ -20,8 +20,10 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\TokenBinding;
+use Webauthn\TokenBinding\TokenBindingHandler;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -32,7 +34,15 @@ return function (ContainerConfigurator $container) {
     $container->set(AuthenticatorAttestationResponseValidator::class)
         ->public();
     $container->set(AuthenticatorAssertionResponseValidator::class)
+        ->args([
+            ref(CredentialRepository::class),
+            ref(Decoder::class),
+            ref(TokenBindingHandler::class),
+            ref(ExtensionOutputCheckerHandler::class),
+            ref('webauthn.cose.algorithm.manager')->nullOnInvalid(),
+        ])
         ->public();
+
     $container->set(PublicKeyCredentialLoader::class)
         ->public();
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
