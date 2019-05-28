@@ -25,6 +25,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use function Safe\hex2bin;
 
 class AuthenticatorAssertionResponseValidator
 {
@@ -96,6 +97,9 @@ class AuthenticatorAssertionResponseValidator
 
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
+        if (0 === mb_strpos(bin2hex($credentialPublicKey), 'a401030339010020590256', 0, '8bit')) { // Fix wrong RSA key encoding
+            $credentialPublicKey = hex2bin('a401030339010020590100'.mb_substr(bin2hex($credentialPublicKey), 22, null, '8bit'));
+        }
         $credentialPublicKeyStream = $this->decoder->decode(
             new StringStream($credentialPublicKey)
         );

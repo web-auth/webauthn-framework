@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
-use InvalidArgumentException;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -41,8 +40,6 @@ class W10Test extends AbstractTestCase
      */
     public function anAttestationWithTokenBindingCanBeVerified(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(InvalidArgumentException::class);
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(
             '{"rp":{"name":"Webauthn Demo"},"pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"challenge":"XKADkZSW9B4h0Fek8KbhQun3m4dfJYN3ci9wdXDNJvU=","attestation":"direct","user":{"name":"test**","id":"ZjZlYWJjNGItYjkyYi00YzI0LTg2N2MtZWZjYmE4OGNjOTRm","displayName":"test**"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}'
         );
@@ -91,8 +88,6 @@ class W10Test extends AbstractTestCase
      */
     public function anAssertionCanBeVerified(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('');
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString(
             '{"challenge":"w+BeaUTZZnYMzvUB5GWUpiT1WYOnr9iCGUt5irUiUko=","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18="}],"timeout":60000}'
         );

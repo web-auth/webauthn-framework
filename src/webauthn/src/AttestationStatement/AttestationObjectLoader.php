@@ -21,6 +21,7 @@ use CBOR\StringStream;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
+use function Safe\hex2bin;
 
 class AttestationObjectLoader
 {
@@ -71,7 +72,11 @@ class AttestationObjectLoader
             $credentialId = $authDataStream->read($credentialLength);
             $credentialPublicKey = $this->decoder->decode($authDataStream);
             try {
-                $this->decoder->decode(new StringStream((string) $credentialPublicKey));
+                $credentialPublicKeyAsString = (string) $credentialPublicKey;
+                if (0 === mb_strpos(bin2hex($credentialPublicKeyAsString), 'a401030339010020590256', 0, '8bit')) { // Fix wrong RSA key encoding
+                    $credentialPublicKeyAsString = hex2bin('a401030339010020590100'.mb_substr(bin2hex($credentialPublicKeyAsString), 22, null, '8bit'));
+                }
+                $this->decoder->decode(new StringStream($credentialPublicKeyAsString));
             } catch (\Throwable $throwable) {
                 throw $throwable;
             }
