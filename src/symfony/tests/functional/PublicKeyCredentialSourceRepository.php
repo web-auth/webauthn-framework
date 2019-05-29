@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Ramsey\Uuid\Uuid;
 use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -36,7 +37,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             [],
             AttestationStatement::TYPE_NONE,
             new EmptyTrustPath(),
-            base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true),
+            Uuid::fromBytes(base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true)),
             base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true),
             'foo',
             100

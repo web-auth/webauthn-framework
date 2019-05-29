@@ -15,8 +15,9 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JsonSerializable;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use function Safe\base64_decode;
-use function Safe\preg_replace;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
@@ -24,7 +25,7 @@ use function Safe\preg_replace;
 class AttestedCredentialData implements JsonSerializable
 {
     /**
-     * @var string
+     * @var UuidInterface
      */
     private $aaguid;
 
@@ -38,23 +39,16 @@ class AttestedCredentialData implements JsonSerializable
      */
     private $credentialPublicKey;
 
-    public function __construct(string $aaguid, string $credentialId, ?string $credentialPublicKey)
+    public function __construct(UuidInterface $aaguid, string $credentialId, ?string $credentialPublicKey)
     {
         $this->aaguid = $aaguid;
         $this->credentialId = $credentialId;
         $this->credentialPublicKey = $credentialPublicKey;
     }
 
-    public function getAaguid(): string
+    public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
-    }
-
-    public function getAaguidAsUuid(): string
-    {
-        $data = bin2hex($this->aaguid);
-
-        return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $data);
     }
 
     public function getCredentialId(): string
@@ -71,9 +65,16 @@ class AttestedCredentialData implements JsonSerializable
     {
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
+        switch (true) {
+            case 36 === mb_strlen($json['aaguid'], '8bit'):
+                $uuid = Uuid::fromString($json['aaguid']);
+                break;
+            default: // Kept for compatibility with old format
+                $uuid = Uuid::fromBytes(base64_decode($json['aaguid'], true));
+        }
 
         return new self(
-            base64_decode($json['aaguid'], true),
+            $uuid,
             base64_decode($json['credentialId'], true),
             isset($json['credentialPublicKey']) ? base64_decode($json['credentialPublicKey'], true) : null
         );
@@ -82,7 +83,7 @@ class AttestedCredentialData implements JsonSerializable
     public function jsonSerialize(): array
     {
         $result = [
-            'aaguid' => base64_encode($this->aaguid),
+            'aaguid' => $this->aaguid->toString(),
             'credentialId' => base64_encode($this->credentialId),
         ];
         if (null !== $this->credentialPublicKey) {

@@ -17,7 +17,9 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
 use JsonSerializable;
-use function Safe\preg_replace;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use function Safe\base64_decode;
 use function Safe\sprintf;
 use Throwable;
 use Webauthn\TrustPath\AbstractTrustPath;
@@ -54,7 +56,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     protected $trustPath;
 
     /**
-     * @var string
+     * @var UuidInterface
      */
     protected $aaguid;
 
@@ -73,7 +75,7 @@ class PublicKeyCredentialSource implements JsonSerializable
      */
     protected $counter;
 
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, string $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
@@ -155,16 +157,9 @@ class PublicKeyCredentialSource implements JsonSerializable
         return $this->transports;
     }
 
-    public function getAaguid(): string
+    public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
-    }
-
-    public function getAaguidAsUuid(): string
-    {
-        $data = bin2hex($this->aaguid);
-
-        return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $data);
     }
 
     public function getCredentialPublicKey(): string
@@ -193,6 +188,13 @@ class PublicKeyCredentialSource implements JsonSerializable
         foreach ($keys as $key) {
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
+        switch (true) {
+            case 36 === mb_strlen($data['aaguid'], '8bit'):
+                $uuid = Uuid::fromString($data['aaguid']);
+                break;
+            default: // Kept for compatibility with old format
+                $uuid = Uuid::fromBytes(base64_decode($data['aaguid'], true));
+        }
 
         try {
             return new self(
@@ -201,7 +203,7 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $data['transports'],
                 $data['attestationType'],
                 AbstractTrustPath::createFromArray($data['trustPath']),
-                Base64Url::decode($data['aaguid']),
+                $uuid,
                 $data['credentialPublicKey'],
                 Base64Url::decode($data['userHandle']),
                 $data['counter']
@@ -219,7 +221,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'transports' => $this->transports,
             'attestationType' => $this->attestationType,
             'trustPath' => $this->trustPath,
-            'aaguid' => Base64Url::encode($this->aaguid),
+            'aaguid' => $this->aaguid->toString(),
             'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
             'userHandle' => Base64Url::encode($this->userHandle),
             'counter' => $this->counter,

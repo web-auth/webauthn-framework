@@ -17,6 +17,7 @@ use Base64Url\Base64Url;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Ramsey\Uuid\Uuid;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
 use Webauthn\AttestedCredentialData;
@@ -92,7 +93,7 @@ class W10Test extends AbstractTestCase
         $publicKeyCredentialSource->getCounter()->willReturn(0);
         $publicKeyCredentialSource->setCounter(Argument::is(4))->will(function () {});
         $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
-            base64_decode('YCiwF7HUTAK0s6/Nr8lrsg==', true),
+            Uuid::fromBytes(base64_decode('YCiwF7HUTAK0s6/Nr8lrsg==', true)),
             base64_decode('6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=', true),
             base64_decode('pAEDAzkBACBZAlbwn2Ee7V+9GNDn2iCU2plQnIVmZG/vOiXSHb9TQzC5806bGzLV918+1SLFhMhlX5jua2rdXt65nYw9Eln7mbmVxLBDmEm2wod6wP2HinC9HPsYwr75tMRakLMNFfH4Xx4lEsjulRmv68yl/N8XH64X8LKe2GBxjqcuJR+c3LbW4D5dWt/1pGL8fS1UbO3abA/d3IeEsP8RpEz5eVo6qBhb4r0VTo2NMeq75saBHIj4whqo6qsRqRvBmK2d9NAecBFFRIQ31NUtEQZPqXOzkbXGehDi7c3YJPBkTW9kMqcosob9Vlru+vVab+1PnFRdqaklR1UtmhrWte/wB61Hm3xdIUMBAAE=', true)
         ));

@@ -1,14 +1,20 @@
 CHANGELOG
 =========
 
-*For versions 1.x, only major and minor versions are listed.*
-*Patch version details are available for other releases.* 
+*Only major and minor versions are listed.*
 
-Version 2.0.0
--------------
+Version 2.0
+-----------
 
 This major version do not add any new feature.
 It corresponds to the last version of the previous major branch **where deprecations have been removed**.
+
+Additionally, the following changes have to be taken into account:
+
+1. The AAGUID
+ 
+The AAGUID of the `Webauthn\AttestedCredentialData` or `Webauthn\PublicKeyCredentialSource` object in the constructor
+or returned by the method `getAaguid()` are now an instance of a `Ramsey\Uuid\UuidInterface` object.  
 
 To migrate to that new major versions, you should make your code deprecation free first.
 When done, you can use this new major branch.

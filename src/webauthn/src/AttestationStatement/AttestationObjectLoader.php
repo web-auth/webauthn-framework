@@ -18,6 +18,7 @@ use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\StringStream;
+use Ramsey\Uuid\Uuid;
 use function Safe\hex2bin;
 use Throwable;
 use Webauthn\AttestedCredentialData;
@@ -67,7 +68,7 @@ class AttestationObjectLoader
 
         $attestedCredentialData = null;
         if (0 !== (\ord($flags) & self::FLAG_AT)) {
-            $aaguid = $authDataStream->read(16);
+            $aaguid = Uuid::fromBytes($authDataStream->read(16));
             $credentialLength = $authDataStream->read(2);
             $credentialLength = unpack('n', $credentialLength)[1];
             $credentialId = $authDataStream->read($credentialLength);
