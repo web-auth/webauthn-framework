@@ -148,9 +148,9 @@ class WebauthnToken extends AbstractToken
         return $this->providerKey;
     }
 
-    public function serialize(): string
+    public function __serialize(): array
     {
-        return serialize([
+        return [
             json_encode($this->publicKeyCredentialUserEntity),
             json_encode($this->publicKeyCredentialDescriptor),
             json_encode($this->publicKeyCredentialRequestOptions),
@@ -161,8 +161,8 @@ class WebauthnToken extends AbstractToken
             $this->signCount,
             $this->extensions,
             $this->providerKey,
-            parent::serialize(),
-        ]);
+            parent::__serialize()
+        ];
     }
 
     public function getAttributes()
@@ -181,9 +181,9 @@ class WebauthnToken extends AbstractToken
     /**
      * @param string $serialized
      */
-    public function unserialize($serialized): void
+    public function __unserialize(array $serialized): void
     {
-        list(
+        [
             $publicKeyCredentialUserEntity,
             $publicKeyCredentialDescriptor,
             $publicKeyCredentialRequestOptions,
@@ -194,8 +194,8 @@ class WebauthnToken extends AbstractToken
             $this->signCount,
             $extensions,
             $this->providerKey,
-            $parentStr
-            ) = unserialize($serialized);
+            $parentData
+            ] = $serialized;
         $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString($publicKeyCredentialUserEntity);
         $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
         $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString($publicKeyCredentialRequestOptions);
@@ -204,7 +204,6 @@ class WebauthnToken extends AbstractToken
         if (null !== $extensions) {
             $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
         }
-
-        parent::unserialize($parentStr);
+        parent::__unserialize($parentData);
     }
 }
