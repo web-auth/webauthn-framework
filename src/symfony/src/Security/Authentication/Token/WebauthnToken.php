@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 use Assert\Assertion;
 use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Symfony\Component\Security\Core\Role\Role;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
@@ -77,7 +76,7 @@ class WebauthnToken extends AbstractToken
     private $publicKeyCredentialRequestOptions;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
     {
@@ -153,7 +152,7 @@ class WebauthnToken extends AbstractToken
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function __serialize(): array
     {
@@ -186,7 +185,7 @@ class WebauthnToken extends AbstractToken
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function __unserialize(array $serialized): void
     {
