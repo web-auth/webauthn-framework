@@ -33,7 +33,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\HttpUtils;
-use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -185,9 +184,6 @@ class WebauthnListener
         $this->requestOptionsHandler = $requestOptionsHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
