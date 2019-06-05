@@ -202,7 +202,7 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $data['attestationType'],
                 AbstractTrustPath::createFromArray($data['trustPath']),
                 Base64Url::decode($data['aaguid']),
-                $data['credentialPublicKey'],
+                Base64Url::decode($data['credentialPublicKey']),
                 Base64Url::decode($data['userHandle']),
                 $data['counter']
             );
