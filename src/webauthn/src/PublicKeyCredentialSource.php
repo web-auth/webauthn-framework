@@ -22,8 +22,8 @@ use Ramsey\Uuid\UuidInterface;
 use function Safe\base64_decode;
 use function Safe\sprintf;
 use Throwable;
-use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
+use Webauthn\TrustPath\TrustPathLoader;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -202,7 +202,7 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $data['type'],
                 $data['transports'],
                 $data['attestationType'],
-                AbstractTrustPath::createFromArray($data['trustPath']),
+                TrustPathLoader::loadTrustPath($data['trustPath']),
                 $uuid,
                 Base64Url::decode($data['credentialPublicKey']),
                 Base64Url::decode($data['userHandle']),

@@ -17,7 +17,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\TrustPath\AbstractTrustPath;
+use Webauthn\TrustPath\TrustPath;
+use Webauthn\TrustPath\TrustPathLoader;
 
 final class TrustPathDataType extends Type
 {
@@ -32,11 +33,11 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): AbstractTrustPath
+    public function convertToPHPValue($value, AbstractPlatform $platform): TrustPath
     {
         $json = json_decode($value, true);
 
-        return AbstractTrustPath::createFromArray($json);
+        return TrustPathLoader::loadTrustPath($json);
     }
 
     /**
