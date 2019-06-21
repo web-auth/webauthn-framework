@@ -26,7 +26,7 @@
         "spomky-labs/cbor-php": "^1.0.2",
         "thecodingmachine/safe": "^0.1",
         "beberlei/assert": "^3.0",
-        "web-auth/cose-lib": "^1.1"
+        "web-auth/cose-lib": "^2.0"
     },
     "autoload": {
         "psr-4": {
