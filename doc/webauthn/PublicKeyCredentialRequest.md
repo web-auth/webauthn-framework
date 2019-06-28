@@ -207,6 +207,7 @@ $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseVal
     $decoder,                              // The CBOR Decoder service
     $tokenBindingHandler,                  // The token binding handler
     $extensionOutputCheckerHandler         // The extension output checker handler  
+    $coseAlgorithmManager                  // The COSE Algorithm Manager
 );
 ``` 
 
@@ -359,6 +360,7 @@ $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseVal
   $decoder,
   $tokenBindnigHandler,
   $extensionOutputCheckerHandler
+  $coseAlgorithmManager
 );
 
 try {
