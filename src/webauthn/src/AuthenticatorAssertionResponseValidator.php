@@ -20,7 +20,6 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Psr\Http\Message\ServerRequestInterface;
-use function Safe\hex2bin;
 use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -95,10 +94,6 @@ class AuthenticatorAssertionResponseValidator
 
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
-        if ('a401030339010020590256' === mb_substr(bin2hex($credentialPublicKey), 0, 22, '8bit')) { // Fix wrong RSA key encoding
-            $credentialPublicKey = hex2bin('a401030339010020590100'.mb_substr(bin2hex($credentialPublicKey), 22, null, '8bit'));
-        }
-
         $credentialPublicKeyStream = $this->decoder->decode(
             new StringStream($credentialPublicKey)
         );
