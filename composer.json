@@ -20,7 +20,9 @@
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
-            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/"
+            "Webauthn\\MetadataService\\": "src/metadata-service/src/",
+            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
+            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
         }
     },
     "autoload-dev": {
@@ -29,7 +31,8 @@
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/"
+            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\MetadataService\\Tests\\Functional\\": "src/metadata-service/tests/functional/"
         }
     },
     "require": {
@@ -51,7 +54,9 @@
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
         "thecodingmachine/safe": "^0.1",
-        "web-token/jwt-signature": "^2.0.3"
+        "web-token/jwt-key-mgmt": "^2.0.3",
+        "web-token/jwt-signature": "^2.0.3",
+        "web-token/jwt-signature-algorithm-ecdsa": "^2.0"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",
@@ -65,7 +70,8 @@
             "v1.0": "1.0.x-dev",
             "v1.1": "1.1.x-dev",
             "v1.2": "1.2.x-dev",
-            "v2.0": "2.0.x-dev"
+            "v2.0": "2.0.x-dev",
+            "v2.1": "2.1.x-dev"
         }
     },
     "config": {
