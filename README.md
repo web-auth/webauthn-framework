@@ -62,20 +62,12 @@ You will be able to authenticate your users with their username and FIDO2 compat
 
 ## Other libraries
 
-### Metadata Service
-
-This library provides all tools and data structures to easily consume the Fido Metadata Service.
-
-**Please not that the service and the associated specification should be considered as experimental**
-
-The details for this library and the process are explained [in this dedicated page](doc/metadata-service/index.md).
-
 ### FIDO U2F
 
 FIDO U2F is an old protocol, but widely adopted by a lot of web services.
 It adds a very robust and easy to use second factor authentication method.
 
-The details for this library and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
+The details for this lirary and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
 
 ### Cose Key
 
