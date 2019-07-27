@@ -26,6 +26,9 @@ services:
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
+    Psr\Http\Message\RequestFactoryInterface:
+        alias: Nyholm\Psr7\Factory\Psr17Factory
+
     Nyholm\Psr7\Factory\Psr17Factory: ~
     Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface:
         class: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
@@ -34,12 +37,6 @@ services:
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
             - '@Nyholm\Psr7\Factory\Psr17Factory'
-
-    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
-        autowire: true
-    Webauthn\Bundle\Tests\Functional\FailureHandler: ~
-    Webauthn\Bundle\Tests\Functional\SuccessHandler: ~
-    Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
 
     Webauthn\Bundle\Tests\Functional\UserProvider:
         autowire: true
@@ -53,6 +50,12 @@ services:
     Webauthn\Bundle\Tests\Functional\AdminController:
         autowire: true
         tags: ['controller.service_arguments']
+
+    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
+        autowire: true
+    Webauthn\Bundle\Tests\Functional\FailureHandler: ~
+    Webauthn\Bundle\Tests\Functional\SuccessHandler: ~
+    Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
 
 doctrine:
     dbal:

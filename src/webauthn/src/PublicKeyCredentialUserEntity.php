@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use function Safe\base64_decode;
+use function Safe\json_decode;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
@@ -45,12 +46,12 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return $this->displayName;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
+    public static function createFromString(string $data): self
     {
-        return self::createFromArray($json);
+        $data = json_decode($data, true);
+        Assertion::isArray($data, 'Invalid data');
+
+        return self::createFromArray($data);
     }
 
     public static function createFromArray(array $json): self

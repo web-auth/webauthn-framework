@@ -15,25 +15,31 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\json_encode;
-use Webauthn\PublicKeyCredentialDescriptorCollection;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use function Safe\base64_decode;
 
-final class PublicKeyCredentialDescriptorCollectionType extends Type
+final class AAGUIDDataType extends Type
 {
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        return json_encode($value);
+        return $value->toString();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): PublicKeyCredentialDescriptorCollection
+    public function convertToPHPValue($value, AbstractPlatform $platform): UuidInterface
     {
-        return PublicKeyCredentialDescriptorCollection::createFromString($value);
+        switch (true) {
+            case 36 === mb_strlen($value, '8bit'):
+                return Uuid::fromString($value);
+            default: // Kept for compatibility with old format
+                return Uuid::fromBytes(base64_decode($value, true));
+        }
     }
 
     /**
@@ -41,7 +47,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
@@ -49,7 +55,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
      */
     public function getName(): string
     {
-        return 'public_key_credential_descriptor_collection';
+        return 'aaguid';
     }
 
     /**

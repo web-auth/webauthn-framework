@@ -16,8 +16,8 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use JsonSerializable;
 use function Safe\sprintf;
-use Webauthn\TrustPath\AbstractTrustPath;
 use Webauthn\TrustPath\TrustPath;
+use Webauthn\TrustPath\TrustPathLoader;
 
 class AttestationStatement implements JsonSerializable
 {
@@ -115,14 +115,6 @@ class AttestationStatement implements JsonSerializable
         return $this->type;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
-    }
-
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
@@ -133,14 +125,12 @@ class AttestationStatement implements JsonSerializable
             $data['fmt'],
             $data['attStmt'],
             $data['type'],
-            AbstractTrustPath::createFromArray($data['trustPath'])
+            TrustPathLoader::loadTrustPath($data['trustPath'])
         );
     }
 
     public function jsonSerialize(): array
     {
-        Assertion::isInstanceOf($this->trustPath, AbstractTrustPath::class, 'This method is reserved for specific classes');
-
         return [
             'fmt' => $this->fmt,
             'attStmt' => $this->attStmt,

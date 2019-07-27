@@ -24,11 +24,11 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
+use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -68,8 +68,8 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))->willReturn(false);
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))->willReturn(null);
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('webauthn.org');

@@ -6,18 +6,12 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
-        - '#Parameter (.*) of method Symfony\\Component\\DependencyInjection\\ContainerBuilder::setAlias\(\) expects string|Symfony\\Component\\DependencyInjection\\Alias, Webauthn\\PublicKeyCredentialSourceRepository given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
         - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
-        - '#Call to function method_exists\(\) with Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder and (.*) will always evaluate to true\.#'
-        - '#Parameter \#1 \$serialized \(string\) of method (.*)::unserialize\(\) should be contravariant with parameter \$serialized \(mixed\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\AbstractToken::unserialize\(\)#'
-        - '#Instantiation of deprecated class Jose\\Component\\Core\\Converter\\StandardConverter\.#'
-        - '#Call to method find\(\) of deprecated class Http\\Discovery\\MessageFactoryDiscovery\.#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-        - '#Fetching class constant class of deprecated class Webauthn\\CredentialRepository\.#'
-        - '#Interface Webauthn\\PublicKeyCredentialSourceRepository extends deprecated interface Webauthn\\CredentialRepository\.#'
         - '#Parameter (.*) of class Webauthn\\PublicKeyCredentialSource constructor expects string, string|null given\.#'
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
+        - '#Parameter (.*) of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects array(.*) given#'
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

@@ -461,8 +461,8 @@ use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepository;
 /** @var PublicKeyCredentialUserEntityRepository $userRepository */
 $userRepository = $this->container->get(UserRepository::class);
 
-/** @var PublicKeyCredentialSourceRepository $credentialRepository */
-$credentialRepository = $this->container->get(PublicKeyCredentialSourceRepository::class);
+/** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
+$publicKeyCredentialSourceRepository = $this->container->get(PublicKeyCredentialSourceRepository::class);
 
 /** @var PublicKeyCredentialRequestOptionsFactory $factory */
 $factory = $this->container->get(UserRepository::class);
@@ -471,7 +471,7 @@ $factory = $this->container->get(UserRepository::class);
 $userEntity = $userRepository->findOneByUsername('username');
 
 // We get the associated credential list
-$allowedCredentials = $credentialRepository->findAllForUserEntity($userEntity);
+$allowedCredentials = $publicKeyCredentialSourceRepository->findAllForUserEntity($userEntity);
 
 
 // The PublicKeyCredentialRequestOptions object is created for that user

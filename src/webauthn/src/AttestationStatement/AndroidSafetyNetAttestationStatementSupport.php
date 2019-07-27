@@ -14,17 +14,15 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Http\Client\Exception;
-use Http\Client\HttpClient;
-use Http\Discovery\MessageFactoryDiscovery;
-use Http\Message\MessageFactory;
-use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -36,12 +34,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private $apiKey;
 
     /**
-     * @var MessageFactory
+     * @var RequestFactoryInterface
      */
-    private $messageFactory;
+    private $requestFactory;
 
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     private $client;
 
@@ -50,13 +48,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $jwsSerializer;
 
-    public function __construct(HttpClient $client, string $apiKey)
+    public function __construct(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory)
     {
-        $this->jwsSerializer = new CompactSerializer(
-            new StandardConverter()
-        );
+        $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
-        $this->messageFactory = MessageFactoryDiscovery::find();
+        $this->requestFactory = $requestFactory;
         $this->client = $client;
     }
 
@@ -108,7 +104,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
             $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
             $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-            $request = $this->messageFactory->createRequest('POST', $uri);
+            $request = $this->requestFactory->createRequest('POST', $uri);
             $request = $request->withHeader('content-type', 'application/json');
             $request->getBody()->write($requestBody);
 
@@ -122,9 +118,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
 
             return $responseBodyJson['isValidSignature'];
-        } catch (\Throwable $throwable) {
-            return false;
-        } catch (Exception $throwable) {
+        } catch (Throwable $throwable) {
             return false;
         }
     }
@@ -151,7 +145,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
 
         foreach ($response->getHeader('content-type') as $header) {
-            if ('application/json' === mb_substr($header, 0, 16)) {
+            if (0 === mb_strpos($header, 'application/json')) {
                 return true;
             }
         }

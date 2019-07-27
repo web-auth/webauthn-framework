@@ -206,7 +206,8 @@ $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseVal
     $publicKeyCredentialSourceRepository,  // The Credential Repository service
     $decoder,                              // The CBOR Decoder service
     $tokenBindingHandler,                  // The token binding handler
-    $extensionOutputCheckerHandler         // The extension output checker handler  
+    $extensionOutputCheckerHandler,        // The extension output checker handler
+    $coseAlgorithmManager                  // The COSE Algorithm Manager  
 );
 ``` 
 
@@ -358,7 +359,8 @@ $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseVal
   $publicKeyCredentialSourceRepository,
   $decoder,
   $tokenBindnigHandler,
-  $extensionOutputCheckerHandler
+  $extensionOutputCheckerHandler,
+  $coseAlgorithmManager
 );
 
 try {

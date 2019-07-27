@@ -18,6 +18,8 @@ use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\StringStream;
+use Ramsey\Uuid\Uuid;
+use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
@@ -65,11 +67,17 @@ class AttestationObjectLoader
 
         $attestedCredentialData = null;
         if (0 !== (\ord($flags) & self::FLAG_AT)) {
-            $aaguid = $authDataStream->read(16);
+            $aaguid = Uuid::fromBytes($authDataStream->read(16));
             $credentialLength = $authDataStream->read(2);
             $credentialLength = unpack('n', $credentialLength)[1];
             $credentialId = $authDataStream->read($credentialLength);
             $credentialPublicKey = $this->decoder->decode($authDataStream);
+            try {
+                $credentialPublicKeyAsString = (string) $credentialPublicKey;
+                $this->decoder->decode(new StringStream($credentialPublicKeyAsString));
+            } catch (Throwable $throwable) {
+                throw $throwable;
+            }
             Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');
             $attestedCredentialData = new AttestedCredentialData($aaguid, $credentialId, (string) $credentialPublicKey);
         }

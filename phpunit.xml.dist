@@ -16,6 +16,7 @@
             <directory>./src/webauthn/tests/</directory>
             <directory>./src/metadata-service/tests/</directory>
             <directory>./src/symfony/tests/</directory>
+            <directory>./src/conformance-toolset/tests/</directory>
         </testsuite>
     </testsuites>
     <php>
@@ -24,7 +25,6 @@
         <ini name="intl.error_level" value="0" />
         <ini name="memory_limit" value="-1" />
         <server name="KERNEL_CLASS" value="Webauthn\Bundle\Tests\Functional\AppKernel" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
     </php>
     <filter>
         <whitelist>

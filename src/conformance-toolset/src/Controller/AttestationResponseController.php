@@ -18,6 +18,7 @@ use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
@@ -89,7 +90,7 @@ final class AttestationResponseController
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

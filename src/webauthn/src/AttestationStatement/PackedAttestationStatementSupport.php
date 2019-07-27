@@ -128,7 +128,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
 
         // id-fido-gen-ce-aaguid OID check
-        Assertion::false(\in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($attestedCredentialData->getAaguid(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
+        Assertion::false(\in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($attestedCredentialData->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
     }
 
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool

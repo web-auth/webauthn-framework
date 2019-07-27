@@ -17,14 +17,15 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\TrustPath\AbstractTrustPath;
+use Webauthn\TrustPath\TrustPath;
+use Webauthn\TrustPath\TrustPathLoader;
 
 final class TrustPathDataType extends Type
 {
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return json_encode($value);
     }
@@ -32,17 +33,17 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): TrustPath
     {
         $json = json_decode($value, true);
 
-        return AbstractTrustPath::createFromArray($json);
+        return TrustPathLoader::loadTrustPath($json);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
@@ -50,8 +51,16 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'trust_path';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }

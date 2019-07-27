@@ -13,12 +13,14 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-final class EcdaaKeyIdTrustPath extends AbstractTrustPath
+use Assert\Assertion;
+
+final class EcdaaKeyIdTrustPath implements TrustPath
 {
     /**
      * @var string
      */
-    protected $ecdaaKeyId;
+    private $ecdaaKeyId;
 
     public function __construct(string $ecdaaKeyId)
     {
@@ -33,8 +35,15 @@ final class EcdaaKeyIdTrustPath extends AbstractTrustPath
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'ecdaa_key_id',
+            'type' => self::class,
             'ecdaaKeyId' => $this->ecdaaKeyId,
         ];
+    }
+
+    public static function createFromArray(array $data): TrustPath
+    {
+        Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
+
+        return new EcdaaKeyIdTrustPath($data['ecdaaKeyId']);
     }
 }

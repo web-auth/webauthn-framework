@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -41,7 +40,7 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder($this->alias);
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $this->getRootNode($treeBuilder, $this->alias);
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -51,7 +50,7 @@ final class Configuration implements ConfigurationInterface
                     ->info('This repository is responsible of the credential storage')
                 ->end()
                 ->scalarNode('user_repository')
-                    ->defaultNull()
+                    ->isRequired()
                     ->info('This repository is responsible of the user storage. It is mandatory when using the transport binding profile feature')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
@@ -246,14 +245,5 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ->end();
-    }
-
-    private function getRootNode(TreeBuilder $treeBuilder, string $name): NodeDefinition
-    {
-        if (!\method_exists($treeBuilder, 'getRootNode')) {
-            return $treeBuilder->root($name);
-        }
-
-        return $treeBuilder->getRootNode();
     }
 }

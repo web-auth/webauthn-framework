@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
+use Cose\Algorithms;
 use Http\Mock\Client;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,11 +26,11 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
+use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -48,7 +49,7 @@ class TPMAttestationStatementTest extends AbstractTestCase
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
             Base64Url::decode('wk6LqEXAMAZpqcTYlY2yor5DjiyI_b1gy9nDOtCB1yGYnm_4WG4Uk24FAr7AxTOFfQMeigkRxOTLZNrLxCvV_Q'),
             [
-                new PublicKeyCredentialParameters('public-key', PublicKeyCredentialParameters::ALGORITHM_ES256),
+                new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
             ],
             60000,
             [],
@@ -69,8 +70,8 @@ class TPMAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(CredentialRepository::class);
-        $credentialRepository->has(base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true))->willReturn(false);
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('hWzdFiPbOMQ5KNBsMhs+Zeh8F0iTHrH63YKkrxJFgjQ=', true))->willReturn(null);
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('webauthn.org');

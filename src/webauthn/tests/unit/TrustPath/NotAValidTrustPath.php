@@ -11,8 +11,8 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Symfony\Component\Routing\Loader\Configurator;
+namespace Webauthn\Tests\Unit\TrustPath;
 
-return function (RoutingConfigurator $routes) {
-    $routes->import('.', 'webauthn');
-};
+final class NotAValidTrustPath
+{
+}

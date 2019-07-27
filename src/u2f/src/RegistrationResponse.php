@@ -21,6 +21,7 @@ use function Safe\fopen;
 use function Safe\fread;
 use function Safe\fwrite;
 use function Safe\rewind;
+use Throwable;
 
 class RegistrationResponse
 {
@@ -116,7 +117,7 @@ class RegistrationResponse
             $certLength = $highOrder + $lowOrder;
             $certBody = fread($stream, $certLength); // x bytes for the certificate
             Assertion::eq(mb_strlen($certBody, '8bit'), $certLength, 'Bad certificate.');
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             fclose($stream);
             throw $throwable;
         }

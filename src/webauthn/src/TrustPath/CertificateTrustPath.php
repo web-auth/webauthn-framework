@@ -13,12 +13,14 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-final class CertificateTrustPath extends AbstractTrustPath
+use Assert\Assertion;
+
+final class CertificateTrustPath implements TrustPath
 {
     /**
      * @var string[]
      */
-    protected $certificates;
+    private $certificates;
 
     /**
      * @param string[] $certificates
@@ -36,10 +38,17 @@ final class CertificateTrustPath extends AbstractTrustPath
         return $this->certificates;
     }
 
+    public static function createFromArray(array $data): TrustPath
+    {
+        Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
+
+        return new CertificateTrustPath($data['x5c']);
+    }
+
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'x5c',
+            'type' => self::class,
             'x5c' => $this->certificates,
         ];
     }

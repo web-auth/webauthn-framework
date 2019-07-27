@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\ConformanceToolset\Tests\Functional\Profile;
+namespace Webauthn\Bundle\Tests\Functional\Profile;
 
 use function Safe\json_decode;
 use function Safe\json_encode;

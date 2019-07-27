@@ -13,12 +13,17 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-final class EmptyTrustPath extends AbstractTrustPath
+final class EmptyTrustPath implements TrustPath
 {
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'empty',
+            'type' => self::class,
         ];
+    }
+
+    public static function createFromArray(array $data): TrustPath
+    {
+        return new EmptyTrustPath();
     }
 }

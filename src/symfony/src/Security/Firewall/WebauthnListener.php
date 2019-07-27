@@ -23,7 +23,7 @@ use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -32,12 +32,11 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Http\HttpUtils;
-use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -55,7 +54,7 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class WebauthnListener implements ListenerInterface
+class WebauthnListener
 {
     /**
      * @var TokenStorageInterface
@@ -185,10 +184,7 @@ class WebauthnListener implements ListenerInterface
         $this->requestOptionsHandler = $requestOptionsHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(GetResponseEvent $event): void
+    public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
         if (!$request->isMethod(Request::METHOD_POST)) {
@@ -213,7 +209,7 @@ class WebauthnListener implements ListenerInterface
         }
     }
 
-    private function onOptionsPath(GetResponseEvent $event): void
+    private function onOptionsPath(RequestEvent $event): void
     {
         $request = $event->getRequest();
         try {
@@ -259,7 +255,7 @@ class WebauthnListener implements ListenerInterface
         return $data;
     }
 
-    private function onLoginPath(GetResponseEvent $event): void
+    private function onLoginPath(RequestEvent $event): void
     {
         $request = $event->getRequest();
         try {
@@ -315,7 +311,7 @@ class WebauthnListener implements ListenerInterface
 
         if (null !== $this->dispatcher) {
             $loginEvent = new InteractiveLoginEvent($request, $token);
-            $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+            $this->dispatcher->dispatch($loginEvent);
         }
 
         $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
@@ -357,7 +353,7 @@ class WebauthnListener implements ListenerInterface
                 $psr7Request,
                 $storedData->getPublicKeyCredentialUserEntity()->getId()
             );
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             if (null !== $this->logger) {
                 $this->logger->error(sprintf(
                     'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
@@ -372,7 +368,7 @@ class WebauthnListener implements ListenerInterface
         }
 
         $token = new WebauthnToken(
-            $storedData->getPublicKeyCredentialUserEntity()->getName(),
+            $storedData->getPublicKeyCredentialUserEntity(),
             $storedData->getPublicKeyCredentialRequestOptions(),
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
             $response->getAuthenticatorData()->isUserPresent(),

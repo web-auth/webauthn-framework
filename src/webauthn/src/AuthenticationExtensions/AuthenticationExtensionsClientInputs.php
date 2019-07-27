@@ -34,14 +34,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         $this->extensions[$extension->name()] = $extension;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" instead
-     */
-    public static function createFromJson(array $json): self
-    {
-        return self::createFromArray($json);
-    }
-
     public static function createFromArray(array $json): self
     {
         $object = new self();

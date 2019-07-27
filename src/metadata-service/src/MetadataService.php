@@ -16,7 +16,6 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use Http\Client\HttpClient;
-use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -92,7 +91,7 @@ class MetadataService
 
     private function getJwsPayload(string $token): string
     {
-        $jws = (new CompactSerializer(new StandardConverter()))->unserialize($token);
+        $jws = (new CompactSerializer())->unserialize($token);
         Assertion::eq(1, $jws->countSignatures(), 'Invalid response from the metadata service. Only one signature shall be present.');
         $signature = $jws->getSignature(0);
         $payload = $jws->getPayload();

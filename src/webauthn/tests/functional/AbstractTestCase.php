@@ -25,9 +25,10 @@ use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
-use Http\Client\HttpClient;
 use Http\Mock\Client;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -39,8 +40,8 @@ use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\CredentialRepository;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
@@ -72,7 +73,7 @@ abstract class AbstractTestCase extends TestCase
      */
     private $authenticatorAttestationResponseValidator;
 
-    protected function getAuthenticatorAttestationResponseValidator(CredentialRepository $credentialRepository, ?HttpClient $client = null): AuthenticatorAttestationResponseValidator
+    protected function getAuthenticatorAttestationResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository, ?ClientInterface $client = null): AuthenticatorAttestationResponseValidator
     {
         if (!$this->authenticatorAttestationResponseValidator) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
@@ -91,14 +92,15 @@ abstract class AbstractTestCase extends TestCase
      */
     private $authenticatorAssertionResponseValidator;
 
-    protected function getAuthenticatorAssertionResponseValidator(CredentialRepository $credentialRepository): AuthenticatorAssertionResponseValidator
+    protected function getAuthenticatorAssertionResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository): AuthenticatorAssertionResponseValidator
     {
         if (!$this->authenticatorAssertionResponseValidator) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
                 $this->getDecoder(),
                 new TokenBindingNotSupportedHandler(),
-                new ExtensionOutputCheckerHandler()
+                new ExtensionOutputCheckerHandler(),
+                $this->getAlgorithmManager()
             );
         }
 
@@ -122,7 +124,7 @@ abstract class AbstractTestCase extends TestCase
         return $this->decoder;
     }
 
-    private function getAttestationStatementSupportManager(?HttpClient $client = null): AttestationStatementSupportManager
+    private function getAttestationStatementSupportManager(?ClientInterface $client = null): AttestationStatementSupportManager
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
@@ -131,7 +133,8 @@ abstract class AbstractTestCase extends TestCase
         ));
         $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
             $client ?? new Client(),
-            'api_key'
+            'api_key',
+            new Psr17Factory()
         ));
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
             $this->getDecoder()

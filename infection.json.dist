@@ -2,11 +2,11 @@
     "timeout": 20,
     "source": {
         "directories": [
-            "./src"
+            "src"
         ],
         "excludes": [
-            "./src/*/tests",
-            "./src/*/.var"
+            "src/**/tests",
+            "src/**/var"
         ]
     },
     "mutators": {

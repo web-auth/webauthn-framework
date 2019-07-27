@@ -28,6 +28,7 @@ use InvalidArgumentException;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -125,7 +126,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             $teeEnforcedFlags = $objects[6];
             Assertion::isInstanceOf($teeEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
             $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
         }
     }

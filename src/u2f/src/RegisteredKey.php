@@ -49,17 +49,6 @@ class RegisteredKey implements JsonSerializable
         $this->attestationCertificate = $attestationCertificate;
     }
 
-    /**
-     * @deprecated will be removed in v2.0. Use "createFromArray" or "createFromString" instead
-     */
-    public static function createFromJson(string $json, int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE): self
-    {
-        $data = json_decode($json, true, 512, $options);
-        Assertion::isArray($data, 'Invalid data');
-
-        return self::createFromArray($data);
-    }
-
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);

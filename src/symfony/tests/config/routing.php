@@ -11,35 +11,39 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Webauthn\Bundle\Tests\Functional\AdminController;
 use Webauthn\Bundle\Tests\Functional\HomeController;
 use Webauthn\Bundle\Tests\Functional\SecurityController;
 
-$routes = new RouteCollection();
+return function (RoutingConfigurator $routes) {
+    $routes->import('.', 'webauthn');
 
-// Security
-$routes->add('app_login', new Route('/login', [
-    '_controller' => [SecurityController::class, 'login'],
-]));
+    // Security
+    $routes->add('app_login', '/login')
+        ->controller([SecurityController::class, 'login'])
+        ->methods(['POST'])
+    ;
 
-$routes->add('app_login_options', new Route('/login/options', [
-    '_controller' => [SecurityController::class, 'options'],
-]));
+    $routes->add('app_login_options', '/login/options')
+        ->controller([SecurityController::class, 'options'])
+        ->methods(['POST'])
+    ;
 
-$routes->add('app_logout', new Route('/logout', [
-    '_controller' => [SecurityController::class, 'logout'],
-]));
+    $routes->add('app_logout', '/logout')
+        ->controller([SecurityController::class, 'logout'])
+        ->methods(['POST'])
+    ;
 
-// Home
-$routes->add('app_home', new Route('/', [
-    '_controller' => [HomeController::class, 'home'],
-]));
+    // Home
+    $routes->add('app_home', '/')
+        ->controller([HomeController::class, 'home'])
+        ->methods(['GET'])
+    ;
 
-// Admin
-$routes->add('app_admin', new Route('/admin', [
-    '_controller' => [AdminController::class, 'admin'],
-]));
-
-return $routes;
+    // Admin
+    $routes->add('app_admin', '/admin')
+        ->controller([AdminController::class, 'admin'])
+        ->methods(['GET'])
+    ;
+};
