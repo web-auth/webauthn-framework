@@ -1,11 +1,11 @@
-FIDO2/Webauthn Support for PHP
-==============================
+Metadata Service (MDS) support for FIDO2/Webauthn PHP library
+=============================================================
 
-**FIDO2/Webauthn Support for PHP** is a **PHP library** that will help you to support compatible security tokens and devices.
+This library adds several tools to contact the FIDO Alliance or any other compliant Metadata Services.
 
 # Installation
 
-Install the library with Composer: `composer require web-auth/webauthn-lib`.
+Install the library with Composer: `composer require web-auth/metadata-service`.
 
 # Contribution
 
