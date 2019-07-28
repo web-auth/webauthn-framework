@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Factory;
 
+use Webauthn\Bundle\Security\Handler\DefaultCreationSuccessHandler;
 use function Safe\sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -96,7 +97,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                         ->scalarNode('options_path')->defaultValue('/register/options')->end()
                         ->scalarNode('registration_path')->defaultValue('/register')->end()
                         ->booleanNode('login_after_registration')->defaultFalse()->end()
-                        ->scalarNode('success_handler')->defaultValue(DefaultCreationFailureHandler::class)->end()
+                        ->scalarNode('success_handler')->defaultValue(DefaultCreationSuccessHandler::class)->end()
                         ->scalarNode('failure_handler')->defaultValue(DefaultCreationFailureHandler::class)->end()
                     ->end()
                 ->end()
