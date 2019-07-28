@@ -13,30 +13,44 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
+use RuntimeException;
+use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class StoredData
 {
     /**
-     * @var PublicKeyCredentialRequestOptions
+     * @var PublicKeyCredentialOptions
      */
-    private $publicKeyCredentialRequestOptions;
+    private $publicKeyCredentialOptions;
 
     /**
      * @var PublicKeyCredentialUserEntity
      */
     private $publicKeyCredentialUserEntity;
 
-    public function __construct(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity)
+    public function __construct(PublicKeyCredentialOptions $publicKeyCredentialOptions, PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity)
     {
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
+        $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
     }
 
+    /**
+     * @deprecated Will be removed in v3.0. Please use getPublicKeyCredentialOptions() instead
+     */
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
     {
-        return $this->publicKeyCredentialRequestOptions;
+        if (!$this->publicKeyCredentialOptions instanceof PublicKeyCredentialRequestOptions) {
+            throw new RuntimeException('Inconsistent data');
+        }
+
+        return $this->publicKeyCredentialOptions;
+    }
+
+    public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions
+    {
+        return $this->publicKeyCredentialOptions;
     }
 
     public function getPublicKeyCredentialUserEntity(): PublicKeyCredentialUserEntity

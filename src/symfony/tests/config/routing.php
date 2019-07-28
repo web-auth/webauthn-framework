@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Webauthn\Bundle\Tests\Functional\AdminController;
 use Webauthn\Bundle\Tests\Functional\HomeController;
+use Webauthn\Bundle\Tests\Functional\PageController;
 use Webauthn\Bundle\Tests\Functional\SecurityController;
 
 return function (RoutingConfigurator $routes) {
@@ -44,6 +45,12 @@ return function (RoutingConfigurator $routes) {
     // Admin
     $routes->add('app_admin', '/admin')
         ->controller([AdminController::class, 'admin'])
+        ->methods(['GET'])
+    ;
+
+    // Admin
+    $routes->add('app_page', '/page')
+        ->controller([PageController::class, 'page'])
         ->methods(['GET'])
     ;
 };

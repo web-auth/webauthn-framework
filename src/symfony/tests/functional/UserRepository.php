@@ -13,26 +13,44 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final class UserRepository
 {
     /**
-     * @var User[]
+     * @var CacheItemPoolInterface
      */
-    private $users;
+    private $cache;
 
-    public function __construct()
+    public function __construct(CacheItemPoolInterface $cache)
     {
-        $this->users = [
-            'admin' => new User('uuid', 'admin', ['ROLE_ADMIN', 'ROLE_USER']),
-        ];
+        $this->cache = $cache;
+        $this->saveUser(new User('uuid', 'admin', ['ROLE_ADMIN', 'ROLE_USER']));
+    }
+
+    public function saveUser(User $user): void
+    {
+        $item = $this->cache->getItem('users');
+        $users = [];
+        if ($item->isHit()) {
+            $users = $item->get();
+        }
+        $users[$user->getUsername()] = $user;
+        $item->set($users);
+        $this->cache->save($item);
     }
 
     public function findByUsername(string $username): ?UserInterface
     {
-        if (\array_key_exists($username, $this->users)) {
-            return $this->users[$username];
+        $item = $this->cache->getItem('users');
+        $users = [];
+        if ($item->isHit()) {
+            $users = $item->get();
+        }
+
+        if (\array_key_exists($username, $users)) {
+            return $users[$username];
         }
 
         return null;

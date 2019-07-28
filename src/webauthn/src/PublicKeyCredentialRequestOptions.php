@@ -14,26 +14,15 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use JsonSerializable;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
-class PublicKeyCredentialRequestOptions implements JsonSerializable
+class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
-
-    /**
-     * @var string
-     */
-    private $challenge;
-
-    /**
-     * @var int|null
-     */
-    private $timeout;
 
     /**
      * @var string|null
@@ -51,31 +40,14 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
     private $userVerification;
 
     /**
-     * @var AuthenticationExtensionsClientInputs
-     */
-    private $extensions;
-
-    /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
     public function __construct(string $challenge, ?int $timeout = null, ?string $rpId = null, array $allowCredentials = [], ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $extensions = null)
     {
-        $this->challenge = $challenge;
-        $this->timeout = $timeout;
+        parent::__construct($challenge, $timeout, $extensions);
         $this->rpId = $rpId;
         $this->allowCredentials = array_values($allowCredentials);
         $this->userVerification = $userVerification;
-        $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
-    }
-
-    public function getChallenge(): string
-    {
-        return $this->challenge;
-    }
-
-    public function getTimeout(): ?int
-    {
-        return $this->timeout;
     }
 
     public function getRpId(): ?string
@@ -96,12 +68,7 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
         return $this->userVerification;
     }
 
-    public function getExtensions(): AuthenticationExtensionsClientInputs
-    {
-        return $this->extensions;
-    }
-
-    public static function createFromString(string $data): self
+    public static function createFromString(string $data): PublicKeyCredentialOptions
     {
         $data = json_decode($data, true);
         Assertion::isArray($data, 'Invalid data');
@@ -109,7 +76,7 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
         return self::createFromArray($data);
     }
 
-    public static function createFromArray(array $json): self
+    public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
 
@@ -132,7 +99,7 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
     public function jsonSerialize(): array
     {
         $json = [
-            'challenge' => base64_encode($this->challenge),
+            'challenge' => base64_encode($this->getChallenge()),
         ];
 
         if (null !== $this->rpId) {
@@ -147,12 +114,12 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
             $json['allowCredentials'] = $this->allowCredentials;
         }
 
-        if (0 !== $this->extensions->count()) {
-            $json['extensions'] = $this->extensions;
+        if (0 !== $this->getExtensions()->count()) {
+            $json['extensions'] = $this->getExtensions();
         }
 
-        if (!\is_null($this->timeout)) {
-            $json['timeout'] = $this->timeout;
+        if (null !== $this->getTimeout()) {
+            $json['timeout'] = $this->getTimeout();
         }
 
         return $json;

@@ -18,10 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
-/**
- * @deprecated Will be removed in v3.0. Please use DefaultAuthenticationSuccessHandler instead
- */
-final class DefaultSuccessHandler implements AuthenticationSuccessHandlerInterface
+final class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse
     {

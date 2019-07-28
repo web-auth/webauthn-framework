@@ -118,7 +118,7 @@ class SecuredAreaTest extends WebTestCase
         $client->request('POST', '/login', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], $assertion);
 
         static::assertEquals(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
-        static::assertEquals('{"status":"error","errorMessage":"No public key credential request options available for this session.","errorCode":0}', $client->getResponse()->getContent());
+        static::assertEquals('{"status":"error","errorMessage":"No public key credential options available for this session.","errorCode":0}', $client->getResponse()->getContent());
     }
 
     /**

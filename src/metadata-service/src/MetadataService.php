@@ -15,10 +15,10 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use Http\Client\HttpClient;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
@@ -27,7 +27,7 @@ class MetadataService
 {
     private const SERVICE_URI = 'https://mds2.fidoalliance.org';
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     private $httpClient;
 
@@ -41,7 +41,7 @@ class MetadataService
      */
     private $token;
 
-    public function __construct(HttpClient $httpClient, RequestFactoryInterface $requestFactory, string $token)
+    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, string $token)
     {
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
@@ -55,7 +55,7 @@ class MetadataService
         return $this->getMetadataStatementAt($uri, true);
     }
 
-    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?HttpClient $client = null): MetadataStatement
+    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?ClientInterface $client = null): MetadataStatement
     {
         $payload = $this->callMetadataService($uri, $client);
         $json = $isBase64UrlEncoded ? Base64Url::decode($payload) : $payload;
@@ -64,7 +64,7 @@ class MetadataService
         return MetadataStatement::createFromArray($data);
     }
 
-    public function getMetadataTOCPayloadAt(string $uri, ?HttpClient $client = null): MetadataTOCPayload
+    public function getMetadataTOCPayloadAt(string $uri, ?ClientInterface $client = null): MetadataTOCPayload
     {
         $content = $this->callMetadataService($uri, $client);
         $payload = $this->getJwsPayload($content);
@@ -79,7 +79,7 @@ class MetadataService
         return $this->getMetadataTOCPayloadAt($uri);
     }
 
-    private function callMetadataService(string $uri, ?HttpClient $client): string
+    private function callMetadataService(string $uri, ?ClientInterface $client): string
     {
         $client = $client ?? $this->httpClient;
         $request = $this->requestFactory->createRequest('GET', $uri);

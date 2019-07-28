@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Security\Handler;
+namespace Webauthn\Bundle\Tests\Functional;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,16 +19,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 
-/**
- * @deprecated Will be removed in v3.0. Please use DefaultAuthenticationFailureHandler instead
- */
-final class DefaultFailureHandler implements AuthenticationFailureHandlerInterface
+final class AuthenticationFailureHandler implements AuthenticationFailureHandlerInterface
 {
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
         $data = [
             'status' => 'error',
             'errorMessage' => $exception->getMessage(),
+            'errorCode' => $exception->getCode(),
         ];
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);

@@ -20,7 +20,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken
@@ -71,14 +71,14 @@ class WebauthnToken extends AbstractToken
     private $reservedForFutureUse2;
 
     /**
-     * @var PublicKeyCredentialRequestOptions
+     * @var PublicKeyCredentialOptions
      */
-    private $publicKeyCredentialRequestOptions;
+    private $publicKeyCredentialOptions;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
+    public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, PublicKeyCredentialOptions $publicKeyCredentialOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -93,7 +93,7 @@ class WebauthnToken extends AbstractToken
         $this->extensions = $extensions;
         $this->reservedForFutureUse1 = $reservedForFutureUse1;
         $this->reservedForFutureUse2 = $reservedForFutureUse2;
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
+        $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
     }
 
     public function getCredentials(): PublicKeyCredentialDescriptor
@@ -111,9 +111,17 @@ class WebauthnToken extends AbstractToken
         return $this->publicKeyCredentialDescriptor;
     }
 
-    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
+    public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions
     {
-        return $this->publicKeyCredentialRequestOptions;
+        return $this->publicKeyCredentialOptions;
+    }
+
+    /**
+     * @deprecated Will be removed in v3.0. Please use getPublicKeyCredentialOptions() instead
+     */
+    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialOptions
+    {
+        return $this->publicKeyCredentialOptions;
     }
 
     public function isUserPresent(): bool
@@ -159,7 +167,8 @@ class WebauthnToken extends AbstractToken
         return [
             json_encode($this->publicKeyCredentialUserEntity),
             json_encode($this->publicKeyCredentialDescriptor),
-            json_encode($this->publicKeyCredentialRequestOptions),
+            \get_class($this->publicKeyCredentialOptions),
+            json_encode($this->publicKeyCredentialOptions),
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,
@@ -192,7 +201,8 @@ class WebauthnToken extends AbstractToken
         [
             $publicKeyCredentialUserEntity,
             $publicKeyCredentialDescriptor,
-            $publicKeyCredentialRequestOptions,
+            $publicKeyCredentialOptionsClass,
+            $publicKeyCredentialOptions,
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,
@@ -204,7 +214,7 @@ class WebauthnToken extends AbstractToken
             ] = $serialized;
         $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString($publicKeyCredentialUserEntity);
         $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
-        $this->publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString($publicKeyCredentialRequestOptions);
+        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString($publicKeyCredentialOptions);
 
         $this->extensions = null;
         if (null !== $extensions) {

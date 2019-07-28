@@ -23,13 +23,17 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Firewall\WebauthnListener;
-use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
+use Webauthn\Bundle\Security\Handler\DefaultAuthenticationFailureHandler;
+use Webauthn\Bundle\Security\Handler\DefaultAuthenticationSuccessHandler;
+use Webauthn\Bundle\Security\Handler\DefaultCreationFailureHandler;
+use Webauthn\Bundle\Security\Handler\DefaultCreationSuccessHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
-use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
@@ -38,15 +42,19 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 return function (ContainerConfigurator $container) {
-    $container->services()->set(WebauthnProvider::class)
+    $container = $container->services()->defaults()
         ->private()
+        ->autoconfigure()
+        ->autowire()
+    ;
+
+    $container->set(WebauthnProvider::class)
         ->arg(0, ref(UserCheckerInterface::class))
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn.json')
+    $container->set('security.authentication.listener.webauthn.json')
         ->class(WebauthnListener::class)
         ->abstract()
-        ->private()
         ->args([
             '', // HTTP Message Factory
             ref(SerializerInterface::class),
@@ -56,6 +64,7 @@ return function (ContainerConfigurator $container) {
             ref(PublicKeyCredentialUserEntityRepository::class),
             ref(PublicKeyCredentialLoader::class),
             ref(AuthenticatorAssertionResponseValidator::class),
+            ref(AuthenticatorAttestationResponseValidator::class),
             ref(TokenStorageInterface::class),
             ref(AuthenticationManagerInterface::class),
             ref(SessionAuthenticationStrategyInterface::class),
@@ -73,37 +82,32 @@ return function (ContainerConfigurator $container) {
         ->tag('monolog.logger', ['channel' => 'security'])
     ;
 
-    $container->services()->set(WebauthnEntryPoint::class)
+    $container->set(WebauthnEntryPoint::class)
         ->abstract()
-        ->private()
         ->args([
             null, // Authentication failure handler
         ])
     ;
 
-    $container->services()->set(IsUserPresentVoter::class)
-        ->private()
+    $container->set(IsUserPresentVoter::class)
         ->tag('security.voter')
     ;
 
-    $container->services()->set(IsUserVerifiedVoter::class)
-        ->private()
+    $container->set(IsUserVerifiedVoter::class)
         ->tag('security.voter')
     ;
 
-    $container->services()->set(DefaultSuccessHandler::class)
-        ->private()
-    ;
+    $container->set(DefaultAuthenticationSuccessHandler::class);
 
-    $container->services()->set(DefaultFailureHandler::class)
-        ->private()
-    ;
+    $container->set(DefaultAuthenticationFailureHandler::class);
 
-    $container->services()->set(SessionStorage::class)
-        ->private()
-    ;
+    $container->set(DefaultCreationSuccessHandler::class);
 
-    $container->services()->set(DefaultRequestOptionsHandler::class)
-        ->private()
-    ;
+    $container->set(DefaultCreationFailureHandler::class);
+
+    $container->set(SessionStorage::class);
+
+    $container->set(DefaultRequestOptionsHandler::class);
+
+    $container->set(AttestationResponseControllerFactory::class);
 };

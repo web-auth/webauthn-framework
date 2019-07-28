@@ -15,15 +15,14 @@ namespace Webauthn\Bundle\Security\Handler;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialSource;
 
-/**
- * @deprecated Will be removed in v3.0. Please use DefaultAuthenticationSuccessHandler instead
- */
-final class DefaultSuccessHandler implements AuthenticationSuccessHandlerInterface
+final class DefaultCreationSuccessHandler implements CreationSuccessHandler
 {
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse
+    public function onCreationSuccess(Request $request, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialSource $publicKeyCredentialSource): Response
     {
         $data = [
             'status' => 'ok',

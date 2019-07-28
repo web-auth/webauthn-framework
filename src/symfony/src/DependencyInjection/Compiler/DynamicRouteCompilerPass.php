@@ -21,7 +21,7 @@ use Webauthn\Bundle\Routing\Loader;
 
 final class DynamicRouteCompilerPass implements CompilerPassInterface
 {
-    public const TAG = 'webauthn_transport_binding_profile_controller_request';
+    public const TAG = 'webauthn_dynamic_controller';
 
     /**
      * {@inheritdoc}

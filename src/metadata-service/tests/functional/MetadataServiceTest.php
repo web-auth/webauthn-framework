@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Functional;
 
-use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -82,7 +82,7 @@ class MetadataServiceTest extends TestCase
         }
     }
 
-    private function getClient(): HttpClient
+    private function getClient(): ClientInterface
     {
         $map = $this->getResponsesMap();
         $client = new Client();

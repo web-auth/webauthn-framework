@@ -40,7 +40,8 @@ services:
 
     Webauthn\Bundle\Tests\Functional\UserProvider:
         autowire: true
-    Webauthn\Bundle\Tests\Functional\UserRepository: ~
+    Webauthn\Bundle\Tests\Functional\UserRepository:
+        autowire: true
     Webauthn\Bundle\Tests\Functional\HomeController:
         autowire: true
         tags: ['controller.service_arguments']
@@ -50,12 +51,21 @@ services:
     Webauthn\Bundle\Tests\Functional\AdminController:
         autowire: true
         tags: ['controller.service_arguments']
+    Webauthn\Bundle\Tests\Functional\PageController:
+        autowire: true
+        tags: ['controller.service_arguments']
 
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
         autowire: true
-    Webauthn\Bundle\Tests\Functional\FailureHandler: ~
-    Webauthn\Bundle\Tests\Functional\SuccessHandler: ~
+    Webauthn\Bundle\Tests\Functional\AuthenticationFailureHandler: ~
+    Webauthn\Bundle\Tests\Functional\AuthenticationSuccessHandler: ~
+    Webauthn\Bundle\Tests\Functional\CreationFailureHandler: ~
+    Webauthn\Bundle\Tests\Functional\CreationSuccessHandler: ~
     Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
+    Webauthn\Bundle\Tests\Functional\LoginAfterRegistration:
+        autowire: true
+        tags:
+            - { name: kernel.event_listener, event: Webauthn\Bundle\Event\PublicKeyCredentialSourceRegistrationCompleted }
 
 doctrine:
     dbal:
@@ -114,7 +124,7 @@ webauthn:
         default:
             public_key_credential_parameters:
                 - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
-                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA
+                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
             rp:
                 name: 'My other application'
                 id: 'webauth.app'
@@ -170,11 +180,16 @@ security:
             anonymous: ~
             webauthn_json:
                 profile: 'default'
-                request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
-                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
-                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
+                options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
+                success_handler: 'Webauthn\Bundle\Tests\Functional\AuthenticationSuccessHandler'
+                failure_handler: 'Webauthn\Bundle\Tests\Functional\AuthenticationFailureHandler'
                 http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
                 fake_user_entity_provider: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
+                registration:
+                    enabled: true
+                    profile: 'default'
+                    success_handler: 'Webauthn\Bundle\Tests\Functional\CreationSuccessHandler'
+                    failure_handler: 'Webauthn\Bundle\Tests\Functional\CreationFailureHandler'
             logout:
                 path: /logout
                 target: /

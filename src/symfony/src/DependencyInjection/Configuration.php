@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Cose\Algorithms;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -63,7 +64,7 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('http_client')
                             ->isRequired()
-                            ->info('HttpPlug Client')
+                            ->info('PSR-7 HTTP Client')
                         ->end()
                         ->scalarNode('api_key')
                             ->isRequired()
@@ -128,8 +129,11 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarPrototype()->end()
                             ->end()
                             ->arrayNode('public_key_credential_parameters')
+                                ->defaultValue([
+                                    Algorithms::COSE_ALGORITHM_ES256,
+                                    Algorithms::COSE_ALGORITHM_RS256,
+                                ])
                                 ->variablePrototype()->end()
-                                ->isRequired()
                                 ->requiresAtLeastOneElement()
                             ->end()
                             ->scalarNode('attestation_conveyance')
@@ -190,7 +194,7 @@ final class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('profile_name')
-                                    ->info('The name of the profile. Shold be one of the creation profiles registered at path "webauthn.creation_profiles"')
+                                    ->info('The name of the profile. Should be one of the creation profiles registered at path "webauthn.creation_profiles"')
                                     ->isRequired()
                                 ->end()
                                 ->scalarNode('request_path')
