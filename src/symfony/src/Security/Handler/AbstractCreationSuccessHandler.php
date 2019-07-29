@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Handler;
 
 use LogicException;
+use function Safe\sprintf;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,6 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function Safe\sprintf;
 
 abstract class AbstractCreationSuccessHandler implements CreationSuccessHandler
 {

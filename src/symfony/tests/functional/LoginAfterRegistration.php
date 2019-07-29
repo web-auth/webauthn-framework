@@ -38,7 +38,6 @@ final class LoginAfterRegistration
     public function __invoke(PublicKeyCredentialSourceRegistrationCompleted $event): void
     {
         $userEntity = $event->getPublicKeyCredentialCreationOptions()->getUser();
-        dump($userEntity);
         $user = new User(
             $userEntity->getId(),
             $userEntity->getName(),

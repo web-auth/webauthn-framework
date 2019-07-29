@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

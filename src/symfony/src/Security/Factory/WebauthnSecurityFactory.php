@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Factory;
 
-use Webauthn\Bundle\Security\Handler\AbstractCreationSuccessHandler;
 use function Safe\sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
