@@ -13,23 +13,34 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\Bundle\Security\Handler\CreationSuccessHandler as CreationSuccessHandlerInterface;
-use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialSource;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\AbstractCreationSuccessHandler;
+use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\PublicKeyCredentialUserEntity;
 
-final class CreationSuccessHandler implements CreationSuccessHandlerInterface
+final class CreationSuccessHandler extends AbstractCreationSuccessHandler
 {
-    public function onCreationSuccess(Request $request, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialSource $publicKeyCredentialSource): Response
-    {
-        $data = [
-            'status' => 'ok',
-            'errorMessage' => '',
-        ];
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-        return new JsonResponse($data, JsonResponse::HTTP_OK);
+    public function __construct(PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, UserRepository $userRepository)
+    {
+        parent::__construct($userEntityRepository, $credentialSourceRepository);
+        $this->userRepository = $userRepository;
+    }
+
+    protected function createUserAndSave(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): UserInterface
+    {
+        $user = new User(
+            $publicKeyCredentialUserEntity->getId(),
+            $publicKeyCredentialUserEntity->getName(),
+            ['ROLE_USER']
+        );
+        $this->userRepository->saveUser($user);
+
+        return $user;
     }
 }

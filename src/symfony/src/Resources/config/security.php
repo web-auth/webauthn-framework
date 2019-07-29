@@ -32,7 +32,6 @@ use Webauthn\Bundle\Security\Firewall\WebauthnListener;
 use Webauthn\Bundle\Security\Handler\DefaultAuthenticationFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultAuthenticationSuccessHandler;
 use Webauthn\Bundle\Security\Handler\DefaultCreationFailureHandler;
-use Webauthn\Bundle\Security\Handler\DefaultCreationSuccessHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
@@ -100,8 +99,6 @@ return function (ContainerConfigurator $container) {
     $container->set(DefaultAuthenticationSuccessHandler::class);
 
     $container->set(DefaultAuthenticationFailureHandler::class);
-
-    $container->set(DefaultCreationSuccessHandler::class);
 
     $container->set(DefaultCreationFailureHandler::class);
 

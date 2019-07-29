@@ -88,13 +88,11 @@ final class AttestationResponseController
      */
     private $userProvider;
 
-    public function __construct(string $providerKey, UserProviderInterface $userProvider, HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, OptionsStorage $optionsStorage, EventDispatcherInterface $eventDispatcher, CreationSuccessHandler $creationSuccessHandler, CreationFailureHandler $creationFailureHandler)
+    public function __construct(string $providerKey, UserProviderInterface $userProvider, HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, OptionsStorage $optionsStorage, EventDispatcherInterface $eventDispatcher, CreationSuccessHandler $creationSuccessHandler, CreationFailureHandler $creationFailureHandler)
     {
         $this->providerKey = $providerKey;
         $this->userProvider = $userProvider;
         $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->httpMessageFactory = $httpMessageFactory;
         $this->optionsStorage = $optionsStorage;
@@ -111,30 +109,26 @@ final class AttestationResponseController
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
-            $response = $publicKeyCredential->getResponse();
-            Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
+            $authenticatorResponse = $publicKeyCredential->getResponse();
+            Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAttestationResponse::class, 'Invalid response');
             $storedData = $this->optionsStorage->get($request);
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
-            $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+            $this->attestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $psr7Request);
             try {
                 $user = $this->userProvider->loadUserByUsername($userEntity->getName());
             } catch (Throwable $throwable) {
                 $user = null;
             }
-            if (null !== $user) {
-                throw new \LogicException(sprintf('User with username "%s" already exist', $user->getUsername()));
-            }
-            $this->userEntityRepository->saveUserEntity($userEntity);
             $credentialSource = PublicKeyCredentialSource::createFromPublicKeyCredential(
                 $publicKeyCredential,
                 $userEntity->getId()
             );
-            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
-            $this->eventDispatcher->dispatch(new PublicKeyCredentialSourceRegistrationCompleted($this->providerKey, $publicKeyCredentialCreationOptions, $response, $credentialSource));
+            $httpResponse = $this->creationSuccessHandler->onCreationSuccess($request, $user, $userEntity, $publicKeyCredentialCreationOptions, $authenticatorResponse, $credentialSource);
+            $this->eventDispatcher->dispatch(new PublicKeyCredentialSourceRegistrationCompleted($this->providerKey, $publicKeyCredentialCreationOptions, $authenticatorResponse, $credentialSource));
 
-            return $this->creationSuccessHandler->onCreationSuccess($request, $publicKeyCredentialCreationOptions, $response, $credentialSource);
+            return $httpResponse;
         } catch (Throwable $throwable) {
             return $this->creationFailureHandler->onCreationFailure($request, $throwable);
         }

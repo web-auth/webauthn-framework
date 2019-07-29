@@ -60,7 +60,8 @@ services:
     Webauthn\Bundle\Tests\Functional\AuthenticationFailureHandler: ~
     Webauthn\Bundle\Tests\Functional\AuthenticationSuccessHandler: ~
     Webauthn\Bundle\Tests\Functional\CreationFailureHandler: ~
-    Webauthn\Bundle\Tests\Functional\CreationSuccessHandler: ~
+    Webauthn\Bundle\Tests\Functional\CreationSuccessHandler:
+        autowire: true
     Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
     Webauthn\Bundle\Tests\Functional\LoginAfterRegistration:
         autowire: true

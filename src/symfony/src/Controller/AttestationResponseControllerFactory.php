@@ -108,8 +108,6 @@ final class AttestationResponseControllerFactory
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
             $optionsStorage,
             $this->eventDispatcher,
             $creationSuccessHandler,
