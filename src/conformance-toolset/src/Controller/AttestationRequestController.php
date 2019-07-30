@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -89,12 +90,17 @@ final class AttestationRequestController
             if (\is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
             }
+            $extensions = $creationOptionsRequest->extensions;
+            if (\is_array($extensions)) {
+                $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
+            }
             $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
                 $this->profile,
                 $userEntity,
                 $excludedCredentials,
                 $authenticatorSelection,
-                $creationOptionsRequest->attestation
+                $creationOptionsRequest->attestation,
+                $extensions
             );
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],

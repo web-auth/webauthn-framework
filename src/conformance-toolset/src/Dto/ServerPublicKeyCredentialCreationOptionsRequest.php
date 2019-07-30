@@ -46,4 +46,9 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
      * @Assert\Choice({PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT})
      */
     public $attestation;
+
+    /**
+     * @var array|null
+     */
+    public $extensions;
 }

@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -82,12 +83,17 @@ final class AssertionRequestController
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
+            $extensions = $creationOptionsRequest->extensions;
+            if (\is_array($extensions)) {
+                $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
+            }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
                 $allowedCredentials,
-                $creationOptionsRequest->userVerification
+                $creationOptionsRequest->userVerification,
+                $extensions
             );
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],

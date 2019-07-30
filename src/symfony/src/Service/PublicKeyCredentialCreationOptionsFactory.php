@@ -36,7 +36,7 @@ final class PublicKeyCredentialCreationOptionsFactory
         $this->profiles = $profiles;
     }
 
-    public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestation = null): PublicKeyCredentialCreationOptions
+    public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestationConveyance = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialCreationOptions
     {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
@@ -49,8 +49,8 @@ final class PublicKeyCredentialCreationOptionsFactory
             $profile['timeout'],
             $excludeCredentials,
             $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile),
-            $attestation ?? $profile['attestation_conveyance'],
-            $this->createExtensions($profile)
+            $attestationConveyance ?? $profile['attestation_conveyance'],
+            $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
         );
     }
 
