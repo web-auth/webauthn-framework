@@ -89,12 +89,12 @@ final class AttestationRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Received data: '. $content);
+            $this->logger->debug('Received data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $this->logger->debug('User entity: '. json_encode($userEntity));
+            $this->logger->debug('User entity: '.json_encode($userEntity));
             $excludedCredentials = $this->getCredentials($userEntity);
-            $this->logger->debug('Excluded credentials: '. json_encode($excludedCredentials));
+            $this->logger->debug('Excluded credentials: '.json_encode($excludedCredentials));
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
@@ -111,7 +111,7 @@ final class AttestationRequestController
                 $creationOptionsRequest->attestation,
                 $extensions
             );
-            $this->logger->debug('Attestation options: '. json_encode($publicKeyCredentialCreationOptions));
+            $this->logger->debug('Attestation options: '.json_encode($publicKeyCredentialCreationOptions));
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
@@ -120,7 +120,8 @@ final class AttestationRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '. $throwable->getMessage());
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

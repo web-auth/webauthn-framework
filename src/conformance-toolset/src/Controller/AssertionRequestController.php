@@ -88,14 +88,14 @@ final class AssertionRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Receiving data: '. $content);
+            $this->logger->debug('Receiving data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions;
             if (\is_array($extensions)) {
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $this->logger->debug('User entity: '. json_encode($content));
+            $this->logger->debug('User entity: '.json_encode($content));
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -103,7 +103,7 @@ final class AssertionRequestController
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
-            $this->logger->debug('Assertion options: '. json_encode($publicKeyCredentialRequestOptions));
+            $this->logger->debug('Assertion options: '.json_encode($publicKeyCredentialRequestOptions));
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
@@ -112,7 +112,8 @@ final class AssertionRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '. $throwable->getMessage());
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

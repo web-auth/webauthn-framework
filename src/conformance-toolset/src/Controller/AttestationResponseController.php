@@ -81,7 +81,7 @@ final class AttestationResponseController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Receiving data: '. $content);
+            $this->logger->debug('Receiving data: '.$content);
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
@@ -96,12 +96,13 @@ final class AttestationResponseController
             );
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
-            $this->logger->debug('User entity: '. json_encode($publicKeyCredentialCreationOptions->getUser()));
-            $this->logger->debug('Credential source: '. json_encode($credentialSource));
+            $this->logger->debug('User entity: '.json_encode($publicKeyCredentialCreationOptions->getUser()));
+            $this->logger->debug('Credential source: '.json_encode($credentialSource));
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '. $throwable->getMessage());
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

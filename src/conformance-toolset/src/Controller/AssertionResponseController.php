@@ -67,7 +67,7 @@ final class AssertionResponseController
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
-            $this->logger->debug('Receiving data: '. $content);
+            $this->logger->debug('Receiving data: '.$content);
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
@@ -86,7 +86,8 @@ final class AssertionResponseController
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '. $throwable->getMessage());
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
