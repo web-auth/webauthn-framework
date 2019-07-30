@@ -16,7 +16,6 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use JsonSerializable;
-use function Safe\base64_decode;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
