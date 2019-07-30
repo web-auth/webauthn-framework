@@ -173,7 +173,7 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
         return new self(
             PublicKeyCredentialRpEntity::createFromArray($json['rp']),
             PublicKeyCredentialUserEntity::createFromArray($json['user']),
-            Base64Url::encode($json['challenge']),
+            Base64Url::decode($json['challenge']),
             $pubKeyCredParams,
             $json['timeout'] ?? null,
             $excludeCredentials,
