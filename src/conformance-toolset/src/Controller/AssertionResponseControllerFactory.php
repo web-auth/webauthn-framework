@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Controller;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -60,8 +61,12 @@ final class AssertionResponseControllerFactory
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -71,6 +76,7 @@ final class AssertionResponseControllerFactory
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->httpMessageFactory = $httpMessageFactory;
+        $this->logger = $logger;
     }
 
     public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
@@ -82,7 +88,8 @@ final class AssertionResponseControllerFactory
             $this->credentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
-            $sessionParameterName
+            $sessionParameterName,
+            $this->logger
         );
     }
 
@@ -92,9 +99,8 @@ final class AssertionResponseControllerFactory
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
-            $sessionParameterName
+            $sessionParameterName,
+            $this->logger
         );
     }
 }

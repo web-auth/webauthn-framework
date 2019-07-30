@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,8 +58,12 @@ final class AttestationResponseController
      * @var string
      */
     private $sessionParameterName;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName, LoggerInterface $logger)
     {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
@@ -66,6 +71,7 @@ final class AttestationResponseController
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->httpMessageFactory = $httpMessageFactory;
         $this->sessionParameterName = $sessionParameterName;
+        $this->logger = $logger;
     }
 
     public function __invoke(Request $request): Response
@@ -75,6 +81,7 @@ final class AttestationResponseController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
+            $this->logger->debug('Receiving data: '. $content);
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
@@ -89,8 +96,12 @@ final class AttestationResponseController
             );
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
+            $this->logger->debug('User entity: '. json_encode($publicKeyCredentialCreationOptions->getUser()));
+            $this->logger->debug('Credential source: '. json_encode($credentialSource));
+
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
+            $this->logger->debug('Error: '. $throwable->getMessage());
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

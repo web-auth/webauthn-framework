@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,24 +22,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AssertionResponseController
 {
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-
     /**
      * @var PublicKeyCredentialLoader
      */
@@ -58,15 +47,18 @@ final class AssertionResponseController
      * @var string
      */
     private $sessionParameterName;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, string $sessionParameterName, LoggerInterface $logger)
     {
         $this->httpMessageFactory = $httpMessageFactory;
         $this->assertionResponseValidator = $assertionResponseValidator;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->sessionParameterName = $sessionParameterName;
+        $this->logger = $logger;
     }
 
     public function __invoke(Request $request): Response
@@ -75,6 +67,7 @@ final class AssertionResponseController
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
+            $this->logger->debug('Receiving data: '. $content);
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
@@ -93,6 +86,7 @@ final class AssertionResponseController
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
+            $this->logger->debug('Error: '. $throwable->getMessage());
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

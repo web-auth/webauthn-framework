@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,8 +65,12 @@ final class AssertionRequestController
      * @var string
      */
     private $sessionParameterName;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -74,6 +79,7 @@ final class AssertionRequestController
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->sessionParameterName = $sessionParameterName;
+        $this->logger = $logger;
     }
 
     public function __invoke(Request $request): Response
@@ -82,12 +88,14 @@ final class AssertionRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
+            $this->logger->debug('Receiving data: '. $content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions;
             if (\is_array($extensions)) {
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
+            $this->logger->debug('User entity: '. json_encode($content));
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -95,6 +103,7 @@ final class AssertionRequestController
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
+            $this->logger->debug('Assertion options: '. json_encode($publicKeyCredentialRequestOptions));
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
@@ -103,6 +112,7 @@ final class AssertionRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
+            $this->logger->debug('Error: '. $throwable->getMessage());
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
