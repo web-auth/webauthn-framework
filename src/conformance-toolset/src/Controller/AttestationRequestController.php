@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -70,8 +71,12 @@ final class AttestationRequestController
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -81,6 +86,7 @@ final class AttestationRequestController
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->sessionParameterName = $sessionParameterName;
         $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response
@@ -116,7 +122,9 @@ final class AttestationRequestController
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
             );
-            $request->getSession()->set($this->sessionParameterName, $publicKeyCredentialCreationOptions);
+            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
+            $item->set($publicKeyCredentialCreationOptions);
+            $this->cacheItemPool->save($item);
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {

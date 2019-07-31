@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -62,8 +64,12 @@ final class AttestationResponseController
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName, LoggerInterface $logger)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
@@ -72,6 +78,7 @@ final class AttestationResponseController
         $this->httpMessageFactory = $httpMessageFactory;
         $this->sessionParameterName = $sessionParameterName;
         $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response
@@ -85,8 +92,12 @@ final class AttestationResponseController
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
-            $publicKeyCredentialCreationOptions = $request->getSession()->get($this->sessionParameterName);
-            $request->getSession()->remove($this->sessionParameterName);
+
+            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
+            if (!$item->isHit()) {
+                throw new InvalidArgumentException('Unable to find the public key credential creation options');
+            }
+            $publicKeyCredentialCreationOptions = $item->get();
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
             $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());

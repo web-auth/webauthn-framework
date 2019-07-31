@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,14 +53,19 @@ final class AssertionResponseController
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, string $sessionParameterName, LoggerInterface $logger)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->httpMessageFactory = $httpMessageFactory;
         $this->assertionResponseValidator = $assertionResponseValidator;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->sessionParameterName = $sessionParameterName;
         $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response
@@ -72,16 +79,19 @@ final class AssertionResponseController
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
-            $data = $request->getSession()->get($this->sessionParameterName);
-            $request->getSession()->remove($this->sessionParameterName);
-            Assertion::isArray($data, 'Unable to find the public key credential creation options');
-            Assertion::keyExists($data, 'options', 'Unable to find the public key credential creation options');
+            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
+            if (!$item->isHit()) {
+                throw new InvalidArgumentException('Unable to find the public key credential request options');
+            }
+            $data = $item->get();
+            Assertion::isArray($data, 'Unable to find the public key credential request options');
+            Assertion::keyExists($data, 'options', 'Unable to find the public key credential request options');
             $publicKeyCredentialRequestOptions = $data['options'];
-            Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential creation options');
-            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential creation options');
+            Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential request options');
+            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential request options');
             $userEntity = $data['userEntity'];
-            Assertion::isInstanceOf(PublicKeyCredentialUserEntity::class, $userEntity, 'Unable to find the public key credential creation options');
-            Assertion::notEmpty($userEntity, 'Unable to find the public key credential creation options');
+            Assertion::isInstanceOf(PublicKeyCredentialUserEntity::class, $userEntity, 'Unable to find the public key credential request options');
+            Assertion::notEmpty($userEntity, 'Unable to find the public key credential request options');
             $this->assertionResponseValidator->check($publicKeyCredential->getId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntity->getId());
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);

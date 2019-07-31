@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Controller;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -55,8 +56,12 @@ final class AssertionResponseControllerFactory
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -65,6 +70,7 @@ final class AssertionResponseControllerFactory
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->httpMessageFactory = $httpMessageFactory;
         $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function createAssertionRequestController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AssertionRequestController
@@ -77,7 +83,8 @@ final class AssertionResponseControllerFactory
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
             $sessionParameterName,
-            $this->logger
+            $this->logger,
+            $this->cacheItemPool
         );
     }
 
@@ -88,7 +95,8 @@ final class AssertionResponseControllerFactory
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $sessionParameterName,
-            $this->logger
+            $this->logger,
+            $this->cacheItemPool
         );
     }
 }
