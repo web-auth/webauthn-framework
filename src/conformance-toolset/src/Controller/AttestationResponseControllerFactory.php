@@ -41,15 +41,6 @@ final class AttestationResponseControllerFactory
     private $validator;
 
     /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-    /**
      * @var PublicKeyCredentialLoader
      */
     private $publicKeyCredentialLoader;
@@ -66,26 +57,24 @@ final class AttestationResponseControllerFactory
      */
     private $logger;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->httpMessageFactory = $httpMessageFactory;
         $this->logger = $logger;
     }
 
-    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
+    public function createAttestationRequestController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AttestationRequestController
     {
         return new AttestationRequestController(
             $this->serializer,
             $this->validator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $sessionParameterName,
@@ -93,14 +82,14 @@ final class AttestationResponseControllerFactory
         );
     }
 
-    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
+    public function createAttestationResponseController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $sessionParameterName): AttestationResponseController
     {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository,
             $sessionParameterName,
             $this->logger
         );

@@ -17,8 +17,10 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 final class Configuration implements ConfigurationInterface
@@ -172,8 +174,16 @@ final class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('profile_name')
-                                    ->info('The name of the profile. Shold be one of the creation profiles registered at path "webauthn.creation_profiles"')
+                                    ->info('The name of the profile. Should be one of the creation profiles registered at path "webauthn.creation_profiles"')
                                     ->isRequired()
+                                ->end()
+                                ->scalarNode('user_entity_repository')
+                                    ->info('User entity repository')
+                                    ->defaultValue(PublicKeyCredentialUserEntityRepository::class)
+                                ->end()
+                                ->scalarNode('credential_source_repository')
+                                    ->info('Public key credential source  repository')
+                                    ->defaultValue(PublicKeyCredentialSourceRepository::class)
                                 ->end()
                                 ->scalarNode('request_path')
                                     ->info('The path of the creation request')
@@ -204,6 +214,14 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarNode('profile_name')
                                     ->info('The name of the profile. Shold be one of the creation profiles registered at path "webauthn.creation_profiles"')
                                     ->isRequired()
+                                ->end()
+                                ->scalarNode('user_entity_repository')
+                                    ->info('User entity repository')
+                                    ->defaultValue(PublicKeyCredentialUserEntityRepository::class)
+                                ->end()
+                                ->scalarNode('credential_source_repository')
+                                    ->info('Public key credential source  repository')
+                                    ->defaultValue(PublicKeyCredentialSourceRepository::class)
                                 ->end()
                                 ->scalarNode('request_path')
                                     ->info('The path of the creation request')
