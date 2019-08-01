@@ -16,13 +16,14 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\StringStream;
+use Cose\Key\Ec2Key;
 use InvalidArgumentException;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport
@@ -62,6 +63,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
+        Assertion::eq(
+            $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+            '00000000-0000-0000-0000-000000000000',
+            'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
+        );
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";
@@ -77,14 +83,15 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         Assertion::notNull($publicKey, 'The attested credential data does not contain a valid public key.');
 
-        $publicKey = $this->decoder->decode(new StringStream($publicKey));
-        Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
+        $publicKeyStream = new StringStream($publicKey);
+        $coseKey = $this->decoder->decode($publicKeyStream);
+        Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        Assertion::isInstanceOf($coseKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
 
-        $publicKey = $publicKey->getNormalizedData();
-        Assertion::false(!\array_key_exists(-2, $publicKey) || !\is_string($publicKey[-2]) || 32 !== mb_strlen($publicKey[-2], '8bit'), 'The public key of the attestation statement is not valid.');
-        Assertion::false(!\array_key_exists(-3, $publicKey) || !\is_string($publicKey[-3]) || 32 !== mb_strlen($publicKey[-3], '8bit'), 'The public key of the attestation statement is not valid.');
+        $coseKey = $coseKey->getNormalizedData();
+        $ec2Key = new Ec2Key($coseKey + [Ec2Key::TYPE => 2, Ec2Key::DATA_CURVE => Ec2Key::CURVE_P256]);
 
-        return "\x04".$publicKey[-2].$publicKey[-3];
+        return "\x04".$ec2Key->x().$ec2Key->y();
     }
 
     private function checkCertificate(string $publicKey): void

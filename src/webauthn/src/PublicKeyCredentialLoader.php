@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\StringStream;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
@@ -110,6 +109,7 @@ class PublicKeyCredentialLoader
                     $extension = $this->decoder->decode($authDataStream);
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
+                Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
                 $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
 
                 return new AuthenticatorAssertionResponse(

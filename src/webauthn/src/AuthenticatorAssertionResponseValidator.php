@@ -15,7 +15,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Decoder;
-use CBOR\StringStream;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
@@ -94,9 +93,9 @@ class AuthenticatorAssertionResponseValidator
 
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No public key available.');
-        $credentialPublicKeyStream = $this->decoder->decode(
-            new StringStream($credentialPublicKey)
-        );
+        $stream = new StringStream($credentialPublicKey);
+        $credentialPublicKeyStream = $this->decoder->decode($stream);
+        Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
 
         /** @see 7.2.4 */
         /** @see 7.2.5 */

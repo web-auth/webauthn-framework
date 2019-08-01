@@ -15,13 +15,13 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use CBOR\StringStream;
 use Cose\Algorithms;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
+use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
@@ -101,6 +101,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $attestedQaulifiedNameLength = unpack('n', $certInfo->read(2))[1];
         $attestedQaulifiedName = $certInfo->read($attestedQaulifiedNameLength); //Ignore
+        Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
 
         return [
             'magic' => $magic,
@@ -131,6 +132,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $uniqueLength = unpack('n', $pubArea->read(2))[1];
         $unique = $pubArea->read($uniqueLength);
+        Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
 
         return [
             'type' => $type,

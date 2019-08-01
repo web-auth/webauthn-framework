@@ -15,7 +15,6 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use CBOR\Decoder;
-use CBOR\StringStream;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
@@ -31,6 +30,7 @@ use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport
@@ -93,7 +93,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             Assertion::notNull($attestedCredentialData, 'No attested credential data found');
             $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
             Assertion::notNull($publicKeyData, 'No attested public key found');
-            $coseKey = $this->decoder->decode(new StringStream($publicKeyData))->getNormalizedData(false);
+            $publicDataStream = new StringStream($publicKeyData);
+            $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
+            Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
             $publicKey = Key::createFromData($coseKey);
 
             Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
