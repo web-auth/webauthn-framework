@@ -21,6 +21,7 @@ use CBOR\StringStream;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
+use function Safe\sprintf;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -47,9 +48,13 @@ class PublicKeyCredentialLoader
 
     public function loadArray(array $json): PublicKeyCredential
     {
-        Assertion::keyExists($json, 'id');
-        Assertion::keyExists($json, 'rawId');
-        Assertion::keyExists($json, 'response');
+        foreach (['id', 'rawId', 'type'] as $key) {
+            Assertion::keyExists($json, $key, sprintf('The parameter "%s" is missing', $key));
+            Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
+        }
+        Assertion::keyExists($json, 'response', 'The parameter "response" is missing');
+        Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
+        Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
 
         $id = Base64Url::decode($json['id']);
         $rawId = Base64Url::decode($json['rawId']);
@@ -57,7 +62,7 @@ class PublicKeyCredentialLoader
 
         $publicKeyCredential = new PublicKeyCredential(
             $json['id'],
-            $json['type'] ?? 'public-key',
+            $json['type'],
             $rawId,
             $this->createResponse($json['response'])
         );
