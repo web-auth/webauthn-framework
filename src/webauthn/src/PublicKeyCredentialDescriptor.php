@@ -16,7 +16,6 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use JsonSerializable;
-use function Safe\base64_decode;
 use function Safe\json_decode;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
@@ -86,7 +85,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
         return new self(
             $json['type'],
-            Base64Url::decode($json['id'], true),
+            Base64Url::decode($json['id']),
             $json['transports'] ?? []
         );
     }

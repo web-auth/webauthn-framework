@@ -73,6 +73,7 @@ abstract class Algorithms
     public const COSE_ALGORITHM_RSAES_OAEP = -40;
     public const COSE_ALGORITHM_RSAES_OAEP_256 = -41;
     public const COSE_ALGORITHM_RSAES_OAEP_512 = -42;
+    public const COSE_ALGORITHM_ES256K = -43;
     public const COSE_ALGORITHM_RS256 = -257;
     public const COSE_ALGORITHM_RS384 = -258;
     public const COSE_ALGORITHM_RS512 = -259;
@@ -89,12 +90,16 @@ abstract class Algorithms
     ];
 
     public const COSE_HASH_MAP = [
+        self::COSE_ALGORITHM_ES256K => 'sha256',
         self::COSE_ALGORITHM_ES256 => 'sha256',
         self::COSE_ALGORITHM_ES384 => 'sha384',
         self::COSE_ALGORITHM_ES512 => 'sha512',
         self::COSE_ALGORITHM_RS256 => 'sha256',
         self::COSE_ALGORITHM_RS384 => 'sha384',
         self::COSE_ALGORITHM_RS512 => 'sha512',
+        self::COSE_ALGORITHM_PS256 => 'sha256',
+        self::COSE_ALGORITHM_PS384 => 'sha384',
+        self::COSE_ALGORITHM_PS512 => 'sha512',
         self::COSE_ALGORITHM_RS1 => 'sha1',
     ];
 
@@ -135,6 +140,7 @@ abstract class Algorithms
             RSA\PS256::identifier() => new RSA\PS256(),
             RSA\PS384::identifier() => new RSA\PS384(),
             RSA\PS512::identifier() => new RSA\PS512(),
+            ECDSA\ES256K::identifier() => new ECDSA\ES256K(),
             ECDSA\ES256::identifier() => new ECDSA\ES256(),
             ECDSA\ES384::identifier() => new ECDSA\ES384(),
             ECDSA\ES512::identifier() => new ECDSA\ES512(),
