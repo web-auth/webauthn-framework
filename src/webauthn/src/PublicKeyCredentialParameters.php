@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use JsonSerializable;
 use function Safe\json_decode;
+use function Safe\sprintf;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
@@ -57,6 +58,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
     {
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
         Assertion::string($json['type'], 'Invalid input. "type" is not a string.');
+        Assertion::eq($json['type'], PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, sprintf('Invalid type "%s", should be "%s"', $json['type'], PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY));
         Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
         Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
 

@@ -34,7 +34,7 @@ class CollectedClientDataTest extends TestCase
         $collectedClientData = new CollectedClientData(
             'raw_data',
             [
-                'type' => 'type',
+                'type' => 'public-key',
                 'origin' => 'origin',
                 'challenge' => Base64Url::encode('challenge'),
                 'extensions' => 'extensions',
@@ -48,7 +48,7 @@ class CollectedClientDataTest extends TestCase
         static::assertInstanceOf(TokenBinding::class, $collectedClientData->getTokenBinding());
         static::assertEquals('id', $collectedClientData->getTokenBinding()->getId());
         static::assertEquals('present', $collectedClientData->getTokenBinding()->getStatus());
-        static::assertEquals('type', $collectedClientData->getType());
+        static::assertEquals('public-key', $collectedClientData->getType());
         static::assertEquals(['type', 'origin', 'challenge', 'extensions', 'tokenBinding'], $collectedClientData->all());
         static::assertTrue($collectedClientData->has('extensions'));
         static::assertEquals('extensions', $collectedClientData->get('extensions'));

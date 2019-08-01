@@ -16,6 +16,7 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use JsonSerializable;
 use function Safe\sprintf;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
@@ -120,6 +121,7 @@ class AttestationStatement implements JsonSerializable
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
             Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
         }
+        Assertion::eq($data['type'], PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, sprintf('Invalid type "%s", should be "%s"', $data['type'], PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY));
 
         return new self(
             $data['fmt'],
