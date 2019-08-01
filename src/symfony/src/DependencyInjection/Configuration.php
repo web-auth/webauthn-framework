@@ -212,7 +212,7 @@ final class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('profile_name')
-                                    ->info('The name of the profile. Shold be one of the creation profiles registered at path "webauthn.creation_profiles"')
+                                    ->info('The name of the profile. Should be one of the creation profiles registered at path "webauthn.creation_profiles"')
                                     ->isRequired()
                                 ->end()
                                 ->scalarNode('user_entity_repository')
