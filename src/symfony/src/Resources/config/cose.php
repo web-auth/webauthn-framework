@@ -36,7 +36,7 @@ return function (ContainerConfigurator $container) {
 
     $container->set('webauthn.cose.algoritm.PS256')
         ->class(Signature\RSA\PS256::class);
-    $container->set('webauthn.cose.algoritm.RS384')
+    $container->set('webauthn.cose.algoritm.PS384')
         ->class(Signature\RSA\PS384::class);
     $container->set('webauthn.cose.algoritm.PS512')
         ->class(Signature\RSA\PS512::class);
