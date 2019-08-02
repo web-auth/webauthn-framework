@@ -160,7 +160,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['errorMessage'], '');
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals($data['attestation'], 'none');
+        static::assertEquals($data['attestation'], 'direct');
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertEquals(['userVerification' => 'preferred', 'requireResidentKey' => true], $data['authenticatorSelection']);

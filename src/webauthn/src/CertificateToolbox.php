@@ -13,33 +13,57 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
-use function Safe\json_encode;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fwrite;
+use function Safe\tempnam;
+use function Safe\unlink;
+use Symfony\Component\Process\Process;
 
 class CertificateToolbox
 {
-    public static function checkChain(array $x5c): void
+    public static function checkChain(array $certificates): void
     {
-        Assertion::notEmpty($x5c, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        reset($x5c);
-        $currentCert = current($x5c);
-        if (1 === \count($x5c)) {
+        if (1 <= \count($certificates)) {
             return;
         }
+        $tmpFiles = [];
 
-        $currentCertParsed = openssl_x509_parse($currentCert);
-        while ($cert = next($x5c)) {
-            $currentCertIssuer = json_encode($currentCertParsed['issuer']);
+        foreach ($certificates as $certificate) {
+            $filename = tempnam(sys_get_temp_dir(), 'FOO');
+            $resource = fopen($filename, 'wb');
+            fwrite($resource, $certificate);
+            fclose($resource);
+            $tmpFiles[] = $filename;
+        }
+        $filenames = $tmpFiles;
+        $endCertificate = array_shift($filenames);
 
-            $nextCertParsed = openssl_x509_parse($cert);
-            $nextCertAsPemSubject = json_encode($nextCertParsed['subject']);
+        $processArguments = [
+            '-check_ss_sig',
+            '-no-CAfile',
+            '-no-CApath',
+            '-partial_chain',
+            '-CAfile',
+            array_pop($filenames),
+        ];
 
-            Assertion::eq($currentCertIssuer, $nextCertAsPemSubject, 'Invalid certificate chain.');
+        while (0 !== \count($filenames)) {
+            $processArguments[] = '-untrusted';
+            $processArguments[] = array_pop($filenames);
+        }
+        $processArguments[] = $endCertificate;
+        array_unshift($processArguments, 'openssl', 'verify');
 
-            Assertion::keyExists($nextCertParsed, 'extensions', 'Invalid certificate chain.');
-            Assertion::keyExists($nextCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
-            Assertion::startsWith($nextCertParsed['extensions']['basicConstraints'], 'CA:TRUE', 'Invalid certificate chain.');
-            $currentCertParsed = $nextCertParsed;
+        $process = new Process($processArguments);
+        $process->start();
+        while ($process->isRunning()) {
+        }
+        foreach ($tmpFiles as $filename) {
+            unlink($filename);
+        }
+        if (!$process->isSuccessful()) {
+            throw new \InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
 

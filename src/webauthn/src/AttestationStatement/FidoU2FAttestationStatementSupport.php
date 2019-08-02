@@ -99,13 +99,13 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         try {
             $resource = openssl_pkey_get_public($publicKey);
         } catch (Throwable $throwable) {
-            throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
+            throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
         $details = openssl_pkey_get_details($resource);
-        Assertion::keyExists($details, 'ec', 'The certificate in the attestation statement is not valid.');
-        Assertion::keyExists($details['ec'], 'curve_name', 'The certificate in the attestation statement is not valid.');
-        Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'The certificate in the attestation statement is not valid.');
-        Assertion::keyExists($details['ec'], 'curve_oid', 'The certificate in the attestation statement is not valid.');
-        Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'The certificate in the attestation statement is not valid.');
+        Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
+        Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
+        Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
+        Assertion::keyExists($details['ec'], 'curve_oid', 'Invalid certificate or certificate chain');
+        Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
     }
 }

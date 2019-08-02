@@ -98,7 +98,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The certificate in the attestation statement is not valid.');
+        $this->expectExceptionMessage('Invalid certificate or certificate chain');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('fido-u2f', $support->name());

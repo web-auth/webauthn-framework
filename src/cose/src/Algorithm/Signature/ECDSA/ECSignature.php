@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Algorithm\Signature\ECDSA;
 
 use InvalidArgumentException;
+use function Safe\hex2bin;
 use const STR_PAD_LEFT;
 
 /**

@@ -26,14 +26,13 @@ abstract class ECDSA implements Signature
         $key = $this->handleKey($key);
         openssl_sign($data, $signature, $key->asPEM(), $this->getHashAlgorithm());
 
-        return ECSignature::fromAsn1($signature, $this->getPartLength($key->curve()));
+        return $signature;
     }
 
     public function verify(string $data, Key $key, string $signature): bool
     {
         $key = $this->handleKey($key);
         $publicKey = $key->toPublic();
-        $signature = ECSignature::toAsn1($signature, $this->getPartLength($key->curve()));
 
         return 1 === openssl_verify($data, $signature, $publicKey->asPEM(), $this->getHashAlgorithm());
     }
@@ -49,17 +48,4 @@ abstract class ECDSA implements Signature
     abstract protected function getCurve(): int;
 
     abstract protected function getHashAlgorithm(): int;
-
-    private function getPartLength(int $curve): int
-    {
-        switch ($curve) {
-            case Ec2Key::CURVE_P256:
-            case Ec2Key::CURVE_P256K:
-                return 64;
-            case Ec2Key::CURVE_P384:
-                return 96;
-            case Ec2Key::CURVE_P521:
-                return 132;
-        }
-    }
 }

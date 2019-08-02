@@ -63,6 +63,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         reset($certificates);
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
+        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -129,7 +130,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             Assertion::isInstanceOf($teeEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
             $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
         } catch (Throwable $throwable) {
-            throw new InvalidArgumentException('The certificate in the attestation statement is not valid.', 0, $throwable);
+            throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
     }
 

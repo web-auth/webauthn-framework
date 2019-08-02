@@ -21,6 +21,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
+use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
@@ -52,7 +53,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
-        $certificates = $this->convertCertificatesToPem($attestation['attStmt']['x5c']);
+        $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
+        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createAttCA(
             $this->name(),

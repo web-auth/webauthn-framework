@@ -139,7 +139,7 @@ webauthn:
                 profile_name: 'foo'
                 request_path: '/attestation/options'
                 response_path: '/attestation/result'
-                host: 'test.com'
+                #host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__1'
             with_host:
                 profile_name: 'default'
@@ -152,7 +152,7 @@ webauthn:
                 profile_name: 'foo'
                 request_path: '/assertion/options'
                 response_path: '/assertion/result'
-                host: 'test.com'
+                #host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__'
 
 security:

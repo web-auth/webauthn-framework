@@ -24,6 +24,7 @@ use function Safe\json_decode;
 use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
+use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
@@ -72,6 +73,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::keyExists($jwsHeader, 'x5c', 'The response in the attestation statement must contain a "x5c" header.');
         Assertion::notEmpty($jwsHeader['x5c'], 'The "x5c" parameter in the attestation statement response must contain at least one certificate.');
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
+        CertificateToolbox::checkChain($certificates);
         $parsedCertificate = openssl_x509_parse(current($certificates));
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
