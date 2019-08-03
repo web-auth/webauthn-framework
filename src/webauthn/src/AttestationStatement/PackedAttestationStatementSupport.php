@@ -86,10 +86,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     {
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-
         //Check certificate CA chain and returns the Attestation Certificate
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
-        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -133,7 +131,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
     {
+        dump($authenticatorData, $attestationStatement);
         $certificates = $trustPath->getCertificates();
+        CertificateToolbox::checkChain($certificates);
         Assertion::notEmpty($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         // Check certificate CA chain and returns the Attestation Certificate

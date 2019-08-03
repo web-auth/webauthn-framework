@@ -95,13 +95,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::keyExists($jwsHeader, 'x5c', 'The response in the attestation statement must contain a "x5c" header.');
         Assertion::notEmpty($jwsHeader['x5c'], 'The "x5c" parameter in the attestation statement response must contain at least one certificate.');
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
-        CertificateToolbox::checkChain($certificates);
-        $parsedCertificate = openssl_x509_parse(current($certificates));
-        Assertion::isArray($parsedCertificate, 'Invalid attestation object');
-        Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
-        Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
-        Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
-
         $attestation['attStmt']['jws'] = $jws;
 
         return AttestationStatement::createBasic(
@@ -113,15 +106,22 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
+        $trustPath = $attestationStatement->getTrustPath();
+        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $certificates = $trustPath->getCertificates();
+        CertificateToolbox::checkChain($certificates);
+        $parsedCertificate = openssl_x509_parse(current($certificates));
+        Assertion::isArray($parsedCertificate, 'Invalid attestation object');
+        Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
+        Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
+        Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
+
         /** @var JWS $jws */
         $jws = $attestationStatement->get('jws');
         $payload = $jws->getPayload();
         $this->validatePayload($payload, $clientDataJSONHash, $authenticatorData);
 
         //Check the signature
-        $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
-
         $this->validateSignature($jws, $trustPath);
 
         //Check against Google service

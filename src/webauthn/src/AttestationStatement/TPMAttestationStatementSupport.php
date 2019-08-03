@@ -54,7 +54,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
-        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createAttCA(
             $this->name(),
@@ -212,6 +211,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $certificates = $trustPath->getCertificates();
         Assertion::greaterThan(\count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        CertificateToolbox::checkChain($certificates);
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

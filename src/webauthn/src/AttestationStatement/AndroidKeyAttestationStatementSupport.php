@@ -23,7 +23,6 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use Psr\Log\LoggerInterface;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
@@ -38,15 +37,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      * @var Decoder
      */
     private $decoder;
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
 
-    public function __construct(Decoder $decoder, ?LoggerInterface $logger = null)
+    public function __construct(Decoder $decoder)
     {
         $this->decoder = $decoder;
-        $this->logger = $logger;
     }
 
     public function name(): string
@@ -64,10 +58,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         Assertion::greaterThan(\count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-
-        reset($certificates);
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
-        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -77,8 +68,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
+        $certificates = $trustPath->getCertificates();
+        CertificateToolbox::checkChain($certificates);
+
         //Decode leaf attestation certificate
-        $leaf = $trustPath->getCertificates()[0];
+        $leaf = $certificates[0];
         $this->checkCertificateAndGetPublicKey($leaf, $clientDataJSONHash, $authenticatorData);
 
         $signedData = $authenticatorData->getAuthData().$clientDataJSONHash;

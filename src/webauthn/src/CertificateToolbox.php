@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fwrite;
+use Assert\Assertion;
+use InvalidArgumentException;
+use function Safe\file_put_contents;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
@@ -24,16 +24,21 @@ class CertificateToolbox
 {
     public static function checkChain(array $certificates): void
     {
-        if (1 <= \count($certificates)) {
+        /*if (1 <= \count($certificates)) {
             return;
-        }
+        }*/
         $tmpFiles = [];
 
         foreach ($certificates as $certificate) {
-            $filename = tempnam(sys_get_temp_dir(), 'FOO');
-            $resource = fopen($filename, 'wb');
-            fwrite($resource, $certificate);
-            fclose($resource);
+            $parsed = openssl_x509_parse($certificate);
+            Assertion::isArray($parsed, 'Unable to read the certificate');
+            Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
+            Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
+            Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
+            Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
+
+            $filename = tempnam(sys_get_temp_dir(), 'webauthn-');
+            file_put_contents($filename, $certificate);
             $tmpFiles[] = $filename;
         }
         $filenames = $tmpFiles;
@@ -41,12 +46,12 @@ class CertificateToolbox
 
         $processArguments = [
             '-check_ss_sig',
-            '-no-CAfile',
-            '-no-CApath',
             '-partial_chain',
-            '-CAfile',
-            array_pop($filenames),
         ];
+        if (\count($filenames) >= 1) {
+            $processArguments[] = '-CAfile';
+            $processArguments[] = array_pop($filenames);
+        }
 
         while (0 !== \count($filenames)) {
             $processArguments[] = '-untrusted';
@@ -59,11 +64,13 @@ class CertificateToolbox
         $process->start();
         while ($process->isRunning()) {
         }
-        foreach ($tmpFiles as $filename) {
+        foreach ($filenames as $filename) {
             unlink($filename);
         }
         if (!$process->isSuccessful()) {
-            throw new \InvalidArgumentException('Invalid certificate or certificate chain');
+            dump($process->getErrorOutput());
+            dump($process->getCommandLine());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
         }
     }
 

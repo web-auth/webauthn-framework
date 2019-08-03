@@ -99,7 +99,7 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
         static::assertEquals([], $options->getExcludeCredentials());
-        static::assertEquals(1, \count($options->getPubKeyCredParams()));
+        static::assertEquals(11, \count($options->getPubKeyCredParams()));
         static::assertEquals('none', $options->getAttestation());
         static::assertEquals(60000, $options->getTimeout());
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
