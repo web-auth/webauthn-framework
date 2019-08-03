@@ -110,6 +110,7 @@ class PublicKeyCredentialLoader
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
                 Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+                $authDataStream->close();
                 $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
 
                 return new AuthenticatorAssertionResponse(

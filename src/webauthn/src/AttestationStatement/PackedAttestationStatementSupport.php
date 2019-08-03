@@ -164,6 +164,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $publicKeyStream = new StringStream($credentialPublicKey);
         $publicKey = $this->decoder->decode($publicKeyStream);
         Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        $publicKeyStream->close();
         Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
         $publicKey = $publicKey->getNormalizedData(false);
         $publicKey = new Key($publicKey);

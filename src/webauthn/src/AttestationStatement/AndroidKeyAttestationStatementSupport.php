@@ -43,7 +43,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      */
     private $logger;
 
-    public function __construct(Decoder $decoder, ?LoggerInterface $logger)
+    public function __construct(Decoder $decoder, ?LoggerInterface $logger = null)
     {
         $this->decoder = $decoder;
         $this->logger = $logger;
@@ -100,10 +100,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
         Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
+        $publicDataStream->close();
         $publicKey = Key::createFromData($coseKey);
 
         Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
-        Assertion::eq($publicKey->asPEM(), $details['key']);
+        Assertion::eq($publicKey->asPEM(), $details['key'], 'Invalid key');
 
         /*---------------------------*/
         $certDetails = openssl_x509_parse($certificate);

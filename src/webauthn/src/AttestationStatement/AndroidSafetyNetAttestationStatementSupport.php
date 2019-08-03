@@ -136,7 +136,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $payload = JsonConverter::decode($payload);
         Assertion::isArray($payload, 'Invalid attestation object');
         Assertion::keyExists($payload, 'nonce', 'Invalid attestation object. "nonce" is missing.');
-        Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object. Invalid nonce1');
+        Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object. Invalid nonce');
         Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object. "ctsProfileMatch" is missing.');
         Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object. "ctsProfileMatch" value is false.');
         Assertion::keyExists($payload, 'timestampMs', 'Invalid attestation object. Timestamp is missing.');

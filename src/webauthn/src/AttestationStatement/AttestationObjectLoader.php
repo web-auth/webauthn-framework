@@ -48,7 +48,10 @@ class AttestationObjectLoader
     {
         $decodedData = Base64Url::decode($data);
         $stream = new StringStream($decodedData);
-        $attestationObject = $this->decoder->decode($stream)->getNormalizedData();
+        $parsed = $this->decoder->decode($stream);
+        $attestationObject = $parsed->getNormalizedData();
+        Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
+        $stream->close();
         Assertion::isArray($attestationObject, 'Invalid attestation object');
         Assertion::keyExists($attestationObject, 'authData', 'Invalid attestation object');
         Assertion::keyExists($attestationObject, 'fmt', 'Invalid attestation object');
@@ -81,6 +84,7 @@ class AttestationObjectLoader
             $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
         }
         Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+        $authDataStream->close();
 
         $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
 

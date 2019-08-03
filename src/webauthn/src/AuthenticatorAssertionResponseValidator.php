@@ -96,6 +96,7 @@ class AuthenticatorAssertionResponseValidator
         $stream = new StringStream($credentialPublicKey);
         $credentialPublicKeyStream = $this->decoder->decode($stream);
         Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
+        $stream->close();
 
         /** @see 7.2.4 */
         /** @see 7.2.5 */

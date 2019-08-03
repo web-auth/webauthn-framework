@@ -48,7 +48,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
         $pubAreaHash = hash($this->getTPMHash($pubArea['nameAlg']), $attestation['attStmt']['pubArea'], true);
         $attestedName = $pubArea['nameAlg'].$pubAreaHash;
-        Assertion::eq($attestedName, $certInfo['attestedName']);
+        Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
@@ -67,7 +67,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         $attToBeSigned = $authenticatorData->getAuthData().$clientDataJSONHash;
         $attToBeSignedHash = hash(Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')), $attToBeSigned, true);
-        Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash);
+        Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
 
         switch (true) {
             case $attestationStatement->getTrustPath() instanceof CertificateTrustPath:
@@ -101,9 +101,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestedNameLength = unpack('n', $certInfo->read(2))[1];
         $attestedName = $certInfo->read($attestedNameLength);
 
-        $attestedQaulifiedNameLength = unpack('n', $certInfo->read(2))[1];
-        $attestedQaulifiedName = $certInfo->read($attestedQaulifiedNameLength); //Ignore
+        $attestedQualifiedNameLength = unpack('n', $certInfo->read(2))[1];
+        $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLength); //Ignore
         Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
+        $certInfo->close();
 
         return [
             'magic' => $magic,
@@ -113,7 +114,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'clockInfo' => $clockInfo,
             'firmwareVersion' => $firmwareVersion,
             'attestedName' => $attestedName,
-            'attestedQaulifiedName' => $attestedQaulifiedName,
+            'attestedQualifiedName' => $attestedQualifiedName,
         ];
     }
 
@@ -135,6 +136,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $uniqueLength = unpack('n', $pubArea->read(2))[1];
         $unique = $pubArea->read($uniqueLength);
         Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
+        $pubArea->close();
 
         return [
             'type' => $type,
