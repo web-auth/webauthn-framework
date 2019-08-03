@@ -27,7 +27,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
-use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -114,25 +113,21 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        try {
-            /** @var JWS $jws */
-            $jws = $attestationStatement->get('jws');
-            $payload = $jws->getPayload();
-            $this->validatePayload($payload, $clientDataJSONHash, $authenticatorData);
+        /** @var JWS $jws */
+        $jws = $attestationStatement->get('jws');
+        $payload = $jws->getPayload();
+        $this->validatePayload($payload, $clientDataJSONHash, $authenticatorData);
 
-            //Check the signature
-            $trustPath = $attestationStatement->getTrustPath();
-            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        //Check the signature
+        $trustPath = $attestationStatement->getTrustPath();
+        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
-            $this->validateSignature($jws, $trustPath);
+        $this->validateSignature($jws, $trustPath);
 
-            //Check against Google service
-            $this->validateUsingGoogleApi($attestationStatement);
+        //Check against Google service
+        $this->validateUsingGoogleApi($attestationStatement);
 
-            return true;
-        } catch (Throwable $throwable) {
-            return false;
-        }
+        return true;
     }
 
     private function validatePayload(?string $payload, string $clientDataJSONHash, AuthenticatorData $authenticatorData): void

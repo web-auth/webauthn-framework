@@ -23,11 +23,10 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
-use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
@@ -39,10 +38,15 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      * @var Decoder
      */
     private $decoder;
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
 
-    public function __construct(Decoder $decoder)
+    public function __construct(Decoder $decoder, ?LoggerInterface $logger)
     {
         $this->decoder = $decoder;
+        $this->logger = $logger;
     }
 
     public function name(): string
@@ -85,53 +89,49 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
     private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
     {
-        try {
-            $resource = openssl_pkey_get_public($certificate);
-            $details = openssl_pkey_get_details($resource);
+        $resource = openssl_pkey_get_public($certificate);
+        $details = openssl_pkey_get_details($resource);
 
-            //Check that authData publicKey matches the public key in the attestation certificate
-            $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-            Assertion::notNull($attestedCredentialData, 'No attested credential data found');
-            $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
-            Assertion::notNull($publicKeyData, 'No attested public key found');
-            $publicDataStream = new StringStream($publicKeyData);
-            $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
-            Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
-            $publicKey = Key::createFromData($coseKey);
+        //Check that authData publicKey matches the public key in the attestation certificate
+        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        Assertion::notNull($attestedCredentialData, 'No attested credential data found');
+        $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
+        Assertion::notNull($publicKeyData, 'No attested public key found');
+        $publicDataStream = new StringStream($publicKeyData);
+        $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
+        Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
+        $publicKey = Key::createFromData($coseKey);
 
-            Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
-            Assertion::eq($publicKey->asPEM(), $details['key']);
+        Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
+        Assertion::eq($publicKey->asPEM(), $details['key']);
 
-            /*---------------------------*/
-            $certDetails = openssl_x509_parse($certificate);
+        /*---------------------------*/
+        $certDetails = openssl_x509_parse($certificate);
 
-            //Find Android KeyStore Extension with OID “1.3.6.1.4.1.11129.2.1.17” in certificate extensions
-            Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
-            Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
-            Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17', 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing');
-            $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
-            $extensionAsAsn1 = ASNObject::fromBinary($extension);
-            Assertion::isInstanceOf($extensionAsAsn1, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            $objects = $extensionAsAsn1->getChildren();
+        //Find Android KeyStore Extension with OID “1.3.6.1.4.1.11129.2.1.17” in certificate extensions
+        Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
+        Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
+        Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17', 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing');
+        $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
+        $extensionAsAsn1 = ASNObject::fromBinary($extension);
+        Assertion::isInstanceOf($extensionAsAsn1, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        $objects = $extensionAsAsn1->getChildren();
 
-            //Check that attestationChallenge is set to the clientDataHash.
-            Assertion::keyExists($objects, 4, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            Assertion::isInstanceOf($objects[4], OctetString::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            Assertion::eq($clientDataHash, hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
+        //Check that attestationChallenge is set to the clientDataHash.
+        Assertion::keyExists($objects, 4, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        Assertion::isInstanceOf($objects[4], OctetString::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        Assertion::eq($clientDataHash, hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
 
-            //Check that both teeEnforced and softwareEnforced structures don’t contain allApplications(600) tag.
-            Assertion::keyExists($objects, 6, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            $softwareEnforcedFlags = $objects[6];
-            Assertion::isInstanceOf($softwareEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
+        //Check that both teeEnforced and softwareEnforced structures don’t contain allApplications(600) tag.
+        Assertion::keyExists($objects, 6, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        $softwareEnforcedFlags = $objects[6];
+        Assertion::isInstanceOf($softwareEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
 
-            Assertion::keyExists($objects, 7, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            $teeEnforcedFlags = $objects[6];
-            Assertion::isInstanceOf($teeEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-            $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
-        } catch (Throwable $throwable) {
-            throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
-        }
+        Assertion::keyExists($objects, 7, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        $teeEnforcedFlags = $objects[6];
+        Assertion::isInstanceOf($teeEnforcedFlags, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
     }
 
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void
