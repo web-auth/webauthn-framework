@@ -73,10 +73,9 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'userVerification' => PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'localhost'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
-
         static::assertArrayHasKey('status', $data);
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());

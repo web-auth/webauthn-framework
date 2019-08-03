@@ -89,10 +89,10 @@ class AssertionTest extends KernelTestCase
 
         /** @var PublicKeyCredentialRequestOptionsFactory $factory */
         $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
-        $options = $factory->create('foo', $allowedCredentials);
+        $options = $factory->create('default', $allowedCredentials);
 
         static::assertEquals(30000, $options->getTimeout());
-        static::assertEquals('demo.webauth.app', $options->getRpId());
+        static::assertEquals('localhost', $options->getRpId());
         static::assertEquals($allowedCredentials, $options->getAllowCredentials());
         static::assertEquals('required', $options->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());

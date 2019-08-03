@@ -92,16 +92,16 @@ class AttestationTest extends KernelTestCase
         /** @var PublicKeyCredentialCreationOptionsFactory $factory */
         $factory = self::$kernel->getContainer()->get(PublicKeyCredentialCreationOptionsFactory::class);
         $options = $factory->create(
-            'foo',
+            'default',
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity')
         );
 
-        static::assertEquals(64, mb_strlen($options->getChallenge(), '8bit'));
+        static::assertEquals(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
         static::assertEquals([], $options->getExcludeCredentials());
-        static::assertEquals(2, \count($options->getPubKeyCredParams()));
-        static::assertEquals('direct', $options->getAttestation());
-        static::assertEquals(30000, $options->getTimeout());
+        static::assertEquals(1, \count($options->getPubKeyCredParams()));
+        static::assertEquals('none', $options->getAttestation());
+        static::assertEquals(60000, $options->getTimeout());
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
         static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());

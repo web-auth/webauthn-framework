@@ -83,41 +83,12 @@ webauthn:
     android_safetynet:
         max_age: 99999999999
     creation_profiles:
-        foo:
-            public_key_credential_parameters:
-                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
-                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
-            extensions:
-                foo: 'bar'
-            rp:
-                name: 'My application'
-                id: 'demo.webauth.app'
-                icon: 'https://demo.webauth.app/assets/app.png'
-            challenge_length: 64
-            timeout: 30000
-            authenticator_selection_criteria:
-                attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM
-                require_resident_key: true
-                user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
-            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         default:
-            public_key_credential_parameters:
-                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
-                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA
             rp:
                 name: 'My other application'
                 id: 'webauth.app'
     request_profiles:
-        foo:
-            extensions:
-                foo: 'bar'
-            rp_id: 'demo.webauth.app'
-            challenge_length: 64
-            timeout: 30000
-            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
         default:
-            extensions:
-                foo: 'bar'
             rp_id: 'localhost'
             challenge_length: 32
             timeout: 30000
@@ -125,24 +96,18 @@ webauthn:
     transport_binding_profile:
         creation:
             default:
-                profile_name: 'foo'
+                profile_name: 'default'
                 request_path: '/attestation/options'
                 response_path: '/attestation/result'
                 #host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__1'
-            with_host:
-                profile_name: 'default'
-                request_path: '/attestation/options'
-                response_path: '/attestation/result'
-                #host: 'webauth.app'
-                session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__2'
         request:
             default:
-                profile_name: 'foo'
+                profile_name: 'default'
                 request_path: '/assertion/options'
                 response_path: '/assertion/result'
                 #host: 'test.com'
-                session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__'
+                session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
 
 security:
     providers:
