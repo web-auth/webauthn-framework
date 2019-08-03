@@ -26,9 +26,6 @@ services:
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
-    Psr\Http\Message\RequestFactoryInterface:
-        alias: Nyholm\Psr7\Factory\Psr17Factory
-
     Nyholm\Psr7\Factory\Psr17Factory: ~
     Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface:
         class: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
@@ -79,20 +76,10 @@ doctrine:
                 prefix: 'Webauthn\Bundle\Tests\Functional'
                 alias: App
 
-httplug:
-    profiling: false
-    discovery:
-        client: false
-        async_client: false
-
 
 webauthn:
     credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
     user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
-    android_safetynet:
-        enabled: true
-        api_key: 'api_key'
-        http_client: 'httplug.client.mock'
     creation_profiles:
         foo:
             public_key_credential_parameters:
@@ -145,7 +132,7 @@ webauthn:
                 profile_name: 'default'
                 request_path: '/attestation/options'
                 response_path: '/attestation/result'
-                host: 'webauth.app'
+                #host: 'webauth.app'
                 session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__2'
         request:
             default:

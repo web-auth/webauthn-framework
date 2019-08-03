@@ -14,8 +14,13 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm;
 use Jose\Component\Signature\JWS;
+use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -30,14 +35,9 @@ use Webauthn\TrustPath\CertificateTrustPath;
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $apiKey;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
 
     /**
      * @var ClientInterface
@@ -49,12 +49,23 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $jwsSerializer;
 
-    public function __construct(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory)
+    /**
+     * @var JWSVerifier|null
+     */
+    private $jwsVerifier;
+
+    /**
+     * @var RequestFactoryInterface|null
+     */
+    private $requestFactory;
+
+    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory)
     {
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
-        $this->requestFactory = $requestFactory;
         $this->client = $client;
+        $this->requestFactory = $requestFactory;
+        $this->initJwsVerifier();
     }
 
     public function name(): string
@@ -95,34 +106,61 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             /** @var JWS $jws */
             $jws = $attestationStatement->get('jws');
             $payload = $jws->getPayload();
-            Assertion::notNull($payload, 'Invalid attestation object');
-            $payload = JsonConverter::decode($payload);
-            Assertion::isArray($payload, 'Invalid attestation object');
-            Assertion::keyExists($payload, 'nonce', 'Invalid attestation object');
-            Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object');
+            $this->validatePayload($payload, $clientDataJSONHash, $authenticatorData);
 
-            Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object');
-            Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object');
+            //Check the signature
+            $trustPath = $attestationStatement->getTrustPath();
+            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
-            $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
-            $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-            $request = $this->requestFactory->createRequest('POST', $uri);
-            $request = $request->withHeader('content-type', 'application/json');
-            $request->getBody()->write($requestBody);
+            $this->validateSignature($jws, $trustPath);
 
-            $response = $this->client->sendRequest($request);
-            if (!$this->isResponseSuccess($response)) {
-                return false;
-            }
-            $responseBody = $this->getResponseBody($response);
-            $responseBodyJson = json_decode($responseBody, true);
-            Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
-            Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
+            //Check against Google service
+            $this->validateUsingGoogleApi($attestationStatement);
 
-            return $responseBodyJson['isValidSignature'];
+            return true;
         } catch (Throwable $throwable) {
+            dump($throwable->getFile(), $throwable->getLine(), $throwable->getMessage());
+
             return false;
         }
+    }
+
+    private function validatePayload(?string $payload, string $clientDataJSONHash, AuthenticatorData $authenticatorData): void
+    {
+        Assertion::notNull($payload, 'Invalid attestation object');
+        $payload = JsonConverter::decode($payload);
+        Assertion::isArray($payload, 'Invalid attestation object');
+        Assertion::keyExists($payload, 'nonce', 'Invalid attestation object');
+        Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object');
+        Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object');
+        Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object');
+    }
+
+    private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void
+    {
+        $jwk = JWKFactory::createFromCertificate($trustPath->getCertificates()[0]);
+        $isValid = $this->jwsVerifier->verifyWithKey($jws, $jwk, 0);
+        Assertion::true($isValid, 'Invalid response signature');
+    }
+
+    private function validateUsingGoogleApi(AttestationStatement $attestationStatement): void
+    {
+        if (null === $this->client || null === $this->apiKey || null === $this->requestFactory) {
+            return;
+        }
+        $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
+        $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
+        $request = $this->requestFactory->createRequest('POST', $uri);
+        $request = $request->withHeader('content-type', 'application/json');
+        $request->getBody()->write($requestBody);
+
+        $response = $this->client->sendRequest($request);
+        $this->checkGoogleApiResponse($response);
+        $responseBody = $this->getResponseBody($response);
+        $responseBodyJson = json_decode($responseBody, true);
+        Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
+        Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
+        Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');
     }
 
     private function getResponseBody(ResponseInterface $response): string
@@ -140,19 +178,18 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return $responseBody;
     }
 
-    private function isResponseSuccess(ResponseInterface $response): bool
+    private function checkGoogleApiResponse(ResponseInterface $response): void
     {
-        if (200 !== $response->getStatusCode() || !$response->hasHeader('content-type')) {
-            return false;
-        }
+        Assertion::eq(200, $response->getStatusCode(), 'Request did not succeeded');
+        Assertion::true($response->hasHeader('content-type'), 'Unrecognized response');
 
         foreach ($response->getHeader('content-type') as $header) {
             if (0 === mb_strpos($header, 'application/json')) {
-                return true;
+                return;
             }
         }
 
-        return false;
+        throw new InvalidArgumentException('Unrecognized response');
     }
 
     private function convertCertificatesToPem(array $certificates): array
@@ -165,5 +202,16 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
 
         return $certificates;
+    }
+
+    private function initJwsVerifier(): void
+    {
+        $algoritmManager = new AlgorithmManager([
+            new Algorithm\RS256(), new Algorithm\RS384(), new Algorithm\RS512(),
+            new Algorithm\PS256(), new Algorithm\PS384(), new Algorithm\PS512(),
+            new Algorithm\ES256(), new Algorithm\ES384(), new Algorithm\ES512(),
+            new Algorithm\EdDSA(),
+        ]);
+        $this->jwsVerifier = new JWSVerifier($algoritmManager);
     }
 }

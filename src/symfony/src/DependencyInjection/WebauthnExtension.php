@@ -89,11 +89,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         }
-        if (true === $config['android_safetynet']['enabled']) {
-            $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
-            $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
-            $loader->load('android_safetynet.php');
-        }
+        $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
+        $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
+        $loader->load('android_safetynet.php');
     }
 
     /**
