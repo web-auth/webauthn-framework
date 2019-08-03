@@ -142,8 +142,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::keyExists($payload, 'timestampMs', 'Invalid attestation object. Timestamp is missing.');
         Assertion::integer($payload['timestampMs'], 'Invalid attestation object. Timestamp shall be an integer.');
         $currentTime = time() * 1000;
-        Assertion::lessOrEqualThan($payload['timestampMs'], $currentTime + $this->leeway, 'Invalid attestation object. Issued in the future.');
-        Assertion::lessOrEqualThan($currentTime - $payload['timestampMs'], $this->maxAge, 'Invalid attestation object. Issued in the future.');
+        Assertion::lessOrEqualThan($payload['timestampMs'], $currentTime + $this->leeway, sprintf('Invalid attestation object. Issued in the future. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
+        Assertion::lessOrEqualThan($currentTime - $payload['timestampMs'], $this->maxAge, sprintf('Invalid attestation object. Too old. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
     }
 
     private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void
