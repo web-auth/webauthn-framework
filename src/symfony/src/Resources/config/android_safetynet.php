@@ -11,6 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
+use Psr\Http\Message\RequestFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -29,5 +30,8 @@ return function (ContainerConfigurator $container) {
         ->args([
             ref('webauthn.android_safetynet.http_client'),
             '%webauthn.android_safetynet.api_key%',
+            ref(RequestFactoryInterface::class)->nullOnInvalid(),
+            '%webauthn.android_safetynet.leeway%',
+            '%webauthn.android_safetynet.max_age%',
         ]);
 };

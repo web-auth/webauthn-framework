@@ -59,13 +59,25 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $requestFactory;
 
-    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory)
+    /**
+     * @var int
+     */
+    private $leeway;
+
+    /**
+     * @var int
+     */
+    private $maxAge;
+
+    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory, int $leeway = 0, int $maxAge = 60000)
     {
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
         $this->initJwsVerifier();
+        $this->leeway = $leeway;
+        $this->maxAge = $maxAge;
     }
 
     public function name(): string
@@ -119,8 +131,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
             return true;
         } catch (Throwable $throwable) {
-            dump($throwable->getFile(), $throwable->getLine(), $throwable->getMessage());
-
             return false;
         }
     }
@@ -130,10 +140,15 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::notNull($payload, 'Invalid attestation object');
         $payload = JsonConverter::decode($payload);
         Assertion::isArray($payload, 'Invalid attestation object');
-        Assertion::keyExists($payload, 'nonce', 'Invalid attestation object');
-        Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object');
-        Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object');
-        Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object');
+        Assertion::keyExists($payload, 'nonce', 'Invalid attestation object. "nonce" is missing.');
+        Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object. Invalid nonce1');
+        Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object. "ctsProfileMatch" is missing.');
+        Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object. "ctsProfileMatch" value is false.');
+        Assertion::keyExists($payload, 'timestampMs', 'Invalid attestation object. Timestamp is missing.');
+        Assertion::integer($payload['timestampMs'], 'Invalid attestation object. Timestamp shall be an integer.');
+        $currentTime = time() * 1000;
+        Assertion::lessOrEqualThan($payload['timestampMs'], $currentTime + $this->leeway, 'Invalid attestation object. Issued in the future.');
+        Assertion::lessOrEqualThan($currentTime - $payload['timestampMs'], $this->maxAge, 'Invalid attestation object. Issued in the future.');
     }
 
     private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void
@@ -145,7 +160,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function validateUsingGoogleApi(AttestationStatement $attestationStatement): void
     {
-        if (null === $this->client || null === $this->apiKey || null === $this->requestFactory) {
+        if (null === $this->apiKey || null === $this->requestFactory) {
             return;
         }
         $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));
@@ -206,12 +221,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function initJwsVerifier(): void
     {
-        $algoritmManager = new AlgorithmManager([
+        $algorithmManager = new AlgorithmManager([
             new Algorithm\RS256(), new Algorithm\RS384(), new Algorithm\RS512(),
             new Algorithm\PS256(), new Algorithm\PS384(), new Algorithm\PS512(),
             new Algorithm\ES256(), new Algorithm\ES384(), new Algorithm\ES512(),
             new Algorithm\EdDSA(),
         ]);
-        $this->jwsVerifier = new JWSVerifier($algoritmManager);
+        $this->jwsVerifier = new JWSVerifier($algorithmManager);
     }
 }
