@@ -16,7 +16,6 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\StringStream;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
@@ -25,6 +24,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -86,10 +86,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     {
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-
         //Check certificate CA chain and returns the Attestation Certificate
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
-        CertificateToolbox::checkChain($certificates);
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -134,6 +132,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
     {
         $certificates = $trustPath->getCertificates();
+        CertificateToolbox::checkChain($certificates);
         Assertion::notEmpty($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         // Check certificate CA chain and returns the Attestation Certificate
@@ -161,8 +160,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No credential public key available');
-        $publicKey = $this->decoder->decode(new StringStream($credentialPublicKey));
-        Assertion::isInstanceOf($publicKey, MapObject::class, 'The attestated credential data does not contain a valid public key.');
+        $publicKeyStream = new StringStream($credentialPublicKey);
+        $publicKey = $this->decoder->decode($publicKeyStream);
+        Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        $publicKeyStream->close();
+        Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
         $publicKey = $publicKey->getNormalizedData(false);
         $publicKey = new Key($publicKey);
         Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');

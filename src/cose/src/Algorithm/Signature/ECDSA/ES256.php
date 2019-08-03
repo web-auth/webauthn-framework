@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Algorithm\Signature\ECDSA;
 
 use Cose\Algorithms;
+use Cose\Key\Ec2Key;
 
 final class ES256 extends ECDSA
 {
@@ -29,6 +30,6 @@ final class ES256 extends ECDSA
 
     protected function getCurve(): int
     {
-        return 1;
+        return Ec2Key::CURVE_P256;
     }
 }

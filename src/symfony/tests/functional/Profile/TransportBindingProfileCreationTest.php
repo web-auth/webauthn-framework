@@ -121,7 +121,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'attestation' => 'indirect',
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'localhost'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
@@ -160,7 +160,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['errorMessage'], '');
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals($data['attestation'], 'none');
+        static::assertEquals('none', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertEquals(['userVerification' => 'preferred', 'requireResidentKey' => true], $data['authenticatorSelection']);
@@ -174,6 +174,11 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
+            'authenticatorSelection' => [
+                'authenticatorAttachment' => 'platform',
+                'userVerification' => 'required',
+                'requireResidentKey' => true,
+            ],
         ];
         $client = self::createClient([], ['HTTPS' => 'on']);
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
@@ -187,9 +192,9 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['errorMessage'], '');
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals($data['attestation'], 'direct');
+        static::assertEquals('none', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
-        static::assertEquals($data['authenticatorSelection'], ['authenticatorAttachment' => 'platform', 'userVerification' => 'required', 'requireResidentKey' => true]);
+        static::assertEquals(['authenticatorAttachment' => 'platform', 'userVerification' => 'required', 'requireResidentKey' => true], $data['authenticatorSelection']);
     }
 }

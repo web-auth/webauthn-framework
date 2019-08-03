@@ -36,9 +36,10 @@ class MetadataServiceTest extends TestCase
     public function theTocCanBeRetrieved(): void
     {
         $service = new MetadataService(
+            'https://foo',
             $this->getClient(),
             new Psr17Factory(),
-            '--TOKEN--'
+            ['token' => '--TOKEN--']
         );
 
         $data = $service->getMetadataTOCPayload();

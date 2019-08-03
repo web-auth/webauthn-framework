@@ -14,32 +14,61 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use function Safe\json_encode;
+use InvalidArgumentException;
+use function Safe\file_put_contents;
+use function Safe\tempnam;
+use function Safe\unlink;
+use Symfony\Component\Process\Process;
 
 class CertificateToolbox
 {
-    public static function checkChain(array $x5c): void
+    public static function checkChain(array $certificates): void
     {
-        Assertion::notEmpty($x5c, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        reset($x5c);
-        $currentCert = current($x5c);
-        if (1 === \count($x5c)) {
+        /*if (1 <= \count($certificates)) {
             return;
+        }*/
+        $tmpFiles = [];
+
+        foreach ($certificates as $certificate) {
+            $parsed = openssl_x509_parse($certificate);
+            Assertion::isArray($parsed, 'Unable to read the certificate');
+            Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
+            Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
+            Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
+            Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
+
+            $filename = tempnam(sys_get_temp_dir(), 'webauthn-');
+            file_put_contents($filename, $certificate);
+            $tmpFiles[] = $filename;
+        }
+        $filenames = $tmpFiles;
+        $endCertificate = array_shift($filenames);
+
+        $processArguments = [
+            '-check_ss_sig',
+            '-partial_chain',
+        ];
+        if (\count($filenames) >= 1) {
+            $processArguments[] = '-CAfile';
+            $processArguments[] = array_pop($filenames);
         }
 
-        $currentCertParsed = openssl_x509_parse($currentCert);
-        while ($cert = next($x5c)) {
-            $currentCertIssuer = json_encode($currentCertParsed['issuer']);
+        while (0 !== \count($filenames)) {
+            $processArguments[] = '-untrusted';
+            $processArguments[] = array_pop($filenames);
+        }
+        $processArguments[] = $endCertificate;
+        array_unshift($processArguments, 'openssl', 'verify');
 
-            $nextCertParsed = openssl_x509_parse($cert);
-            $nextCertAsPemSubject = json_encode($nextCertParsed['subject']);
-
-            Assertion::eq($currentCertIssuer, $nextCertAsPemSubject, 'Invalid certificate chain.');
-
-            Assertion::keyExists($nextCertParsed, 'extensions', 'Invalid certificate chain.');
-            Assertion::keyExists($nextCertParsed['extensions'], 'basicConstraints', 'Invalid certificate chain.');
-            Assertion::startsWith($nextCertParsed['extensions']['basicConstraints'], 'CA:TRUE', 'Invalid certificate chain.');
-            $currentCertParsed = $nextCertParsed;
+        $process = new Process($processArguments);
+        $process->start();
+        while ($process->isRunning()) {
+        }
+        foreach ($filenames as $filename) {
+            unlink($filename);
+        }
+        if (!$process->isSuccessful()) {
+            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
         }
     }
 

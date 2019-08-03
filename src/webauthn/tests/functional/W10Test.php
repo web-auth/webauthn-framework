@@ -33,7 +33,6 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 /**
  * @group functional
  * @group Fido2
- * TODO: when bug #56 is resolved, new tests should be added
  */
 class W10Test extends AbstractTestCase
 {

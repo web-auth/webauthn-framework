@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Psr\Http\Message\RequestFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use Symfony\Component\HttpClient\Psr18Client;
 use Webauthn\AttestationStatement;
 
 return function (ContainerConfigurator $container) {
@@ -22,10 +23,15 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
+    $container->set('webauthn.android_safetynet.default_http_client')
+        ->class(Psr18Client::class);
+
     $container->set(AttestationStatement\AndroidSafetyNetAttestationStatementSupport::class)
         ->args([
             ref('webauthn.android_safetynet.http_client'),
             '%webauthn.android_safetynet.api_key%',
-            ref(RequestFactoryInterface::class),
+            ref(RequestFactoryInterface::class)->nullOnInvalid(),
+            '%webauthn.android_safetynet.leeway%',
+            '%webauthn.android_safetynet.max_age%',
         ]);
 };

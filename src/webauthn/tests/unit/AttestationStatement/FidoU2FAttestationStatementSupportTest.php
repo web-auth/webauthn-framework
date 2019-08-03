@@ -23,6 +23,7 @@ use CBOR\SignedIntegerObject;
 use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -97,7 +98,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The certificate in the attestation statement is not valid.');
+        $this->expectExceptionMessage('Invalid certificate or certificate chain');
         $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
 
         static::assertEquals('fido-u2f', $support->name());
@@ -132,6 +133,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 
         $attestedCredentialData = $this->prophesize(AttestedCredentialData::class);
         $attestedCredentialData->getCredentialId()->willReturn('CREDENTIAL_ID');
+        $attestedCredentialData->getAaguid()->willReturn(Uuid::fromString('00000000-0000-0000-0000-000000000000'));
         $attestedCredentialData->getCredentialPublicKey()->willReturn(
             new MapObject([
                 new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-2)), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),

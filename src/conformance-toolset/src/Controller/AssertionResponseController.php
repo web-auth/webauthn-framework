@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,24 +24,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AssertionResponseController
 {
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-
     /**
      * @var PublicKeyCredentialLoader
      */
@@ -58,15 +49,23 @@ final class AssertionResponseController
      * @var string
      */
     private $sessionParameterName;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->httpMessageFactory = $httpMessageFactory;
         $this->assertionResponseValidator = $assertionResponseValidator;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->sessionParameterName = $sessionParameterName;
+        $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response
@@ -75,24 +74,30 @@ final class AssertionResponseController
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
+            $this->logger->debug('Receiving data: '.$content);
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
-            $data = $request->getSession()->get($this->sessionParameterName);
-            $request->getSession()->remove($this->sessionParameterName);
-            Assertion::isArray($data, 'Unable to find the public key credential creation options');
-            Assertion::keyExists($data, 'options', 'Unable to find the public key credential creation options');
+            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
+            if (!$item->isHit()) {
+                throw new InvalidArgumentException('Unable to find the public key credential request options');
+            }
+            $data = $item->get();
+            Assertion::isArray($data, 'Unable to find the public key credential request options');
+            Assertion::keyExists($data, 'options', 'Unable to find the public key credential request options');
             $publicKeyCredentialRequestOptions = $data['options'];
-            Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential creation options');
-            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential creation options');
+            Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential request options');
+            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential request options');
             $userEntity = $data['userEntity'];
-            Assertion::isInstanceOf(PublicKeyCredentialUserEntity::class, $userEntity, 'Unable to find the public key credential creation options');
-            Assertion::notEmpty($userEntity, 'Unable to find the public key credential creation options');
+            Assertion::isInstanceOf(PublicKeyCredentialUserEntity::class, $userEntity, 'Unable to find the public key credential request options');
+            Assertion::notEmpty($userEntity, 'Unable to find the public key credential request options');
             $this->assertionResponseValidator->check($publicKeyCredential->getId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntity->getId());
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

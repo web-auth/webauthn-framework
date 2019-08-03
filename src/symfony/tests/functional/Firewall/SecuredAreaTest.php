@@ -58,7 +58,6 @@ class SecuredAreaTest extends WebTestCase
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
         static::assertArrayHasKey('allowCredentials', $json);
-        static::assertArrayHasKey('extensions', $json);
         static::assertArrayHasKey('timeout', $json);
 
         static::assertArrayHasKey('set-cookie', $client->getResponse()->headers->all());
@@ -84,7 +83,6 @@ class SecuredAreaTest extends WebTestCase
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
         static::assertArrayHasKey('allowCredentials', $json);
-        static::assertArrayHasKey('extensions', $json);
         static::assertArrayHasKey('timeout', $json);
 
         static::assertArrayHasKey('set-cookie', $client->getResponse()->headers->all());

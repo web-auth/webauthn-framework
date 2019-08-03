@@ -42,6 +42,9 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "fgrosse/phpasn1": "^2.1",
+        "league/uri": "^5.3",
+        "nyholm/psr7": "^1.1",
+        "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
@@ -50,6 +53,8 @@
         "symfony/config": "^4.3",
         "symfony/dependency-injection": "^4.3",
         "symfony/framework-bundle": "^4.3",
+        "symfony/http-client": "^4.3",
+        "symfony/process": "^4.3",
         "symfony/psr-http-message-bridge": "^1.1",
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
@@ -78,8 +83,6 @@
         "sort-packages": true
     },
     "suggest": {
-        "php-http/httplug": "For Android SafetyNet support",
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application",
         "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "require-dev": {
@@ -88,10 +91,7 @@
         "doctrine/orm": "^2.6",
         "fzaninotto/faker": "^1.8",
         "infection/infection": "^0.13",
-        "nyholm/psr7": "^1.1",
         "php-coveralls/php-coveralls": "^2.0",
-        "php-http/httplug": "^2.0",
-        "php-http/httplug-bundle": "^1.0",
         "php-http/mock-client": "^1.0",
         "phpstan/phpstan": "^0.11",
         "phpstan/phpstan-beberlei-assert": "^0.11.0",
@@ -99,7 +99,7 @@
         "phpstan/phpstan-phpunit": "^0.11",
         "phpstan/phpstan-strict-rules": "^0.11",
         "phpunit/phpcov": "^6.0",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "8.2.5",
         "ramsey/uuid": "^3.8",
         "symfony/browser-kit": "^4.3",
         "symfony/phpunit-bridge": "^4.3",

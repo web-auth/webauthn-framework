@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use Base64Url\Base64Url;
 use JsonSerializable;
-use function Safe\base64_decode;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -120,7 +120,7 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
         }
 
         return new self(
-            base64_decode($json['challenge'], true),
+            Base64Url::decode($json['challenge']),
             $json['timeout'] ?? null,
             $json['rpId'] ?? null,
             $allowCredentials,
@@ -132,7 +132,7 @@ class PublicKeyCredentialRequestOptions implements JsonSerializable
     public function jsonSerialize(): array
     {
         $json = [
-            'challenge' => base64_encode($this->challenge),
+            'challenge' => Base64Url::encode($this->challenge),
         ];
 
         if (null !== $this->rpId) {

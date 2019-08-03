@@ -28,27 +28,27 @@ class DisplayPNGCharacteristicsDescriptor
     private $height;
 
     /**
-     * @var string
+     * @var int
      */
     private $bitDepth;
 
     /**
-     * @var string
+     * @var int
      */
     private $colorType;
 
     /**
-     * @var string
+     * @var int
      */
     private $compression;
 
     /**
-     * @var string
+     * @var int
      */
     private $filter;
 
     /**
-     * @var string
+     * @var int
      */
     private $interlace;
 
@@ -67,27 +67,27 @@ class DisplayPNGCharacteristicsDescriptor
         return $this->height;
     }
 
-    public function getBitDepth(): string
+    public function getBitDepth(): int
     {
         return $this->bitDepth;
     }
 
-    public function getColorType(): string
+    public function getColorType(): int
     {
         return $this->colorType;
     }
 
-    public function getCompression(): string
+    public function getCompression(): int
     {
         return $this->compression;
     }
 
-    public function getFilter(): string
+    public function getFilter(): int
     {
         return $this->filter;
     }
 
-    public function getInterlace(): string
+    public function getInterlace(): int
     {
         return $this->interlace;
     }

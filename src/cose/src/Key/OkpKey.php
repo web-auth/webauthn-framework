@@ -29,9 +29,9 @@ class OkpKey extends Key
         self::CURVE_ED448,
     ];
 
-    private const DATA_CURVE = -1;
-    private const DATA_X = -2;
-    private const DATA_D = -4;
+    public const DATA_CURVE = -1;
+    public const DATA_X = -2;
+    public const DATA_D = -4;
 
     public function __construct(array $data)
     {

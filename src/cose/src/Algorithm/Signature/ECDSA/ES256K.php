@@ -16,20 +16,20 @@ namespace Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 
-final class ES512 extends ECDSA
+final class ES256K extends ECDSA
 {
     public static function identifier(): int
     {
-        return Algorithms::COSE_ALGORITHM_ES512;
+        return Algorithms::COSE_ALGORITHM_ES256K;
     }
 
     protected function getHashAlgorithm(): int
     {
-        return OPENSSL_ALGO_SHA512;
+        return OPENSSL_ALGO_SHA256;
     }
 
     protected function getCurve(): int
     {
-        return Ec2Key::CURVE_P521;
+        return Ec2Key::CURVE_P256K;
     }
 }

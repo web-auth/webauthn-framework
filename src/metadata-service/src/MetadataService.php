@@ -15,19 +15,22 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use Http\Client\HttpClient;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use function League\Uri\build;
+use function League\Uri\build_query;
+use function League\Uri\parse;
+use function League\Uri\parse_query;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
 class MetadataService
 {
-    private const SERVICE_URI = 'https://mds2.fidoalliance.org';
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     private $httpClient;
 
@@ -41,21 +44,50 @@ class MetadataService
      */
     private $token;
 
-    public function __construct(HttpClient $httpClient, RequestFactoryInterface $requestFactory, string $token)
+    /**
+     * @var array
+     */
+    private $additionalQueryStringValues;
+
+    /**
+     * @var array
+     */
+    private $additionalHeaders;
+    /**
+     * @var string
+     */
+    private $serviceUri;
+
+    public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalQueryStringValues = [], array $additionalHeaders = [])
     {
+        $this->serviceUri = $serviceUri;
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
-        $this->token = $token;
+        $this->additionalQueryStringValues = $additionalQueryStringValues;
+        $this->additionalHeaders = $additionalHeaders;
     }
 
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
     {
-        $uri = sprintf('%s?token=%s', $entry->getUrl(), $this->token);
+        $uri = $this->buildUri($entry->getUrl());
 
         return $this->getMetadataStatementAt($uri, true);
     }
 
-    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?HttpClient $client = null): MetadataStatement
+    private function buildUri(string $uri): string
+    {
+        $parsedUri = parse($uri);
+        $queryString = $parsedUri['query'];
+        $query = parse_query($queryString ?? '');
+        foreach ($this->additionalQueryStringValues as $k => $v) {
+            $query[$k] = $v;
+        }
+        $parsedUri['query'] = build_query($query);
+
+        return build($parsedUri);
+    }
+
+    public function getMetadataStatementAt(string $uri, bool $isBase64UrlEncoded, ?ClientInterface $client = null): MetadataStatement
     {
         $payload = $this->callMetadataService($uri, $client);
         $json = $isBase64UrlEncoded ? Base64Url::decode($payload) : $payload;
@@ -64,7 +96,7 @@ class MetadataService
         return MetadataStatement::createFromArray($data);
     }
 
-    public function getMetadataTOCPayloadAt(string $uri, ?HttpClient $client = null): MetadataTOCPayload
+    public function getMetadataTOCPayloadAt(string $uri, ?ClientInterface $client = null): MetadataTOCPayload
     {
         $content = $this->callMetadataService($uri, $client);
         $payload = $this->getJwsPayload($content);
@@ -74,15 +106,18 @@ class MetadataService
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
     {
-        $uri = sprintf('%s/?token=%s', self::SERVICE_URI, $this->token);
+        $uri = $this->buildUri($this->serviceUri);
 
         return $this->getMetadataTOCPayloadAt($uri);
     }
 
-    private function callMetadataService(string $uri, ?HttpClient $client): string
+    private function callMetadataService(string $uri, ?ClientInterface $client): string
     {
         $client = $client ?? $this->httpClient;
         $request = $this->requestFactory->createRequest('GET', $uri);
+        foreach ($this->additionalHeaders as $k => $v) {
+            $request = $request->withHeader($k, $v);
+        }
         $response = $client->sendRequest($request);
         Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
 

@@ -15,13 +15,14 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use CBOR\StringStream;
 use Cose\Algorithms;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
+use Webauthn\CertificateToolbox;
+use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
@@ -47,12 +48,12 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
         $pubAreaHash = hash($this->getTPMHash($pubArea['nameAlg']), $attestation['attStmt']['pubArea'], true);
         $attestedName = $pubArea['nameAlg'].$pubAreaHash;
-        Assertion::eq($attestedName, $certInfo['attestedName']);
+        Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
-        $certificates = $this->convertCertificatesToPem($attestation['attStmt']['x5c']);
+        $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
 
         return AttestationStatement::createAttCA(
             $this->name(),
@@ -65,7 +66,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         $attToBeSigned = $authenticatorData->getAuthData().$clientDataJSONHash;
         $attToBeSignedHash = hash(Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')), $attToBeSigned, true);
-        Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash);
+        Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
 
         switch (true) {
             case $attestationStatement->getTrustPath() instanceof CertificateTrustPath:
@@ -99,8 +100,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestedNameLength = unpack('n', $certInfo->read(2))[1];
         $attestedName = $certInfo->read($attestedNameLength);
 
-        $attestedQaulifiedNameLength = unpack('n', $certInfo->read(2))[1];
-        $attestedQaulifiedName = $certInfo->read($attestedQaulifiedNameLength); //Ignore
+        $attestedQualifiedNameLength = unpack('n', $certInfo->read(2))[1];
+        $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLength); //Ignore
+        Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
+        $certInfo->close();
 
         return [
             'magic' => $magic,
@@ -110,7 +113,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'clockInfo' => $clockInfo,
             'firmwareVersion' => $firmwareVersion,
             'attestedName' => $attestedName,
-            'attestedQaulifiedName' => $attestedQaulifiedName,
+            'attestedQualifiedName' => $attestedQualifiedName,
         ];
     }
 
@@ -131,6 +134,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $uniqueLength = unpack('n', $pubArea->read(2))[1];
         $unique = $pubArea->read($uniqueLength);
+        Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
+        $pubArea->close();
 
         return [
             'type' => $type,
@@ -206,6 +211,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $certificates = $trustPath->getCertificates();
         Assertion::greaterThan(\count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        CertificateToolbox::checkChain($certificates);
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

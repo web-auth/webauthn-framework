@@ -23,18 +23,18 @@ use function Safe\sprintf;
 
 class RsaKey extends Key
 {
-    private const DATA_N = -1;
-    private const DATA_E = -2;
-    private const DATA_D = -3;
-    private const DATA_P = -4;
-    private const DATA_Q = -5;
-    private const DATA_DP = -6;
-    private const DATA_DQ = -7;
-    private const DATA_QI = -8;
-    private const DATA_OTHER = -9;
-    private const DATA_RI = -10;
-    private const DATA_DI = -11;
-    private const DATA_TI = -12;
+    public const DATA_N = -1;
+    public const DATA_E = -2;
+    public const DATA_D = -3;
+    public const DATA_P = -4;
+    public const DATA_Q = -5;
+    public const DATA_DP = -6;
+    public const DATA_DQ = -7;
+    public const DATA_QI = -8;
+    public const DATA_OTHER = -9;
+    public const DATA_RI = -10;
+    public const DATA_DI = -11;
+    public const DATA_TI = -12;
 
     public function __construct(array $data)
     {

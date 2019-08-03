@@ -134,7 +134,9 @@ abstract class AbstractTestCase extends TestCase
         $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
             $client ?? new Client(),
             'api_key',
-            new Psr17Factory()
+            new Psr17Factory(),
+            0,
+            99999999999
         ));
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
             $this->getDecoder()

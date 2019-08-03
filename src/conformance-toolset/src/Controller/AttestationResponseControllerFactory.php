@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Controller;
 
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -40,15 +42,6 @@ final class AttestationResponseControllerFactory
     private $validator;
 
     /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-    /**
      * @var PublicKeyCredentialLoader
      */
     private $publicKeyCredentialLoader;
@@ -60,41 +53,53 @@ final class AttestationResponseControllerFactory
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->httpMessageFactory = $httpMessageFactory;
+        $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
-    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
+    public function createAttestationRequestController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AttestationRequestController
     {
         return new AttestationRequestController(
             $this->serializer,
             $this->validator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
-            $sessionParameterName
+            $sessionParameterName,
+            $this->logger,
+            $this->cacheItemPool
         );
     }
 
-    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
+    public function createAttestationResponseController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $sessionParameterName): AttestationResponseController
     {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $this->userEntityRepository,
-            $this->credentialSourceRepository,
-            $sessionParameterName
+            $publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository,
+            $sessionParameterName,
+            $this->logger,
+            $this->cacheItemPool
         );
     }
 }

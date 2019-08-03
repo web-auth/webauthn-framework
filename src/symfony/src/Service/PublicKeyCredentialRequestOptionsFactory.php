@@ -31,7 +31,7 @@ final class PublicKeyCredentialRequestOptionsFactory
         $this->profiles = $profiles;
     }
 
-    public function create(string $key, array $allowCredentials, ?string $userVerification = null): PublicKeyCredentialRequestOptions
+    public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
     {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
@@ -42,7 +42,7 @@ final class PublicKeyCredentialRequestOptionsFactory
             $profile['rp_id'],
             $allowCredentials,
             $userVerification ?? $profile['user_verification'],
-            $this->createExtensions($profile)
+            $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
         );
     }
 

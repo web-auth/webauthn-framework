@@ -14,13 +14,17 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
+use function Safe\json_encode;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\ConformanceToolset\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -63,8 +67,16 @@ final class AssertionRequestController
      * @var string
      */
     private $sessionParameterName;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cacheItemPool;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -73,6 +85,8 @@ final class AssertionRequestController
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->sessionParameterName = $sessionParameterName;
+        $this->logger = $logger;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response
@@ -81,22 +95,34 @@ final class AssertionRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
+            $this->logger->debug('Receiving data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
+            $extensions = $creationOptionsRequest->extensions;
+            if (\is_array($extensions)) {
+                $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
+            }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
+            $this->logger->debug('User entity: '.json_encode($content));
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
                 $allowedCredentials,
-                $creationOptionsRequest->userVerification
+                $creationOptionsRequest->userVerification,
+                $extensions
             );
+            $this->logger->debug('Assertion options: '.json_encode($publicKeyCredentialRequestOptions));
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
             );
-            $request->getSession()->set($this->sessionParameterName, ['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
+            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
+            $item->set(['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
+            $this->cacheItemPool->save($item);
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
+            $this->logger->debug('Error: '.$throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

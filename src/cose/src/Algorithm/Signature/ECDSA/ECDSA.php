@@ -32,8 +32,9 @@ abstract class ECDSA implements Signature
     public function verify(string $data, Key $key, string $signature): bool
     {
         $key = $this->handleKey($key);
+        $publicKey = $key->toPublic();
 
-        return 1 === openssl_verify($data, $signature, $key->asPEM(), $this->getHashAlgorithm());
+        return 1 === openssl_verify($data, $signature, $publicKey->asPEM(), $this->getHashAlgorithm());
     }
 
     private function handleKey(Key $key): Ec2Key

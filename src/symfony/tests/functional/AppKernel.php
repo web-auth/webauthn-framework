@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Http\HttplugBundle\HttplugBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -40,7 +39,6 @@ final class AppKernel extends Kernel
         return [
             new FrameworkBundle(),
             new SpomkyLabsCborBundle(),
-            new HttplugBundle(),
             new DoctrineBundle(),
             new SecurityBundle(),
 

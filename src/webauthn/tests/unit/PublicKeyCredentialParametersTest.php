@@ -30,15 +30,15 @@ class PublicKeyCredentialParametersTest extends TestCase
      */
     public function anPublicKeyCredentialParametersCanBeCreatedAndValueAccessed(): void
     {
-        $parameters = new PublicKeyCredentialParameters('type', 100);
+        $parameters = new PublicKeyCredentialParameters('public-key', 100);
 
-        static::assertEquals('type', $parameters->getType());
+        static::assertEquals('public-key', $parameters->getType());
         static::assertEquals(100, $parameters->getAlg());
-        static::assertEquals('{"type":"type","alg":100}', json_encode($parameters));
+        static::assertEquals('{"type":"public-key","alg":100}', json_encode($parameters));
 
-        $data = PublicKeyCredentialParameters::createFromString('{"type":"type","alg":100}');
-        static::assertEquals('type', $data->getType());
+        $data = PublicKeyCredentialParameters::createFromString('{"type":"public-key","alg":100}');
+        static::assertEquals('public-key', $data->getType());
         static::assertEquals(100, $data->getAlg());
-        static::assertEquals('{"type":"type","alg":100}', json_encode($data));
+        static::assertEquals('{"type":"public-key","alg":100}', json_encode($data));
     }
 }
