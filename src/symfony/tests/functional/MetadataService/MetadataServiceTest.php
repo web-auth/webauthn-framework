@@ -37,7 +37,6 @@ class MetadataServiceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $map = $this->getResponsesMap();
         $client = self::$container->get('httplug.client.mock');
         $this->prepareResponsesMap($client);
 

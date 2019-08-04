@@ -34,8 +34,10 @@ class MetadataServiceFactory
         $this->requestFactory = $requestFactory;
     }
 
-    public function create(string $serviceUri, array $additionalQueryStringValues = [], array $additionalHeaders = []): MetadataService
+    public function create(string $serviceUri, array $additionalQueryStringValues = [], array $additionalHeaders = [], ?ClientInterface $client = null): MetadataService
     {
-        return new MetadataService($serviceUri, $this->httpClient, $this->requestFactory, $additionalQueryStringValues, $additionalHeaders);
+        $client = $client ?? $this->httpClient;
+
+        return new MetadataService($serviceUri, $client, $this->requestFactory, $additionalQueryStringValues, $additionalHeaders);
     }
 }

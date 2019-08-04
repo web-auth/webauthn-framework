@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Cose\Algorithms;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -88,10 +89,7 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('metadata_service')
-                    ->addDefaultsIfNotSet()
-                    ->treatNullLike([])
-                    ->treatFalseLike([])
-                    ->treatTrueLike([])
+                    ->canBeEnabled()
                     ->children()
                         ->scalarNode('http_client')
                             ->defaultValue('webauthn.metadata_service.default_http_client')
@@ -132,6 +130,10 @@ final class Configuration implements ConfigurationInterface
                                         ->useAttributeAsKey('name')
                                         ->variablePrototype()->end()
                                     ->end()
+                                    ->scalarNode('http_client')
+                                       ->defaultNull()
+                                        ->info('If set, this client will override the one defined in the "metadata_service" section')
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()
@@ -153,6 +155,10 @@ final class Configuration implements ConfigurationInterface
                                     ->scalarNode('uri')
                                         ->isRequired()
                                         ->info('Metadata URI (e.g. https://raw.githubusercontent.com/solokeys/solo/2.1.0/metadata/Solo-FIDO2-CTAP2-Authenticator.json)')
+                                    ->end()
+                                    ->scalarNode('http_client')
+                                        ->defaultNull()
+                                        ->info('If set, this client will override the one defined in the "metadata_service" section')
                                     ->end()
                                     ->arrayNode('additional_headers')
                                         ->info('Additional header parameters (e.g. authorization)')
@@ -206,9 +212,24 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarPrototype()->end()
                             ->end()
                             ->arrayNode('public_key_credential_parameters')
-                                ->variablePrototype()->end()
-                                ->isRequired()
+                                ->integerPrototype()->end()
                                 ->requiresAtLeastOneElement()
+                                ->treatNullLike([])
+                                ->treatFalseLike([])
+                                ->treatTrueLike([])
+                                ->defaultValue([
+                                    Algorithms::COSE_ALGORITHM_EdDSA,
+                                    Algorithms::COSE_ALGORITHM_ES256,
+                                    Algorithms::COSE_ALGORITHM_ES256K,
+                                    Algorithms::COSE_ALGORITHM_ES384,
+                                    Algorithms::COSE_ALGORITHM_ES512,
+                                    Algorithms::COSE_ALGORITHM_RS256,
+                                    Algorithms::COSE_ALGORITHM_RS384,
+                                    Algorithms::COSE_ALGORITHM_RS512,
+                                    Algorithms::COSE_ALGORITHM_PS256,
+                                    Algorithms::COSE_ALGORITHM_PS384,
+                                    Algorithms::COSE_ALGORITHM_PS512,
+                                ])
                             ->end()
                             ->scalarNode('attestation_conveyance')
                                 ->defaultValue(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)

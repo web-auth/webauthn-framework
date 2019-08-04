@@ -30,7 +30,7 @@ class MetadataTOCPayloadEntry
     /**
      * @var string[]
      */
-    private $attestationCertificateKeyIdentifiers;
+    private $attestationCertificateKeyIdentifiers = [];
 
     /**
      * @var string|null
@@ -45,12 +45,12 @@ class MetadataTOCPayloadEntry
     /**
      * @var BiometricStatusReport[]
      */
-    private $biometricStatusReports;
+    private $biometricStatusReports = [];
 
     /**
      * @var StatusReport[]
      */
-    private $statusReports;
+    private $statusReports = [];
 
     /**
      * @var string

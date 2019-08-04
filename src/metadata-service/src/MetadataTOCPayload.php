@@ -33,7 +33,7 @@ class MetadataTOCPayload
     /**
      * @var MetadataTOCPayloadEntry[]
      */
-    private $entries;
+    private $entries = [];
 
     public function getLegalHeader(): ?string
     {

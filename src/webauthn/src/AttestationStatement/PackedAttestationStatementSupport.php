@@ -24,6 +24,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
@@ -41,10 +42,16 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private $algorithmManager;
 
-    public function __construct(Decoder $decoder, Manager $algorithmManager)
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
+    public function __construct(Decoder $decoder, Manager $algorithmManager, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->decoder = $decoder;
         $this->algorithmManager = $algorithmManager;
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -86,8 +93,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     {
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        //Check certificate CA chain and returns the Attestation Certificate
-        $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
+        Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -132,8 +138,17 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
     {
         $certificates = $trustPath->getCertificates();
+        $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
+        if (null !== $this->metadataStatementRepository) {
+            $certificates = CertificateToolbox::addAttestationRootCertificates(
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+                $certificates,
+                $this->metadataStatementRepository
+            );
+        }
+
+        //Check certificate CA chain and returns the Attestation Certificate
         CertificateToolbox::checkChain($certificates);
-        Assertion::notEmpty($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

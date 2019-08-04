@@ -175,7 +175,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
     public function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
-        if (!class_exists(MetadataServiceFactory::class)) {
+        if (false === $config['metadata_service']['enabled'] || !class_exists(MetadataServiceFactory::class)) {
             return;
         }
         $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
@@ -190,6 +190,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $statementConfig['service_uri'],
                 $statementConfig['additional_query_string_values'],
                 $statementConfig['additional_headers'],
+                $statementConfig['http_client'],
             ]);
             $metadataService->setPublic($statementConfig['is_public']);
             $metadataService->addTag(MetadataServiceCompilerPass::TAG);
@@ -203,6 +204,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $statementConfig['uri'],
                 $statementConfig['is_base_64'],
                 $statementConfig['additional_headers'],
+                $statementConfig['http_client'],
             ]);
             $metadataService->setPublic($statementConfig['is_public']);
             $metadataService->addTag(SingleMetadataCompilerPass::TAG);

@@ -100,7 +100,7 @@ class MetadataStatement
     /**
      * @var string[]
      */
-    private $alternativeDescriptions;
+    private $alternativeDescriptions = [];
 
     /**
      * @var int
@@ -115,7 +115,7 @@ class MetadataStatement
     /**
      * @var Version[]
      */
-    private $upv;
+    private $upv = [];
 
     /**
      * @var string|null
@@ -130,7 +130,7 @@ class MetadataStatement
     /**
      * @var int[]
      */
-    private $authenticationAlgorithms;
+    private $authenticationAlgorithms = [];
 
     /**
      * @var int|null
@@ -140,17 +140,17 @@ class MetadataStatement
     /**
      * @var int[]
      */
-    private $publicKeyAlgAndEncodings;
+    private $publicKeyAlgAndEncodings = [];
 
     /**
      * @var int[]
      */
-    private $attestationTypes;
+    private $attestationTypes = [];
 
     /**
      * @var VerificationMethodANDCombinations[]
      */
-    private $userVerificationDetails;
+    private $userVerificationDetails = [];
 
     /**
      * @var int

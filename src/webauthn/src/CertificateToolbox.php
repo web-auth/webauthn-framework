@@ -19,6 +19,7 @@ use function Safe\file_put_contents;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
+use Webauthn\MetadataService\MetadataStatementRepository;
 
 class CertificateToolbox
 {
@@ -72,14 +73,42 @@ class CertificateToolbox
         }
     }
 
-    public static function convertDERToPEM(string $certificate): string
+    public static function addAttestationRootCertificates(string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
     {
-        $derCertificate = self::unusedBytesFix($certificate);
+        $metadataStatement = $metadataStatementRepository->findOneByAAGUID($aaguid);
+        if (null === $metadataStatement) {
+            return $certificates;
+        }
+
+        $attestationRootCertificates = $metadataStatement->getAttestationRootCertificates();
+        if (0 === \count($attestationRootCertificates)) {
+            return $certificates;
+        }
+
+        foreach ($attestationRootCertificates as $attestationRootCertificate) {
+            $attestationRootCertificate = self::fixPEMStructure($attestationRootCertificate);
+            if (!\in_array($attestationRootCertificate, $certificates, true)) {
+                $certificates[] = $attestationRootCertificate;
+            }
+        }
+
+        return $certificates;
+    }
+
+    public static function fixPEMStructure(string $certificate): string
+    {
         $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
-        $pemCert .= chunk_split(base64_encode($derCertificate), 64, PHP_EOL);
+        $pemCert .= chunk_split($certificate, 64, PHP_EOL);
         $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
 
         return $pemCert;
+    }
+
+    public static function convertDERToPEM(string $certificate): string
+    {
+        $derCertificate = self::unusedBytesFix($certificate);
+
+        return self::fixPEMStructure(base64_encode($derCertificate));
     }
 
     public static function convertAllDERToPEM(array $certificates): array
