@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Component\HttpClient\Psr18Client;
 use Webauthn\MetadataService\MetadataServiceFactory;
+use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\SingleMetadataFactory;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -22,13 +24,22 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
-    $container->set('webauthn.metadata_services.default_http_client')
+    $container->set('webauthn.metadata_service.default_http_client')
         ->class(Psr18Client::class);
+
+    $container->set(MetadataStatementRepository::class)
+        ->public();
 
     $container->set(MetadataServiceFactory::class)
         ->public()
         ->args([
-            ref('webauthn.metadata_services.http_client'),
-            ref('webauthn.metadata_services.request_factory'),
+            ref('webauthn.metadata_service.http_client'),
+            ref('webauthn.metadata_service.request_factory'),
+        ]);
+    $container->set(SingleMetadataFactory::class)
+        ->public()
+        ->args([
+            ref('webauthn.metadata_service.http_client'),
+            ref('webauthn.metadata_service.request_factory'),
         ]);
 };

@@ -59,9 +59,9 @@
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
         "thecodingmachine/safe": "^0.1",
-        "web-token/jwt-key-mgmt": "^2.0.3",
-        "web-token/jwt-signature": "^2.0.3",
-        "web-token/jwt-signature-algorithm-ecdsa": "^2.0"
+        "web-token/jwt-key-mgmt": "^2.0.9",
+        "web-token/jwt-signature": "^2.0.9",
+        "web-token/signature-pack": "^2.0.9"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",

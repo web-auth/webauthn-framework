@@ -23,6 +23,8 @@ use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportComp
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\MetadataServiceCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\SingleMetadataCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 use Webauthn\Bundle\Security\Factory\WebauthnSecurityFactory;
 
@@ -46,6 +48,8 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new ExtensionOutputCheckerCompilerPass());
         $container->addCompilerPass(new CoseAlgorithmCompilerPass());
         $container->addCompilerPass(new DynamicRouteCompilerPass());
+        $container->addCompilerPass(new MetadataServiceCompilerPass());
+        $container->addCompilerPass(new SingleMetadataCompilerPass());
 
         $this->registerMappings($container);
 

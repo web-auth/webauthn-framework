@@ -123,12 +123,20 @@ webauthn:
     metadata_service:
         http_client: 'httplug.client.mock'
         request_factory: 'Nyholm\Psr7\Factory\Psr17Factory'
+        #cache: 'app.cache'
         services:
             fido_alliance:
                 is_public: true
                 service_uri: 'https://foo.com'
                 additional_query_string_values:
                     token: '--TOKEN--'
+        single_statements:
+            solo:
+                is_public: true
+                uri: 'https://raw.githubusercontent.com/solokeys/solo/2.1.0/metadata/Solo-FIDO2-CTAP2-Authenticator.json'
+                additional_headers: ~
+                is_base_64: false
+
 
 security:
     providers:
