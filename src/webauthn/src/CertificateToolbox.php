@@ -25,9 +25,9 @@ class CertificateToolbox
 {
     public static function checkChain(array $certificates): void
     {
-        /*if (1 <= \count($certificates)) {
+        if (1 <= \count($certificates)) {
             return;
-        }*/
+        }
         $tmpFiles = [];
 
         foreach ($certificates as $certificate) {

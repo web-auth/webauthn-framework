@@ -187,7 +187,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $metadataService = new Definition(MetadataService::class);
             $metadataService->setFactory([new Reference(MetadataServiceFactory::class), 'create']);
             $metadataService->setArguments([
-                $statementConfig['service_uri'],
+                $statementConfig['uri'],
                 $statementConfig['additional_query_string_values'],
                 $statementConfig['additional_headers'],
                 $statementConfig['http_client'],

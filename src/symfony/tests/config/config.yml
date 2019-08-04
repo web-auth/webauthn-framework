@@ -126,7 +126,7 @@ webauthn:
         services:
             fido_alliance:
                 is_public: true
-                service_uri: 'https://foo.com'
+                uri: 'https://foo.com'
                 additional_query_string_values:
                     token: '--TOKEN--'
         single_statements:

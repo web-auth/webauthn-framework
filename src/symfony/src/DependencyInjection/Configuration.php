@@ -110,7 +110,7 @@ final class Configuration implements ConfigurationInterface
                                         ->defaultFalse()
                                         ->info('If true, the service will be public')
                                     ->end()
-                                    ->scalarNode('service_uri')
+                                    ->scalarNode('uri')
                                         ->isRequired()
                                         ->info('Metadata service URI (e.g. https://mds2.fidoalliance.org)')
                                     ->end()
