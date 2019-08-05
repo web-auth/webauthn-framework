@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Psr\Cache\CacheItemPoolInterface;
-
 class MetadataStatementRepository
 {
     /**
@@ -26,11 +24,6 @@ class MetadataStatementRepository
      * @var SingleMetadata[]
      */
     private $singleStatements = [];
-
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
 
     public function addService(MetadataService $service): void
     {
@@ -106,5 +99,21 @@ class MetadataStatementRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @return MetadataService[]
+     */
+    protected function getServices(): array
+    {
+        return $this->services;
+    }
+
+    /**
+     * @return SingleMetadata[]
+     */
+    protected function getSingleStatements(): array
+    {
+        return $this->singleStatements;
     }
 }

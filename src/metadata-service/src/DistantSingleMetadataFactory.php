@@ -16,7 +16,7 @@ namespace Webauthn\MetadataService;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
-class SingleMetadataFactory
+class DistantSingleMetadataFactory
 {
     /**
      * @var ClientInterface
@@ -34,10 +34,10 @@ class SingleMetadataFactory
         $this->requestFactory = $requestFactory;
     }
 
-    public function create(string $uri, bool $isBare64Encoded, array $additionalHeaders = [], ?ClientInterface $client = null): SingleMetadata
+    public function create(string $uri, bool $isBare64Encoded, array $additionalHeaders = [], ?ClientInterface $client = null): DistantSingleMetadata
     {
         $client = $client ?? $this->httpClient;
 
-        return new SingleMetadata($uri, $isBare64Encoded, $client, $this->requestFactory, $additionalHeaders);
+        return new DistantSingleMetadata($uri, $isBare64Encoded, $client, $this->requestFactory, $additionalHeaders);
     }
 }

@@ -13,47 +13,38 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use function Safe\base64_decode;
+use function Safe\json_decode;
 
 class SingleMetadata
 {
     /**
-     * @var ClientInterface
+     * @var MetadataStatement
      */
-    private $httpClient;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
+    private $statement;
     /**
      * @var string
      */
-    private $uri;
-
+    private $data;
     /**
      * @var bool
      */
     private $isBare64Encoded;
 
-    public function __construct(string $uri, bool $isBare64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
+    public function __construct(string $data, bool $isBare64Encoded)
     {
-        $this->uri = $uri;
+        $this->data = $data;
         $this->isBare64Encoded = $isBare64Encoded;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->additionalHeaders = $additionalHeaders;
     }
 
     public function getMetadataStatement(): MetadataStatement
     {
-        return MetadataStatementFetcher::fetchMetadataStatement($this->uri, $this->isBare64Encoded, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
+        if (null === $this->statement) {
+            $json = $this->isBare64Encoded ? base64_decode($this->data, true) : $this->data;
+            $statement = json_decode($json, true);
+            $this->statement = MetadataStatement::createFromArray($statement);
+        }
+
+        return $this->statement;
     }
 }

@@ -41,10 +41,12 @@ use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
+use Webauthn\MetadataService\DistantSingleMetadata;
+use Webauthn\MetadataService\DistantSingleMetadataFactory;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataServiceFactory;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\SingleMetadata;
-use Webauthn\MetadataService\SingleMetadataFactory;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -80,7 +82,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
         $container->registerForAutoconfiguration(MetadataService::class)->addTag(MetadataServiceCompilerPass::TAG);
-        $container->registerForAutoconfiguration(SingleMetadata::class)->addTag(SingleMetadataCompilerPass::TAG);
+        $container->registerForAutoconfiguration(DistantSingleMetadata::class)->addTag(SingleMetadataCompilerPass::TAG);
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
@@ -178,6 +180,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (false === $config['metadata_service']['enabled'] || !class_exists(MetadataServiceFactory::class)) {
             return;
         }
+        $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
         $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
         $container->setAlias('webauthn.metadata_service.request_factory', $config['metadata_service']['request_factory']);
         $loader->load('metadata_service.php');
@@ -196,15 +199,26 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $metadataService->addTag(MetadataServiceCompilerPass::TAG);
             $container->setDefinition($metadataServiceId, $metadataService);
         }
-        foreach ($config['metadata_service']['single_statements'] as $name => $statementConfig) {
-            $metadataServiceId = sprintf('webauthn.metadata_service.single_statement.%s', $name);
-            $metadataService = new Definition(SingleMetadata::class);
-            $metadataService->setFactory([new Reference(SingleMetadataFactory::class), 'create']);
+        foreach ($config['metadata_service']['distant_single_statements'] as $name => $statementConfig) {
+            $metadataServiceId = sprintf('webauthn.metadata_service.distant_single_statement.%s', $name);
+            $metadataService = new Definition(DistantSingleMetadata::class);
+            $metadataService->setFactory([new Reference(DistantSingleMetadataFactory::class), 'create']);
             $metadataService->setArguments([
                 $statementConfig['uri'],
                 $statementConfig['is_base_64'],
                 $statementConfig['additional_headers'],
                 $statementConfig['http_client'],
+            ]);
+            $metadataService->setPublic($statementConfig['is_public']);
+            $metadataService->addTag(SingleMetadataCompilerPass::TAG);
+            $container->setDefinition($metadataServiceId, $metadataService);
+        }
+        foreach ($config['metadata_service']['from_data'] as $name => $statementConfig) {
+            $metadataServiceId = sprintf('webauthn.metadata_service.from_data.%s', $name);
+            $metadataService = new Definition(SingleMetadata::class);
+            $metadataService->setArguments([
+                $statementConfig['data'],
+                $statementConfig['is_base_64'],
             ]);
             $metadataService->setPublic($statementConfig['is_public']);
             $metadataService->addTag(SingleMetadataCompilerPass::TAG);
