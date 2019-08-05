@@ -19,14 +19,15 @@ use function Safe\file_put_contents;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
+use Webauthn\MetadataService\MetadataStatementRepository;
 
 class CertificateToolbox
 {
     public static function checkChain(array $certificates): void
     {
-        /*if (1 <= \count($certificates)) {
+        if (1 <= \count($certificates)) {
             return;
-        }*/
+        }
         $tmpFiles = [];
 
         foreach ($certificates as $certificate) {
@@ -68,20 +69,46 @@ class CertificateToolbox
             unlink($filename);
         }
         if (!$process->isSuccessful()) {
-            dump($process->getErrorOutput());
-            dump($process->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
         }
+    }
+
+    public static function addAttestationRootCertificates(string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
+    {
+        $metadataStatement = $metadataStatementRepository->findOneByAAGUID($aaguid);
+        if (null === $metadataStatement) {
+            return $certificates;
+        }
+
+        $attestationRootCertificates = $metadataStatement->getAttestationRootCertificates();
+        if (0 === \count($attestationRootCertificates)) {
+            return $certificates;
+        }
+
+        foreach ($attestationRootCertificates as $attestationRootCertificate) {
+            $attestationRootCertificate = self::fixPEMStructure($attestationRootCertificate);
+            if (!\in_array($attestationRootCertificate, $certificates, true)) {
+                $certificates[] = $attestationRootCertificate;
+            }
+        }
+
+        return $certificates;
+    }
+
+    public static function fixPEMStructure(string $certificate): string
+    {
+        $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
+        $pemCert .= chunk_split($certificate, 64, PHP_EOL);
+        $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
+
+        return $pemCert;
     }
 
     public static function convertDERToPEM(string $certificate): string
     {
         $derCertificate = self::unusedBytesFix($certificate);
-        $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
-        $pemCert .= chunk_split(base64_encode($derCertificate), 64, PHP_EOL);
-        $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
 
-        return $pemCert;
+        return self::fixPEMStructure(base64_encode($derCertificate));
     }
 
     public static function convertAllDERToPEM(array $certificates): array

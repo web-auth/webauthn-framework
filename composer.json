@@ -20,7 +20,9 @@
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
-            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/"
+            "Webauthn\\MetadataService\\": "src/metadata-service/src/",
+            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
+            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
         }
     },
     "autoload-dev": {
@@ -29,7 +31,8 @@
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/"
+            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
+            "Webauthn\\MetadataService\\Tests\\Functional\\": "src/metadata-service/tests/functional/"
         }
     },
     "require": {
@@ -39,6 +42,7 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "fgrosse/phpasn1": "^2.1",
+        "league/uri": "^5.3",
         "nyholm/psr7": "^1.1",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
@@ -55,9 +59,9 @@
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
         "thecodingmachine/safe": "^0.1",
-        "web-token/jwt-key-mgmt": "^2.0",
-        "web-token/jwt-signature": "^2.0.3",
-        "web-token/signature-pack": "^2.0.3"
+        "web-token/jwt-key-mgmt": "^2.0.9",
+        "web-token/jwt-signature": "^2.0.9",
+        "web-token/signature-pack": "^2.0.9"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",

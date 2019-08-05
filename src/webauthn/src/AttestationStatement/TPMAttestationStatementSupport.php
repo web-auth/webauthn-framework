@@ -22,15 +22,26 @@ use RuntimeException;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
     public function name(): string
     {
         return 'tpm';
+    }
+
+    public function __construct(?MetadataStatementRepository $metadataStatementRepository = null)
+    {
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function load(array $attestation): AttestationStatement
@@ -54,6 +65,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
+        Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         return AttestationStatement::createAttCA(
             $this->name(),
@@ -210,7 +222,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
-        Assertion::greaterThan(\count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        if (null !== $this->metadataStatementRepository) {
+            $certificates = CertificateToolbox::addAttestationRootCertificates(
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+                $certificates,
+                $this->metadataStatementRepository
+            );
+        }
         CertificateToolbox::checkChain($certificates);
 
         // Check certificate CA chain and returns the Attestation Certificate

@@ -29,6 +29,7 @@ use function Safe\json_decode;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
@@ -68,7 +69,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $maxAge;
 
-    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory, int $leeway = 0, int $maxAge = 60000)
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
+    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
@@ -77,6 +83,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->initJwsVerifier();
         $this->leeway = $leeway;
         $this->maxAge = $maxAge;
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -109,6 +116,13 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
+        if (null !== $this->metadataStatementRepository) {
+            $certificates = CertificateToolbox::addAttestationRootCertificates(
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+                $certificates,
+                $this->metadataStatementRepository
+            );
+        }
         CertificateToolbox::checkChain($certificates);
         $parsedCertificate = openssl_x509_parse(current($certificates));
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
@@ -205,10 +219,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private function convertCertificatesToPem(array $certificates): array
     {
         foreach ($certificates as $k => $v) {
-            $tmp = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
-            $tmp .= chunk_split($v, 64, PHP_EOL);
-            $tmp .= '-----END CERTIFICATE-----'.PHP_EOL;
-            $certificates[$k] = $tmp;
+            $certificates[$k] = CertificateToolbox::fixPEMStructure($v);
         }
 
         return $certificates;

@@ -1,0 +1,42 @@
+{
+    "name": "web-auth/metadata-service",
+    "type": "library",
+    "license": "MIT",
+    "description": "Metadata Service for FIDO2/Webauthn",
+    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/metadata-service/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-mbstring": "*",
+        "php-http/httplug": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\MetadataService\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webauthn\\MetadataService\\Tests\\Functional\\": "tests/functional/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "v1.0": "1.0.x-dev",
+            "v1.1": "1.1.x-dev",
+            "v1.2": "1.2.x-dev"
+        }
+    }
+}

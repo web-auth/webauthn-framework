@@ -28,6 +28,7 @@ use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -38,9 +39,15 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      */
     private $decoder;
 
-    public function __construct(Decoder $decoder)
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
+    public function __construct(Decoder $decoder, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->decoder = $decoder;
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -69,6 +76,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
+        if (null !== $this->metadataStatementRepository) {
+            $certificates = CertificateToolbox::addAttestationRootCertificates(
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+                $certificates,
+                $this->metadataStatementRepository
+            );
+        }
         CertificateToolbox::checkChain($certificates);
 
         //Decode leaf attestation certificate
