@@ -38,67 +38,36 @@ class MetadataStatementRepository
     public function findOneByAAGUID(string $aaguid): ?MetadataStatement
     {
         foreach ($this->services as $service) {
-            $tableOfContent = $service->getMetadataTOCPayload();
-            $entries = $tableOfContent->getEntries();
-            foreach ($entries as $entry) {
-                $metadataStatement = $service->getMetadataStatementFor($entry);
+            try {
+                $tableOfContent = $service->getMetadataTOCPayload();
+                $entries = $tableOfContent->getEntries();
+                foreach ($entries as $entry) {
+                    try {
+                        $metadataStatement = $service->getMetadataStatementFor($entry);
+                        if ($metadataStatement->getAaguid() === $aaguid) {
+                            return $metadataStatement;
+                        }
+                    } catch (\Throwable $throwable) {
+                        continue;
+                    }
+                }
+            } catch (\Throwable $throwable) {
+                continue;
+            }
+        }
+
+        foreach ($this->singleStatements as $singleStatement) {
+            try {
+                $metadataStatement = $singleStatement->getMetadataStatement();
                 if ($metadataStatement->getAaguid() === $aaguid) {
                     return $metadataStatement;
                 }
-            }
-        }
-
-        foreach ($this->singleStatements as $singleStatement) {
-            $metadataStatement = $singleStatement->getMetadataStatement();
-            if ($metadataStatement->getAaguid() === $aaguid) {
-                return $metadataStatement;
+            } catch (\Throwable $throwable) {
+                continue;
             }
         }
 
         return null;
-    }
-
-    public function findOneByAAID(string $aaid): ?MetadataStatement
-    {
-        foreach ($this->services as $service) {
-            $tableOfContent = $service->getMetadataTOCPayload();
-            $entries = $tableOfContent->getEntries();
-            foreach ($entries as $entry) {
-                $metadataStatement = $service->getMetadataStatementFor($entry);
-                if ($metadataStatement->getAaid() === $aaid) {
-                    return $metadataStatement;
-                }
-            }
-        }
-
-        foreach ($this->singleStatements as $singleStatement) {
-            $metadataStatement = $singleStatement->getMetadataStatement();
-            if ($metadataStatement->getAaguid() === $aaid) {
-                return $metadataStatement;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return MetadataStatement[]
-     */
-    public function findAll(): array
-    {
-        $result = [];
-        foreach ($this->services as $service) {
-            $tableOfContent = $service->getMetadataTOCPayload();
-            foreach ($tableOfContent->getEntries() as $entry) {
-                $result[] = $service->getMetadataStatementFor($entry);
-            }
-        }
-
-        foreach ($this->singleStatements as $singleStatement) {
-            $result[] = $singleStatement->getMetadataStatement();
-        }
-
-        return $result;
     }
 
     /**

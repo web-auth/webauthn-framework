@@ -50,8 +50,10 @@ class MetadataStatementFetcher
         }
         $response = $client->sendRequest($request);
         Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
+        $content = $response->getBody()->getContents();
+        Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
-        return $response->getBody()->getContents();
+        return $content;
     }
 
     private static function getJwsPayload(string $token): string

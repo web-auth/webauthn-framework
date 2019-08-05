@@ -133,10 +133,11 @@ class AuthenticatorAssertionResponseValidator
         Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
         /* @see 7.2.12 */
-        Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
-
         /* @see 7.2.13 */
-        Assertion::false(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification() && !$authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
+        if (AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification()) {
+            Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
+            Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
+        }
 
         /* @see 7.2.14 */
         $extensions = $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions();
@@ -158,7 +159,9 @@ class AuthenticatorAssertionResponseValidator
         /* @see 7.2.17 */
         $storedCounter = $publicKeyCredentialSource->getCounter();
         $currentCounter = $authenticatorAssertionResponse->getAuthenticatorData()->getSignCount();
-        Assertion::greaterThan($currentCounter, $storedCounter, 'Invalid counter.');
+        if (0 !== $currentCounter || 0 !== $storedCounter) {
+            Assertion::greaterThan($currentCounter, $storedCounter, 'Invalid counter.');
+        }
         $publicKeyCredentialSource->setCounter($currentCounter);
         $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 

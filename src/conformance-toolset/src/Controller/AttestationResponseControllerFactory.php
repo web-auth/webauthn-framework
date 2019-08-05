@@ -45,24 +45,38 @@ final class AttestationResponseControllerFactory
      * @var PublicKeyCredentialLoader
      */
     private $publicKeyCredentialLoader;
+
     /**
      * @var AuthenticatorAttestationResponseValidator
      */
     private $attestationResponseValidator;
+
     /**
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var CacheItemPoolInterface
      */
     private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    /**
+     * @var PublicKeyCredentialUserEntityRepository
+     */
+    private $publicKeyCredentialUserEntityRepository;
+
+    /**
+     * @var PublicKeyCredentialSourceRepository
+     */
+    private $publicKeyCredentialSourceRepository;
+
+    public function __construct(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -72,15 +86,17 @@ final class AttestationResponseControllerFactory
         $this->httpMessageFactory = $httpMessageFactory;
         $this->logger = $logger;
         $this->cacheItemPool = $cacheItemPool;
+        $this->publicKeyCredentialUserEntityRepository = $publicKeyCredentialUserEntityRepository;
+        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAttestationRequestController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AttestationRequestController
+    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
     {
         return new AttestationRequestController(
             $this->serializer,
             $this->validator,
-            $publicKeyCredentialUserEntityRepository,
-            $publicKeyCredentialSourceRepository,
+            $this->publicKeyCredentialUserEntityRepository,
+            $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $sessionParameterName,
@@ -89,14 +105,14 @@ final class AttestationResponseControllerFactory
         );
     }
 
-    public function createAttestationResponseController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $sessionParameterName): AttestationResponseController
+    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
     {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $publicKeyCredentialUserEntityRepository,
-            $publicKeyCredentialSourceRepository,
+            $this->publicKeyCredentialUserEntityRepository,
+            $this->publicKeyCredentialSourceRepository,
             $sessionParameterName,
             $this->logger,
             $this->cacheItemPool

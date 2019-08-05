@@ -23,6 +23,7 @@ use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -33,9 +34,15 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
      */
     private $decoder;
 
-    public function __construct(Decoder $decoder)
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
+    public function __construct(Decoder $decoder, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->decoder = $decoder;
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -68,6 +75,14 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             '00000000-0000-0000-0000-000000000000',
             'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
         );
+        if (null !== $this->metadataStatementRepository) {
+            CertificateToolbox::checkAttestationMedata(
+                $attestationStatement,
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
+                [],
+                $this->metadataStatementRepository
+            );
+        }
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";

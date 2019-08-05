@@ -13,29 +13,40 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Base64Url\Base64Url;
+use Psr\Cache\CacheItemPoolInterface;
 use Ramsey\Uuid\Uuid;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository as PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepositoryInterface
 {
-    private $users = [];
+    private $cacheItemPool;
 
-    public function __construct()
+    public function __construct(CacheItemPoolInterface $cacheItemPool)
     {
-        $this->users = [
-            'username' => new PublicKeyCredentialUserEntity('username', 'foo', 'Foo BAR'),
-        ];
+        $this->cacheItemPool = $cacheItemPool;
+        $this->saveUserEntity(new PublicKeyCredentialUserEntity('username', 'foo', 'Foo BAR'));
     }
 
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
     {
-        return $this->users[$username] ?? null;
+        $item = $this->cacheItemPool->getItem('user-name'.Base64Url::encode($username));
+        if (!$item->isHit()) {
+            return null;
+        }
+
+        return $item->get();
     }
 
     public function findOneByUserHandle(string $userHandle): ?PublicKeyCredentialUserEntity
     {
-        return 'foo' === $userHandle ? $this->users['username'] : null;
+        $item = $this->cacheItemPool->getItem('user-id'.Base64Url::encode($userHandle));
+        if (!$item->isHit()) {
+            return null;
+        }
+
+        return $item->get();
     }
 
     public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
@@ -50,6 +61,12 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
-        $this->users[$userEntity->getName()] = $userEntity;
+        $item = $this->cacheItemPool->getItem('user-id'.Base64Url::encode($userEntity->getId()));
+        $item->set($userEntity);
+        $this->cacheItemPool->save($item);
+
+        $item = $this->cacheItemPool->getItem('user-name'.Base64Url::encode($userEntity->getName()));
+        $item->set($userEntity);
+        $this->cacheItemPool->save($item);
     }
 }

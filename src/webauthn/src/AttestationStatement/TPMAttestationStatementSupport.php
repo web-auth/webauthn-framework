@@ -15,7 +15,12 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use CBOR\Decoder;
+use CBOR\MapObject;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Algorithms;
+use Cose\Key\RsaKey;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
@@ -57,8 +62,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::eq('8017', bin2hex($certInfo['type']), 'Invalid attestation object');
 
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
-        $pubAreaHash = hash($this->getTPMHash($pubArea['nameAlg']), $attestation['attStmt']['pubArea'], true);
-        $attestedName = $pubArea['nameAlg'].$pubAreaHash;
+        $pubAreaAttestedNameAlg = mb_substr($certInfo['attestedName'], 0, 2, '8bit');
+        $pubAreaHash = hash($this->getTPMHash($pubAreaAttestedNameAlg), $attestation['attStmt']['pubArea'], true);
+        $attestedName = $pubAreaAttestedNameAlg.$pubAreaHash;
         Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
@@ -79,6 +85,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attToBeSigned = $authenticatorData->getAuthData().$clientDataJSONHash;
         $attToBeSignedHash = hash(Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')), $attToBeSigned, true);
         Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
+        $this->checkUniquePublicKey(
+            $attestationStatement->get('parsedPubArea')['unique'],
+            $authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()
+        );
 
         switch (true) {
             case $attestationStatement->getTrustPath() instanceof CertificateTrustPath:
@@ -88,6 +98,16 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             default:
                 throw new InvalidArgumentException('Unsupported attestation statement');
         }
+    }
+
+    private function checkUniquePublicKey(string $unique, string $cborPublicKey): void
+    {
+        $cborDecoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
+        Assertion::isInstanceOf($publicKey, MapObject::class, 'Invalid public key');
+        $rsaKey = new RsaKey($publicKey->getNormalizedData(false));
+
+        Assertion::eq($unique, $rsaKey->n(), 'Invalid pubArea.unique value');
     }
 
     private function checkCertInfo(string $data): array
@@ -223,13 +243,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $certificates = $trustPath->getCertificates();
         if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::addAttestationRootCertificates(
+            $certificates = CertificateToolbox::checkAttestationMedata(
+                $attestationStatement,
                 $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
                 $certificates,
                 $this->metadataStatementRepository
             );
         }
-        CertificateToolbox::checkChain($certificates);
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

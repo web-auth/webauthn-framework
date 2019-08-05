@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Base64Url\Base64Url;
+use Psr\Cache\CacheItemPoolInterface;
 use Ramsey\Uuid\Uuid;
 use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -24,14 +26,12 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
 {
-    /**
-     * @var PublicKeyCredentialSource[]
-     */
-    private $credentials;
+    private $cacheItemPool;
 
-    public function __construct()
+    public function __construct(CacheItemPoolInterface $cacheItemPool)
     {
-        $pkcs1 = new PublicKeyCredentialSource(
+        $this->cacheItemPool = $cacheItemPool;
+        $publicKeyCredentialSource1 = new PublicKeyCredentialSource(
             base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -42,25 +42,42 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             'foo',
             100
         );
-        $this->saveCredentialSource($pkcs1);
+        $this->saveCredentialSource($publicKeyCredentialSource1);
+    }
+
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
+    {
+        $item = $this->cacheItemPool->getItem('pks-'.Base64Url::encode($publicKeyCredentialId));
+        if (!$item->isHit()) {
+            return null;
+        }
+
+        return $item->get();
     }
 
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
-        return 'foo' === $publicKeyCredentialUserEntity->getId() ? $this->credentials : [];
-    }
-
-    public function findOneByCredentialId(string $credentialId): ?PublicKeyCredentialSource
-    {
-        if (!\array_key_exists(base64_encode($credentialId), $this->credentials)) {
-            return null;
+        $item = $this->cacheItemPool->getItem('user-pks-'.Base64Url::encode($publicKeyCredentialUserEntity->getId()));
+        if (!$item->isHit()) {
+            return [];
         }
 
-        return $this->credentials[base64_encode($credentialId)];
+        return $item->get();
     }
 
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->credentials[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
+        $item = $this->cacheItemPool->getItem('pks-'.Base64Url::encode($publicKeyCredentialSource->getPublicKeyCredentialId()));
+        $item->set($publicKeyCredentialSource);
+        $this->cacheItemPool->save($item);
+
+        $item = $this->cacheItemPool->getItem('user-pks-'.Base64Url::encode($publicKeyCredentialSource->getUserHandle()));
+        $pks = [];
+        if ($item->isHit()) {
+            $pks = $item->get();
+        }
+        $pks[] = $publicKeyCredentialSource;
+        $item->set($pks);
+        $this->cacheItemPool->save($item);
     }
 }

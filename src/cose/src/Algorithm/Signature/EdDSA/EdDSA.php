@@ -20,23 +20,22 @@ use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use InvalidArgumentException;
 use function sodium_crypto_sign_detached;
-use function sodium_crypto_sign_secretkey;
-use function sodium_crypto_sign_seed_keypair;
 use function sodium_crypto_sign_verify_detached;
 
-final class EdDSA implements Signature
+class EdDSA implements Signature
 {
     public function sign(string $data, Key $key): string
     {
         $key = $this->handleKey($key);
         Assertion::true($key->isPrivate(), 'The key is not private');
 
-        $keyPair = sodium_crypto_sign_seed_keypair($key->d());
-        $secretKey = sodium_crypto_sign_secretkey($keyPair);
+        $x = $key->x();
+        $d = $key->d();
+        $secret = $d.$x;
 
         switch ($key->curve()) {
             case OkpKey::CURVE_ED25519:
-                return sodium_crypto_sign_detached($data, $secretKey);
+                return sodium_crypto_sign_detached($data, $secret);
             default:
                 throw new InvalidArgumentException('Unsupported curve');
         }

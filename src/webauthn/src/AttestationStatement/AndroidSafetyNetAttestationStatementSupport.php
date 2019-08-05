@@ -96,6 +96,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['ver', 'response'] as $key) {
             Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::notEmpty($attestation['attStmt'][$key], sprintf('The attestation statement value "%s" is empty.', $key));
         }
         $jws = $this->jwsSerializer->unserialize($attestation['attStmt']['response']);
         $jwsHeader = $jws->getSignature(0)->getProtectedHeader();
@@ -117,13 +118,14 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
         if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::addAttestationRootCertificates(
+            $certificates = CertificateToolbox::checkAttestationMedata(
+                $attestationStatement,
                 $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
                 $certificates,
                 $this->metadataStatementRepository
             );
         }
-        CertificateToolbox::checkChain($certificates);
+
         $parsedCertificate = openssl_x509_parse(current($certificates));
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');

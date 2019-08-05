@@ -51,6 +51,8 @@ abstract class Algorithms
     public const COSE_ALGORITHM_DIRECT = -6;
     public const COSE_ALGORITHM_ES256 = -7;
     public const COSE_ALGORITHM_EdDSA = -8;
+    public const COSE_ALGORITHM_ED256 = -260;
+    public const COSE_ALGORITHM_ED512 = -261;
     public const COSE_ALGORITHM_DIRECT_HKDF_SHA_256 = -10;
     public const COSE_ALGORITHM_DIRECT_HKDF_SHA_512 = -11;
     public const COSE_ALGORITHM_DIRECT_HKDF_AES_128 = -12;
@@ -144,7 +146,7 @@ abstract class Algorithms
             ECDSA\ES256::identifier() => new ECDSA\ES256(),
             ECDSA\ES384::identifier() => new ECDSA\ES384(),
             ECDSA\ES512::identifier() => new ECDSA\ES512(),
-            EdDSA\EdDSA::identifier() => new EdDSA\EdDSA(),
+            EdDSA\ED512::identifier() => new EdDSA\ED512(),
         ];
     }
 }

@@ -94,6 +94,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
@@ -138,19 +139,17 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
     {
         $certificates = $trustPath->getCertificates();
-        $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
+
         if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::addAttestationRootCertificates(
+            $certificates = CertificateToolbox::checkAttestationMedata(
+                $attestationStatement,
                 $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
                 $certificates,
                 $this->metadataStatementRepository
             );
         }
 
-        //Check certificate CA chain and returns the Attestation Certificate
-        CertificateToolbox::checkChain($certificates);
-
-        // Check certificate CA chain and returns the Attestation Certificate
+        // Check leaf certificate
         $this->checkCertificate($certificates[0], $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
@@ -187,11 +186,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
 
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
-        switch (true) {
-            case $algorithm instanceof Signature:
-                return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
-            default:
-                throw new RuntimeException('Invalid algorithm');
+        if (!$algorithm instanceof Signature) {
+            throw new RuntimeException('Invalid algorithm');
         }
+
+        return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
     }
 }

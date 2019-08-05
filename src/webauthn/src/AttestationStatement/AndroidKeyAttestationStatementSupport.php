@@ -77,13 +77,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         $certificates = $trustPath->getCertificates();
         if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::addAttestationRootCertificates(
+            $certificates = CertificateToolbox::checkAttestationMedata(
+                $attestationStatement,
                 $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
                 $certificates,
                 $this->metadataStatementRepository
             );
         }
-        CertificateToolbox::checkChain($certificates);
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];

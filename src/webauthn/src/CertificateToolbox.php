@@ -19,46 +19,47 @@ use function Safe\file_put_contents;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
+use Webauthn\AttestationStatement\AttestationStatement;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
 
 class CertificateToolbox
 {
-    public static function checkChain(array $certificates): void
+    public static function checkChain(array $certificates, array $trustedCertificates = []): void
     {
-        if (1 <= \count($certificates)) {
-            return;
-        }
-        $tmpFiles = [];
+        $certificates = array_unique(array_merge($certificates, $trustedCertificates));
+        self::checkCertificatesValidity($certificates);
+        $filenames = [];
 
-        foreach ($certificates as $certificate) {
-            $parsed = openssl_x509_parse($certificate);
-            Assertion::isArray($parsed, 'Unable to read the certificate');
-            Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
-            Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
-            Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
-            Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
+        $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
+        $leafCertificate = array_shift($certificates);
+        file_put_contents($leafFilename, $leafCertificate);
+        $filenames[] = $leafFilename;
 
-            $filename = tempnam(sys_get_temp_dir(), 'webauthn-');
-            file_put_contents($filename, $certificate);
-            $tmpFiles[] = $filename;
-        }
-        $filenames = $tmpFiles;
-        $endCertificate = array_shift($filenames);
+        $processArguments = [];
 
-        $processArguments = [
-            '-check_ss_sig',
-            '-partial_chain',
-        ];
-        if (\count($filenames) >= 1) {
+        if (0 !== \count($certificates)) {
+            $caFilename = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
+            $caCertificate = array_pop($certificates);
+            file_put_contents($caFilename, $caCertificate);
+
             $processArguments[] = '-CAfile';
-            $processArguments[] = array_pop($filenames);
+            $processArguments[] = $caFilename;
+            $filenames[] = $caFilename;
         }
 
-        while (0 !== \count($filenames)) {
+        if (0 !== \count($certificates)) {
+            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
+            foreach ($certificates as $certificate) {
+                file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
+                file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            }
             $processArguments[] = '-untrusted';
-            $processArguments[] = array_pop($filenames);
+            $processArguments[] = $untrustedFilename;
+            $filenames[] = $untrustedFilename;
         }
-        $processArguments[] = $endCertificate;
+
+        $processArguments[] = $leafFilename;
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
@@ -68,31 +69,65 @@ class CertificateToolbox
         foreach ($filenames as $filename) {
             unlink($filename);
         }
+
         if (!$process->isSuccessful()) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
         }
     }
 
-    public static function addAttestationRootCertificates(string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
+    public static function checkAttestationMedata(AttestationStatement $attestationStatement, string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
     {
         $metadataStatement = $metadataStatementRepository->findOneByAAGUID($aaguid);
         if (null === $metadataStatement) {
+            //Check certificate CA chain
+            self::checkChain($certificates);
+
             return $certificates;
+        }
+
+        //FIXME: to decide later if relevant
+        /*Assertion::eq('fido2', $metadataStatement->getProtocolFamily(), sprintf('The protocol family of the authenticator "%s" should be "fido2". Got "%s".', $aaguid, $metadataStatement->getProtocolFamily()));
+        if (null !== $metadataStatement->getAssertionScheme()) {
+            Assertion::eq('FIDOV2', $metadataStatement->getAssertionScheme(), sprintf('The assertion scheme of the authenticator "%s" should be "FIDOV2". Got "%s".', $aaguid, $metadataStatement->getAssertionScheme()));
+        }*/
+
+        // Check Attestation Type is allowed
+        if (0 !== \count($metadataStatement->getAttestationTypes())) {
+            $type = self::getAttestationType($attestationStatement);
+            Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
         }
 
         $attestationRootCertificates = $metadataStatement->getAttestationRootCertificates();
         if (0 === \count($attestationRootCertificates)) {
+            self::checkChain($certificates);
+
             return $certificates;
         }
 
-        foreach ($attestationRootCertificates as $attestationRootCertificate) {
-            $attestationRootCertificate = self::fixPEMStructure($attestationRootCertificate);
-            if (!\in_array($attestationRootCertificate, $certificates, true)) {
-                $certificates[] = $attestationRootCertificate;
-            }
+        foreach ($attestationRootCertificates as $key => $attestationRootCertificate) {
+            $attestationRootCertificates[$key] = self::fixPEMStructure($attestationRootCertificate);
         }
 
+        //Check certificate CA chain
+        self::checkChain($certificates, $attestationRootCertificates);
+
         return $certificates;
+    }
+
+    private static function getAttestationType(AttestationStatement $attestationStatement): int
+    {
+        switch ($attestationStatement->getType()) {
+            case AttestationStatement::TYPE_BASIC:
+                return MetadataStatement::ATTESTATION_BASIC_FULL;
+            case AttestationStatement::TYPE_SELF:
+                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
+            case AttestationStatement::TYPE_ATTCA:
+                return MetadataStatement::ATTESTATION_ATTCA;
+            case AttestationStatement::TYPE_ECDAA:
+                return MetadataStatement::ATTESTATION_ECDAA;
+            default:
+                throw new InvalidArgumentException('Invalid attestation type');
+        }
     }
 
     public static function fixPEMStructure(string $certificate): string
@@ -129,6 +164,21 @@ class CertificateToolbox
         }
 
         return $certificate;
+    }
+
+    /**
+     * @param string[] $certificates
+     */
+    private static function checkCertificatesValidity(array $certificates): void
+    {
+        foreach ($certificates as $certificate) {
+            $parsed = openssl_x509_parse($certificate);
+            Assertion::isArray($parsed, 'Unable to read the certificate');
+            Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
+            Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
+            Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
+            Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
+        }
     }
 
     /**

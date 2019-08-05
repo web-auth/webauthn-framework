@@ -118,13 +118,6 @@ $repository->addService($myMetadataStatementService);
 // Tries to find the MDS associated to the given AAGUID
 // If not found, the returned value is null
 $mds = $repository->findOneByAAGUID('f8a011f3-8c0a-4d15-8006-17111f9edc7d');
-
-// Tries to find the MDS associated to the given AAID
-// If not found, the returned value is null
-$otherMds = $repository->findOneByAAID('001D#0002');
-
-// All MDS
-$all = $repository->findAll();
 ```
 
 Feel free to extend that class and add custom methods.

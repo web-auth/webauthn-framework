@@ -11,168 +11,89 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Tests\Functional\Assertion;
+namespace Webauthn\Bundle\Tests\Functional\All;
 
-use Base64Url\Base64Url;
 use Http\Message\RequestMatcher\RequestMatcher;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use function Safe\base64_decode;
 use function Safe\json_decode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticatorAssertionResponse;
-use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * @group functional
  */
-class AssertionTest extends WebTestCase
+class AllCeremoniesTest extends WebTestCase
 {
     /**
      * @test
      */
-    public function anAssertionResponseCanBeLoadedAndVerified(): void
+    public function anAuthenticatorCanBeRegisteredAndUsed(): void
     {
+        $attestationOptions = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"9HUL4nds0otfZ6hU01HV8hDulMXrkdoifKUZA_36cZg","attestation":"direct","user":{"name":"F0q-wEtqhVfGSln1pVju","id":"Y2JjNTg5ZmQtNWQ4OC00ZmMwLWI4ZGQtMTM2Y2EzY2NlOTJi","displayName":"Commander Shepard"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
+        $attestationResponse = '{"id":"5d6NKwLLT6mYnc4s1r7rUnFtZoD2b17Gqj1109hzygI","rawId":"5d6NKwLLT6mYnc4s1r7rUnFtZoD2b17Gqj1109hzygI","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEcwRQIgTLxnZQ37C1L6kdzNfq0Z1f85YRUBT05cfo1FA4Qw01MCIQCY8igR9LvpCBZA3beB4jEQ7Ef49KL9bhWytgoZ9ekc3WN4NWOBWQRFMIIEQTCCAimgAwIBAgIBATANBgkqhkiG9w0BAQsFADCBoTEYMBYGA1UEAwwPRklETzIgVEVTVCBST09UMTEwLwYJKoZIhvcNAQkBFiJjb25mb3JtYW5jZS10b29sc0BmaWRvYWxsaWFuY2Uub3JnMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMQwwCgYDVQQLDANDV0cxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMB4XDTE4MDUyMzE0Mzk0M1oXDTI4MDUyMDE0Mzk0M1owgcIxIzAhBgNVBAMMGkZJRE8yIEJBVENIIEtFWSBwcmltZTI1NnYxMTEwLwYJKoZIhvcNAQkBFiJjb25mb3JtYW5jZS10b29sc0BmaWRvYWxsaWFuY2Uub3JnMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVzdGF0aW9uMQswCQYDVQQGEwJVUzELMAkGA1UECAwCTVkxEjAQBgNVBAcMCVdha2VmaWVsZDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABE86Xl6rbB-8rpf232RJlnYse-9yAEAqdsbyMPZVbxeqmZtZf8S_UIqvjp7wzQE_Wrm9J5FL8IBDeMvMsRuJtUajLDAqMAkGA1UdEwQCMAAwHQYDVR0OBBYEFFZN98D4xlW2oR9sTRnzv0Hi_QF5MA0GCSqGSIb3DQEBCwUAA4ICAQCH3aCf-CCJBdEtQc4JpOnUelwGGw7DxnBMokHHBgrzJxDn9BFcFwxGLxrFV7EfYehQNOD-74OS8fZRgZiNf9EDGAYiHh0-CspfBWd20zCIjlCdDBcyhwq3PLJ65JC_og3CT9AK4kvks4DI-01RYxNv9S8Jx1haO1lgU55hBIr1P_p21ZKnpcCEhPjB_cIFrHJqL5iJGfed-LXni9Suq24OHnp44Mrv4h7OD2elu5yWfdfFb-RGG2TYURFIGYGijsii093w0ZMBOfBS-3Xq_DrHeZbZrrNkY455gJCZ5eV83Nrt9J9_UF0VZHl_hwnSAUC_b3tN_l0ZlC9kPcNzJD04l4ndFBD2KdfQ2HGTX7pybWLZ7yH2BM3ui2OpiacaOzd7OE91rHYB2uZyQ7jdg25yF9M8QI9NHM_itCjdBvAYt4QCT8dX6gmZiIGR2F_YXZAsybtJ16pnUmODVbW80lPbzy-PUQYX79opeD9u6MBorzr9g08Elpb1F3DgSd8VSLlsR2QPllKl4AcJDMIOfZHOQGOzatMV7ipEVRa0L5FnjAWpHHvSNcsjD4Cul562mO3MlI2pCyo-US-nIzG5XZmOeu4Db_Kw_dEPOo2ztHwlU0qKJ7REBsbt63jdQtlwLuiLHwkpiwnrAOZfwbLLu9Yz4tL1eJlQffuwS_Aolsz7HGhhdXRoRGF0YViklgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1lBAAAAkzJq3PAM70bQk5KY1sSoSnIAIOXejSsCy0-pmJ3OLNa-61JxbWaA9m9exqo9ddPYc8oCpQECAyYgASFYIPZqrx6hVeNTXbxMSuqSCpT8We5alLysHPFqTvVHZK3hIlgg2J3GCpYovzZTaVPFp-vQjIZNIfBXUAEpIiXH8Odbd1c","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IjlIVUw0bmRzMG90Zlo2aFUwMUhWOGhEdWxNWHJrZG9pZktVWkFfMzZjWmciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
+        $assertionOptions = '{"status":"ok","errorMessage":"","challenge":"3KPuf4_fwvyEyZOzJSPPRLmDXccYwM43N_BndMFHGJg","rpId":"webauthn.spomky-labs.com","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"5d6NKwLLT6mYnc4s1r7rUnFtZoD2b17Gqj1109hzygI"}],"timeout":60000}';
+        $assertionResponse = '{"id":"5d6NKwLLT6mYnc4s1r7rUnFtZoD2b17Gqj1109hzygI","rawId":"5d6NKwLLT6mYnc4s1r7rUnFtZoD2b17Gqj1109hzygI","response":{"authenticatorData":"lgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1kBAAAAlA","signature":"MEUCIF-8sRSXiv8R_jobQIPLpbBiEl8lOXeyP666-kKcuuQ9AiEA-WqYFwfSY10GHlCF-F9DcGPT7BGRFB_qza2aN2vaTZw","userHandle":"Y2JjNTg5ZmQtNWQ4OC00ZmMwLWI4ZGQtMTM2Y2EzY2NlOTJi","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IjNLUHVmNF9md3Z5RXlaT3pKU1BQUkxtRFhjY1l3TTQzTl9CbmRNRkhHSmciLCJ0eXBlIjoid2ViYXV0aG4uZ2V0In0"},"type":"public-key"}';
+
         self::bootKernel();
 
-        $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
-            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
-            60000,
-            'localhost',
-            [
-                new PublicKeyCredentialDescriptor(
-                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                    Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
-                ),
-            ],
-            PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-            new AuthenticationExtensionsClientInputs()
-        );
+        /** @var ClientInterface $mdsClient */
+        $mdsClient = static::$container->get('httplug.client.mock');
+        $this->prepareClient($mdsClient);
 
-        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load('{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAew==","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ==","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}');
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($attestationOptions);
+        $this->storePublicKeyCredentialCreationOptions($publicKeyCredentialCreationOptions);
 
-        $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        $client = static::createClient();
+        $client->request('POST', '/attestation/result', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauthn.spomky-labs.com', 'HTTPS' => 'on'], $attestationResponse);
+        $response = $client->getResponse();
 
-        $response = $publicKeyCredential->getResponse();
-        static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
-        static::assertNull($response->getUserHandle());
+        static::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $json = json_decode($response->getContent(), true);
+        static::assertArrayHasKey('status', $json);
+        static::assertArrayHasKey('errorMessage', $json);
+        static::assertEquals('ok', $json['status']);
+        static::assertEquals('', $json['errorMessage']);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString($assertionOptions);
+        $this->storePublicKeyCredentialRequestOptions($publicKeyCredentialRequestOptions, $publicKeyCredentialCreationOptions->getUser());
 
-        self::$kernel->getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
-            $publicKeyCredential->getRawId(),
-            $publicKeyCredential->getResponse(),
-            $publicKeyCredentialRequestOptions,
-            $request->reveal(),
-            'foo'
-        );
+        $client->request('POST', '/assertion/result', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauthn.spomky-labs.com', 'HTTPS' => 'on'], $assertionResponse);
+        $response = $client->getResponse();
+
+        static::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $json = json_decode($response->getContent(), true);
+        static::assertArrayHasKey('status', $json);
+        static::assertArrayHasKey('errorMessage', $json);
+        static::assertEquals('ok', $json['status']);
+        static::assertEquals('', $json['errorMessage']);
     }
 
-    /**
-     * @test
-     */
-    public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
+    private function storePublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions): void
     {
-        self::bootKernel();
-
-        $allowedCredentials = [
-            new PublicKeyCredentialDescriptor(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
-            ),
-        ];
-
-        /** @var PublicKeyCredentialRequestOptionsFactory $factory */
-        $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
-        $options = $factory->create('default', $allowedCredentials);
-
-        static::assertEquals(30000, $options->getTimeout());
-        static::assertEquals('localhost', $options->getRpId());
-        static::assertEquals($allowedCredentials, $options->getAllowCredentials());
-        static::assertEquals('required', $options->getUserVerification());
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
-    }
-
-    /**
-     * @test
-     */
-    public function p4(): void
-    {
-        $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"PYOERlJy4LKZgTOm0_4DIMDYyzWNmEa0JZsL8QITTLA","attestation":"direct","user":{"name":"VaYNWxEFaiNCd9Xd5kzO","id":"OWFkMjE1YWEtZTFjMC00NjMwLThjNDQtYzM0MzM4NDRlYjBl","displayName":"Stanford Mcguffie"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
-        $body = '{"id":"ZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuc","rawId":"ZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuc","response":{"attestationObject":"o2NmbXRjdHBtZ2F0dFN0bXSmY2FsZzkBAGNzaWdZAQAMy7XyNwcrCwZGA5vYahd85BF0znd5DscLXWYYmVz56SgFqphTIOxxrlPYs6948dK_6lHZZgtq5uwzAr1bNLaaEwJ8FEqUNl4pjzRn_Om7pGteJ6aLWaK9AR0Rap3bWsecCdGBiVM2Jj7p6DYiQVp9GJ0EtBZc5V3Qp5kodvmH6uN0lyWfQ5idrwhTDXnQ2g6tTHhgmdwijWM6JBdBkZbcoXDUtiB-WNMgksy1k73lszdGz2tcScOx4Htl5s4RJXgVNgBfOjCf0UiMQTCCic35Gzq6GXmi2TZOpwFd2AxpoZb0-S1r5ftB6kQtImS3CPV7DLd4KyYGA92PretZWq5zY3ZlcmMyLjBjeDVjglkEhzCCBIMwggNroAMCAQICDwQ37CUYctpcQKJavYjf-jANBgkqhkiG9w0BAQsFADBBMT8wPQYDVQQDEzZOQ1UtTlRDLUtFWUlELTAzN0FGNzM4MTEwRjk2MDU0RENERjA4MkVGRkEwMzFGOUJGODEwQUYwHhcNMTgwMjAxMDAwMDAwWhcNMjUwMTMxMjM1OTU5WjAAMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp9AaYJt3wv5MxR2eXlOVcAanKrgKDmIBgBvJic_R2v1ksONB9p8MY8abLevBMASKAFJz0trlmDkNH19b0zKoo_phhXv1KeEDOIDDlN-g0AV0a_PzGfPxYk5Pq1yNTM_iHTLc7KAVuer8zzMx1e2NMi0eSKpEpvV3jwFHkAQjAuT2P6MaYDmaJIkQPKqiRmv5VLKC4vU01JMM79G1ukij3xBvtTuqVSGrP3XDxiTzXKW1PSt0qoc5HQZIPrJQb2jtSxcfV0-TwhejCp8xPezjVWodgPjxO6vxnD9L2Ks1mtfpsjPjOTYt9kkapoebtRfCV9IyMmWvxA1uNxYcT4E3oQIDAQABo4IBtzCCAbMwDgYDVR0PAQH_BAQDAgeAMAwGA1UdEwEB_wQCMAAwewYDVR0gAQH_BHEwbzBtBgkrBgEEAYI3FR8wYDBeBggrBgEFBQcCAjBSHlAARgBBAEsARQAgAEYASQBEAE8AIABUAEMAUABBACAAVAByAHUAcwB0AGUAZAAgAFAAbABhAHQAZgBvAHIAbQAgAEkAZABlAG4AdABpAHQAeTAQBgNVHSUECTAHBgVngQUIAzBKBgNVHREBAf8EQDA-pDwwOjE4MA4GBWeBBQIDDAVpZDoxMzAQBgVngQUCAgwHTlBDVDZ4eDAUBgVngQUCAQwLaWQ6RkZGRkYxRDAwHwYDVR0jBBgwFoAUUX8iyOZTpXzVTN0wWH4w_2c2jF0wHQYDVR0OBBYEFKPee-WQSm7M_XZ_IdmFWq5zT0B_MHgGCCsGAQUFBwEBBGwwajBoBggrBgEFBQcwAoZcaHR0cHM6Ly9maWRvYWxsaWFuY2UuY28ubnovdHBtcGtpL05DVS1OVEMtS0VZSUQtMDM3QUY3MzgxMTBGOTYwNTREQ0RGMDgyRUZGQTAzMUY5QkY4MTBBRi5jcnQwDQYJKoZIhvcNAQELBQADggEBAA9gjc9Jd_UE6L7rt9x47jISWHu02q3yW4b9OKUaLZhgHlhgYzvBnk0l--SNrEEMohtq2tu-l9gT2PQTxUSa7k3lE82vr8fdHZf2GiqxqoZ7xQ30RJ5SHU3ErKAlxKpOa89RFaETivMUOTtEOhl0obKRxjztAbrlNwbo71xN7WUUOx4ZPExwR-8tl_wkArRi9Zjur-O4_d9gFwkzNl-hgIB2u4yerGt-eNMvgjoveQiVOE1oe5DMRtnGx6tWov8zmgjGpjnxRnbF9kIok7khC15JwWOit3Faj7bh7zzXkrAPVVv2fb8CNIDQ7Td97I8V5Yd-drnGxL26lSZMXHDgPI5ZBgUwggYBMIID6aADAgECAg8Ea4iQoZL_Z7CuCmNqDHMwDQYJKoZIhvcNAQELBQAwgb8xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMQwwCgYDVQQLDANDV0cxNjA0BgNVBAMMLUZJRE8gRmFrZSBUUE0gUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkgMjAxODExMC8GCSqGSIb3DQEJARYiY29uZm9ybWFuY2UtdG9vbHNAZmlkb2FsbGlhbmNlLm9yZzAeFw0xNzAyMDEwMDAwMDBaFw0zNTAxMzEyMzU5NTlaMEExPzA9BgNVBAMTNk5DVS1OVEMtS0VZSUQtMDM3QUY3MzgxMTBGOTYwNTREQ0RGMDgyRUZGQTAzMUY5QkY4MTBBRjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANc-c30RpQd-_LCoiLJbXz3t_vqciOIovwjez79_DtVgi8G9Ph-tPL-lC0ueFGBMSPcKd_RDdSFe2QCYQd9e0DtiFxra-uWGa0olI1hHI7bK2GzNAZSTKEbwgqpf8vXMQ-7SPajg6PfxSOLH_Nj2yd6tkNkUSdlGtWfY8XGB3n-q--nt3UHdUQWEtgUoTe5abBXsG7MQSuTNoad3v6vk-tLd0W44ivM6pbFqFUHchx8mGLApCpjlVXrfROaCoc9E91hG9B-WNvekJ0dM6kJ658Hy7yscQ6JdqIEolYojCtWaWNmwcfv--OE1Ax_4Ub24gl3hpB9EOcBCzpb4UFmLYUECAwEAAaOCAXUwggFxMAsGA1UdDwQEAwIBhjAWBgNVHSAEDzANMAsGCSsGAQQBgjcVHzAbBgNVHSUEFDASBgkrBgEEAYI3FSQGBWeBBQgDMBIGA1UdEwEB_wQIMAYBAf8CAQAwHQYDVR0OBBYEFFF_IsjmU6V81UzdMFh-MP9nNoxdMB8GA1UdIwQYMBaAFFx_Ni2QrVq8uo512t46oO3BTgKLMGgGA1UdHwRhMF8wXaBboFmGV2h0dHBzOi8vZmlkb2FsbGlhbmNlLmNvLm56L3RwbXBraS9jcmwvRklETyBGYWtlIFRQTSBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eSAyMDE4LmNybDBvBggrBgEFBQcBAQRjMGEwXwYIKwYBBQUHMAKGU2h0dHBzOi8vZmlkb2FsbGlhbmNlLmNvLm56L3RwbXBraS9GSURPIEZha2UgVFBNIFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IDIwMTguY3J0MA0GCSqGSIb3DQEBCwUAA4ICAQCN1i8OPMdt_K9yL8UI_SUx7NkEpDRQ-FWJ6-JNQIfpV8aTAPmDLiSqeSQEheq_F0s4RuiGQLkS3xRFFiIF9y5-ouiqyWMKJLVMNdhkMr1YJmBzkrcGYLEVl80WhtxoK_8QUpQpzqjpXjyJdVAi5nnbOvQ4gUuSDXD1BUynY3xAxn9Sn73QhKlgZSSxV65DsP3_VG4nZqQ_EnpiSP_QVIas6MR4F96N3NReQ2Qc9RAZ05xArnbZW32xCApSeAgUoWJiSYTOUdPW8whl05B0ni_PCgOn3QtVlMC3Zm0d7P8WXihpGtT24_h6q0ewBJKeXejcXW4gohHNtPfBCAKypTw_rsJrzsMk1SnzA5dJEyoTcz4_Yh_tRXjg9-pDuECqZrnb_Z3hDB0ctqPvSVwONhWkyrWgejExBfJ3i2oGlzihqcZ2VsTvsFostfRB2dRwm1JWoy63_39uZW48pkfI3JRXgNPHJWiH16Zz8Jb6jx2brOmyifTmMyhfgDkuwSYG5Wp2-hsORKTjRlzkEooi9n57GEGi8OIhe6a4l8ZeIee4C7DdTT7WZeIL2Muxg0bEDz63NiVdQBp6gJkbTzzgLfRDVPVwXfzxCwdp-uf2dw0QjTAQ8kecVW_AZ5Y5BWJHdWjWUMA9xFarDti1dAznGPZscrMNHEhhpmLmhxBL_Nk0kGdwdWJBcmVhWQE2AAEACwAGBHIAIJ3_y_NsODrmmfuYaNxty4nXFTiEvigDkiwSQVi_rSKuABAAEAgAAAAAAAEAQEqmHschTkuJP_aSR99T-obDGrZZwDzeQqKAXFQzvYGFvsyKK45XBAUh22GBAFcQTkx94UEHI0HMDN05z58mRxr4f9r8IqSseCq4UpqAvO_TZOUyPf0kTAznbUdxLj22I4NOIKukYSVaAbX91mLLPiJC6Yuw_ADqycEWLNKCB4S-zXe_1X6WVVwmuMlT-TflXV41VYwlkJ6Z7oIJjLXlCmhsRtSvw7DTpF96x36vFn35apAHgHdesgriaNY1YU9LV5Q8rGm_9jLCkz4wR8W4EPCKDo5NZU2flWqWuocAVzIe4naMH4GWz5qdKkiEdV6ydJLoVuG9v4ax0gHqCCo4KGhjZXJ0SW5mb1it_1RDR4AXACIACxHmjtRNtTcuFCluL4Ssx4OYdRiBkh4w_CKgb4tzx5RTACD2kYQtsoL_xwCMQaeDa1YHOkWUvxe4FnG_mvcDSzKO6AAAAAFHcBdIVWl7S8aFYKUBc375jTRWVfsAIgAL1hzcHqr7rT0Mvr4oinOSS0mgbdaAnNkd4dLyj-HDKwEAIgALZY6m3muW46Ib5WieCu15WWjvOA-hGb_Zj9usooO7wd9oYXV0aERhdGFZAWeWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAACbp9bZOooNEeialKbPcQcvcwAgZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuekAQMDOQEAIFkBALJbyBg5lXITECfxZXtd2Vfu6paG-jbMkS5U8MB95XlS1H6U2fEuKDetLMHncHmEUwJpEKSzs1hi0kyMEcgChQZCvhsmozoD2jtz6lrtjOwFdhAU9CjGWG5ieNuLf6_3Mwhz3oSzd0XfjAL8Ozc1NuUfrVQT80lS2taWsB_rMWl9qjC-SLkxoSZCO4PHC8e0HVuL0MKTnOvVpbh_SlPNp1O_rDteOPagCM7mkUzcmyZT6dyNCUri0CpINZD-2VPqqDts6ZYPdCMbjccM6a1_iJ0ouTdcG2Ai5Fy-NMkkhDHEnThUiVZ0ZU3WqRJtUpeG9lFnZXHWN1ekvFjIGQ9fnhMhQwEAAQ","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IlBZT0VSbEp5NExLWmdUT20wXzRESU1EWXl6V05tRWEwSlpzTDhRSVRUTEEiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
-
-        self::bootKernel();
-
-        /** @var ClientInterface $clientService */
-        $clientService = static::$container->get('httplug.client.mock');
-        $this->prepareClient($clientService);
-
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
-
         /** @var CacheItemPoolInterface $storage */
         $storage = static::$container->get(CacheItemPoolInterface::class);
         $item = $storage->getItem('__WEBAUTHN_ATTESTATION_REQUEST__1');
         $item->set($publicKeyCredentialCreationOptions);
         $storage->save($item);
-
-        $client = static::createClient();
-        $client->request('POST', '/attestation/result', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauthn.spomky-labs.com', 'HTTPS' => 'on'], $body);
-        $response = $client->getResponse();
-
-        static::assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $json = json_decode($client->getResponse()->getContent(), true);
-        static::assertArrayHasKey('status', $json);
-        static::assertArrayHasKey('errorMessage', $json);
-        static::assertEquals('failed', $json['status']);
-        static::assertEquals('Invalid pubArea.unique value', $json['errorMessage']);
     }
 
-    /**
-     * @test
-     */
-    public function p3(): void
+    private function storePublicKeyCredentialRequestOptions(PublicKeyCredentialRequestOptions $publicKeyCredentialCreationOptions, PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): void
     {
-        $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"ECL5_Gs_GPNk_aovwU1m4yPs6HJuDdHp8WmglxvkvMM","attestation":"direct","user":{"name":"svM3KEkubJRqtAhpYt3G","id":"ZDZmMDc4NTYtODc3Ni00OTcxLTkwMDEtNDdiZWZjMmNmMjFh","displayName":"Megan Vinzant"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
-        $body = '{"id":"TnuDHwZa1KzgR2D-arz5eipQHuUZMykoeo-Z1iHK6Ow","rawId":"TnuDHwZa1KzgR2D-arz5eipQHuUZMykoeo-Z1iHK6Ow","response":{"attestationObject":"o2NmbXRxYW5kcm9pZC1zYWZldHluZXRnYXR0U3RtdKJjdmVyYGhyZXNwb25zZVkVlWV5SmhiR2NpT2lKU1V6STFOaUlzSW5nMVl5STZXeUpOU1VsR1QycERRMEpEUzJkQmQwbENRV2RKVUVKUWFXeHpOMDB6WWpaR01HVmFRemt2Y2xCVVRVRXdSME5UY1VkVFNXSXpSRkZGUWtOM1ZVRk5SelI0UTNwQlNrSm5UbFpDUVZsVVFXeFdWRTFUYzNkTFVWbEVWbEZSUzBSRFNrZFRWVkpRU1VWR2MySkhiR2hpYlU1c1kzbENSMUZWZEVaSlJsSjVaRmhPTUVsR1RteGpibHB3V1RKV2VrMVVTWGROUVZsRVZsRlJSRVJEYkVkVFZWSlFTVVZHYzJKSGJHaGliVTVzWTNsQ1IxRlZkRVpKUld4MVpFZFdlV0p0VmpCSlJVWXhaRWRvZG1OdGJEQmxVMEpIVFZSQlpVWjNNSGhQUkVGNVRVUkZkMDFFUVhkTlJFSmhSbmN3ZVUxRVFUUk5SRlY1VFZSSmQwMVVhR0ZOU0VWNFEzcEJTa0puVGxaQ1FWbFVRV3hXVkUxUmMzZERVVmxFVmxGUlNVUkJTazVYVkVWVFRVSkJSMEV4VlVWQ2QzZEtWakpHY2xwWFduQmFWM2hyVFZKWmQwWkJXVVJXVVZGTFJFRXhSMU5WVWxCSlJVWnpZa2RzYUdKdFRteE5VWGQzUTJkWlJGWlJVVXhFUVU1RVZqQmplRWQ2UVZwQ1owNVdRa0ZOVFVWdFJqQmtSMVo2WkVNMWFHSnRVbmxpTW14clRHMU9kbUpVUTBOQlUwbDNSRkZaU2t0dldrbG9kbU5PUVZGRlFrSlJRVVJuWjBWUVFVUkRRMEZSYjBOblowVkNRVXgzT0U5NFMzVktZa3hFVmxGQlkyeFFTbmhOZFRsdU9WaHpLekJaVTNaTlpIcDZVM0IxZGxvM1RrTkxSRUpSTmpCU1MzZHBkbEJoVVRCU2RqSnlTMEpSUjFGTWFtbFNhaklyTDNkbFNuTm9ja2QxZFhWaGRtRlllV05yUTNoT1dFVXlUVXN6ZHl0allsbzRiMmh5YzBodVoyYzNkRkZWZGxSamJ6aG1jWHBVYVRrd1Qya3liRFJMZFhoak1UQnZTRGRpYmpKV0swSTVkRFZJYVc1RldqTXpPRXM0T1hGSU5YYzFiVkpMWm1Kb2VVb3dOMlpOUld4amIyTmpUVXAxUm5reVdIRlpUbmxRVVZkc2FFa3dXalJrT0dnMFlVZDViVmQyVkRSVWRUTTRSekJ4UzNkaFMycEJiSEUzUjBOV2RrSlNiR3RoVTBoR2VVUnhPVlU0VlROR1Nrd3dVRlZGWTJabWFuQTRkVkZTYXpsRVZ6bFlZMWhDVGxKemRHSlBUSFZuYVhwTlRVeFFibVo0V21wTlozWXlNMDFrZWl0aVRIUk1iMUJGTlRSQ2R6WXliRlJDZDBkYVNUZEhXVXRrTkNzck0xTnRPRU5CZDBWQlFXRlBRMEZrUVhkblowaE5UVU5GUjBFeFZXUkpRVkZoVFVKbmQwUkJXVXRMZDFsQ1FrRklWMlZSU1VaQmVrRkpRbWRhYm1kUmQwSkJaMGwzUlhkWlJGWlNNR3hDUVhkM1EyZFpTVXQzV1VKQ1VWVklRWGRGZDBSQldVUldVakJVUVZGSUwwSkJTWGRCUkVGa1FtZE9Wa2hSTkVWR1oxRlZURlV6UTB4R2IwdEpORFpxZW5FMlRrMTZZU3MxYm1wNVRGcEZkMGgzV1VSV1VqQnFRa0puZDBadlFWVnZPVzlZTkVsbk1ESTRiVzFZUVVOUlV6RnpjMGxDVVVRNVVXTjNWWGRaUkZaU01HWkNSWGQzVTJwQ1NXOUZZV2RTU1ZwRFlVaFNNR05JVFRaTWVUbHRZVmRTZGxsWGVITmhWMFoxV1RKVmRWa3lPSFZpYm05Mll6SkdiVnBZVWpWaWJWWXdZMGQwY0V3eVRubGlRemxvWkVoU2JHTXpVWFZaVnpWclkyMDVjRnBETldwaU1qQjFXVE5LYzAxSlNIVkNaMmR5UW1kRlJrSlJZMEpCVVZOQ05GUkRRak5xUW5KQ1oyZHlRbWRGUmtKUlkzZEJiMXBtWVVoU01HTklUVFpNZVRsdFlWZFNkbGxYZUhOaFYwWjFXVEpWZFZreU9IVmlibTkyWXpKR2JWcFlValZpYlZZd1kwZDBjRXd3V2twU1JUaHNUV3BDUjFsWGRHeEtWRWwzVlcwNWRtUkRWWGxOUlU1c1kyNVNjRnB0YkdwWldGSnNTbFJKZDFGWVZqQmhSemw1WVZoU05VcFVTWGROYWtGNFQwTTFhbU51VVhkaWQxbEpTM2RaUWtKUlZVaE5RVWRIV1RKb01HUklRbnBQYVRoMldtMXNhMkl5Um5OaVIyeG9ZbTFPYkV4dFRuWk1iVFUyVEROT2FGcHRWakJsVnpWc1pFaENjbUZUT1dwamJYZDJVbXRzUlZSNVZYbE5SVnBvWVRKVmJFMXFRbE5pTWprd1NsUkpkMUV5Vm5sa1IyeHRZVmRPYUdSSFZXeE5ha0pDWkZoU2IySXpTbkJrU0d0c1RXcEJlVTFFUlRSTWJVNTVZa1JCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUVU5RFFWRkZRVmcwVDAxUWFVSm5TM1V4YWxWUFdGbGxOa05CZGpONVNYRTRaRXMzUjNWRFZrTnlPRVpvVHk5M1prMW1ZVVUwVjIxNlpEbEtUVlJXYTJOck9YUmxUMFUwV0dKMk9VVnVNV1ZUVkd3eWRVVjFRbTl5Y1V0amRVVTNhWGhPVmtOc1VGbFRVelZIVG0xYWVIUktjMmd2WjBNMk5tWklkRkJPTkhoQmMyUklNamRRZVVSSk0wMHhTV0o1VkdsVFl6bGlSWHBOVms1WE5XUXdkMmxMWVRCNmIyeFVWakZZVVd4aUsyMU1SeTg1ZDNVeFRUUlVhVE5VVFVwc2VHbEVTVWd6T1hwdGMwOXdiWE01WnpGdk1tNDJRa0ZtYTNaM01WVkpRMGhaZVhCWFRGRmFNM0l4VXpsS2ExWlJiREZPUVVKamVYaEdWM1UyYkNzM1VISkZabXBWZEVOWFRVNW1NM2xvU0M5Wk1uWktVR2R0WXl0cmRWVkhRMHBPZEhscmNsZE1WbXB1WTFwTmVrTjNWVGw1VEd0bmJ6ZHNRVTlQUTJRNUszWktkalo2WmtKWlJHaEZUbXR5UkZsc1dFcFlaRGxqYjBrMmMzSkNVVDA5SWl3aVRVbEpSa1JVUTBOQkwxZG5RWGRKUWtGblNWQkNUbVpRVm5wVFRuWmlTMDlITUdWSFFuVkZTazFCTUVkRFUzRkhVMGxpTTBSUlJVSkRkMVZCVFVaQmVFTjZRVXBDWjA1V1FrRlpWRUZzVmxSTlVsbDNSa0ZaUkZaUlVVdEVRVEZIVTFWU1VFbEZSbk5pUjJ4b1ltMU9iRTFUYTNkS2QxbEVWbEZSUkVSRFFrZFRWVkpRU1VWR2MySkhiR2hpYlU1c1kzbENSMUZWZEVaSlJrcDJZak5SWjFFd1JXZE1VMEpVVFZSQlpVWjNNSGhPZWtGNVRVUkZkMDFFUVhkTlJFSmhSbmN3ZWs1VVFYaE5la1Y1VFhwVk5VNVViR0ZOUnpSNFEzcEJTa0puVGxaQ1FWbFVRV3hXVkUxVGMzZExVVmxFVmxGUlMwUkRTa2RUVlZKUVNVVkdjMkpIYkdoaWJVNXNZM2xDUjFGVmRFWkpSbEo1WkZoT01FbEdUbXhqYmxwd1dUSldlazFVU1hkTlFWbEVWbEZSUkVSRGJFZFRWVkpRU1VWR2MySkhiR2hpYlU1c1kzbENSMUZWZEVaSlJXeDFaRWRXZVdKdFZqQkpSVVl4WkVkb2RtTnRiREJsVTBKSFRWUkRRMEZUU1hkRVVWbEtTMjlhU1doMlkwNUJVVVZDUWxGQlJHZG5SVkJCUkVORFFWRnZRMmRuUlVKQlRVVkliVVptWWs1NWNGQjFjVGswYXl0VFUwTnBWWFpZVTNWdGIyeFpjRWhaU0dsclVHRldNbXBSWW1KWWRrZDFTaXQzT0hsNGVraEhWVkpHV2xGTVprTkdWbkpVV2pJMk9XVmlkbGt5Y0U1c2FGVlRjRTVLWXpkVGNHaHZiRk55T1hSRGFuVklaRWRNTTNWMlFtUndlR0ZhYW5aMFpGWkZObmx1TlZwMlEzaDVlQzlvUVdkMVJXUnJaRkIxVmtWdFpGWkVjalkwWXpZNFpESTRiMmt2TTFselJtNUpZbkZOYm5WWWRqaHdjWFpHWVhOSGFtUlVWMFpETTJGMVNrZGtkVEoyTmpWelFsVTBkbGRqY2tWR1pGbHFNRTFuZDA5RU1HeHZXVWhpS3pCNlMwczVkM2htYVZwUVZWWTRTRVZhWWt0M1JGZG1OV3B2ZFdGalNtVlhXak15TkZkR01VeElUMnBYY25oSVoyOUVVVUpwZW5NeWNWVkdTblpEVG1sdWMyRkRVMDAxU2xONFVYVnNUVWRrWWtSVlZWTjJXVE51YVd0NmJuSjVUbkpPTm1ZdlQxSnVabXN5SzB0SmVuUmpkREpyVDBsalEwRjNSVUZCWVU5RFFXTlJkMmRuU0VGTlFYTkhRVEZWWkVSM1VVVkJkMGxDYUdwQ1RFSm5UbFpJVTBGRlVrUkNRMDFGUVVkQ2JXVkNSRUZGUTBGcVFUSk5SRkZIUTBOelIwRlJWVVpDZDBsQ1JtbG9iMlJJVW5kamVtOTJUREphY0ZwSE9XaGlSM2h3V1ZjMWFscFROV3BpZVRWMVpXazVlbGxYV214a1NHeDFXbGhTZDJFeWEzWk5RakJIUVRGVlpFcFJVVmROUWxGSFEwTnpSMEZSVlVaQ2QwMUNRbWRuY2tKblJVWkNVV05FUVdwQlUwSm5UbFpJVWsxQ1FXWTRSVU5FUVVkQlVVZ3ZRV2RGUVUxQ01FZEJNVlZrUkdkUlYwSkNVMm95YUdabmFVUlVZbmxoV21OQlNrSk1WM2wzWjBaQlVERkNla0ZtUW1kT1ZraFRUVVZIUkVGWFowSlRjVTUyT1VKaFpFdGthV3AyV1VoSFdGUlhPVFZ5WTBNeVZXdEVRakJDWjA1V1NGSTRSV0pVUW5KTlIyMW5XalpDYkdodFRtOWtTRkozWTNwdmRrd3lXbkJhUnpsb1lrZDRjRmxYTldwYVV6VnFZbmsxZFdWcE9YcFpWMXBzWkVoc2RWcFlVbmRoTW10MldUTktjMHd3V2twU1JUaHNUV3BDUjFsWGRHeEtWRWwzVlcwNWRtUkRWWGxOUlU1c1kyNVNjRnB0YkdwWldGSnNTbFJKZDFGWVZqQmhSemw1WVZoU05VcFVTWGROYWtGNFQwTTFhbU50ZDNkbGQxbEpTM2RaUWtKUlZVaEJVVVZGWW5wQ2RFMUhjMGREUTNOSFFWRlZSa0o2UVVKb2JEbHZaRWhTZDJONmIzWk1NbHB3V2tjNWFHSkhlSEJaVnpWcVdsTTFhbUo1TlhWbGFUbDZXVmRhYkdSSWJIVmFXRkozWVRKcmRsSnJiRVZVZVZWNVRVVmFhR0V5Vld4TmFrSlRZakk1TUVwVVNYZFJNbFo1WkVkc2JXRlhUbWhrUjFWc1RXcENRbVJZVW05aU0wcHdaRWhyYkUxcVFYbE5SRVUwVEcxT2VXUkVRVTVDWjJ0eGFHdHBSemwzTUVKQlVYTkdRVUZQUTBGUlJVRnBUMDlJTUZsQkszRXZXVWREV1RjNWEyWkxWUzlhVVdwaVN6Qk5jMUozUTNwYVJ6bFRMMjAwYVhkSlkzcFJNMGRoYTA5R1NEZHllVFI1Um5GUk5UaGpUeXM1WjJKV2NuTkNhRWcxTkVKSk1FMTNVelZwUTFocWFIWXhZbWRyTVVoc2RIYzRTMGhTYjNOc1NuSjVSRkZRZWxJelV6SkZUWFo0SzJ4NmVESllkalp6TWxoNGRraFNVa000UzFGWlZDOVBWMlJtYVRsRFprSTVaRkZ2UzJOa2JUVnNNV1pFT1dkV1ZqWnRlR1Y2YTNKUmJEZERNRXRtWlRSYWNIa3hORGRJVDI5YU1EUnlUM2hzZUhSME0xZEljMFpuVjB3dlRXNHdaR0ppUVZNd2VIaERUbVIzT0RoSmFVeE9OMGQ2UzNwU2NtSjNObU5JYzBKRVlYWjRiRmhHWTBwMU9GWnhVMnBPVFZKR1JFZ3hVRFJCUjJKVFpWZzRlWFZFTVdkek4zZDJiSEpCZVdSdlRIWnhOamRRVURJMGQxVTBRakYxVVZsdVdVVnRRelZ2UVhaek5uRlRkbXh3ZEVSaVRuTTNZMmhOZVRCaGNIYzlQU0pkZlEuZXlKdWIyNWpaU0k2SWtNMU9WaFhiRXd6V2tkdE5URmtaMDlUTUVKSWJHZzVSR0ZZV1dGNFJqUTFhV3Q2TlhGc2RsQktkMGs5SWl3aWRHbHRaWE4wWVcxd1RYTWlPakUxTmpVd05EQXdNVGc0T0RNc0ltRndhMUJoWTJ0aFoyVk9ZVzFsSWpvaVkyOXRMbUZ1WkhKdmFXUXVhMlY1YzNSdmNtVXVZVzVrY205cFpHdGxlWE4wYjNKbFpHVnRieUlzSW1Gd2EwUnBaMlZ6ZEZOb1lUSTFOaUk2SW1STkwweFZTRk5KT1ZOclVXaGFTRWh3VVZkU2JucEtNMDEyZGtJeVFVNVRZWFZ4V1VGQllsTXlTbWM5SWl3aVlYQnJRMlZ5ZEdsbWFXTmhkR1ZFYVdkbGMzUlRhR0V5TlRZaU9sc2lZbk5pTkM5WFVXUmhZVTlYV1VOa0wybzVUMHBwVVhCbk4ySXdhWGRHWjBGakwzcDZRVEYwUTJaM1JUMGlYU3dpWTNSelVISnZabWxzWlUxaGRHTm9JanAwY25WbExDSmlZWE5wWTBsdWRHVm5jbWwwZVNJNmRISjFaWDAuY2NIdkFsaS1fQjJOWklDZUl1SGFNYlJEUkhfbG9MT3VIaVZNeXF0SGYxWTByWTFJMU55bUYwM3dwX0x0ZnhmR01qU0poRi1BdXZ0M0w0NTRZWS1kbVdjbmxfaW5GQTMwNXBCTUx1N1B6NF8zZ2dKYk13NXhiWnVVNEZ5Z1dlR1V0d0w5Z01DZlZhaDdIZEJvV3J4YlFWOWY0M0Q2TUxUZFBuYjB3T3M2eWliVmh5eUx2U0ViUTh5UVdfWTBxYlJuaTd0M1cwclZ3MFJNVE1hSm1lRFJlaG9ONFVySjJ0T1NOVHlVa1VROHNaRUNEQngwSmFTRTU0bzN4MVFrTzd0US1TSk5OdTBQQWtZemo0WENvMFZzaGNaQjlUcDhROFBKLXlJTWZYRE1SRm5SUDlVOFpKdWF1eGNxT1A1TlN6RS16X0g5ZHE5Q0xKaHdvVFRCYW1wS193aGF1dGhEYXRhWQFnlgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1lBAAAAMMh83ZdWwUm4niTLNjZU81AAIE57gx8GWtSs4Edg_mq8-XoqUB7lGTMpKHqPmdYhyujspAEDAzkBACBZAQDCxeHEICoCqq8uoamGw-8xNiUKEq0FRGZJlenHVcEITU-vHTFLxZNy1hdXr-6bS6EPzz8c6xXfsi9D_biAtpzvhfWI41M84_o_FY0W7E3QbK1jJvHCE0qcdjuaMOnBTqfsePuc8DQNS3WuXW_DpYUScbIoWkhsxZVkugdF21BDId3pXhTfyjAZr_L_soUWUpV6WgWa8itdlHWMsX9TwTwwBCyn8Kv7aiL5MkqOUU8nEtrHXWaIVGhQjerBoiksDsz_hUYoAa-i3623yzl8sCVuRQ0k25vS1AYemopeG3cPmqM00XfynO68S9rzo_7wJd4tavrHoAEokbJ3-QAYZXKfIUMBAAE","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVDTDVfR3NfR1BOa19hb3Z3VTFtNHlQczZISnVEZEhwOFdtZ2x4dmt2TU0iLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
-
-        self::bootKernel();
-
-        /** @var ClientInterface $clientService */
-        $clientService = static::$container->get('httplug.client.mock');
-        $this->prepareClient($clientService);
-
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
-
         /** @var CacheItemPoolInterface $storage */
         $storage = static::$container->get(CacheItemPoolInterface::class);
-        $item = $storage->getItem('__WEBAUTHN_ATTESTATION_REQUEST__1');
-        $item->set($publicKeyCredentialCreationOptions);
+        $item = $storage->getItem('__WEBAUTHN_ASSERTION_REQUEST__1');
+        $item->set([
+            'options' => $publicKeyCredentialCreationOptions,
+            'userEntity' => $publicKeyCredentialUserEntity,
+        ]);
         $storage->save($item);
-
-        $client = static::createClient();
-        $client->request('POST', '/attestation/result', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauthn.spomky-labs.com', 'HTTPS' => 'on'], $body);
-        $response = $client->getResponse();
-
-        static::assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $json = json_decode($client->getResponse()->getContent(), true);
-        static::assertArrayHasKey('status', $json);
-        static::assertArrayHasKey('errorMessage', $json);
-        static::assertEquals('failed', $json['status']);
-        static::assertEquals('The attestation statement value "ver" is empty.', $json['errorMessage']);
     }
 
     private function prepareClient(ClientInterface $client): void

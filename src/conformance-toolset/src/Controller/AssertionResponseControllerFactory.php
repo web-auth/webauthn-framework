@@ -40,28 +40,43 @@ final class AssertionResponseControllerFactory
      * @var ValidatorInterface
      */
     private $validator;
+
     /**
      * @var PublicKeyCredentialLoader
      */
     private $publicKeyCredentialLoader;
+
     /**
      * @var AuthenticatorAssertionResponseValidator
      */
     private $attestationResponseValidator;
+
     /**
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var CacheItemPoolInterface
      */
     private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    /**
+     * @var PublicKeyCredentialUserEntityRepository
+     */
+    private $publicKeyCredentialUserEntityRepository;
+
+    /**
+     * @var PublicKeyCredentialSourceRepository
+     */
+    private $publicKeyCredentialSourceRepository;
+
+    public function __construct(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -71,15 +86,17 @@ final class AssertionResponseControllerFactory
         $this->httpMessageFactory = $httpMessageFactory;
         $this->logger = $logger;
         $this->cacheItemPool = $cacheItemPool;
+        $this->publicKeyCredentialUserEntityRepository = $publicKeyCredentialUserEntityRepository;
+        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAssertionRequestController(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AssertionRequestController
+    public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
     {
         return new AssertionRequestController(
             $this->serializer,
             $this->validator,
-            $publicKeyCredentialUserEntityRepository,
-            $publicKeyCredentialSourceRepository,
+            $this->publicKeyCredentialUserEntityRepository,
+            $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
             $sessionParameterName,
