@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
-use Cose\Algorithms;
-
 final class RS1 extends RSA
 {
+    public const ID = -65535;
+
     public static function identifier(): int
     {
-        return Algorithms::COSE_ALGORITHM_RS1;
+        return self::ID;
     }
 
     protected function getHashAlgorithm(): int

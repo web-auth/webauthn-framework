@@ -28,7 +28,20 @@ class Manager
         $this->algorithms[$identifier] = $algorithm;
     }
 
+    /**
+     * @deprecated Will be removed in v3.0. Please use all() instead
+     */
     public function getAlgorithms(): iterable
+    {
+        yield from $this->algorithms;
+    }
+
+    public function list(): iterable
+    {
+        yield from array_keys($this->algorithms);
+    }
+
+    public function all(): iterable
     {
         yield from $this->algorithms;
     }

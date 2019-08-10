@@ -24,6 +24,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use Webauthn\Util\CoseSignatureFixer;
 
 class AuthenticatorAssertionResponseValidator
 {
@@ -154,6 +155,7 @@ class AuthenticatorAssertionResponseValidator
         $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
         $algorithm = $this->algorithmManager->get($coseKey->alg());
         Assertion::isInstanceOf($algorithm, Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
+        $signature = CoseSignatureFixer::fix($signature, $algorithm);
         Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
 
         /* @see 7.2.17 */
