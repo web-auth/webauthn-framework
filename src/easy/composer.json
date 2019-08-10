@@ -1,0 +1,36 @@
+{
+    "name": "web-auth/easy-server",
+    "type": "library",
+    "license": "MIT",
+    "description": "Toolset to ease the creation of a Webauthn Server",
+    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/easy-server/contributors"
+        }
+    ],
+    "require": {
+        "web-auth/webauthn-lib\"": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\Easy\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webauthn\\Easy\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "v2.1": "2.1.x-dev"
+        }
+    }
+}
