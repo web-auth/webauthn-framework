@@ -13,14 +13,30 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\ECDSA;
 
-use Cose\Algorithms;
 use Cose\Key\Ec2Key;
+use Cose\Key\Key;
 
 final class ES512 extends ECDSA
 {
+    public const ID = -36;
+
     public static function identifier(): int
     {
-        return Algorithms::COSE_ALGORITHM_ES512;
+        return self::ID;
+    }
+
+    public function sign(string $data, Key $key): string
+    {
+        $signature = parent::sign($data, $key);
+
+        return ECSignature::fromAsn1($signature, 132);
+    }
+
+    public function verify(string $data, Key $key, string $signature): bool
+    {
+        $signature = ECSignature::toAsn1($signature, 132);
+
+        return parent::verify($data, $key, $signature);
     }
 
     protected function getHashAlgorithm(): int

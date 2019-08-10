@@ -39,11 +39,11 @@ abstract class PSSRSA implements Signature
         $key = $this->handleKey($key);
         $modulusLength = mb_strlen($key->n(), '8bit');
 
-        $em = self::encodeEMSAPSS($data, 8 * $modulusLength - 1, $this->getHashAlgorithm());
+        $em = $this->encodeEMSAPSS($data, 8 * $modulusLength - 1, $this->getHashAlgorithm());
         $message = BigInteger::createFromBinaryString($em);
         $signature = $this->exponentiate($key, $message);
 
-        return self::convertIntegerToOctetString($signature, $modulusLength);
+        return $this->convertIntegerToOctetString($signature, $modulusLength);
     }
 
     public function verify(string $data, Key $key, string $signature): bool
@@ -56,10 +56,10 @@ abstract class PSSRSA implements Signature
         }
         $s2 = BigInteger::createFromBinaryString($signature);
         $m2 = $this->exponentiate($key, $s2);
-        $em = self::convertIntegerToOctetString($m2, $modulusLength);
+        $em = $this->convertIntegerToOctetString($m2, $modulusLength);
         $modBits = 8 * $modulusLength;
 
-        return self::verifyEMSAPSS($data, $em, $modBits - 1, $this->getHashAlgorithm());
+        return $this->verifyEMSAPSS($data, $em, $modBits - 1, $this->getHashAlgorithm());
     }
 
     private function handleKey(Key $key): RsaKey
@@ -110,7 +110,7 @@ abstract class PSSRSA implements Signature
         $h = $hash->hash($m2);
         $ps = str_repeat(\chr(0), $emLen - $sLen - $hash->getLength() - 2);
         $db = $ps.\chr(1).$salt;
-        $dbMask = self::getMGF1($h, $emLen - $hash->getLength() - 1, $hash);
+        $dbMask = $this->getMGF1($h, $emLen - $hash->getLength() - 1, $hash);
         $maskedDB = $db ^ $dbMask;
         $maskedDB[0] = ~\chr(0xFF << ($modulusLength & 7)) & $maskedDB[0];
 
@@ -137,7 +137,7 @@ abstract class PSSRSA implements Signature
         if ((~$maskedDB[0] & $temp) !== $temp) {
             throw new InvalidArgumentException();
         }
-        $dbMask = self::getMGF1($h, $emLen - $hash->getLength() - 1, $hash/*MGF*/);
+        $dbMask = $this->getMGF1($h, $emLen - $hash->getLength() - 1, $hash/*MGF*/);
         $db = $maskedDB ^ $dbMask;
         $db[0] = ~\chr(0xFF << ($emBits & 7)) & $db[0];
         $temp = $emLen - $hash->getLength() - $sLen - 2;

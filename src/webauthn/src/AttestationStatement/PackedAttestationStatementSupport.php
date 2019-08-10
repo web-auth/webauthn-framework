@@ -29,6 +29,7 @@ use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
+use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
@@ -189,7 +190,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         if (!$algorithm instanceof Signature) {
             throw new RuntimeException('Invalid algorithm');
         }
+        $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);
 
-        return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
+        return $algorithm->verify($dataToVerify, $publicKey, $signature);
     }
 }
