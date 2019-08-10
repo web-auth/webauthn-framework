@@ -46,15 +46,15 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
         static::assertEquals([$credential], $publicKeyCredentialRequestOptions->getAllowCredentials());
         static::assertEquals('user_verification', $publicKeyCredentialRequestOptions->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $publicKeyCredentialRequestOptions->getExtensions());
-        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($publicKeyCredentialRequestOptions));
+        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($publicKeyCredentialRequestOptions));
 
-        $data = PublicKeyCredentialRequestOptions::createFromString('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}');
+        $data = PublicKeyCredentialRequestOptions::createFromString('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}');
         static::assertEquals('challenge', $data->getChallenge());
         static::assertEquals(1000, $data->getTimeout());
         static::assertEquals('rp_id', $data->getRpId());
         static::assertEquals([$credential], $data->getAllowCredentials());
         static::assertEquals('user_verification', $data->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
-        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ=","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($data));
+        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"user_verification","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($data));
     }
 }
