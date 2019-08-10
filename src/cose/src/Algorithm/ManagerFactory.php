@@ -42,7 +42,7 @@ class ManagerFactory
     {
         $manager = new Manager();
         foreach ($aliases as $alias) {
-            Assertion::keyExists($alias, $this->algorithms, sprintf('The algorithm with alias "%s" is not supported', $alias));
+            Assertion::keyExists($this->algorithms, $alias, sprintf('The algorithm with alias "%s" is not supported', $alias));
             $manager->add($this->algorithms[$alias]);
         }
 
