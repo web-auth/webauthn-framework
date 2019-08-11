@@ -19,6 +19,8 @@ use Cose\Algorithm\ManagerFactory;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
@@ -88,10 +90,26 @@ class Server
      * @var string[]
      */
     private $selectedAlgorithms;
+
     /**
      * @var MetadataStatementRepository
      */
     private $metadataStatementRepository;
+
+    /**
+     * @var ClientInterface
+     */
+    private $httpClient;
+
+    /**
+     * @var string
+     */
+    private $googleApiKey;
+
+    /**
+     * @var RequestFactoryInterface
+     */
+    private $requestFactory;
 
     public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, MetadataStatementRepository $metadataStatementRepository)
     {
@@ -191,15 +209,7 @@ class Server
 
     public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
-        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
-        $attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(null, null, null, 0, 60000, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager, $this->metadataStatementRepository));
-
+        $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
         $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
 
@@ -220,15 +230,7 @@ class Server
 
     public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): void
     {
-        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
-        $attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager));
-
+        $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
         $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
 
@@ -241,7 +243,7 @@ class Server
             null,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
-            $coseAlgorithmManager
+            $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
         );
         $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
@@ -250,5 +252,26 @@ class Server
             $serverRequest,
             $userEntity->getId()
         );
+    }
+
+    public function enforceAndroidSafetyNetVerification(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory): void
+    {
+        $this->httpClient = $client;
+        $this->googleApiKey = $apiKey;
+        $this->requestFactory = $requestFactory;
+    }
+
+    private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
+    {
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+        $attestationStatementSupportManager = new AttestationStatementSupportManager();
+        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager, $this->metadataStatementRepository));
+
+        return $attestationStatementSupportManager;
     }
 }
