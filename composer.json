@@ -20,15 +20,16 @@
             "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
+            "Webauthn\\Easy\\": "src/easy/src/",
             "Webauthn\\MetadataService\\": "src/metadata-service/src/",
-            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
-            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
+            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
             "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
+            "Webauthn\\Easy\\Test\\": "src/easy/tests/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
@@ -64,6 +65,7 @@
         "web-token/signature-pack": "^2.0.9"
     },
     "replace": {
+        "web-auth/easy-server": "self.version",
         "web-auth/cose-lib": "self.version",
         "web-auth/u2f-lib": "self.version",
         "web-auth/webauthn-lib": "self.version",

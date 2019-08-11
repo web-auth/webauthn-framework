@@ -14,15 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\Easy;
 
 use Assert\Assertion;
-use CBOR\Decoder;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Algorithm;
-use Cose\Algorithm\Manager;
+use Cose\Algorithm\ManagerFactory;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
-use Cose\Algorithms;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
@@ -34,13 +30,17 @@ use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialParameters;
+use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -50,24 +50,24 @@ use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 class Server
 {
     /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rpEntity;
-
-    /**
      * @var int
      */
     public $timeout = 60000;
 
     /**
-     * @var PublicKeyCredentialParameters[]
+     * @var int
      */
-    private $publicKeyCredentialParametersList;
+    public $challengeSize = 32;
 
     /**
-     * @var Manager
+     * @var PublicKeyCredentialRpEntity
      */
-    private $coseAlgorithmManager;
+    private $rpEntity;
+
+    /**
+     * @var ManagerFactory
+     */
+    private $coseAlgorithmManagerFactory;
 
     /**
      * @var PublicKeyCredentialSourceRepository
@@ -75,24 +75,9 @@ class Server
     private $publicKeyCredentialSourceRepository;
 
     /**
-     * @var Decoder
-     */
-    private $decoder;
-
-    /**
      * @var TokenBindingNotSupportedHandler
      */
     private $tokenBindingHandler;
-
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
-
-    /**
-     * @var AttestationObjectLoader
-     */
-    private $attestationObjectLoader;
 
     /**
      * @var ExtensionOutputCheckerHandler
@@ -100,61 +85,46 @@ class Server
     private $extensionOutputCheckerHandler;
 
     /**
-     * @var PublicKeyCredentialLoader
+     * @var string[]
      */
-    private $publicKeyCredentialLoader;
+    private $selectedAlgorithms;
+    /**
+     * @var MetadataStatementRepository
+     */
+    private $metadataStatementRepository;
 
-    public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, MetadataStatementRepository $metadataStatementRepository)
     {
         $this->rpEntity = $relayingParty;
 
-        $this->coseAlgorithmManager = new Manager();
-        $this->coseAlgorithmManager->add(new RSA\RS1());
-        $this->coseAlgorithmManager->add(new RSA\RS256());
-        $this->coseAlgorithmManager->add(new RSA\RS384());
-        $this->coseAlgorithmManager->add(new RSA\RS512());
-        $this->coseAlgorithmManager->add(new RSA\PS256());
-        $this->coseAlgorithmManager->add(new RSA\PS384());
-        $this->coseAlgorithmManager->add(new RSA\PS512());
-        $this->coseAlgorithmManager->add(new ECDSA\ES256());
-        $this->coseAlgorithmManager->add(new ECDSA\ES256K());
-        $this->coseAlgorithmManager->add(new ECDSA\ES384());
-        $this->coseAlgorithmManager->add(new ECDSA\ES512());
-        $this->coseAlgorithmManager->add(new EdDSA\ED512());
+        $this->coseAlgorithmManagerFactory = new ManagerFactory();
+        $this->coseAlgorithmManagerFactory->add('RS1', new RSA\RS1());
+        $this->coseAlgorithmManagerFactory->add('RS256', new RSA\RS256());
+        $this->coseAlgorithmManagerFactory->add('RS384', new RSA\RS384());
+        $this->coseAlgorithmManagerFactory->add('RS512', new RSA\RS512());
+        $this->coseAlgorithmManagerFactory->add('PS256', new RSA\PS256());
+        $this->coseAlgorithmManagerFactory->add('PS384', new RSA\PS384());
+        $this->coseAlgorithmManagerFactory->add('PS512', new RSA\PS512());
+        $this->coseAlgorithmManagerFactory->add('ES256', new ECDSA\ES256());
+        $this->coseAlgorithmManagerFactory->add('ES256K', new ECDSA\ES256K());
+        $this->coseAlgorithmManagerFactory->add('ES384', new ECDSA\ES384());
+        $this->coseAlgorithmManagerFactory->add('ES512', new ECDSA\ES512());
+        $this->coseAlgorithmManagerFactory->add('ED256', new EdDSA\ED256());
+        $this->coseAlgorithmManagerFactory->add('ED512', new EdDSA\ED512());
 
-        $this->publicKeyCredentialParametersList = [
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS1),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS256),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS384),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS512),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS256),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS384),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS512),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256K),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES384),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES512),
-            new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ED256),
-        ];
+        $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'ED256', 'ED512'];
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-
-        $otherObjectManager = new OtherObjectManager();
-        $tagObjectManager = new TagObjectManager();
-        $this->decoder = new Decoder($tagObjectManager, $otherObjectManager);
-
         $this->tokenBindingHandler = new TokenBindingNotSupportedHandler();
-
-        $this->attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $this->attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $this->attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-        $this->attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport());
-        $this->attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-        $this->attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
-        $this->attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $this->coseAlgorithmManager));
-
-        $this->attestationObjectLoader = new AttestationObjectLoader($this->attestationStatementSupportManager, $this->decoder);
-        $this->publicKeyCredentialLoader = new PublicKeyCredentialLoader($this->attestationObjectLoader, $this->decoder);
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+        $this->metadataStatementRepository = $metadataStatementRepository;
+    }
+
+    /**
+     * @param string[] $selectedAlgorithms
+     */
+    public function setSelectedAlgorithms(array $selectedAlgorithms): void
+    {
+        $this->selectedAlgorithms = $selectedAlgorithms;
     }
 
     public function setTokenBindingHandler(TokenBindingNotSupportedHandler $tokenBindingHandler): void
@@ -162,9 +132,11 @@ class Server
         $this->tokenBindingHandler = $tokenBindingHandler;
     }
 
-    public function addAlgorithm(Algorithm $algorithm): void
+    public function addAlgorithm(string $alias, Algorithm $algorithm): void
     {
-        $this->coseAlgorithmManager->add($algorithm);
+        $this->coseAlgorithmManagerFactory->add($alias, $algorithm);
+        $this->selectedAlgorithms[] = $alias;
+        $this->selectedAlgorithms = array_unique($this->selectedAlgorithms);
     }
 
     public function setExtensionOutputCheckerHandler(ExtensionOutputCheckerHandler $extensionOutputCheckerHandler): void
@@ -177,15 +149,23 @@ class Server
      */
     public function generatePublicKeyCredentialCreationOptions(PublicKeyCredentialUserEntity $userEntity, ?string $attestationMode = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, array $excludedPublicKeyDescriptors = [], ?AuthenticatorSelectionCriteria $criteria = null, ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialCreationOptions
     {
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+        $publicKeyCredentialParametersList = [];
+        foreach ($coseAlgorithmManager->all() as $algorithm) {
+            $publicKeyCredentialParametersList[] = new PublicKeyCredentialParameters(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                $algorithm::identifier()
+            );
+        }
         $criteria = $criteria ?? new AuthenticatorSelectionCriteria();
         $extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
-        $challenge = random_bytes(32);
+        $challenge = random_bytes($this->challengeSize);
 
         return new PublicKeyCredentialCreationOptions(
             $this->rpEntity,
             $userEntity,
             $challenge,
-            $this->publicKeyCredentialParametersList,
+            $publicKeyCredentialParametersList,
             $this->timeout,
             $excludedPublicKeyDescriptors,
             $criteria,
@@ -194,14 +174,41 @@ class Server
         );
     }
 
+    /**
+     * @param PublicKeyCredentialDescriptor[] $allowedPublicKeyDescriptors
+     */
+    public function generatePublicKeyCredentialRequestOptions(?string $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, array $allowedPublicKeyDescriptors = [], ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
+    {
+        return new PublicKeyCredentialRequestOptions(
+            random_bytes($this->challengeSize),
+            $this->timeout,
+            $this->rpEntity->getId(),
+            $allowedPublicKeyDescriptors,
+            $userVerification,
+            $extensions ?? new AuthenticationExtensionsClientInputs()
+        );
+    }
+
     public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
-        $publicKeyCredential = $this->publicKeyCredentialLoader->load($data);
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+        $attestationStatementSupportManager = new AttestationStatementSupportManager();
+        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(null, null, null, 0, 60000, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager, $this->metadataStatementRepository));
+
+        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
+        $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
+
+        $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
         Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAttestationResponse::class, 'Not an authenticator attestation response');
 
         $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
-            $this->attestationStatementSupportManager,
+            $attestationStatementSupportManager,
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler
@@ -209,5 +216,39 @@ class Server
         $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest);
 
         return PublicKeyCredentialSource::createFromPublicKeyCredential($publicKeyCredential, $publicKeyCredentialCreationOptions->getUser()->getId());
+    }
+
+    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): void
+    {
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+        $attestationStatementSupportManager = new AttestationStatementSupportManager();
+        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager));
+
+        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
+        $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
+
+        $publicKeyCredential = $publicKeyCredentialLoader->load($data);
+        $authenticatorResponse = $publicKeyCredential->getResponse();
+        Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAssertionResponse::class, 'Not an authenticator assertion response');
+
+        $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
+            $this->publicKeyCredentialSourceRepository,
+            null,
+            $this->tokenBindingHandler,
+            $this->extensionOutputCheckerHandler,
+            $coseAlgorithmManager
+        );
+        $authenticatorAssertionResponseValidator->check(
+            $publicKeyCredential->getRawId(),
+            $authenticatorResponse,
+            $publicKeyCredentialRequestOptions,
+            $serverRequest,
+            $userEntity->getId()
+        );
     }
 }

@@ -48,7 +48,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
     public function __construct(?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
-        if (!null === $decoder) {
+        if (null !== $decoder) {
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
         }
         if (null === $metadataStatementRepository) {

@@ -40,7 +40,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private $apiKey;
 
     /**
-     * @var ClientInterface
+     * @var ClientInterface|null
      */
     private $client;
 
@@ -74,7 +74,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $metadataStatementRepository;
 
-    public function __construct(ClientInterface $client, ?string $apiKey, ?RequestFactoryInterface $requestFactory, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
@@ -171,7 +171,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function validateUsingGoogleApi(AttestationStatement $attestationStatement): void
     {
-        if (null === $this->apiKey || null === $this->requestFactory) {
+        if (null === $this->client || null === $this->apiKey || null === $this->requestFactory) {
             return;
         }
         $uri = sprintf('https://www.googleapis.com/androidcheck/v1/attestations/verify?key=%s', urlencode($this->apiKey));

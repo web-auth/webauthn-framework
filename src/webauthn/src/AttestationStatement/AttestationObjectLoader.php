@@ -17,6 +17,8 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -38,9 +40,12 @@ class AttestationObjectLoader
      */
     private $attestationStatementSupportManager;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, Decoder $decoder)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null)
     {
-        $this->decoder = $decoder;
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
+        }
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
     }
 
