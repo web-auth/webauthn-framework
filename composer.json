@@ -99,7 +99,7 @@
         "phpstan/phpstan-phpunit": "^0.11",
         "phpstan/phpstan-strict-rules": "^0.11",
         "phpunit/phpcov": "^6.0",
-        "phpunit/phpunit": "8.2.5",
+        "phpunit/phpunit": "8.3.4",
         "ramsey/uuid": "^3.8",
         "symfony/browser-kit": "^4.3",
         "symfony/phpunit-bridge": "^4.3",
