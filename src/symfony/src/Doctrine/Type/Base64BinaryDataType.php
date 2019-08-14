@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
+use Assert\Assertion;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\base64_decode;
 
 final class Base64BinaryDataType extends Type
 {
@@ -32,7 +32,10 @@ final class Base64BinaryDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): string
     {
-        return base64_decode($value, true);
+        $data = base64_decode($value, true);
+        Assertion::string($data, 'Unable to decode the data');
+
+        return $data;
     }
 
     /**

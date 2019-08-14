@@ -94,7 +94,6 @@ final class AssertionRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Receiving data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions;
             if (\is_array($extensions)) {
@@ -103,7 +102,6 @@ final class AssertionRequestController
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $json = json_encode($content);
             Assertion::string($json, 'Unable to encode the data');
-            $this->logger->debug('User entity: '.$json);
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -113,7 +111,6 @@ final class AssertionRequestController
             );
             $json = json_encode($publicKeyCredentialRequestOptions);
             Assertion::string($json, 'Unable to encode the data');
-            $this->logger->debug('Assertion options: '.$json);
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
@@ -124,8 +121,6 @@ final class AssertionRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '.$throwable->getMessage());
-
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

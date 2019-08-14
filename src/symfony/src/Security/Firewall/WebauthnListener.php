@@ -17,7 +17,6 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -286,10 +285,6 @@ class WebauthnListener
 
     private function onAssertionFailure(Request $request, AuthenticationException $failed): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('Webauthn authentication request failed.', ['exception' => $failed]);
-        }
-
         $token = $this->tokenStorage->getToken();
         if ($token instanceof WebauthnToken && $this->providerKey === $token->getProviderKey()) {
             $this->tokenStorage->setToken(null);
@@ -312,10 +307,6 @@ class WebauthnListener
      */
     private function onAssertionSuccess(Request $request, TokenInterface $token): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('User has been authenticated successfully.', ['username' => $token->getUsername()]);
-        }
-
         $this->tokenStorage->setToken($token);
 
         if (null !== $this->dispatcher) {
@@ -363,16 +354,6 @@ class WebauthnListener
                 $storedData->getPublicKeyCredentialUserEntity()->getId()
             );
         } catch (Throwable $throwable) {
-            if (null !== $this->logger) {
-                $this->logger->error(sprintf(
-                    'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
-                    $assertion,
-                    json_encode($storedData->getPublicKeyCredentialRequestOptions()),
-                    $throwable->getMessage(),
-                    $throwable->getFile(),
-                    $throwable->getLine()
-                ));
-            }
             throw new AuthenticationException('Invalid assertion:', 0, $throwable);
         }
 

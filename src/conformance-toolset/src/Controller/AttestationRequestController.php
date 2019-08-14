@@ -95,16 +95,13 @@ final class AttestationRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Received data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $json = json_encode($userEntity);
             Assertion::string($json, 'Unable to encode the data');
-            $this->logger->debug('User entity: '.$json);
             $excludedCredentials = $this->getCredentials($userEntity);
             $json = json_encode($excludedCredentials);
             Assertion::string($json, 'Unable to encode the data');
-            $this->logger->debug('Excluded credentials: '.$json);
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
@@ -123,7 +120,6 @@ final class AttestationRequestController
             );
             $json = json_encode($publicKeyCredentialCreationOptions);
             Assertion::string($json, 'Unable to encode the data');
-            $this->logger->debug('Attestation options: '.$json);
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
@@ -134,8 +130,6 @@ final class AttestationRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '.$throwable->getMessage());
-
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
