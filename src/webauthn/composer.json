@@ -3,7 +3,7 @@
     "type": "library",
     "license": "MIT",
     "description": "FIDO2/Webauthn Support For PHP",
-    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "keywords": ["FIDO", "FIDO2", "webauthn"],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {
@@ -24,7 +24,6 @@
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-php": "^1.0.2",
-        "thecodingmachine/safe": "^0.1",
         "beberlei/assert": "^3.0",
         "web-auth/cose-lib": "^2.0"
     },

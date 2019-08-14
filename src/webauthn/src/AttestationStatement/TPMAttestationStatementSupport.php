@@ -24,7 +24,6 @@ use Cose\Key\RsaKey;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
-use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;

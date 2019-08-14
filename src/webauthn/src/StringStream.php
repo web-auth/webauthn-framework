@@ -20,7 +20,6 @@ use function Safe\fopen;
 use function Safe\fread;
 use function Safe\fwrite;
 use function Safe\rewind;
-use function Safe\sprintf;
 
 final class StringStream implements Stream
 {

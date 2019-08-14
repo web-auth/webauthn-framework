@@ -24,8 +24,6 @@ use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
-use function Safe\base64_decode;
-use function Safe\hex2bin;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;

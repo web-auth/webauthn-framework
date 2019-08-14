@@ -58,14 +58,12 @@
         "symfony/psr-http-message-bridge": "^1.1",
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
-        "thecodingmachine/safe": "^0.1",
         "web-token/jwt-key-mgmt": "^2.0.9",
         "web-token/jwt-signature": "^2.0.9",
         "web-token/signature-pack": "^2.0.9"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",
-        "web-auth/u2f-lib": "self.version",
         "web-auth/webauthn-lib": "self.version",
         "web-auth/conformance-toolset": "self.version",
         "web-auth/webauthn-symfony-bundle": "self.version"
@@ -106,7 +104,6 @@
         "symfony/serializer": "^4.3",
         "symfony/translation": "^4.3",
         "symfony/validator": "^4.3",
-        "symfony/var-dumper": "^4.3",
-        "thecodingmachine/phpstan-safe-rule": "^0.1.0"
+        "symfony/var-dumper": "^4.3"
     }
 }

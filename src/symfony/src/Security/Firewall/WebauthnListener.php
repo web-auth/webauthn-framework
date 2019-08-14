@@ -18,7 +18,6 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use function Safe\json_encode;
-use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +36,7 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -226,9 +226,18 @@ class WebauthnListener
             } else {
                 $allowedCredentials = $this->getCredentials($userEntity);
             }
+            if (true === $this->options['empty_allowed_credentials']) {
+                $allowedCredentials = [];
+            }
+            $authenticationExtensionsClientInputs = null;
+            if (0 === \count($this->options['extensions'])) {
+                $authenticationExtensionsClientInputs = AuthenticationExtensionsClientInputs::createFromArray($this->options['extensions']);
+            }
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->options['profile'],
-                $allowedCredentials
+                $allowedCredentials,
+                $this->options['user_verification'],
+                $authenticationExtensionsClientInputs
             );
             $this->requestOptionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity));
             $response = $this->requestOptionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);

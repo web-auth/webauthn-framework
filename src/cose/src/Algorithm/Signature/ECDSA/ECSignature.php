@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Cose\Algorithm\Signature\ECDSA;
 
 use InvalidArgumentException;
-use function Safe\hex2bin;
 use const STR_PAD_LEFT;
 
 /**
@@ -47,7 +46,7 @@ final class ECSignature
         $totalLength = $lengthR + $lengthS + self::BYTE_SIZE + self::BYTE_SIZE;
         $lengthPrefix = $totalLength > self::ASN1_MAX_SINGLE_BYTE ? self::ASN1_LENGTH_2BYTES : '';
 
-        return hex2bin(
+        return self::hex2bin(
             self::ASN1_SEQUENCE
             .$lengthPrefix.dechex($totalLength)
             .self::ASN1_INTEGER.dechex($lengthR).$pointR
@@ -71,7 +70,7 @@ final class ECSignature
         $pointR = self::retrievePositiveInteger(self::readAsn1Integer($message, $position));
         $pointS = self::retrievePositiveInteger(self::readAsn1Integer($message, $position));
 
-        return hex2bin(str_pad($pointR, $length, '0', STR_PAD_LEFT).str_pad($pointS, $length, '0', STR_PAD_LEFT));
+        return self::hex2bin(str_pad($pointR, $length, '0', STR_PAD_LEFT).str_pad($pointS, $length, '0', STR_PAD_LEFT));
     }
 
     private static function octetLength(string $data): int
@@ -120,5 +119,15 @@ final class ECSignature
         }
 
         return $data;
+    }
+
+    private static function hex2bin(string $data): string
+    {
+        $result = \hex2bin($data);
+        if (false === $result) {
+            throw new InvalidArgumentException('Unable to convert the data');
+        }
+
+        return $result;
     }
 }

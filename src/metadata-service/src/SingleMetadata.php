@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use function Safe\base64_decode;
-use function Safe\json_decode;
+use Assert\Assertion;
 
 class SingleMetadata
 {
@@ -40,8 +39,13 @@ class SingleMetadata
     public function getMetadataStatement(): MetadataStatement
     {
         if (null === $this->statement) {
-            $json = $this->isBare64Encoded ? base64_decode($this->data, true) : $this->data;
+            $json = $this->data;
+            if ($this->isBare64Encoded) {
+                $json = base64_decode($this->data, true);
+                Assertion::string($json, 'Unable to decode the data');
+            }
             $statement = json_decode($json, true);
+            Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Unable to decode the data');
             $this->statement = MetadataStatement::createFromArray($statement);
         }
 

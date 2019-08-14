@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,7 +101,9 @@ final class AssertionRequestController
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $this->logger->debug('User entity: '.json_encode($content));
+            $json = json_encode($content);
+            Assertion::string($json, 'Unable to encode the data');
+            $this->logger->debug('User entity: '.$json);
             $allowedCredentials = $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -110,7 +111,9 @@ final class AssertionRequestController
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
-            $this->logger->debug('Assertion options: '.json_encode($publicKeyCredentialRequestOptions));
+            $json = json_encode($publicKeyCredentialRequestOptions);
+            Assertion::string($json, 'Unable to encode the data');
+            $this->logger->debug('Assertion options: '.$json);
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()

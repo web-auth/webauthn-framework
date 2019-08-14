@@ -16,7 +16,6 @@ namespace Webauthn\TrustPath;
 use Assert\Assertion;
 use InvalidArgumentException;
 use function Safe\class_implements;
-use function Safe\sprintf;
 
 abstract class TrustPathLoader
 {

@@ -21,7 +21,6 @@ use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 use function Safe\json_decode;
-use function Safe\sprintf;
 
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {

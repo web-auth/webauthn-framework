@@ -21,8 +21,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use function Safe\base64_decode;
-use function Safe\json_decode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -99,9 +98,13 @@ final class AttestationRequestController
             $this->logger->debug('Received data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $this->logger->debug('User entity: '.json_encode($userEntity));
+            $json = json_encode($userEntity);
+            Assertion::string($json, 'Unable to encode the data');
+            $this->logger->debug('User entity: '.$json);
             $excludedCredentials = $this->getCredentials($userEntity);
-            $this->logger->debug('Excluded credentials: '.json_encode($excludedCredentials));
+            $json = json_encode($excludedCredentials);
+            Assertion::string($json, 'Unable to encode the data');
+            $this->logger->debug('Excluded credentials: '.$json);
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
@@ -118,7 +121,9 @@ final class AttestationRequestController
                 $creationOptionsRequest->attestation,
                 $extensions
             );
-            $this->logger->debug('Attestation options: '.json_encode($publicKeyCredentialCreationOptions));
+            $json = json_encode($publicKeyCredentialCreationOptions);
+            Assertion::string($json, 'Unable to encode the data');
+            $this->logger->debug('Attestation options: '.$json);
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
