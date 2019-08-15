@@ -15,7 +15,6 @@ namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
 use InvalidArgumentException;
-use function Safe\class_implements;
 
 abstract class TrustPathLoader
 {
@@ -25,10 +24,14 @@ abstract class TrustPathLoader
         $type = $data['type'];
         $oldTypes = self::oldTrustPathTypes();
         switch (true) {
-            case class_exists($type) && \in_array(TrustPath::class, class_implements($type), true):
-                return $type::createFromArray($data);
             case \array_key_exists($type, $oldTypes):
-                return ($oldTypes[$type])::createFromArray($data);
+                return $oldTypes[$type]::createFromArray($data);
+            case class_exists($type):
+                $implements = class_implements($type);
+                if (\is_array($implements) && \in_array(TrustPath::class, $implements, true)) {
+                    return $type::createFromArray($data);
+                }
+                // no break
             default:
                 throw new InvalidArgumentException(sprintf('The trust path type "%s" is not supported', $data['type']));
         }

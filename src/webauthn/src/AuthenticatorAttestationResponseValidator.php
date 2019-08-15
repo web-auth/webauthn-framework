@@ -15,7 +15,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
-use function Safe\parse_url;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -73,9 +72,9 @@ class AuthenticatorAttestationResponseValidator
         $parsedRelyingPartyId = parse_url($C->getOrigin());
         Assertion::isArray($parsedRelyingPartyId, sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
         Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
-        Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
-        Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        $clientDataRpId = $parsedRelyingPartyId['host'];
+        $scheme = $parsedRelyingPartyId['scheme'] ?? '';
+        Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+        $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
         $rpIdLength = mb_strlen($rpId);
         Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');

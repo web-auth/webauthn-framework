@@ -19,7 +19,6 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Psr\Http\Message\ServerRequestInterface;
-use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -116,10 +115,10 @@ class AuthenticatorAssertionResponseValidator
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $rpIdLength = mb_strlen($rpId);
         $parsedRelyingPartyId = parse_url($C->getOrigin());
-        Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
-        Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
-        Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        $clientDataRpId = $parsedRelyingPartyId['host'];
+        Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
+        $scheme = $parsedRelyingPartyId['scheme'] ?? '';
+        Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+        $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
         Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 

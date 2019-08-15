@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Firewall;
 
 use Base64Url\Base64Url;
-use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -72,6 +71,7 @@ class SecuredAreaTest extends WebTestCase
             'username' => 'john.doe',
         ];
         $client = static::createClient();
+        $data =
         $client->request('POST', '/login/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com', 'HTTPS' => 'on'], json_encode($body));
 
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
