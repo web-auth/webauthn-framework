@@ -19,6 +19,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
@@ -69,6 +70,12 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         /* @var ArrayNodeDefinition $node */
         $node
+            ->validate()
+                ->ifTrue(static function ($v) {
+                    return true === $v['empty_allowed_credentials'] && AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED !== $v['user_verification'];
+                })
+                ->thenInvalid('To allow an empty credential list, the user verification must be set to "required"')
+            ->end()
             ->children()
                 ->scalarNode('profile')->isRequired()->end()
                 ->scalarNode('options_path')->defaultValue('/login/options')->end()
@@ -80,6 +87,15 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
                 ->scalarNode('http_message_factory')->isRequired()->end()
                 ->scalarNode('fake_user_entity_provider')->defaultNull()->end()
+                ->booleanNode('empty_allowed_credentials')->defaultFalse()->end()
+                ->scalarNode('user_verification')->defaultNull()->end()
+                ->arrayNode('extensions')
+                    ->treatFalseLike([])
+                    ->treatTrueLike([])
+                    ->treatNullLike([])
+                    ->useAttributeAsKey('name')
+                    ->scalarPrototype()->end()
+                ->end()
             ->end()
         ;
     }

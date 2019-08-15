@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection;
 
 use Cose\Algorithm\Algorithm;
-use function Safe\sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;

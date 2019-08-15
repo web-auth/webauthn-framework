@@ -25,7 +25,6 @@ use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
-use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;

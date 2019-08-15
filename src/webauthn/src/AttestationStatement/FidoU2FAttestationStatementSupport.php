@@ -19,7 +19,6 @@ use CBOR\MapObject;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
 use function Safe\openssl_pkey_get_public;
-use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;

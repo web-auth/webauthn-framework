@@ -3,7 +3,7 @@
     "type": "library",
     "license": "MIT",
     "description": "Metadata Service for FIDO2/Webauthn",
-    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "keywords": ["FIDO", "FIDO2", "webauthn"],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {

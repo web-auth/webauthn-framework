@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
 use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData

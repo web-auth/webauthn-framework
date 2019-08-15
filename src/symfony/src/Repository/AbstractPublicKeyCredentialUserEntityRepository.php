@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
-use function Safe\sprintf;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 abstract class AbstractPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository, ServiceEntityRepositoryInterface

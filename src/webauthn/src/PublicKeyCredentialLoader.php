@@ -20,7 +20,6 @@ use CBOR\MapObject;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 

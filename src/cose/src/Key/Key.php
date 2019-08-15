@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
-use function Safe\sprintf;
 
 class Key
 {

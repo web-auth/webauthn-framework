@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
-use function Safe\json_encode;
+use JsonSerializable;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
@@ -157,9 +157,9 @@ class WebauthnToken extends AbstractToken
     public function __serialize(): array
     {
         return [
-            json_encode($this->publicKeyCredentialUserEntity),
-            json_encode($this->publicKeyCredentialDescriptor),
-            json_encode($this->publicKeyCredentialRequestOptions),
+            $this->json_encode($this->publicKeyCredentialUserEntity),
+            $this->json_encode($this->publicKeyCredentialDescriptor),
+            $this->json_encode($this->publicKeyCredentialRequestOptions),
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,
@@ -211,5 +211,13 @@ class WebauthnToken extends AbstractToken
             $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
         }
         parent::__unserialize($parentData);
+    }
+
+    private function json_encode(JsonSerializable $value): string
+    {
+        $result = json_encode($value);
+        Assertion::string($result, 'Unable to encode the data');
+
+        return $result;
     }
 }

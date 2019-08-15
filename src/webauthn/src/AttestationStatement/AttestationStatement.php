@@ -15,7 +15,6 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use JsonSerializable;
-use function Safe\sprintf;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 

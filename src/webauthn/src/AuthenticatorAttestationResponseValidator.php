@@ -16,7 +16,6 @@ namespace Webauthn;
 use Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
 use function Safe\parse_url;
-use function Safe\sprintf;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
