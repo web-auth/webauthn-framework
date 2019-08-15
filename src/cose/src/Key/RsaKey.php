@@ -19,7 +19,6 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
-use function Safe\sprintf;
 
 class RsaKey extends Key
 {

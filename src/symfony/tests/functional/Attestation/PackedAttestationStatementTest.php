@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\Tests\Functional\Attestation;
 use Cose\Algorithms;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

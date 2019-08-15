@@ -17,7 +17,6 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use function Safe\json_encode;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -89,7 +88,6 @@ final class AttestationResponseController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Receiving data: '.$content);
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
@@ -108,13 +106,14 @@ final class AttestationResponseController
             );
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
-            $this->logger->debug('User entity: '.json_encode($publicKeyCredentialCreationOptions->getUser()));
-            $this->logger->debug('Credential source: '.json_encode($credentialSource));
+            $json = json_encode($publicKeyCredentialCreationOptions->getUser());
+            Assertion::string($json, 'Unable to encode the data');
+
+            $json = json_encode($credentialSource);
+            Assertion::string($json, 'Unable to encode the data');
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '.$throwable->getMessage());
-
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

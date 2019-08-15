@@ -1,7 +1,0 @@
-* text=auto
-
-/.github
-/tests
-/.gitattributes export-ignore
-/.gitignore export-ignore
-/phpunit.xml.dist export-ignore

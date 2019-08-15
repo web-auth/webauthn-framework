@@ -21,8 +21,6 @@ use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -77,6 +75,7 @@ class PublicKeyCredentialLoader
     public function load(string $data): PublicKeyCredential
     {
         $json = json_decode($data, true);
+        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
 
         return $this->loadArray($json);
     }

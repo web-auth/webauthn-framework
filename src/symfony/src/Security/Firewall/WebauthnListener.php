@@ -17,8 +17,6 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
-use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +35,7 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -226,9 +225,18 @@ class WebauthnListener
             } else {
                 $allowedCredentials = $this->getCredentials($userEntity);
             }
+            if (true === $this->options['empty_allowed_credentials']) {
+                $allowedCredentials = [];
+            }
+            $authenticationExtensionsClientInputs = null;
+            if (0 === \count($this->options['extensions'])) {
+                $authenticationExtensionsClientInputs = AuthenticationExtensionsClientInputs::createFromArray($this->options['extensions']);
+            }
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->options['profile'],
-                $allowedCredentials
+                $allowedCredentials,
+                $this->options['user_verification'],
+                $authenticationExtensionsClientInputs
             );
             $this->requestOptionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity));
             $response = $this->requestOptionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
@@ -277,10 +285,6 @@ class WebauthnListener
 
     private function onAssertionFailure(Request $request, AuthenticationException $failed): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('Webauthn authentication request failed.', ['exception' => $failed]);
-        }
-
         $token = $this->tokenStorage->getToken();
         if ($token instanceof WebauthnToken && $this->providerKey === $token->getProviderKey()) {
             $this->tokenStorage->setToken(null);
@@ -303,10 +307,6 @@ class WebauthnListener
      */
     private function onAssertionSuccess(Request $request, TokenInterface $token): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('User has been authenticated successfully.', ['username' => $token->getUsername()]);
-        }
-
         $this->tokenStorage->setToken($token);
 
         if (null !== $this->dispatcher) {
@@ -354,16 +354,6 @@ class WebauthnListener
                 $storedData->getPublicKeyCredentialUserEntity()->getId()
             );
         } catch (Throwable $throwable) {
-            if (null !== $this->logger) {
-                $this->logger->error(sprintf(
-                    'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
-                    $assertion,
-                    json_encode($storedData->getPublicKeyCredentialRequestOptions()),
-                    $throwable->getMessage(),
-                    $throwable->getFile(),
-                    $throwable->getLine()
-                ));
-            }
             throw new AuthenticationException('Invalid assertion:', 0, $throwable);
         }
 

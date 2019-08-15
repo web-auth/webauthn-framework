@@ -17,7 +17,6 @@
     "autoload": {
         "psr-4": {
             "Cose\\": "src/cose/src/",
-            "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
             "Webauthn\\Easy\\": "src/easy/src/",
@@ -28,7 +27,6 @@
     "autoload-dev": {
         "psr-4": {
             "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
-            "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Easy\\Test\\": "src/easy/tests/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
@@ -59,7 +57,6 @@
         "symfony/psr-http-message-bridge": "^1.1",
         "symfony/security-bundle": "^4.3",
         "symfony/twig-bundle": "^4.3",
-        "thecodingmachine/safe": "^0.1",
         "web-token/jwt-key-mgmt": "^2.0.9",
         "web-token/jwt-signature": "^2.0.9",
         "web-token/signature-pack": "^2.0.9"
@@ -67,7 +64,6 @@
     "replace": {
         "web-auth/easy-server": "self.version",
         "web-auth/cose-lib": "self.version",
-        "web-auth/u2f-lib": "self.version",
         "web-auth/webauthn-lib": "self.version",
         "web-auth/conformance-toolset": "self.version",
         "web-auth/webauthn-symfony-bundle": "self.version"
@@ -101,14 +97,13 @@
         "phpstan/phpstan-phpunit": "^0.11",
         "phpstan/phpstan-strict-rules": "^0.11",
         "phpunit/phpcov": "^6.0",
-        "phpunit/phpunit": "8.2.5",
+        "phpunit/phpunit": "^8.0",
         "ramsey/uuid": "^3.8",
         "symfony/browser-kit": "^4.3",
         "symfony/phpunit-bridge": "^4.3",
         "symfony/serializer": "^4.3",
         "symfony/translation": "^4.3",
         "symfony/validator": "^4.3",
-        "symfony/var-dumper": "^4.3",
-        "thecodingmachine/phpstan-safe-rule": "^0.1.0"
+        "symfony/var-dumper": "^4.3"
     }
 }

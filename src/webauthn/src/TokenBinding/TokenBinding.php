@@ -15,7 +15,6 @@ namespace Webauthn\TokenBinding;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use function Safe\sprintf;
 
 class TokenBinding
 {

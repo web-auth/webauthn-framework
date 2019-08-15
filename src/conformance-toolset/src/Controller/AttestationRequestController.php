@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,12 +95,13 @@ final class AttestationRequestController
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
-            $this->logger->debug('Received data: '.$content);
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $this->logger->debug('User entity: '.json_encode($userEntity));
+            $json = json_encode($userEntity);
+            Assertion::string($json, 'Unable to encode the data');
             $excludedCredentials = $this->getCredentials($userEntity);
-            $this->logger->debug('Excluded credentials: '.json_encode($excludedCredentials));
+            $json = json_encode($excludedCredentials);
+            Assertion::string($json, 'Unable to encode the data');
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
             if (\is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
@@ -118,7 +118,8 @@ final class AttestationRequestController
                 $creationOptionsRequest->attestation,
                 $extensions
             );
-            $this->logger->debug('Attestation options: '.json_encode($publicKeyCredentialCreationOptions));
+            $json = json_encode($publicKeyCredentialCreationOptions);
+            Assertion::string($json, 'Unable to encode the data');
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
@@ -129,8 +130,6 @@ final class AttestationRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '.$throwable->getMessage());
-
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
