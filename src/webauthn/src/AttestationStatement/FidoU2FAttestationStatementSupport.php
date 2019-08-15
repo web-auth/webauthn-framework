@@ -16,6 +16,8 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
 use Throwable;
@@ -37,9 +39,15 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
      */
     private $metadataStatementRepository;
 
-    public function __construct(Decoder $decoder, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
-        $this->decoder = $decoder;
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
+        }
+        if (null === $metadataStatementRepository) {
+            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory en v3.0.', E_USER_DEPRECATED);
+        }
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->metadataStatementRepository = $metadataStatementRepository;
     }
 

@@ -41,6 +41,9 @@ class Manager
         yield from array_keys($this->algorithms);
     }
 
+    /**
+     * @return Algorithm[]
+     */
     public function all(): iterable
     {
         yield from $this->algorithms;

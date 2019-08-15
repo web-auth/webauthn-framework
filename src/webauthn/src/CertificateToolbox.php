@@ -24,7 +24,11 @@ class CertificateToolbox
 {
     public static function checkChain(array $certificates, array $trustedCertificates = []): void
     {
+        dump($certificates, $trustedCertificates);
         $certificates = array_unique(array_merge($certificates, $trustedCertificates));
+        if (0 === \count($certificates)) {
+            return;
+        }
         self::checkCertificatesValidity($certificates);
         $filenames = [];
 

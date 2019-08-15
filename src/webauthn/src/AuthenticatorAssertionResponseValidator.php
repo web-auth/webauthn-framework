@@ -15,6 +15,8 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Decoder;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
@@ -52,10 +54,13 @@ class AuthenticatorAssertionResponseValidator
      */
     private $algorithmManager;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
     {
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
+        }
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-        $this->decoder = $decoder;
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->algorithmManager = $algorithmManager;

@@ -42,6 +42,12 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 
 # Documentation
 
+## The Easy Way
+
+If you want to quickly start a Webauthn Server, 
+
+Install the library with Composer: `composer require web-auth/easy-server`.
+
 ## Webauthn Library
 
 With this library, you can add multi-factor authentication like FIDO U2F does or add passwordless authentication support for your application using the new FIDO2 Webauthn specification.

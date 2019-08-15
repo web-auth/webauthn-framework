@@ -17,6 +17,8 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -37,10 +39,13 @@ class PublicKeyCredentialLoader
      */
     private $decoder;
 
-    public function __construct(AttestationObjectLoader $attestationObjectLoader, Decoder $decoder)
+    public function __construct(AttestationObjectLoader $attestationObjectLoader, ?Decoder $decoder = null)
     {
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
+        }
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationObjectLoader = $attestationObjectLoader;
-        $this->decoder = $decoder;
     }
 
     public function loadArray(array $json): PublicKeyCredential
