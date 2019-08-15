@@ -67,16 +67,16 @@ final class AttestationResponseControllerFactory
     private $cacheItemPool;
 
     /**
-     * @var PublicKeyCredentialUserEntityRepository
+     * @var PublicKeyCredentialUserEntityRepository|null
      */
     private $publicKeyCredentialUserEntityRepository;
 
     /**
-     * @var PublicKeyCredentialSourceRepository
+     * @var PublicKeyCredentialSourceRepository|null
      */
     private $publicKeyCredentialSourceRepository;
 
-    public function __construct(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, ?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository = null, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -90,13 +90,20 @@ final class AttestationResponseControllerFactory
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
+    public function createAttestationRequestController(?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AttestationRequestController
     {
+        if (null !== $publicKeyCredentialUserEntityRepository) {
+            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+        if (null !== $publicKeyCredentialSourceRepository) {
+            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+
         return new AttestationRequestController(
             $this->serializer,
             $this->validator,
-            $this->publicKeyCredentialUserEntityRepository,
-            $this->publicKeyCredentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository ?? $this->publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository ?? $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $sessionParameterName,
@@ -105,14 +112,21 @@ final class AttestationResponseControllerFactory
         );
     }
 
-    public function createAttestationResponseController(string $sessionParameterName): AttestationResponseController
+    public function createAttestationResponseController(?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $sessionParameterName): AttestationResponseController
     {
+        if (null !== $publicKeyCredentialUserEntityRepository) {
+            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+        if (null !== $publicKeyCredentialSourceRepository) {
+            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
-            $this->publicKeyCredentialUserEntityRepository,
-            $this->publicKeyCredentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository ?? $this->publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository ?? $this->publicKeyCredentialSourceRepository,
             $sessionParameterName,
             $this->logger,
             $this->cacheItemPool

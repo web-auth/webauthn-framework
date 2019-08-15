@@ -67,16 +67,16 @@ final class AssertionResponseControllerFactory
     private $cacheItemPool;
 
     /**
-     * @var PublicKeyCredentialUserEntityRepository
+     * @var PublicKeyCredentialUserEntityRepository|null
      */
     private $publicKeyCredentialUserEntityRepository;
 
     /**
-     * @var PublicKeyCredentialSourceRepository
+     * @var PublicKeyCredentialSourceRepository|null
      */
     private $publicKeyCredentialSourceRepository;
 
-    public function __construct(PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, ?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository = null, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -90,13 +90,20 @@ final class AssertionResponseControllerFactory
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
+    public function createAssertionRequestController(?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AssertionRequestController
     {
+        if (null !== $publicKeyCredentialUserEntityRepository) {
+            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+        if (null !== $publicKeyCredentialSourceRepository) {
+            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+        }
+
         return new AssertionRequestController(
             $this->serializer,
             $this->validator,
-            $this->publicKeyCredentialUserEntityRepository,
-            $this->publicKeyCredentialSourceRepository,
+            $publicKeyCredentialUserEntityRepository ?? $this->publicKeyCredentialUserEntityRepository,
+            $publicKeyCredentialSourceRepository ?? $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
             $sessionParameterName,

@@ -128,6 +128,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationRequestController = new Definition(AttestationRequestController::class);
             $attestationRequestController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationRequestController']);
             $attestationRequestController->setArguments([
+                null,
+                null,
                 $profileConfig['profile_name'],
                 $profileConfig['session_parameter_name'],
             ]);
@@ -139,6 +141,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseController = new Definition(AttestationResponseController::class);
             $attestationResponseController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
             $attestationResponseController->setArguments([
+                null,
+                null,
                 $profileConfig['session_parameter_name'],
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $profileConfig['response_path'], 'host' => $profileConfig['host']]);
@@ -151,6 +155,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionRequestController = new Definition(AssertionRequestController::class);
             $assertionRequestController->setFactory([new Reference(AssertionResponseControllerFactory::class), 'createAssertionRequestController']);
             $assertionRequestController->setArguments([
+                null,
+                null,
                 $profileConfig['profile_name'],
                 $profileConfig['session_parameter_name'],
             ]);
