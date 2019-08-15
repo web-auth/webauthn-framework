@@ -21,7 +21,7 @@
         "symfony/config": "^4.3",
         "symfony/dependency-injection": "^4.3",
         "symfony/framework-bundle": "^4.3",
-        "web-auth/webauthn-lib": "^2.0",
+        "web-auth/webauthn-lib": "^2.1",
         "web-token/jwt-signature": "^2.0.3"
     },
     "require-dev": {
@@ -47,10 +47,6 @@
     },
     "extra": {
         "branch-alias": {
-            "v1.0": "1.0.x-dev",
-            "v1.1": "1.1.x-dev",
-            "v1.2": "1.2.x-dev",
-            "v2.0": "2.0.x-dev",
             "v2.1": "2.1.x-dev"
         }
     }
