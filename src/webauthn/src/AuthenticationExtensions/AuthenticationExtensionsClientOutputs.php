@@ -15,12 +15,10 @@ namespace Webauthn\AuthenticationExtensions;
 
 use ArrayIterator;
 use Assert\Assertion;
-use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
-use function Safe\json_decode;
 
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
@@ -37,6 +35,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);
+        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

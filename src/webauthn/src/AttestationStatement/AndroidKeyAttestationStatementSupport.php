@@ -23,8 +23,6 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use function Safe\hex2bin;
-use function Safe\openssl_pkey_get_public;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -97,7 +95,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
     {
         $resource = openssl_pkey_get_public($certificate);
+        Assertion::isResource($resource, 'Unable to read the certificate');
         $details = openssl_pkey_get_details($resource);
+        Assertion::isArray($details, 'Unable to read the certificate');
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();

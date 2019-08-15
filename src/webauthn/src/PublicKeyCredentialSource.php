@@ -19,7 +19,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use function Safe\base64_decode;
 use Throwable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
@@ -192,7 +191,9 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $uuid = Uuid::fromString($data['aaguid']);
                 break;
             default: // Kept for compatibility with old format
-                $uuid = Uuid::fromBytes(base64_decode($data['aaguid'], true));
+                $decoded = base64_decode($data['aaguid'], true);
+                Assertion::string($decoded, 'Invalid AAGUID');
+                $uuid = Uuid::fromBytes($decoded);
         }
 
         try {

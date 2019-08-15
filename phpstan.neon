@@ -6,6 +6,7 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
+        - '#Call to function is_array\(\) with array\<string\, string\> will always evaluate to true\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
         - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'

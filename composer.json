@@ -17,18 +17,15 @@
     "autoload": {
         "psr-4": {
             "Cose\\": "src/cose/src/",
-            "U2F\\": "src/u2f/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
             "Webauthn\\MetadataService\\": "src/metadata-service/src/",
-            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/",
-            "Webauthn\\SecurityBundle\\": "src/symfony-security/src/"
+            "Webauthn\\ConformanceToolset\\": "src/conformance-toolset/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
-            "U2F\\Tests\\Unit\\": "src/u2f/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
             "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
