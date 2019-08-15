@@ -20,7 +20,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
-        "php-http/httplug": "^1.0"
+        "psr/http-client": "^1.0"
     },
     "autoload": {
         "psr-4": {
