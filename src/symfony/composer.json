@@ -41,10 +41,6 @@
             "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
         }
     },
-    "suggest": {
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application",
-        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
-    },
     "extra": {
         "branch-alias": {
             "v2.1": "2.1.x-dev"
