@@ -59,3 +59,5 @@ $publicKeyCredentialSource = $server->loadAndCheckAssertionResponse(
 // The $publicKeyCredentialSource contains the Public Key Credential Source used for the authentication of the user
 // If you haven’t the user entity, you can get it using the unique user handle defined in $publicKeyCredentialSource
 ```
+
+When done, you can try [to authenticate you users](Assertion.md).
