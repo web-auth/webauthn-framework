@@ -12,7 +12,6 @@
     <testsuites>
         <testsuite name="Test Suite">
             <directory>./src/cose/tests/</directory>
-            <directory>./src/easy/tests/</directory>
             <directory>./src/u2f/tests/</directory>
             <directory>./src/webauthn/tests/</directory>
             <directory>./src/metadata-service/tests/</directory>

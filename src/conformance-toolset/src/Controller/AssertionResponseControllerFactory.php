@@ -78,6 +78,12 @@ final class AssertionResponseControllerFactory
 
     public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, ?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository = null, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null)
     {
+        if (null === $publicKeyCredentialUserEntityRepository) {
+            @trigger_error('For v3.0, the argument "$publicKeyCredentialUserEntityRepository" will be mandatory. Passing null is deprecated since v2.1', E_USER_DEPRECATED);
+        }
+        if (null === $publicKeyCredentialSourceRepository) {
+            @trigger_error('For v3.0, the argument "$publicKeyCredentialSourceRepository" will be mandatory. Passing null is deprecated since v2.1', E_USER_DEPRECATED);
+        }
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
