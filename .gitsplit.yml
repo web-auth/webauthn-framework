@@ -1,8 +1,6 @@
 splits:
     - prefix: "src/cose"
       target: "https://${GH_TOKEN}@github.com/web-auth/cose-lib.git"
-    - prefix: "src/easy"
-      target: "https://${GH_TOKEN}@github.com/web-auth/easy-server.git"
     - prefix: "src/webauthn"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
     - prefix: "src/conformance-toolset"

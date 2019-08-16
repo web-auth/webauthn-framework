@@ -44,9 +44,9 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 
 ## The Easy Way
 
-If you want to quickly start a Webauthn Server, 
+If you want to quickly start a Webauthn Server, you should read how to use the [Server class](doc/easy/Attestation.md).
 
-Install the library with Composer: `composer require web-auth/easy-server`.
+If you prefer to build integrate it into your application, you should directly use the library or the Symfony bundle.
 
 ## Webauthn Library
 
