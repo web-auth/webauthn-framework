@@ -34,10 +34,8 @@ $userEntity = new PublicKeyCredentialUserEntity('jdoe', 'unique ID', 'John Doe')
 
 $options = $server->generatePublicKeyCredentialCreationOptions($userEntity);
 
-$response = new Response(200, ['Content-Type' => 'application/json']);
-$response->getBody()->write(json_encode($options));
-
-//Send the response
+//Save the options somewhere (e.g. session)
+//And send it to the client (JSON)
 ```
 
 When the authenticator send you the computed response, you can load it and check it.
@@ -67,7 +65,11 @@ $publicKeyCredentialSource = $server->loadAndCheckAttestationResponse(
     $serverRequest
 );
 
-// The user entity and the public key credential source can now be stored using theeir repository
+// The user entity and the public key credential source can now be stored using their repository
+// The Public Key Credential Source repository must implement Webauthn\PublicKeyCredentialSourceRepository
 $publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
+
+// There is no requirement for the Public Key Credential User Entity repository
+// You are free to implement the service you need. It just has to get and store Webauthn\PublicKeyCredentialUserEntity objects.
 $userEntityRepository->save($userEntity);
 ```

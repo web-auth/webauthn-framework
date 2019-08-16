@@ -214,7 +214,7 @@ class Server
         return PublicKeyCredentialSource::createFromPublicKeyCredential($publicKeyCredential, $publicKeyCredentialCreationOptions->getUser()->getId());
     }
 
-    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): void
+    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
@@ -231,7 +231,8 @@ class Server
             $this->extensionOutputCheckerHandler,
             $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
         );
-        $authenticatorAssertionResponseValidator->check(
+
+        return $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
             $authenticatorResponse,
             $publicKeyCredentialRequestOptions,
