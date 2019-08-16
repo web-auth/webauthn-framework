@@ -15,10 +15,9 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
-class PublicKeyCredentialCreationOptions implements JsonSerializable
+class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
@@ -35,19 +34,9 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
     private $user;
 
     /**
-     * @var string
-     */
-    private $challenge;
-
-    /**
      * @var PublicKeyCredentialParameters[]
      */
     private $pubKeyCredParams;
-
-    /**
-     * @var int|null
-     */
-    private $timeout;
 
     /**
      * @var PublicKeyCredentialDescriptor[]
@@ -65,11 +54,6 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
     private $attestation;
 
     /**
-     * @var AuthenticationExtensionsClientInputs
-     */
-    private $extensions;
-
-    /**
      * PublicKeyCredentialCreationOptions constructor.
      *
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
@@ -77,15 +61,13 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
      */
     public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout, array $excludeCredentials, AuthenticatorSelectionCriteria $authenticatorSelection, string $attestation, ?AuthenticationExtensionsClientInputs $extensions)
     {
+        parent::__construct($challenge, $timeout, $extensions);
         $this->rp = $rp;
         $this->user = $user;
-        $this->challenge = $challenge;
         $this->pubKeyCredParams = array_values($pubKeyCredParams);
-        $this->timeout = $timeout;
         $this->excludeCredentials = array_values($excludeCredentials);
         $this->authenticatorSelection = $authenticatorSelection;
         $this->attestation = $attestation;
-        $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
     }
 
     public function getRp(): PublicKeyCredentialRpEntity
@@ -98,22 +80,12 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
         return $this->user;
     }
 
-    public function getChallenge(): string
-    {
-        return $this->challenge;
-    }
-
     /**
      * @return PublicKeyCredentialParameters[]
      */
     public function getPubKeyCredParams(): array
     {
         return $this->pubKeyCredParams;
-    }
-
-    public function getTimeout(): ?int
-    {
-        return $this->timeout;
     }
 
     /**
@@ -134,12 +106,7 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
         return $this->attestation;
     }
 
-    public function getExtensions(): AuthenticationExtensionsClientInputs
-    {
-        return $this->extensions;
-    }
-
-    public static function createFromString(string $data): self
+    public static function createFromString(string $data): PublicKeyCredentialOptions
     {
         $data = json_decode($data, true);
         Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
@@ -148,7 +115,7 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
         return self::createFromArray($data);
     }
 
-    public static function createFromArray(array $json): self
+    public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
         Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
         Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
@@ -201,7 +168,7 @@ class PublicKeyCredentialCreationOptions implements JsonSerializable
             $json['extensions'] = $this->extensions;
         }
 
-        if (!\is_null($this->timeout)) {
+        if (null !== $this->timeout) {
             $json['timeout'] = $this->timeout;
         }
 

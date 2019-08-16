@@ -49,6 +49,7 @@ use Webauthn\Bundle\Security\Storage\StoredData;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -343,23 +344,26 @@ class WebauthnListener
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
         try {
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId($publicKeyCredential->getRawId());
-            Assertion::notNull($publicKeyCredentialSource, 'Invalid credential ID');
+            $options = $storedData->getPublicKeyCredentialOptions();
+            Assertion::isInstanceOf($options, PublicKeyCredentialRequestOptions::class, 'Invalid options');
+            $userEntity = $storedData->getPublicKeyCredentialUserEntity();
 
-            $this->authenticatorAssertionResponseValidator->check(
+            $publicKeyCredentialSource = $this->authenticatorAssertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
-                $storedData->getPublicKeyCredentialRequestOptions(),
+                $options,
                 $psr7Request,
-                $storedData->getPublicKeyCredentialUserEntity()->getId()
+                null === $userEntity ? null : $userEntity->getId()
             );
+            $userEntity = $this->userEntityRepository->findOneByUserHandle($publicKeyCredentialSource->getUserHandle());
+            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the associated user entity');
         } catch (Throwable $throwable) {
             throw new AuthenticationException('Invalid assertion:', 0, $throwable);
         }
 
         $token = new WebauthnToken(
-            $storedData->getPublicKeyCredentialUserEntity(),
-            $storedData->getPublicKeyCredentialRequestOptions(),
+            $userEntity,
+            $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
             $response->getAuthenticatorData()->isUserPresent(),
             $response->getAuthenticatorData()->isUserVerified(),

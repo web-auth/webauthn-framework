@@ -102,7 +102,7 @@ final class AssertionRequestController
             $userEntity = $this->getUserEntity($creationOptionsRequest);
             $json = json_encode($content);
             Assertion::string($json, 'Unable to encode the data');
-            $allowedCredentials = $this->getCredentials($userEntity);
+            $allowedCredentials = null === $userEntity ? [] : $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
                 $allowedCredentials,
@@ -137,9 +137,12 @@ final class AssertionRequestController
         }, $credentialSources);
     }
 
-    private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
+    private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): ?PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
+        if (null === $username) {
+            return null;
+        }
         $userEntity = $this->userEntityRepository->findOneByUsername($username);
         Assertion::notNull($userEntity, 'User not found');
 

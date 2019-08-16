@@ -69,7 +69,7 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): void
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): PublicKeyCredentialSource
     {
         /* @see 7.2.1 */
         if (0 !== \count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
@@ -172,19 +172,8 @@ class AuthenticatorAssertionResponseValidator
         $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 
         /* @see 7.2.18 */
-    }
-
-    private function getPublicKeyAsPem(string $key): string
-    {
-        $der = "\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01";
-        $der .= "\x06\x08\x2a\x86\x48\xce\x3d\x03\x01\x07\x03\x42";
-        $der .= "\0".$key;
-
-        $pem = '-----BEGIN PUBLIC KEY-----'.PHP_EOL;
-        $pem .= chunk_split(base64_encode($der), 64, PHP_EOL);
-        $pem .= '-----END PUBLIC KEY-----'.PHP_EOL;
-
-        return $pem;
+        //All good. We can continue.
+        return $publicKeyCredentialSource;
     }
 
     private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool

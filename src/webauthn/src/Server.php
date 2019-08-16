@@ -214,7 +214,7 @@ class Server
         return PublicKeyCredentialSource::createFromPublicKeyCredential($publicKeyCredential, $publicKeyCredentialCreationOptions->getUser()->getId());
     }
 
-    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): void
+    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): void
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
@@ -236,7 +236,7 @@ class Server
             $authenticatorResponse,
             $publicKeyCredentialRequestOptions,
             $serverRequest,
-            $userEntity->getId()
+            null !== $userEntity ? $userEntity->getId() : null
         );
     }
 
