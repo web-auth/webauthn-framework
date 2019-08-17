@@ -99,10 +99,10 @@ final class AttestationResponseControllerFactory
     public function createAttestationRequestController(?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $profile, string $sessionParameterName): AttestationRequestController
     {
         if (null !== $publicKeyCredentialUserEntityRepository) {
-            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed in v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
         }
         if (null !== $publicKeyCredentialSourceRepository) {
-            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed in v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
         }
 
         return new AttestationRequestController(
@@ -121,10 +121,10 @@ final class AttestationResponseControllerFactory
     public function createAttestationResponseController(?PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, ?PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, string $sessionParameterName): AttestationResponseController
     {
         if (null !== $publicKeyCredentialUserEntityRepository) {
-            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+            @trigger_error('The argument "$publicKeyCredentialUserEntityRepository" is deprecated since 2.1 and will be removed in v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
         }
         if (null !== $publicKeyCredentialSourceRepository) {
-            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed en v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
+            @trigger_error('The argument "$publicKeyCredentialSourceRepository" is deprecated since 2.1 and will be removed in v3.0. Set null instead and inject it through the constructor', E_USER_DEPRECATED);
         }
 
         return new AttestationResponseController(

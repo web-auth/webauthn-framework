@@ -20,6 +20,13 @@ use Cose\Key\Key;
 
 abstract class ECDSA implements Signature
 {
+    public function __construct()
+    {
+        if (!method_exists($this, 'getSignaturePartLength')) {
+            @trigger_error('The method "getSignaturePartLength" is needed since 2.1 and will be mandatory in v3.0', E_USER_DEPRECATED);
+        }
+    }
+
     public function sign(string $data, Key $key): string
     {
         $key = $this->handleKey($key);

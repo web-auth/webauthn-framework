@@ -29,12 +29,12 @@ final class ES256K extends ECDSA
     {
         $signature = parent::sign($data, $key);
 
-        return ECSignature::fromAsn1($signature, 64);
+        return ECSignature::fromAsn1($signature, $this->getSignaturePartLength());
     }
 
     public function verify(string $data, Key $key, string $signature): bool
     {
-        $signature = ECSignature::toAsn1($signature, 64);
+        $signature = ECSignature::toAsn1($signature, $this->getSignaturePartLength());
 
         return parent::verify($data, $key, $signature);
     }
@@ -47,5 +47,10 @@ final class ES256K extends ECDSA
     protected function getCurve(): int
     {
         return Ec2Key::CURVE_P256K;
+    }
+
+    protected function getSignaturePartLength(): int
+    {
+        return 64;
     }
 }
