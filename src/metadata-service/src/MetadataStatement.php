@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 
 class MetadataStatement
 {
@@ -185,7 +186,7 @@ class MetadataStatement
     /**
      * @var int
      */
-    private $attachmentHint;
+    private $attachmentHint = 0;
 
     /**
      * @var bool|null
@@ -418,14 +419,19 @@ class MetadataStatement
     public static function createFromArray(array $data): self
     {
         $object = new self();
+        foreach (['description', 'protocolFamily'] as $key) {
+            if (!isset($data[$key])) {
+                throw new InvalidArgumentException(sprintf('The parameter "%s" is missing', $key));
+            }
+        }
         $object->legalHeader = $data['legalHeader'] ?? null;
         $object->aaid = $data['aaid'] ?? null;
         $object->aaguid = $data['aaguid'] ?? null;
         $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? [];
-        $object->description = $data['description'] ?? null;
+        $object->description = $data['description'];
         $object->alternativeDescriptions = $data['alternativeDescriptions'] ?? [];
-        $object->authenticatorVersion = $data['authenticatorVersion'] ?? null;
-        $object->protocolFamily = $data['protocolFamily'] ?? null;
+        $object->authenticatorVersion = $data['authenticatorVersion'] ?? 0;
+        $object->protocolFamily = $data['protocolFamily'];
         if (isset($data['upv'])) {
             $upv = $data['upv'];
             Assertion::isArray($upv, 'Invalid Metadata Statement');
@@ -448,15 +454,15 @@ class MetadataStatement
                 $object->userVerificationDetails[] = VerificationMethodANDCombinations::createFromArray($value);
             }
         }
-        $object->keyProtection = $data['keyProtection'] ?? null;
+        $object->keyProtection = $data['keyProtection'] ?? 0;
         $object->isKeyRestricted = $data['isKeyRestricted'] ?? null;
         $object->isFreshUserVerificationRequired = $data['isFreshUserVerificationRequired'] ?? null;
-        $object->matcherProtection = $data['matcherProtection'] ?? null;
+        $object->matcherProtection = $data['matcherProtection'] ?? 0;
         $object->cryptoStrength = $data['cryptoStrength'] ?? null;
         $object->operatingEnv = $data['operatingEnv'] ?? null;
-        $object->attachmentHint = $data['attachmentHint'] ?? null;
+        $object->attachmentHint = $data['attachmentHint'] ?? 0;
         $object->isSecondFactorOnly = $data['isSecondFactorOnly'] ?? null;
-        $object->tcDisplay = $data['tcDisplay'] ?? null;
+        $object->tcDisplay = $data['tcDisplay'] ?? 0;
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
