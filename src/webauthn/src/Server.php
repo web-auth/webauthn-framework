@@ -78,7 +78,7 @@ class Server
     private $selectedAlgorithms;
 
     /**
-     * @var MetadataStatementRepository
+     * @var MetadataStatementRepository|null
      */
     private $metadataStatementRepository;
 
@@ -97,7 +97,7 @@ class Server
      */
     private $requestFactory;
 
-    public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, MetadataStatementRepository $metadataStatementRepository)
+    public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository)
     {
         $this->rpEntity = $relayingParty;
 
