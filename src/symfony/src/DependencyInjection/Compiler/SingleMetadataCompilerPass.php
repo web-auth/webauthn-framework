@@ -33,7 +33,7 @@ final class SingleMetadataCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('webauthn.metadata_service.default_repository');
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $attributes) {
-            $definition->addMethodCall('addSingleStatement', [new Reference($id)]);
+            $definition->addMethodCall('addSingleStatement', [$id, new Reference($id)]);
         }
     }
 }

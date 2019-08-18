@@ -16,7 +16,7 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Component\HttpClient\Psr18Client;
 use Webauthn\MetadataService\DistantSingleMetadataFactory;
 use Webauthn\MetadataService\MetadataServiceFactory;
-use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\SimpleMetadataStatementRepository;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -28,7 +28,7 @@ return function (ContainerConfigurator $container) {
         ->class(Psr18Client::class);
 
     $container->set('webauthn.metadata_service.default_repository')
-        ->class(MetadataStatementRepository::class)
+        ->class(SimpleMetadataStatementRepository::class)
         ->public();
 
     $container->set(MetadataServiceFactory::class)
