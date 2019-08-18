@@ -108,12 +108,12 @@ You will be able to fetch a MDS using the AAGUID of the authenticator.
 
 declare(strict_types=1);
 
-use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\SimpleMetadataStatementRepository;
 
-$repository = new MetadataStatementRepository;
+$repository = new SimpleMetadataStatementRepository($cacheService);
 $repository->addSingleStatement($localData);
 $repository->addSingleStatement($distantData);
-$repository->addService($myMetadataStatementService);
+$repository->addService('my-metadata-statement-service', $myMetadataStatementService);
 
 // Tries to find the MDS associated to the given AAGUID
 // If not found, the returned value is null

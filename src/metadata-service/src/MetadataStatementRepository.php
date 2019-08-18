@@ -13,76 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class MetadataStatementRepository
+interface MetadataStatementRepository
 {
-    /**
-     * @var MetadataService[]
-     */
-    private $services = [];
-
-    /**
-     * @var SingleMetadata[]
-     */
-    private $singleStatements = [];
-
-    public function addService(MetadataService $service): void
-    {
-        $this->services[] = $service;
-    }
-
-    public function addSingleStatement(SingleMetadata $singleStatements): void
-    {
-        $this->singleStatements[] = $singleStatements;
-    }
-
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatement
-    {
-        foreach ($this->services as $service) {
-            try {
-                $tableOfContent = $service->getMetadataTOCPayload();
-                $entries = $tableOfContent->getEntries();
-                foreach ($entries as $entry) {
-                    try {
-                        $metadataStatement = $service->getMetadataStatementFor($entry);
-                        if ($metadataStatement->getAaguid() === $aaguid) {
-                            return $metadataStatement;
-                        }
-                    } catch (\Throwable $throwable) {
-                        continue;
-                    }
-                }
-            } catch (\Throwable $throwable) {
-                continue;
-            }
-        }
-
-        foreach ($this->singleStatements as $singleStatement) {
-            try {
-                $metadataStatement = $singleStatement->getMetadataStatement();
-                if ($metadataStatement->getAaguid() === $aaguid) {
-                    return $metadataStatement;
-                }
-            } catch (\Throwable $throwable) {
-                continue;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return MetadataService[]
-     */
-    protected function getServices(): array
-    {
-        return $this->services;
-    }
-
-    /**
-     * @return SingleMetadata[]
-     */
-    protected function getSingleStatements(): array
-    {
-        return $this->singleStatements;
-    }
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatement;
 }

@@ -15,20 +15,19 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use Base64Url\Base64Url;
 use CBOR\ByteStringObject;
-use CBOR\Decoder;
 use CBOR\MapItem;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
 use CBOR\SignedIntegerObject;
-use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\SimpleMetadataStatementRepository;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 /**
@@ -46,7 +45,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
-        $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
+        $support = new FidoU2FAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
 
         static::assertEquals('fido-u2f', $support->name());
         static::assertFalse($support->load([
@@ -62,7 +61,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
-        $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
+        $support = new FidoU2FAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
             'attStmt' => [
@@ -78,7 +77,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with one certificate.');
-        $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
+        $support = new FidoU2FAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
 
         static::assertEquals('fido-u2f', $support->name());
         static::assertFalse($support->load([
@@ -97,7 +96,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid certificate or certificate chain');
-        $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
+        $support = new FidoU2FAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
 
         static::assertEquals('fido-u2f', $support->name());
         static::assertFalse($support->load([
@@ -114,7 +113,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementContain(): void
     {
-        $support = new FidoU2FAttestationStatementSupport($this->getDecoder());
+        $support = new FidoU2FAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
 
         $attestationStatement = $this->prophesize(AttestationStatement::class);
         $attestationStatement->getAttStmt()->willReturn([
@@ -145,13 +144,5 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
 
         static::assertEquals('fido-u2f', $support->name());
         static::assertFalse($support->isValid('FOO', $attestationStatement->reveal(), $authenticatorData->reveal()));
-    }
-
-    private function getDecoder(): Decoder
-    {
-        return new Decoder(
-            new TagObjectManager(),
-            new OtherObjectManager()
-        );
     }
 }
