@@ -6,13 +6,12 @@ The Webauthn Easy Server is a simple class that have the basic features for your
 ```php
 <?php
 
-use Webauthn\Server;
-use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\SimpleMetadataStatementRepository;use Webauthn\Server;
 use Webauthn\PublicKeyCredentialRpEntity;
 
 $rpEntity = new PublicKeyCredentialRpEntity('Webauthn Server', 'my.domain.com');
 $publicKeyCredentialSourceRepository = …; //Your repository here. Must implement Webauthn\PublicKeyCredentialSourceRepository
-$metadataStatementRepository = new MetadataStatementRepository();
+$metadataStatementRepository = new SimpleMetadataStatementRepository();
 
 $server = new Server(
     $rpEntity,

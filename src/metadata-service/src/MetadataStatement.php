@@ -439,7 +439,7 @@ class MetadataStatement
         $object->authenticationAlgorithms = $data['authenticationAlgorithms'] ?? [];
         $object->publicKeyAlgAndEncoding = $data['publicKeyAlgAndEncoding'] ?? null;
         $object->publicKeyAlgAndEncodings = $data['publicKeyAlgAndEncodings'] ?? [];
-        $object->attestationTypes = $data['attestationTypes'] ?? null;
+        $object->attestationTypes = $data['attestationTypes'] ?? [];
         if (isset($data['userVerificationDetails'])) {
             $userVerificationDetails = $data['userVerificationDetails'];
             Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');

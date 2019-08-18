@@ -53,10 +53,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     public function __construct(?Decoder $decoder, Manager $algorithmManager, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed en v3.0. Set null instead', E_USER_DEPRECATED);
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         if (null === $metadataStatementRepository) {
-            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory en v3.0.', E_USER_DEPRECATED);
+            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory in v3.0.', E_USER_DEPRECATED);
         }
         $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->algorithmManager = $algorithmManager;
