@@ -94,14 +94,17 @@ class SimpleMetadataStatementRepository implements MetadataStatementRepository
                     $this->cacheItemPool->save($tocCacheItem);
                     $needCacheUpdate = true;
                 } else {
-                    /** @var MetadataTOCPayload $tableOfContent */
                     $tableOfContent = $tocCacheItem->get();
                     $nextUpdate = DateTimeImmutable::createFromFormat('Y-m-d', $tableOfContent->getNextUpdate());
-                    $needCacheUpdate = $nextUpdate->getTimestamp() < time();
-                    if ($needCacheUpdate) {
-                        $tableOfContent = $service->getMetadataTOCPayload();
-                        $tocCacheItem->set($tableOfContent);
-                        $this->cacheItemPool->save($tocCacheItem);
+                    if ($nextUpdate === false) {
+                        $needCacheUpdate = true;
+                    } else {
+                        $needCacheUpdate = $nextUpdate->getTimestamp() < time();
+                        if ($needCacheUpdate) {
+                            $tableOfContent = $service->getMetadataTOCPayload();
+                            $tocCacheItem->set($tableOfContent);
+                            $this->cacheItemPool->save($tocCacheItem);
+                        }
                     }
                 }
             } catch (Throwable $throwable) {
