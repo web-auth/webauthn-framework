@@ -37,8 +37,8 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 - Cose Algorithms
   - [x] RS1, RS256, RS384, RS512
   - [x] PS256, PS384, PS512
-  - [x] ES256, ES384, ES512
-  - [x] EdDSA
+  - [x] ES256, ES256K, ES384, ES512
+  - [x] ED256, ED512
 
 # Documentation
 
