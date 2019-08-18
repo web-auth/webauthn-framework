@@ -96,7 +96,7 @@ class SimpleMetadataStatementRepository implements MetadataStatementRepository
                 } else {
                     $tableOfContent = $tocCacheItem->get();
                     $nextUpdate = DateTimeImmutable::createFromFormat('Y-m-d', $tableOfContent->getNextUpdate());
-                    if ($nextUpdate === false) {
+                    if (false === $nextUpdate) {
                         $needCacheUpdate = true;
                     } else {
                         $needCacheUpdate = $nextUpdate->getTimestamp() < time();

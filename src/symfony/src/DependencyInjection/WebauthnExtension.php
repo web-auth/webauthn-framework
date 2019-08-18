@@ -99,12 +99,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         }
-
-        $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
-        $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
-        $container->setParameter('webauthn.android_safetynet.leeway', $config['android_safetynet']['leeway']);
-        $container->setParameter('webauthn.android_safetynet.max_age', $config['android_safetynet']['max_age']);
-        $loader->load('android_safetynet.php');
     }
 
     /**
@@ -174,8 +168,27 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    public function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    private function loadAndroidSafetyNet(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
+        $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
+        $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
+        $container->setParameter('webauthn.android_safetynet.leeway', $config['android_safetynet']['leeway']);
+        $container->setParameter('webauthn.android_safetynet.max_age', $config['android_safetynet']['max_age']);
+        $loader->load('android_safetynet.php');
+    }
+
+    private function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    {
+        //INFO: in v2.1, all metadata statement supports are loaded.
+        // Starting at v3.0, if the metadata service is not enabled, only none will be available as this service will become mandatory for:
+        // - FIDO2 U2F
+        // - Packed
+        // - Android Key
+        // - Android SafetyNet
+        // - TPM
+        $loader->load('metadata_statement_supports.php');
+        $this->loadAndroidSafetyNet($container, $loader, $config);
+
         if (false === $config['metadata_service']['enabled'] || !class_exists(MetadataServiceFactory::class)) {
             return;
         }
