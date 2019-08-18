@@ -22,7 +22,7 @@ class SymmetricKey extends Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        Assertion::eq($data[self::TYPE], 4, 'Invalid symmetric key. The key type does not correspond to a symmetric key');
+        Assertion::eq($data[self::TYPE], self::TYPE_OCT, 'Invalid symmetric key. The key type does not correspond to a symmetric key');
         Assertion::keyExists($data, self::DATA_K, 'Invalid symmetric key. The parameter "k" is missing');
     }
 

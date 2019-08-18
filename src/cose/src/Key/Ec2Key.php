@@ -57,7 +57,7 @@ class Ec2Key extends Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        Assertion::eq($data[self::TYPE], 2, 'Invalid EC2 key. The key type does not correspond to an EC2 key');
+        Assertion::eq($data[self::TYPE], self::TYPE_EC2, 'Invalid EC2 key. The key type does not correspond to an EC2 key');
         Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
         Assertion::keyExists($data, self::DATA_X, 'Invalid EC2 key. The x coordinate is missing');
         Assertion::keyExists($data, self::DATA_Y, 'Invalid EC2 key. The y coordinate is missing');

@@ -20,6 +20,9 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Cose\Algorithms;
+use Cose\Key\Ec2Key;
+use Cose\Key\Key;
+use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -104,9 +107,24 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $cborDecoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
         Assertion::isInstanceOf($publicKey, MapObject::class, 'Invalid public key');
-        $rsaKey = new RsaKey($publicKey->getNormalizedData(false));
+        $key = new Key($publicKey->getNormalizedData(false));
 
-        Assertion::eq($unique, $rsaKey->n(), 'Invalid pubArea.unique value');
+        switch ($key->type()) {
+            case Key::TYPE_OKP:
+                $uniqueFromKey = (new OkpKey($key->getData()))->x();
+                break;
+            case Key::TYPE_EC2:
+                $ec2Key = new Ec2Key($key->getData());
+                $uniqueFromKey = "\x04".$ec2Key->x().$ec2Key->y();
+                break;
+            case Key::TYPE_RSA:
+                $uniqueFromKey = (new RsaKey($key->getData()))->n();
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid or unsupported key type.');
+        }
+
+        Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
     }
 
     private function checkCertInfo(string $data): array
