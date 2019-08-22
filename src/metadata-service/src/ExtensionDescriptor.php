@@ -26,7 +26,7 @@ class ExtensionDescriptor
     private $tag;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $data;
 
@@ -45,7 +45,7 @@ class ExtensionDescriptor
         return $this->tag;
     }
 
-    public function getData(): string
+    public function getData(): ?string
     {
         return $this->data;
     }
