@@ -40,7 +40,7 @@ class TPMAttestationStatementTest extends AbstractTestCase
     /**
      * @test
      */
-    public function anAndroidSafetyNetAttestationCanBeVerified(): void
+    public function anAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),

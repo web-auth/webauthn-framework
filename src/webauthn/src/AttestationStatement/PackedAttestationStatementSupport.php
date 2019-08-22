@@ -193,7 +193,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
 
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
-
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         if (!$algorithm instanceof Signature) {
             throw new RuntimeException('Invalid algorithm');

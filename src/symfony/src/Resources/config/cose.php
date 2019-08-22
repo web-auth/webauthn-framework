@@ -55,5 +55,5 @@ return function (ContainerConfigurator $container) {
     $container->set('webauthn.cose.algoritm.ED512')
         ->class(Signature\EdDSA\ED512::class);
     $container->set('webauthn.cose.algoritm.Ed25519ph')
-        ->class(Signature\EdDSA\Ed25519ph::class);
+        ->class(Signature\EdDSA\Ed25519::class);
 };
