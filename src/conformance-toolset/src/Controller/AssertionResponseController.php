@@ -74,7 +74,6 @@ final class AssertionResponseController
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
-            $this->logger->debug('Receiving data: '.$content);
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
@@ -90,13 +89,12 @@ final class AssertionResponseController
             Assertion::isInstanceOf($publicKeyCredentialRequestOptions, PublicKeyCredentialRequestOptions::class, 'Unable to find the public key credential request options');
             Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential request options');
             $userEntity = $data['userEntity'];
-            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the public key credential request options');
-            $this->assertionResponseValidator->check($publicKeyCredential->getRawId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntity->getId());
+            Assertion::nullOrIsInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the public key credential request options');
+            $userEntityId = null !== $userEntity ? $userEntity->getId() : null;
+            $this->assertionResponseValidator->check($publicKeyCredential->getRawId(), $response, $publicKeyCredentialRequestOptions, $psr7Request, $userEntityId);
 
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
-            $this->logger->debug('Error: '.$throwable->getMessage());
-
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

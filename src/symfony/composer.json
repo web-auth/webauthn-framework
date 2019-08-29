@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "license": "MIT",
     "description": "FIDO2/Webauthn Security Bundle For Symfony",
-    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "keywords": ["FIDO", "FIDO2", "webauthn"],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {
@@ -21,11 +21,11 @@
         "symfony/config": "^4.3",
         "symfony/dependency-injection": "^4.3",
         "symfony/framework-bundle": "^4.3",
-        "web-auth/webauthn-lib": "^2.0",
+        "web-auth/webauthn-lib": "^2.1",
         "web-token/jwt-signature": "^2.0.3"
     },
     "require-dev": {
-        "php-http/httplug-bundle": "^1.0",
+        "nyholm/psr7": "^1.1",
         "fzaninotto/faker": "^1.8",
         "ramsey/uuid": "^3.8",
         "symfony/psr-http-message-bridge": "^1.1",
@@ -40,10 +40,6 @@
         "psr-4": {
             "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
         }
-    },
-    "suggest": {
-        "php-http/httplug-bundle": "For Android SafetyNet support on a Symfony application",
-        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "extra": {
         "branch-alias": {

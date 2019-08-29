@@ -19,7 +19,6 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
-use function Safe\sprintf;
 
 class RsaKey extends Key
 {
@@ -39,7 +38,7 @@ class RsaKey extends Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        Assertion::eq($data[self::TYPE], 3, 'Invalid RSA key. The key type does not correspond to a RSA key');
+        Assertion::eq($data[self::TYPE], self::TYPE_RSA, 'Invalid RSA key. The key type does not correspond to a RSA key');
         Assertion::keyExists($data, self::DATA_N, 'Invalid RSA key. The modulus is missing');
         Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
     }

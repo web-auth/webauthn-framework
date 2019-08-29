@@ -20,7 +20,6 @@ use Countable;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
-use function Safe\sprintf;
 
 class AuthenticationExtensionsClientInputs implements JsonSerializable, Countable, IteratorAggregate
 {

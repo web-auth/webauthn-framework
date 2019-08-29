@@ -14,11 +14,14 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
-use function Safe\sprintf;
 
 class Key
 {
     public const TYPE = 1;
+    public const TYPE_OKP = 1;
+    public const TYPE_EC2 = 2;
+    public const TYPE_RSA = 3;
+    public const TYPE_OCT = 4;
     public const KID = 2;
     public const ALG = 3;
     public const KEY_OPS = 4;

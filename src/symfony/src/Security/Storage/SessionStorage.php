@@ -16,7 +16,7 @@ namespace Webauthn\Bundle\Security\Storage;
 use Assert\Assertion;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class SessionStorage implements RequestOptionsStorage
@@ -31,7 +31,7 @@ final class SessionStorage implements RequestOptionsStorage
         $session = $request->getSession();
         Assertion::notNull($session, 'This authentication method requires a session.');
 
-        $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialRequestOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
+        $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
     }
 
     public function get(Request $request): StoredData
@@ -47,10 +47,10 @@ final class SessionStorage implements RequestOptionsStorage
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
 
-        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions) {
+        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
             throw new BadRequestHttpException('No public key credential request options available for this session.');
         }
-        if (!$userEntity instanceof PublicKeyCredentialUserEntity) {
+        if (null !== $userEntity && !$userEntity instanceof PublicKeyCredentialUserEntity) {
             throw new BadRequestHttpException('No user entity available for this session.');
         }
 

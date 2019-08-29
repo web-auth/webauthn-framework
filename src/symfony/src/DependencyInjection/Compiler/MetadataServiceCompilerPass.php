@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\MetadataService\MetadataStatementRepository;
 
 final class MetadataServiceCompilerPass implements CompilerPassInterface
 {
@@ -27,14 +26,14 @@ final class MetadataServiceCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(MetadataStatementRepository::class)) {
+        if (!$container->hasDefinition('webauthn.metadata_service.default_repository')) {
             return;
         }
 
-        $definition = $container->getDefinition(MetadataStatementRepository::class);
+        $definition = $container->getDefinition('webauthn.metadata_service.default_repository');
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $attributes) {
-            $definition->addMethodCall('addService', [new Reference($id)]);
+            $definition->addMethodCall('addService', [$id, new Reference($id)]);
         }
     }
 }

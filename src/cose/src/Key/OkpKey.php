@@ -36,7 +36,7 @@ class OkpKey extends Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        Assertion::eq($data[self::TYPE], 1, 'Invalid OKP key. The key type does not correspond to an OKP key');
+        Assertion::eq($data[self::TYPE], self::TYPE_OKP, 'Invalid OKP key. The key type does not correspond to an OKP key');
         Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
         Assertion::keyExists($data, self::DATA_X, 'Invalid OKP key. The x coordinate is missing');
         Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');

@@ -119,6 +119,9 @@ abstract class Algorithms
         return self::COSE_HASH_MAP[$algorithmIdentifier];
     }
 
+    /**
+     * @deprecated Will be removed in v3.0. Please use the Manager or the ManagerFactory
+     */
     public static function getAlgorithm(int $identifier): Algorithm
     {
         $algs = static::getAlgorithms();
@@ -128,6 +131,8 @@ abstract class Algorithms
     }
 
     /**
+     * @deprecated Will be removed in v3.0. Please use the Manager or the ManagerFactory
+     *
      * @return Algorithm[]
      */
     public static function getAlgorithms(): array

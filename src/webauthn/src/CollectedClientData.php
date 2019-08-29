@@ -16,8 +16,6 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -66,6 +64,7 @@ class CollectedClientData
     {
         $rawData = Base64Url::decode($data);
         $json = json_decode($rawData, true);
+        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid collected client data');
         Assertion::isArray($json, 'Invalid collected client data');
 
         return new self($rawData, $json);

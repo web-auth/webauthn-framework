@@ -15,15 +15,17 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Decoder;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Psr\Http\Message\ServerRequestInterface;
-use function Safe\parse_url;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use Webauthn\Util\CoseSignatureFixer;
 
 class AuthenticatorAssertionResponseValidator
 {
@@ -52,10 +54,13 @@ class AuthenticatorAssertionResponseValidator
      */
     private $algorithmManager;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
     {
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
+        }
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-        $this->decoder = $decoder;
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->algorithmManager = $algorithmManager;
@@ -64,7 +69,7 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): void
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): PublicKeyCredentialSource
     {
         /* @see 7.2.1 */
         if (0 !== \count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
@@ -115,10 +120,10 @@ class AuthenticatorAssertionResponseValidator
         $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
         $rpIdLength = mb_strlen($rpId);
         $parsedRelyingPartyId = parse_url($C->getOrigin());
-        Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
-        Assertion::eq('https', $parsedRelyingPartyId['scheme'], 'Invalid scheme. HTTPS required.');
-        Assertion::keyExists($parsedRelyingPartyId, 'host', 'Invalid origin rpId.');
-        $clientDataRpId = $parsedRelyingPartyId['host'];
+        Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
+        $scheme = $parsedRelyingPartyId['scheme'] ?? '';
+        Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+        $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
         Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
         Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
 
@@ -154,6 +159,7 @@ class AuthenticatorAssertionResponseValidator
         $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
         $algorithm = $this->algorithmManager->get($coseKey->alg());
         Assertion::isInstanceOf($algorithm, Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
+        $signature = CoseSignatureFixer::fix($signature, $algorithm);
         Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
 
         /* @see 7.2.17 */
@@ -166,19 +172,8 @@ class AuthenticatorAssertionResponseValidator
         $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 
         /* @see 7.2.18 */
-    }
-
-    private function getPublicKeyAsPem(string $key): string
-    {
-        $der = "\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01";
-        $der .= "\x06\x08\x2a\x86\x48\xce\x3d\x03\x01\x07\x03\x42";
-        $der .= "\0".$key;
-
-        $pem = '-----BEGIN PUBLIC KEY-----'.PHP_EOL;
-        $pem .= chunk_split(base64_encode($der), 64, PHP_EOL);
-        $pem .= '-----END PUBLIC KEY-----'.PHP_EOL;
-
-        return $pem;
+        //All good. We can continue.
+        return $publicKeyCredentialSource;
     }
 
     private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool

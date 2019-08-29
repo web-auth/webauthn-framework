@@ -17,8 +17,6 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use function Safe\json_encode;
-use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +35,7 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
@@ -50,6 +49,7 @@ use Webauthn\Bundle\Security\Storage\StoredData;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -226,9 +226,18 @@ class WebauthnListener
             } else {
                 $allowedCredentials = $this->getCredentials($userEntity);
             }
+            if (true === $this->options['empty_allowed_credentials']) {
+                $allowedCredentials = [];
+            }
+            $authenticationExtensionsClientInputs = null;
+            if (0 === \count($this->options['extensions'])) {
+                $authenticationExtensionsClientInputs = AuthenticationExtensionsClientInputs::createFromArray($this->options['extensions']);
+            }
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->options['profile'],
-                $allowedCredentials
+                $allowedCredentials,
+                $this->options['user_verification'],
+                $authenticationExtensionsClientInputs
             );
             $this->requestOptionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity));
             $response = $this->requestOptionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
@@ -277,10 +286,6 @@ class WebauthnListener
 
     private function onAssertionFailure(Request $request, AuthenticationException $failed): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('Webauthn authentication request failed.', ['exception' => $failed]);
-        }
-
         $token = $this->tokenStorage->getToken();
         if ($token instanceof WebauthnToken && $this->providerKey === $token->getProviderKey()) {
             $this->tokenStorage->setToken(null);
@@ -303,10 +308,6 @@ class WebauthnListener
      */
     private function onAssertionSuccess(Request $request, TokenInterface $token): Response
     {
-        if (null !== $this->logger) {
-            $this->logger->info('User has been authenticated successfully.', ['username' => $token->getUsername()]);
-        }
-
         $this->tokenStorage->setToken($token);
 
         if (null !== $this->dispatcher) {
@@ -343,33 +344,26 @@ class WebauthnListener
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
         try {
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId($publicKeyCredential->getRawId());
-            Assertion::notNull($publicKeyCredentialSource, 'Invalid credential ID');
+            $options = $storedData->getPublicKeyCredentialOptions();
+            Assertion::isInstanceOf($options, PublicKeyCredentialRequestOptions::class, 'Invalid options');
+            $userEntity = $storedData->getPublicKeyCredentialUserEntity();
 
-            $this->authenticatorAssertionResponseValidator->check(
+            $publicKeyCredentialSource = $this->authenticatorAssertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
-                $storedData->getPublicKeyCredentialRequestOptions(),
+                $options,
                 $psr7Request,
-                $storedData->getPublicKeyCredentialUserEntity()->getId()
+                null === $userEntity ? null : $userEntity->getId()
             );
+            $userEntity = $this->userEntityRepository->findOneByUserHandle($publicKeyCredentialSource->getUserHandle());
+            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the associated user entity');
         } catch (Throwable $throwable) {
-            if (null !== $this->logger) {
-                $this->logger->error(sprintf(
-                    'Invalid assertion: %s. Request was: %s. Reason is: %s (%s:%d)',
-                    $assertion,
-                    json_encode($storedData->getPublicKeyCredentialRequestOptions()),
-                    $throwable->getMessage(),
-                    $throwable->getFile(),
-                    $throwable->getLine()
-                ));
-            }
             throw new AuthenticationException('Invalid assertion:', 0, $throwable);
         }
 
         $token = new WebauthnToken(
-            $storedData->getPublicKeyCredentialUserEntity(),
-            $storedData->getPublicKeyCredentialRequestOptions(),
+            $userEntity,
+            $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
             $response->getAuthenticatorData()->isUserPresent(),
             $response->getAuthenticatorData()->isUserVerified(),

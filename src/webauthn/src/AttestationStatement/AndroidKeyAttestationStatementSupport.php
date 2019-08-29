@@ -15,6 +15,8 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use CBOR\Decoder;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
@@ -23,9 +25,6 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use function Safe\hex2bin;
-use function Safe\openssl_pkey_get_public;
-use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -44,9 +43,15 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      */
     private $metadataStatementRepository;
 
-    public function __construct(Decoder $decoder, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
-        $this->decoder = $decoder;
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
+        }
+        if (null === $metadataStatementRepository) {
+            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory in v3.0.', E_USER_DEPRECATED);
+        }
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
@@ -98,7 +103,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
     {
         $resource = openssl_pkey_get_public($certificate);
+        Assertion::isResource($resource, 'Unable to read the certificate');
         $details = openssl_pkey_get_details($resource);
+        Assertion::isArray($details, 'Unable to read the certificate');
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();

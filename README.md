@@ -37,10 +37,16 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 - Cose Algorithms
   - [x] RS1, RS256, RS384, RS512
   - [x] PS256, PS384, PS512
-  - [x] ES256, ES384, ES512
-  - [x] EdDSA
+  - [x] ES256, ES256K, ES384, ES512
+  - [x] ED256, ED512
 
 # Documentation
+
+## The Easy Way
+
+If you want to quickly start a Webauthn Server, you should read how to use the [Server class](doc/easy/Attestation.md).
+
+If you prefer to build integrate it into your application, you should directly use the library or the Symfony bundle.
 
 ## Webauthn Library
 
@@ -69,13 +75,6 @@ This library provides all tools and data structures to easily consume the Fido M
 **Please not that the service and the associated specification should be considered as experimental**
 
 The details for this library and the process are explained [in this dedicated page](doc/metadata-service/index.md).
-
-### FIDO U2F
-
-FIDO U2F is an old protocol, but widely adopted by a lot of web services.
-It adds a very robust and easy to use second factor authentication method.
-
-The details for this library and the process are explained [in this dedicated page](doc/u2f/FIDO.md).
 
 ### Cose Key
 

@@ -16,6 +16,8 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
+use CBOR\OtherObject\OtherObjectManager;
+use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
@@ -29,6 +31,7 @@ use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
+use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
@@ -47,9 +50,15 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private $metadataStatementRepository;
 
-    public function __construct(Decoder $decoder, Manager $algorithmManager, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(?Decoder $decoder, Manager $algorithmManager, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
-        $this->decoder = $decoder;
+        if (null !== $decoder) {
+            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
+        }
+        if (null === $metadataStatementRepository) {
+            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory in v3.0.', E_USER_DEPRECATED);
+        }
+        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->algorithmManager = $algorithmManager;
         $this->metadataStatementRepository = $metadataStatementRepository;
     }
@@ -184,12 +193,12 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
 
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
-
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         if (!$algorithm instanceof Signature) {
             throw new RuntimeException('Invalid algorithm');
         }
+        $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);
 
-        return $algorithm->verify($dataToVerify, $publicKey, $attestationStatement->get('sig'));
+        return $algorithm->verify($dataToVerify, $publicKey, $signature);
     }
 }

@@ -383,7 +383,7 @@ try {
         $publicKeyCredential->getResponse(),
         $publicKeyCredentialRequestOptions,
         $psr7Request,
-        null // User handle
+        null // User handle: null or the user ID if you know it
         );
     ?>
         <html>

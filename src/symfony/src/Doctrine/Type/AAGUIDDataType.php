@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
+use Assert\Assertion;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use function Safe\base64_decode;
 
 final class AAGUIDDataType extends Type
 {
@@ -38,7 +38,10 @@ final class AAGUIDDataType extends Type
             case 36 === mb_strlen($value, '8bit'):
                 return Uuid::fromString($value);
             default: // Kept for compatibility with old format
-                return Uuid::fromBytes(base64_decode($value, true));
+                $decoded = base64_decode($value, true);
+                Assertion::string($decoded, 'Unable to decode the data');
+
+                return Uuid::fromBytes($decoded);
         }
     }
 

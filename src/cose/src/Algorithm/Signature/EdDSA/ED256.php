@@ -13,11 +13,17 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\EdDSA;
 
-use Cose\Algorithms;
 use Cose\Key\Key;
 
 final class ED256 extends EdDSA
 {
+    public const ID = -260;
+
+    public static function identifier(): int
+    {
+        return self::ID;
+    }
+
     public function sign(string $data, Key $key): string
     {
         $hashedData = hash('sha256', $data, true);
@@ -30,10 +36,5 @@ final class ED256 extends EdDSA
         $hashedData = hash('sha256', $data, true);
 
         return parent::verify($hashedData, $key, $signature);
-    }
-
-    public static function identifier(): int
-    {
-        return Algorithms::COSE_ALGORITHM_ED256;
     }
 }

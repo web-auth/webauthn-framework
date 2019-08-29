@@ -55,7 +55,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
 
         $authenticatedToken = new WebauthnToken(
             $token->getPublicKeyCredentialUserEntity(),
-            $token->getPublicKeyCredentialRequestOptions(),
+            $token->getPublicKeyCredentialOptions(),
             $token->getCredentials(),
             $token->isUserPresent(),
             $token->isUserVerified(),

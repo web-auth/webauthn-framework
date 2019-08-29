@@ -3,7 +3,7 @@
     "type": "library",
     "license": "MIT",
     "description": "FIDO2/Webauthn Support For PHP",
-    "keywords": ["FIDO", "FIDO2", "U2F", "webauthn"],
+    "keywords": ["FIDO", "FIDO2", "webauthn"],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {
@@ -20,13 +20,15 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
+        "nyholm/psr7": "^1.1",
+        "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/cbor-php": "^1.0.2",
-        "thecodingmachine/safe": "^0.1",
         "beberlei/assert": "^3.0",
-        "web-auth/cose-lib": "^2.0"
+        "web-auth/cose-lib": "^2.1",
+        "web-auth/metadata-service": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -38,9 +40,6 @@
             "Webauthn\\Tests\\Functional\\": "tests/functional/",
             "Webauthn\\Tests\\Unit\\": "tests/unit/"
         }
-    },
-    "suggest": {
-        "php-http/httplug": "For Android SafetyNet support"
     },
     "extra": {
         "branch-alias": {

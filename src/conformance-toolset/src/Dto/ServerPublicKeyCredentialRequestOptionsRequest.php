@@ -19,10 +19,9 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class ServerPublicKeyCredentialRequestOptionsRequest
 {
     /**
-     * @var string
+     * @var string|null
      *
      * @Assert\Type("string")
-     * @Assert\NotBlank
      */
     public $username;
 

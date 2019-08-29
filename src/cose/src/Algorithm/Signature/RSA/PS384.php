@@ -13,14 +13,15 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
-use Cose\Algorithms;
 use Jose\Component\Core\Util\Hash;
 
 final class PS384 extends PSSRSA
 {
+    public const ID = -38;
+
     public static function identifier(): int
     {
-        return Algorithms::COSE_ALGORITHM_PS384;
+        return self::ID;
     }
 
     protected function getHashAlgorithm(): Hash

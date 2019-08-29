@@ -26,7 +26,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function __construct(CacheItemPoolInterface $cacheItemPool)
     {
         $this->cacheItemPool = $cacheItemPool;
-        $this->saveUserEntity(new PublicKeyCredentialUserEntity('username', 'foo', 'Foo BAR'));
+        $this->saveUserEntity(new PublicKeyCredentialUserEntity('admin', 'foo', 'Foo BAR (-_-)'));
     }
 
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
