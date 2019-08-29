@@ -25,6 +25,7 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -74,6 +75,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
+        foreach ([Algorithm\RS256::class] as $algorithm) {
+            if (!class_exists($algorithm)) {
+                throw new RuntimeException('The algorithms RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
+            }
+        }
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
         $this->client = $client;
@@ -228,15 +234,16 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function initJwsVerifier(): void
     {
-        $algorithms = [
-            new Algorithm\RS256(), new Algorithm\RS384(), new Algorithm\RS512(),
-            new Algorithm\PS256(), new Algorithm\PS384(), new Algorithm\PS512(),
-            new Algorithm\ES256(), new Algorithm\ES384(), new Algorithm\ES512(),
-            new Algorithm\EdDSA(),
+        $algorithmClasses = [
+            Algorithm\RS256::class, Algorithm\RS384::class, Algorithm\RS512::class,
+            Algorithm\PS256::class, Algorithm\PS384::class, Algorithm\PS512::class,
+            Algorithm\ES256::class, Algorithm\ES384::class, Algorithm\ES512::class,
+            Algorithm\EdDSA::class,
         ];
-        foreach ($algorithms as $key => $algorithm) {
-            if (!class_exists($algorithm)) {
-                unset($algorithms[$key]);
+        $algorithms = [];
+        foreach ($algorithmClasses as $key => $algorithm) {
+            if (class_exists($algorithm)) {
+                $algorithms[] = new $algorithm();
             }
         }
         $algorithmManager = new AlgorithmManager($algorithms);
