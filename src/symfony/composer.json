@@ -21,7 +21,7 @@
         "symfony/config": "^4.3",
         "symfony/dependency-injection": "^4.3",
         "symfony/framework-bundle": "^4.3",
-        "web-auth/webauthn-lib": "^2.1",
+        "web-auth/webauthn-lib": "self.version",
         "web-token/jwt-signature": "^2.0.3"
     },
     "require-dev": {
