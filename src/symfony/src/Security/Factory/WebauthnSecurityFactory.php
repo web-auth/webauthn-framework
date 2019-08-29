@@ -34,7 +34,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      * @param string           $id
      * @param array            $config
      * @param string           $userProviderId
-     * @param string           $defaultEntryPointId
+     * @param string|null      $defaultEntryPointId
      *
      * @return array
      */
