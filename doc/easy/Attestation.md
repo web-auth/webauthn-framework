@@ -11,33 +11,79 @@ use Webauthn\PublicKeyCredentialRpEntity;
 
 $rpEntity = new PublicKeyCredentialRpEntity('Webauthn Server', 'my.domain.com');
 $publicKeyCredentialSourceRepository = …; //Your repository here. Must implement Webauthn\PublicKeyCredentialSourceRepository
-$metadataStatementRepository = new SimpleMetadataStatementRepository();
 
 $server = new Server(
-    $rpEntity,
-    $publicKeyCredentialSourceRepository,
-    $metadataStatementRepository
+    $rpEntity,                            // The relaying party (your application)
+    $publicKeyCredentialSourceRepository, // The credential repository
+    null                                  // The metadata statement service (not used here)
 );
 ```
 
-To generate a `PublicKeyCredentialCreationOptions` object, you just need to call the method `generatePublicKeyCredentialCreationOptions`.
-This object can be serialized into JSON and sent to the client.
+To generate and send a `PublicKeyCredentialCreationOptions` object, you just need to call the method `generatePublicKeyCredentialCreationOptions`.
+This method requires a `Webathn\PublicKeyCredentialUserEntity` object that represents the user you are creating or for which you want to add an authenticator.
+ 
+The `PublicKeyCredentialCreationOptions` object returned by the method can be serialized into JSON and sent to the client.
 
 ```php
 <?php
 
-use Nyholm\Psr7\Response;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 $userEntity = new PublicKeyCredentialUserEntity('jdoe', 'unique ID', 'John Doe');
 
 $options = $server->generatePublicKeyCredentialCreationOptions($userEntity);
-
-//Save the options somewhere (e.g. session)
-//And send it to the client (JSON)
 ```
 
-When the authenticator send you the computed response, you can load it and check it.
+Then you need to send this object to the user.
+This step depends on your application ; it can by a plain JSON object or an HTML page.
+
+```html
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Request</title>
+    </head>
+    <body>
+    <script>
+        let publicKey = "<?php echo json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>";
+
+        function arrayToBase64String(a) {
+            return btoa(String.fromCharCode(...a));
+        }
+
+        publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), c=>c.charCodeAt(0));
+        publicKey.user.id = Uint8Array.from(window.atob(publicKey.user.id), c=>c.charCodeAt(0));
+        if (publicKey.excludeCredentials) {
+            publicKey.excludeCredentials = publicKey.excludeCredentials.map(function(data) {
+                return {
+                    ...data,
+                    'id': Uint8Array.from(window.atob(data.id), c=>c.charCodeAt(0))
+                };
+            });
+        }
+
+        navigator.credentials.create({publicKey})
+            .then(function (data) {
+                let publicKeyCredential = {
+
+                    id: data.id,
+                    type: data.type,
+                    rawId: arrayToBase64String(new Uint8Array(data.rawId)),
+                    response: {
+                        clientDataJSON: arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
+                        attestationObject: arrayToBase64String(new Uint8Array(data.response.attestationObject))
+                    }
+                };
+                window.location = '/request_post?data='+btoa(JSON.stringify(publicKeyCredential));
+            }, function (error) {
+                console.log(error); // Example: timeout, interaction refused...
+            });
+    </script>
+    </body>
+</html>
+```
+
+When the authenticator send you the computed response (i.e. the user touched the button, fingerprint reader, submitted the PIN…), you can load it and check it.
 If successful, you will receive a `PublicKeyCredentialSource` object.
 
 In the example below, we use `nyholm/psr7-server` to get the PSR-7 request.
