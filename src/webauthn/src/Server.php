@@ -113,10 +113,9 @@ class Server
         $this->coseAlgorithmManagerFactory->add('ES256K', new ECDSA\ES256K());
         $this->coseAlgorithmManagerFactory->add('ES384', new ECDSA\ES384());
         $this->coseAlgorithmManagerFactory->add('ES512', new ECDSA\ES512());
-        $this->coseAlgorithmManagerFactory->add('ED256', new EdDSA\ED256());
-        $this->coseAlgorithmManagerFactory->add('ED512', new EdDSA\ED512());
+        $this->coseAlgorithmManagerFactory->add('ED256', new EdDSA\Ed25519());
 
-        $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'ED256', 'ED512'];
+        $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->tokenBindingHandler = new TokenBindingNotSupportedHandler();
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
