@@ -78,7 +78,10 @@
         "sort-packages": true
     },
     "suggest": {
-        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
+        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)",
+        "web-token/jwt-signature-algorithm-rsa": "Mandatory for the AndroidSafetyNet Attestation Statement support",
+        "web-token/jwt-signature-algorithm-ecdsa": "Recommended for the AndroidSafetyNet Attestation Statement support",
+        "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"
     },
     "require-dev": {
         "doctrine/dbal": "^2.9",

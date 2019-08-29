@@ -41,6 +41,11 @@
             "Webauthn\\Tests\\Unit\\": "tests/unit/"
         }
     },
+    "suggest": {
+        "web-token/jwt-signature-algorithm-rsa": "Mandatory for the AndroidSafetyNet Attestation Statement support",
+        "web-token/jwt-signature-algorithm-ecdsa": "Recommended for the AndroidSafetyNet Attestation Statement support",
+        "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"
+    },
     "extra": {
         "branch-alias": {
             "v1.0": "1.0.x-dev",

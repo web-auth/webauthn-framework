@@ -228,12 +228,18 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function initJwsVerifier(): void
     {
-        $algorithmManager = new AlgorithmManager([
+        $algorithms = [
             new Algorithm\RS256(), new Algorithm\RS384(), new Algorithm\RS512(),
             new Algorithm\PS256(), new Algorithm\PS384(), new Algorithm\PS512(),
             new Algorithm\ES256(), new Algorithm\ES384(), new Algorithm\ES512(),
             new Algorithm\EdDSA(),
-        ]);
+        ];
+        foreach ($algorithms as $key => $algorithm) {
+            if (!class_exists($algorithm)) {
+                unset($algorithms[$key]);
+            }
+        }
+        $algorithmManager = new AlgorithmManager($algorithms);
         $this->jwsVerifier = new JWSVerifier($algorithmManager);
     }
 }
