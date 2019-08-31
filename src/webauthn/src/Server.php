@@ -113,7 +113,7 @@ class Server
         $this->coseAlgorithmManagerFactory->add('ES256K', new ECDSA\ES256K());
         $this->coseAlgorithmManagerFactory->add('ES384', new ECDSA\ES384());
         $this->coseAlgorithmManagerFactory->add('ES512', new ECDSA\ES512());
-        $this->coseAlgorithmManagerFactory->add('ED256', new EdDSA\Ed25519());
+        $this->coseAlgorithmManagerFactory->add('Ed25519', new EdDSA\Ed25519());
 
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
@@ -249,14 +249,16 @@ class Server
 
     private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
     {
-        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager, $this->metadataStatementRepository));
+        if (null !== $this->metadataStatementRepository) {
+            $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+            $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
+            $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000, $this->metadataStatementRepository));
+            $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
+            $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
+            $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager, $this->metadataStatementRepository));
+        }
 
         return $attestationStatementSupportManager;
     }
