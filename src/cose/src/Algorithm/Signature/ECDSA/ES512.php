@@ -34,7 +34,11 @@ final class ES512 extends ECDSA
 
     public function verify(string $data, Key $key, string $signature): bool
     {
-        $signature = ECSignature::toAsn1($signature, $this->getSignaturePartLength());
+        if (mb_strlen($signature, '8bit') !== $this->getSignaturePartLength()) {
+            @trigger_error('Since v2.1, the method "verify" accepts ASN.1 structures and raw ECDSA signature. In v3.0 and ASN.1 structures will be rejected', E_USER_DEPRECATED);
+        } else {
+            $signature = ECSignature::toAsn1($signature, $this->getSignaturePartLength());
+        }
 
         return parent::verify($data, $key, $signature);
     }
