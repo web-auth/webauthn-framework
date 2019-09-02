@@ -120,24 +120,42 @@ header('Content-Type: text/html');
         <title>Login</title>
     </head>
     <body>
+    <script src="js/helpers.js" type="application/javascript"></script>
     <script>
-        let publicKey = <?php echo json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+        const publicKey = <?php echo json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 
         function arrayToBase64String(a) {
             return btoa(String.fromCharCode(...a));
         }
 
-        publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), c=>c.charCodeAt(0));
-        publicKey.allowCredentials = publicKey.allowCredentials.map(function(data) {
-            return {
-                ...data,
-                'id': Uint8Array.from(atob(data.id), c=>c.charCodeAt(0))
-            };
-        });
+        function base64url2base64(input) {
+            input = input
+                .replace(/=/g, "")
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
 
-        navigator.credentials.get({publicKey})
-            .then(data => {
-                let publicKeyCredential = {
+            const pad = input.length % 4;
+            if(pad) {
+                if(pad === 1) {
+                    throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+                }
+                input += new Array(5-pad).join('=');
+            }
+
+            return input;
+        }
+
+        publicKey.challenge = Uint8Array.from(window.atob(base64url2base64(publicKey.challenge)), function(c){return c.charCodeAt(0);});
+        if (publicKey.allowCredentials) {
+            publicKey.allowCredentials = publicKey.allowCredentials.map(function(data) {
+                data.id = Uint8Array.from(window.atob(base64url2base64(data.id)), function(c){return c.charCodeAt(0);});
+                return data;
+            });
+        }
+
+        navigator.credentials.get({ 'publicKey': publicKey })
+            .then(function(data){
+                const publicKeyCredential = {
                     id: data.id,
                     type: data.type,
                     rawId: arrayToBase64String(new Uint8Array(data.rawId)),
@@ -148,9 +166,12 @@ header('Content-Type: text/html');
                         userHandle: data.response.userHandle ? arrayToBase64String(new Uint8Array(data.response.userHandle)) : null
                     }
                 };
-                window.location = '/login_post?data='+btoa(JSON.stringify(publicKeyCredential));
-            }, error => {
-                console.log(error); // Example: timeout, interaction refused...
+                window.location = window.location.pathname.replace('login.php', 'login_response.php')+
+                    '?data='+btoa(JSON.stringify(publicKeyCredential));
+            })
+            .catch(function(error){
+                alert('Open your browser console!');
+                console.log('FAIL', error);
             });
     </script>
     <h1>Login</h1>

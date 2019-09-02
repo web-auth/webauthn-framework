@@ -291,48 +291,66 @@ $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
 );
 ?>
 
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>Request</title>
-    </head>
-    <body>
-    <script>
-        let publicKey = <?php echo json_encode($publicKeyCredentialCreationOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Request</title>
+</head>
+<body>
+<script src="js/helpers.js" type="application/javascript"></script>
+<script>
+    const publicKey = <?php echo json_encode($publicKeyCredentialCreationOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 
-        function arrayToBase64String(a) {
-            return btoa(String.fromCharCode(...a));
+    function arrayToBase64String(a) {
+        return btoa(String.fromCharCode(...a));
+    }
+
+    function base64url2base64(input) {
+        input = input
+            .replace(/=/g, "")
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+
+        const pad = input.length % 4;
+        if(pad) {
+            if(pad === 1) {
+                throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+            }
+            input += new Array(5-pad).join('=');
         }
 
-        publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), c=>c.charCodeAt(0));
-        publicKey.user.id = Uint8Array.from(window.atob(publicKey.user.id), c=>c.charCodeAt(0));
-        if (publicKey.excludeCredentials) {
-            publicKey.excludeCredentials = publicKey.excludeCredentials.map(function(data) {
-                return {
-                    ...data,
-                    'id': Uint8Array.from(window.atob(data.id), c=>c.charCodeAt(0))
-                };
-            });
-        }
+        return input;
+    }
 
-        navigator.credentials.create({publicKey})
-            .then(function (data) {
-                let publicKeyCredential = {
+    publicKey.challenge = Uint8Array.from(window.atob(base64url2base64(publicKey.challenge)), function(c){return c.charCodeAt(0);});
+    publicKey.user.id = Uint8Array.from(window.atob(publicKey.user.id), function(c){return c.charCodeAt(0);});
+    if (publicKey.excludeCredentials) {
+        publicKey.excludeCredentials = publicKey.excludeCredentials.map(function(data) {
+            data.id = Uint8Array.from(window.atob(base64url2base64(data.id)), function(c){return c.charCodeAt(0);});
+            return data;
+        });
+    }
 
-                    id: data.id,
-                    type: data.type,
-                    rawId: arrayToBase64String(new Uint8Array(data.rawId)),
-                    response: {
-                        clientDataJSON: arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
-                        attestationObject: arrayToBase64String(new Uint8Array(data.response.attestationObject))
-                    }
-                };
-                window.location = '/request_post?data='+btoa(JSON.stringify(publicKeyCredential));
-            }, function (error) {
-                console.log(error); // Example: timeout, interaction refused...
-            });
-    </script>
-    </body>
+    navigator.credentials.create({ 'publicKey': publicKey })
+        .then(function(data){
+            const publicKeyCredential = {
+                id: data.id,
+                type: data.type,
+                rawId: arrayToBase64String(new Uint8Array(data.rawId)),
+                response: {
+                    clientDataJSON: arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
+                    attestationObject: arrayToBase64String(new Uint8Array(data.response.attestationObject))
+                }
+            };
+            window.location = window.location.pathname.replace('register.php', 'register_response.php')+
+                '?data='+btoa(JSON.stringify(publicKeyCredential));
+        })
+        .catch(function(error){
+            alert('Open your browser console!');
+            console.log('FAIL', error);
+        });
+</script>
+</body>
 </html>
 ```
 
