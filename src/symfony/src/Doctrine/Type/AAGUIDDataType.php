@@ -24,16 +24,23 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
+        if (null === $value) {
+            return $value;
+        }
+
         return $value->toString();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): UuidInterface
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
     {
+        if (null === $value || $value instanceof UuidInterface) {
+            return $value;
+        }
         switch (true) {
             case 36 === mb_strlen($value, '8bit'):
                 return Uuid::fromString($value);

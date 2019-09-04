@@ -22,16 +22,23 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
+        if (null === $value) {
+            return $value;
+        }
+
         return base64_encode($value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): string
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
+        if (null === $value) {
+            return $value;
+        }
         $data = base64_decode($value, true);
         Assertion::string($data, 'Unable to decode the data');
 

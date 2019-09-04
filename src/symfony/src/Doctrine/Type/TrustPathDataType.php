@@ -24,8 +24,11 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
+        if (null === $value) {
+            return $value;
+        }
         $data = json_encode($value);
         Assertion::string($data, 'Unable to encode the data');
 
@@ -35,8 +38,11 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): TrustPath
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?TrustPath
     {
+        if (null === $value || $value instanceof TrustPath) {
+            return $value;
+        }
         $json = json_decode($value, true);
         Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Unable to decode the data');
 

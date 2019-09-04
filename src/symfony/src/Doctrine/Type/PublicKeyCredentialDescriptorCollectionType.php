@@ -23,8 +23,11 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
+        if (null === $value) {
+            return $value;
+        }
         $data = json_encode($value);
         Assertion::string($data, 'Unable to encode the data');
 
@@ -34,8 +37,12 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): PublicKeyCredentialDescriptorCollection
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?PublicKeyCredentialDescriptorCollection
     {
+        if (null === $value || $value instanceof PublicKeyCredentialDescriptorCollection) {
+            return $value;
+        }
+
         return PublicKeyCredentialDescriptorCollection::createFromString($value);
     }
 
