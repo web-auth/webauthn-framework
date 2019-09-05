@@ -13,7 +13,7 @@ Webauthn Framework
 
 Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web applications, for the purpose of strongly authenticating users.
 
-This framework contains PHP libraries and Symfony bundle to allow developpers to integrate that authentication mechanism into their web applications.
+This framework contains PHP libraries and Symfony bundle to allow developers to integrate that authentication mechanism into their web applications.
 
 # Supported features
 
@@ -42,49 +42,70 @@ This framework contains PHP libraries and Symfony bundle to allow developpers to
 
 # Documentation
 
+## Installation
+
+This framework contains several sub-packages that you don’t necessarily need.
+It is highly recommended to install what you need and not the whole framework.
+Hereafter the dependency tree:
+
+* `web-auth/webauthn-lib`: this is the core library. This package can be used in any PHP project or within any popular framework (Laravel, CakePHP…)
+    * `web-auth/webauthn-symfony-bundle`: this is a Symfony bundle that ease the integration of this authentication mechanism in your Symfony project.
+        * `web-auth/conformance-toolset`: this component helps you to verify your application is compliant with the specification. It is meant to be used with the FIDO Alliance Tools
+
+The core library also depends on `web-auth/cose-lib` and `web-auth/metadata-service`. What are these dependencies?
+
+`web-auth/cose-lib` contains several cipher algorithms and COSE key support to verify the digital signatures sent by the authenticators during the creation and authentication ceremonies.
+These algorithms are compliant with the [RFC8152](https://tools.ietf.org/html/rfc8152).
+This library can be used by any other PHP projects.
+At the moment only signature algorithms are available, but it is planned to add encryption algorithms
+
+`web-auth/metadata-service` provides classes to support the [Fido Alliance Metadata Service](https://fidoalliance.org/metadata/).
+If you plan to use Attestation Statements during the creation ceremony, this service is mandatory.
+Please note that Attestation Statements decreases the user privacy as they may leak data that allow to identify a specific user.
+**The use of Attestation Statements and this service are generally not recommended unless you REALLY need this information**.
+This library can also be used by any other PHP projects.
+
 ## The Easy Way
 
-If you want to quickly start a Webauthn Server, you should read how to use the [Server class](doc/easy/Attestation.md).
+If you want to quickly start a Webauthn Server, you should read how to use the [`Server` class](doc/easy/Attestation.md).
+This class ease the use of the library by providing simple methods for the creation and the authentication ceremonies.
 
-If you prefer to build integrate it into your application, you should directly use the library or the Symfony bundle.
+This class is part of the core library:
+
+```sh
+composer require web-auth/webauthn-lib
+```
 
 ## Webauthn Library
 
-With this library, you can add multi-factor authentication like FIDO U2F does or add passwordless authentication support for your application using the new FIDO2 Webauthn specification.
+With this library, you can add multi-factor authentication like FIDO U2F does or
+add passwordless authentication support for your application using the new FIDO2 Webauthn specification.
+
+Install the library with Composer: `composer require web-auth/webauthn-lib`.
 
 There are two steps to perform:
 
 * [Associate the device to your user (Public Key Credential Creation)](doc/webauthn/PublicKeyCredentialCreation.md)
 * [Check authentication request (Public Key Credential Request)](doc/webauthn/PublicKeyCredentialRequest.md)
 
-Install the library with Composer: `composer require web-auth/webauthn-lib`.
 
 ## Symfony Bundles
 
 This framework provides a [Symfony bundle](doc/symfony/index.md) to store, load and verify the data from the authenticators.
 
+```sh
+composer require web-auth/webauthn-symfony-bundle
+```
+
 This bundle also includes [a firewall based on webauthn](doc/symfony/firewall.md) that will help you to protect the routes.
 You will be able to authenticate your users with their username and FIDO2 compatible authenticators. 
 
-## Other libraries
-
-### Metadata Service
-
-This library provides all tools and data structures to easily consume the Fido Metadata Service.
-
-**Please not that the service and the associated specification should be considered as experimental**
-
-The details for this library and the process are explained [in this dedicated page](doc/metadata-service/index.md).
-
-### Cose Key
-
-TO BE WRITTEN
-
 # Support
 
-I bring solutions to your problems and answer your questions.
+I bring solutions to your problems and try answer your questions.
+If you really love that project and the work I have done, then you can help me out for a couple of :beers: or more!
 
-If you really love that project and the work I have done or if you want I prioritize your issues, then you can help me out for a couple of :beers: or more!
+*Support and help for your application integration are only provided for active contributors*.
 
 [![Become a Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/FlorentMorselli)
 

@@ -1,3 +1,96 @@
+Public Key Credential Source Repository
+=======================================
+
+The credential data is managed using a repository.
+The library does not provide any concrete implementation.
+It is up to you to create it depending on your application constraints.
+
+This repository must implement the interface `Webauthn\PublicKeyCredentialSourceRepository`.
+
+For example, you might save the data in the filesystem or in a database.
+
+# Filesystem Repository
+
+```php
+<?php
+/**
+ * EGroupware WebAuthn
+ *
+ * @link https://www.egroupware.org
+ * @author Ralf Becker <rb-At-egroupware.org>
+ * @package openid
+ * @license http://opensource.org/licenses/gpl-license.php GPL - GNU General Public License
+ */
+
+namespace EGroupware\WebAuthn;
+
+use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\PublicKeyCredentialSource;
+use Webauthn\PublicKeyCredentialUserEntity;
+
+class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
+{
+	private $path = '/tmp/pubkey-repo.json';
+
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
+	{
+		$data = $this->read();
+        if (isset($data[base64_encode($publicKeyCredentialId)]))
+        {
+            return PublicKeyCredentialSource::createFromArray($data[base64_encode($publicKeyCredentialId)]);
+		}
+		return null;
+	}
+
+    /**
+     * @return PublicKeyCredentialSource[]
+     */
+    public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
+	{
+		$sources = [];
+		foreach($this->read() as $data)
+		{
+			$source = PublicKeyCredentialSource::createFromArray($data);
+			if ($source->getUserHandle() === $publicKeyCredentialUserEntity->getId())
+			{
+				$sources[] = $source;
+			}
+		}
+		return $sources;
+	}
+
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
+	{
+		$data = $this->read();
+		$data[base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId())] = $publicKeyCredentialSource;
+		$this->write($data);
+	}
+
+	private function read(): array
+	{
+		if (file_exists($this->path))
+		{
+			return json_decode(file_get_contents($this->path), true);
+		}
+		return [];
+	}
+
+	private function write(array $data): void
+	{
+		if (!file_exists($this->path))
+		{
+            if (!mkdir($concurrentDirectory = dirname($this->path), 0700, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+		}
+		file_put_contents($this->path, json_encode($data), LOCK_EX);
+	}
+}
+```
+
+# Doctrine Repository
+
+```php
 <?php
 
 declare(strict_types=1);
@@ -17,8 +110,6 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
-use InvalidArgumentException;
-use Webauthn\AttestedCredentialData;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -98,65 +189,8 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             ->getOneOrNullResult()
             ;
     }
-
-    /**
-     * @deprecated Since v2.1 and will be removed in v3.0
-     */
-    public function has(string $credentialId): bool
-    {
-        return null !== $this->findOneByCredentialId($credentialId);
-    }
-
-    /**
-     * @deprecated Since v2.1 and will be removed in v3.0
-     */
-    public function get(string $credentialId): AttestedCredentialData
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getAttestedCredentialData();
-    }
-
-    /**
-     * @deprecated Since v2.1 and will be removed in v3.0
-     */
-    public function getUserHandleFor(string $credentialId): string
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getUserHandle();
-    }
-
-    /**
-     * @deprecated Since v2.1 and will be removed in v3.0
-     */
-    public function getCounterFor(string $credentialId): int
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        return $credential->getCounter();
-    }
-
-    /**
-     * @deprecated Since v2.1 and will be removed in v3.0
-     */
-    public function updateCounterFor(string $credentialId, int $newCounter): void
-    {
-        $credential = $this->findOneByCredentialId($credentialId);
-        if (null === $credential) {
-            throw new InvalidArgumentException('Invalid credential ID');
-        }
-
-        $credential->setCounter($newCounter);
-        $this->saveCredentialSource($credential);
-    }
 }
+```
+
+*Note #1: you must add custom Doctrine types to convert plain PHP objects into your ORM. Please have a look at [this folder](https://github.com/web-auth/webauthn-framework/tree/v2.0/src/symfony/src/Doctrine/Type)*.
+*Note #2: if you use Symfony, this repository already exists and custom doctrine types are automatically registered.
