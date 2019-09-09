@@ -47,12 +47,14 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
         $this->manager = $manager;
     }
 
-    /**
-     * @return string
-     */
     protected function getClass(): string
     {
         return $this->class;
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->manager;
     }
 
     public function findOneByUserHandle(string $id): ?PublicKeyCredentialUserEntity
