@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
+use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -52,7 +53,7 @@ class AuthenticatorAttestationResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): void
+    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): PublicKeyCredentialSource
     {
         /** @see 7.1.1 */
         //Nothing to do
@@ -126,5 +127,26 @@ class AuthenticatorAttestationResponseValidator
 
         /* @see 7.1.18 */
         /* @see 7.1.19 */
+        return $this->createPublicKeyCredentialSource(
+            $credentialId,
+            $attestedCredentialData,
+            $attestationObject,
+            $publicKeyCredentialCreationOptions->getUser()->getId()
+        );
+    }
+
+    private function createPublicKeyCredentialSource(string $credentialId, AttestedCredentialData $attestedCredentialData, AttestationObject $attestationObject, string $userHandle): PublicKeyCredentialSource
+    {
+        return new PublicKeyCredentialSource(
+            $credentialId,
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            [],
+            $attestationObject->getAttStmt()->getType(),
+            $attestationObject->getAttStmt()->getTrustPath(),
+            $attestedCredentialData->getAaguid(),
+            $attestedCredentialData->getCredentialPublicKey(),
+            $userHandle,
+            $attestationObject->getAuthData()->getSignCount()
+        );
     }
 }

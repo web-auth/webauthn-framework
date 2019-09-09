@@ -27,7 +27,6 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseController
@@ -98,12 +97,9 @@ final class AttestationResponseController
             }
             $publicKeyCredentialCreationOptions = $item->get();
             Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
-            $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+            $credentialSource = $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
-            $credentialSource = PublicKeyCredentialSource::createFromPublicKeyCredential(
-                $publicKeyCredential,
-                $publicKeyCredentialCreationOptions->getUser()->getId()
-            );
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
             $json = json_encode($publicKeyCredentialCreationOptions->getUser());

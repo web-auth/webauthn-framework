@@ -805,7 +805,7 @@ try {
     }
 
     // Check the response against the request
-    $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+    $publicKeyCredentialSource = $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
 } catch (\Throwable $exception) {
     ?>
     <html>
@@ -823,11 +823,6 @@ try {
 
 // Everything is OK here.
 
-// You can get the Public Key Credential Source. This object should be persisted using the Public Key Credential Source repository 
-$publicKeyCredentialSource = \Webauthn\PublicKeyCredentialSource::createFromPublicKeyCredential(
-    $publicKeyCredential,
-    $publicKeyCredentialCreationOptions->getUser()->getId()
-);
 
 
 //You can also get the PublicKeyCredentialDescriptor.

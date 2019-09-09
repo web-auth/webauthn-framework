@@ -208,9 +208,8 @@ class Server
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler
         );
-        $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest);
 
-        return PublicKeyCredentialSource::createFromPublicKeyCredential($publicKeyCredential, $publicKeyCredentialCreationOptions->getUser()->getId());
+        return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest);
     }
 
     public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource

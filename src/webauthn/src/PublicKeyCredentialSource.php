@@ -86,6 +86,9 @@ class PublicKeyCredentialSource implements JsonSerializable
         $this->trustPath = $trustPath;
     }
 
+    /**
+     * @deprecated Deprecated since v2.1. Will be removed in v3.0. Please use response from the credential source returned by the AuthenticatorAttestationResponseValidator after "check" method
+     */
     public static function createFromPublicKeyCredential(PublicKeyCredential $publicKeyCredential, string $userHandle): self
     {
         $response = $publicKeyCredential->getResponse();
