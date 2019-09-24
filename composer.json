@@ -71,7 +71,8 @@
             "v1.1": "1.1.x-dev",
             "v1.2": "1.2.x-dev",
             "v2.0": "2.0.x-dev",
-            "v2.1": "2.1.x-dev"
+            "v2.1": "2.1.x-dev",
+            "v2.2": "2.2.x-dev"
         }
     },
     "config": {
@@ -88,7 +89,6 @@
         "doctrine/doctrine-bundle": "^1.10",
         "doctrine/orm": "^2.6",
         "fzaninotto/faker": "^1.8",
-        "infection/infection": "^0.14",
         "php-coveralls/php-coveralls": "^2.0",
         "php-http/mock-client": "^1.0",
         "phpstan/phpstan": "^0.11",

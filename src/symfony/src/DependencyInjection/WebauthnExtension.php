@@ -40,6 +40,7 @@ use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
+use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\DistantSingleMetadata;
 use Webauthn\MetadataService\DistantSingleMetadataFactory;
 use Webauthn\MetadataService\MetadataService;
@@ -85,6 +86,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
+        $container->setAlias(CounterChecker::class, $config['counter_checker']);
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 

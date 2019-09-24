@@ -20,6 +20,7 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding;
@@ -61,4 +62,6 @@ return function (ContainerConfigurator $container) {
 
     $container->set(TokenBinding\IgnoreTokenBindingHandler::class);
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
+
+    $container->set(ThrowExceptionIfInvalid::class);
 };
