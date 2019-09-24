@@ -20,7 +20,6 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
-        "ext-sodium": "*",
         "fgrosse/phpasn1": "^2.1",
         "beberlei/assert": "^3.0"
     },
