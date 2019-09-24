@@ -24,6 +24,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\Counter\CounterChecker;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
 
@@ -53,8 +55,12 @@ class AuthenticatorAssertionResponseValidator
      * @var Manager|null
      */
     private $algorithmManager;
+    /**
+     * @var CounterChecker
+     */
+    private $counterChecker;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker = null)
     {
         if (null !== $decoder) {
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
@@ -64,6 +70,7 @@ class AuthenticatorAssertionResponseValidator
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->algorithmManager = $algorithmManager;
+        $this->counterChecker = $counterChecker ?? new ThrowExceptionIfInvalid();
     }
 
     /**
@@ -166,7 +173,7 @@ class AuthenticatorAssertionResponseValidator
         $storedCounter = $publicKeyCredentialSource->getCounter();
         $currentCounter = $authenticatorAssertionResponse->getAuthenticatorData()->getSignCount();
         if (0 !== $currentCounter || 0 !== $storedCounter) {
-            Assertion::greaterThan($currentCounter, $storedCounter, 'Invalid counter.');
+            $this->counterChecker->check($publicKeyCredentialSource, $currentCounter);
         }
         $publicKeyCredentialSource->setCounter($currentCounter);
         $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);

@@ -20,6 +20,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
@@ -60,6 +61,11 @@ final class Configuration implements ConfigurationInterface
                     ->defaultValue(TokenBindingNotSupportedHandler::class)
                     ->cannotBeEmpty()
                     ->info('This handler will check the token binding header from the request')
+                ->end()
+                ->scalarNode('counter_checker')
+                    ->defaultValue(ThrowExceptionIfInvalid::class)
+                    ->cannotBeEmpty()
+                    ->info('This service will check if the counter is valid. By default it throws an exception')
                 ->end()
                 ->arrayNode('android_safetynet')
                     ->addDefaultsIfNotSet()
