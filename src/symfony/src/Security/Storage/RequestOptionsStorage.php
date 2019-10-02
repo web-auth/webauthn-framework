@@ -13,14 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
  * @deprecated Will be removed in v3.0. Please use Webauthn\Bundle\Security\Storage\OptionsStorage instead.
  */
-interface RequestOptionsStorage
+interface RequestOptionsStorage extends OptionsStorage
 {
-    public function store(Request $request, StoredData $data): void;
-
-    public function get(Request $request): StoredData;
 }

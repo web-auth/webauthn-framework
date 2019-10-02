@@ -13,6 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
+use Symfony\Component\HttpFoundation\Request;
+
 interface OptionsStorage
 {
+    public function store(Request $request, StoredData $data): void;
+
+    public function get(Request $request): StoredData;
 }

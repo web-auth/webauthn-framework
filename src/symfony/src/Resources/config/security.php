@@ -74,35 +74,6 @@ return function (ContainerConfigurator $container) {
         ->tag('monolog.logger', ['channel' => 'security'])
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn')
-        ->class(WebauthnListener::class)
-        ->abstract()
-        ->private()
-        ->args([
-            '', // HTTP Message Factory
-            ref(SerializerInterface::class),
-            ref(ValidatorInterface::class),
-            ref(PublicKeyCredentialRequestOptionsFactory::class),
-            ref(PublicKeyCredentialSourceRepository::class),
-            ref(PublicKeyCredentialUserEntityRepository::class),
-            ref(PublicKeyCredentialLoader::class),
-            ref(AuthenticatorAssertionResponseValidator::class),
-            ref(TokenStorageInterface::class),
-            ref(AuthenticationManagerInterface::class),
-            ref(SessionAuthenticationStrategyInterface::class),
-            ref(HttpUtils::class),
-            null, // Fake user provider
-            '', // Provider key
-            [], // Options
-            null, // Authentication success handler
-            null, // Authentication failure handler
-            null, // Request Options handler
-            null, // Request Options Storage
-            ref(EventDispatcherInterface::class)->nullOnInvalid(),
-        ])
-        ->tag('monolog.logger', ['channel' => 'security'])
-    ;
-
     $container->services()->set(WebauthnEntryPoint::class)
         ->abstract()
         ->private()
