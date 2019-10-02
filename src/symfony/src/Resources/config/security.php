@@ -24,12 +24,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Security\Authentication\Provider\WebauthnJsonProvider;
-use Webauthn\Bundle\Security\EntryPoint\WebauthnJsonEntryPoint;
-use Webauthn\Bundle\Security\Firewall\WebauthnJsonListener;
+use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
+use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Firewall\WebauthnListener;
-use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
+use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
@@ -40,13 +39,13 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 return function (ContainerConfigurator $container) {
-    $container->services()->set(WebauthnJsonProvider::class)
+    $container->services()->set(WebauthnProvider::class)
         ->private()
         ->arg(0, ref(UserCheckerInterface::class))
     ;
 
     $container->services()->set('security.authentication.listener.webauthn.json')
-        ->class(WebauthnJsonListener::class)
+        ->class(WebauthnListener::class)
         ->abstract()
         ->private()
         ->args([
@@ -104,7 +103,7 @@ return function (ContainerConfigurator $container) {
         ->tag('monolog.logger', ['channel' => 'security'])
     ;
 
-    $container->services()->set(WebauthnJsonEntryPoint::class)
+    $container->services()->set(WebauthnEntryPoint::class)
         ->abstract()
         ->private()
         ->args([

@@ -19,7 +19,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\StoredData;
 use Webauthn\PublicKeyCredentialOptions;
-use Webauthn\PublicKeyCredentialUserEntity;
 
 final class CustomSessionStorage implements OptionsStorage
 {
