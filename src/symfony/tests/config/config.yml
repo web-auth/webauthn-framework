@@ -185,24 +185,6 @@ security:
     firewalls:
         main:
             anonymous: ~
-#            webauthn:
-#                options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
-#                http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
-#                creation:
-#                    profile: 'default'
-#                    success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
-#                    failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
-#                    options_handler: 'Webauthn\Bundle\Tests\Functional\CreationOptionsHandler'
-#                    option_path: '/register/options'
-#                    result_path: '/register/result'
-#                    login_after_registration: true
-#                request:
-#                    profile: 'default'
-#                    success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
-#                    failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
-#                    options_handler: 'Webauthn\Bundle\Tests\Functional\RequestOptionsHandler'
-#                    option_path: '/login/options'
-#                    result_path: '/login/result'
             webauthn_json:
                 profile: 'default'
                 request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
