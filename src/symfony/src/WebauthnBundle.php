@@ -25,7 +25,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerP
 use Webauthn\Bundle\DependencyInjection\Compiler\MetadataServiceCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\SingleMetadataCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
-use Webauthn\Bundle\Security\Factory\WebauthnSecurityFactory;
+use Webauthn\Bundle\Security\Factory\WebauthnJsonSecurityFactory;
 
 final class WebauthnBundle extends Bundle
 {
@@ -55,7 +55,7 @@ final class WebauthnBundle extends Bundle
         if ($container->hasExtension('security')) {
             $extension = $container->getExtension('security');
             Assertion::isInstanceOf($extension, SecurityExtension::class, 'The security extension is missing or invalid');
-            $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
+            $extension->addSecurityListenerFactory(new WebauthnJsonSecurityFactory());
         }
     }
 
