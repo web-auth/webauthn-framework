@@ -216,18 +216,16 @@ class WebauthnListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-            $userEntity = $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
+            $userEntity = $creationOptionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
             if (null === $userEntity) {
                 if (null === $this->fakePublicKeyCredentialUserEntityProvider) {
-                    throw new InvalidArgumentException('User not found');
+                    $allowedCredentials = [];
+                } else {
+                    $userEntity = $this->fakePublicKeyCredentialUserEntityProvider->getFakeUserEntityFor($creationOptionsRequest->username);
+                    $allowedCredentials = $userEntity->getCredentials();
                 }
-                $userEntity = $this->fakePublicKeyCredentialUserEntityProvider->getFakeUserEntityFor($creationOptionsRequest->username);
-                $allowedCredentials = $userEntity->getCredentials();
             } else {
                 $allowedCredentials = $this->getCredentials($userEntity);
-            }
-            if (true === $this->options['empty_allowed_credentials']) {
-                $allowedCredentials = [];
             }
             $authenticationExtensionsClientInputs = null;
             if (0 === \count($this->options['extensions'])) {
