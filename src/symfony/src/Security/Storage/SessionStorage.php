@@ -19,12 +19,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class SessionStorage implements RequestOptionsStorage
+final class SessionStorage implements OptionsStorage
 {
     /**
      * @var string
      */
-    private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_REQUEST_OPTIONS';
+    private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
     public function store(Request $request, StoredData $data): void
     {
@@ -41,7 +41,7 @@ final class SessionStorage implements RequestOptionsStorage
 
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
         if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
+            throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];

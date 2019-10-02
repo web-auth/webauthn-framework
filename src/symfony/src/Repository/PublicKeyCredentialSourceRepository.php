@@ -102,11 +102,17 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             ;
     }
 
+    /**
+     * @deprecated Will be removed in v3.0
+     */
     public function has(string $credentialId): bool
     {
         return null !== $this->findOneByCredentialId($credentialId);
     }
 
+    /**
+     * @deprecated Will be removed in v3.0
+     */
     public function get(string $credentialId): AttestedCredentialData
     {
         $credential = $this->findOneByCredentialId($credentialId);
@@ -117,6 +123,9 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $credential->getAttestedCredentialData();
     }
 
+    /**
+     * @deprecated Will be removed in v3.0
+     */
     public function getUserHandleFor(string $credentialId): string
     {
         $credential = $this->findOneByCredentialId($credentialId);
@@ -127,6 +136,9 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $credential->getUserHandle();
     }
 
+    /**
+     * @deprecated Will be removed in v3.0
+     */
     public function getCounterFor(string $credentialId): int
     {
         $credential = $this->findOneByCredentialId($credentialId);
@@ -137,6 +149,9 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         return $credential->getCounter();
     }
 
+    /**
+     * @deprecated Will be removed in v3.0
+     */
     public function updateCounterFor(string $credentialId, int $newCounter): void
     {
         $credential = $this->findOneByCredentialId($credentialId);

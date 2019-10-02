@@ -20,7 +20,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class DefaultRequestOptionsHandler implements RequestOptionsHandler
 {
-    public function onRequestOptions(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, PublicKeyCredentialUserEntity $userEntity): Response
+    public function onRequestOptions(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity): Response
     {
         return new JsonResponse($publicKeyCredentialRequestOptions);
     }

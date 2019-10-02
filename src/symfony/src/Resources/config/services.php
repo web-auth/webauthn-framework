@@ -36,7 +36,7 @@ return function (ContainerConfigurator $container) {
     $container->set(AuthenticatorAssertionResponseValidator::class)
         ->args([
             ref(PublicKeyCredentialSourceRepository::class),
-            ref(Decoder::class),
+            null,
             ref(TokenBinding\TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),

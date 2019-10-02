@@ -16,12 +16,12 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Assert\Assertion;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Webauthn\Bundle\Security\Storage\RequestOptionsStorage;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\StoredData;
-use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class CustomSessionStorage implements RequestOptionsStorage
+final class CustomSessionStorage implements OptionsStorage
 {
     /**
      * @var string
@@ -33,7 +33,7 @@ final class CustomSessionStorage implements RequestOptionsStorage
         $session = $request->getSession();
         Assertion::notNull($session, 'This authentication method requires a session.');
 
-        $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialRequestOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
+        $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
     }
 
     public function get(Request $request): StoredData
@@ -49,11 +49,8 @@ final class CustomSessionStorage implements RequestOptionsStorage
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
 
-        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
-        }
-        if (!$userEntity instanceof PublicKeyCredentialUserEntity) {
-            throw new BadRequestHttpException('No user entity available for this session.');
+        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
+            throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 
         return new StoredData($publicKeyCredentialRequestOptions, $userEntity);
