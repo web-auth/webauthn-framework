@@ -41,19 +41,19 @@ class CertificateToolbox
         $processArguments = ['--no-CApath', '--no-CAfile'];
 
         foreach ($trustedCertificates as $certificate) {
-            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-chain-');
-            Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
-            $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
+            $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-trusted-');
+            Assertion::string($trustedFilename, 'Unable to get a temporary filename');
+            $result = file_put_contents($trustedFilename, $certificate, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
-            $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            $result = file_put_contents($trustedFilename, PHP_EOL, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
             $processArguments[] = '-trusted';
-            $processArguments[] = $untrustedFilename;
-            $filenames[] = $untrustedFilename;
+            $processArguments[] = $trustedFilename;
+            $filenames[] = $trustedFilename;
         }
 
         foreach ($certificates as $certificate) {
-            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-chain-');
+            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
             Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
             $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
