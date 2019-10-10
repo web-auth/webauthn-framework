@@ -24,7 +24,6 @@ class CertificateToolbox
 {
     public static function checkChain(array $certificates, array $trustedCertificates = []): void
     {
-        $certificates = array_unique(array_merge($certificates, $trustedCertificates));
         if (0 === \count($certificates)) {
             return;
         }
@@ -39,32 +38,33 @@ class CertificateToolbox
         Assertion::integer($result, 'Unable to write temporary data');
         $filenames[] = $leafFilename;
 
-        $processArguments = [];
+        $processArguments = ['--no-CApath', '--no-CAfile'];
 
-        if (0 !== \count($certificates)) {
-            $caFilename = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
-            Assertion::string($caFilename, 'Unable to get a temporary filename');
-
-            $caCertificate = array_pop($certificates);
-            $result = file_put_contents($caFilename, $caCertificate);
+        foreach ($trustedCertificates as $certificate) {
+            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-chain-');
+            Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
+            $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
-
-            $processArguments[] = '-CAfile';
-            $processArguments[] = $caFilename;
-            $filenames[] = $caFilename;
+            $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            Assertion::integer($result, 'Unable to write temporary data');
+            $processArguments[] = '-trusted';
+            $processArguments[] = $untrustedFilename;
+            $filenames[] = $untrustedFilename;
         }
 
-        if (0 !== \count($certificates)) {
-            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
+        foreach ($certificates as $certificate) {
+            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-chain-');
             Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
-
-            foreach ($certificates as $certificate) {
-                $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
-                Assertion::integer($result, 'Unable to write temporary data');
-                $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
-                Assertion::integer($result, 'Unable to write temporary data');
+            $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
+            Assertion::integer($result, 'Unable to write temporary data');
+            $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            Assertion::integer($result, 'Unable to write temporary data');
+            if (1 === \count($filenames)) {
+                $processArguments[] = '-partial_chain';
+                $processArguments[] = '-trusted';
+            } else {
+                $processArguments[] = '-untrusted';
             }
-            $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
         }

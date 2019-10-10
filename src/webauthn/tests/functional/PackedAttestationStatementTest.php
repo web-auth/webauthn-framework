@@ -162,4 +162,55 @@ class PackedAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
     }
+
+    /**
+     * @test
+     */
+    public function p2(): void
+    {
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString('{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"KhWQ12Gltp92RModoTPgDqpgXCvR73JXKozijHIfwHE","attestation":"direct","user":{"name":"hw1BfGxhRSKwTOAIx39K","id":"NzExYmI2ZTItYmU3My00YTcyLWE1MDUtYTQzYWE3ZTUyYzgw","displayName":"Leona Grayson"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}');
+        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{"id":"RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY","rawId":"RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEYwRAIgPjEY0D6cbc2ByBEvr1cu2QQvPewY7xdk-3E7XxpvW3YCIDswTHA5eoieLK0dJlHsneEJ0nmMCbyOP5Qt2m4s5B9-Y3g1Y4JZApIwggKOMIICNKADAgECAgEBMAoGCCqGSM49BAMCMIGvMSYwJAYDVQQDDB1GSURPMiBJTlRFUk1FRElBVEUgcHJpbWUyNTZ2MTExMC8GCSqGSIb3DQEJARYiY29uZm9ybWFuY2UtdG9vbHNAZmlkb2FsbGlhbmNlLm9yZzEWMBQGA1UECgwNRklETyBBbGxpYW5jZTEMMAoGA1UECwwDQ1dHMQswCQYDVQQGEwJVUzELMAkGA1UECAwCTVkxEjAQBgNVBAcMCVdha2VmaWVsZDAeFw0xODA1MjMxNDM3NDFaFw0yODA1MjAxNDM3NDFaMIHCMSMwIQYDVQQDDBpGSURPMiBCQVRDSCBLRVkgcHJpbWUyNTZ2MTExMC8GCSqGSIb3DQEJARYiY29uZm9ybWFuY2UtdG9vbHNAZmlkb2FsbGlhbmNlLm9yZzEWMBQGA1UECgwNRklETyBBbGxpYW5jZTEiMCAGA1UECwwZQXV0aGVudGljYXRvciBBdHRlc3RhdGlvbjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk1ZMRIwEAYDVQQHDAlXYWtlZmllbGQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAS62WKs8a1SL5r7CgySHBfb6zqZk9Cko2ZjvsT1y_Ia-4BkaWUcUZGD9HyRD8wqNGUytw_rxxbbHQ4BvVduKUhkoywwKjAJBgNVHRMEAjAAMB0GA1UdDgQWBBRKVOUG0pFET20PM13W_cdGbLlfVDAKBggqhkjOPQQDAgNIADBFAiEAuVs2tHN9o6wQ0w2-9euV5QQnQlpElX874Yah038n6kUCIE0LrMA4QKR8Kk_1-lvGmHHKnpym_RyhfAzWkYRzNyl4WQQ1MIIEMTCCAhmgAwIBAgIBAjANBgkqhkiG9w0BAQsFADCBoTEYMBYGA1UEAwwPRklETzIgVEVTVCBST09UMTEwLwYJKoZIhvcNAQkBFiJjb25mb3JtYW5jZS10b29sc0BmaWRvYWxsaWFuY2Uub3JnMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMQwwCgYDVQQLDANDV0cxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMB4XDTE4MDcyMzE0MjkwN1oXDTQ1MTIwODE0MjkwN1owga8xJjAkBgNVBAMMHUZJRE8yIElOVEVSTUVESUFURSBwcmltZTI1NnYxMTEwLwYJKoZIhvcNAQkBFiJjb25mb3JtYW5jZS10b29sc0BmaWRvYWxsaWFuY2Uub3JnMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMQwwCgYDVQQLDANDV0cxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3EEd31Vtf01zjKl1FHpVcfRjACkj1m-0e16XhyBwWQUOyc6HqW80V4rU3Qi0wnzV6SxNRuiUXLLT5l_bS0l586MvMC0wDAYDVR0TBAUwAwEB_zAdBgNVHQ4EFgQUZ8EZkpBb9V0AwdYhDowtdiGSR8AwDQYJKoZIhvcNAQELBQADggIBAAuYLqezVLsHJ3Yn7-XcJWehiEj0xHIkHTMZjaPZxPQUQDtm7UNA3SXYnwPBp0EHdvXSIJPFOPFrnGOKs7r0WWius-gCK1NmwFJSayp5U2b43YjN6Ik2PVk4gfXsn5iv2YBL-1vQxBVu764d9vqY0jRdVcsbjBKZ2tV-rMqrTQ1RvsNGC43ZF4tHIrkSctEPQPdL5jCoAMYJ0XwqJeWkFJR6WTE4ivvDgqfLEqKtOUDd_Yst-LuAHihlFnrio2BMDbICoJ_r9fgNXW1MNnFmIOdzouZvw0C5bflrNYaJLsF8QnpGgb4ngfZ7td32F7-0pIMLljzcMhT5UJFqSD4G_XmTBN5J1IidhAEtVBO5K2ljYN3EDtr-rWNuPufhZhMrlopxgoax7ME9LGLZoUBpVmtGwlfXxCy-vWwjuuEYlqHpy7Il9eYZpgu_mWxfQ9VR49QR0fXoqAGVFaJxIgyUmR7VcV5ZlN40AYaxD87ReUZ-u9Hc6vxOByz3826ylvi9hdovlhFhe3LYnDVQQS11B7BQLxmDKr-wxNMwxmmey_o1yI0gohNiI4sQoTGMP2hWMJsdDesrl3iQ2LvHwklzikz0emUbCwkN_LVxUkEcp9U-RYL8XbO0NrMYLVVwjcvBTKKH9u4IzLuYuKQLdpXVxDsdcyNj_jb-hhcWNlPwbVyDaGF1dGhEYXRhWKSWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAABpgPU9HoUuQ-27P9AvEyLlrwAgRSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzalAQIDJiABIVggMVh-zNGe5B0_5d0YHZ78BUJtmLr5pLuXmWef-O7ONZEiWCCf6mnMspgsRLzt3_HP0hW3WmlE1m-FkUqGr9nXQz5B3g","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IktoV1ExMkdsdHA5MlJNb2RvVFBnRHFwZ1hDdlI3M0pYS296aWpISWZ3SEUiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}');
+
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
+
+        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository->findOneByCredentialId(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true))->willReturn(null);
+
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
+
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+            $publicKeyCredential->getResponse(),
+            $publicKeyCredentialCreationOptions,
+            $request->reveal()
+        );
+
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+            $publicKeyCredential->getResponse(),
+            $publicKeyCredentialCreationOptions,
+            $request->reveal()
+        );
+
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+
+        static::assertEquals(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true), Base64Url::decode($publicKeyCredential->getId()));
+        static::assertEquals(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true), $publicKeyCredentialDescriptor->getId());
+        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredentialDescriptor->getType());
+        static::assertEquals(['usb'], $publicKeyCredentialDescriptor->getTransports());
+
+        /** @var AuthenticatorData $authenticatorData */
+        $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
+
+        static::assertEquals(hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'), $authenticatorData->getRpIdHash());
+        static::assertTrue($authenticatorData->isUserPresent());
+        static::assertFalse($authenticatorData->isUserVerified());
+        static::assertTrue($authenticatorData->hasAttestedCredentialData());
+        static::assertEquals(0, $authenticatorData->getReservedForFutureUse1());
+        static::assertEquals(0, $authenticatorData->getReservedForFutureUse2());
+        static::assertEquals(105, $authenticatorData->getSignCount());
+        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
+        static::assertFalse($authenticatorData->hasExtensions());
+    }
 }
