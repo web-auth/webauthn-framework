@@ -22,18 +22,20 @@ use Webauthn\MetadataService\MetadataStatementRepository;
 
 class CertificateToolbox
 {
-    public static function checkChain(array $certificates, array $trustedCertificates = []): void
+    public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
     {
-        if (0 === \count($certificates)) {
+        self::checkCertificatesValidity($authenticatorCertificates);
+        self::checkCertificatesValidity($trustedCertificates);
+
+        if (0 === \count($authenticatorCertificates) || 0 === \count($trustedCertificates)) {
             return;
         }
-        self::checkCertificatesValidity($certificates);
         $filenames = [];
 
         $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
         Assertion::string($leafFilename, 'Unable to get a temporary filename');
 
-        $leafCertificate = array_shift($certificates);
+        $leafCertificate = array_shift($authenticatorCertificates);
         $result = file_put_contents($leafFilename, $leafCertificate);
         Assertion::integer($result, 'Unable to write temporary data');
         $filenames[] = $leafFilename;
@@ -51,20 +53,14 @@ class CertificateToolbox
             $processArguments[] = $trustedFilename;
             $filenames[] = $trustedFilename;
         }
-
-        foreach ($certificates as $certificate) {
+        foreach ($authenticatorCertificates as $certificate) {
             $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
             Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
             $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
             $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
             Assertion::integer($result, 'Unable to write temporary data');
-            if (1 === \count($filenames)) {
-                $processArguments[] = '-partial_chain';
-                $processArguments[] = '-trusted';
-            } else {
-                $processArguments[] = '-untrusted';
-            }
+            $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
         }
@@ -86,6 +82,9 @@ class CertificateToolbox
         }
     }
 
+    /**
+     * @deprecated Will be removed in v3.0.
+     */
     public static function checkAttestationMedata(AttestationStatement $attestationStatement, string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
     {
         $metadataStatement = $metadataStatementRepository->findOneByAAGUID($aaguid);

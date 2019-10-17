@@ -13,19 +13,16 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Base64Url\Base64Url;
 use Cose\Algorithms;
 use Http\Mock\Client;
+use InvalidArgumentException;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorData;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -42,6 +39,8 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
      */
     public function anAndroidSafetyNetAttestationCanBeVerified(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The certificate expired');
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
@@ -80,25 +79,5 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
             $publicKeyCredentialCreationOptions,
             $request->reveal()
         );
-
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
-
-        static::assertEquals(base64_decode('Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=', true), Base64Url::decode($publicKeyCredential->getId()));
-        static::assertEquals(base64_decode('Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=', true), $publicKeyCredentialDescriptor->getId());
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredentialDescriptor->getType());
-        static::assertEquals(['usb'], $publicKeyCredentialDescriptor->getTransports());
-
-        /** @var AuthenticatorData $authenticatorData */
-        $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
-
-        static::assertEquals(hex2bin('cad46edb99615323e66224bdfe8abc5d59cc2d2063029de3e9b24204890943b6'), $authenticatorData->getRpIdHash());
-        static::assertTrue($authenticatorData->isUserPresent());
-        static::assertTrue($authenticatorData->isUserVerified());
-        static::assertTrue($authenticatorData->hasAttestedCredentialData());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse1());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertEquals(0, $authenticatorData->getSignCount());
-        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
-        static::assertFalse($authenticatorData->hasExtensions());
     }
 }

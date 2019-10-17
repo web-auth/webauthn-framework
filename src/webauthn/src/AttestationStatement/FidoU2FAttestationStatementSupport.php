@@ -44,8 +44,8 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         if (null !== $decoder) {
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
-        if (null === $metadataStatementRepository) {
-            @trigger_error('Setting "null" for argument "$metadataStatementRepository" is deprecated since 2.1 and will be mandatory in v3.0.', E_USER_DEPRECATED);
+        if (null !== $metadataStatementRepository) {
+            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->metadataStatementRepository = $metadataStatementRepository;

@@ -33,5 +33,6 @@ return function (ContainerConfigurator $container) {
             ref(RequestFactoryInterface::class)->nullOnInvalid(),
             '%webauthn.android_safetynet.leeway%',
             '%webauthn.android_safetynet.max_age%',
+            null,
         ]);
 };

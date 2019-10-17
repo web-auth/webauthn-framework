@@ -14,11 +14,15 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AttestationStatement\AttestationObject;
+use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use Webauthn\TrustPath\CertificateTrustPath;
 
 class AuthenticatorAttestationResponseValidator
 {
@@ -114,6 +118,7 @@ class AuthenticatorAttestationResponseValidator
 
         /** @see 7.1.14 */
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
+        $this->checkMetadataStatement($attestationObject);
         Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
         /* @see 7.1.15 */
@@ -135,6 +140,49 @@ class AuthenticatorAttestationResponseValidator
         );
     }
 
+    private function checkCertificateChain(AttestationStatement $attestationStatement, ?MetadataStatement $metadataStatement): void
+    {
+        $trustPath = $attestationStatement->getTrustPath();
+        if (!$trustPath instanceof CertificateTrustPath) {
+            return;
+        }
+        $authenticatorCertificates = $trustPath->getCertificates();
+
+        if (null === $metadataStatement) {
+            CertificateToolbox::checkChain($authenticatorCertificates);
+
+            return;
+        }
+
+        $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
+        foreach ($metadataStatementCertificates as $key => $attestationRootCertificate) {
+            $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($attestationRootCertificate);
+        }
+        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates);
+    }
+
+    private function checkMetadataStatement(AttestationObject $attestationObject): void
+    {
+        $metadataStatement = $attestationObject->getMetadataStatement();
+        if (null === $metadataStatement) {
+            $this->checkCertificateChain($attestationObject->getAttStmt(), $metadataStatement);
+
+            return;
+        }
+
+        // Check Attestation Type is allowed
+        if (0 !== \count($metadataStatement->getAttestationTypes())) {
+            $type = $this->getAttestationType($attestationObject->getAttStmt());
+            Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
+        }
+
+        //FIXME: to decide later if relevant
+        /*Assertion::eq('fido2', $metadataStatement->getProtocolFamily(), sprintf('The protocol family of the authenticator "%s" should be "fido2". Got "%s".', $aaguid, $metadataStatement->getProtocolFamily()));
+        if (null !== $metadataStatement->getAssertionScheme()) {
+            Assertion::eq('FIDOV2', $metadataStatement->getAssertionScheme(), sprintf('The assertion scheme of the authenticator "%s" should be "FIDOV2". Got "%s".', $aaguid, $metadataStatement->getAssertionScheme()));
+        }*/
+    }
+
     private function createPublicKeyCredentialSource(string $credentialId, AttestedCredentialData $attestedCredentialData, AttestationObject $attestationObject, string $userHandle): PublicKeyCredentialSource
     {
         return new PublicKeyCredentialSource(
@@ -148,5 +196,21 @@ class AuthenticatorAttestationResponseValidator
             $userHandle,
             $attestationObject->getAuthData()->getSignCount()
         );
+    }
+
+    private function getAttestationType(AttestationStatement $attestationStatement): int
+    {
+        switch ($attestationStatement->getType()) {
+            case AttestationStatement::TYPE_BASIC:
+                return MetadataStatement::ATTESTATION_BASIC_FULL;
+            case AttestationStatement::TYPE_SELF:
+                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
+            case AttestationStatement::TYPE_ATTCA:
+                return MetadataStatement::ATTESTATION_ATTCA;
+            case AttestationStatement::TYPE_ECDAA:
+                return MetadataStatement::ATTESTATION_ECDAA;
+            default:
+                throw new InvalidArgumentException('Invalid attestation type');
+        }
     }
 }

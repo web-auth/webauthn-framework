@@ -21,12 +21,24 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
-    $container->set(AttestationStatement\TPMAttestationStatementSupport::class);
-    $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
-    $container->set(AttestationStatement\AndroidKeyAttestationStatementSupport::class);
+    $container->set(AttestationStatement\TPMAttestationStatementSupport::class)
+        ->args([
+            null,
+        ]);
+    $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class)
+        ->args([
+            null,
+            null,
+        ]);
+    $container->set(AttestationStatement\AndroidKeyAttestationStatementSupport::class)
+        ->args([
+            null,
+            null,
+        ]);
     $container->set(AttestationStatement\PackedAttestationStatementSupport::class)
         ->args([
             null,
             ref('webauthn.cose.algorithm.manager'),
+            null,
         ]);
 };

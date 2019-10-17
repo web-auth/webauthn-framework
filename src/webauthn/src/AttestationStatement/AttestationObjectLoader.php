@@ -23,6 +23,7 @@ use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -40,13 +41,19 @@ class AttestationObjectLoader
      */
     private $attestationStatementSupportManager;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null)
+    /**
+     * @var MetadataStatementRepository|null
+     */
+    private $metadataStatementRepository;
+
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         if (null !== $decoder) {
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
+        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function load(string $data): AttestationObject
@@ -92,7 +99,11 @@ class AttestationObjectLoader
         $authDataStream->close();
 
         $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
+        $metadataStatement = null;
+        if (null !== $this->metadataStatementRepository && null !== $attestedCredentialData) {
+            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($attestedCredentialData->getAaguid()->toString());
+        }
 
-        return new AttestationObject($data, $attestationStatement, $authenticatorData);
+        return new AttestationObject($data, $attestationStatement, $authenticatorData, $metadataStatement);
     }
 }

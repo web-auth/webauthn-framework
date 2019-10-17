@@ -75,10 +75,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
-        foreach ([Algorithm\RS256::class] as $algorithm) {
-            if (!class_exists($algorithm)) {
-                throw new RuntimeException('The algorithms RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
-            }
+        if (!class_exists(Algorithm\RS256::class)) {
+            throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
+        }
+        if (null !== $metadataStatementRepository) {
+            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;

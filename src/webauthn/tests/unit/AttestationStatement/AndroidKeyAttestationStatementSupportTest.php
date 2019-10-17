@@ -15,9 +15,7 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
-use Webauthn\MetadataService\SimpleMetadataStatementRepository;
 
 /**
  * @group unit
@@ -34,7 +32,7 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
+        $support = new AndroidKeyAttestationStatementSupport();
 
         static::assertEquals('android-key', $support->name());
         static::assertFalse($support->load([
@@ -50,7 +48,7 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
+        $support = new AndroidKeyAttestationStatementSupport();
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -66,7 +64,7 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "alg" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
+        $support = new AndroidKeyAttestationStatementSupport();
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -83,7 +81,7 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with at least one certificate.');
-        $support = new AndroidKeyAttestationStatementSupport(null, new SimpleMetadataStatementRepository(new FilesystemAdapter('webauthn')));
+        $support = new AndroidKeyAttestationStatementSupport();
 
         static::assertEquals('android-key', $support->name());
         static::assertFalse($support->load([

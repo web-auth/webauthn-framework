@@ -19,7 +19,6 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;

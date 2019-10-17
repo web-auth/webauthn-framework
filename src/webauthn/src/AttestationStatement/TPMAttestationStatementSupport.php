@@ -48,6 +48,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     public function __construct(?MetadataStatementRepository $metadataStatementRepository = null)
     {
+        if (null !== $metadataStatementRepository) {
+            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
+        }
         $this->metadataStatementRepository = $metadataStatementRepository;
     }
 

@@ -14,12 +14,16 @@ declare(strict_types=1);
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Webauthn\AttestationStatement;
+use Webauthn\AttestationStatement\AttestationObjectLoader;
+use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding;
@@ -39,9 +43,14 @@ return function (ContainerConfigurator $container) {
             ref(TokenBinding\TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
+            ref(CounterChecker::class)->nullOnInvalid(),
         ])
         ->public();
     $container->set(PublicKeyCredentialLoader::class)
+        ->args([
+            ref(AttestationObjectLoader::class),
+            null,
+        ])
         ->public();
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args([
@@ -55,7 +64,12 @@ return function (ContainerConfigurator $container) {
         ->public();
 
     $container->set(ExtensionOutputCheckerHandler::class);
-    $container->set(AttestationStatement\AttestationObjectLoader::class);
+    $container->set(AttestationStatement\AttestationObjectLoader::class)
+        ->args([
+            ref(AttestationStatementSupportManager::class),
+            null,
+            ref(MetadataStatementRepository::class)->nullOnInvalid(),
+        ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
 

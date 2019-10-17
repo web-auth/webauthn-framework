@@ -116,30 +116,20 @@ abstract class AbstractTestCase extends TestCase
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(
-            null,
-            $this->getSimpleMetadataStatementRepository()
-        ));
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
         $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
             $client ?? new Client(),
             'api_key',
             new Psr17Factory(),
             0,
-            99999999999,
-            $this->getSimpleMetadataStatementRepository()
+            99999999999
         ));
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(
-            null,
-            $this->getSimpleMetadataStatementRepository()
-        ));
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
             null,
-            $this->getAlgorithmManager(),
-            $this->getSimpleMetadataStatementRepository()
+            $this->getAlgorithmManager()
         ));
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport(
-            $this->getSimpleMetadataStatementRepository()
-        ));
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 
         return $attestationStatementSupportManager;
     }
@@ -175,7 +165,9 @@ abstract class AbstractTestCase extends TestCase
     {
         if (!$this->attestationObjectLoader) {
             $this->attestationObjectLoader = new AttestationObjectLoader(
-                $this->getAttestationStatementSupportManager()
+                $this->getAttestationStatementSupportManager(),
+                null,
+                $this->getSimpleMetadataStatementRepository()
             );
         }
 

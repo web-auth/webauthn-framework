@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
-use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -216,7 +215,7 @@ class WebauthnListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-            $userEntity = $creationOptionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
+            $userEntity = null === $creationOptionsRequest->username ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
             if (null === $userEntity) {
                 if (null === $this->fakePublicKeyCredentialUserEntityProvider) {
                     $allowedCredentials = [];
