@@ -20,6 +20,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
+use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -28,11 +30,11 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorAttestationResponseValidator
 {
     /**
-     * @var EventDispatcherInterface|null
+     * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
         $this->eventDispatcher = $eventDispatcher;
@@ -42,9 +44,22 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
     {
         try {
             $result = parent::check($authenticatorAttestationResponse, $publicKeyCredentialCreationOptions, $request);
+            $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationSucceededEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $result
+            ));
 
             return $result;
         } catch (Throwable $throwable) {
+            $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationFailedEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $throwable
+            ));
+
             throw $throwable;
         }
     }

@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 namespace Webauthn\Bundle\DataCollector;
+
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return function (ContainerConfigurator $container) {

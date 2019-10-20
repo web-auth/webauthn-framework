@@ -28,12 +28,8 @@ class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
         $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
     }
 
-    /**
-     * @return PublicKeyCredentialCreationOptions
-     */
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;
     }
-
 }
