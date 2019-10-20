@@ -55,9 +55,9 @@
                             <span>{{ profiler_dump(data.attestation_response) }}</span>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-pkcco-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
                             </div>
-                            <div id="webauthn-pkcco-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div id="webauthn-attestation-validation-succeeded-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
@@ -74,9 +74,9 @@
                             <span>{{ profiler_dump(data.attestation_response) }}</span>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-pkcco-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
                             </div>
-                            <div id="webauthn-pkcco-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div id="webauthn-attestation-validation-failed-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
