@@ -101,6 +101,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         }
+
+        if (true === $container->getParameter('kernel.debug')) {
+            $loader->load('dev_services.php');
+        }
     }
 
     /**
