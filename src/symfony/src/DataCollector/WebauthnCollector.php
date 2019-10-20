@@ -18,6 +18,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
@@ -81,9 +82,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
     }
 
     /**
-     * @return array
+     * @return array|Data
      */
-    public function getData(): array
+    public function getData()
     {
         return $this->data;
     }
