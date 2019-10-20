@@ -62,7 +62,11 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
     {
         $this->data = [
             'publicKeyCredentialCreationOptions' => $this->publicKeyCredentialCreationOptions,
+            'authenticatorAttestationResponseValidationSucceeded' => $this->authenticatorAttestationResponseValidationSucceeded,
+            'authenticatorAttestationResponseValidationFailed' => $this->authenticatorAttestationResponseValidationFailed,
             'publicKeyCredentialRequestOptions' => $this->publicKeyCredentialRequestOptions,
+            'authenticatorAssertionResponseValidationSucceeded' => $this->authenticatorAssertionResponseValidationSucceeded,
+            'authenticatorAssertionResponseValidationFailed' => $this->authenticatorAssertionResponseValidationFailed,
         ];
     }
 
