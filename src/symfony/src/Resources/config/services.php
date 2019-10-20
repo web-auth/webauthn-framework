@@ -13,12 +13,15 @@ declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\CounterChecker;
@@ -34,9 +37,11 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
-    $container->set(AuthenticatorAttestationResponseValidator::class)
+    $container->set(BaseAuthenticatorAttestationResponseValidator::class)
+        ->class(AuthenticatorAttestationResponseValidator::class)
         ->public();
-    $container->set(AuthenticatorAssertionResponseValidator::class)
+    $container->set(BaseAuthenticatorAssertionResponseValidator::class)
+        ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
             ref(PublicKeyCredentialSourceRepository::class),
             null,
@@ -44,6 +49,7 @@ return function (ContainerConfigurator $container) {
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
             ref(CounterChecker::class)->nullOnInvalid(),
+            ref(EventDispatcherInterface::class),
         ])
         ->public();
     $container->set(PublicKeyCredentialLoader::class)
@@ -55,11 +61,13 @@ return function (ContainerConfigurator $container) {
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args([
             '%webauthn.creation_profiles%',
+            ref(EventDispatcherInterface::class),
         ])
         ->public();
     $container->set(PublicKeyCredentialRequestOptionsFactory::class)
         ->args([
             '%webauthn.request_profiles%',
+            ref(EventDispatcherInterface::class),
         ])
         ->public();
 

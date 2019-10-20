@@ -14,9 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -30,9 +32,15 @@ final class PublicKeyCredentialCreationOptionsFactory
      */
     private $profiles;
 
-    public function __construct(array $profiles)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
         $this->profiles = $profiles;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestationConveyance = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialCreationOptions
@@ -40,7 +48,7 @@ final class PublicKeyCredentialCreationOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        return new PublicKeyCredentialCreationOptions(
+        $options = new PublicKeyCredentialCreationOptions(
             $this->createRpEntity($profile),
             $userEntity,
             random_bytes($profile['challenge_length']),
@@ -51,6 +59,9 @@ final class PublicKeyCredentialCreationOptionsFactory
             $attestationConveyance ?? $profile['attestation_conveyance'],
             $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
         );
+        $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
+
+        return $options;
     }
 
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs

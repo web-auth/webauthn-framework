@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class PublicKeyCredentialRequestOptionsFactory
@@ -25,9 +27,15 @@ final class PublicKeyCredentialRequestOptionsFactory
      */
     private $profiles;
 
-    public function __construct(array $profiles)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
         $this->profiles = $profiles;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
@@ -35,7 +43,7 @@ final class PublicKeyCredentialRequestOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        return new PublicKeyCredentialRequestOptions(
+        $options = new PublicKeyCredentialRequestOptions(
             random_bytes($profile['challenge_length']),
             $profile['timeout'],
             $profile['rp_id'],
@@ -43,6 +51,9 @@ final class PublicKeyCredentialRequestOptionsFactory
             $userVerification ?? $profile['user_verification'],
             $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
         );
+        $this->eventDispatcher->dispatch(new PublicKeyCredentialRequestOptionsCreatedEvent($options));
+
+        return $options;
     }
 
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
