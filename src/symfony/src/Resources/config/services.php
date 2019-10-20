@@ -12,13 +12,15 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Webauthn\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\CounterChecker;
@@ -34,7 +36,8 @@ return function (ContainerConfigurator $container) {
         ->autoconfigure()
         ->autowire();
 
-    $container->set(AuthenticatorAttestationResponseValidator::class)
+    $container->set(BaseAuthenticatorAttestationResponseValidator::class)
+        ->class(AuthenticatorAttestationResponseValidator::class)
         ->public();
     $container->set(AuthenticatorAssertionResponseValidator::class)
         ->args([
@@ -55,6 +58,7 @@ return function (ContainerConfigurator $container) {
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args([
             '%webauthn.creation_profiles%',
+            ref(EventDispatcherInterface::class)
         ])
         ->public();
     $container->set(PublicKeyCredentialRequestOptionsFactory::class)
