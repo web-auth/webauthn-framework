@@ -39,7 +39,7 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.0",
         "fgrosse/phpasn1": "^2.1",
-        "league/uri": "^5.3",
+        "league/uri": "^6.0",
         "nyholm/psr7": "^1.1",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
