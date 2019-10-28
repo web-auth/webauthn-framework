@@ -159,6 +159,43 @@ class AttestationTest extends KernelTestCase
     /**
      * @test
      */
+    public function certificateExpired(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The certificate expired');
+        self::bootKernel();
+
+        $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"vK4TDySRYWO-ZMLS19rRzbuqSDBz-QZRLBb9MB6TVek","attestation":"direct","user":{"name":"KO5UZZdhgkrDan8uypFD","id":"MWY1ODk4M2MtN2JlMi00ZWIxLTllMjMtMDAwZWQwMTk3OGZh","displayName":"Sharyl Seguin"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
+        $result = '{"id":"u0VyY10Mp_r0HnjCRx-uVL_uyzMAK300KmtFkwQVfJo","rawId":"u0VyY10Mp_r0HnjCRx-uVL_uyzMAK300KmtFkwQVfJo","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEYwRAIgYvfDLmK6e21CGl-CkF9S3l54VS6Ju0sWJ5VwUB68a_4CIAZoj-gRGrTb3jcYH1u_KtI_mwo4IYdAjAnSUsMtMTCrY3g1Y4FZBE0wggRJMIICMaADAgECAgEBMA0GCSqGSIb3DQEBCwUAMIGhMRgwFgYDVQQDDA9GSURPMiBURVNUIFJPT1QxMTAvBgkqhkiG9w0BCQEWImNvbmZvcm1hbmNlLXRvb2xzQGZpZG9hbGxpYW5jZS5vcmcxFjAUBgNVBAoMDUZJRE8gQWxsaWFuY2UxDDAKBgNVBAsMA0NXRzELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk1ZMRIwEAYDVQQHDAlXYWtlZmllbGQwHhcNMTgwNTIyMTIxODQ1WhcNMTgwNTIzMTIxODQ1WjCByjErMCkGA1UEAwwiRklETzIgRVhQSVJFRCBCQVRDSCBLRVkgcHJpbWUyNTZ2MTExMC8GCSqGSIb3DQEJARYiY29uZm9ybWFuY2UtdG9vbHNAZmlkb2FsbGlhbmNlLm9yZzEWMBQGA1UECgwNRklETyBBbGxpYW5jZTEiMCAGA1UECwwZQXV0aGVudGljYXRvciBBdHRlc3RhdGlvbjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk1ZMRIwEAYDVQQHDAlXYWtlZmllbGQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARJdux_JC6uTGWho8eSKpuQmzRfF01V_cVGUEBKY82G-NB3J6-k76qTGvaQKG5HXQyDCiZIJGixIAA1xmoNnsRnoywwKjAJBgNVHRMEAjAAMB0GA1UdDgQWBBSv7KtPuy2pPcSktaEeir5sFjxvfTANBgkqhkiG9w0BAQsFAAOCAgEAIUx9saJ5pXSEDS6Cb-wyNp2tPJPaSQKEFsUnrzETsY5Bm0Hc1wENHf2pUhnqooXDcfWuhDK2_Wt86AZ6q8p3mv91YKXyJfZXNAksMXONE-nKDRkijrNydqdzL18D6I5aWwyj_icAneDFuzABIevrxohsCkVYDF0tdNDsKGRHwaRv2JWGp8atChwa0cAkYYQ2OYIylVkuxauUxfx8BUU41w8fknqa_Ih1jpyGfX6yL6EDYH5nSAm6fYne1zgZkhvKVS1_RNPIUXD9YssmXOlbPpMqXo-RZH34zNAzblIFZixTouzRBggitz1vNDu5IcCuyxutVEGiP_cEt9AAF-YEs7yUmKLdgWeM5AjGXL2Pq4NSWjHesBNHyGqFgzPgHQcMVDvkR4uZswh6v-cA9cXB8bCecionoga_7FZPg3uexkjj_I9LfOuHDshhO1vWNKF07oBW-YlXOYj2eOkv6hdclPmXbbrjNMJR1xY5Poev9OCaq6u6ZYf4yjaqDWjN--hbUUUN3juIhwo748Wg_ds7HXw03bfhAt33MVq6-THDZWEJ9rf8K6gBysrdAreBkOLND0c5zhk5HV3RAn8QYG3PKF7dkktLvbdBQvSfDbmu_gzcaXRn2pMs6kri6tYR82yvnRZZC6AQILw3rh9U3KIf76aj7lyHSNNOHKZC5WwLuURoYXV0aERhdGFYpJYE6oKCTpikraFLRGLQ1zqOxGkTDakbGTB0WSKfdKNZQQAAACkyatzwDO9G0JOSmNbEqEpyACC7RXJjXQyn-vQeeMJHH65Uv-7LMwArfTQqa0WTBBV8mqUBAgMmIAEhWCAgvqy102Xgb_tOUcC9I6vCksCFSp7sMpbEuZtGO1MI_CJYIGgStwNV2pziVj7naI50SSZtu7wsPurxtqmLzKb92op3","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6InZLNFREeVNSWVdPLVpNTFMxOXJSemJ1cVNEQnotUVpSTEJiOU1CNlRWZWsiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
+
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
+        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load($result);
+
+        $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertEquals(hex2bin('bb4572635d0ca7faf41e78c2471fae54bfeecb33002b7d342a6b459304157c9a'), $descriptor->getId());
+        static::assertEquals([], $descriptor->getTransports());
+
+        $response = $publicKeyCredential->getResponse();
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
+        static::assertEquals(AttestationStatement::TYPE_BASIC, $response->getAttestationObject()->getAttStmt()->getType());
+        static::assertInstanceOf(CertificateTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
+
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
+
+        self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
+            $publicKeyCredential->getResponse(),
+            $publicKeyCredentialCreationOptions,
+            $request->reveal()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
     {
         self::bootKernel();

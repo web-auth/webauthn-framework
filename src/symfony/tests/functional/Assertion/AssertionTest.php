@@ -105,40 +105,6 @@ class AssertionTest extends WebTestCase
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
     }
 
-    /**
-     * @test
-     */
-    public function p4(): void
-    {
-        $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"PYOERlJy4LKZgTOm0_4DIMDYyzWNmEa0JZsL8QITTLA","attestation":"direct","user":{"name":"VaYNWxEFaiNCd9Xd5kzO","id":"OWFkMjE1YWEtZTFjMC00NjMwLThjNDQtYzM0MzM4NDRlYjBl","displayName":"Stanford Mcguffie"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
-        $body = '{"id":"ZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuc","rawId":"ZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuc","response":{"attestationObject":"o2NmbXRjdHBtZ2F0dFN0bXSmY2FsZzkBAGNzaWdZAQAMy7XyNwcrCwZGA5vYahd85BF0znd5DscLXWYYmVz56SgFqphTIOxxrlPYs6948dK_6lHZZgtq5uwzAr1bNLaaEwJ8FEqUNl4pjzRn_Om7pGteJ6aLWaK9AR0Rap3bWsecCdGBiVM2Jj7p6DYiQVp9GJ0EtBZc5V3Qp5kodvmH6uN0lyWfQ5idrwhTDXnQ2g6tTHhgmdwijWM6JBdBkZbcoXDUtiB-WNMgksy1k73lszdGz2tcScOx4Htl5s4RJXgVNgBfOjCf0UiMQTCCic35Gzq6GXmi2TZOpwFd2AxpoZb0-S1r5ftB6kQtImS3CPV7DLd4KyYGA92PretZWq5zY3ZlcmMyLjBjeDVjglkEhzCCBIMwggNroAMCAQICDwQ37CUYctpcQKJavYjf-jANBgkqhkiG9w0BAQsFADBBMT8wPQYDVQQDEzZOQ1UtTlRDLUtFWUlELTAzN0FGNzM4MTEwRjk2MDU0RENERjA4MkVGRkEwMzFGOUJGODEwQUYwHhcNMTgwMjAxMDAwMDAwWhcNMjUwMTMxMjM1OTU5WjAAMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp9AaYJt3wv5MxR2eXlOVcAanKrgKDmIBgBvJic_R2v1ksONB9p8MY8abLevBMASKAFJz0trlmDkNH19b0zKoo_phhXv1KeEDOIDDlN-g0AV0a_PzGfPxYk5Pq1yNTM_iHTLc7KAVuer8zzMx1e2NMi0eSKpEpvV3jwFHkAQjAuT2P6MaYDmaJIkQPKqiRmv5VLKC4vU01JMM79G1ukij3xBvtTuqVSGrP3XDxiTzXKW1PSt0qoc5HQZIPrJQb2jtSxcfV0-TwhejCp8xPezjVWodgPjxO6vxnD9L2Ks1mtfpsjPjOTYt9kkapoebtRfCV9IyMmWvxA1uNxYcT4E3oQIDAQABo4IBtzCCAbMwDgYDVR0PAQH_BAQDAgeAMAwGA1UdEwEB_wQCMAAwewYDVR0gAQH_BHEwbzBtBgkrBgEEAYI3FR8wYDBeBggrBgEFBQcCAjBSHlAARgBBAEsARQAgAEYASQBEAE8AIABUAEMAUABBACAAVAByAHUAcwB0AGUAZAAgAFAAbABhAHQAZgBvAHIAbQAgAEkAZABlAG4AdABpAHQAeTAQBgNVHSUECTAHBgVngQUIAzBKBgNVHREBAf8EQDA-pDwwOjE4MA4GBWeBBQIDDAVpZDoxMzAQBgVngQUCAgwHTlBDVDZ4eDAUBgVngQUCAQwLaWQ6RkZGRkYxRDAwHwYDVR0jBBgwFoAUUX8iyOZTpXzVTN0wWH4w_2c2jF0wHQYDVR0OBBYEFKPee-WQSm7M_XZ_IdmFWq5zT0B_MHgGCCsGAQUFBwEBBGwwajBoBggrBgEFBQcwAoZcaHR0cHM6Ly9maWRvYWxsaWFuY2UuY28ubnovdHBtcGtpL05DVS1OVEMtS0VZSUQtMDM3QUY3MzgxMTBGOTYwNTREQ0RGMDgyRUZGQTAzMUY5QkY4MTBBRi5jcnQwDQYJKoZIhvcNAQELBQADggEBAA9gjc9Jd_UE6L7rt9x47jISWHu02q3yW4b9OKUaLZhgHlhgYzvBnk0l--SNrEEMohtq2tu-l9gT2PQTxUSa7k3lE82vr8fdHZf2GiqxqoZ7xQ30RJ5SHU3ErKAlxKpOa89RFaETivMUOTtEOhl0obKRxjztAbrlNwbo71xN7WUUOx4ZPExwR-8tl_wkArRi9Zjur-O4_d9gFwkzNl-hgIB2u4yerGt-eNMvgjoveQiVOE1oe5DMRtnGx6tWov8zmgjGpjnxRnbF9kIok7khC15JwWOit3Faj7bh7zzXkrAPVVv2fb8CNIDQ7Td97I8V5Yd-drnGxL26lSZMXHDgPI5ZBgUwggYBMIID6aADAgECAg8Ea4iQoZL_Z7CuCmNqDHMwDQYJKoZIhvcNAQELBQAwgb8xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMRYwFAYDVQQKDA1GSURPIEFsbGlhbmNlMQwwCgYDVQQLDANDV0cxNjA0BgNVBAMMLUZJRE8gRmFrZSBUUE0gUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkgMjAxODExMC8GCSqGSIb3DQEJARYiY29uZm9ybWFuY2UtdG9vbHNAZmlkb2FsbGlhbmNlLm9yZzAeFw0xNzAyMDEwMDAwMDBaFw0zNTAxMzEyMzU5NTlaMEExPzA9BgNVBAMTNk5DVS1OVEMtS0VZSUQtMDM3QUY3MzgxMTBGOTYwNTREQ0RGMDgyRUZGQTAzMUY5QkY4MTBBRjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANc-c30RpQd-_LCoiLJbXz3t_vqciOIovwjez79_DtVgi8G9Ph-tPL-lC0ueFGBMSPcKd_RDdSFe2QCYQd9e0DtiFxra-uWGa0olI1hHI7bK2GzNAZSTKEbwgqpf8vXMQ-7SPajg6PfxSOLH_Nj2yd6tkNkUSdlGtWfY8XGB3n-q--nt3UHdUQWEtgUoTe5abBXsG7MQSuTNoad3v6vk-tLd0W44ivM6pbFqFUHchx8mGLApCpjlVXrfROaCoc9E91hG9B-WNvekJ0dM6kJ658Hy7yscQ6JdqIEolYojCtWaWNmwcfv--OE1Ax_4Ub24gl3hpB9EOcBCzpb4UFmLYUECAwEAAaOCAXUwggFxMAsGA1UdDwQEAwIBhjAWBgNVHSAEDzANMAsGCSsGAQQBgjcVHzAbBgNVHSUEFDASBgkrBgEEAYI3FSQGBWeBBQgDMBIGA1UdEwEB_wQIMAYBAf8CAQAwHQYDVR0OBBYEFFF_IsjmU6V81UzdMFh-MP9nNoxdMB8GA1UdIwQYMBaAFFx_Ni2QrVq8uo512t46oO3BTgKLMGgGA1UdHwRhMF8wXaBboFmGV2h0dHBzOi8vZmlkb2FsbGlhbmNlLmNvLm56L3RwbXBraS9jcmwvRklETyBGYWtlIFRQTSBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eSAyMDE4LmNybDBvBggrBgEFBQcBAQRjMGEwXwYIKwYBBQUHMAKGU2h0dHBzOi8vZmlkb2FsbGlhbmNlLmNvLm56L3RwbXBraS9GSURPIEZha2UgVFBNIFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IDIwMTguY3J0MA0GCSqGSIb3DQEBCwUAA4ICAQCN1i8OPMdt_K9yL8UI_SUx7NkEpDRQ-FWJ6-JNQIfpV8aTAPmDLiSqeSQEheq_F0s4RuiGQLkS3xRFFiIF9y5-ouiqyWMKJLVMNdhkMr1YJmBzkrcGYLEVl80WhtxoK_8QUpQpzqjpXjyJdVAi5nnbOvQ4gUuSDXD1BUynY3xAxn9Sn73QhKlgZSSxV65DsP3_VG4nZqQ_EnpiSP_QVIas6MR4F96N3NReQ2Qc9RAZ05xArnbZW32xCApSeAgUoWJiSYTOUdPW8whl05B0ni_PCgOn3QtVlMC3Zm0d7P8WXihpGtT24_h6q0ewBJKeXejcXW4gohHNtPfBCAKypTw_rsJrzsMk1SnzA5dJEyoTcz4_Yh_tRXjg9-pDuECqZrnb_Z3hDB0ctqPvSVwONhWkyrWgejExBfJ3i2oGlzihqcZ2VsTvsFostfRB2dRwm1JWoy63_39uZW48pkfI3JRXgNPHJWiH16Zz8Jb6jx2brOmyifTmMyhfgDkuwSYG5Wp2-hsORKTjRlzkEooi9n57GEGi8OIhe6a4l8ZeIee4C7DdTT7WZeIL2Muxg0bEDz63NiVdQBp6gJkbTzzgLfRDVPVwXfzxCwdp-uf2dw0QjTAQ8kecVW_AZ5Y5BWJHdWjWUMA9xFarDti1dAznGPZscrMNHEhhpmLmhxBL_Nk0kGdwdWJBcmVhWQE2AAEACwAGBHIAIJ3_y_NsODrmmfuYaNxty4nXFTiEvigDkiwSQVi_rSKuABAAEAgAAAAAAAEAQEqmHschTkuJP_aSR99T-obDGrZZwDzeQqKAXFQzvYGFvsyKK45XBAUh22GBAFcQTkx94UEHI0HMDN05z58mRxr4f9r8IqSseCq4UpqAvO_TZOUyPf0kTAznbUdxLj22I4NOIKukYSVaAbX91mLLPiJC6Yuw_ADqycEWLNKCB4S-zXe_1X6WVVwmuMlT-TflXV41VYwlkJ6Z7oIJjLXlCmhsRtSvw7DTpF96x36vFn35apAHgHdesgriaNY1YU9LV5Q8rGm_9jLCkz4wR8W4EPCKDo5NZU2flWqWuocAVzIe4naMH4GWz5qdKkiEdV6ydJLoVuG9v4ax0gHqCCo4KGhjZXJ0SW5mb1it_1RDR4AXACIACxHmjtRNtTcuFCluL4Ssx4OYdRiBkh4w_CKgb4tzx5RTACD2kYQtsoL_xwCMQaeDa1YHOkWUvxe4FnG_mvcDSzKO6AAAAAFHcBdIVWl7S8aFYKUBc375jTRWVfsAIgAL1hzcHqr7rT0Mvr4oinOSS0mgbdaAnNkd4dLyj-HDKwEAIgALZY6m3muW46Ib5WieCu15WWjvOA-hGb_Zj9usooO7wd9oYXV0aERhdGFZAWeWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAACbp9bZOooNEeialKbPcQcvcwAgZoFJGeNlcc1kdrwU4XXd4e5zPSapXUf2-pkHdLPDjuekAQMDOQEAIFkBALJbyBg5lXITECfxZXtd2Vfu6paG-jbMkS5U8MB95XlS1H6U2fEuKDetLMHncHmEUwJpEKSzs1hi0kyMEcgChQZCvhsmozoD2jtz6lrtjOwFdhAU9CjGWG5ieNuLf6_3Mwhz3oSzd0XfjAL8Ozc1NuUfrVQT80lS2taWsB_rMWl9qjC-SLkxoSZCO4PHC8e0HVuL0MKTnOvVpbh_SlPNp1O_rDteOPagCM7mkUzcmyZT6dyNCUri0CpINZD-2VPqqDts6ZYPdCMbjccM6a1_iJ0ouTdcG2Ai5Fy-NMkkhDHEnThUiVZ0ZU3WqRJtUpeG9lFnZXHWN1ekvFjIGQ9fnhMhQwEAAQ","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IlBZT0VSbEp5NExLWmdUT20wXzRESU1EWXl6V05tRWEwSlpzTDhRSVRUTEEiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
-
-        self::bootKernel();
-
-        /** @var ClientInterface $clientService */
-        $clientService = static::$container->get('httplug.client.mock');
-        $this->prepareClient($clientService);
-
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
-
-        /** @var CacheItemPoolInterface $storage */
-        $storage = static::$container->get(CacheItemPoolInterface::class);
-        $item = $storage->getItem('__WEBAUTHN_ATTESTATION_REQUEST__1');
-        $item->set($publicKeyCredentialCreationOptions);
-        $storage->save($item);
-
-        $client = static::createClient();
-        $client->request('POST', '/attestation/result', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauthn.spomky-labs.com', 'HTTPS' => 'on'], $body);
-        $response = $client->getResponse();
-
-        static::assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $json = json_decode($client->getResponse()->getContent(), true);
-        static::assertArrayHasKey('status', $json);
-        static::assertArrayHasKey('errorMessage', $json);
-        static::assertEquals('failed', $json['status']);
-        static::assertEquals('Invalid pubArea.unique value', $json['errorMessage']);
-    }
-
     private function prepareClient(ClientInterface $client): void
     {
         $map = $this->getResponsesMap();

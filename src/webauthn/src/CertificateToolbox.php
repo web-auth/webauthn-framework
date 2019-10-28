@@ -27,7 +27,7 @@ class CertificateToolbox
         self::checkCertificatesValidity($authenticatorCertificates);
         self::checkCertificatesValidity($trustedCertificates);
 
-        if (0 === \count($authenticatorCertificates) || 0 === \count($trustedCertificates)) {
+        if (0 === \count($trustedCertificates)) {
             return;
         }
         $filenames = [];

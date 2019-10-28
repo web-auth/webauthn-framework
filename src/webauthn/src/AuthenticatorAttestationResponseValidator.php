@@ -164,9 +164,8 @@ class AuthenticatorAttestationResponseValidator
     private function checkMetadataStatement(AttestationObject $attestationObject): void
     {
         $metadataStatement = $attestationObject->getMetadataStatement();
+        $this->checkCertificateChain($attestationObject->getAttStmt(), $metadataStatement);
         if (null === $metadataStatement) {
-            $this->checkCertificateChain($attestationObject->getAttStmt(), $metadataStatement);
-
             return;
         }
 
