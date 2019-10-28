@@ -43,6 +43,7 @@
         }
     },
     "suggest": {
+        "web-token/jwt-key-mgmt": "Mandatory for the AndroidSafetyNet Attestation Statement support",
         "web-token/jwt-signature-algorithm-rsa": "Mandatory for the AndroidSafetyNet Attestation Statement support",
         "web-token/jwt-signature-algorithm-ecdsa": "Recommended for the AndroidSafetyNet Attestation Statement support",
         "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"

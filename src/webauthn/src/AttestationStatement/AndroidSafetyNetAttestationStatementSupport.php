@@ -78,6 +78,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         if (!class_exists(Algorithm\RS256::class)) {
             throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
         }
+        if (!class_exists(JWKFactory::class)) {
+            throw new RuntimeException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
+        }
         if (null !== $metadataStatementRepository) {
             @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
