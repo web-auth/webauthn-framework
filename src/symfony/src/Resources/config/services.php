@@ -83,6 +83,7 @@ return function (ContainerConfigurator $container) {
 
     $container->set(TokenBinding\IgnoreTokenBindingHandler::class);
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
+    $container->set(TokenBinding\SecTokenBindingHandler::class);
 
     $container->set(ThrowExceptionIfInvalid::class);
 };
