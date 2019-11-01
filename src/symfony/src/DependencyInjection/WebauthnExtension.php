@@ -186,7 +186,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         //INFO: in v2.1, all metadata statement supports are loaded.
-        // Starting at v3.0, if the metadata service is not enabled, only none will be available as this service will become mandatory for:
+        // Starting at v3.0, if the metadata service is not enabled, only "none" will be available as this service will become mandatory for:
         // - FIDO2 U2F
         // - Packed
         // - Android Key
@@ -201,6 +201,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
         $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
         $container->setAlias('webauthn.metadata_service.request_factory', $config['metadata_service']['request_factory']);
+        $container->setParameter('webauthn.metadata_service.enforce_verification', $config['metadata_service']['enforce_verification']);
         $loader->load('metadata_service.php');
 
         foreach ($config['metadata_service']['services'] as $name => $statementConfig) {

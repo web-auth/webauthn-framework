@@ -16,6 +16,7 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Webauthn\Bundle\DataCollector\WebauthnCollector;
 
 final class SingleMetadataCompilerPass implements CompilerPassInterface
 {
@@ -26,11 +27,36 @@ final class SingleMetadataCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
+        $this->processForDefaultRepository($container);
+        $this->processForDataCollector($container);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function processForDefaultRepository(ContainerBuilder $container): void
+    {
         if (!$container->hasDefinition('webauthn.metadata_service.default_repository')) {
             return;
         }
 
         $definition = $container->getDefinition('webauthn.metadata_service.default_repository');
+        $taggedServices = $container->findTaggedServiceIds(self::TAG);
+        foreach ($taggedServices as $id => $attributes) {
+            $definition->addMethodCall('addSingleStatement', [$id, new Reference($id)]);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function processForDataCollector(ContainerBuilder $container): void
+    {
+        if (!$container->hasDefinition(WebauthnCollector::class)) {
+            return;
+        }
+
+        $definition = $container->getDefinition(WebauthnCollector::class);
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $attributes) {
             $definition->addMethodCall('addSingleStatement', [$id, new Reference($id)]);

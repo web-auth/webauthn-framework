@@ -25,6 +25,8 @@ use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
+use Webauthn\MetadataService\MetadataService;
+use Webauthn\MetadataService\SingleMetadata;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
@@ -58,6 +60,26 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
      */
     private $authenticatorAssertionResponseValidationFailed = [];
 
+    /**
+     * @var MetadataService[]
+     */
+    private $metadataServices = [];
+
+    /**
+     * @var SingleMetadata[]
+     */
+    private $singleMetadatas = [];
+
+    public function addService(string $name, MetadataService $metadataService): void
+    {
+        $this->metadataServices[$name] = $metadataService;
+    }
+
+    public function addSingleStatement(string $name, SingleMetadata $singleMetadata): void
+    {
+        $this->singleMetadatas[$name] = $singleMetadata;
+    }
+
     public function collect(Request $request, Response $response, ?Exception $exception = null): void
     {
         $this->data = [
@@ -67,7 +89,29 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'publicKeyCredentialRequestOptions' => $this->publicKeyCredentialRequestOptions,
             'authenticatorAssertionResponseValidationSucceeded' => $this->authenticatorAssertionResponseValidationSucceeded,
             'authenticatorAssertionResponseValidationFailed' => $this->authenticatorAssertionResponseValidationFailed,
+            'mds' => [
+                'services' => [],
+                'single' => [],
+            ]
         ];
+
+        $cloner = new VarCloner();
+        foreach ($this->singleMetadatas as $name => $singleMetadata) {
+            $this->data['mds']['single'][$name] = $cloner->cloneVar($singleMetadata->getMetadataStatement());
+        }
+        foreach ($this->metadataServices as $name => $metadataService) {
+            try {
+                $toc = $metadataService->getMetadataTOCPayload();
+                $this->data['mds']['services'][$name] = [
+                    'toc' => $cloner->cloneVar($toc),
+                    'entries' => [],
+                ];
+            } catch (\Throwable $throwable) {
+                $this->data['mds']['services'][$name] = [
+                    'exception' => $cloner->cloneVar($throwable),
+                ];
+            }
+        }
     }
 
     public function getName()

@@ -53,6 +53,8 @@ class MetadataServiceTest extends KernelTestCase
             $ms = $service->getMetadataStatementFor($entry);
             $this->callObjectMethods($ms);
         }
+
+        $client->reset();
     }
 
     /**

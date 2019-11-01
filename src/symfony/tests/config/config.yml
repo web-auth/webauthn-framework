@@ -121,9 +121,21 @@ webauthn:
                 #host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
     metadata_service:
+        enabled: true
         http_client: 'httplug.client.mock'
         request_factory: 'Nyholm\Psr7\Factory\Psr17Factory'
+        enforce_verification: true
         services:
+            fido_alliance_test1:
+                uri: 'https://fidoalliance.co.nz/mds/execute/0ab57df429bd2a277c1e87ce705099d134219af5e2e2577ff287afa073c963ad'
+            fido_alliance_test2:
+                uri: 'https://fidoalliance.co.nz/mds/execute/39fa5b56ba6d5186e1f384d3fd880499ef9647086b2e7419cc01e12211ca16dd'
+            fido_alliance_test3:
+                uri: 'https://fidoalliance.co.nz/mds/execute/3d559152a328ae5c934de1005f53a376a03f5ef6f61ec4c318ca5552a9c4ebf7'
+            fido_alliance_test4:
+                uri: 'https://fidoalliance.co.nz/mds/execute/d7eac3e12c24a05edbb3eef1cd757c3fa670a348e29e35285046f1173b77d7c0'
+            fido_alliance_test5:
+                uri: 'https://fidoalliance.co.nz/mds/execute/d7f47b1a5d510bd440874b7d89e3b42347413cdd5a311059ee53cf5dc688526b'
             fido_alliance:
                 is_public: true
                 uri: 'https://foo.com'

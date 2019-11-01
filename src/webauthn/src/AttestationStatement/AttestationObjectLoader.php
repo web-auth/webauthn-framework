@@ -20,6 +20,7 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
@@ -46,14 +47,23 @@ class AttestationObjectLoader
      */
     private $metadataStatementRepository;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
+    /**
+     * @var bool
+     */
+    private $enforceMetadataStatementVerification;
+
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null, bool $enforceMetadataStatementVerification = false)
     {
         if (null !== $decoder) {
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
+        if (false === $enforceMetadataStatementVerification && null === $metadataStatementRepository) {
+            @trigger_error('With 3.0, the Metadata Statement verification will be mandatory and this option will be removed', E_USER_DEPRECATED);
+        }
         $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->metadataStatementRepository = $metadataStatementRepository;
+        $this->enforceMetadataStatementVerification = $enforceMetadataStatementVerification;
     }
 
     public function load(string $data): AttestationObject
@@ -101,7 +111,11 @@ class AttestationObjectLoader
         $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
         $metadataStatement = null;
         if (null !== $this->metadataStatementRepository && null !== $attestedCredentialData) {
-            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($attestedCredentialData->getAaguid()->toString());
+            $aaguid = $attestedCredentialData->getAaguid()->toString();
+            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
+            if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement && true === $this->enforceMetadataStatementVerification) {
+                throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
+            }
         }
 
         return new AttestationObject($data, $attestationStatement, $authenticatorData, $metadataStatement);

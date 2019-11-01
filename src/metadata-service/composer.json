@@ -19,6 +19,7 @@
         "php": "^7.1",
         "ext-json": "*",
         "beberlei/assert": "^3.0",
+        "league/uri": "^5.3",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0"
     },
