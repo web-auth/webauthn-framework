@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JsonSerializable;
+use LogicException;
 
-class MetadataTOCPayloadEntry
+class MetadataTOCPayloadEntry implements JsonSerializable
 {
     /**
      * @var string|null
@@ -43,11 +45,6 @@ class MetadataTOCPayloadEntry
     private $url;
 
     /**
-     * @var BiometricStatusReport[]
-     */
-    private $biometricStatusReports = [];
-
-    /**
      * @var StatusReport[]
      */
     private $statusReports = [];
@@ -66,6 +63,29 @@ class MetadataTOCPayloadEntry
      * @var string
      */
     private $rogueListHash;
+
+    public function __construct(?string $aaid, ?string $aaguid, array $attestationCertificateKeyIdentifiers, ?string $hash, ?string $url, string $timeOfLastStatusChange, ?string $rogueListURL, ?string $rogueListHash)
+    {
+        if (null !== $aaid && null !== $aaguid) {
+            throw new LogicException('Authenticators cannot support both AAID and AAGUID');
+        }
+        if (null === $aaid && null === $aaguid && 0 === \count($attestationCertificateKeyIdentifiers)) {
+            throw new LogicException('If neither AAID nor AAGUID are set, the attestation certificate identifier list shall not be empty');
+        }
+        foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
+            Assertion::string($attestationCertificateKeyIdentifier, Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            Assertion::notEmpty($attestationCertificateKeyIdentifier, Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            Assertion::regex($attestationCertificateKeyIdentifier, '/^[0-9a-f]+$/', Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+        }
+        $this->aaid = $aaid;
+        $this->aaguid = $aaguid;
+        $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
+        $this->hash = $hash;
+        $this->url = $url;
+        $this->timeOfLastStatusChange = $timeOfLastStatusChange;
+        $this->rogueListURL = $rogueListURL;
+        $this->rogueListHash = $rogueListHash;
+    }
 
     public function getAaid(): ?string
     {
@@ -92,9 +112,11 @@ class MetadataTOCPayloadEntry
         return $this->url;
     }
 
-    public function getBiometricStatusReports(): array
+    public function addStatusReports(StatusReport $statusReport): self
     {
-        return $this->biometricStatusReports;
+        $this->statusReports[] = $statusReport;
+
+        return $this;
     }
 
     /**
@@ -122,24 +144,41 @@ class MetadataTOCPayloadEntry
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->aaid = $data['aaid'] ?? null;
-        $object->aaguid = $data['aaguid'] ?? null;
-        $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? null;
-        $object->hash = $data['hash'] ?? null;
-        $object->url = $data['url'] ?? null;
-        $object->biometricStatusReports = isset($data['biometricStatusReports']) ? BiometricStatusReport::createFromArray($data['biometricStatusReports']) : null;
-        $object->statusReports = [];
-        if (isset($data['statusReports'])) {
-            Assertion::isArray($data['statusReports'], 'Invalid status report');
-            foreach ($data['statusReports'] as $k => $statusReport) {
-                $object->statusReports[$k] = StatusReport::createFromArray($statusReport);
-            }
+        $data = Utils::filterNullValues($data);
+        Assertion::keyExists($data, 'timeOfLastStatusChange', Utils::logicException('Invalid data. The parameter "timeOfLastStatusChange" is missing'));
+        Assertion::keyExists($data, 'statusReports', Utils::logicException('Invalid data. The parameter "statusReports" is missing'));
+        Assertion::isArray($data['statusReports'], Utils::logicException('Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'));
+        $object = new self(
+        $data['aaid'] ?? null,
+        $data['aaguid'] ?? null,
+        $data['attestationCertificateKeyIdentifiers'] ?? [],
+        $data['hash'] ?? null,
+        $data['url'] ?? null,
+            $data['timeOfLastStatusChange'],
+            $data['rogueListURL'] ?? null,
+            $data['rogueListHash'] ?? null
+        );
+        foreach ($data['statusReports'] as $statusReport) {
+            $object->addStatusReports(StatusReport::createFromArray($statusReport));
         }
-        $object->timeOfLastStatusChange = $data['timeOfLastStatusChange'] ?? null;
-        $object->rogueListURL = $data['rogueListURL'] ?? null;
-        $object->rogueListHash = $data['rogueListHash'] ?? null;
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'aaid' => $this->aaid,
+            'aaguid' => $this->aaguid,
+            'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
+            'hash' => $this->hash,
+            'url' => $this->url,
+            'statusReports' => $this->statusReports,
+            'timeOfLastStatusChange' => $this->timeOfLastStatusChange,
+            'rogueListURL' => $this->rogueListURL,
+            'rogueListHash' => $this->rogueListHash,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

@@ -13,7 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class EcdaaTrustAnchor
+use Assert\Assertion;
+use Base64Url\Base64Url;
+use JsonSerializable;
+
+class EcdaaTrustAnchor implements JsonSerializable
 {
     /**
      * @var string
@@ -44,6 +48,16 @@ class EcdaaTrustAnchor
      * @var string
      */
     private $G1Curve;
+
+    public function __construct(string $X, string $Y, string $c, string $sx, string $sy, string $G1Curve)
+    {
+        $this->X = $X;
+        $this->Y = $Y;
+        $this->c = $c;
+        $this->sx = $sx;
+        $this->sy = $sy;
+        $this->G1Curve = $G1Curve;
+    }
 
     public function getX(): string
     {
@@ -77,14 +91,33 @@ class EcdaaTrustAnchor
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->X = $data['X'] ?? null;
-        $object->Y = $data['Y'] ?? null;
-        $object->c = $c['data'] ?? null;
-        $object->sx = $data['sx'] ?? null;
-        $object->sy = $data['sy'] ?? null;
-        $object->G1Curve = $data['G1Curve'] ?? null;
+        $data = Utils::filterNullValues($data);
+        foreach (['X', 'Y', 'c', 'sx', 'sy', 'G1Curve'] as $key) {
+            Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
+        }
+        $object = new self(
+            Base64Url::decode($data['X']),
+            Base64Url::decode($data['Y']),
+            Base64Url::decode($data['c']),
+            Base64Url::decode($data['sx']),
+            Base64Url::decode($data['sy']),
+            $data['G1Curve']
+        );
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'X' => Base64Url::encode($this->X),
+            'Y' => Base64Url::encode($this->Y),
+            'c' => Base64Url::encode($this->c),
+            'sx' => Base64Url::encode($this->sx),
+            'sy' => Base64Url::encode($this->sy),
+            'G1Curve' => $this->G1Curve,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

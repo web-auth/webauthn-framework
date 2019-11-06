@@ -13,33 +13,55 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class RogueListEntry
+use Assert\Assertion;
+use JsonSerializable;
+
+class RogueListEntry implements JsonSerializable
 {
     /**
      * @var string
      */
     private $sk;
+
     /**
      * @var string
      */
     private $date;
+
+    public function __construct(string $sk, string $date)
+    {
+        $this->sk = $sk;
+        $this->date = $date;
+    }
 
     public function getSk(): string
     {
         return $this->sk;
     }
 
-    public function getDate(): string
+    public function getDate(): ?string
     {
         return $this->date;
     }
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->sk = $data['sk'] ?? null;
-        $object->date = $data['date'] ?? null;
+        Assertion::keyExists($data, 'sk', 'The key "sk" is missing');
+        Assertion::string($data['sk'], 'The key "sk" is invalid');
+        Assertion::keyExists($data, 'date', 'The key "date" is missing');
+        Assertion::string($data['date'], 'The key "date" is invalid');
 
-        return $object;
+        return new self(
+            $data['sk'],
+            $data['date']
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'sk' => $this->sk,
+            'date' => $this->date,
+        ];
     }
 }

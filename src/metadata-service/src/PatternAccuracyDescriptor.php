@@ -13,45 +13,52 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class PatternAccuracyDescriptor
+use Assert\Assertion;
+
+class PatternAccuracyDescriptor extends AbstractDescriptor
 {
     /**
      * @var int
      */
     private $minComplexity;
 
-    /**
-     * @var int|null
-     */
-    private $maxRetries;
-
-    /**
-     * @var int|null
-     */
-    private $blockSlowdown;
+    public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
+    {
+        Assertion::greaterOrEqualThan($minComplexity, 0, Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer'));
+        $this->minComplexity = $minComplexity;
+        parent::__construct($maxRetries, $blockSlowdown);
+    }
 
     public function getMinComplexity(): int
     {
         return $this->minComplexity;
     }
 
-    public function getMaxRetries(): ?int
-    {
-        return $this->maxRetries;
-    }
-
-    public function getBlockSlowdown(): ?int
-    {
-        return $this->blockSlowdown;
-    }
-
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->minComplexity = $data['minComplexity'] ?? null;
-        $object->maxRetries = $data['maxRetries'] ?? null;
-        $object->blockSlowdown = $data['blockSlowdown'] ?? null;
+        $data = Utils::filterNullValues($data);
+        Assertion::keyExists($data, 'minComplexity', Utils::logicException('The key "minComplexity" is missing'));
+        foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
+            if (\array_key_exists($key, $data)) {
+                Assertion::integer($data[$key], Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
+            }
+        }
 
-        return $object;
+        return new self(
+            $data['minComplexity'],
+        $data['maxRetries'] ?? null,
+        $data['blockSlowdown'] ?? null
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'minComplexity' => $this->minComplexity,
+            'maxRetries' => $this->getMaxRetries(),
+            'blockSlowdown' => $this->getBlockSlowdown(),
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

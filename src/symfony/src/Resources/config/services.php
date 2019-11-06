@@ -77,7 +77,7 @@ return function (ContainerConfigurator $container) {
             ref(AttestationStatementSupportManager::class),
             null,
             ref(MetadataStatementRepository::class)->nullOnInvalid(),
-            '%webauthn.metadata_service.enforce_verification%'
+            '%webauthn.metadata_service.enforce_verification%',
         ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);

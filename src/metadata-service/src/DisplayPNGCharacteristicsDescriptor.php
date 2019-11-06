@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JsonSerializable;
 
-class DisplayPNGCharacteristicsDescriptor
+class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
     /**
      * @var int
@@ -56,6 +57,32 @@ class DisplayPNGCharacteristicsDescriptor
      * @var RgbPaletteEntry[]
      */
     private $plte = [];
+
+    public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
+    {
+        Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
+        Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
+        Assertion::range($bitDepth, 0, 254, Utils::logicException('Invalid bit depth'));
+        Assertion::range($colorType, 0, 254, Utils::logicException('Invalid color type'));
+        Assertion::range($compression, 0, 254, Utils::logicException('Invalid compression'));
+        Assertion::range($filter, 0, 254, Utils::logicException('Invalid filter'));
+        Assertion::range($interlace, 0, 254, Utils::logicException('Invalid interlace'));
+
+        $this->width = $width;
+        $this->height = $height;
+        $this->bitDepth = $bitDepth;
+        $this->colorType = $colorType;
+        $this->compression = $compression;
+        $this->filter = $filter;
+        $this->interlace = $interlace;
+    }
+
+    public function addPalette(RgbPaletteEntry $rgbPaletteEntry): self
+    {
+        $this->plte[] = $rgbPaletteEntry;
+
+        return $this;
+    }
 
     public function getWidth(): int
     {
@@ -102,23 +129,43 @@ class DisplayPNGCharacteristicsDescriptor
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->width = $data['width'] ?? null;
-        $object->compression = $data['compression'] ?? null;
-        $object->height = $data['height'] ?? null;
-        $object->bitDepth = $data['bitDepth'] ?? null;
-        $object->colorType = $data['colorType'] ?? null;
-        $object->compression = $data['compression'] ?? null;
-        $object->filter = $data['filter'] ?? null;
-        $object->interlace = $data['interlace'] ?? null;
+        $data = Utils::filterNullValues($data);
+        foreach (['width', 'compression', 'height', 'bitDepth', 'colorType', 'compression', 'filter', 'interlace'] as $key) {
+            Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
+        }
+        $object = new self(
+            $data['width'],
+            $data['height'],
+            $data['bitDepth'],
+            $data['colorType'],
+            $data['compression'],
+            $data['filter'],
+            $data['interlace']
+        );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            Assertion::isArray($plte, 'Invalid "plte" parameter');
+            Assertion::isArray($plte, Utils::logicException('Invalid "plte" parameter'));
             foreach ($plte as $item) {
-                $object->plte[] = RgbPaletteEntry::createFromArray($item);
+                $object->addPalette(RgbPaletteEntry::createFromArray($item));
             }
         }
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'width' => $this->width,
+            'height' => $this->height,
+            'bitDepth' => $this->bitDepth,
+            'colorType' => $this->colorType,
+            'compression' => $this->compression,
+            'filter' => $this->filter,
+            'interlace' => $this->interlace,
+            'plte' => $this->plte,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

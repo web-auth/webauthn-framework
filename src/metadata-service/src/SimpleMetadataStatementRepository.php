@@ -39,14 +39,18 @@ class SimpleMetadataStatementRepository implements MetadataStatementRepository
         $this->cacheItemPool = $cacheItemPool;
     }
 
-    public function addService(string $name, MetadataService $service): void
+    public function addService(string $name, MetadataService $service): self
     {
         $this->services[$name] = $service;
+
+        return $this;
     }
 
-    public function addSingleStatement(string $name, SingleMetadata $singleStatements): void
+    public function addSingleStatement(string $name, SingleMetadata $singleStatements): self
     {
         $this->singleStatements[$name] = $singleStatements;
+
+        return $this;
     }
 
     public function findOneByAAGUID(string $aaguid): ?MetadataStatement

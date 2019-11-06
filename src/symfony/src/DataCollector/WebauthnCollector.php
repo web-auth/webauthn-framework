@@ -92,7 +92,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'mds' => [
                 'services' => [],
                 'single' => [],
-            ]
+            ],
         ];
 
         $cloner = new VarCloner();
@@ -125,7 +125,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getData(): array
     {

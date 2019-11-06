@@ -19,6 +19,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
@@ -109,9 +110,11 @@ class MetadataServiceTest extends KernelTestCase
     private function callObjectMethods($object): void
     {
         $availableMethods = get_class_methods($object);
-        if (false !== ($key = array_search('createFromArray', $availableMethods, true))) {
-            unset($availableMethods[$key]);
-        }
+        $availableMethods = array_filter($availableMethods, static function ($method) use ($object) {
+            $classMethod = new ReflectionMethod($object, $method);
+
+            return !\in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === \count($classMethod->getParameters());
+        });
         foreach ($availableMethods as $method) {
             $value = $object->$method();
             switch (true) {

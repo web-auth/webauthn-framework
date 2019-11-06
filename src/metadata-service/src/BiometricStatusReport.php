@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class BiometricStatusReport
+use JsonSerializable;
+
+class BiometricStatusReport implements JsonSerializable
 {
     /**
      * @var int
@@ -97,5 +99,20 @@ class BiometricStatusReport
         $object->certificationRequirementsVersion = $data['certificationRequirementsVersion'] ?? null;
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'certLevel' => $this->certLevel,
+            'modality' => $this->modality,
+            'effectiveDate' => $this->effectiveDate,
+            'certificationDescriptor' => $this->certificationDescriptor,
+            'certificateNumber' => $this->certificateNumber,
+            'certificationPolicyVersion' => $this->certificationPolicyVersion,
+            'certificationRequirementsVersion' => $this->certificationRequirementsVersion,
+        ];
+
+        return array_filter($data, static function ($var) {return null !== $var; });
     }
 }

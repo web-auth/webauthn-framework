@@ -15,8 +15,9 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use JsonSerializable;
 
-class MetadataStatement
+class MetadataStatement implements JsonSerializable
 {
     public const KEY_PROTECTION_SOFTWARE = 0x0001;
     public const KEY_PROTECTION_HARDWARE = 0x0002;
@@ -485,5 +486,44 @@ class MetadataStatement
         }
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'legalHeader' => $this->legalHeader,
+            'aaid' => $this->aaid,
+            'aaguid' => $this->aaguid,
+            'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
+            'description' => $this->description,
+            'alternativeDescriptions' => $this->alternativeDescriptions,
+            'authenticatorVersion' => $this->authenticatorVersion,
+            'protocolFamily' => $this->protocolFamily,
+            'upv' => $this->upv,
+            'assertionScheme' => $this->assertionScheme,
+            'authenticationAlgorithm' => $this->authenticationAlgorithm,
+            'authenticationAlgorithms' => $this->authenticationAlgorithms,
+            'publicKeyAlgAndEncoding' => $this->publicKeyAlgAndEncoding,
+            'publicKeyAlgAndEncodings' => $this->publicKeyAlgAndEncodings,
+            'attestationTypes' => $this->attestationTypes,
+            'userVerificationDetails' => $this->userVerificationDetails,
+            'keyProtection' => $this->keyProtection,
+            'isKeyRestricted' => $this->isKeyRestricted,
+            'isFreshUserVerificationRequired' => $this->isFreshUserVerificationRequired,
+            'matcherProtection' => $this->matcherProtection,
+            'cryptoStrength' => $this->cryptoStrength,
+            'operatingEnv' => $this->operatingEnv,
+            'attachmentHint' => $this->attachmentHint,
+            'isSecondFactorOnly' => $this->isSecondFactorOnly,
+            'tcDisplay' => $this->tcDisplay,
+            'tcDisplayContentType' => $this->tcDisplayContentType,
+            'tcDisplayPNGCharacteristics' => $this->tcDisplayPNGCharacteristics,
+            'attestationRootCertificates' => $this->attestationRootCertificates,
+            'ecdaaTrustAnchors' => $this->ecdaaTrustAnchors,
+            'icon' => $this->icon,
+            'supportedExtensions' => $this->supportedExtensions,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

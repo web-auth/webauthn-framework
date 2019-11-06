@@ -13,82 +13,116 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class BiometricAccuracyDescriptor
+use Assert\Assertion;
+use LogicException;
+
+class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
     /**
-     * @var int|null
+     * @var float|null
      */
-    private $selfAttestedFRR;
+    private $FAR;
+
+    /**
+     * @var float|null
+     */
+    private $FRR;
+
+    /**
+     * @var float|null
+     */
+    private $EER;
+
+    /**
+     * @var float|null
+     */
+    private $FAAR;
 
     /**
      * @var int|null
      */
-    private $selfAttestedFAR;
+    private $maxReferenceDataSets;
 
-    /**
-     * @var int|null
-     */
-    private $maxTemplates;
-
-    /**
-     * @var int|null
-     */
-    private $maxRetries;
-
-    /**
-     * @var int|null
-     */
-    private $blockSlowdown;
-
-    /**
-     * @return int
-     */
-    public function getSelfAttestedFRR(): ?int
+    public function __construct(?float $FAR, ?float $FRR, ?float $EER, ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        return $this->selfAttestedFRR;
+        if (null === $FAR && null === $FRR && null === $EER && null === $FAAR) {
+            throw new LogicException('Invalid data. Must contain at least one item');
+        }
+        Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
+
+        $this->FRR = $FRR;
+        $this->FAR = $FAR;
+        $this->EER = $EER;
+        $this->FAAR = $FAAR;
+        $this->maxReferenceDataSets = $maxReferenceDataSets;
+        parent::__construct($maxRetries, $blockSlowdown);
     }
 
     /**
-     * @return int
+     * @return float|null
      */
-    public function getSelfAttestedFAR(): ?int
+    public function getFAR(): ?float
     {
-        return $this->selfAttestedFAR;
+        return $this->FAR;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getFRR(): ?float
+    {
+        return $this->FRR;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getEER(): ?float
+    {
+        return $this->EER;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getFAAR(): ?float
+    {
+        return $this->FAAR;
     }
 
     /**
      * @return int|null
      */
-    public function getMaxTemplates(): ?int
+    public function getMaxReferenceDataSets(): ?int
     {
-        return $this->maxTemplates;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getMaxRetries(): ?int
-    {
-        return $this->maxRetries;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getBlockSlowdown(): ?int
-    {
-        return $this->blockSlowdown;
+        return $this->maxReferenceDataSets;
     }
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->selfAttestedFRR = $data['selfAttestedFRR'] ?? null;
-        $object->selfAttestedFAR = $data['selfAttestedFAR'] ?? null;
-        $object->maxTemplates = $data['maxTemplates'] ?? null;
-        $object->maxRetries = $data['maxRetries'] ?? null;
-        $object->blockSlowdown = $data['blockSlowdown'] ?? null;
+        return new self(
+            $data['FAR'] ?? null,
+            $data['FRR'] ?? null,
+            $data['EER'] ?? null,
+            $data['FAAR'] ?? null,
+            $data['maxReferenceDataSets'] ?? null,
+            $data['maxRetries'] ?? null,
+            $data['blockSlowdown'] ?? null
+        );
+    }
 
-        return $object;
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'FAR' => $this->FAR,
+            'FRR' => $this->FRR,
+            'EER' => $this->EER,
+            'FAAR' => $this->FAAR,
+            'maxReferenceDataSets' => $this->maxReferenceDataSets,
+            'maxRetries' => $this->getMaxRetries(),
+            'blockSlowdown' => $this->getBlockSlowdown(),
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

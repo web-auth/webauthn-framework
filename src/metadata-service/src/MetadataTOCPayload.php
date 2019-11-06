@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class MetadataTOCPayload
+use Assert\Assertion;
+use JsonSerializable;
+
+class MetadataTOCPayload implements JsonSerializable
 {
     /**
      * @var string|null
@@ -34,6 +37,20 @@ class MetadataTOCPayload
      * @var MetadataTOCPayloadEntry[]
      */
     private $entries = [];
+
+    public function __construct(int $no, string $nextUpdate, ?string $legalHeader = null)
+    {
+        $this->no = $no;
+        $this->nextUpdate = $nextUpdate;
+        $this->legalHeader = $legalHeader;
+    }
+
+    public function addEntry(MetadataTOCPayloadEntry $entry): self
+    {
+        $this->entries[] = $entry;
+
+        return $this;
+    }
 
     public function getLegalHeader(): ?string
     {
@@ -60,17 +77,37 @@ class MetadataTOCPayload
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->legalHeader = $data['legalHeader'] ?? null;
-        $object->nextUpdate = $data['nextUpdate'] ?? null;
-        $object->no = $data['no'] ?? null;
-        $object->entries = [];
-        if (isset($data['entries'])) {
-            foreach ($data['entries'] as $k => $entry) {
-                $object->entries[$k] = MetadataTOCPayloadEntry::createFromArray($entry);
-            }
+        $data = Utils::filterNullValues($data);
+        foreach (['no', 'nextUpdate', 'entries'] as $key) {
+            Assertion::keyExists($data, $key, Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key)));
+        }
+        Assertion::integer($data['no'], Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
+        Assertion::string($data['nextUpdate'], Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
+        Assertion::isArray($data['entries'], Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
+        if (\array_key_exists('legalHeader', $data)) {
+            Assertion::string($data['legalHeader'], Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
+        }
+        $object = new self(
+            $data['no'],
+            $data['nextUpdate'],
+            $data['legalHeader'] ?? null
+        );
+        foreach ($data['entries'] as $k => $entry) {
+            $object->addEntry(MetadataTOCPayloadEntry::createFromArray($entry));
         }
 
         return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'legalHeader' => $this->legalHeader,
+            'nextUpdate' => $this->nextUpdate,
+            'no' => $this->no,
+            'entries' => $this->entries,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }

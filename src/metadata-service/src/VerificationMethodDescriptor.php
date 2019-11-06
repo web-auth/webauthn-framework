@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-class VerificationMethodDescriptor
+use Assert\Assertion;
+use JsonSerializable;
+
+class VerificationMethodDescriptor implements JsonSerializable
 {
     public const USER_VERIFY_PRESENCE = 0x00000001;
     public const USER_VERIFY_FINGERPRINT = 0x00000002;
@@ -47,9 +50,73 @@ class VerificationMethodDescriptor
      */
     private $paDesc;
 
+    public function __construct(int $userVerification, ?CodeAccuracyDescriptor $caDesc = null, ?BiometricAccuracyDescriptor $baDesc = null, ?PatternAccuracyDescriptor $paDesc = null)
+    {
+        Assertion::greaterOrEqualThan($userVerification, 0, Utils::logicException('The parameter "userVerification" is invalid'));
+        $this->userVerification = $userVerification;
+        $this->caDesc = $caDesc;
+        $this->baDesc = $baDesc;
+        $this->paDesc = $paDesc;
+    }
+
     public function getUserVerification(): int
     {
         return $this->userVerification;
+    }
+
+    public function userPresence(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_PRESENCE);
+    }
+
+    public function fingerprint(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_FINGERPRINT);
+    }
+
+    public function passcode(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_PASSCODE);
+    }
+
+    public function voicePrint(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_VOICEPRINT);
+    }
+
+    public function facePrint(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_FACEPRINT);
+    }
+
+    public function location(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_LOCATION);
+    }
+
+    public function eyePrint(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_EYEPRINT);
+    }
+
+    public function pattern(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_PATTERN);
+    }
+
+    public function handprint(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_HANDPRINT);
+    }
+
+    public function none(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_NONE);
+    }
+
+    public function all(): bool
+    {
+        return 0 !== ($this->userVerification & self::USER_VERIFY_ALL);
     }
 
     public function getCaDesc(): ?CodeAccuracyDescriptor
@@ -69,12 +136,32 @@ class VerificationMethodDescriptor
 
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->userVerification = $data['userVerification'] ?? null;
-        $object->caDesc = isset($data['caDesc']) ? CodeAccuracyDescriptor::createFromArray($data['caDesc']) : null;
-        $object->baDesc = isset($data['baDesc']) ? BiometricAccuracyDescriptor::createFromArray($data['baDesc']) : null;
-        $object->paDesc = isset($data['paDesc']) ? PatternAccuracyDescriptor::createFromArray($data['paDesc']) : null;
+        $data = Utils::filterNullValues($data);
+        Assertion::keyExists($data, 'userVerification', Utils::logicException('The parameter "userVerification" is missing'));
+        Assertion::integer($data['userVerification'], Utils::logicException('The parameter "userVerification" is invalid'));
+        foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
+            if (isset($data[$key])) {
+                Assertion::isArray($data[$key], Utils::logicException(sprintf('Invalid parameter "%s"', $key)));
+            }
+        }
 
-        return $object;
+        return new self(
+            $data['userVerification'],
+            isset($data['caDesc']) ? CodeAccuracyDescriptor::createFromArray($data['caDesc']) : null,
+            isset($data['baDesc']) ? BiometricAccuracyDescriptor::createFromArray($data['baDesc']) : null,
+            isset($data['paDesc']) ? PatternAccuracyDescriptor::createFromArray($data['paDesc']) : null
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'userVerification' => $this->userVerification,
+            'caDesc' => $this->caDesc,
+            'baDesc' => $this->baDesc,
+            'paDesc' => $this->paDesc,
+        ];
+
+        return Utils::filterNullValues($data);
     }
 }
