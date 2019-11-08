@@ -34,9 +34,9 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
      */
     private $eventDispatcher;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher, bool $enforceMetadataStatementVerification = false)
     {
-        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
+        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $enforceMetadataStatementVerification);
         $this->eventDispatcher = $eventDispatcher;
     }
 

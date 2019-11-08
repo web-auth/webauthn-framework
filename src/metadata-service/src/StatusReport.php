@@ -74,6 +74,16 @@ class StatusReport implements JsonSerializable
         $this->certificationRequirementsVersion = $certificationRequirementsVersion;
     }
 
+    public function isCompromised(): bool
+    {
+        return \in_array($this->status, [
+            AuthenticatorStatus::ATTESTATION_KEY_COMPROMISE,
+            AuthenticatorStatus::USER_KEY_PHYSICAL_COMPROMISE,
+            AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE,
+            AuthenticatorStatus::USER_VERIFICATION_BYPASS,
+        ], true);
+    }
+
     public function getStatus(): string
     {
         return $this->status;

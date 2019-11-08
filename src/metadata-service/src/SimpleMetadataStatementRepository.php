@@ -13,11 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use DateTimeImmutable;
 use Psr\Cache\CacheItemPoolInterface;
 use Throwable;
 
-class SimpleMetadataStatementRepository implements MetadataStatementRepository
+class SimpleMetadataStatementRepository implements MetadataStatementStatusReportRepository
 {
     /**
      * @var CacheItemPoolInterface
@@ -63,6 +62,13 @@ class SimpleMetadataStatementRepository implements MetadataStatementRepository
         return $this->findOneByAAGUIDFromSingleStatements($aaguid);
     }
 
+    public function findStatusReportsByAAGUID(string $aaguid): array
+    {
+        $entry = $this->findEntryForAAGUID($aaguid);
+
+        return null === $entry ? [] : $entry->getStatusReports();
+    }
+
     private function findOneByAAGUIDFromSingleStatements(string $aaguid): ?MetadataStatement
     {
         foreach ($this->singleStatements as $name => $singleStatement) {
@@ -89,51 +95,32 @@ class SimpleMetadataStatementRepository implements MetadataStatementRepository
 
     private function findOneByAAGUIDFromServices(string $aaguid): ?MetadataStatement
     {
-        foreach ($this->services as $name => $service) {
+        $entry = $this->findEntryForAAGUID($aaguid, $service);
+        try {
+            return $service->getMetadataStatementFor($entry);
+        } catch (Throwable $throwable) {
+            return null;
+        }
+    }
+
+    private function findEntryForAAGUID(string $aaguid, ?MetadataService &$service = null): ?MetadataTOCPayloadEntry
+    {
+        foreach ($this->services as $name => $s) {
             try {
-                $tocCacheItem = $this->cacheItemPool->getItem(sprintf('TOC-%s', $name));
-                if (!$tocCacheItem->isHit()) {
-                    $tableOfContent = $service->getMetadataTOCPayload();
-                    $tocCacheItem->set($tableOfContent);
-                    $this->cacheItemPool->save($tocCacheItem);
-                    $needCacheUpdate = true;
-                } else {
-                    $tableOfContent = $tocCacheItem->get();
-                    $nextUpdate = DateTimeImmutable::createFromFormat('Y-m-d', $tableOfContent->getNextUpdate());
-                    if (false === $nextUpdate) {
-                        $needCacheUpdate = true;
-                    } else {
-                        $needCacheUpdate = $nextUpdate->getTimestamp() < time();
-                        if ($needCacheUpdate) {
-                            $tableOfContent = $service->getMetadataTOCPayload();
-                            $tocCacheItem->set($tableOfContent);
-                            $this->cacheItemPool->save($tocCacheItem);
-                        }
+                $tableOfContent = $s->getMetadataTOCPayload();
+                foreach ($tableOfContent->getEntries() as $entry) {
+                    if ($aaguid !== $entry->getAaguid()) { //Does not correspond
+                        continue;
                     }
+                    if (null === $entry->getUrl() || null === $entry->getHash()) { //Not published
+                        continue;
+                    }
+                    $service = $s;
+
+                    return $entry;
                 }
             } catch (Throwable $throwable) {
                 continue;
-            }
-            foreach ($tableOfContent->getEntries() as $entry) {
-                $url = $entry->getUrl();
-                if (null === $url) {
-                    continue;
-                }
-                try {
-                    $mdsCacheItem = $this->cacheItemPool->getItem(sprintf('MDS-%s', urlencode($url)));
-                    if ($mdsCacheItem->isHit() && !$needCacheUpdate) {
-                        $metadataStatement = $mdsCacheItem->get();
-                    } else {
-                        $metadataStatement = $service->getMetadataStatementFor($entry);
-                        $mdsCacheItem->set($metadataStatement);
-                        $this->cacheItemPool->save($mdsCacheItem);
-                    }
-                    if ($metadataStatement->getAaguid() === $aaguid) {
-                        return $metadataStatement;
-                    }
-                } catch (Throwable $throwable) {
-                    continue;
-                }
             }
         }
 

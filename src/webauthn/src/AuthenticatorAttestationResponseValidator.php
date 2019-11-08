@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -46,12 +47,21 @@ class AuthenticatorAttestationResponseValidator
      */
     private $extensionOutputCheckerHandler;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
+    /**
+     * @var bool
+     */
+    private $enforceMetadataStatementVerification;
+
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, bool $enforceMetadataStatementVerification = false)
     {
+        if (false === $enforceMetadataStatementVerification) {
+            @trigger_error('With 3.0, the Metadata Statement verification will be mandatory and the argument "$enforceMetadataStatementVerification" will be removed', E_USER_DEPRECATED);
+        }
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->publicKeyCredentialSource = $publicKeyCredentialSource;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
+        $this->enforceMetadataStatementVerification = $enforceMetadataStatementVerification;
     }
 
     /**
@@ -163,15 +173,22 @@ class AuthenticatorAttestationResponseValidator
 
     private function checkMetadataStatement(AttestationObject $attestationObject): void
     {
+        $attestationStatement = $attestationObject->getAttStmt();
         $metadataStatement = $attestationObject->getMetadataStatement();
-        $this->checkCertificateChain($attestationObject->getAttStmt(), $metadataStatement);
+
+        //If the MDS verification is enforced and an Attestation Statement is present, we must check the MDS is present.
+        // Null AAGUID (=00000000-0000-0000-0000-000000000000) are not concerned
+        if ($this->enforceMetadataStatementVerification && null === $metadataStatement && AttestationStatement::TYPE_NONE !== $attestationStatement->getType() && '00000000-0000-0000-0000-000000000000' !== $attestationObject->getAuthData()->getAttestedCredentialData()->getAaguid()->toString()) {
+            throw new RuntimeException(sprintf('An attestation statement has been asked but the metadata statement is missing'));
+        }
+        $this->checkCertificateChain($attestationStatement, $metadataStatement);
         if (null === $metadataStatement) {
             return;
         }
 
         // Check Attestation Type is allowed
         if (0 !== \count($metadataStatement->getAttestationTypes())) {
-            $type = $this->getAttestationType($attestationObject->getAttStmt());
+            $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
         }
 

@@ -19,12 +19,15 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use LogicException;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\MetadataStatementStatusReportRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -58,7 +61,10 @@ class AttestationObjectLoader
             @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         if (false === $enforceMetadataStatementVerification && null === $metadataStatementRepository) {
-            @trigger_error('With 3.0, the Metadata Statement verification will be mandatory and this option will be removed', E_USER_DEPRECATED);
+            @trigger_error('With 3.0, the Metadata Statement verification will be mandatory and the argument "$enforceMetadataStatementVerification" will be removed', E_USER_DEPRECATED);
+        }
+        if (null !== $metadataStatementRepository && !$metadataStatementRepository instanceof MetadataStatementStatusReportRepository) {
+            @trigger_error('With 3.0, the Metadata Statement Repository shall also implement methods from the interface Webauthn\MetadataService\MetadataStatementStatusReportRepository', E_USER_DEPRECATED);
         }
         $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
@@ -109,15 +115,44 @@ class AttestationObjectLoader
         $authDataStream->close();
 
         $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
-        $metadataStatement = null;
-        if (null !== $this->metadataStatementRepository && null !== $attestedCredentialData) {
-            $aaguid = $attestedCredentialData->getAaguid()->toString();
-            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-            if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement && true === $this->enforceMetadataStatementVerification) {
-                throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
-            }
-        }
+        $metadataStatement = $this->getMetadataStatement($attestedCredentialData);
 
         return new AttestationObject($data, $attestationStatement, $authenticatorData, $metadataStatement);
+    }
+
+    private function getMetadataStatement(?AttestedCredentialData $attestedCredentialData): ?MetadataStatement
+    {
+        if (null === $attestedCredentialData) {
+            return null;
+        }
+        $aaguid = $attestedCredentialData->getAaguid()->toString();
+        $metadataStatement = null;
+        if (null !== $this->metadataStatementRepository) {
+            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
+            $this->checkStatusReport($aaguid);
+        }
+        $this->checkMetadataExist($aaguid, $metadataStatement);
+
+        return $metadataStatement;
+    }
+
+    private function checkMetadataExist(string $aaguid, ?MetadataStatement $metadataStatement): void
+    {
+        if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement && true === $this->enforceMetadataStatementVerification) {
+            throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
+        }
+    }
+
+    private function checkStatusReport(string $aaguid): void
+    {
+        if ($this->metadataStatementRepository instanceof MetadataStatementStatusReportRepository) {
+            $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
+            if (0 !== \count($statusReports)) {
+                $lastStatusReport = reset($statusReports);
+                if ($lastStatusReport->isCompromised()) {
+                    throw new LogicException('The authenticator is compromised and cannot be used');
+                }
+            }
+        }
     }
 }

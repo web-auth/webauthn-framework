@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use Base64Url\Base64Url;
 use JsonSerializable;
 use LogicException;
 
@@ -80,7 +81,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         $this->aaid = $aaid;
         $this->aaguid = $aaguid;
         $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
-        $this->hash = $hash;
+        $this->hash = Base64Url::decode($hash);
         $this->url = $url;
         $this->timeOfLastStatusChange = $timeOfLastStatusChange;
         $this->rogueListURL = $rogueListURL;

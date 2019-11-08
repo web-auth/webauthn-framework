@@ -17,6 +17,7 @@ use function League\Uri\build;
 use function League\Uri\build_query;
 use function League\Uri\parse;
 use function League\Uri\parse_query;
+use LogicException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
@@ -55,11 +56,16 @@ class MetadataService
         $this->additionalHeaders = $additionalHeaders;
     }
 
-    public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry): MetadataStatement
+    public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
     {
-        $uri = $this->buildUri($entry->getUrl());
+        $hash = $entry->getHash();
+        $url = $entry->getUrl();
+        if (null === $hash || null === $url) {
+            throw new LogicException('The Metadata Statement has not been published');
+        }
+        $uri = $this->buildUri($url);
 
-        return MetadataStatementFetcher::fetchMetadataStatement($uri, true, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
+        return MetadataStatementFetcher::fetchMetadataStatement($uri, true, $this->httpClient, $this->requestFactory, $this->additionalHeaders, $hash, $hashingFunction);
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload

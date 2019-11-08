@@ -33,9 +33,12 @@ class MetadataStatementFetcher
         return MetadataTOCPayload::createFromArray($data);
     }
 
-    public static function fetchMetadataStatement(string $uri, bool $isBase64UrlEncoded, ClientInterface $client, RequestFactoryInterface $requestFactory, array $additionalHeaders = []): MetadataStatement
+    public static function fetchMetadataStatement(string $uri, bool $isBase64UrlEncoded, ClientInterface $client, RequestFactoryInterface $requestFactory, array $additionalHeaders = [], string $hash = '', string $hashingFunction = 'sha256'): MetadataStatement
     {
         $payload = self::fetch($uri, $client, $requestFactory, $additionalHeaders);
+        if ('' !== $hash) {
+            Assertion::true(hash_equals($hash, hash($hashingFunction, $payload, true)), 'The hash cannot be verified. The metadata statement shall be rejected');
+        }
         $json = $isBase64UrlEncoded ? Base64Url::decode($payload) : $payload;
         $data = json_decode($json, true);
         Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Unable to decode the data');

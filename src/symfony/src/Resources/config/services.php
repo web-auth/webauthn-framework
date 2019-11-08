@@ -30,6 +30,7 @@ use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding;
+use Webauthn\TokenBinding\TokenBindingHandler;
 
 return function (ContainerConfigurator $container) {
     $container = $container->services()->defaults()
@@ -39,6 +40,14 @@ return function (ContainerConfigurator $container) {
 
     $container->set(BaseAuthenticatorAttestationResponseValidator::class)
         ->class(AuthenticatorAttestationResponseValidator::class)
+        ->args([
+            ref(AttestationStatementSupportManager::class),
+            ref(PublicKeyCredentialSourceRepository::class),
+            ref(TokenBindingHandler::class),
+            ref(ExtensionOutputCheckerHandler::class),
+            ref(EventDispatcherInterface::class),
+            '%webauthn.metadata_service.enforce_verification%',
+        ])
         ->public();
     $container->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
