@@ -46,14 +46,12 @@ return function (ContainerConfigurator $container) {
             ref(TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref(EventDispatcherInterface::class),
-            '%webauthn.metadata_service.enforce_verification%',
         ])
         ->public();
     $container->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
             ref(PublicKeyCredentialSourceRepository::class),
-            null,
             ref(TokenBinding\TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
@@ -64,7 +62,6 @@ return function (ContainerConfigurator $container) {
     $container->set(PublicKeyCredentialLoader::class)
         ->args([
             ref(AttestationObjectLoader::class),
-            null,
         ])
         ->public();
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
@@ -84,9 +81,7 @@ return function (ContainerConfigurator $container) {
     $container->set(AttestationStatement\AttestationObjectLoader::class)
         ->args([
             ref(AttestationStatementSupportManager::class),
-            null,
-            ref(MetadataStatementRepository::class)->nullOnInvalid(),
-            '%webauthn.metadata_service.enforce_verification%',
+            ref(MetadataStatementRepository::class),
         ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);

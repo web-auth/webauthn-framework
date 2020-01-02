@@ -60,13 +60,10 @@ class AuthenticatorAssertionResponseValidator
      */
     private $counterChecker;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker = null)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker = null)
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->algorithmManager = $algorithmManager;

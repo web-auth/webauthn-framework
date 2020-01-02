@@ -39,17 +39,17 @@ class Loader implements LoaderInterface
         $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 
-    public function load($resource, $type = null): RouteCollection
+    public function load($resource, string $type = null): RouteCollection
     {
         return $this->routes;
     }
 
-    public function supports($resource, $type = null): bool
+    public function supports($resource, string $type = null): bool
     {
         return 'webauthn' === $type;
     }
 
-    public function getResolver()
+    public function getResolver(): void
     {
     }
 

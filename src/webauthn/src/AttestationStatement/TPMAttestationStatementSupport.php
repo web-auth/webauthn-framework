@@ -29,29 +29,15 @@ use InvalidArgumentException;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
     public function name(): string
     {
         return 'tpm';
-    }
-
-    public function __construct(?MetadataStatementRepository $metadataStatementRepository = null)
-    {
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function load(array $attestation): AttestationStatement
@@ -262,14 +248,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
-        if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::checkAttestationMedata(
-                $attestationStatement,
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
-                $certificates,
-                $this->metadataStatementRepository
-            );
-        }
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

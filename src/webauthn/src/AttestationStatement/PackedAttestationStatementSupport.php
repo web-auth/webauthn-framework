@@ -26,7 +26,6 @@ use InvalidArgumentException;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
@@ -45,22 +44,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private $algorithmManager;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    public function __construct(?Decoder $decoder, Manager $algorithmManager, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(Manager $algorithmManager)
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->algorithmManager = $algorithmManager;
-        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -148,15 +135,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
     {
         $certificates = $trustPath->getCertificates();
-
-        if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::checkAttestationMedata(
-                $attestationStatement,
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
-                $certificates,
-                $this->metadataStatementRepository
-            );
-        }
 
         // Check leaf certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

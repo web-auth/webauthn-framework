@@ -39,12 +39,9 @@ class PublicKeyCredentialLoader
      */
     private $decoder;
 
-    public function __construct(AttestationObjectLoader $attestationObjectLoader, ?Decoder $decoder = null)
+    public function __construct(AttestationObjectLoader $attestationObjectLoader)
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationObjectLoader = $attestationObjectLoader;
     }
 
@@ -82,9 +79,11 @@ class PublicKeyCredentialLoader
 
     private function createResponse(array $response): AuthenticatorResponse
     {
-        Assertion::keyExists($response, 'clientDataJSON');
+        Assertion::keyExists($response, 'clientDataJSON', 'Invalid data. The parameter "clientDataJSON" is missing');
+        Assertion::string($response['clientDataJSON'], 'Invalid data. The parameter "clientDataJSON" is invalid');
         switch (true) {
             case \array_key_exists('attestationObject', $response):
+                Assertion::string($response['attestationObject'], 'Invalid data. The parameter "attestationObject   " is invalid');
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
                 return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);

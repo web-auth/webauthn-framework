@@ -14,6 +14,8 @@ parameters:
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
         - '#Parameter (.*) of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects array(.*) given#'
         - '#Call to deprecated method checkAttestationMedata\(\) of class Webauthn\\CertificateToolbox.*#'
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

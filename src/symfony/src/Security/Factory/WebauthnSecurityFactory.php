@@ -29,13 +29,10 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
-     * @param ContainerBuilder $container
-     * @param string           $id
-     * @param array            $config
-     * @param string           $userProviderId
-     * @param string|null      $defaultEntryPointId
-     *
-     * @return array
+     * @param string      $id
+     * @param array       $config
+     * @param string      $userProviderId
+     * @param string|null $defaultEntryPointId
      */
     public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId): array
     {
@@ -80,7 +77,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
             ->scalarNode('http_message_factory')->isRequired()->end()
             ->scalarNode('fake_user_entity_provider')->defaultNull()->end()
-            ->booleanNode('empty_allowed_credentials')->defaultFalse()->setDeprecated('Now uselss. Will be removed in v3.0')->end()
             ->scalarNode('user_verification')->defaultNull()->end()
             ->arrayNode('extensions')
             ->treatFalseLike([])

@@ -46,6 +46,7 @@ use Webauthn\MetadataService\DistantSingleMetadataFactory;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataServiceFactory;
 use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\MetadataStatementStatusReportRepository;
 use Webauthn\MetadataService\SingleMetadata;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -128,8 +129,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationRequestController = new Definition(AttestationRequestController::class);
             $attestationRequestController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationRequestController']);
             $attestationRequestController->setArguments([
-                null,
-                null,
                 $profileConfig['profile_name'],
                 $profileConfig['session_parameter_name'],
             ]);
@@ -141,8 +140,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseController = new Definition(AttestationResponseController::class);
             $attestationResponseController->setFactory([new Reference(AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
             $attestationResponseController->setArguments([
-                null,
-                null,
                 $profileConfig['session_parameter_name'],
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $profileConfig['response_path'], 'host' => $profileConfig['host']]);
@@ -155,8 +152,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionRequestController = new Definition(AssertionRequestController::class);
             $assertionRequestController->setFactory([new Reference(AssertionResponseControllerFactory::class), 'createAssertionRequestController']);
             $assertionRequestController->setArguments([
-                null,
-                null,
                 $profileConfig['profile_name'],
                 $profileConfig['session_parameter_name'],
             ]);
@@ -199,9 +194,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
         $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
+        $container->setAlias(MetadataStatementStatusReportRepository::class, $config['metadata_service']['repository']);
         $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
         $container->setAlias('webauthn.metadata_service.request_factory', $config['metadata_service']['request_factory']);
-        $container->setParameter('webauthn.metadata_service.enforce_verification', $config['metadata_service']['enforce_verification']);
         $loader->load('metadata_service.php');
 
         foreach ($config['metadata_service']['services'] as $name => $statementConfig) {

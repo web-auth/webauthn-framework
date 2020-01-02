@@ -23,7 +23,6 @@ use InvalidArgumentException;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -34,21 +33,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
      */
     private $decoder;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    public function __construct(?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct()
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->metadataStatementRepository = $metadataStatementRepository;
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
     public function name(): string
@@ -81,14 +68,6 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             '00000000-0000-0000-0000-000000000000',
             'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
         );
-        if (null !== $this->metadataStatementRepository) {
-            CertificateToolbox::checkAttestationMedata(
-                $attestationStatement,
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
-                [],
-                $this->metadataStatementRepository
-            );
-        }
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";

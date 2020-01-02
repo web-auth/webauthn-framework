@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use LogicException;
 
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
@@ -54,41 +53,26 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    /**
-     * @return float|null
-     */
     public function getFAR(): ?float
     {
         return $this->FAR;
     }
 
-    /**
-     * @return float|null
-     */
     public function getFRR(): ?float
     {
         return $this->FRR;
     }
 
-    /**
-     * @return float|null
-     */
     public function getEER(): ?float
     {
         return $this->EER;
     }
 
-    /**
-     * @return float|null
-     */
     public function getFAAR(): ?float
     {
         return $this->FAAR;
     }
 
-    /**
-     * @return int|null
-     */
     public function getMaxReferenceDataSets(): ?int
     {
         return $this->maxReferenceDataSets;

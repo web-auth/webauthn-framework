@@ -26,7 +26,6 @@ use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\MetadataStatement;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\MetadataStatementStatusReportRepository;
 use Webauthn\StringStream;
 
@@ -46,30 +45,15 @@ class AttestationObjectLoader
     private $attestationStatementSupportManager;
 
     /**
-     * @var MetadataStatementRepository|null
+     * @var MetadataStatementStatusReportRepository
      */
     private $metadataStatementRepository;
 
-    /**
-     * @var bool
-     */
-    private $enforceMetadataStatementVerification;
-
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null, bool $enforceMetadataStatementVerification = false)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, MetadataStatementStatusReportRepository $metadataStatementRepository)
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        if (false === $enforceMetadataStatementVerification && null === $metadataStatementRepository) {
-            @trigger_error('With 3.0, the Metadata Statement verification will be mandatory and the argument "$enforceMetadataStatementVerification" will be removed', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository && !$metadataStatementRepository instanceof MetadataStatementStatusReportRepository) {
-            @trigger_error('With 3.0, the Metadata Statement Repository shall also implement methods from the interface Webauthn\MetadataService\MetadataStatementStatusReportRepository', E_USER_DEPRECATED);
-        }
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->metadataStatementRepository = $metadataStatementRepository;
-        $this->enforceMetadataStatementVerification = $enforceMetadataStatementVerification;
     }
 
     public function load(string $data): AttestationObject
@@ -138,20 +122,18 @@ class AttestationObjectLoader
 
     private function checkMetadataExist(string $aaguid, ?MetadataStatement $metadataStatement): void
     {
-        if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement && true === $this->enforceMetadataStatementVerification) {
+        if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement) {
             throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
         }
     }
 
     private function checkStatusReport(string $aaguid): void
     {
-        if ($this->metadataStatementRepository instanceof MetadataStatementStatusReportRepository) {
-            $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
-            if (0 !== \count($statusReports)) {
-                $lastStatusReport = reset($statusReports);
-                if ($lastStatusReport->isCompromised()) {
-                    throw new LogicException('The authenticator is compromised and cannot be used');
-                }
+        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
+        if (0 !== \count($statusReports)) {
+            $lastStatusReport = reset($statusReports);
+            if ($lastStatusReport->isCompromised()) {
+                throw new LogicException('The authenticator is compromised and cannot be used');
             }
         }
     }

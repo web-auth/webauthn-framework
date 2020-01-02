@@ -9,7 +9,7 @@ framework:
     fragments:       ~
     http_method_override: true
     router:
-        resource: "%kernel.root_dir%/../config/routing.php"
+        resource: "%kernel.project_dir%/tests/config/routing.php"
 
 services:
     _defaults:
@@ -66,7 +66,7 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
     orm:
         auto_generate_proxy_classes: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
             App:
@@ -124,7 +124,6 @@ webauthn:
         enabled: true
         http_client: 'httplug.client.mock'
         request_factory: 'Nyholm\Psr7\Factory\Psr17Factory'
-        enforce_verification: true
         services:
             fido_alliance_test1:
                 uri: 'https://fidoalliance.co.nz/mds/execute/0ab57df429bd2a277c1e87ce705099d134219af5e2e2577ff287afa073c963ad'

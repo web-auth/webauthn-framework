@@ -14,11 +14,6 @@ declare(strict_types=1);
 namespace Cose;
 
 use Assert\Assertion;
-use Cose\Algorithm\Algorithm;
-use Cose\Algorithm\Mac;
-use Cose\Algorithm\Signature\ECDSA;
-use Cose\Algorithm\Signature\EdDSA;
-use Cose\Algorithm\Signature\RSA;
 
 /**
  * @see https://www.iana.org/assignments/cose/cose.xhtml#algorithms
@@ -117,41 +112,5 @@ abstract class Algorithms
         Assertion::keyExists(self::COSE_HASH_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
 
         return self::COSE_HASH_MAP[$algorithmIdentifier];
-    }
-
-    /**
-     * @deprecated Will be removed in v3.0. Please use the Manager or the ManagerFactory
-     */
-    public static function getAlgorithm(int $identifier): Algorithm
-    {
-        $algs = static::getAlgorithms();
-        Assertion::keyExists($algs, $identifier, 'The specified algorithm identifier is not supported');
-
-        return $algs[$identifier];
-    }
-
-    /**
-     * @deprecated Will be removed in v3.0. Please use the Manager or the ManagerFactory
-     *
-     * @return Algorithm[]
-     */
-    public static function getAlgorithms(): array
-    {
-        return [
-            Mac\HS256::identifier() => new Mac\HS256(),
-            Mac\HS384::identifier() => new Mac\HS384(),
-            Mac\HS512::identifier() => new Mac\HS512(),
-            RSA\RS256::identifier() => new RSA\RS256(),
-            RSA\RS384::identifier() => new RSA\RS384(),
-            RSA\RS512::identifier() => new RSA\RS512(),
-            RSA\PS256::identifier() => new RSA\PS256(),
-            RSA\PS384::identifier() => new RSA\PS384(),
-            RSA\PS512::identifier() => new RSA\PS512(),
-            ECDSA\ES256K::identifier() => new ECDSA\ES256K(),
-            ECDSA\ES256::identifier() => new ECDSA\ES256(),
-            ECDSA\ES384::identifier() => new ECDSA\ES384(),
-            ECDSA\ES512::identifier() => new ECDSA\ES512(),
-            EdDSA\ED512::identifier() => new EdDSA\ED512(),
-        ];
     }
 }

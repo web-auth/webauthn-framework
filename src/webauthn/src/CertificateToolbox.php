@@ -16,9 +16,6 @@ namespace Webauthn;
 use Assert\Assertion;
 use InvalidArgumentException;
 use Symfony\Component\Process\Process;
-use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\MetadataService\MetadataStatement;
-use Webauthn\MetadataService\MetadataStatementRepository;
 
 class CertificateToolbox
 {
@@ -79,64 +76,6 @@ class CertificateToolbox
 
         if (!$process->isSuccessful()) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
-        }
-    }
-
-    /**
-     * @deprecated Will be removed in v3.0.
-     */
-    public static function checkAttestationMedata(AttestationStatement $attestationStatement, string $aaguid, array $certificates, MetadataStatementRepository $metadataStatementRepository): array
-    {
-        $metadataStatement = $metadataStatementRepository->findOneByAAGUID($aaguid);
-        if (null === $metadataStatement) {
-            //Check certificate CA chain
-            self::checkChain($certificates);
-
-            return $certificates;
-        }
-
-        //FIXME: to decide later if relevant
-        /*Assertion::eq('fido2', $metadataStatement->getProtocolFamily(), sprintf('The protocol family of the authenticator "%s" should be "fido2". Got "%s".', $aaguid, $metadataStatement->getProtocolFamily()));
-        if (null !== $metadataStatement->getAssertionScheme()) {
-            Assertion::eq('FIDOV2', $metadataStatement->getAssertionScheme(), sprintf('The assertion scheme of the authenticator "%s" should be "FIDOV2". Got "%s".', $aaguid, $metadataStatement->getAssertionScheme()));
-        }*/
-
-        // Check Attestation Type is allowed
-        if (0 !== \count($metadataStatement->getAttestationTypes())) {
-            $type = self::getAttestationType($attestationStatement);
-            Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
-        }
-
-        $attestationRootCertificates = $metadataStatement->getAttestationRootCertificates();
-        if (0 === \count($attestationRootCertificates)) {
-            self::checkChain($certificates);
-
-            return $certificates;
-        }
-
-        foreach ($attestationRootCertificates as $key => $attestationRootCertificate) {
-            $attestationRootCertificates[$key] = self::fixPEMStructure($attestationRootCertificate);
-        }
-
-        //Check certificate CA chain
-        self::checkChain($certificates, $attestationRootCertificates);
-
-        return $certificates;
-    }
-
-    private static function getAttestationType(AttestationStatement $attestationStatement): int
-    {
-        switch ($attestationStatement->getType()) {
-            case AttestationStatement::TYPE_BASIC:
-                return MetadataStatement::ATTESTATION_BASIC_FULL;
-            case AttestationStatement::TYPE_SELF:
-                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
-            case AttestationStatement::TYPE_ATTCA:
-                return MetadataStatement::ATTESTATION_ATTCA;
-            case AttestationStatement::TYPE_ECDAA:
-                return MetadataStatement::ATTESTATION_ECDAA;
-            default:
-                throw new InvalidArgumentException('Invalid attestation type');
         }
     }
 

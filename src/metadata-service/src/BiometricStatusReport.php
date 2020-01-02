@@ -113,6 +113,6 @@ class BiometricStatusReport implements JsonSerializable
             'certificationRequirementsVersion' => $this->certificationRequirementsVersion,
         ];
 
-        return array_filter($data, static function ($var) {return null !== $var; });
+        return array_filter($data, static function ($var): bool {return null !== $var; });
     }
 }

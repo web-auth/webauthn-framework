@@ -13,9 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
-use Assert\Assertion;
 use Webauthn\PublicKeyCredentialOptions;
-use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class StoredData
@@ -34,16 +32,6 @@ class StoredData
     {
         $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
-    }
-
-    /**
-     * @deprecated Will be removed in v3.0. Please use getPublicKeyCredentialOptions instead
-     */
-    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialOptions
-    {
-        Assertion::isInstanceOf($this->publicKeyCredentialOptions, PublicKeyCredentialRequestOptions::class, sprintf('The object is not an instance of Webauthn\$this->publicKeyCredentialOptions. Got "%s" instead', \get_class($this->publicKeyCredentialOptions)));
-
-        return $this->publicKeyCredentialOptions;
     }
 
     public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions

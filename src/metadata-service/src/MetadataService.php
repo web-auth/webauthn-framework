@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use function League\Uri\build;
-use function League\Uri\build_query;
-use function League\Uri\parse;
-use function League\Uri\parse_query;
+use League\Uri\Components\Query;
+use League\Uri\UriString;
 use LogicException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -77,14 +75,14 @@ class MetadataService
 
     private function buildUri(string $uri): string
     {
-        $parsedUri = parse($uri);
+        $parsedUri = UriString::parse($uri);
         $queryString = $parsedUri['query'];
-        $query = parse_query($queryString ?? '');
+        $query = Query::createFromRFC3986($queryString);
         foreach ($this->additionalQueryStringValues as $k => $v) {
-            $query[$k] = $v;
+            $query = $query->withPair($k, $v);
         }
-        $parsedUri['query'] = build_query($query);
+        $parsedUri['query'] = 0 === $query->count() ? null : $query->__toString();
 
-        return build($parsedUri);
+        return UriString::build($parsedUri);
     }
 }

@@ -86,32 +86,6 @@ class PublicKeyCredentialSource implements JsonSerializable
         $this->trustPath = $trustPath;
     }
 
-    /**
-     * @deprecated Deprecated since v2.1. Will be removed in v3.0. Please use response from the credential source returned by the AuthenticatorAttestationResponseValidator after "check" method
-     */
-    public static function createFromPublicKeyCredential(PublicKeyCredential $publicKeyCredential, string $userHandle): self
-    {
-        $response = $publicKeyCredential->getResponse();
-        Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'This method is only available with public key credential containing an authenticator attestation response.');
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        $attestationStatement = $response->getAttestationObject()->getAttStmt();
-        $authenticatorData = $response->getAttestationObject()->getAuthData();
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential data available');
-
-        return new self(
-            $publicKeyCredentialDescriptor->getId(),
-            $publicKeyCredentialDescriptor->getType(),
-            $publicKeyCredentialDescriptor->getTransports(),
-            $attestationStatement->getType(),
-            $attestationStatement->getTrustPath(),
-            $attestedCredentialData->getAaguid(),
-            $attestedCredentialData->getCredentialPublicKey(),
-            $userHandle,
-            $authenticatorData->getSignCount()
-        );
-    }
-
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;

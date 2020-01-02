@@ -102,7 +102,6 @@ abstract class AbstractTestCase extends TestCase
         if (!$this->authenticatorAssertionResponseValidator) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
-                null,
                 new TokenBindingNotSupportedHandler(),
                 new ExtensionOutputCheckerHandler(),
                 $this->getAlgorithmManager()
@@ -126,7 +125,6 @@ abstract class AbstractTestCase extends TestCase
         ));
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
-            null,
             $this->getAlgorithmManager()
         ));
         $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
@@ -166,7 +164,6 @@ abstract class AbstractTestCase extends TestCase
         if (!$this->attestationObjectLoader) {
             $this->attestationObjectLoader = new AttestationObjectLoader(
                 $this->getAttestationStatementSupportManager(),
-                null,
                 $this->getSimpleMetadataStatementRepository()
             );
         }

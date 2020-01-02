@@ -27,7 +27,6 @@ use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -38,21 +37,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      */
     private $decoder;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    public function __construct(?Decoder $decoder = null, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct()
     {
-        if (null !== $decoder) {
-            @trigger_error('The argument "$decoder" is deprecated since 2.1 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
-        }
-        $this->decoder = $decoder ?? new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->metadataStatementRepository = $metadataStatementRepository;
+        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
     public function name(): string
@@ -81,15 +68,6 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
-
-        if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::checkAttestationMedata(
-                $attestationStatement,
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
-                $certificates,
-                $this->metadataStatementRepository
-            );
-        }
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];

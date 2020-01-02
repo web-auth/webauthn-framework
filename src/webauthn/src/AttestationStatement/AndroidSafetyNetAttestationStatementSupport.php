@@ -28,7 +28,6 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
@@ -68,21 +67,13 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $maxAge;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000)
     {
         if (!class_exists(Algorithm\RS256::class)) {
             throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
         }
         if (!class_exists(JWKFactory::class)) {
             throw new RuntimeException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "$metadataStatementRepository" is deprecated since 2.2 and will be removed in v3.0. Set null instead', E_USER_DEPRECATED);
         }
         $this->jwsSerializer = new CompactSerializer();
         $this->apiKey = $apiKey;
@@ -91,7 +82,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->initJwsVerifier();
         $this->leeway = $leeway;
         $this->maxAge = $maxAge;
-        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function name(): string
@@ -125,14 +115,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
-        if (null !== $this->metadataStatementRepository) {
-            $certificates = CertificateToolbox::checkAttestationMedata(
-                $attestationStatement,
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
-                $certificates,
-                $this->metadataStatementRepository
-            );
-        }
 
         $parsedCertificate = openssl_x509_parse(current($certificates));
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use LogicException;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {

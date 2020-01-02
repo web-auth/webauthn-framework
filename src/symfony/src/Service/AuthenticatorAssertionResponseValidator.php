@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use CBOR\Decoder;
 use Cose\Algorithm\Manager;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -36,9 +35,9 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
      */
     private $eventDispatcher;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?Decoder $decoder, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker, EventDispatcherInterface $eventDispatcher)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker, EventDispatcherInterface $eventDispatcher)
     {
-        parent::__construct($publicKeyCredentialSourceRepository, $decoder, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker);
+        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker);
         $this->eventDispatcher = $eventDispatcher;
     }
 

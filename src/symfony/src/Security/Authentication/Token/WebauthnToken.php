@@ -21,7 +21,6 @@ use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
-use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken
@@ -110,16 +109,6 @@ class WebauthnToken extends AbstractToken
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
         return $this->publicKeyCredentialDescriptor;
-    }
-
-    /**
-     * @deprecated Will be removed in v3.0. Please use getPublicKeyCredentialOptions instead
-     */
-    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
-    {
-        Assertion::isInstanceOf($this->publicKeyCredentialOptions, PublicKeyCredentialRequestOptions::class, sprintf('The object is not an instance of Webauthn\$this->publicKeyCredentialOptions. Got "%s" instead', \get_class($this->publicKeyCredentialOptions)));
-
-        return $this->publicKeyCredentialOptions;
     }
 
     public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions

@@ -37,17 +37,11 @@ abstract class AbstractDescriptor implements JsonSerializable
         $this->blockSlowdown = $blockSlowdown;
     }
 
-    /**
-     * @return int|null
-     */
     public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
-    /**
-     * @return int|null
-     */
     public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;
