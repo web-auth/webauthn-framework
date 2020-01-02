@@ -16,4 +16,9 @@ namespace Webauthn\MetadataService;
 interface MetadataStatementRepository
 {
     public function findOneByAAGUID(string $aaguid): ?MetadataStatement;
+
+    /**
+     * @return StatusReport[]
+     */
+    public function findStatusReportsByAAGUID(string $aaguid): array;
 }

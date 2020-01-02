@@ -41,8 +41,11 @@ class MetadataServiceTest extends KernelTestCase
         $client = self::$container->get('httplug.client.mock');
         $this->prepareResponsesMap($client);
 
-        /** @var MetadataService $service */
-        $service = self::$container->get('webauthn.metadata_service.service.fido_alliance');
+        $service = new MetadataService(
+            'https://foo.com',
+            $client,
+            new Psr17Factory()
+        );
         $data = $service->getMetadataTOCPayload();
         $entries = $data->getEntries();
         static::assertCount(42, $entries);
@@ -114,7 +117,7 @@ class MetadataServiceTest extends KernelTestCase
     private function callObjectMethods($object): void
     {
         $availableMethods = get_class_methods($object);
-        $availableMethods = array_filter($availableMethods, static function ($method) use ($object) {
+        $availableMethods = array_filter($availableMethods, static function ($method) use ($object): bool {
             $classMethod = new ReflectionMethod($object, $method);
 
             return !\in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === \count($classMethod->getParameters());

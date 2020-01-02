@@ -15,10 +15,10 @@ namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
 use Http\Mock\Client;
-use InvalidArgumentException;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -39,7 +39,7 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
      */
     public function anAndroidSafetyNetAttestationCanBeVerified(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The certificate expired');
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),

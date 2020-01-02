@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
-use Assert\Assertion;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\PublicKeyCredentialOptions;
@@ -29,16 +28,12 @@ final class SessionStorage implements OptionsStorage
     public function store(Request $request, StoredData $data): void
     {
         $session = $request->getSession();
-        Assertion::notNull($session, 'This authentication method requires a session.');
-
         $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
     }
 
     public function get(Request $request): StoredData
     {
         $session = $request->getSession();
-        Assertion::notNull($session, 'This authentication method requires a session.');
-
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
         if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
             throw new BadRequestHttpException('No public key credential options available for this session.');

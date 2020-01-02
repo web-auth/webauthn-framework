@@ -32,7 +32,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
-return function (ContainerConfigurator $container) {
+return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()

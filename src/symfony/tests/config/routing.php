@@ -16,7 +16,7 @@ use Webauthn\Bundle\Tests\Functional\AdminController;
 use Webauthn\Bundle\Tests\Functional\HomeController;
 use Webauthn\Bundle\Tests\Functional\SecurityController;
 
-return function (RoutingConfigurator $routes) {
+return static function (RoutingConfigurator $routes): void {
     $routes->import('.', 'webauthn');
 
     // Security

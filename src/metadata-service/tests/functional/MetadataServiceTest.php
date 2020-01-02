@@ -66,7 +66,7 @@ class MetadataServiceTest extends TestCase
     private function callObjectMethods($object): void
     {
         $availableMethods = get_class_methods($object);
-        $availableMethods = array_filter($availableMethods, static function ($method) use ($object) {
+        $availableMethods = array_filter($availableMethods, static function ($method) use ($object): bool {
             $classMethod = new ReflectionMethod($object, $method);
 
             return !\in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === \count($classMethod->getParameters());

@@ -6,14 +6,12 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::scalarNode\(\)\.#'
         - '#Call to function is_array\(\) with array\<string\, string\> will always evaluate to true\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
-        - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface|null\.#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Parameter (.*) of class Webauthn\\PublicKeyCredentialSource constructor expects string, string|null given\.#'
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
-        - '#Parameter (.*) of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects array(.*) given#'
-        - '#Call to deprecated method checkAttestationMedata\(\) of class Webauthn\\CertificateToolbox.*#'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
 includes:

@@ -104,6 +104,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
         $details = openssl_pkey_get_details($resource);
+        Assertion::isArray($details, 'Invalid certificate or certificate chain');
         Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
         Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
         Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');

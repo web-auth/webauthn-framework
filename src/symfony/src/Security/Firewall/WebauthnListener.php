@@ -382,7 +382,7 @@ class WebauthnListener
     {
         $credentialSources = $this->publicKeyCredentialSourceRepository->findAllForUserEntity($userEntity);
 
-        return array_map(function (PublicKeyCredentialSource $credential) {
+        return array_map(static function (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor {
             return $credential->getPublicKeyCredentialDescriptor();
         }, $credentialSources);
     }

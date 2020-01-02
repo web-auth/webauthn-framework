@@ -35,9 +35,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        Assertion::range($r, 0, 254, Utils::logicException('The key "r" is invalid'));
-        Assertion::range($g, 0, 254, Utils::logicException('The key "g" is invalid'));
-        Assertion::range($b, 0, 254, Utils::logicException('The key "b" is invalid'));
+        Assertion::range($r, 0, 255, Utils::logicException('The key "r" is invalid'));
+        Assertion::range($g, 0, 255, Utils::logicException('The key "g" is invalid'));
+        Assertion::range($b, 0, 255, Utils::logicException('The key "b" is invalid'));
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;

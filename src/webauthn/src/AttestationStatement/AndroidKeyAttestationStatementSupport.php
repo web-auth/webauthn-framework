@@ -104,6 +104,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Android KeyStore Extension with OID “1.3.6.1.4.1.11129.2.1.17” in certificate extensions
+        Assertion::isArray($certDetails, 'The certificate is not valid');
         Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
         Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
         Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17', 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing');

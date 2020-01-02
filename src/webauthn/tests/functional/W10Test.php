@@ -89,7 +89,7 @@ class W10Test extends AbstractTestCase
         $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
         $publicKeyCredentialSource->getUserHandle()->willReturn('ee13d4f1-4863-47dd-a407-097cb49ac822');
         $publicKeyCredentialSource->getCounter()->willReturn(0);
-        $publicKeyCredentialSource->setCounter(Argument::is(4))->will(function () {});
+        $publicKeyCredentialSource->setCounter(Argument::is(4))->will(function (): void {});
         $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
             Uuid::fromBytes(base64_decode('YCiwF7HUTAK0s6/Nr8lrsg==', true)),
             base64_decode('6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=', true),
@@ -98,7 +98,7 @@ class W10Test extends AbstractTestCase
 
         $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
         $credentialRepository->findOneByCredentialId(base64_decode('6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=', true))->willReturn($publicKeyCredentialSource->reveal());
-        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function () {});
+        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function (): void {});
 
         $uri = $this->prophesize(UriInterface::class);
         $uri->getHost()->willReturn('webauthn.spomky-labs.com');

@@ -28,7 +28,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\CertificateTrustPath
+     * @use CertificateTrustPath
      */
     public function aCertificateTrustPathCanBeCreated(): void
     {
@@ -40,7 +40,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\EcdaaKeyIdTrustPath
+     * @use EcdaaKeyIdTrustPath
      */
     public function anEcdaaKeyIdTrustPathCanBeCreated(): void
     {
@@ -52,7 +52,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\TrustPathLoader
+     * @use TrustPathLoader
      */
     public function theLoaderCanLoadCustomTrustPath(): void
     {
@@ -66,7 +66,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\TrustPathLoader
+     * @use TrustPathLoader
      */
     public function theLoaderCannotLoadUnsupportedTypeName(): void
     {
@@ -80,7 +80,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\TrustPathLoader
+     * @use TrustPathLoader
      */
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
@@ -94,7 +94,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\TrustPathLoader
+     * @use TrustPathLoader
      */
     public function theLoaderCanLoadOldTrustPathType(): void
     {
@@ -110,7 +110,7 @@ class TrustPathTest extends TestCase
     /**
      * @test
      *
-     * @use \Webauthn\TrustPath\TrustPath\TrustPathLoader
+     * @use TrustPathLoader
      */
     public function theLoaderCanLoadNewTrustPathType(): void
     {

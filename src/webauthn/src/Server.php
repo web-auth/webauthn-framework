@@ -195,7 +195,7 @@ class Server
     public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
-        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, null, $this->metadataStatementRepository);
+        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $this->metadataStatementRepository);
         $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -224,7 +224,6 @@ class Server
 
         $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
             $this->publicKeyCredentialSourceRepository,
-            null,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
             $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
@@ -256,7 +255,7 @@ class Server
             $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000));
             $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
             $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
-            $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(null, $coseAlgorithmManager));
+            $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
         }
 
         return $attestationStatementSupportManager;

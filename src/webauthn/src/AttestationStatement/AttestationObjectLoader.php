@@ -26,7 +26,7 @@ use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\MetadataStatement;
-use Webauthn\MetadataService\MetadataStatementStatusReportRepository;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -45,11 +45,11 @@ class AttestationObjectLoader
     private $attestationStatementSupportManager;
 
     /**
-     * @var MetadataStatementStatusReportRepository
+     * @var MetadataStatementRepository|null
      */
     private $metadataStatementRepository;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, MetadataStatementStatusReportRepository $metadataStatementRepository)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?MetadataStatementRepository $metadataStatementRepository = null)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
@@ -99,32 +99,40 @@ class AttestationObjectLoader
         $authDataStream->close();
 
         $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
-        $metadataStatement = $this->getMetadataStatement($attestedCredentialData);
+        $metadataStatement = $this->getMetadataStatement($attestationStatement, $attestedCredentialData);
 
         return new AttestationObject($data, $attestationStatement, $authenticatorData, $metadataStatement);
     }
 
-    private function getMetadataStatement(?AttestedCredentialData $attestedCredentialData): ?MetadataStatement
+    private function getMetadataStatement(AttestationStatement $attestationStatement, ?AttestedCredentialData $attestedCredentialData): ?MetadataStatement
     {
+        // If no attested credential data is present, no MDS can be found
         if (null === $attestedCredentialData) {
             return null;
         }
+
+        // If the AAGUID is a zero-based UUID, no MDS can be found
         $aaguid = $attestedCredentialData->getAaguid()->toString();
-        $metadataStatement = null;
-        if (null !== $this->metadataStatementRepository) {
-            $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-            $this->checkStatusReport($aaguid);
+        if ('00000000-0000-0000-0000-000000000000' === $aaguid) {
+            return null;
         }
-        $this->checkMetadataExist($aaguid, $metadataStatement);
 
-        return $metadataStatement;
-    }
+        // If the attestation statement type is "none", no MDS is required
+        if (AttestationStatement::TYPE_NONE === $attestationStatement->getType()) {
+            return null;
+        }
 
-    private function checkMetadataExist(string $aaguid, ?MetadataStatement $metadataStatement): void
-    {
-        if ('00000000-0000-0000-0000-000000000000' !== $aaguid && null === $metadataStatement) {
+        if (null === $this->metadataStatementRepository) {
             throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
         }
+
+        $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
+        if (null === $metadataStatement) {
+            throw new RuntimeException(sprintf('Unable to find the Metadata Statement for the AAGUID "%s"', $aaguid));
+        }
+        $this->checkStatusReport($aaguid);
+
+        return $metadataStatement;
     }
 
     private function checkStatusReport(string $aaguid): void

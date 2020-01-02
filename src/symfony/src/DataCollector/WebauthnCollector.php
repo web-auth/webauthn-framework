@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
-use Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -122,14 +121,6 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
     public function reset(): void
     {
         $this->data = [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getData(): array
-    {
-        return $this->data;
     }
 
     public static function getSubscribedEvents(): array

@@ -17,7 +17,7 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Component\HttpClient\Psr18Client;
 use Webauthn\AttestationStatement;
 
-return function (ContainerConfigurator $container) {
+return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()

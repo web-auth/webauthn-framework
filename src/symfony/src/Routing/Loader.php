@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Routing;
 
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Loader\LoaderResolverInterface;
+use Symfony\Component\Config\Loader\Loader as SymfonyLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class Loader implements LoaderInterface
+class Loader extends SymfonyLoader
 {
     /**
      * @var RouteCollection
@@ -47,13 +46,5 @@ class Loader implements LoaderInterface
     public function supports($resource, string $type = null): bool
     {
         return 'webauthn' === $type;
-    }
-
-    public function getResolver(): void
-    {
-    }
-
-    public function setResolver(LoaderResolverInterface $resolver): void
-    {
     }
 }

@@ -42,12 +42,8 @@ use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\DistantSingleMetadata;
-use Webauthn\MetadataService\DistantSingleMetadataFactory;
 use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataServiceFactory;
 use Webauthn\MetadataService\MetadataStatementRepository;
-use Webauthn\MetadataService\MetadataStatementStatusReportRepository;
-use Webauthn\MetadataService\SingleMetadata;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -98,6 +94,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $this->loadTransportBindingProfile($container, $loader, $config);
         $this->loadMetadataServices($container, $loader, $config);
+        if (true === $config['metadata_service']['enabled']) {
+            $this->loadMetadataStatementSupports($container, $loader, $config);
+        }
 
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
@@ -169,8 +168,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    private function loadAndroidSafetyNet(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    private function loadMetadataStatementSupports(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
+        $loader->load('metadata_statement_supports.php');
+
+        //Android SafetyNet
         $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
         $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
         $container->setParameter('webauthn.android_safetynet.leeway', $config['android_safetynet']['leeway']);
@@ -180,64 +182,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
     private function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
-        //INFO: in v2.1, all metadata statement supports are loaded.
-        // Starting at v3.0, if the metadata service is not enabled, only "none" will be available as this service will become mandatory for:
-        // - FIDO2 U2F
-        // - Packed
-        // - Android Key
-        // - Android SafetyNet
-        // - TPM
-        $loader->load('metadata_statement_supports.php');
-        $this->loadAndroidSafetyNet($container, $loader, $config);
-
-        if (false === $config['metadata_service']['enabled'] || !class_exists(MetadataServiceFactory::class)) {
+        if (false === $config['metadata_service']['enabled']) {
             return;
         }
         $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
-        $container->setAlias(MetadataStatementStatusReportRepository::class, $config['metadata_service']['repository']);
-        $container->setAlias('webauthn.metadata_service.http_client', $config['metadata_service']['http_client']);
-        $container->setAlias('webauthn.metadata_service.request_factory', $config['metadata_service']['request_factory']);
-        $loader->load('metadata_service.php');
-
-        foreach ($config['metadata_service']['services'] as $name => $statementConfig) {
-            $metadataServiceId = sprintf('webauthn.metadata_service.service.%s', $name);
-            $metadataService = new Definition(MetadataService::class);
-            $metadataService->setFactory([new Reference(MetadataServiceFactory::class), 'create']);
-            $metadataService->setArguments([
-                $statementConfig['uri'],
-                $statementConfig['additional_query_string_values'],
-                $statementConfig['additional_headers'],
-                $statementConfig['http_client'],
-            ]);
-            $metadataService->setPublic($statementConfig['is_public']);
-            $metadataService->addTag(MetadataServiceCompilerPass::TAG);
-            $container->setDefinition($metadataServiceId, $metadataService);
-        }
-        foreach ($config['metadata_service']['distant_single_statements'] as $name => $statementConfig) {
-            $metadataServiceId = sprintf('webauthn.metadata_service.distant_single_statement.%s', $name);
-            $metadataService = new Definition(DistantSingleMetadata::class);
-            $metadataService->setFactory([new Reference(DistantSingleMetadataFactory::class), 'create']);
-            $metadataService->setArguments([
-                $statementConfig['uri'],
-                $statementConfig['is_base_64'],
-                $statementConfig['additional_headers'],
-                $statementConfig['http_client'],
-            ]);
-            $metadataService->setPublic($statementConfig['is_public']);
-            $metadataService->addTag(SingleMetadataCompilerPass::TAG);
-            $container->setDefinition($metadataServiceId, $metadataService);
-        }
-        foreach ($config['metadata_service']['from_data'] as $name => $statementConfig) {
-            $metadataServiceId = sprintf('webauthn.metadata_service.from_data.%s', $name);
-            $metadataService = new Definition(SingleMetadata::class);
-            $metadataService->setArguments([
-                $statementConfig['data'],
-                $statementConfig['is_base_64'],
-            ]);
-            $metadataService->setPublic($statementConfig['is_public']);
-            $metadataService->addTag(SingleMetadataCompilerPass::TAG);
-            $container->setDefinition($metadataServiceId, $metadataService);
-        }
     }
 
     /**

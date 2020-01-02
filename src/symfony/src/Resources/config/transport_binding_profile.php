@@ -16,7 +16,7 @@ use Webauthn\Bundle\Routing\Loader;
 use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 
-return function (ContainerConfigurator $container) {
+return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()

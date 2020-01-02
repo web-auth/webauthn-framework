@@ -38,7 +38,7 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
-return function (ContainerConfigurator $container) {
+return static function (ContainerConfigurator $container): void {
     $container->services()->set(WebauthnProvider::class)
         ->private()
         ->arg(0, ref(UserCheckerInterface::class))
