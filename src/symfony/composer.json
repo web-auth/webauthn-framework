@@ -16,11 +16,10 @@
         }
     ],
     "require": {
-        "spomky-labs/cbor-bundle": "^1.0",
-        "spomky-labs/cbor-php": "^1.0.2",
-        "symfony/config": "^4.3",
-        "symfony/dependency-injection": "^4.3",
-        "symfony/framework-bundle": "^4.3",
+        "spomky-labs/cbor-bundle": "^2.0",
+        "symfony/config": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/framework-bundle": "^5.0",
         "web-auth/webauthn-lib": "self.version",
         "web-token/jwt-signature": "^2.0.3"
     },
@@ -28,8 +27,8 @@
         "nyholm/psr7": "^1.1",
         "fzaninotto/faker": "^1.8",
         "ramsey/uuid": "^3.8",
-        "symfony/psr-http-message-bridge": "^1.1",
-        "symfony/security-bundle": "^4.3"
+        "symfony/psr-http-message-bridge": "^2.0",
+        "symfony/security-bundle": "^5.0"
     },
     "autoload": {
         "psr-4": {
@@ -48,7 +47,7 @@
             "v1.2": "1.2.x-dev",
             "v2.0": "2.0.x-dev",
             "v2.1": "2.1.x-dev",
-            "v2.2": "2.2.x-dev"
+            "v3.0": "3.0.x-dev"
         }
     }
 }
