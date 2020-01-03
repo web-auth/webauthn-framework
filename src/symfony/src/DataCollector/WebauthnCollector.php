@@ -17,6 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Throwable;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
@@ -68,6 +69,14 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'authenticatorAssertionResponseValidationSucceeded' => $this->authenticatorAssertionResponseValidationSucceeded,
             'authenticatorAssertionResponseValidationFailed' => $this->authenticatorAssertionResponseValidationFailed,
         ];
+    }
+
+    /**
+     * @return array|Data
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     public function getName()
