@@ -30,8 +30,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportComp
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\MetadataServiceCompilerPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\SingleMetadataCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\ConformanceToolset\Controller\AssertionRequestController;
@@ -41,8 +39,6 @@ use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 use Webauthn\Counter\CounterChecker;
-use Webauthn\MetadataService\DistantSingleMetadata;
-use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
@@ -78,8 +74,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(AttestationStatementSupportCompilerPass::TAG);
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
-        $container->registerForAutoconfiguration(MetadataService::class)->addTag(MetadataServiceCompilerPass::TAG);
-        $container->registerForAutoconfiguration(DistantSingleMetadata::class)->addTag(SingleMetadataCompilerPass::TAG);
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);

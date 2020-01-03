@@ -18,14 +18,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Throwable;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
-use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\SingleMetadata;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
@@ -59,27 +58,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
      */
     private $authenticatorAssertionResponseValidationFailed = [];
 
-    /**
-     * @var MetadataService[]
-     */
-    private $metadataServices = [];
-
-    /**
-     * @var SingleMetadata[]
-     */
-    private $singleMetadatas = [];
-
-    public function addService(string $name, MetadataService $metadataService): void
-    {
-        $this->metadataServices[$name] = $metadataService;
-    }
-
-    public function addSingleStatement(string $name, SingleMetadata $singleMetadata): void
-    {
-        $this->singleMetadatas[$name] = $singleMetadata;
-    }
-
-    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
+    public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
         $this->data = [
             'publicKeyCredentialCreationOptions' => $this->publicKeyCredentialCreationOptions,
@@ -88,29 +67,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'publicKeyCredentialRequestOptions' => $this->publicKeyCredentialRequestOptions,
             'authenticatorAssertionResponseValidationSucceeded' => $this->authenticatorAssertionResponseValidationSucceeded,
             'authenticatorAssertionResponseValidationFailed' => $this->authenticatorAssertionResponseValidationFailed,
-            'mds' => [
-                'services' => [],
-                'single' => [],
-            ],
         ];
-
-        $cloner = new VarCloner();
-        foreach ($this->singleMetadatas as $name => $singleMetadata) {
-            $this->data['mds']['single'][$name] = $cloner->cloneVar($singleMetadata->getMetadataStatement());
-        }
-        foreach ($this->metadataServices as $name => $metadataService) {
-            try {
-                $toc = $metadataService->getMetadataTOCPayload();
-                $this->data['mds']['services'][$name] = [
-                    'toc' => $cloner->cloneVar($toc),
-                    'entries' => [],
-                ];
-            } catch (\Throwable $throwable) {
-                $this->data['mds']['services'][$name] = [
-                    'exception' => $cloner->cloneVar($throwable),
-                ];
-            }
-        }
     }
 
     public function getName()
