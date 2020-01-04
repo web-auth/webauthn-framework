@@ -7,7 +7,7 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-            channels: ["!event"]
+            channels: ["!event", "!webauthn"]
         webauthn:
             type: stream
             path: "%kernel.logs_dir%/webauthn.log"
@@ -44,15 +44,6 @@ services:
         tags:
             - { name: 'monolog.logger', channel: 'webauthn' }
 
-    Nyholm\Psr7\Factory\Psr17Factory: ~
-    Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface:
-        class: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
-        arguments:
-            - '@Nyholm\Psr7\Factory\Psr17Factory'
-            - '@Nyholm\Psr7\Factory\Psr17Factory'
-            - '@Nyholm\Psr7\Factory\Psr17Factory'
-            - '@Nyholm\Psr7\Factory\Psr17Factory'
-
     Webauthn\Bundle\Tests\Functional\UserProvider:
         autowire: true
     Webauthn\Bundle\Tests\Functional\UserRepository: ~
@@ -72,7 +63,7 @@ services:
     Webauthn\Bundle\Tests\Functional\MetadataStatementRepository:
         arguments:
             - '@httplug.client.mock'
-            - '@Nyholm\Psr7\Factory\Psr17Factory'
+            - '@nyholm.psr7.psr17_factory'
         calls:
             - method: addDistantSingleStatement
               arguments:
@@ -178,17 +169,13 @@ doctrine:
                 prefix: 'Webauthn\Bundle\Tests\Functional'
                 alias: App
 
-
 webauthn:
     logger: 'Webauthn\Bundle\Tests\Functional\Logger'
-    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository' ## Mandatory
-    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository' ## Mandatory
+    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
+    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
     android_safetynet:
         max_age: 99999999999
-    creation_profiles: ## Set default profile for zero-conf
-        foo:
-            rp:
-                name: 'My other application'
+    creation_profiles:
         default:
             rp:
                 name: 'My other application'
@@ -214,13 +201,14 @@ webauthn:
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS384
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS512
             attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
-    request_profiles: ## Set default profile for zero-conf
+    request_profiles:
         default:
             rp_id: 'localhost'
             challenge_length: 32
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-    transport_binding_profile: ## FIXME: TO BE REMOVED / USELESS
+    transport_binding_profile:
+        http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
         creation:
             default:
                 profile_name: 'default'
@@ -239,6 +227,12 @@ webauthn:
         enabled: true
         repository: 'Webauthn\Bundle\Tests\Functional\MetadataStatementRepository'
 
+sensio_framework_extra:
+    router:
+        annotations: false
+    psr_message:
+        enabled: true
+
 security:
     providers:
         default:
@@ -248,31 +242,27 @@ security:
         main:
             anonymous: ~
             webauthn:
-                profile: 'default'
-                request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
-                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
-                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
-                http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
-#            webauthn:
 #               user_provider: null
-#               options_storage: SessionStorage::class
-#               http_message_factory: ----
-#               creation:
-#                   enabled: true
+               options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
+#               http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
+               failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
+               success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
+               creation:
+                   enabled: true
 #                   profile: default
-#                   options_path: /attestation/options
-#                   result_path: /attestation/result
+#                   routes:
+#                       host: null
+#                       options_path: '/register/options'
+#                       result_path: '/register'
 #                   options_handler: DefaultCreationOptionsHandler::class
-#                   success_handler: DefaultCreationSuccessHandler::class
-#                   failure_handler: DefaultCreationFailureHandler::class
-#               request:
-#                   enabled: true
+               request:
+                   enabled: true
 #                   profile: default
-#                   options_path: /assertion/options
-#                   result_path: /assertion/result
+#                   routes:
+#                       host: null
+#                       options_path: '/login/options'
+#                       result_path: '/login'
 #                   options_handler: DefaultRequestOptionsHandler::class
-#                   success_handler: DefaultRequestSuccessHandler::class
-#                   failure_handler: DefaultRequestFailureHandler::class
             logout:
                 path: /logout
                 target: /

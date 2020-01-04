@@ -28,6 +28,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
      * @var UserProviderInterface
      */
     private $userProvider;
+
     /**
      * @var UserCheckerInterface
      */

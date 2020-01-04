@@ -20,11 +20,11 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 final class UserProvider implements UserProviderInterface
 {
     /**
-     * @var UserRepository
+     * @var PublicKeyCredentialUserEntityRepository
      */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(PublicKeyCredentialUserEntityRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
@@ -34,7 +34,7 @@ final class UserProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username): UserInterface
     {
-        $user = $this->userRepository->findByUsername($username);
+        $user = $this->userRepository->findOneByUsername($username);
         if (null === $user) {
             throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
         }

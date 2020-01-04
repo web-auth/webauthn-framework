@@ -14,28 +14,18 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Webauthn\PublicKeyCredentialUserEntity;
 
-final class User implements UserInterface
+final class User extends PublicKeyCredentialUserEntity implements UserInterface
 {
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $username;
-
     /**
      * @var array
      */
     private $roles;
 
-    public function __construct(string $id, string $username, array $roles)
+    public function __construct(string $name, string $id, string $displayName, ?string $icon = null, array $roles = [])
     {
-        $this->id = $id;
-        $this->username = $username;
+        parent::__construct($name, $id, $displayName, $icon);
         $this->roles = $roles;
     }
 
@@ -54,7 +44,7 @@ final class User implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->username;
+        return $this->getName();
     }
 
     public function eraseCredentials(): void

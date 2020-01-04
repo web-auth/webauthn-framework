@@ -24,7 +24,7 @@ final class DefaultFailureHandler implements AuthenticationFailureHandlerInterfa
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
         $data = [
-            'status' => 'error',
+            'status' => 'failed',
             'errorMessage' => $exception->getMessage(),
         ];
 

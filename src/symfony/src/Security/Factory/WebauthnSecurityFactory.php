@@ -18,9 +18,14 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Webauthn\Bundle\Controller\DummyController;
+use Webauthn\Bundle\Controller\DummyControllerFactory;
+use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
+use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
@@ -61,57 +66,54 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 
     /**
      * {@inheritdoc}
-     *
-     * webauthn:
-     *   user_provider: null
-     *   options_storage: SessionStorage::class
-     *   http_message_factory: ----
-     *   creation:
-     *     enabled: true
-     *     profile: default
-     *     options_path: /attestation/options
-     *     result_path: /attestation/result
-     *     options_handler: DefaultCreationOptionsHandler::class
-     *     success_handler: DefaultCreationSuccessHandler::class
-     *     failure_handler: DefaultCreationFailureHandler::class
-     *   request:
-     *     enabled: true
-     *     profile: default
-     *     options_path: /assertion/options
-     *     result_path: /assertion/result
-     *     options_handler: DefaultRequestOptionsHandler::class
-     *     success_handler: DefaultRequestSuccessHandler::class
-     *     failure_handler: DefaultRequestFailureHandler::class
      */
     public function addConfiguration(NodeDefinition $node): void
     {
         /* @var ArrayNodeDefinition $node */
         $node
             ->children()
-            ->scalarNode('profile')->isRequired()->end()
-            ->scalarNode('options_path')->defaultValue('/login/options')->end()
-            ->scalarNode('login_path')->defaultValue('/login')->end()
-            ->scalarNode('user_provider')->defaultNull()->end()
-            ->scalarNode('request_options_storage')->defaultValue(SessionStorage::class)->end()
-            ->scalarNode('request_options_handler')->defaultValue(DefaultRequestOptionsHandler::class)->end()
-            ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
-            ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
-            ->scalarNode('http_message_factory')->isRequired()->end()
-            ->scalarNode('user_verification')->defaultNull()->end()
-            ->arrayNode('extensions')
-            ->treatFalseLike([])
-            ->treatTrueLike([])
-            ->treatNullLike([])
-            ->useAttributeAsKey('name')
-            ->scalarPrototype()->end()
-            ->end()
+                ->scalarNode('user_provider')->defaultNull()->end()
+                ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
+                ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
+                ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
+                ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+                ->arrayNode('request')
+                    ->canBeEnabled()
+                    ->children()
+                        ->scalarNode('profile')->defaultValue('default')->end()
+                        ->arrayNode('routes')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('host')->defaultNull()->end()
+                                ->scalarNode('options_path')->defaultValue('/login/options')->end()
+                                ->scalarNode('result_path')->defaultValue('/login')->end()
+                            ->end()
+                        ->end()
+                        ->scalarNode('options_handler')->defaultValue(DefaultRequestOptionsHandler::class)->end()
+                    ->end()
+                ->end()
+                ->arrayNode('creation')
+                    ->canBeEnabled()
+                    ->children()
+                        ->scalarNode('profile')->defaultValue('default')->end()
+                        ->arrayNode('routes')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('host')->defaultNull()->end()
+                                ->scalarNode('options_path')->defaultValue('/register/options')->end()
+                                ->scalarNode('result_path')->defaultValue('/register')->end()
+                            ->end()
+                        ->end()
+                        ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
+                    ->end()
+                ->end()
             ->end()
         ;
     }
 
     private function createAuthProvider(ContainerBuilder $container, string $id, array $config, string $userProviderId): string
     {
-        $providerId = 'security.authentication.provider.webauthn.json.'.$id;
+        $providerId = 'security.authentication.provider.webauthn.'.$id;
         $container
             ->setDefinition($providerId, new ChildDefinition(WebauthnProvider::class))
             ->setArgument(1, new Reference($userProviderId))
@@ -122,30 +124,99 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 
     private function createListener(ContainerBuilder $container, string $id, array $config): string
     {
-        $listenerId = 'security.authentication.listener.webauthn.json';
-        $listener = new ChildDefinition($listenerId);
-        $listener->replaceArgument(0, new Reference($config['http_message_factory']));
-        $listener->replaceArgument(12, $id);
-        $listener->replaceArgument(13, $config);
-        $listener->replaceArgument(14, new Reference($config['success_handler']));
-        $listener->replaceArgument(15, new Reference($config['failure_handler']));
-        $listener->replaceArgument(16, new Reference($config['request_options_handler']));
-        $listener->replaceArgument(17, new Reference($config['request_options_storage']));
+        $this->createRequestControllersAndRoutes($container, $id, $config);
+        $requestListenerId = $this->createRequestListener($container, $id, $config);
 
-        $listenerId .= '.'.$id;
+        $this->createCreationControllersAndRoutes($container, $id, $config);
+        $creationListenerId = $this->createCreationListener($container, $id, $config);
+
+        $abstractListenerId = 'security.authentication.listener.webauthn';
+        $listener = new ChildDefinition($abstractListenerId);
+        $listener->replaceArgument(2, new Reference($requestListenerId));
+        $listener->replaceArgument(3, new Reference($creationListenerId));
+        $listener->replaceArgument(4, $config);
+
+        $listenerId = $abstractListenerId.'.'.$id;
         $container->setDefinition($listenerId, $listener);
 
         return $listenerId;
     }
 
+    private function createRequestControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
+    {
+        if (false === $config['request']['enabled']) {
+            return;
+        }
+
+        $this->createControllerAndRoute($container, 'request', 'options', $id, $config['request']['routes']['options_path'], $config['request']['routes']['host']);
+        $this->createControllerAndRoute($container, 'request', 'result', $id, $config['request']['routes']['result_path'], $config['request']['routes']['host']);
+    }
+
+    private function createRequestListener(ContainerBuilder $container, string $id, array $config): string
+    {
+        $abstractRequestListenerId = 'security.authentication.listener.webauthn.request';
+        $requestListener = new ChildDefinition($abstractRequestListenerId);
+        $requestListener->replaceArgument(0, new Reference($config['http_message_factory']));
+        $requestListener->replaceArgument(11, $id);
+        $requestListener->replaceArgument(12, $config['request']);
+        $requestListener->replaceArgument(13, new Reference($config['success_handler']));
+        $requestListener->replaceArgument(14, new Reference($config['failure_handler']));
+        $requestListener->replaceArgument(15, new Reference($config['request']['options_handler']));
+        $requestListener->replaceArgument(16, new Reference($config['options_storage']));
+
+        $requestListenerId = $abstractRequestListenerId.'.'.$id;
+        $container->setDefinition($requestListenerId, $requestListener);
+
+        return $requestListenerId;
+    }
+
+    private function createCreationControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
+    {
+        if (false === $config['creation']['enabled']) {
+            return;
+        }
+
+        $this->createControllerAndRoute($container, 'creation', 'options', $id, $config['creation']['routes']['options_path'], $config['creation']['routes']['host']);
+        $this->createControllerAndRoute($container, 'creation', 'result', $id, $config['creation']['routes']['result_path'], $config['creation']['routes']['host']);
+    }
+
+    private function createCreationListener(ContainerBuilder $container, string $id, array $config): string
+    {
+        $abstractCreationListenerId = 'security.authentication.listener.webauthn.creation';
+        $creationListener = new ChildDefinition($abstractCreationListenerId);
+        $creationListener->replaceArgument(0, new Reference($config['http_message_factory']));
+        $creationListener->replaceArgument(11, $id);
+        $creationListener->replaceArgument(12, $config['creation']);
+        $creationListener->replaceArgument(13, new Reference($config['success_handler']));
+        $creationListener->replaceArgument(14, new Reference($config['failure_handler']));
+        $creationListener->replaceArgument(15, new Reference($config['creation']['options_handler']));
+        $creationListener->replaceArgument(16, new Reference($config['options_storage']));
+
+        $creationListenerId = $abstractCreationListenerId.'.'.$id;
+        $container->setDefinition($creationListenerId, $creationListener);
+
+        return $creationListenerId;
+    }
+
     private function createEntryPoint(ContainerBuilder $container, string $id, array $config): string
     {
-        $entryPointId = 'webauthn.security.json.authentication.entrypoint.'.$id;
+        $entryPointId = 'security.authentication.entrypoint.'.$id;
         $entryPoint = new ChildDefinition(WebauthnEntryPoint::class);
         $entryPoint->replaceArgument(0, new Reference($config['failure_handler']));
 
         $container->setDefinition($entryPointId, $entryPoint);
 
         return $entryPointId;
+    }
+
+    private function createControllerAndRoute(ContainerBuilder $container, string $name, string $operation, string $id, string $path, ?string $host): void
+    {
+        $controller = new Definition(DummyController::class);
+        $controller->setFactory([new Reference(DummyControllerFactory::class), 'create']);
+        $controller->addTag(DynamicRouteCompilerPass::TAG, ['path' => $path, 'host' => $host]);
+        $controller->addTag('controller.service_arguments');
+
+        $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $name, $operation, $id);
+        $container->setDefinition($controllerId, $controller);
     }
 }

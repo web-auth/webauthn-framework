@@ -46,6 +46,19 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->addDefaultsIfNotSet()
+            ->beforeNormalization()
+                ->ifArray()
+                ->then(static function ($v): array {
+                    if (!isset($v['creation_profiles'])) {
+                        $v['creation_profiles'] = null;
+                    }
+                    if (!isset($v['request_profiles'])) {
+                        $v['request_profiles'] = null;
+                    }
+
+                    return $v;
+                })
+            ->end()
             ->children()
                 ->scalarNode('logger')
                     ->defaultNull()
@@ -102,8 +115,9 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('creation_profiles')
-                    ->treatFalseLike([])
-                    ->treatNullLike([])
+                    ->treatFalseLike(['default' => ['rp' => ['name' => 'Secured Application']]])
+                    ->treatNullLike(['default' => ['rp' => ['name' => 'Secured Application']]])
+                    ->treatTrueLike(['default' => ['rp' => ['name' => 'Secured Application']]])
                     ->useAttributeAsKey('name')
                     ->arrayPrototype()
                         ->addDefaultsIfNotSet()
@@ -166,8 +180,9 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('request_profiles')
-                    ->treatFalseLike([])
-                    ->treatNullLike([])
+                    ->treatFalseLike(['default' => []])
+                    ->treatTrueLike(['default' => []])
+                    ->treatNullLike(['default' => []])
                     ->useAttributeAsKey('name')
                     ->arrayPrototype()
                         ->addDefaultsIfNotSet()
@@ -209,6 +224,10 @@ final class Configuration implements ConfigurationInterface
                 ->treatNullLike([])
                 ->addDefaultsIfNotSet()
                 ->children()
+                    ->scalarNode('http_message_factory')
+                        ->defaultValue('sensio_framework_extra.psr7.http_message_factory')
+                        ->info('Service used to convert Symfony Requests/Responses into PSR-7 ones')
+                    ->end()
                     ->arrayNode('creation')
                         ->treatFalseLike([])
                         ->treatNullLike([])

@@ -42,7 +42,7 @@ final class CustomSessionStorage implements OptionsStorage
 
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
         if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
+            throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
