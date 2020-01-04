@@ -56,11 +56,32 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     public function getKey(): string
     {
-        return 'webauthn_json';
+        return 'webauthn';
     }
 
     /**
      * {@inheritdoc}
+     *
+     * webauthn:
+     *   user_provider: null
+     *   options_storage: SessionStorage::class
+     *   http_message_factory: ----
+     *   creation:
+     *     enabled: true
+     *     profile: default
+     *     options_path: /attestation/options
+     *     result_path: /attestation/result
+     *     options_handler: DefaultCreationOptionsHandler::class
+     *     success_handler: DefaultCreationSuccessHandler::class
+     *     failure_handler: DefaultCreationFailureHandler::class
+     *   request:
+     *     enabled: true
+     *     profile: default
+     *     options_path: /assertion/options
+     *     result_path: /assertion/result
+     *     options_handler: DefaultRequestOptionsHandler::class
+     *     success_handler: DefaultRequestSuccessHandler::class
+     *     failure_handler: DefaultRequestFailureHandler::class
      */
     public function addConfiguration(NodeDefinition $node): void
     {
@@ -76,7 +97,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
             ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
             ->scalarNode('http_message_factory')->isRequired()->end()
-            ->scalarNode('fake_user_entity_provider')->defaultNull()->end()
             ->scalarNode('user_verification')->defaultNull()->end()
             ->arrayNode('extensions')
             ->treatFalseLike([])
@@ -105,13 +125,12 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $listenerId = 'security.authentication.listener.webauthn.json';
         $listener = new ChildDefinition($listenerId);
         $listener->replaceArgument(0, new Reference($config['http_message_factory']));
-        $listener->replaceArgument(12, null === $config['fake_user_entity_provider'] ? null : new Reference($config['fake_user_entity_provider']));
-        $listener->replaceArgument(13, $id);
-        $listener->replaceArgument(14, $config);
-        $listener->replaceArgument(15, new Reference($config['success_handler']));
-        $listener->replaceArgument(16, new Reference($config['failure_handler']));
-        $listener->replaceArgument(17, new Reference($config['request_options_handler']));
-        $listener->replaceArgument(18, new Reference($config['request_options_storage']));
+        $listener->replaceArgument(12, $id);
+        $listener->replaceArgument(13, $config);
+        $listener->replaceArgument(14, new Reference($config['success_handler']));
+        $listener->replaceArgument(15, new Reference($config['failure_handler']));
+        $listener->replaceArgument(16, new Reference($config['request_options_handler']));
+        $listener->replaceArgument(17, new Reference($config['request_options_storage']));
 
         $listenerId .= '.'.$id;
         $container->setDefinition($listenerId, $listener);

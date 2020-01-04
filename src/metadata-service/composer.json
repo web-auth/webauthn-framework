@@ -22,7 +22,11 @@
         "league/uri": "^6.0",
         "league/uri-components": "^2.1",
         "psr/http-client": "^1.0",
-        "psr/http-factory": "^1.0"
+        "psr/http-factory": "^1.0",
+        "psr/log": "^1.1"
+    },
+    "suggest": {
+        "psr/log-implementation": "Recommended to receive logs from the library"
     },
     "autoload": {
         "psr-4": {

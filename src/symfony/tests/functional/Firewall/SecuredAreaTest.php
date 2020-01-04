@@ -80,7 +80,7 @@ class SecuredAreaTest extends WebTestCase
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
-        static::assertArrayHasKey('allowCredentials', $json);
+        static::assertArrayNotHasKey('allowCredentials', $json);
         static::assertArrayHasKey('timeout', $json);
 
         static::assertArrayHasKey('set-cookie', $client->getResponse()->headers->all());
@@ -100,7 +100,6 @@ class SecuredAreaTest extends WebTestCase
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $responseContent = $client->getResponse()->getContent();
         $newJson = json_decode($responseContent, true);
-        static::assertEquals($json['allowCredentials'], $newJson['allowCredentials']);
     }
 
     /**

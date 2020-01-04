@@ -24,8 +24,7 @@ use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\Counter\CounterChecker;
-use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Counter;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -46,6 +45,8 @@ return static function (ContainerConfigurator $container): void {
             ref(TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref(EventDispatcherInterface::class),
+            ref(MetadataStatementRepository::class)->nullOnInvalid(),
+            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public();
     $container->set(BaseAuthenticatorAssertionResponseValidator::class)
@@ -55,13 +56,15 @@ return static function (ContainerConfigurator $container): void {
             ref(TokenBinding\TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
-            ref(CounterChecker::class)->nullOnInvalid(),
             ref(EventDispatcherInterface::class),
+            ref(Counter\CounterChecker::class)->nullOnInvalid(),
+            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public();
     $container->set(PublicKeyCredentialLoader::class)
         ->args([
             ref(AttestationObjectLoader::class),
+            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public();
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
@@ -82,6 +85,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             ref(AttestationStatementSupportManager::class),
             ref(MetadataStatementRepository::class),
+            ref('webauthn.logger')->nullOnInvalid(),
         ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
@@ -90,5 +94,5 @@ return static function (ContainerConfigurator $container): void {
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
     $container->set(TokenBinding\SecTokenBindingHandler::class);
 
-    $container->set(ThrowExceptionIfInvalid::class);
+    $container->set(Counter\ThrowExceptionIfInvalid::class);
 };

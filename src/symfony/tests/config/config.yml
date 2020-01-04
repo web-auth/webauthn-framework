@@ -1,6 +1,19 @@
 parameters:
     env(DATABASE_URL): ''
 
+monolog:
+    handlers:
+        main:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+            channels: ["!event"]
+        webauthn:
+            type: stream
+            path: "%kernel.logs_dir%/webauthn.log"
+            level: error
+            channels: ["webauthn"]
+
 framework:
     test: ~
     secret: 'test'
@@ -26,6 +39,11 @@ services:
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
+    Webauthn\Bundle\Tests\Functional\Logger:
+        arguments: ['@logger']
+        tags:
+            - { name: 'monolog.logger', channel: 'webauthn' }
+
     Nyholm\Psr7\Factory\Psr17Factory: ~
     Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface:
         class: 'Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory'
@@ -48,8 +66,6 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-    Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider:
-        autowire: true
     Webauthn\Bundle\Tests\Functional\FailureHandler: ~
     Webauthn\Bundle\Tests\Functional\SuccessHandler: ~
     Webauthn\Bundle\Tests\Functional\CustomSessionStorage: ~
@@ -164,12 +180,27 @@ doctrine:
 
 
 webauthn:
-    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository'
-    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
+    logger: 'Webauthn\Bundle\Tests\Functional\Logger'
+    credential_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository' ## Mandatory
+    user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository' ## Mandatory
     android_safetynet:
         max_age: 99999999999
-    creation_profiles:
+    creation_profiles: ## Set default profile for zero-conf
+        foo:
+            rp:
+                name: 'My other application'
         default:
+            rp:
+                name: 'My other application'
+                id: 'localhost'
+                icon: null
+            challenge_length: 32
+            timeout: 60000
+            authenticator_selection_criteria:
+                attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
+                require_resident_key: false
+                user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+            extensions: []
 #            public_key_credential_parameters:
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
@@ -182,16 +213,14 @@ webauthn:
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS256
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS384
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS512
-            rp:
-                name: 'My other application'
-                id: 'localhost'
-    request_profiles:
+            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
+    request_profiles: ## Set default profile for zero-conf
         default:
             rp_id: 'localhost'
             challenge_length: 32
             timeout: 30000
-            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED
-    transport_binding_profile:
+            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+    transport_binding_profile: ## FIXME: TO BE REMOVED / USELESS
         creation:
             default:
                 profile_name: 'default'
@@ -206,7 +235,7 @@ webauthn:
                 response_path: '/assertion/result'
                 #host: 'test.com'
                 session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
-    metadata_service:
+    metadata_service: ## Optional
         enabled: true
         repository: 'Webauthn\Bundle\Tests\Functional\MetadataStatementRepository'
 
@@ -218,13 +247,32 @@ security:
     firewalls:
         main:
             anonymous: ~
-            webauthn_json:
+            webauthn:
                 profile: 'default'
                 request_options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
                 success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
                 failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
                 http_message_factory: 'Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface'
-                fake_user_entity_provider: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialFakeUserEntityProvider'
+#            webauthn:
+#               user_provider: null
+#               options_storage: SessionStorage::class
+#               http_message_factory: ----
+#               creation:
+#                   enabled: true
+#                   profile: default
+#                   options_path: /attestation/options
+#                   result_path: /attestation/result
+#                   options_handler: DefaultCreationOptionsHandler::class
+#                   success_handler: DefaultCreationSuccessHandler::class
+#                   failure_handler: DefaultCreationFailureHandler::class
+#               request:
+#                   enabled: true
+#                   profile: default
+#                   options_path: /assertion/options
+#                   result_path: /assertion/result
+#                   options_handler: DefaultRequestOptionsHandler::class
+#                   success_handler: DefaultRequestSuccessHandler::class
+#                   failure_handler: DefaultRequestFailureHandler::class
             logout:
                 path: /logout
                 target: /

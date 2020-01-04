@@ -18,6 +18,9 @@ use League\Uri\UriString;
 use LogicException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Throwable;
 
 class MetadataService
 {
@@ -45,32 +48,60 @@ class MetadataService
      */
     private $serviceUri;
 
-    public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalQueryStringValues = [], array $additionalHeaders = [])
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalQueryStringValues = [], array $additionalHeaders = [], ?LoggerInterface $logger = null)
     {
         $this->serviceUri = $serviceUri;
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
         $this->additionalQueryStringValues = $additionalQueryStringValues;
         $this->additionalHeaders = $additionalHeaders;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
     {
-        $hash = $entry->getHash();
-        $url = $entry->getUrl();
-        if (null === $hash || null === $url) {
-            throw new LogicException('The Metadata Statement has not been published');
-        }
-        $uri = $this->buildUri($url);
+        $this->logger->info('Trying to get the metadata statement for a given entry', ['entry' => $entry]);
+        try {
+            $hash = $entry->getHash();
+            $url = $entry->getUrl();
+            if (null === $hash || null === $url) {
+                throw new LogicException('The Metadata Statement has not been published');
+            }
+            $uri = $this->buildUri($url);
+            $result = MetadataStatementFetcher::fetchMetadataStatement($uri, true, $this->httpClient, $this->requestFactory, $this->additionalHeaders, $hash, $hashingFunction);
+            $this->logger->info('The metadata statement exists');
+            $this->logger->debug('Metadata Statement', ['mds' => $result]);
 
-        return MetadataStatementFetcher::fetchMetadataStatement($uri, true, $this->httpClient, $this->requestFactory, $this->additionalHeaders, $hash, $hashingFunction);
+            return $result;
+        } catch (Throwable $throwable) {
+            $this->logger->error('An error occurred', [
+                'exception' => $throwable,
+            ]);
+            throw $throwable;
+        }
     }
 
     public function getMetadataTOCPayload(): MetadataTOCPayload
     {
-        $uri = $this->buildUri($this->serviceUri);
+        $this->logger->info('Trying to get the metadata service TOC payload');
+        try {
+            $uri = $this->buildUri($this->serviceUri);
+            $toc = MetadataStatementFetcher::fetchTableOfContent($uri, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
+            $this->logger->info('The TOC payload has been received');
+            $this->logger->debug('TOC payload', ['toc' => $toc]);
 
-        return MetadataStatementFetcher::fetchTableOfContent($uri, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
+            return $toc;
+        } catch (Throwable $throwable) {
+            $this->logger->error('An error occurred', [
+                'exception' => $throwable,
+            ]);
+            throw $throwable;
+        }
     }
 
     private function buildUri(string $uri): string

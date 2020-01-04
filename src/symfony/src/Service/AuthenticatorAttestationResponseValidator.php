@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -22,6 +23,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
+use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -34,9 +36,9 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
      */
     private $eventDispatcher;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
     {
-        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
+        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $metadataStatementRepository, $logger);
         $this->eventDispatcher = $eventDispatcher;
     }
 

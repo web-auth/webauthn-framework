@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Service;
 
 use Cose\Algorithm\Manager;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -35,9 +36,9 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
      */
     private $eventDispatcher;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker, EventDispatcherInterface $eventDispatcher)
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, EventDispatcherInterface $eventDispatcher, ?CounterChecker $counterChecker = null, ?LoggerInterface $logger = null)
     {
-        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker);
+        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker, $logger);
         $this->eventDispatcher = $eventDispatcher;
     }
 

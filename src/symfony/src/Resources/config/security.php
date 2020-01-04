@@ -61,7 +61,6 @@ return static function (ContainerConfigurator $container): void {
             ref(AuthenticationManagerInterface::class),
             ref(SessionAuthenticationStrategyInterface::class),
             ref(HttpUtils::class),
-            null, // Fake user provider
             '', // Provider key
             [], // Options
             null, // Authentication success handler

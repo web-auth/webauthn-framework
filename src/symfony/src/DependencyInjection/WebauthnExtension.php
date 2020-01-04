@@ -75,9 +75,13 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(ExtensionOutputChecker::class)->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
+        if (null !== $config['logger']) {
+            $container->setAlias('webauthn.logger', $config['logger']);
+        }
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
+        //FIXME: set default profiles for zero-conf
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 

@@ -15,13 +15,13 @@ namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -38,8 +38,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
-use Webauthn\Bundle\Model\PublicKeyCredentialFakeUserEntity;
-use Webauthn\Bundle\Provider\FakePublicKeyCredentialUserEntityProvider;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
@@ -132,11 +130,6 @@ class WebauthnListener
     private $validator;
 
     /**
-     * @var FakePublicKeyCredentialUserEntityProvider
-     */
-    private $fakePublicKeyCredentialUserEntityProvider;
-
-    /**
      * @var AuthenticationSuccessHandlerInterface
      */
     private $authenticationSuccessHandler;
@@ -150,12 +143,13 @@ class WebauthnListener
      * @var OptionsStorage
      */
     private $requestOptionsStorage;
+
     /**
      * @var RequestOptionsHandler
      */
     private $requestOptionsHandler;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, ?FakePublicKeyCredentialUserEntityProvider $fakePublicKeyCredentialSourceRepository, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $requestOptionsHandler, OptionsStorage $requestOptionsStorage, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $requestOptionsHandler, OptionsStorage $requestOptionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null)
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -164,7 +158,7 @@ class WebauthnListener
         $this->sessionStrategy = $sessionStrategy;
         $this->providerKey = $providerKey;
         $this->options = $options;
-        $this->logger = $logger;
+        $this->logger = $logger ?? new NullLogger();
         $this->dispatcher = $dispatcher;
         $this->httpUtils = $httpUtils;
         $this->tokenStorage = $tokenStorage;
@@ -176,7 +170,6 @@ class WebauthnListener
         $this->serializer = $serializer;
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
         $this->validator = $validator;
-        $this->fakePublicKeyCredentialUserEntityProvider = $fakePublicKeyCredentialSourceRepository;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->requestOptionsStorage = $requestOptionsStorage;
@@ -198,17 +191,17 @@ class WebauthnListener
 
         switch (true) {
             case $this->httpUtils->checkRequestPath($request, $this->options['login_path']):
-                $this->onLoginPath($event);
+                $this->onRequestResultPath($event);
                 break;
             case $this->httpUtils->checkRequestPath($request, $this->options['options_path']):
-                $this->onOptionsPath($event);
+                $this->onRequestOptionsPath($event);
                 break;
             default:
                 return;
         }
     }
 
-    private function onOptionsPath(RequestEvent $event): void
+    private function onRequestOptionsPath(RequestEvent $event): void
     {
         $request = $event->getRequest();
         try {
@@ -216,16 +209,7 @@ class WebauthnListener
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $userEntity = null === $creationOptionsRequest->username ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
-            if (null === $userEntity) {
-                if (null === $this->fakePublicKeyCredentialUserEntityProvider) {
-                    $allowedCredentials = [];
-                } else {
-                    $userEntity = $this->fakePublicKeyCredentialUserEntityProvider->getFakeUserEntityFor($creationOptionsRequest->username);
-                    $allowedCredentials = $userEntity->getCredentials();
-                }
-            } else {
-                $allowedCredentials = $this->getCredentials($userEntity);
-            }
+            $allowedCredentials = $userEntity ? $this->getCredentials($userEntity) : [];
             $authenticationExtensionsClientInputs = null;
             if (0 === \count($this->options['extensions'])) {
                 $authenticationExtensionsClientInputs = AuthenticationExtensionsClientInputs::createFromArray($this->options['extensions']);
@@ -261,13 +245,10 @@ class WebauthnListener
         return $data;
     }
 
-    private function onLoginPath(RequestEvent $event): void
+    private function onRequestResultPath(RequestEvent $event): void
     {
         $request = $event->getRequest();
         try {
-            /*if ($this->options['require_previous_session'] && !$request->hasPreviousSession()) {
-                throw new SessionUnavailableException('Your session has timed out, or you have disabled cookies.');
-            }*/
             $token = $this->processWithAssertion($request);
             $authenticatedToken = $this->authenticationManager->authenticate($token);
             $this->sessionStrategy->onAuthentication($request, $authenticatedToken);
@@ -324,11 +305,6 @@ class WebauthnListener
     private function processWithAssertion(Request $request): WebauthnToken
     {
         $storedData = $this->requestOptionsStorage->get($request);
-
-        if ($storedData->getPublicKeyCredentialUserEntity() instanceof PublicKeyCredentialFakeUserEntity) {
-            throw new BadRequestHttpException('Invalid assertion');
-        }
-
         $assertion = $request->getContent();
         Assertion::string($assertion, 'Invalid assertion');
         $assertion = trim($assertion);
@@ -355,7 +331,7 @@ class WebauthnListener
             $userEntity = $this->userEntityRepository->findOneByUserHandle($publicKeyCredentialSource->getUserHandle());
             Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the associated user entity');
         } catch (Throwable $throwable) {
-            throw new AuthenticationException('Invalid assertion:', 0, $throwable);
+            throw new AuthenticationException('Invalid assertion', 0, $throwable);
         }
 
         $token = new WebauthnToken(

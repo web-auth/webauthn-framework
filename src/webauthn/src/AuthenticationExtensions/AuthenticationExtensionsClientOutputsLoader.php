@@ -17,7 +17,7 @@ use Assert\Assertion;
 use CBOR\CBORObject;
 use CBOR\MapObject;
 
-class AuthenticationExtensionsClientOutputsLoader
+abstract class AuthenticationExtensionsClientOutputsLoader
 {
     public static function load(CBORObject $object): AuthenticationExtensionsClientOutputs
     {

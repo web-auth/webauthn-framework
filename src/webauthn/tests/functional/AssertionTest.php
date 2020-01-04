@@ -69,7 +69,10 @@ class AssertionTest extends AbstractTestCase
         $credentialRepository->findOneByCredentialId(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn($publicKeyCredentialSource->reveal());
         $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function (): void {});
 
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('localhost');
         $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
 
         $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getRawId(),

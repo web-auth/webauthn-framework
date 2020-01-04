@@ -21,7 +21,7 @@ use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -47,23 +47,27 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('logger')
+                    ->defaultNull()
+                    ->info('A PSR3 logger to receive logs during the processes')
+                ->end()
                 ->scalarNode('credential_repository')
                     ->isRequired()
                     ->info('This repository is responsible of the credential storage')
                 ->end()
                 ->scalarNode('user_repository')
                     ->isRequired()
-                    ->info('This repository is responsible of the user storage. It is mandatory when using the transport binding profile feature')
+                    ->info('This repository is responsible of the user storage')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
-                    ->defaultValue(TokenBindingNotSupportedHandler::class)
+                    ->defaultValue(IgnoreTokenBindingHandler::class)
                     ->cannotBeEmpty()
                     ->info('This handler will check the token binding header from the request')
                 ->end()
                 ->scalarNode('counter_checker')
                     ->defaultValue(ThrowExceptionIfInvalid::class)
                     ->cannotBeEmpty()
-                    ->info('This service will check if the counter is valid. By default it throws an exception')
+                    ->info('This service will check if the counter is valid. By default it throws an exception (recommended)')
                 ->end()
                 ->arrayNode('android_safetynet')
                     ->addDefaultsIfNotSet()

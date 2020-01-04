@@ -16,6 +16,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -41,6 +42,7 @@ final class AppKernel extends Kernel
             new SpomkyLabsCborBundle(),
             new DoctrineBundle(),
             new SecurityBundle(),
+            new MonologBundle(),
 
             new WebauthnBundle(),
         ];

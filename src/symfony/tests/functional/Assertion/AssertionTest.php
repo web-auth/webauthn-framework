@@ -20,6 +20,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -66,7 +67,10 @@ class AssertionTest extends WebTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
         static::assertNull($response->getUserHandle());
 
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getHost()->willReturn('localhost');
         $request = $this->prophesize(ServerRequestInterface::class);
+        $request->getUri()->willReturn($uri->reveal());
 
         self::$kernel->getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
             $publicKeyCredential->getRawId(),
@@ -98,7 +102,7 @@ class AssertionTest extends WebTestCase
         static::assertEquals(30000, $options->getTimeout());
         static::assertEquals('localhost', $options->getRpId());
         static::assertEquals($allowedCredentials, $options->getAllowCredentials());
-        static::assertEquals('required', $options->getUserVerification());
+        static::assertEquals('preferred', $options->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
     }
 

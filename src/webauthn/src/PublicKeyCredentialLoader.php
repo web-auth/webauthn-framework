@@ -20,7 +20,10 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -39,40 +42,64 @@ class PublicKeyCredentialLoader
      */
     private $decoder;
 
-    public function __construct(AttestationObjectLoader $attestationObjectLoader)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(AttestationObjectLoader $attestationObjectLoader, ?LoggerInterface $logger = null)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationObjectLoader = $attestationObjectLoader;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function loadArray(array $json): PublicKeyCredential
     {
-        foreach (['id', 'rawId', 'type'] as $key) {
-            Assertion::keyExists($json, $key, sprintf('The parameter "%s" is missing', $key));
-            Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
+        $this->logger->info('Trying to load data from an array', ['data' => $json]);
+        try {
+            foreach (['id', 'rawId', 'type'] as $key) {
+                Assertion::keyExists($json, $key, sprintf('The parameter "%s" is missing', $key));
+                Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
+            }
+            Assertion::keyExists($json, 'response', 'The parameter "response" is missing');
+            Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
+            Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
+
+            $id = Base64Url::decode($json['id']);
+            $rawId = Base64Url::decode($json['rawId']);
+            Assertion::true(hash_equals($id, $rawId));
+
+            $publicKeyCredential = new PublicKeyCredential(
+                $json['id'],
+                $json['type'],
+                $rawId,
+                $this->createResponse($json['response'])
+            );
+            $this->logger->info('The data has been loaded');
+            $this->logger->debug('Public Key Credential', ['publicKeyCredential' => $publicKeyCredential]);
+
+            return $publicKeyCredential;
+        } catch (Throwable $throwable) {
+            $this->logger->error('An error occurred', [
+                'exception' => $throwable,
+            ]);
+            throw $throwable;
         }
-        Assertion::keyExists($json, 'response', 'The parameter "response" is missing');
-        Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
-        Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
-
-        $id = Base64Url::decode($json['id']);
-        $rawId = Base64Url::decode($json['rawId']);
-        Assertion::true(hash_equals($id, $rawId));
-
-        $publicKeyCredential = new PublicKeyCredential(
-            $json['id'],
-            $json['type'],
-            $rawId,
-            $this->createResponse($json['response'])
-        );
-
-        return $publicKeyCredential;
     }
 
     public function load(string $data): PublicKeyCredential
     {
-        $json = json_decode($data, true);
-        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
+        $this->logger->info('Trying to load data from a string', ['data' => $data]);
+        try {
+            $json = json_decode($data, true);
+            Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
+        } catch (Throwable $throwable) {
+            $this->logger->error('An error occurred', [
+                'exception' => $throwable,
+            ]);
+            throw $throwable;
+        }
 
         return $this->loadArray($json);
     }
