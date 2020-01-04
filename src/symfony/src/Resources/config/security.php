@@ -23,9 +23,12 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Authentication\Provider\WebauthnProvider;
 use Webauthn\Bundle\Security\EntryPoint\WebauthnEntryPoint;
+use Webauthn\Bundle\Security\Firewall\CreationListener;
+use Webauthn\Bundle\Security\Firewall\RequestListener;
 use Webauthn\Bundle\Security\Firewall\WebauthnListener;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
@@ -34,6 +37,7 @@ use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
+use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -44,7 +48,7 @@ return static function (ContainerConfigurator $container): void {
         ->arg(0, ref(UserCheckerInterface::class))
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn.json')
+    $container->services()->set('security.authentication.listener.webauthn')
         ->class(WebauthnListener::class)
         ->abstract()
         ->private()
@@ -68,6 +72,76 @@ return static function (ContainerConfigurator $container): void {
             null, // Request Options handler
             null, // Request Options Storage
             ref(LoggerInterface::class)->nullOnInvalid(),
+            ref(EventDispatcherInterface::class)->nullOnInvalid(),
+        ])
+        ->tag('monolog.logger', ['channel' => 'security'])
+    ;
+
+    $container->services()->set('security.authentication.listener.webauthn')
+        ->class(WebauthnListener::class)
+        ->abstract()
+        ->private()
+        ->args([
+            ref(HttpUtils::class),
+            ref('webauthn.logger')->nullOnInvalid(),
+            null, // Request Listener
+            null, // Creation Listener
+            [], // Options
+        ])
+        ->tag('monolog.logger', ['channel' => 'security'])
+    ;
+
+    $container->services()->set('security.authentication.listener.webauthn.request')
+        ->class(RequestListener::class)
+        ->abstract()
+        ->private()
+        ->args([
+            '', // HTTP Message Factory
+            ref(SerializerInterface::class),
+            ref(ValidatorInterface::class),
+            ref(PublicKeyCredentialRequestOptionsFactory::class),
+            ref(PublicKeyCredentialSourceRepository::class),
+            ref(PublicKeyCredentialUserEntityRepository::class),
+            ref(PublicKeyCredentialLoader::class),
+            ref(AuthenticatorAssertionResponseValidator::class),
+            ref(TokenStorageInterface::class),
+            ref(AuthenticationManagerInterface::class),
+            ref(SessionAuthenticationStrategyInterface::class),
+            '', // Provider key
+            [], // Options
+            null, // Authentication success handler
+            null, // Authentication failure handler
+            null, // Options handler
+            null, // Options Storage
+            ref('webauthn.logger')->nullOnInvalid(),
+            ref(EventDispatcherInterface::class)->nullOnInvalid(),
+        ])
+        ->tag('monolog.logger', ['channel' => 'security'])
+    ;
+
+    $container->services()->set('security.authentication.listener.webauthn.creation')
+        ->class(CreationListener::class)
+        ->abstract()
+        ->private()
+        ->args([
+            '', // HTTP Message Factory
+            ref(SerializerInterface::class),
+            ref(ValidatorInterface::class),
+            ref(PublicKeyCredentialCreationOptionsFactory::class),
+            ref(PublicKeyCredentialSourceRepository::class),
+            ref(PublicKeyCredentialUserEntityRepository::class),
+            ref(PublicKeyCredentialLoader::class),
+            ref(AuthenticatorAttestationResponseValidator::class),
+            ref(TokenStorageInterface::class),
+            ref(AuthenticationManagerInterface::class),
+            ref(SessionAuthenticationStrategyInterface::class),
+            '', // Provider key
+            [], // Options
+            null, // Authentication success handler
+            null, // Authentication failure handler
+            null, // Options handler
+            null, // Options Storage
+            ref('webauthn.logger')->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
         ])
         ->tag('monolog.logger', ['channel' => 'security'])

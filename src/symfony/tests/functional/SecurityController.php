@@ -20,22 +20,6 @@ final class SecurityController
     /**
      * Intercepted by the security listener.
      */
-    public function login(): Response
-    {
-        return new Response('login');
-    }
-
-    /**
-     * Intercepted by the security listener.
-     */
-    public function options(): Response
-    {
-        return new Response('options');
-    }
-
-    /**
-     * Intercepted by the security listener.
-     */
     public function logout(): Response
     {
         return new Response('logout');

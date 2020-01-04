@@ -20,6 +20,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Controller\DummyControllerFactory;
+use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -95,4 +97,9 @@ return static function (ContainerConfigurator $container): void {
     $container->set(TokenBinding\SecTokenBindingHandler::class);
 
     $container->set(Counter\ThrowExceptionIfInvalid::class);
+
+    $container->set(Loader::class)
+        ->tag('routing.loader');
+
+    $container->set(DummyControllerFactory::class);
 };

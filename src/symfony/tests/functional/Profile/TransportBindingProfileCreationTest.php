@@ -85,7 +85,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
     /**
      * @test
      */
-    public function aRequestWithAnUsernameNameCannotBeProcessed(): void
+    public function aRequestWithAnInvalidUsernameCannotBeProcessed(): void
     {
         $content = [
             'username' => 123,

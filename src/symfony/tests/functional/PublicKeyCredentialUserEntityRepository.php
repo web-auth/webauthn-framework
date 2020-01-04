@@ -26,7 +26,13 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function __construct(CacheItemPoolInterface $cacheItemPool)
     {
         $this->cacheItemPool = $cacheItemPool;
-        $this->saveUserEntity(new PublicKeyCredentialUserEntity('admin', 'foo', 'Foo BAR (-_-)'));
+        $this->saveUserEntity(new User(
+            'admin',
+            'foo',
+            'Foo BAR (-_-)',
+            null,
+            ['ROLE_ADMIN', 'ROLE_USER']
+        ));
     }
 
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
@@ -51,7 +57,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
     {
-        return new PublicKeyCredentialUserEntity(
+        return new User(
             $username,
             Uuid::uuid4()->toString(),
             $displayName,
@@ -61,6 +67,15 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
+        if (!$userEntity instanceof User) {
+            $userEntity = new User(
+                $userEntity->getName(),
+                $userEntity->getId(),
+                $userEntity->getDisplayName(),
+                $userEntity->getIcon()
+            );
+        }
+
         $item = $this->cacheItemPool->getItem('user-id'.Base64Url::encode($userEntity->getId()));
         $item->set($userEntity);
         $this->cacheItemPool->save($item);

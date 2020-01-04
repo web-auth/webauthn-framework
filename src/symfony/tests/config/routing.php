@@ -17,18 +17,8 @@ use Webauthn\Bundle\Tests\Functional\HomeController;
 use Webauthn\Bundle\Tests\Functional\SecurityController;
 
 return static function (RoutingConfigurator $routes): void {
+    // Webauthn Dynamic routes
     $routes->import('.', 'webauthn');
-
-    // Security
-    $routes->add('app_login', '/login')
-        ->controller([SecurityController::class, 'login'])
-        ->methods(['POST'])
-    ;
-
-    $routes->add('app_login_options', '/login/options')
-        ->controller([SecurityController::class, 'options'])
-        ->methods(['POST'])
-    ;
 
     $routes->add('app_logout', '/logout')
         ->controller([SecurityController::class, 'logout'])

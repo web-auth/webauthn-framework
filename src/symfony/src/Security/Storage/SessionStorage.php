@@ -43,7 +43,7 @@ final class SessionStorage implements OptionsStorage
         $userEntity = $sessionValue['userEntity'];
 
         if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
-            throw new BadRequestHttpException('No public key credential request options available for this session.');
+            throw new BadRequestHttpException('No public key credential options available for this session.');
         }
         if (null !== $userEntity && !$userEntity instanceof PublicKeyCredentialUserEntity) {
             throw new BadRequestHttpException('No user entity available for this session.');

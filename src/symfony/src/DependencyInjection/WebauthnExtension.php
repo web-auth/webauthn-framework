@@ -119,6 +119,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
 
+        $container->setAlias('webauthn.transport_binding_profile.http_message_factory', $config['transport_binding_profile']['http_message_factory']);
+
         $loader->load('transport_binding_profile.php');
 
         foreach ($config['transport_binding_profile']['creation'] as $name => $profileConfig) {

@@ -64,6 +64,11 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         return $item->get();
     }
 
+    public function clearCredentials(): void
+    {
+        $this->cacheItemPool->clear();
+    }
+
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $item = $this->cacheItemPool->getItem('pks-'.Base64Url::encode($publicKeyCredentialSource->getPublicKeyCredentialId()));
