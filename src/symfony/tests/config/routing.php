@@ -18,7 +18,7 @@ use Webauthn\Bundle\Tests\Functional\SecurityController;
 
 return static function (RoutingConfigurator $routes): void {
     // Webauthn Dynamic routes
-    $routes->import('.', 'webauthn');
+    $routes->import('@WebauthnBundle/Resources/config/routing.php');
 
     $routes->add('app_logout', '/logout')
         ->controller([SecurityController::class, 'logout'])
