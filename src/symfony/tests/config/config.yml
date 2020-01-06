@@ -247,16 +247,16 @@ security:
 #               http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
-               creation:
-                   enabled: true
+#               registration:
+#                   enabled: true
 #                   profile: default
 #                   routes:
 #                       host: null
 #                       options_path: '/register/options'
 #                       result_path: '/register'
 #                   options_handler: DefaultCreationOptionsHandler::class
-               request:
-                   enabled: true
+#               authentication:
+#                   enabled: true
 #                   profile: default
 #                   routes:
 #                       host: null

@@ -83,22 +83,22 @@ class WebauthnListener
         }
 
         switch (true) {
-            case true === $this->options['request']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['request']['routes']['result_path']):
+            case true === $this->options['authentication']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['authentication']['routes']['result_path']):
                 $this->logger->debug('The path corresponds to the request result path');
                 $this->requestListener->processWithRequestResult($event);
 
                 return;
-            case true === $this->options['request']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['request']['routes']['options_path']):
+            case true === $this->options['authentication']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['authentication']['routes']['options_path']):
                 $this->logger->debug('The path corresponds to the request options path');
                 $this->requestListener->processWithRequestOptions($event);
 
                 return;
-            case true === $this->options['creation']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['creation']['routes']['result_path']):
+            case true === $this->options['registration']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['registration']['routes']['result_path']):
                 $this->logger->debug('The path corresponds to the creation result path');
                 $this->creationListener->processWithCreationResult($event);
 
                 return;
-            case true === $this->options['creation']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['creation']['routes']['options_path']):
+            case true === $this->options['registration']['enabled'] && $this->httpUtils->checkRequestPath($request, $this->options['registration']['routes']['options_path']):
                 $this->logger->debug('The path corresponds to the creation options path');
                 $this->creationListener->processWithCreationOptions($event);
 
