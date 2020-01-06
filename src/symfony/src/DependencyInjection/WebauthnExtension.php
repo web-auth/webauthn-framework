@@ -179,7 +179,12 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('metadata_statement_supports.php');
 
         //Android SafetyNet
-        $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
+        if (null !== $config['android_safetynet']['http_client']) {
+            $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
+        }
+        if (null !== $config['android_safetynet']['request_factory']) {
+            $container->setAlias('webauthn.android_safetynet.request_factory', $config['android_safetynet']['request_factory']);
+        }
         $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
         $container->setParameter('webauthn.android_safetynet.leeway', $config['android_safetynet']['leeway']);
         $container->setParameter('webauthn.android_safetynet.max_age', $config['android_safetynet']['max_age']);
