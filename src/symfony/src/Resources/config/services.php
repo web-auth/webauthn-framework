@@ -12,6 +12,8 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement;
@@ -102,4 +104,6 @@ return static function (ContainerConfigurator $container): void {
         ->tag('routing.loader');
 
     $container->set(DummyControllerFactory::class);
+    $container->set(DummyPublicKeyCredentialSourceRepository::class);
+    $container->set(DummyPublicKeyCredentialUserEntityRepository::class);
 };
