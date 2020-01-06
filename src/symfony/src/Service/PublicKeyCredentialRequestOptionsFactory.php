@@ -18,12 +18,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class PublicKeyCredentialRequestOptionsFactory
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $profiles;
 
@@ -32,12 +33,18 @@ final class PublicKeyCredentialRequestOptionsFactory
      */
     private $eventDispatcher;
 
+    /**
+     * @param array<string, mixed> $profiles
+     */
     public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
         $this->profiles = $profiles;
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    /**
+     * @param array<PublicKeyCredentialDescriptor> $allowCredentials
+     */
     public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
     {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
@@ -56,6 +63,9 @@ final class PublicKeyCredentialRequestOptionsFactory
         return $options;
     }
 
+    /**
+     * @param array<string, mixed> $profile
+     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
         $extensions = new AuthenticationExtensionsClientInputs();

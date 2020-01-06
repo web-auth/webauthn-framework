@@ -55,6 +55,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return 'packed';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation['attStmt'], 'sig', 'The attestation statement value "sig" is missing.');
@@ -85,6 +88,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         }
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     private function loadBasicType(array $attestation): AttestationStatement
     {
         $certificates = $attestation['attStmt']['x5c'];
@@ -95,6 +101,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     private function loadEcdaaType(array $attestation): AttestationStatement
     {
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
@@ -103,6 +112,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return AttestationStatement::createEcdaa($attestation['fmt'], $attestation['attStmt'], new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId']));
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     private function loadEmptyType(array $attestation): AttestationStatement
     {
         return AttestationStatement::createSelf($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());

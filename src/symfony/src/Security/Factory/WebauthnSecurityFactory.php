@@ -34,14 +34,13 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
-     * @param string      $id
-     * @param array       $config
-     * @param string      $userProviderId
-     * @param string|null $defaultEntryPointId
+     * @param array<string, mixed> $config
+     *
+     * @return array<int, string>
      */
-    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId): array
+    public function create(ContainerBuilder $container, string $id, array $config, string $userProviderId, ?string $defaultEntryPoint): array
     {
-        $authProviderId = $this->createAuthProvider($container, $id, $config, $userProviderId);
+        $authProviderId = $this->createAuthProvider($container, $id, $userProviderId);
         $entryPointId = $this->createEntryPoint($container, $id, $config);
         $listenerId = $this->createListener($container, $id, $config);
 
@@ -111,7 +110,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         ;
     }
 
-    private function createAuthProvider(ContainerBuilder $container, string $id, array $config, string $userProviderId): string
+    private function createAuthProvider(ContainerBuilder $container, string $id, string $userProviderId): string
     {
         $providerId = 'security.authentication.provider.webauthn.'.$id;
         $container
@@ -122,6 +121,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $providerId;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createListener(ContainerBuilder $container, string $id, array $config): string
     {
         $this->createRequestControllersAndRoutes($container, $id, $config);
@@ -142,6 +144,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $listenerId;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createRequestControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
         if (false === $config['authentication']['enabled']) {
@@ -152,6 +157,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $this->createControllerAndRoute($container, 'request', 'result', $id, $config['authentication']['routes']['result_path'], $config['authentication']['routes']['host']);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createRequestListener(ContainerBuilder $container, string $id, array $config): string
     {
         $abstractRequestListenerId = 'security.authentication.listener.webauthn.request';
@@ -170,6 +178,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $requestListenerId;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createCreationControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
         if (false === $config['registration']['enabled']) {
@@ -180,6 +191,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $this->createControllerAndRoute($container, 'creation', 'result', $id, $config['registration']['routes']['result_path'], $config['registration']['routes']['host']);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createCreationListener(ContainerBuilder $container, string $id, array $config): string
     {
         $abstractCreationListenerId = 'security.authentication.listener.webauthn.creation';
@@ -198,6 +212,9 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $creationListenerId;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function createEntryPoint(ContainerBuilder $container, string $id, array $config): string
     {
         $entryPointId = 'security.authentication.entrypoint.'.$id;

@@ -64,7 +64,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<string, mixed> $configs
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -91,7 +91,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('security.php');
 
         $this->loadTransportBindingProfile($container, $loader, $config);
-        $this->loadMetadataServices($container, $loader, $config);
+        $this->loadMetadataServices($container, $config);
         if (true === $config['metadata_service']['enabled']) {
             $this->loadMetadataStatementSupports($container, $loader, $config);
         }
@@ -106,13 +106,16 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<string, mixed> $config
      */
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function loadTransportBindingProfile(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         if (!class_exists(AttestationRequestController::class)) {
@@ -168,6 +171,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function loadMetadataStatementSupports(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         $loader->load('metadata_statement_supports.php');
@@ -180,7 +186,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('android_safetynet.php');
     }
 
-    private function loadMetadataServices(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function loadMetadataServices(ContainerBuilder $container, array $config): void
     {
         if (false === $config['metadata_service']['enabled']) {
             return;

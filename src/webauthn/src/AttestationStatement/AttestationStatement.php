@@ -32,7 +32,7 @@ class AttestationStatement implements JsonSerializable
     private $fmt;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $attStmt;
 
@@ -46,6 +46,9 @@ class AttestationStatement implements JsonSerializable
      */
     private $type;
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public function __construct(string $fmt, array $attStmt, string $type, TrustPath $trustPath)
     {
         $this->fmt = $fmt;
@@ -54,26 +57,41 @@ class AttestationStatement implements JsonSerializable
         $this->trustPath = $trustPath;
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_NONE, $trustPath);
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createBasic(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_BASIC, $trustPath);
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createSelf(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_SELF, $trustPath);
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createAttCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ATTCA, $trustPath);
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ECDAA, $trustPath);
@@ -84,6 +102,9 @@ class AttestationStatement implements JsonSerializable
         return $this->fmt;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getAttStmt(): array
     {
         return $this->attStmt;
@@ -114,6 +135,9 @@ class AttestationStatement implements JsonSerializable
         return $this->type;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
@@ -128,6 +152,9 @@ class AttestationStatement implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

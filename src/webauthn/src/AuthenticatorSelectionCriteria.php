@@ -72,6 +72,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         return new self(
@@ -81,6 +84,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = [

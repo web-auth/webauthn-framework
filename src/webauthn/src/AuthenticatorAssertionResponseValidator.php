@@ -165,9 +165,12 @@ class AuthenticatorAssertionResponseValidator
             }
 
             /* @see 7.2.14 */
-            $extensions = $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions();
-            if (null !== $extensions) {
-                $this->extensionOutputCheckerHandler->check($extensions);
+            $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions();
+            if (null !== $extensionsClientOutputs) {
+                $this->extensionOutputCheckerHandler->check(
+                    $publicKeyCredentialRequestOptions->getExtensions(),
+                    $extensionsClientOutputs
+                );
             }
 
             /** @see 7.2.15 */
@@ -205,6 +208,9 @@ class AuthenticatorAssertionResponseValidator
         }
     }
 
+    /**
+     * @param array<PublicKeyCredentialDescriptor> $allowedCredentials
+     */
     private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool
     {
         foreach ($allowedCredentials as $allowedCredential) {

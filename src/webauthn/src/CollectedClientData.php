@@ -26,7 +26,7 @@ class CollectedClientData
     private $rawData;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $data;
 
@@ -46,10 +46,13 @@ class CollectedClientData
     private $origin;
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     private $tokenBinding;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(string $rawData, array $data)
     {
         $this->type = $this->findData($data, 'type');
@@ -121,6 +124,8 @@ class CollectedClientData
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return mixed|null
      */
     private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)

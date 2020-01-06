@@ -43,6 +43,9 @@ abstract class PublicKeyCredentialEntity implements JsonSerializable
         return $this->icon;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = [

@@ -28,7 +28,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class PublicKeyCredentialCreationOptionsFactory
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $profiles;
 
@@ -37,12 +37,18 @@ final class PublicKeyCredentialCreationOptionsFactory
      */
     private $eventDispatcher;
 
+    /**
+     * @param array<string, mixed> $profiles
+     */
     public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
         $this->profiles = $profiles;
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    /**
+     * @param array<PublicKeyCredentialDescriptor> $excludeCredentials
+     */
     public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestationConveyance = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialCreationOptions
     {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
@@ -64,6 +70,9 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $options;
     }
 
+    /**
+     * @param array<string, mixed> $profile
+     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
         $extensions = new AuthenticationExtensionsClientInputs();
@@ -74,6 +83,9 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $extensions;
     }
 
+    /**
+     * @param array<string, mixed> $profile
+     */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
         return new AuthenticatorSelectionCriteria(
@@ -83,13 +95,18 @@ final class PublicKeyCredentialCreationOptionsFactory
         );
     }
 
+    /**
+     * @param array<string, mixed> $profile
+     */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
         return new PublicKeyCredentialRpEntity($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
     }
 
     /**
-     * @return PublicKeyCredentialParameters[]
+     * @param array<string, mixed> $profile
+     *
+     * @return array<PublicKeyCredentialParameters>
      */
     private function createCredentialParameters(array $profile): array
     {

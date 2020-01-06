@@ -131,9 +131,12 @@ class AuthenticatorAttestationResponseValidator
             }
 
             /* @see 7.1.12 */
-            $extensions = $attestationObject->getAuthData()->getExtensions();
-            if (null !== $extensions) {
-                $this->extensionOutputCheckerHandler->check($extensions);
+            $extensionsClientOutputs = $attestationObject->getAuthData()->getExtensions();
+            if (null !== $extensionsClientOutputs) {
+                $this->extensionOutputCheckerHandler->check(
+                    $publicKeyCredentialCreationOptions->getExtensions(),
+                    $extensionsClientOutputs
+                );
             }
 
             /** @see 7.1.13 */

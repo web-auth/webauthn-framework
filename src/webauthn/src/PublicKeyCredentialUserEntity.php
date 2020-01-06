@@ -53,6 +53,9 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
@@ -69,6 +72,9 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

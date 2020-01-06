@@ -29,7 +29,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     private $rpId;
 
     /**
-     * @var PublicKeyCredentialDescriptor[]
+     * @var array<PublicKeyCredentialDescriptor>
      */
     private $allowCredentials;
 
@@ -55,7 +55,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     }
 
     /**
-     * @return PublicKeyCredentialDescriptor[]
+     * @return array<PublicKeyCredentialDescriptor>
      */
     public function getAllowCredentials(): array
     {
@@ -76,6 +76,9 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
@@ -96,6 +99,9 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = [

@@ -40,6 +40,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         return 'tpm';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
@@ -116,6 +119,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkCertInfo(string $data): array
     {
         $certInfo = new StringStream($data);
@@ -155,6 +161,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkPubArea(string $data): array
     {
         $pubArea = new StringStream($data);
@@ -185,6 +194,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getParameters(string $type, StringStream $stream): array
     {
         switch (bin2hex($type)) {
@@ -212,18 +224,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     private function getExponent(string $exponent): string
     {
         return '00000000' === bin2hex($exponent) ? Base64Url::decode('AQAB') : $exponent;
-    }
-
-    private function convertCertificatesToPem(array $certificates): array
-    {
-        foreach ($certificates as $k => $v) {
-            $tmp = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
-            $tmp .= chunk_split(base64_encode($v), 64, PHP_EOL);
-            $tmp .= '-----END CERTIFICATE-----'.PHP_EOL;
-            $certificates[$k] = $tmp;
-        }
-
-        return $certificates;
     }
 
     private function getTPMHash(string $nameAlg): string

@@ -19,6 +19,10 @@ use Symfony\Component\Process\Process;
 
 class CertificateToolbox
 {
+    /**
+     * @param array<string> $authenticatorCertificates
+     * @param array<string> $trustedCertificates
+     */
     public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
     {
         self::checkCertificatesValidity($authenticatorCertificates);
@@ -95,6 +99,11 @@ class CertificateToolbox
         return self::fixPEMStructure(base64_encode($derCertificate));
     }
 
+    /**
+     * @param array<string> $certificates
+     *
+     * @return array<string>
+     */
     public static function convertAllDERToPEM(array $certificates): array
     {
         $certs = [];
@@ -116,7 +125,7 @@ class CertificateToolbox
     }
 
     /**
-     * @param string[] $certificates
+     * @param array<string> $certificates
      */
     private static function checkCertificatesValidity(array $certificates): void
     {
@@ -131,7 +140,7 @@ class CertificateToolbox
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     private static function getCertificateHashes(): array
     {

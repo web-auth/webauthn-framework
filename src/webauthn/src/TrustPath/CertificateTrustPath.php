@@ -38,6 +38,9 @@ final class CertificateTrustPath implements TrustPath
         return $this->certificates;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function createFromArray(array $data): TrustPath
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
@@ -45,6 +48,9 @@ final class CertificateTrustPath implements TrustPath
         return new CertificateTrustPath($data['x5c']);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

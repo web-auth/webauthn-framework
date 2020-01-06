@@ -42,7 +42,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     protected $transports;
 
     /**
-     * @param string[] $transports
+     * @param array<string> $transports
      */
     public function __construct(string $type, string $id, array $transports = [])
     {
@@ -62,7 +62,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     public function getTransports(): array
     {
@@ -78,6 +78,9 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
@@ -90,6 +93,9 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = [

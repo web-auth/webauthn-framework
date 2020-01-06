@@ -32,6 +32,9 @@ final class EcdaaKeyIdTrustPath implements TrustPath
         return $this->ecdaaKeyId;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function jsonSerialize(): array
     {
         return [
@@ -40,6 +43,9 @@ final class EcdaaKeyIdTrustPath implements TrustPath
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function createFromArray(array $data): TrustPath
     {
         Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');

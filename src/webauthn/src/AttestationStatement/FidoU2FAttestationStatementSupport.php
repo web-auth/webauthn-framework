@@ -43,6 +43,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         return 'fido-u2f';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');

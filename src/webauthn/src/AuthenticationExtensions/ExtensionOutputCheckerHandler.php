@@ -28,10 +28,10 @@ class ExtensionOutputCheckerHandler
     /**
      * @throws ExtensionOutputError
      */
-    public function check(AuthenticationExtensionsClientOutputs $extensions): void
+    public function check(AuthenticationExtensionsClientInputs $inputs, AuthenticationExtensionsClientOutputs $outputs): void
     {
         foreach ($this->checkers as $checker) {
-            $checker->check($extensions);
+            $checker->check($inputs, $outputs);
         }
     }
 }

@@ -35,7 +35,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     public $displayName;
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     public $authenticatorSelection;
 
@@ -48,7 +48,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     public $attestation;
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     public $extensions;
 }

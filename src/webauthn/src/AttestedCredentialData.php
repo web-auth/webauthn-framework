@@ -60,6 +60,9 @@ class AttestedCredentialData implements JsonSerializable
         return $this->credentialPublicKey;
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
@@ -83,6 +86,9 @@ class AttestedCredentialData implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $result = [

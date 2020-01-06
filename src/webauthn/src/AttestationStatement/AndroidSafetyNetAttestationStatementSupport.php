@@ -89,6 +89,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return 'android-safetynet';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
@@ -209,6 +212,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         throw new InvalidArgumentException('Unrecognized response');
     }
 
+    /**
+     * @param array<string> $certificates
+     *
+     * @return array<string>
+     */
     private function convertCertificatesToPem(array $certificates): array
     {
         foreach ($certificates as $k => $v) {

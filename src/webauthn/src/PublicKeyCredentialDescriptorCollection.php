@@ -23,7 +23,7 @@ use JsonSerializable;
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
-     * @var PublicKeyCredentialDescriptor[]
+     * @var array<string, PublicKeyCredentialDescriptor>
      */
     private $publicKeyCredentialDescriptors = [];
 
@@ -46,6 +46,9 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
         unset($this->publicKeyCredentialDescriptors[$id]);
     }
 
+    /**
+     * @return Iterator<string, PublicKeyCredentialDescriptor>
+     */
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->publicKeyCredentialDescriptors);
@@ -56,6 +59,9 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
         return \count($this->publicKeyCredentialDescriptors, $mode);
     }
 
+    /**
+     * @return array<PublicKeyCredentialDescriptor>
+     */
     public function jsonSerialize(): array
     {
         return array_values($this->publicKeyCredentialDescriptors);
@@ -70,6 +76,9 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         $collection = new self();

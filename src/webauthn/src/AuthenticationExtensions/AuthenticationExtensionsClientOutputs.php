@@ -23,7 +23,7 @@ use JsonSerializable;
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
-     * @var AuthenticationExtension[]
+     * @var array<string, AuthenticationExtension>
      */
     private $extensions = [];
 
@@ -41,6 +41,9 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
         return self::createFromArray($data);
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         $object = new self();
@@ -66,11 +69,17 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
         return $this->extensions[$key];
     }
 
+    /**
+     * @return array<string, AuthenticationExtension>
+     */
     public function jsonSerialize(): array
     {
         return $this->extensions;
     }
 
+    /**
+     * @return Iterator<string, AuthenticationExtension>
+     */
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->extensions);

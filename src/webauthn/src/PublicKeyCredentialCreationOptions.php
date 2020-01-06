@@ -149,6 +149,9 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $json = [

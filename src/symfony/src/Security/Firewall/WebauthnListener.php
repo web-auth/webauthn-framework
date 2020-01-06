@@ -29,7 +29,7 @@ class WebauthnListener
     private $tokenStorage;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $options;
 
@@ -53,6 +53,9 @@ class WebauthnListener
      */
     private $creationListener;
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(HttpUtils $httpUtils, ?LoggerInterface $logger, RequestListener $requestListener, CreationListener $creationListener, array $options)
     {
         $this->httpUtils = $httpUtils;

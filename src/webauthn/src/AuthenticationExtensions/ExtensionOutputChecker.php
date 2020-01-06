@@ -18,5 +18,5 @@ interface ExtensionOutputChecker
     /**
      * @throws ExtensionOutputError
      */
-    public function check(AuthenticationExtensionsClientOutputs $extensions): void;
+    public function check(AuthenticationExtensionsClientInputs $inputs, AuthenticationExtensionsClientOutputs $outputs): void;
 }

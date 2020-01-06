@@ -47,6 +47,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         return 'android-key';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');

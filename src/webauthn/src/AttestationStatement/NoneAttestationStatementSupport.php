@@ -24,6 +24,9 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         return 'none';
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::noContent($attestation['attStmt'], 'Invalid attestation object');

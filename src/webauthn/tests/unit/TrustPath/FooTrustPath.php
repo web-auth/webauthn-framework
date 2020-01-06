@@ -17,6 +17,9 @@ use Webauthn\TrustPath\TrustPath;
 
 final class FooTrustPath implements TrustPath
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function createFromArray(array $data): TrustPath
     {
         return new self();

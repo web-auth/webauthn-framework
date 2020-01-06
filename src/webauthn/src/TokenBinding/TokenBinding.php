@@ -39,6 +39,9 @@ class TokenBinding
         $this->id = $id;
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFormArray(array $json): self
     {
         Assertion::keyExists($json, 'status', 'The member "status" is required');

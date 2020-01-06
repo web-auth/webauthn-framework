@@ -19,7 +19,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * This dummy Public Key Credential Source Repository is set to allow the bundle to be installed
- * even if the real repository is not set in the configuration file
+ * even if the real repository is not set in the configuration file.
  */
 class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepository
 {

@@ -58,7 +58,7 @@ class RequestListener
     private $tokenStorage;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $options;
 

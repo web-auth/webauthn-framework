@@ -153,6 +153,8 @@ class WebauthnToken extends AbstractToken
 
     /**
      * {@inheritdoc}
+     *
+     * @return array<int, mixed>
      */
     public function __serialize(): array
     {
@@ -172,6 +174,9 @@ class WebauthnToken extends AbstractToken
         ];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getAttributes()
     {
         $attributes = parent::getAttributes();
@@ -187,6 +192,8 @@ class WebauthnToken extends AbstractToken
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<int, mixed> $serialized
      */
     public function __unserialize(array $serialized): void
     {

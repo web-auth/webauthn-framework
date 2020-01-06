@@ -15,6 +15,9 @@ namespace Webauthn\TrustPath;
 
 final class EmptyTrustPath implements TrustPath
 {
+    /**
+     * @return array<string, string>
+     */
     public function jsonSerialize(): array
     {
         return [
@@ -22,6 +25,9 @@ final class EmptyTrustPath implements TrustPath
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function createFromArray(array $data): TrustPath
     {
         return new EmptyTrustPath();

@@ -23,6 +23,9 @@ final class IsUserPresentVoter implements VoterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed                 $subject
+     * @param array<string, string> $attributes
      */
     public function vote(TokenInterface $token, $subject, array $attributes)
     {

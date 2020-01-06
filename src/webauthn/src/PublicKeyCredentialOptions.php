@@ -57,5 +57,8 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     abstract public static function createFromString(string $data): self;
 
+    /**
+     * @param array<string, mixed> $json
+     */
     abstract public static function createFromArray(array $json): self;
 }

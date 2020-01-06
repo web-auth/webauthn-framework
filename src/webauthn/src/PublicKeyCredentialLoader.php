@@ -54,6 +54,9 @@ class PublicKeyCredentialLoader
         $this->logger = $logger ?? new NullLogger();
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public function loadArray(array $json): PublicKeyCredential
     {
         $this->logger->info('Trying to load data from an array', ['data' => $json]);
@@ -104,6 +107,9 @@ class PublicKeyCredentialLoader
         return $this->loadArray($json);
     }
 
+    /**
+     * @param array<string, mixed> $response
+     */
     private function createResponse(array $response): AuthenticatorResponse
     {
         Assertion::keyExists($response, 'clientDataJSON', 'Invalid data. The parameter "clientDataJSON" is missing');

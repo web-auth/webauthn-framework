@@ -12,8 +12,6 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
-use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement;
@@ -23,6 +21,8 @@ use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;

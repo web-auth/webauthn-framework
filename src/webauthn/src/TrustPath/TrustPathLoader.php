@@ -18,6 +18,9 @@ use InvalidArgumentException;
 
 abstract class TrustPathLoader
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function loadTrustPath(array $data): TrustPath
     {
         Assertion::keyExists($data, 'type', 'The trust path type is missing');
@@ -37,6 +40,9 @@ abstract class TrustPathLoader
         }
     }
 
+    /**
+     * @return array<string, string>
+     */
     private static function oldTrustPathTypes(): array
     {
         return [
