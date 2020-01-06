@@ -18,6 +18,8 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -65,11 +67,13 @@ final class Configuration implements ConfigurationInterface
                     ->info('A PSR3 logger to receive logs during the processes')
                 ->end()
                 ->scalarNode('credential_repository')
-                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->defaultValue(DummyPublicKeyCredentialSourceRepository::class)
                     ->info('This repository is responsible of the credential storage')
                 ->end()
                 ->scalarNode('user_repository')
-                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->defaultValue(DummyPublicKeyCredentialUserEntityRepository::class)
                     ->info('This repository is responsible of the user storage')
                 ->end()
                 ->scalarNode('token_binding_support_handler')
