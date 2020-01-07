@@ -88,7 +88,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AttestationStatement\AttestationObjectLoader::class)
         ->args([
             ref(AttestationStatementSupportManager::class),
-            ref(MetadataStatementRepository::class),
+            ref(MetadataStatementRepository::class)->nullOnInvalid(),
             ref('webauthn.logger')->nullOnInvalid(),
         ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
