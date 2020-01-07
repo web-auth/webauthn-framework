@@ -92,7 +92,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                     ->end()
                 ->end()
                 ->arrayNode('registration')
-                    ->canBeDisabled()
+                    ->canBeEnabled()
                     ->children()
                         ->scalarNode('profile')->defaultValue('default')->end()
                         ->arrayNode('routes')
