@@ -1,4 +1,4 @@
-name: Tests
+name: Tests with Code Coverage
 
 on: [push]
 
@@ -21,4 +21,11 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run test suite
-      run: vendor/bin/phpunit -c phpunit.xml.dist
+      run: |
+        wget https://phar.phpunit.de/phpcov.phar
+        wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+        chmod +x php-coveralls.phar
+        chmod +x phpcov.phar
+        vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
+        phpcov.phar merge --clover build/logs/clover.xml build/cov
+        php-coveralls.phar --no-interaction
