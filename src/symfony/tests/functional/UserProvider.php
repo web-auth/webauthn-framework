@@ -35,7 +35,7 @@ final class UserProvider implements UserProviderInterface
     public function loadUserByUsername($username): UserInterface
     {
         $user = $this->userRepository->findOneByUsername($username);
-        if (null === $user) {
+        if (!$user instanceof User) {
             throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
         }
 
@@ -52,6 +52,6 @@ final class UserProvider implements UserProviderInterface
      */
     public function supportsClass($class): bool
     {
-        return $class instanceof User;
+        return User::class === $class || is_subclass_of($class, User::class);
     }
 }

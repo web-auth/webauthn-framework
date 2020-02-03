@@ -57,13 +57,13 @@ final class ECSignature
     public static function fromAsn1(string $signature, int $length): string
     {
         $message = bin2hex($signature);
-        $position = 0;
 
-        if (self::ASN1_SEQUENCE !== self::readAsn1Content($message, $position, self::BYTE_SIZE)) {
+        if (0 !== mb_strpos($message, self::ASN1_SEQUENCE, 0, '8bit')) {
             throw new InvalidArgumentException('Invalid data. Should start with a sequence.');
         }
 
-        if (self::ASN1_LENGTH_2BYTES === self::readAsn1Content($message, $position, self::BYTE_SIZE)) {
+        $position = 2;
+        if (0 !== mb_strpos($message, self::ASN1_LENGTH_2BYTES, 2, '8bit')) {
             $position += self::BYTE_SIZE;
         }
 
@@ -84,7 +84,7 @@ final class ECSignature
             return self::ASN1_NEGATIVE_INTEGER.$data;
         }
 
-        while (self::ASN1_NEGATIVE_INTEGER === mb_substr($data, 0, self::BYTE_SIZE, '8bit')
+        while (0 === mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, 0, '8bit')
             && mb_substr($data, 2, self::BYTE_SIZE, '8bit') <= self::ASN1_BIG_INTEGER_LIMIT) {
             $data = mb_substr($data, 2, null, '8bit');
         }
@@ -113,7 +113,7 @@ final class ECSignature
 
     private static function retrievePositiveInteger(string $data): string
     {
-        while (self::ASN1_NEGATIVE_INTEGER === mb_substr($data, 0, self::BYTE_SIZE, '8bit')
+        while (0 === mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, 0, '8bit')
             && mb_substr($data, 2, self::BYTE_SIZE, '8bit') > self::ASN1_BIG_INTEGER_LIMIT) {
             $data = mb_substr($data, 2, null, '8bit');
         }

@@ -17,7 +17,7 @@ use Cose\Key\Ec2Key;
 
 final class ES256K extends ECDSA
 {
-    public const ID = -43;
+    public const ID = -46;
 
     public static function identifier(): int
     {
