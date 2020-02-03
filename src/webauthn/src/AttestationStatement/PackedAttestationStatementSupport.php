@@ -101,9 +101,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
 
-    /**
-     * @param array<string, mixed> $attestation
-     */
     private function loadEcdaaType(array $attestation): AttestationStatement
     {
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];

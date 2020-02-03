@@ -180,9 +180,9 @@ class RequestListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-            $extensions = $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
+            $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
             $userEntity = null === $creationOptionsRequest->username ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
-            $allowedCredentials = $userEntity ? $this->getCredentials($userEntity) : [];
+            $allowedCredentials = null !== $userEntity ? $this->getCredentials($userEntity) : [];
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->options['profile'],
                 $allowedCredentials,

@@ -34,8 +34,6 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
-     * @param array<string, mixed> $config
-     *
      * @return array<int, string>
      */
     public function create(ContainerBuilder $container, string $id, array $config, string $userProviderId, ?string $defaultEntryPoint): array

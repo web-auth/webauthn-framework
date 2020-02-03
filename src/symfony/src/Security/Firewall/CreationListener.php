@@ -181,8 +181,8 @@ class CreationListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-            $authenticatorSelection = $creationOptionsRequest->authenticatorSelection ? AuthenticatorSelectionCriteria::createFromArray($creationOptionsRequest->authenticatorSelection) : null;
-            $extensions = $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
+            $authenticatorSelection = null !== $creationOptionsRequest->authenticatorSelection ? AuthenticatorSelectionCriteria::createFromArray($creationOptionsRequest->authenticatorSelection) : null;
+            $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
             $userEntity = $this->publicKeyUserEntityRepository->findOneByUsername($creationOptionsRequest->username);
             Assertion::null($userEntity, 'Invalid username');
             $userEntity = $this->publicKeyUserEntityRepository->createUserEntity(
