@@ -1,0 +1,8 @@
+daysUntilStale: 1
+daysUntilClose: 1
+staleLabel: wontfix
+markComment: >
+  This issue has been automatically marked as stale because this repository
+  is a read-only repository and nobody will take care of it. Please submit it to the main repository.
+  Thank you for your contributions.
+closeComment: false

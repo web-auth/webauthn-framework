@@ -79,10 +79,16 @@ class AttestedCredentialData implements JsonSerializable
         $credentialId = base64_decode($json['credentialId'], true);
         Assertion::string($credentialId, 'Unable to decode the data');
 
+        $credentialPublicKey = null;
+        if (isset($json['credentialPublicKey'])) {
+            $credentialPublicKey = base64_decode($json['credentialPublicKey'], true);
+            Assertion::string($credentialPublicKey, 'Invalid Credential Public Key');
+        }
+
         return new self(
             $uuid,
             $credentialId,
-            isset($json['credentialPublicKey']) ? base64_decode($json['credentialPublicKey'], true) : null
+            $credentialPublicKey
         );
     }
 

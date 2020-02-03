@@ -70,7 +70,7 @@ abstract class Algorithms
     public const COSE_ALGORITHM_RSAES_OAEP = -40;
     public const COSE_ALGORITHM_RSAES_OAEP_256 = -41;
     public const COSE_ALGORITHM_RSAES_OAEP_512 = -42;
-    public const COSE_ALGORITHM_ES256K = -43;
+    public const COSE_ALGORITHM_ES256K = -46;
     public const COSE_ALGORITHM_RS256 = -257;
     public const COSE_ALGORITHM_RS384 = -258;
     public const COSE_ALGORITHM_RS512 = -259;
