@@ -93,7 +93,7 @@ class AuthenticatorRegistrationHelper
     /**
      * @throws AssertionFailedException
      */
-    public function generateOptions(PublicKeyCredentialUserEntity $userEntity, Request $request): PublicKeyCredentialCreationOptions
+    public function generateOptions(PublicKeyCredentialUserEntity $userEntity, Request $request, string $profile = 'default'): PublicKeyCredentialCreationOptions
     {
         $content = $request->getContent();
         Assertion::string($content, 'Invalid data');
@@ -101,7 +101,7 @@ class AuthenticatorRegistrationHelper
         $authenticatorSelection = null !== $creationOptionsRequest->authenticatorSelection ? AuthenticatorSelectionCriteria::createFromArray($creationOptionsRequest->authenticatorSelection) : null;
         $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
         $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
-            'default',
+            $profile,
             $userEntity,
             $this->getUserAuthenticatorList($userEntity),
             $authenticatorSelection,
