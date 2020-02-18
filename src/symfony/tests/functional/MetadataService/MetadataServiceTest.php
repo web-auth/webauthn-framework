@@ -21,6 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Throwable;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementFetcher;
@@ -57,7 +58,7 @@ class MetadataServiceTest extends KernelTestCase
             try {
                 $ms = $service->getMetadataStatementFor($entry);
                 $this->callObjectMethods($ms);
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }

@@ -16,24 +16,8 @@ namespace Webauthn\Bundle\Dto;
 use Symfony\Component\Validator\Constraints as Assert;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
-final class ServerPublicKeyCredentialCreationOptionsRequest
+final class AdditionalPublicKeyCredentialCreationOptionsRequest
 {
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     */
-    public $username;
-
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     */
-    public $displayName;
-
     /**
      * @var array|null
      */

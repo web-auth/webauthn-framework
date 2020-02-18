@@ -34,7 +34,7 @@ final class ServerPublicKeyCredentialRequestOptionsRequest
     public $userVerification;
 
     /**
-     * @var array<string, mixed>|null
+     * @var array|null
      */
     public $extensions;
 }

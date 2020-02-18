@@ -63,9 +63,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         return $this->alias;
     }
 
-    /**
-     * @param array<string, mixed> $configs
-     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
@@ -105,9 +102,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    /**
-     * @param array<string, mixed> $config
-     */
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
