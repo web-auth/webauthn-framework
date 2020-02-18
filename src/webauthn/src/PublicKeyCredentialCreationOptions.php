@@ -59,14 +59,14 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
-    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout, array $excludeCredentials, AuthenticatorSelectionCriteria $authenticatorSelection, string $attestation, ?AuthenticationExtensionsClientInputs $extensions)
+    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout = null, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, string $attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, ?AuthenticationExtensionsClientInputs $extensions = null)
     {
         parent::__construct($challenge, $timeout, $extensions);
         $this->rp = $rp;
         $this->user = $user;
         $this->pubKeyCredParams = array_values($pubKeyCredParams);
         $this->excludeCredentials = array_values($excludeCredentials);
-        $this->authenticatorSelection = $authenticatorSelection;
+        $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
         $this->attestation = $attestation;
     }
 
