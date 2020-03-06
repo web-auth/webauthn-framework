@@ -106,7 +106,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         return $this->attestation;
     }
 
-    public static function createFromString(string $data): PublicKeyCredentialOptions
+    public static function createFromString(string $data): PublicKeyCredentialCreationOptions
     {
         $data = json_decode($data, true);
         Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
@@ -115,7 +115,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         return self::createFromArray($data);
     }
 
-    public static function createFromArray(array $json): PublicKeyCredentialOptions
+    public static function createFromArray(array $json): PublicKeyCredentialCreationOptions
     {
         Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
         Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
