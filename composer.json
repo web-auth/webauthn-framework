@@ -113,7 +113,6 @@
         "symfony/translation": "5.0",
         "symfony/validator": "5.0",
         "symfony/var-dumper": "5.0",
-        "symfony/yaml": "^5.0",
-        "zendframework/zend-diactoros": "^2.2"
+        "symfony/yaml": "^5.0"
     }
 }
