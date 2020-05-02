@@ -81,7 +81,7 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): PublicKeyCredentialSource
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, array $securedRelyingPartyId = []): PublicKeyCredentialSource
     {
         try {
             $this->logger->info('Checking the authenticator assertion response', [
@@ -138,14 +138,17 @@ class AuthenticatorAssertionResponseValidator
 
             /** @see 7.2.9 */
             $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
-            $rpIdLength = mb_strlen($rpId);
+            $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
             $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-            Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+            if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+                Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+            }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
-            Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
+            $rpIdLength = mb_strlen($facetId);
+            Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $facetId, 'rpId mismatch.');
 
             /* @see 7.2.10 */
             if (null !== $C->getTokenBinding()) {
@@ -153,8 +156,7 @@ class AuthenticatorAssertionResponseValidator
             }
 
             /** @see 7.2.11 */
-            $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
-            $rpIdHash = hash('sha256', $rpId, true);
+            $rpIdHash = hash('sha256', $facetId, true);
             Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /* @see 7.2.12 */
@@ -225,13 +227,10 @@ class AuthenticatorAssertionResponseValidator
     private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
     {
         switch (true) {
-            case !$authenticationExtensionsClientInputs->has('appid'):
-                return $rpId;
             case null === $authenticationExtensionsClientOutputs:
-                return $rpId;
             case !$authenticationExtensionsClientOutputs->has('appid'):
-                return $rpId;
             case true !== $authenticationExtensionsClientOutputs->get('appid'):
+            case !$authenticationExtensionsClientInputs->has('appid'):
                 return $rpId;
             default:
                 return $authenticationExtensionsClientInputs->get('appid');

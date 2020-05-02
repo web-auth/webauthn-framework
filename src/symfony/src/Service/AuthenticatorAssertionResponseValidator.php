@@ -45,10 +45,10 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
     /**
      * {@inheritdoc}
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle): PublicKeyCredentialSource
+    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, array $securedRelyingPartyId = []): PublicKeyCredentialSource
     {
         try {
-            $result = parent::check($credentialId, $authenticatorAssertionResponse, $publicKeyCredentialRequestOptions, $request, $userHandle);
+            $result = parent::check($credentialId, $authenticatorAssertionResponse, $publicKeyCredentialRequestOptions, $request, $userHandle, $securedRelyingPartyId);
             $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationSucceededEvent(
                 $credentialId,
                 $authenticatorAssertionResponse,

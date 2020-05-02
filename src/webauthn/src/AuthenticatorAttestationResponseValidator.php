@@ -19,16 +19,20 @@ use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\TrustPath\EmptyTrustPath;
 
 class AuthenticatorAttestationResponseValidator
 {
@@ -75,7 +79,7 @@ class AuthenticatorAttestationResponseValidator
     /**
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): PublicKeyCredentialSource
+    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, array $securedRelyingPartyId = []): PublicKeyCredentialSource
     {
         try {
             $this->logger->info('Checking the authenticator attestation response', [
@@ -97,16 +101,20 @@ class AuthenticatorAttestationResponseValidator
 
             /** @see 7.1.5 */
             $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
+            $facetId = $this->getFacetId($rpId, $publicKeyCredentialCreationOptions->getExtensions(), $authenticatorAttestationResponse->getAttestationObject()->getAuthData()->getExtensions());
 
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
             Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
-            $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-            Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
-            $rpIdLength = mb_strlen($rpId);
-            Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $rpId, 'rpId mismatch.');
+            $rpIdLength = mb_strlen($facetId);
+            Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $facetId, 'rpId mismatch.');
+
+            $scheme = $parsedRelyingPartyId['scheme'] ?? '';
+            if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+                Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+            }
 
             /* @see 7.1.6 */
             if (null !== $C->getTokenBinding()) {
@@ -120,7 +128,7 @@ class AuthenticatorAttestationResponseValidator
             $attestationObject = $authenticatorAttestationResponse->getAttestationObject();
 
             /** @see 7.1.9 */
-            $rpIdHash = hash('sha256', $rpId, true);
+            $rpIdHash = hash('sha256', $facetId, true);
             Assertion::true(hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /* @see 7.1.10 */
@@ -143,9 +151,9 @@ class AuthenticatorAttestationResponseValidator
             $fmt = $attestationObject->getAttStmt()->getFmt();
             Assertion::true($this->attestationStatementSupportManager->has($fmt), 'Unsupported attestation statement format.');
 
-            /** @see 7.1.14 */
+            /* @see 7.1.14 */
+            $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
-            $this->checkMetadataStatement($attestationObject);
             Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
             /* @see 7.1.15 */
@@ -198,18 +206,44 @@ class AuthenticatorAttestationResponseValidator
         CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates);
     }
 
-    private function checkMetadataStatement(AttestationObject $attestationObject): void
+    private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
     {
         $attestationStatement = $attestationObject->getAttStmt();
-        $metadataStatement = $attestationObject->getMetadataStatement();
+        $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
+        Assertion::notNull($attestedCredentialData, 'No attestedcredential data found');
+        $aaguid = $attestedCredentialData->getAaguid()->toString();
+        if (PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE === $publicKeyCredentialCreationOptions->getAttestation()) {
+            $this->logger->debug('No attestation is asked.');
+            //No attestation is asked. We shall ensure that the data is anonymized.
+            if (
+                '00000000-0000-0000-0000-000000000000' === $aaguid &&
+                (AttestationStatement::TYPE_NONE === $attestationStatement->getType() || AttestationStatement::TYPE_SELF === $attestationStatement->getType())) {
+                $this->logger->debug('Already anonymized.');
+
+                return;
+            }
+            $this->logger->debug('Anonymization required. AAGUID and Attestation Statement changed.', [
+                'aaguid' => $aaguid,
+                'AttestationStatement' => $attestationStatement,
+            ]);
+            $attestedCredentialData->setAaguid(
+                Uuid::fromString('00000000-0000-0000-0000-000000000000')
+            );
+            $attestationObject->setAttStmt(AttestationStatement::createNone('none', [], new EmptyTrustPath()));
+
+            return;
+        }
+
+        //The MDS Repository is mandatory here
+        Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');
+        $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
 
         // If no Attestation Statement has been returned or if null AAGUID (=00000000-0000-0000-0000-000000000000)
         // => nothing to check
-        $aaguid = $attestationObject->getAuthData()->getAttestedCredentialData()->getAaguid()->toString();
-        if ('00000000-0000-0000-0000-000000000000' === $aaguid || (null === $metadataStatement && AttestationStatement::TYPE_NONE === $attestationStatement->getType())) {
+        if ('00000000-0000-0000-0000-000000000000' === $aaguid || AttestationStatement::TYPE_NONE === $attestationStatement->getType()) {
             return;
         }
 
@@ -274,6 +308,19 @@ class AuthenticatorAttestationResponseValidator
                 return MetadataStatement::ATTESTATION_ECDAA;
             default:
                 throw new InvalidArgumentException('Invalid attestation type');
+        }
+    }
+
+    private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
+    {
+        switch (true) {
+            case null === $authenticationExtensionsClientOutputs:
+            case !$authenticationExtensionsClientOutputs->has('appid'):
+            case true !== $authenticationExtensionsClientOutputs->get('appid'):
+            case !$authenticationExtensionsClientInputs->has('appid'):
+                return $rpId;
+            default:
+                return $authenticationExtensionsClientInputs->get('appid');
         }
     }
 }

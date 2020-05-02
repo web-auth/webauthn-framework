@@ -50,6 +50,11 @@ class AttestedCredentialData implements JsonSerializable
         return $this->aaguid;
     }
 
+    public function setAaguid(UuidInterface $aaguid): void
+    {
+        $this->aaguid = $aaguid;
+    }
+
     public function getCredentialId(): string
     {
         return $this->credentialId;

@@ -42,10 +42,10 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request): PublicKeyCredentialSource
+    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, array $securedRelyingPartyId = []): PublicKeyCredentialSource
     {
         try {
-            $result = parent::check($authenticatorAttestationResponse, $publicKeyCredentialCreationOptions, $request);
+            $result = parent::check($authenticatorAttestationResponse, $publicKeyCredentialCreationOptions, $request, $securedRelyingPartyId);
             $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationSucceededEvent(
                 $authenticatorAttestationResponse,
                 $publicKeyCredentialCreationOptions,

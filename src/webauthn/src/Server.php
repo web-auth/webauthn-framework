@@ -110,9 +110,9 @@ class Server
      */
     private $logger;
 
-    public function __construct(PublicKeyCredentialRpEntity $relayingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository)
+    public function __construct(PublicKeyCredentialRpEntity $relyingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository)
     {
-        $this->rpEntity = $relayingParty;
+        $this->rpEntity = $relyingParty;
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
         $this->coseAlgorithmManagerFactory->add('RS1', new RSA\RS1());
@@ -208,7 +208,7 @@ class Server
     public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
-        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $this->metadataStatementRepository, $this->logger);
+        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, null, $this->logger);
         $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $this->logger);
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -230,7 +230,7 @@ class Server
     public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
-        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $this->metadataStatementRepository, $this->logger);
+        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, null, $this->logger);
         $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $this->logger);
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);

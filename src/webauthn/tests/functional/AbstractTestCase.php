@@ -163,8 +163,7 @@ abstract class AbstractTestCase extends TestCase
     {
         if (!$this->attestationObjectLoader) {
             $this->attestationObjectLoader = new AttestationObjectLoader(
-                $this->getAttestationStatementSupportManager(),
-                $this->getMetadataStatementRepository()
+                $this->getAttestationStatementSupportManager()
             );
         }
 

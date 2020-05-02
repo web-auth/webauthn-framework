@@ -54,6 +54,11 @@ class AttestationObject
         return $this->attStmt;
     }
 
+    public function setAttStmt(AttestationStatement $attStmt): void
+    {
+        $this->attStmt = $attStmt;
+    }
+
     public function getAuthData(): AuthenticatorData
     {
         return $this->authData;
@@ -62,5 +67,10 @@ class AttestationObject
     public function getMetadataStatement(): ?MetadataStatement
     {
         return $this->metadataStatement;
+    }
+
+    public function setMetadataStatement(MetadataStatement $metadataStatement): void
+    {
+        $this->metadataStatement = $metadataStatement;
     }
 }

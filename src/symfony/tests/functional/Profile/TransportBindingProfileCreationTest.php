@@ -34,6 +34,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
+        static::assertIsArray($data, 'Invalid response');
+
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
         static::assertEquals(400, $client->getResponse()->getStatusCode());
@@ -53,6 +55,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
+
+        static::assertIsArray($data, 'Invalid response');
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -75,6 +79,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
+        static::assertIsArray($data, 'Invalid response');
+
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
         static::assertEquals(400, $client->getResponse()->getStatusCode());
@@ -95,6 +101,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
+
+        static::assertIsArray($data, 'Invalid response');
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'failed');
@@ -123,6 +131,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
+        static::assertIsArray($data, 'Invalid response');
+
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
@@ -150,6 +160,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauth.app'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
+
+        static::assertIsArray($data, 'Invalid response');
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
@@ -182,6 +194,8 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
+
+        static::assertIsArray($data, 'Invalid response');
 
         static::assertArrayHasKey('status', $data);
         static::assertEquals($data['status'], 'ok');
