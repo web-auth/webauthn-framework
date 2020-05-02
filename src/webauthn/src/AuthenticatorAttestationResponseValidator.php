@@ -147,12 +147,12 @@ class AuthenticatorAttestationResponseValidator
                 );
             }
 
-            /** @see 7.1.13 */
+            /* @see 7.1.13 */
+            $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->getAttStmt()->getFmt();
             Assertion::true($this->attestationStatementSupportManager->has($fmt), 'Unsupported attestation statement format.');
 
             /* @see 7.1.14 */
-            $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
             Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
@@ -210,7 +210,7 @@ class AuthenticatorAttestationResponseValidator
     {
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attestedcredential data found');
+        Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()->toString();
         if (PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE === $publicKeyCredentialCreationOptions->getAttestation()) {
             $this->logger->debug('No attestation is asked.');
