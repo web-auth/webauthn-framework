@@ -43,6 +43,7 @@ class AttestationObjectLoader
      * @var AttestationStatementSupportManager
      */
     private $attestationStatementSupportManager;
+
     /**
      * @var LoggerInterface|null
      */
