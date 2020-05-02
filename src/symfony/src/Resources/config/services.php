@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -88,7 +88,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AttestationStatement\AttestationObjectLoader::class)
         ->args([
             ref(AttestationStatementSupportManager::class),
-            ref(MetadataStatementRepository::class)->nullOnInvalid(),
+            null,
             ref('webauthn.logger')->nullOnInvalid(),
         ]);
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);

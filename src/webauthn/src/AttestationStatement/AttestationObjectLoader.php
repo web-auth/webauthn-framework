@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -26,7 +26,6 @@ use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
-use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
@@ -46,19 +45,17 @@ class AttestationObjectLoader
     private $attestationStatementSupportManager;
 
     /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-    /**
      * @var LoggerInterface|null
      */
     private $logger;
 
     public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
     {
+        if (null !== $metadataStatementRepository) {
+            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.', E_USER_DEPRECATED);
+        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
-        $this->metadataStatementRepository = $metadataStatementRepository;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -118,8 +115,7 @@ class AttestationObjectLoader
             $authDataStream->close();
 
             $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
-            $metadataStatement = $this->getMetadataStatement($attestedCredentialData);
-            $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData, $metadataStatement);
+            $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData);
             $this->logger->info('Attestation Object loaded');
             $this->logger->debug('Attestation Object', ['ed' => $attestationObject]);
 
@@ -130,21 +126,5 @@ class AttestationObjectLoader
             ]);
             throw $throwable;
         }
-    }
-
-    private function getMetadataStatement(?AttestedCredentialData $attestedCredentialData): ?MetadataStatement
-    {
-        // If no attested credential data is present or no Metadata Statement Repository is set, no MDS can be found
-        if (null === $this->metadataStatementRepository || null === $attestedCredentialData) {
-            return null;
-        }
-
-        // If the AAGUID is a zero-based UUID, no MDS can be found
-        $aaguid = $attestedCredentialData->getAaguid()->toString();
-        if ('00000000-0000-0000-0000-000000000000' === $aaguid) {
-            return null;
-        }
-
-        return $this->metadataStatementRepository->findOneByAAGUID($aaguid);
     }
 }

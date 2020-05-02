@@ -26,7 +26,6 @@
     "require-dev": {
         "nyholm/psr7": "^1.1",
         "fzaninotto/faker": "^1.8",
-        "ramsey/uuid": "^3.8",
         "symfony/psr-http-message-bridge": "^2.0",
         "symfony/security-bundle": "^5.0"
     },
