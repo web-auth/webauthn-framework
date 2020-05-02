@@ -111,8 +111,8 @@ class AuthenticatorAttestationResponseValidator
             $rpIdLength = mb_strlen($facetId);
             Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $facetId, 'rpId mismatch.');
 
-            $scheme = $parsedRelyingPartyId['scheme'] ?? '';
             if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+                $scheme = $parsedRelyingPartyId['scheme'] ?? '';
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
 

@@ -147,7 +147,12 @@ class RequestListener
      */
     private $optionsHandler;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null)
+    /**
+     * @var string[]
+     */
+    private $securedRelyingPartyId;
+
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -171,6 +176,7 @@ class RequestListener
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->optionsStorage = $optionsStorage;
         $this->optionsHandler = $optionsHandler;
+        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     public function processWithRequestOptions(RequestEvent $event): void
@@ -296,7 +302,8 @@ class RequestListener
                 $response,
                 $options,
                 $psr7Request,
-                null === $userEntity ? null : $userEntity->getId()
+                null === $userEntity ? null : $userEntity->getId(),
+                $this->securedRelyingPartyId
             );
             $userEntity = $this->userEntityRepository->findOneByUserHandle($publicKeyCredentialSource->getUserHandle());
             Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the associated user entity');

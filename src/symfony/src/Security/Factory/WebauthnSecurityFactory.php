@@ -74,6 +74,13 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
                 ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
                 ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
                 ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+                ->arrayNode('secured_rp_ids')
+                    ->treatFalseLike([])
+                    ->treatTrueLike([])
+                    ->treatNullLike([])
+                    ->useAttributeAsKey('name')
+                    ->scalarPrototype()->end()
+                ->end()
                 ->arrayNode('authentication')
                     ->canBeDisabled()
                     ->children()
@@ -169,6 +176,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $requestListener->replaceArgument(14, new Reference($config['failure_handler']));
         $requestListener->replaceArgument(15, new Reference($config['authentication']['options_handler']));
         $requestListener->replaceArgument(16, new Reference($config['options_storage']));
+        $requestListener->replaceArgument(19, $config['secured_rp_ids']);
 
         $requestListenerId = $abstractRequestListenerId.'.'.$id;
         $container->setDefinition($requestListenerId, $requestListener);
@@ -203,6 +211,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $creationListener->replaceArgument(14, new Reference($config['failure_handler']));
         $creationListener->replaceArgument(15, new Reference($config['registration']['options_handler']));
         $creationListener->replaceArgument(16, new Reference($config['options_storage']));
+        $creationListener->replaceArgument(19, $config['secured_rp_ids']);
 
         $creationListenerId = $abstractCreationListenerId.'.'.$id;
         $container->setDefinition($creationListenerId, $creationListener);

@@ -110,6 +110,11 @@ class Server
      */
     private $logger;
 
+    /**
+     * @var string[]
+     */
+    private $securedRelyingPartyId = [];
+
     public function __construct(PublicKeyCredentialRpEntity $relyingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository)
     {
         $this->rpEntity = $relyingParty;
@@ -158,6 +163,15 @@ class Server
     public function setExtensionOutputCheckerHandler(ExtensionOutputCheckerHandler $extensionOutputCheckerHandler): void
     {
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
+    }
+
+    /**
+     * @param string[] $securedRelyingPartyId
+     */
+    public function setSecuredRelyingPartyId(array $securedRelyingPartyId): void
+    {
+        Assertion::allString($securedRelyingPartyId, 'Invalid list. Shall be a list of strings');
+        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     /**
@@ -224,7 +238,7 @@ class Server
             $this->logger
         );
 
-        return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest);
+        return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest, $this->securedRelyingPartyId);
     }
 
     public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
@@ -251,7 +265,8 @@ class Server
             $authenticatorResponse,
             $publicKeyCredentialRequestOptions,
             $serverRequest,
-            null !== $userEntity ? $userEntity->getId() : null
+            null !== $userEntity ? $userEntity->getId() : null,
+            $this->securedRelyingPartyId
         );
     }
 

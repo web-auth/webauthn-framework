@@ -141,8 +141,8 @@ class AuthenticatorAssertionResponseValidator
             $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
-            $scheme = $parsedRelyingPartyId['scheme'] ?? '';
             if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+                $scheme = $parsedRelyingPartyId['scheme'] ?? '';
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';

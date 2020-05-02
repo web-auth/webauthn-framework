@@ -146,9 +146,14 @@ class CreationListener
     private $optionsHandler;
 
     /**
+     * @var string[]
+     */
+    private $securedRelyingPartyId;
+
+    /**
      * @param array<string, mixed> $options
      */
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -172,6 +177,7 @@ class CreationListener
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->optionsStorage = $optionsStorage;
         $this->optionsHandler = $optionsHandler;
+        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     public function processWithCreationOptions(RequestEvent $event): void
@@ -297,7 +303,8 @@ class CreationListener
             $publicKeyCredentialSource = $this->authenticatorAttestationResponseValidator->check(
                 $response,
                 $options,
-                $psr7Request
+                $psr7Request,
+                $this->securedRelyingPartyId
             );
 
             $this->publicKeyUserEntityRepository->saveUserEntity($userEntity);

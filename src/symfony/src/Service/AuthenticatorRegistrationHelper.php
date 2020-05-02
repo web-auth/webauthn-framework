@@ -78,7 +78,12 @@ class AuthenticatorRegistrationHelper
      */
     private $httpMessageFactory;
 
-    public function __construct(PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, SessionStorage $optionsStorage, HttpMessageFactoryInterface $httpMessageFactory)
+    /**
+     * @var string[]
+     */
+    private $securedRelyingPartyId;
+
+    public function __construct(PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, SessionStorage $optionsStorage, HttpMessageFactoryInterface $httpMessageFactory, array $securedRelyingPartyId = [])
     {
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
         $this->serializer = $serializer;
@@ -88,6 +93,7 @@ class AuthenticatorRegistrationHelper
         $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
         $this->optionsStorage = $optionsStorage;
         $this->httpMessageFactory = $httpMessageFactory;
+        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     /**
@@ -139,7 +145,8 @@ class AuthenticatorRegistrationHelper
         $publicKeyCredentialSource = $this->authenticatorAttestationResponseValidator->check(
             $response,
             $options,
-            $psr7Request
+            $psr7Request,
+            $this->securedRelyingPartyId
         );
         $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 

@@ -115,6 +115,7 @@ return static function (ContainerConfigurator $container): void {
             null, // Options Storage
             ref('webauthn.logger')->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
+            [], // Secured Relying Party IDs
         ])
         ->tag('monolog.logger', ['channel' => 'security'])
     ;
@@ -143,6 +144,7 @@ return static function (ContainerConfigurator $container): void {
             null, // Options Storage
             ref('webauthn.logger')->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
+            [], // Secured Relying Party IDs
         ])
         ->tag('monolog.logger', ['channel' => 'security'])
     ;

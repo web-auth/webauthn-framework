@@ -13,6 +13,7 @@ parameters:
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
+    treatPhpDocTypesAsCertain: false
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
