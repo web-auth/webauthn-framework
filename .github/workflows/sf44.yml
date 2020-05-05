@@ -18,7 +18,7 @@ jobs:
         run: composer validate
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --prefer-lowest
+        run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest
 
       - name: Run test suite
         run: |
