@@ -291,14 +291,12 @@ class Server
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        if (null !== $this->metadataStatementRepository) {
-            $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
-            $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-            $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000));
-            $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-            $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
-            $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
-        }
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000));
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
 
         return $attestationStatementSupportManager;
     }
