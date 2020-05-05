@@ -16,8 +16,8 @@
         }
     ],
     "require": {
-        "beberlei/assert": "^3.0",
-        "symfony/psr-http-message-bridge": "^2.0",
+        "beberlei/assert": "^3.2",
+        "symfony/psr-http-message-bridge": "^1.2|^2.0",
         "web-auth/webauthn-symfony-bundle": "self.version"
     },
     "autoload": {

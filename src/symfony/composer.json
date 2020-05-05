@@ -16,27 +16,17 @@
         }
     ],
     "require": {
+        "sensio/framework-extra-bundle": "^5.2",
         "spomky-labs/cbor-bundle": "^2.0",
-        "symfony/config": "^5.0",
-        "symfony/dependency-injection": "^5.0",
-        "symfony/framework-bundle": "^5.0",
+        "symfony/config": "^4.4|^5.0",
+        "symfony/dependency-injection": "^4.4|^5.0",
+        "symfony/framework-bundle": "^4.4|^5.0",
         "web-auth/webauthn-lib": "self.version",
-        "web-token/jwt-signature": "^2.0.3"
-    },
-    "require-dev": {
-        "nyholm/psr7": "^1.1",
-        "fzaninotto/faker": "^1.8",
-        "symfony/psr-http-message-bridge": "^2.0",
-        "symfony/security-bundle": "^5.0"
+        "web-token/jwt-signature": "^2.0.9"
     },
     "autoload": {
         "psr-4": {
             "Webauthn\\Bundle\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/functional/"
         }
     },
     "extra": {
