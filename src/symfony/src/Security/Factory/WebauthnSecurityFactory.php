@@ -34,9 +34,14 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
+     * @param string      $id
+     * @param array       $config
+     * @param string      $userProviderId
+     * @param string|null $defaultEntryPoint
+     *
      * @return array<int, string>
      */
-    public function create(ContainerBuilder $container, string $id, array $config, string $userProviderId, ?string $defaultEntryPoint): array
+    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPoint): array
     {
         $authProviderId = $this->createAuthProvider($container, $id, $userProviderId);
         $entryPointId = $this->createEntryPoint($container, $id, $config);

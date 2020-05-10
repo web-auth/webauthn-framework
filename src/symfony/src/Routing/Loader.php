@@ -38,12 +38,20 @@ class Loader extends SymfonyLoader
         $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 
-    public function load($resource, string $type = null): RouteCollection
+    /**
+     * @param mixed       $resource
+     * @param string|null $type
+     */
+    public function load($resource, $type = null): RouteCollection
     {
         return $this->routes;
     }
 
-    public function supports($resource, string $type = null): bool
+    /**
+     * @param mixed       $resource
+     * @param string|null $type
+     */
+    public function supports($resource, $type = null): bool
     {
         return 'webauthn' === $type;
     }

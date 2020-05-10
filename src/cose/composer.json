@@ -21,16 +21,11 @@
         "ext-openssl": "*",
         "ext-mbstring": "*",
         "fgrosse/phpasn1": "^2.1",
-        "beberlei/assert": "^3.0"
+        "beberlei/assert": "^3.2"
     },
     "autoload": {
         "psr-4": {
             "Cose\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Cose\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "extra": {
