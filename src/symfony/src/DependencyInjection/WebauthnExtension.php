@@ -93,6 +93,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $this->loadMetadataStatementSupports($container, $loader, $config);
         }
 
+        if (true === $config['controller']['enabled']) {
+            $this->loadControllerSupport($container, $loader, $config);
+        }
+
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         }
@@ -163,6 +167,13 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionResponseController->addTag('controller.service_arguments');
             $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    {
     }
 
     /**

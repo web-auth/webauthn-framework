@@ -20,6 +20,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
+use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
+use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
+use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -120,6 +124,19 @@ final class Configuration implements ConfigurationInterface
                             ->isRequired()
                             ->info('Metadata Statement repository')
                         ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('controller')
+                    ->canBeEnabled()
+                    ->children()
+                        ->scalarNode('options_path')->defaultValue('/add/device/options')->end()
+                        ->scalarNode('result_path')->defaultValue('/add/device')->end()
+                        ->scalarNode('profile')->defaultValue('default')->end()
+                        ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
+                        ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
+                        ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
+                        //->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
+                        //->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
                     ->end()
                 ->end()
                 ->arrayNode('creation_profiles')
