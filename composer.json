@@ -54,7 +54,7 @@
         "symfony/config": "^4.4|^5.0",
         "symfony/dependency-injection": "^4.4|^5.0",
         "symfony/framework-bundle": "^4.4|^5.0",
-        "symfony/process": "^4.4|^5.0",
+        "symfony/process": "^3.0|^4.0|^5.0",
         "symfony/psr-http-message-bridge": "^1.2|^2.0",
         "web-token/jwt-signature": "^2.0.9"
     },

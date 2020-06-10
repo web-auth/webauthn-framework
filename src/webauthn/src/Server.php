@@ -19,6 +19,8 @@ use Cose\Algorithm\ManagerFactory;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\RS256;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -291,11 +293,13 @@ class Server
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000));
+        if (class_exists(RS256::class) && class_exists(JWKFactory::class)) {
+            $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport($this->httpClient, $this->googleApiKey, $this->requestFactory, 2000, 60000));
+        }
         $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
         $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
+        $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
 
         return $attestationStatementSupportManager;
