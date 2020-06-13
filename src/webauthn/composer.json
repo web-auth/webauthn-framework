@@ -43,17 +43,5 @@
         "web-token/jwt-signature-algorithm-rsa": "Mandatory for the AndroidSafetyNet Attestation Statement support",
         "web-token/jwt-signature-algorithm-ecdsa": "Recommended for the AndroidSafetyNet Attestation Statement support",
         "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"
-    },
-    "extra": {
-        "branch-alias": {
-            "v1.0": "1.0.x-dev",
-            "v1.1": "1.1.x-dev",
-            "v1.2": "1.2.x-dev",
-            "v2.0": "2.0.x-dev",
-            "v2.1": "2.1.x-dev",
-            "v3.0": "3.0.x-dev",
-            "v3.1": "3.1.x-dev",
-            "v3.2": "3.2.x-dev"
-        }
     }
 }
