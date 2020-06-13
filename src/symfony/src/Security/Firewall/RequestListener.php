@@ -30,6 +30,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
@@ -264,7 +265,12 @@ class RequestListener
 
     private function getServerPublicKeyCredentialRequestOptionsRequest(string $content): ServerPublicKeyCredentialRequestOptionsRequest
     {
-        $data = $this->serializer->deserialize($content, ServerPublicKeyCredentialRequestOptionsRequest::class, 'json');
+        $data = $this->serializer->deserialize(
+            $content,
+            ServerPublicKeyCredentialRequestOptionsRequest::class,
+            'json',
+            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+        );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (\count($errors) > 0) {

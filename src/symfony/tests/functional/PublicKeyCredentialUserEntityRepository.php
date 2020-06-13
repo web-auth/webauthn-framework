@@ -33,6 +33,13 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
             null,
             ['ROLE_ADMIN', 'ROLE_USER']
         ));
+        $this->saveUserEntity(new User(
+            'XY5nn3p_6olTLjoB2Jbb',
+        '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
+            'Bennie Moneypenny',
+            null,
+            ['ROLE_ADMIN', 'ROLE_USER']
+        ));
     }
 
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity

@@ -89,7 +89,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'error');
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should be of type string.');
+        static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -110,7 +110,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'error');
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
+        static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**

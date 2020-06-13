@@ -93,7 +93,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $this->loadMetadataStatementSupports($container, $loader, $config);
         }
 
-        if (true === $config['controller']['enabled']) {
+        if (true === $config['controllers']['enabled']) {
             $this->loadControllerSupport($container, $loader, $config);
         }
 
@@ -174,6 +174,33 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
      */
     private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
+        $loader->load('controller.php');
+
+        $container->setAlias('webauthn.controller.http_message_factory', $config['controllers']['http_message_factory']);
+
+        foreach ($config['controllers']['creation'] as $name => $creationConfig) {
+            $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
+            $attestationRequestController = new Definition(\Webauthn\Bundle\Controller\AttestationRequestController::class);
+            $attestationRequestController->setFactory([new Reference(\Webauthn\Bundle\Controller\AttestationResponseControllerFactory::class), 'createAttestationRequestController']);
+            $attestationRequestController->setArguments([
+                new Reference($creationConfig['user_entity_guesser']),
+                $creationConfig['profile'],
+                new Reference($creationConfig['options_storage']),
+            ]);
+            $attestationRequestController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['options_path'], 'host' => $creationConfig['host']]);
+            $attestationRequestController->addTag('controller.service_arguments');
+            $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
+
+            $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
+            $attestationResponseController = new Definition(\Webauthn\Bundle\Controller\AttestationResponseController::class);
+            $attestationResponseController->setFactory([new Reference(\Webauthn\Bundle\Controller\AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
+            $attestationResponseController->setArguments([
+                new Reference($creationConfig['options_storage']),
+            ]);
+            $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['result_path'], 'host' => $creationConfig['host']]);
+            $attestationResponseController->addTag('controller.service_arguments');
+            $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
+        }
     }
 
     /**

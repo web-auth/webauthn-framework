@@ -20,9 +20,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
-use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
-use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
@@ -126,17 +123,27 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('controller')
+                ->arrayNode('controllers')
                     ->canBeEnabled()
                     ->children()
-                        ->scalarNode('options_path')->defaultValue('/add/device/options')->end()
-                        ->scalarNode('result_path')->defaultValue('/add/device')->end()
-                        ->scalarNode('profile')->defaultValue('default')->end()
-                        ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
-                        ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
                         ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
-                        //->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
-                        //->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+                        ->arrayNode('creation')
+                            ->treatFalseLike([])
+                            ->treatNullLike([])
+                            ->treatTrueLike([])
+                            ->useAttributeAsKey('name')
+                            ->arrayPrototype()
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('options_path')->isRequired()->end()
+                                    ->scalarNode('result_path')->isRequired()->end()
+                                    ->scalarNode('host')->defaultValue(null)->end()
+                                    ->scalarNode('profile')->defaultValue('default')->end()
+                                    ->scalarNode('user_entity_guesser')->isRequired()->end()
+                                    ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('creation_profiles')
