@@ -195,8 +195,8 @@ class RequestListener
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity));
             $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
+            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity), $response);
         } catch (Throwable $e) {
             $this->logger->error('An error occurred', ['exception' => $e]);
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));

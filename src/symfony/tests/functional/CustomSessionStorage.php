@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use Assert\Assertion;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\StoredData;
@@ -27,8 +28,11 @@ final class CustomSessionStorage implements OptionsStorage
      */
     private const SESSION_PARAMETER = 'FOO_BAR_SESSION_PARAMETER';
 
-    public function store(Request $request, StoredData $data): void
+    public function store(Request $request, StoredData $data, ?Response $response = null): void
     {
+        if ($response === null) {
+            @trigger_error('Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.', E_USER_DEPRECATED);
+        }
         $session = $request->getSession();
         Assertion::notNull($session, 'This authentication method requires a session.');
 

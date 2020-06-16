@@ -36,6 +36,9 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
+/**
+ * @deprecated This class is deprecated and will be removed in 4.0
+ */
 class AuthenticatorRegistrationHelper
 {
     /**
