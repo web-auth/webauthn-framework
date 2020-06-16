@@ -32,6 +32,7 @@ jobs:
         - php: '7.4'
         - php: '7.4'
           env: deps=low
+        - php: 'nightly'
         - stage: Metrics and quality
           env: COVERAGE
           before_script:

@@ -204,8 +204,8 @@ class CreationListener
                 $creationOptionsRequest->attestation,
                 $extensions
             );
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity));
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
+            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
         } catch (\Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
