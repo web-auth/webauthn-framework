@@ -24,10 +24,9 @@ final class IsUserVerifiedVoter implements VoterInterface
     /**
      * {@inheritdoc}
      *
-     * @param mixed                 $subject
-     * @param array<string, string> $attributes
+     * @param mixed $subject
      */
-    public function vote(TokenInterface $token, $subject, array $attributes)
+    public function vote(TokenInterface $token, $subject, array $attributes): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;
         if (!$token instanceof WebauthnToken) {

@@ -18,6 +18,7 @@ use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -31,6 +32,8 @@ use Webauthn\MetadataService\MetadataService;
  */
 class MetadataServiceTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

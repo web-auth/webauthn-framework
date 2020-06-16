@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional\Assertion;
 
 use Base64Url\Base64Url;
 use Http\Message\RequestMatcher\RequestMatcher;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -35,6 +36,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
  */
 class AssertionTest extends WebTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

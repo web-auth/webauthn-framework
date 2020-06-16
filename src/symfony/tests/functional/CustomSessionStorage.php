@@ -30,7 +30,7 @@ final class CustomSessionStorage implements OptionsStorage
 
     public function store(Request $request, StoredData $data, ?Response $response = null): void
     {
-        if ($response === null) {
+        if (null === $response) {
             @trigger_error('Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.', E_USER_DEPRECATED);
         }
         $session = $request->getSession();

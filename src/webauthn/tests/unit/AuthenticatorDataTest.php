@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticatorData;
@@ -26,6 +27,8 @@ use Webauthn\AuthenticatorData;
  */
 class AuthenticatorDataTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
