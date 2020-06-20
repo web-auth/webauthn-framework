@@ -26,6 +26,11 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
+    public const RESIDENT_KEY_REQUIREMENT_NONE = null;
+    public const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
+    public const RESIDENT_KEY_REQUIREMENT_PREFERRED = 'preferred';
+    public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
+
     /**
      * @var string|null
      */
@@ -41,11 +46,17 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
      */
     private $userVerification;
 
-    public function __construct(?string $authenticatorAttachment = null, bool $requireResidentKey = false, string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+    /**
+     * @var string|null
+     */
+    private $residentKey;
+
+    public function __construct(?string $authenticatorAttachment = null, bool $requireResidentKey = false, string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED, ?string $residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE)
     {
         $this->authenticatorAttachment = $authenticatorAttachment;
         $this->requireResidentKey = $requireResidentKey;
         $this->userVerification = $userVerification;
+        $this->residentKey = $residentKey;
     }
 
     public function getAuthenticatorAttachment(): ?string
@@ -61,6 +72,11 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public function getUserVerification(): string
     {
         return $this->userVerification;
+    }
+
+    public function getResidentKey(): ?string
+    {
+        return $this->residentKey;
     }
 
     public static function createFromString(string $data): self
@@ -80,7 +96,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return new self(
             $json['authenticatorAttachment'] ?? null,
             $json['requireResidentKey'] ?? false,
-            $json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED
+            $json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            $json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_NONE
         );
     }
 
@@ -95,6 +112,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         ];
         if (null !== $this->authenticatorAttachment) {
             $json['authenticatorAttachment'] = $this->authenticatorAttachment;
+        }
+        if (null !== $this->residentKey) {
+            $json['residentKey'] = $this->residentKey;
         }
 
         return $json;

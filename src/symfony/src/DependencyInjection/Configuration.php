@@ -55,15 +55,15 @@ final class Configuration implements ConfigurationInterface
             ->beforeNormalization()
             ->ifArray()
             ->then(static function ($v): array {
-                    if (!isset($v['creation_profiles'])) {
-                        $v['creation_profiles'] = null;
-                    }
-                    if (!isset($v['request_profiles'])) {
-                        $v['request_profiles'] = null;
-                    }
+                if (!isset($v['creation_profiles'])) {
+                    $v['creation_profiles'] = null;
+                }
+                if (!isset($v['request_profiles'])) {
+                    $v['request_profiles'] = null;
+                }
 
-                    return $v;
-                })
+                return $v;
+            })
             ->end()
             ->children()
             ->scalarNode('logger')
@@ -179,9 +179,41 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('authenticator_selection_criteria')
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('attachment_mode')->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)->end()
+            ->scalarNode('attachment_mode')
+            ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            ])
+            ->thenInvalid('Invalid value "%s"')
+            ->end()
+            ->end()
             ->booleanNode('require_resident_key')->defaultFalse()->end()
-            ->scalarNode('user_verification')->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)->end()
+            ->scalarNode('user_verification')
+            ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            ])
+            ->thenInvalid('Invalid value "%s"')
+            ->end()
+            ->end()
+            ->scalarNode('resident_key')
+            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+            ])
+            ->thenInvalid('Invalid value "%s"')
+            ->end()
+            ->end()
             ->end()
             ->end()
             ->arrayNode('extensions')

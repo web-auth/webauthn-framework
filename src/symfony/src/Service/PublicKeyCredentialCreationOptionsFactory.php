@@ -91,7 +91,8 @@ final class PublicKeyCredentialCreationOptionsFactory
         return new AuthenticatorSelectionCriteria(
             $profile['authenticator_selection_criteria']['attachment_mode'],
             $profile['authenticator_selection_criteria']['require_resident_key'],
-            $profile['authenticator_selection_criteria']['user_verification']
+            $profile['authenticator_selection_criteria']['user_verification'],
+            $profile['authenticator_selection_criteria']['resident_key']
         );
     }
 
