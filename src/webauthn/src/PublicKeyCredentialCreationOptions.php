@@ -23,6 +23,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT = 'direct';
+    public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
      * @var PublicKeyCredentialRpEntity
