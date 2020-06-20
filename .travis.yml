@@ -1,12 +1,6 @@
 sudo: false
 language: php
 
-php:
-    - 7.2
-    - 7.3
-    - 7.4snapshot
-    - nightly
-
 cache:
     directories:
         - $HOME/.composer/cache
@@ -19,7 +13,12 @@ before_script:
 before_install:
     - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
 
-install: travis_retry composer install
+install:
+  - if [[ $deps = 'low' ]]; then
+    travis_retry composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest --ansi;
+    else
+    travis_retry  composer update --prefer-dist --no-progress --no-suggest --ansi;
+    fi
 
 script:
     - ./vendor/bin/phpunit -c phpunit.xml.dist
@@ -27,8 +26,13 @@ script:
 jobs:
     allow_failures:
         - php: nightly
-
     include:
+        - php: '7.2'
+        - php: '7.3'
+        - php: '7.4'
+        - php: '7.4'
+          env: deps=low
+        - php: 'nightly'
         - stage: Metrics and quality
           env: COVERAGE
           before_script:

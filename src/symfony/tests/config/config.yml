@@ -22,6 +22,7 @@ framework:
     fragments:       ~
     http_method_override: true
     router:
+        utf8: true
         resource: "%kernel.project_dir%/tests/config/routing.php"
 
 services:
@@ -37,6 +38,9 @@ services:
         autowire: true
 
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
+        autowire: true
+
+    Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser:
         autowire: true
 
     Webauthn\Bundle\Tests\Functional\Logger:
@@ -146,6 +150,28 @@ services:
               arguments:
                   - 'https://fidoalliance.co.nz/mds/execute/d7f47b1a5d510bd440874b7d89e3b42347413cdd5a311059ee53cf5dc688526b'
 
+    # Register nyholm/psr7 services for autowiring with PSR-17 (HTTP factories)
+    Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ResponseFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ServerRequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\StreamFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UploadedFileFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
+
+    # Register nyholm/psr7 services for autowiring with HTTPlug factories
+    Http\Message\MessageFactory: '@nyholm.psr7.httplug_factory'
+    Http\Message\RequestFactory: '@nyholm.psr7.httplug_factory'
+    Http\Message\ResponseFactory: '@nyholm.psr7.httplug_factory'
+    Http\Message\StreamFactory: '@nyholm.psr7.httplug_factory'
+    Http\Message\UriFactory: '@nyholm.psr7.httplug_factory'
+
+    nyholm.psr7.psr17_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
+
+    nyholm.psr7.httplug_factory:
+        class: Nyholm\Psr7\Factory\HttplugFactory
+
+
 doctrine:
     dbal:
         driver: 'pdo_mysql'
@@ -174,6 +200,13 @@ webauthn:
     user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
     android_safetynet:
         max_age: 99999999999
+    controllers:
+        enabled: true
+        creation:
+            test:
+                options_path: '/devices/add/options'
+                result_path: '/devices/add'
+                user_entity_guesser: 'Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser'
     creation_profiles:
         default:
             rp:
@@ -186,6 +219,7 @@ webauthn:
                 attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
                 require_resident_key: false
                 user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+                resident_key: !php/const Webauthn\AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
             extensions: []
 #            public_key_credential_parameters:
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
@@ -267,6 +301,7 @@ security:
                 target: /
 
     access_control:
+        - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
         - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }

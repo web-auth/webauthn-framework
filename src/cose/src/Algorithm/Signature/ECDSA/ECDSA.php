@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -38,6 +38,12 @@ abstract class ECDSA implements Signature
         return 1 === openssl_verify($data, $signature, $publicKey->asPEM(), $this->getHashAlgorithm());
     }
 
+    abstract protected function getCurve(): int;
+
+    abstract protected function getHashAlgorithm(): int;
+
+    abstract protected function getSignaturePartLength(): int;
+
     private function handleKey(Key $key): Ec2Key
     {
         $key = new Ec2Key($key->getData());
@@ -45,10 +51,4 @@ abstract class ECDSA implements Signature
 
         return $key;
     }
-
-    abstract protected function getCurve(): int;
-
-    abstract protected function getHashAlgorithm(): int;
-
-    abstract protected function getSignaturePartLength(): int;
 }

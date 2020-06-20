@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Throwable;
 use Webauthn\MetadataService\DistantSingleMetadata;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
@@ -86,7 +87,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                 if ($mds->getAaguid() === $aaguid) {
                     return $mds;
                 }
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }
@@ -97,12 +98,12 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                     if ($entry->getAaguid() === $aaguid) {
                         try {
                             return $metadataService->getMetadataStatementFor($entry);
-                        } catch (\Throwable $throwable) {
+                        } catch (Throwable $throwable) {
                             continue;
                         }
                     }
                 }
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }

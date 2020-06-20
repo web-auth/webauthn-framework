@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -21,6 +21,7 @@ use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
+use function count;
 use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
@@ -58,7 +59,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         }
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::greaterThan(\count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 

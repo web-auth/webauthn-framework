@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -30,6 +30,13 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
             'admin',
             'foo',
             'Foo BAR (-_-)',
+            null,
+            ['ROLE_ADMIN', 'ROLE_USER']
+        ));
+        $this->saveUserEntity(new User(
+            'XY5nn3p_6olTLjoB2Jbb',
+        '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
+            'Bennie Moneypenny',
             null,
             ['ROLE_ADMIN', 'ROLE_USER']
         ));

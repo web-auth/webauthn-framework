@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cose\Key;
 
+use function array_key_exists;
 use Assert\Assertion;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\Integer;
@@ -161,7 +162,7 @@ class RsaKey extends Key
 
     public function isPrivate(): bool
     {
-        return \array_key_exists(self::DATA_D, $this->getData());
+        return array_key_exists(self::DATA_D, $this->getData());
     }
 
     public function asPem(): string
@@ -177,7 +178,7 @@ class RsaKey extends Key
                 new ObjectIdentifier('1.2.840.113549.1.1.1'),
                 new NullObject()
             ),
-            new BitString(\bin2hex($bitSring->getBinary()))
+            new BitString(bin2hex($bitSring->getBinary()))
         );
 
         return $this->pem('PUBLIC KEY', $der->getBinary());

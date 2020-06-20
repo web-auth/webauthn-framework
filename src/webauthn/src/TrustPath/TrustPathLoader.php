@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -13,8 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
+use function array_key_exists;
 use Assert\Assertion;
+use function in_array;
 use InvalidArgumentException;
+use function is_array;
 
 abstract class TrustPathLoader
 {
@@ -27,11 +30,11 @@ abstract class TrustPathLoader
         $type = $data['type'];
         $oldTypes = self::oldTrustPathTypes();
         switch (true) {
-            case \array_key_exists($type, $oldTypes):
+            case array_key_exists($type, $oldTypes):
                 return $oldTypes[$type]::createFromArray($data);
             case class_exists($type):
                 $implements = class_implements($type);
-                if (\is_array($implements) && \in_array(TrustPath::class, $implements, true)) {
+                if (is_array($implements) && in_array(TrustPath::class, $implements, true)) {
                     return $type::createFromArray($data);
                 }
                 // no break

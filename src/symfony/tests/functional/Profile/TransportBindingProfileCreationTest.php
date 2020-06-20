@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class TransportBindingProfileCreationTest extends WebTestCase
 {
@@ -79,7 +81,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['status'], 'failed');
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should be of type string.');
+        static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
     }
 
     /**

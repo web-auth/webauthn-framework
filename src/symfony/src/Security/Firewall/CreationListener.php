@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
+use function count;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -30,6 +32,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
@@ -146,9 +149,14 @@ class CreationListener
     private $optionsHandler;
 
     /**
+     * @var string[]
+     */
+    private $securedRelyingPartyId;
+
+    /**
      * @param array<string, mixed> $options
      */
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null)
+    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -172,6 +180,7 @@ class CreationListener
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->optionsStorage = $optionsStorage;
         $this->optionsHandler = $optionsHandler;
+        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     public function processWithCreationOptions(RequestEvent $event): void
@@ -198,9 +207,9 @@ class CreationListener
                 $creationOptionsRequest->attestation,
                 $extensions
             );
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity));
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
-        } catch (\Exception $e) {
+            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
+        } catch (Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -217,7 +226,7 @@ class CreationListener
             $response = $this->onAssertionSuccess($request, $authenticatedToken);
         } catch (AuthenticationException $e) {
             $response = $this->onAssertionFailure($request, $e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -260,10 +269,15 @@ class CreationListener
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest
     {
-        $data = $this->serializer->deserialize($content, ServerPublicKeyCredentialCreationOptionsRequest::class, 'json');
+        $data = $this->serializer->deserialize(
+            $content,
+            ServerPublicKeyCredentialCreationOptionsRequest::class,
+            'json',
+            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+        );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();
@@ -297,7 +311,8 @@ class CreationListener
             $publicKeyCredentialSource = $this->authenticatorAttestationResponseValidator->check(
                 $response,
                 $options,
-                $psr7Request
+                $psr7Request,
+                $this->securedRelyingPartyId
             );
 
             $this->publicKeyUserEntityRepository->saveUserEntity($userEntity);
@@ -306,7 +321,7 @@ class CreationListener
             throw new AuthenticationException('Invalid assertion', 0, $throwable);
         }
 
-        $token = new WebauthnToken(
+        return new WebauthnToken(
             $userEntity,
             $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
@@ -319,7 +334,5 @@ class CreationListener
             $this->providerKey,
             []
         );
-
-        return $token;
     }
 }

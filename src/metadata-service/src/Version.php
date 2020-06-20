@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use LogicException;
@@ -55,7 +56,7 @@ class Version implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['major', 'minor'] as $key) {
-            if (\array_key_exists($key, $data)) {
+            if (array_key_exists($key, $data)) {
                 Assertion::integer($data[$key], sprintf('Invalid value for key "%s"', $key));
             }
         }

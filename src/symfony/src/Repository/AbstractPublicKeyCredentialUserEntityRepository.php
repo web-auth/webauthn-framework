@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -47,16 +47,6 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
         $this->manager = $manager;
     }
 
-    protected function getClass(): string
-    {
-        return $this->class;
-    }
-
-    protected function getEntityManager(): EntityManagerInterface
-    {
-        return $this->manager;
-    }
-
     public function findOneByUserHandle(string $id): ?PublicKeyCredentialUserEntity
     {
         $qb = $this->manager->createQueryBuilder();
@@ -89,5 +79,15 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
     {
         $this->manager->persist($userEntity);
         $this->manager->flush();
+    }
+
+    protected function getClass(): string
+    {
+        return $this->class;
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->manager;
     }
 }

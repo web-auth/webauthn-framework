@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -37,6 +37,14 @@ class PublicKeyCredential extends Credential
         $this->response = $response;
     }
 
+    public function __toString()
+    {
+        $encoded = json_encode($this);
+        Assertion::string($encoded, 'Unable to encode the data');
+
+        return $encoded;
+    }
+
     public function getRawId(): string
     {
         return $this->rawId;
@@ -53,13 +61,5 @@ class PublicKeyCredential extends Credential
     public function getPublicKeyCredentialDescriptor(array $transport = []): PublicKeyCredentialDescriptor
     {
         return new PublicKeyCredentialDescriptor($this->getType(), $this->getRawId(), $transport);
-    }
-
-    public function __toString()
-    {
-        $encoded = json_encode($this);
-        Assertion::string($encoded, 'Unable to encode the data');
-
-        return $encoded;
     }
 }

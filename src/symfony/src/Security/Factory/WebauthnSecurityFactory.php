@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -34,9 +34,14 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 class WebauthnSecurityFactory implements SecurityFactoryInterface
 {
     /**
+     * @param string      $id
+     * @param array       $config
+     * @param string      $userProviderId
+     * @param string|null $defaultEntryPoint
+     *
      * @return array<int, string>
      */
-    public function create(ContainerBuilder $container, string $id, array $config, string $userProviderId, ?string $defaultEntryPoint): array
+    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPoint): array
     {
         $authProviderId = $this->createAuthProvider($container, $id, $userProviderId);
         $entryPointId = $this->createEntryPoint($container, $id, $config);
@@ -69,41 +74,48 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         /* @var ArrayNodeDefinition $node */
         $node
             ->children()
-                ->scalarNode('user_provider')->defaultNull()->end()
-                ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
-                ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
-                ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
-                ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
-                ->arrayNode('authentication')
-                    ->canBeDisabled()
-                    ->children()
-                        ->scalarNode('profile')->defaultValue('default')->end()
-                        ->arrayNode('routes')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('host')->defaultNull()->end()
-                                ->scalarNode('options_path')->defaultValue('/login/options')->end()
-                                ->scalarNode('result_path')->defaultValue('/login')->end()
-                            ->end()
-                        ->end()
-                        ->scalarNode('options_handler')->defaultValue(DefaultRequestOptionsHandler::class)->end()
-                    ->end()
-                ->end()
-                ->arrayNode('registration')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('profile')->defaultValue('default')->end()
-                        ->arrayNode('routes')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('host')->defaultNull()->end()
-                                ->scalarNode('options_path')->defaultValue('/register/options')->end()
-                                ->scalarNode('result_path')->defaultValue('/register')->end()
-                            ->end()
-                        ->end()
-                        ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
-                    ->end()
-                ->end()
+            ->scalarNode('user_provider')->defaultNull()->end()
+            ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
+            ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
+            ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
+            ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+            ->arrayNode('secured_rp_ids')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()->end()
+            ->end()
+            ->arrayNode('authentication')
+            ->canBeDisabled()
+            ->children()
+            ->scalarNode('profile')->defaultValue('default')->end()
+            ->arrayNode('routes')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('host')->defaultNull()->end()
+            ->scalarNode('options_path')->defaultValue('/login/options')->end()
+            ->scalarNode('result_path')->defaultValue('/login')->end()
+            ->end()
+            ->end()
+            ->scalarNode('options_handler')->defaultValue(DefaultRequestOptionsHandler::class)->end()
+            ->end()
+            ->end()
+            ->arrayNode('registration')
+            ->canBeEnabled()
+            ->children()
+            ->scalarNode('profile')->defaultValue('default')->end()
+            ->arrayNode('routes')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('host')->defaultNull()->end()
+            ->scalarNode('options_path')->defaultValue('/register/options')->end()
+            ->scalarNode('result_path')->defaultValue('/register')->end()
+            ->end()
+            ->end()
+            ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
+            ->end()
+            ->end()
             ->end()
         ;
     }
@@ -169,6 +181,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $requestListener->replaceArgument(14, new Reference($config['failure_handler']));
         $requestListener->replaceArgument(15, new Reference($config['authentication']['options_handler']));
         $requestListener->replaceArgument(16, new Reference($config['options_storage']));
+        $requestListener->replaceArgument(19, $config['secured_rp_ids']);
 
         $requestListenerId = $abstractRequestListenerId.'.'.$id;
         $container->setDefinition($requestListenerId, $requestListener);
@@ -203,6 +216,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $creationListener->replaceArgument(14, new Reference($config['failure_handler']));
         $creationListener->replaceArgument(15, new Reference($config['registration']['options_handler']));
         $creationListener->replaceArgument(16, new Reference($config['options_storage']));
+        $creationListener->replaceArgument(19, $config['secured_rp_ids']);
 
         $creationListenerId = $abstractCreationListenerId.'.'.$id;
         $container->setDefinition($creationListenerId, $creationListener);

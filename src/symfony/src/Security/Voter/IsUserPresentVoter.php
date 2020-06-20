@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -24,10 +24,9 @@ final class IsUserPresentVoter implements VoterInterface
     /**
      * {@inheritdoc}
      *
-     * @param mixed                 $subject
-     * @param array<string, string> $attributes
+     * @param mixed $subject
      */
-    public function vote(TokenInterface $token, $subject, array $attributes)
+    public function vote(TokenInterface $token, $subject, array $attributes): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;
         if (!$token instanceof WebauthnToken) {

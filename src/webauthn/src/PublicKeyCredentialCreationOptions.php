@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function count;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
@@ -22,6 +23,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
     public const ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT = 'direct';
+    public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
      * @var PublicKeyCredentialRpEntity
@@ -59,14 +61,14 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
-    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout, array $excludeCredentials, AuthenticatorSelectionCriteria $authenticatorSelection, string $attestation, ?AuthenticationExtensionsClientInputs $extensions)
+    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout = null, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, string $attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, ?AuthenticationExtensionsClientInputs $extensions = null)
     {
         parent::__construct($challenge, $timeout, $extensions);
         $this->rp = $rp;
         $this->user = $user;
         $this->pubKeyCredParams = array_values($pubKeyCredParams);
         $this->excludeCredentials = array_values($excludeCredentials);
-        $this->authenticatorSelection = $authenticatorSelection;
+        $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
         $this->attestation = $attestation;
     }
 
@@ -163,7 +165,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             'authenticatorSelection' => $this->authenticatorSelection,
         ];
 
-        if (0 !== \count($this->excludeCredentials)) {
+        if (0 !== count($this->excludeCredentials)) {
             $json['excludeCredentials'] = $this->excludeCredentials;
         }
 

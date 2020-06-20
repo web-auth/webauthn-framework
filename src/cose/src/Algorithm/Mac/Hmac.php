@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -31,13 +31,13 @@ abstract class Hmac implements Mac
         return hash_equals($this->hash($data, $key), $signature);
     }
 
+    abstract protected function getHashAlgorithm(): string;
+
+    abstract protected function getSignatureLength(): int;
+
     private function checKey(Key $key): void
     {
         Assertion::eq($key->type(), 4, 'Invalid key. Must be of type symmetric');
         Assertion::true($key->has(-1), 'Invalid key. The value of the key is missing');
     }
-
-    abstract protected function getHashAlgorithm(): string;
-
-    abstract protected function getSignatureLength(): int;
 }

@@ -1,0 +1,31 @@
+name: Tests with Code Coverage
+
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.2', '7.3', '7.4']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run test suite
+        run: |
+          wget https://phar.phpunit.de/phpcov.phar
+          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+          chmod +x php-coveralls.phar
+          chmod +x phpcov.phar
+          vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
+          ./phpcov.phar merge --clover build/logs/clover.xml build/cov
+          ./php-coveralls.phar --no-interaction

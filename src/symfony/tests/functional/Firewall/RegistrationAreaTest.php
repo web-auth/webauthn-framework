@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -28,6 +28,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class RegistrationAreaTest extends WebTestCase
 {
@@ -89,7 +91,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'error');
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should be of type string.');
+        static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -110,7 +112,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'error');
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
+        static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**

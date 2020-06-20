@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Spomky-Labs
+ * Copyright (c) 2014-2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 
 class AttestationStatementSupportManager
@@ -29,7 +30,7 @@ class AttestationStatementSupportManager
 
     public function has(string $name): bool
     {
-        return \array_key_exists($name, $this->attestationStatementSupports);
+        return array_key_exists($name, $this->attestationStatementSupports);
     }
 
     public function get(string $name): AttestationStatementSupport
