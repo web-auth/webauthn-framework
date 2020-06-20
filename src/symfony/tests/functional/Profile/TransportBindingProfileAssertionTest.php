@@ -19,6 +19,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class TransportBindingProfileAssertionTest extends WebTestCase
 {

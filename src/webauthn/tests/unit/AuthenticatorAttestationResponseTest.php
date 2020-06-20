@@ -23,6 +23,8 @@ use Webauthn\CollectedClientData;
  * @group Fido2
  *
  * @covers \Webauthn\AuthenticatorAttestationResponse
+ *
+ * @internal
  */
 class AuthenticatorAttestationResponseTest extends TestCase
 {

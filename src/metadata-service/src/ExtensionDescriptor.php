@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 
@@ -76,10 +77,10 @@ class ExtensionDescriptor implements JsonSerializable
         Assertion::string($data['id'], Utils::logicException('Invalid data. The parameter "id" shall be a string'));
         Assertion::keyExists($data, 'fail_if_unknown', Utils::logicException('Invalid data. The parameter "fail_if_unknown" is missing'));
         Assertion::boolean($data['fail_if_unknown'], Utils::logicException('Invalid data. The parameter "fail_if_unknown" shall be a boolean'));
-        if (\array_key_exists('tag', $data)) {
+        if (array_key_exists('tag', $data)) {
             Assertion::integer($data['tag'], Utils::logicException('Invalid data. The parameter "tag" shall be a positive integer'));
         }
-        if (\array_key_exists('data', $data)) {
+        if (array_key_exists('data', $data)) {
             Assertion::string($data['data'], Utils::logicException('Invalid data. The parameter "data" shall be a string'));
         }
 

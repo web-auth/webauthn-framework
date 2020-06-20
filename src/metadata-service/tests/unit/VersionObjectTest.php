@@ -20,6 +20,8 @@ use Webauthn\MetadataService\Version;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class VersionObjectTest extends TestCase
 {

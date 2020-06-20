@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
+use function count;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -216,7 +217,7 @@ class RequestListener
             $response = $this->onAssertionSuccess($request, $authenticatedToken);
         } catch (AuthenticationException $e) {
             $response = $this->onAssertionFailure($request, $e);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -273,7 +274,7 @@ class RequestListener
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();
@@ -317,7 +318,7 @@ class RequestListener
             throw new AuthenticationException('Invalid assertion', 0, $throwable);
         }
 
-        $token = new WebauthnToken(
+        return new WebauthnToken(
             $userEntity,
             $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
@@ -330,8 +331,6 @@ class RequestListener
             $this->providerKey,
             []
         );
-
-        return $token;
     }
 
     /**

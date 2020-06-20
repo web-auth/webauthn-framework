@@ -23,6 +23,8 @@ use Webauthn\TokenBinding\TokenBinding;
  * @group Fido2
  *
  * @covers \Webauthn\TokenBinding\TokenBinding
+ *
+ * @internal
  */
 class TokenBindingTest extends TestCase
 {

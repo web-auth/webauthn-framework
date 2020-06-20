@@ -23,6 +23,8 @@ use Webauthn\AuthenticatorData;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\AttestationObject
+ *
+ * @internal
  */
 class AttestationObjectTest extends TestCase
 {

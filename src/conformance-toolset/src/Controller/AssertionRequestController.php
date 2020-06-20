@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use function count;
+use function is_array;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -97,7 +99,7 @@ final class AssertionRequestController
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions;
-            if (\is_array($extensions)) {
+            if (is_array($extensions)) {
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
@@ -160,7 +162,7 @@ final class AssertionRequestController
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();

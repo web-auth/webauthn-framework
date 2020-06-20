@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class TransportBindingProfileCreationTest extends WebTestCase
 {

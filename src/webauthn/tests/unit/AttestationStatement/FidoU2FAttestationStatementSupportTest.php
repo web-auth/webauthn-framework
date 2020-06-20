@@ -33,6 +33,8 @@ use Webauthn\TrustPath\CertificateTrustPath;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport
+ *
+ * @internal
  */
 class FidoU2FAttestationStatementSupportTest extends TestCase
 {

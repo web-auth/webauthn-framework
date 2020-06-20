@@ -23,6 +23,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class SecuredAreaTest extends WebTestCase
 {

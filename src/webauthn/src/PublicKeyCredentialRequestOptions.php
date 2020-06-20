@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function count;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
@@ -116,7 +117,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $json['userVerification'] = $this->userVerification;
         }
 
-        if (0 !== \count($this->allowCredentials)) {
+        if (0 !== count($this->allowCredentials)) {
             $json['allowCredentials'] = $this->allowCredentials;
         }
 

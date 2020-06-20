@@ -123,7 +123,7 @@ final class ECSignature
 
     private static function hex2bin(string $data): string
     {
-        $result = \hex2bin($data);
+        $result = hex2bin($data);
         if (false === $result) {
             throw new InvalidArgumentException('Unable to convert the data');
         }

@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function count;
 use JsonSerializable;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
@@ -102,7 +103,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
             'type' => $this->type,
             'id' => Base64Url::encode($this->id),
         ];
-        if (0 !== \count($this->transports)) {
+        if (0 !== count($this->transports)) {
             $json['transports'] = $this->transports;
         }
 

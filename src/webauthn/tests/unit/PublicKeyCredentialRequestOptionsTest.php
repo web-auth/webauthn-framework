@@ -24,6 +24,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
  * @group Fido2
  *
  * @covers \Webauthn\PublicKeyCredentialRequestOptions
+ *
+ * @internal
  */
 class PublicKeyCredentialRequestOptionsTest extends TestCase
 {

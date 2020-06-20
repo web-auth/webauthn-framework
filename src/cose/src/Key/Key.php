@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cose\Key;
 
+use function array_key_exists;
 use Assert\Assertion;
 
 class Key
@@ -75,7 +76,7 @@ class Key
 
     public function has(int $key): bool
     {
-        return \array_key_exists($key, $this->data);
+        return array_key_exists($key, $this->data);
     }
 
     /**

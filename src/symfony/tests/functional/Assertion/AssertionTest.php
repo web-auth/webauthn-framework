@@ -32,6 +32,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class AssertionTest extends WebTestCase
 {

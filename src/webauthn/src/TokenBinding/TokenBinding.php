@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
+use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 
@@ -51,7 +52,7 @@ class TokenBinding
             self::getSupportedStatus(),
             sprintf('The member "status" is invalid. Supported values are: %s', implode(', ', self::getSupportedStatus()))
         );
-        $id = \array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
+        $id = array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
 
         return new self($status, $id);
     }

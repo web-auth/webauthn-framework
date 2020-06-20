@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
+use function array_key_exists;
+use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -39,7 +41,7 @@ final class SessionStorage implements OptionsStorage
     {
         $session = $request->getSession();
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
-        if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
+        if (!is_array($sessionValue) || !array_key_exists('options', $sessionValue) || !array_key_exists('userEntity', $sessionValue)) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 

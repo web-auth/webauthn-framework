@@ -47,16 +47,6 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
         $this->manager = $manager;
     }
 
-    protected function getClass(): string
-    {
-        return $this->class;
-    }
-
-    protected function getEntityManager(): EntityManagerInterface
-    {
-        return $this->manager;
-    }
-
     public function findOneByUserHandle(string $id): ?PublicKeyCredentialUserEntity
     {
         $qb = $this->manager->createQueryBuilder();
@@ -89,5 +79,15 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
     {
         $this->manager->persist($userEntity);
         $this->manager->flush();
+    }
+
+    protected function getClass(): string
+    {
+        return $this->class;
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->manager;
     }
 }

@@ -19,6 +19,7 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
@@ -90,7 +91,7 @@ class AttestationObjectLoader
             $this->logger->debug(sprintf('Signature counter: %d', $signCount));
 
             $attestedCredentialData = null;
-            if (0 !== (\ord($flags) & self::FLAG_AT)) {
+            if (0 !== (ord($flags) & self::FLAG_AT)) {
                 $this->logger->info('Attested Credential Data is present');
                 $aaguid = Uuid::fromBytes($authDataStream->read(16));
                 $credentialLength = $authDataStream->read(2);
@@ -104,7 +105,7 @@ class AttestationObjectLoader
             }
 
             $extension = null;
-            if (0 !== (\ord($flags) & self::FLAG_ED)) {
+            if (0 !== (ord($flags) & self::FLAG_ED)) {
                 $this->logger->info('Extension Data loaded');
                 $extension = $this->decoder->decode($authDataStream);
                 $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);

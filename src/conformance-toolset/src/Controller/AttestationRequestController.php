@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use function count;
+use function is_array;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -104,11 +106,11 @@ final class AttestationRequestController
             $json = json_encode($excludedCredentials);
             Assertion::string($json, 'Unable to encode the data');
             $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
-            if (\is_array($authenticatorSelection)) {
+            if (is_array($authenticatorSelection)) {
                 $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
             }
             $extensions = $creationOptionsRequest->extensions;
-            if (\is_array($extensions)) {
+            if (is_array($extensions)) {
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
@@ -168,7 +170,7 @@ final class AttestationRequestController
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();

@@ -27,6 +27,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * @group Fido2
  *
  * @covers \Webauthn\PublicKeyCredentialCreationOptions
+ *
+ * @internal
  */
 class PublicKeyCredentialCreationOptionsTest extends TestCase
 {

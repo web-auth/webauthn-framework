@@ -28,6 +28,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class RegistrationAreaTest extends WebTestCase
 {

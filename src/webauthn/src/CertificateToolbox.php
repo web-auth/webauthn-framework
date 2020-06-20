@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function count;
+use function in_array;
 use InvalidArgumentException;
 use Symfony\Component\Process\Process;
 
@@ -28,7 +30,7 @@ class CertificateToolbox
         self::checkCertificatesValidity($authenticatorCertificates);
         self::checkCertificatesValidity($trustedCertificates);
 
-        if (0 === \count($trustedCertificates)) {
+        if (0 === count($trustedCertificates)) {
             return;
         }
         $filenames = [];
@@ -117,7 +119,7 @@ class CertificateToolbox
     private static function unusedBytesFix(string $certificate): string
     {
         $certificateHash = hash('sha256', $certificate);
-        if (\in_array($certificateHash, self::getCertificateHashes(), true)) {
+        if (in_array($certificateHash, self::getCertificateHashes(), true)) {
             $certificate[mb_strlen($certificate, '8bit') - 257] = "\0";
         }
 

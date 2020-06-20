@@ -16,8 +16,6 @@ namespace Webauthn\Bundle\Service;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 
 final class DefaultSuccessHandler implements SuccessHandler

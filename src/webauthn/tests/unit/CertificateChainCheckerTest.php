@@ -19,6 +19,8 @@ use Webauthn\CertificateToolbox;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class CertificateChainCheckerTest extends TestCase
 {

@@ -23,6 +23,8 @@ use Webauthn\AuthenticatorData;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\NoneAttestationStatementSupport
+ *
+ * @internal
  */
 class NoneAttestationStatementSupportTest extends TestCase
 {

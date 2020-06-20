@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Throwable;
 use Webauthn\MetadataService\DistantSingleMetadata;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
@@ -86,7 +87,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                 if ($mds->getAaguid() === $aaguid) {
                     return $mds;
                 }
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }
@@ -97,12 +98,12 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                     if ($entry->getAaguid() === $aaguid) {
                         try {
                             return $metadataService->getMetadataStatementFor($entry);
-                        } catch (\Throwable $throwable) {
+                        } catch (Throwable $throwable) {
                             continue;
                         }
                     }
                 }
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }

@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
+use function count;
+use function is_array;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -135,11 +137,11 @@ final class AttestationRequestController
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
         $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
-        if (\is_array($authenticatorSelection)) {
+        if (is_array($authenticatorSelection)) {
             $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
         }
         $extensions = $creationOptionsRequest->extensions;
-        if (\is_array($extensions)) {
+        if (is_array($extensions)) {
             $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
         }
 
@@ -158,7 +160,7 @@ final class AttestationRequestController
         $data = $this->serializer->deserialize($content, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'json');
         Assertion::isInstanceOf($data, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();

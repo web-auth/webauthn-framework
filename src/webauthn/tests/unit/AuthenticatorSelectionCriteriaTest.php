@@ -21,6 +21,8 @@ use Webauthn\AuthenticatorSelectionCriteria;
  * @group Fido2
  *
  * @covers \Webauthn\AuthenticatorSelectionCriteria
+ *
+ * @internal
  */
 class AuthenticatorSelectionCriteriaTest extends TestCase
 {

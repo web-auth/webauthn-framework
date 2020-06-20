@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use function array_key_exists;
 use Cose\Algorithm\Algorithm;
+use function count;
+use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -170,6 +173,37 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
+            return;
+        }
+        $configs = $container->getExtensionConfig('doctrine');
+        if (0 === count($configs)) {
+            return;
+        }
+        $config = current($configs);
+        if (!isset($config['dbal'])) {
+            $config['dbal'] = [];
+        }
+        if (!isset($config['dbal']['types'])) {
+            $config['dbal']['types'] = [];
+        }
+        $config['dbal']['types'] += [
+            'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
+            'aaguid' => DbalType\AAGUIDDataType::class,
+            'base64' => DbalType\Base64BinaryDataType::class,
+            'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
+            'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
+            'trust_path' => DbalType\TrustPathDataType::class,
+        ];
+        $container->prependExtensionConfig('doctrine', $config);
+    }
+
+    /**
      * @param array<string, mixed> $config
      */
     private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
@@ -236,36 +270,5 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
         $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        $bundles = $container->getParameter('kernel.bundles');
-        if (!\is_array($bundles) || !\array_key_exists('DoctrineBundle', $bundles)) {
-            return;
-        }
-        $configs = $container->getExtensionConfig('doctrine');
-        if (0 === \count($configs)) {
-            return;
-        }
-        $config = current($configs);
-        if (!isset($config['dbal'])) {
-            $config['dbal'] = [];
-        }
-        if (!isset($config['dbal']['types'])) {
-            $config['dbal']['types'] = [];
-        }
-        $config['dbal']['types'] += [
-            'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
-            'aaguid' => DbalType\AAGUIDDataType::class,
-            'base64' => DbalType\Base64BinaryDataType::class,
-            'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
-            'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
-            'trust_path' => DbalType\TrustPathDataType::class,
-        ];
-        $container->prependExtensionConfig('doctrine', $config);
     }
 }

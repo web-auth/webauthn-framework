@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use function in_array;
 use JsonSerializable;
 
 class StatusReport implements JsonSerializable
@@ -76,7 +77,7 @@ class StatusReport implements JsonSerializable
 
     public function isCompromised(): bool
     {
-        return \in_array($this->status, [
+        return in_array($this->status, [
             AuthenticatorStatus::ATTESTATION_KEY_COMPROMISE,
             AuthenticatorStatus::USER_KEY_PHYSICAL_COMPROMISE,
             AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE,

@@ -19,7 +19,8 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire();
+        ->autowire()
+    ;
 
     $container->set(AttestationStatement\TPMAttestationStatementSupport::class);
     $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
@@ -27,5 +28,6 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AttestationStatement\PackedAttestationStatementSupport::class)
         ->args([
             ref('webauthn.cose.algorithm.manager'),
-        ]);
+        ])
+    ;
 };

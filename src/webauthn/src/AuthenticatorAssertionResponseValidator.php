@@ -20,6 +20,8 @@ use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
+use function count;
+use function in_array;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -92,7 +94,7 @@ class AuthenticatorAssertionResponseValidator
                 'userHandle' => $userHandle,
             ]);
             /* @see 7.2.1 */
-            if (0 !== \count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
+            if (0 !== count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
                 Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
             }
 
@@ -141,7 +143,7 @@ class AuthenticatorAssertionResponseValidator
             $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
-            if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+            if (!in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
+use function count;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -26,6 +27,8 @@ use Webauthn\PublicKeyCredentialDescriptor;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class AdditionalAuthenticatorTest extends WebTestCase
 {
@@ -70,7 +73,8 @@ class AdditionalAuthenticatorTest extends WebTestCase
         /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
         $publicKeyCredentialSourceRepository = self::$kernel
             ->getContainer()
-            ->get(PublicKeyCredentialSourceRepository::class);
+            ->get(PublicKeyCredentialSourceRepository::class)
+        ;
         $this->logIn();
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
 
@@ -84,7 +88,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         ]);
         $session->save();
 
-        $numberOfRegisteredCredentials = \count($publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser()));
+        $numberOfRegisteredCredentials = count($publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser()));
         $body = '{"id":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","rawId":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZydjc2lnWECRl1RciDxSF7hkhJbqVJeryUIFrX7r6QQMQq8bIP4wYRA6f96iOO4wiOo34l65kZ5v1erxSmIaH56VySUSMusEaGF1dGhEYXRhWIGWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAAykd_q15WeRHWtJpsNSCvgiQAgWT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YOkAQEDJyAGIVgg4smTlXUJnAP_RqNWNv2Eqkh8I7ZDS0IuSgotbPygd9k","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVoTlZ0M1Q4VjEyRkp2U0FjNTBuaEtuWi1NRWMta2Y4NHhlcERjR3lOMWciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
         $this->client->request(
             Request::METHOD_POST,
@@ -109,7 +113,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         $session = self::$container->get('session');
         static::assertFalse($session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
 
-        $newNumberOfRegisteredCredentials = \count($publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser()));
+        $newNumberOfRegisteredCredentials = count($publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser()));
         static::assertEquals($numberOfRegisteredCredentials + 1, $newNumberOfRegisteredCredentials);
     }
 

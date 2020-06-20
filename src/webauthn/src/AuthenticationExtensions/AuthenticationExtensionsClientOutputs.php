@@ -13,8 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
+use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
+use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
@@ -56,7 +58,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
 
     public function has(string $key): bool
     {
-        return \array_key_exists($key, $this->extensions);
+        return array_key_exists($key, $this->extensions);
     }
 
     /**
@@ -87,6 +89,6 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
 
     public function count(int $mode = COUNT_NORMAL): int
     {
-        return \count($this->extensions, $mode);
+        return count($this->extensions, $mode);
     }
 }

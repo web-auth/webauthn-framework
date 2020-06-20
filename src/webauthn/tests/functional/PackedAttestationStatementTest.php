@@ -32,6 +32,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 /**
  * @group functional
  * @group Fido2
+ *
+ * @internal
  */
 class PackedAttestationStatementTest extends AbstractTestCase
 {

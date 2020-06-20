@@ -21,6 +21,8 @@ use Webauthn\PublicKeyCredentialDescriptor;
  * @group Fido2
  *
  * @covers \Webauthn\PublicKeyCredentialDescriptor
+ *
+ * @internal
  */
 class PublicKeyCredentialDescriptorTest extends TestCase
 {
