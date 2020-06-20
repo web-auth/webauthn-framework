@@ -26,7 +26,6 @@ use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -57,8 +56,6 @@ use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
  */
 abstract class AbstractTestCase extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @var PublicKeyCredentialLoader|null
      */

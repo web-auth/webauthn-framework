@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Assert\InvalidArgumentException;
 use Cose\Algorithms;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -40,8 +39,6 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 class AttestationTest extends KernelTestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
