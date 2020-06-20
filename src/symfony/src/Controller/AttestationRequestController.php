@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -25,6 +24,8 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\AdditionalPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
+use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
+use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\StoredData;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -71,7 +72,17 @@ final class AttestationRequestController
      */
     private $userEntityGuesser;
 
-    public function __construct(UserEntityGuesser $userEntityGuesser, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, OptionsStorage $sessionParameterName)
+    /**
+     * @var CreationOptionsHandler
+     */
+    private $creationOptionsHandler;
+
+    /**
+     * @var FailureHandler
+     */
+    private $failureHandler;
+
+    public function __construct(UserEntityGuesser $userEntityGuesser, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, OptionsStorage $sessionParameterName, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -80,6 +91,8 @@ final class AttestationRequestController
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->optionsStorage = $sessionParameterName;
         $this->userEntityGuesser = $userEntityGuesser;
+        $this->creationOptionsHandler = $creationOptionsHandler;
+        $this->failureHandler = $failureHandler;
     }
 
     public function __invoke(Request $request): Response
@@ -96,14 +109,12 @@ final class AttestationRequestController
             );
             $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity));
 
-            $data = array_merge(
-                ['status' => 'ok', 'errorMessage' => ''],
-                $publicKeyCredentialCreationOptions->jsonSerialize()
+            return $this->creationOptionsHandler->onCreationOptions(
+                $publicKeyCredentialCreationOptions,
+                $userEntity
             );
-
-            return new JsonResponse($data);
         } catch (Throwable $throwable) {
-            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
+            return $this->failureHandler->onFailure($request, $throwable);
         }
     }
 

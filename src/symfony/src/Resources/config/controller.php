@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Webauthn\Bundle\Service\DefaultFailureHandler;
+use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 
@@ -27,4 +29,6 @@ return static function (ContainerConfigurator $container): void {
         ->autowire();
 
     $container->set(AttestationResponseControllerFactory::class);
+    $container->set(DefaultFailureHandler::class);
+    $container->set(DefaultSuccessHandler::class);
 };

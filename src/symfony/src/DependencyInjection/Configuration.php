@@ -20,6 +20,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
+use Webauthn\Bundle\Service\DefaultFailureHandler;
+use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
@@ -141,6 +144,9 @@ final class Configuration implements ConfigurationInterface
                                     ->scalarNode('profile')->defaultValue('default')->end()
                                     ->scalarNode('user_entity_guesser')->isRequired()->end()
                                     ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
+                                    ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
+                                    ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+                                    ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
                                 ->end()
                             ->end()
                         ->end()

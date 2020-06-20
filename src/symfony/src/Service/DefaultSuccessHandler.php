@@ -11,15 +11,16 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Bundle\Security\Handler;
+namespace Webauthn\Bundle\Service;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
+use Webauthn\Bundle\Security\Handler\SuccessHandler;
 
-final class DefaultSuccessHandler implements SuccessHandler, AuthenticationSuccessHandlerInterface
+final class DefaultSuccessHandler implements SuccessHandler
 {
     public function onSuccess(Request $request): Response
     {
@@ -28,11 +29,6 @@ final class DefaultSuccessHandler implements SuccessHandler, AuthenticationSucce
             'errorMessage' => '',
         ];
 
-        return new JsonResponse($data, JsonResponse::HTTP_OK);
-    }
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
-    {
-        return $this->onSuccess($request);
+        return new JsonResponse($data, JsonResponse::HTTP_CREATED);
     }
 }

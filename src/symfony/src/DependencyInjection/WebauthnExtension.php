@@ -186,6 +186,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($creationConfig['user_entity_guesser']),
                 $creationConfig['profile'],
                 new Reference($creationConfig['options_storage']),
+                new Reference($creationConfig['options_handler']),
+                new Reference($creationConfig['failure_handler']),
             ]);
             $attestationRequestController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['options_path'], 'host' => $creationConfig['host']]);
             $attestationRequestController->addTag('controller.service_arguments');
@@ -196,6 +198,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseController->setFactory([new Reference(\Webauthn\Bundle\Controller\AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
             $attestationResponseController->setArguments([
                 new Reference($creationConfig['options_storage']),
+                new Reference($creationConfig['success_handler']),
+                new Reference($creationConfig['failure_handler']),
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['result_path'], 'host' => $creationConfig['host']]);
             $attestationResponseController->addTag('controller.service_arguments');
