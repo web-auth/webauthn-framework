@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Cose\Algorithms;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -229,6 +230,17 @@ final class Configuration implements ConfigurationInterface
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->defaultValue([
+                Algorithms::COSE_ALGORITHM_EdDSA,
+                Algorithms::COSE_ALGORITHM_ES256,
+                Algorithms::COSE_ALGORITHM_ES256K,
+                Algorithms::COSE_ALGORITHM_ES384,
+                Algorithms::COSE_ALGORITHM_ES512,
+                Algorithms::COSE_ALGORITHM_RS256,
+                Algorithms::COSE_ALGORITHM_RS384,
+                Algorithms::COSE_ALGORITHM_RS512,
+                Algorithms::COSE_ALGORITHM_PS256,
+                Algorithms::COSE_ALGORITHM_PS384,
+                Algorithms::COSE_ALGORITHM_PS512,
             ])
             ->end()
             ->scalarNode('attestation_conveyance')
