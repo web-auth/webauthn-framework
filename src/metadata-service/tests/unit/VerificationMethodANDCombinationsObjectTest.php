@@ -23,6 +23,8 @@ use Webauthn\MetadataService\VerificationMethodDescriptor;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class VerificationMethodANDCombinationsObjectTest extends TestCase
 {

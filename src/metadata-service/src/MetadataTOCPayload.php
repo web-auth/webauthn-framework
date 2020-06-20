@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 
@@ -84,7 +85,7 @@ class MetadataTOCPayload implements JsonSerializable
         Assertion::integer($data['no'], Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
         Assertion::string($data['nextUpdate'], Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
         Assertion::isArray($data['entries'], Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
-        if (\array_key_exists('legalHeader', $data)) {
+        if (array_key_exists('legalHeader', $data)) {
             Assertion::string($data['legalHeader'], Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
         }
         $object = new self(

@@ -37,6 +37,14 @@ class PublicKeyCredential extends Credential
         $this->response = $response;
     }
 
+    public function __toString()
+    {
+        $encoded = json_encode($this);
+        Assertion::string($encoded, 'Unable to encode the data');
+
+        return $encoded;
+    }
+
     public function getRawId(): string
     {
         return $this->rawId;
@@ -53,13 +61,5 @@ class PublicKeyCredential extends Credential
     public function getPublicKeyCredentialDescriptor(array $transport = []): PublicKeyCredentialDescriptor
     {
         return new PublicKeyCredentialDescriptor($this->getType(), $this->getRawId(), $transport);
-    }
-
-    public function __toString()
-    {
-        $encoded = json_encode($this);
-        Assertion::string($encoded, 'Unable to encode the data');
-
-        return $encoded;
     }
 }

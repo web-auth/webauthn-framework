@@ -13,21 +13,28 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Functional;
 
+use function count;
 use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
+use function in_array;
+use function is_array;
+use function is_object;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use ReflectionMethod;
+use Throwable;
 use Webauthn\MetadataService\MetadataService;
 
 /**
  * @group functional
  * @group Fido2
  * @group TOC
+ *
+ * @internal
  */
 class MetadataServiceTest extends TestCase
 {
@@ -54,7 +61,7 @@ class MetadataServiceTest extends TestCase
             try {
                 $ms = $service->getMetadataStatementFor($entry);
                 $this->callObjectMethods($ms);
-            } catch (\Throwable $throwable) {
+            } catch (Throwable $throwable) {
                 continue;
             }
         }
@@ -69,17 +76,17 @@ class MetadataServiceTest extends TestCase
         $availableMethods = array_filter($availableMethods, static function ($method) use ($object): bool {
             $classMethod = new ReflectionMethod($object, $method);
 
-            return !\in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === \count($classMethod->getParameters());
+            return !in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === count($classMethod->getParameters());
         });
         foreach ($availableMethods as $method) {
-            $value = $object->$method();
+            $value = $object->{$method}();
             switch (true) {
-                case \is_object($value):
+                case is_object($value):
                     $this->callObjectMethods($value);
                     break;
-                case \is_array($value):
+                case is_array($value):
                     foreach ($value as $item) {
-                        if (\is_object($item)) {
+                        if (is_object($item)) {
                             $this->callObjectMethods($item);
                         }
                     }

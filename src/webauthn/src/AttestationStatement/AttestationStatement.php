@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use Webauthn\TrustPath\TrustPath;
@@ -112,7 +113,7 @@ class AttestationStatement implements JsonSerializable
 
     public function has(string $key): bool
     {
-        return \array_key_exists($key, $this->attStmt);
+        return array_key_exists($key, $this->attStmt);
     }
 
     /**

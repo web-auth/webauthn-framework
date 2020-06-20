@@ -15,6 +15,7 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function count;
 use JsonSerializable;
 use LogicException;
 
@@ -70,7 +71,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         if (null !== $aaid && null !== $aaguid) {
             throw new LogicException('Authenticators cannot support both AAID and AAGUID');
         }
-        if (null === $aaid && null === $aaguid && 0 === \count($attestationCertificateKeyIdentifiers)) {
+        if (null === $aaid && null === $aaguid && 0 === count($attestationCertificateKeyIdentifiers)) {
             throw new LogicException('If neither AAID nor AAGUID are set, the attestation certificate identifier list shall not be empty');
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {

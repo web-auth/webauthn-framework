@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use function array_key_exists;
 use Assert\Assertion;
+use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -30,7 +32,7 @@ final class CustomSessionStorage implements OptionsStorage
 
     public function store(Request $request, StoredData $data, ?Response $response = null): void
     {
-        if ($response === null) {
+        if (null === $response) {
             @trigger_error('Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.', E_USER_DEPRECATED);
         }
         $session = $request->getSession();
@@ -45,7 +47,7 @@ final class CustomSessionStorage implements OptionsStorage
         Assertion::notNull($session, 'This authentication method requires a session.');
 
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
-        if (!\is_array($sessionValue) || !\array_key_exists('options', $sessionValue) || !\array_key_exists('userEntity', $sessionValue)) {
+        if (!is_array($sessionValue) || !array_key_exists('options', $sessionValue) || !array_key_exists('userEntity', $sessionValue)) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 

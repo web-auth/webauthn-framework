@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function count;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
@@ -163,7 +164,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             'authenticatorSelection' => $this->authenticatorSelection,
         ];
 
-        if (0 !== \count($this->excludeCredentials)) {
+        if (0 !== count($this->excludeCredentials)) {
             $json['excludeCredentials'] = $this->excludeCredentials;
         }
 

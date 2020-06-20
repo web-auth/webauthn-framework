@@ -24,6 +24,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\AttestationStatement
+ *
+ * @internal
  */
 class AttestationStatementTest extends TestCase
 {

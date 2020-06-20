@@ -21,6 +21,8 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class AuthenticationExtensionsClientTest extends TestCase
 {

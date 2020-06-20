@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function count;
+use function in_array;
 use InvalidArgumentException;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -111,7 +113,7 @@ class AuthenticatorAttestationResponseValidator
             $rpIdLength = mb_strlen($facetId);
             Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $facetId, 'rpId mismatch.');
 
-            if (!\in_array($facetId, $securedRelyingPartyId, true)) {
+            if (!in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
@@ -256,7 +258,7 @@ class AuthenticatorAttestationResponseValidator
         $this->checkStatusReport($aaguid);
 
         // Check Attestation Type is allowed
-        if (0 !== \count($metadataStatement->getAttestationTypes())) {
+        if (0 !== count($metadataStatement->getAttestationTypes())) {
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
         }
@@ -272,7 +274,7 @@ class AuthenticatorAttestationResponseValidator
     {
         Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
         $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
-        if (0 !== \count($statusReports)) {
+        if (0 !== count($statusReports)) {
             $lastStatusReport = reset($statusReports);
             if ($lastStatusReport->isCompromised()) {
                 throw new LogicException('The authenticator is compromised and cannot be used');

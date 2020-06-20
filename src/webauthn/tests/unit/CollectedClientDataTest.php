@@ -23,6 +23,8 @@ use Webauthn\TokenBinding\TokenBinding;
  * @group Fido2
  *
  * @covers \Webauthn\CollectedClientData
+ *
+ * @internal
  */
 class CollectedClientDataTest extends TestCase
 {

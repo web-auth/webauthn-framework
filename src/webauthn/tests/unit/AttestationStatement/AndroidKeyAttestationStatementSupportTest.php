@@ -22,6 +22,8 @@ use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport
+ *
+ * @internal
  */
 class AndroidKeyAttestationStatementSupportTest extends TestCase
 {

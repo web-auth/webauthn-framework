@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use function count;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\EmptyTrustPath;
 
@@ -36,6 +37,6 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        return 0 === \count($attestationStatement->getAttStmt());
+        return 0 === count($attestationStatement->getAttStmt());
     }
 }

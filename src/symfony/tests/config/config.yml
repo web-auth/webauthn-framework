@@ -22,6 +22,7 @@ framework:
     fragments:       ~
     http_method_override: true
     router:
+        utf8: true
         resource: "%kernel.project_dir%/tests/config/routing.php"
 
 services:
@@ -37,6 +38,9 @@ services:
         autowire: true
 
     Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository:
+        autowire: true
+
+    Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser:
         autowire: true
 
     Webauthn\Bundle\Tests\Functional\Logger:
@@ -196,6 +200,13 @@ webauthn:
     user_repository: 'Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository'
     android_safetynet:
         max_age: 99999999999
+    controllers:
+        enabled: true
+        creation:
+            test:
+                options_path: '/devices/add/options'
+                result_path: '/devices/add'
+                user_entity_guesser: 'Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser'
     creation_profiles:
         default:
             rp:
@@ -289,6 +300,7 @@ security:
                 target: /
 
     access_control:
+        - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
         - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use function array_key_exists;
 use Assert\Assertion;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
@@ -39,7 +40,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         $data = Utils::filterNullValues($data);
         Assertion::keyExists($data, 'minComplexity', Utils::logicException('The key "minComplexity" is missing'));
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
-            if (\array_key_exists($key, $data)) {
+            if (array_key_exists($key, $data)) {
                 Assertion::integer($data[$key], Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
             }
         }

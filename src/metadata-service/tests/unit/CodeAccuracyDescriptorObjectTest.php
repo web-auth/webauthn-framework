@@ -21,6 +21,8 @@ use Webauthn\MetadataService\CodeAccuracyDescriptor;
  * @group unit
  * @group Fido2
  * @group FOO
+ *
+ * @internal
  */
 class CodeAccuracyDescriptorObjectTest extends TestCase
 {

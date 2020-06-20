@@ -21,6 +21,8 @@ use Webauthn\PublicKeyCredentialParameters;
  * @group Fido2
  *
  * @covers \Webauthn\PublicKeyCredentialParameters
+ *
+ * @internal
  */
 class PublicKeyCredentialParametersTest extends TestCase
 {

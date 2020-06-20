@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cose\Key;
 
+use function array_key_exists;
 use Assert\Assertion;
 
 class OkpKey extends Key
@@ -22,16 +23,16 @@ class OkpKey extends Key
     public const CURVE_ED25519 = 6;
     public const CURVE_ED448 = 7;
 
+    public const DATA_CURVE = -1;
+    public const DATA_X = -2;
+    public const DATA_D = -4;
+
     private const SUPPORTED_CURVES = [
         self::CURVE_X25519,
         self::CURVE_X448,
         self::CURVE_ED25519,
         self::CURVE_ED448,
     ];
-
-    public const DATA_CURVE = -1;
-    public const DATA_X = -2;
-    public const DATA_D = -4;
 
     public function __construct(array $data)
     {
@@ -49,7 +50,7 @@ class OkpKey extends Key
 
     public function isPrivate(): bool
     {
-        return \array_key_exists(self::DATA_D, $this->getData());
+        return array_key_exists(self::DATA_D, $this->getData());
     }
 
     public function d(): string

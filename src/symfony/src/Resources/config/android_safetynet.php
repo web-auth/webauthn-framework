@@ -21,7 +21,8 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire();
+        ->autowire()
+    ;
 
     if (class_exists(JWKFactory::class) && class_exists(RS256::class)) {
         $container->set(AndroidSafetyNetAttestationStatementSupport::class)
@@ -31,6 +32,7 @@ return static function (ContainerConfigurator $container): void {
                 ref('webauthn.android_safetynet.request_factory')->nullOnInvalid(),
                 '%webauthn.android_safetynet.leeway%',
                 '%webauthn.android_safetynet.max_age%',
-            ]);
+            ])
+        ;
     }
 };

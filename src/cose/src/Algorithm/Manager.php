@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm;
 
+use function array_key_exists;
 use Assert\Assertion;
 
 class Manager
@@ -43,7 +44,7 @@ class Manager
 
     public function has(int $identifier): bool
     {
-        return \array_key_exists($identifier, $this->algorithms);
+        return array_key_exists($identifier, $this->algorithms);
     }
 
     public function get(int $identifier): Algorithm

@@ -22,6 +22,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
  * @group Fido2
  *
  * @covers \Webauthn\AttestationStatement\AttestationStatementSupportManager
+ *
+ * @internal
  */
 class AttestationStatementSupportManagerTest extends TestCase
 {

@@ -38,10 +38,10 @@ abstract class RSA implements Signature
         return 1 === openssl_verify($data, $signature, $key->asPem(), $this->getHashAlgorithm());
     }
 
+    abstract protected function getHashAlgorithm(): int;
+
     private function handleKey(Key $key): RsaKey
     {
         return new RsaKey($key->getData());
     }
-
-    abstract protected function getHashAlgorithm(): int;
 }

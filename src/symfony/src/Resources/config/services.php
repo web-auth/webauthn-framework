@@ -39,7 +39,8 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire();
+        ->autowire()
+    ;
 
     $container->set(BaseAuthenticatorAttestationResponseValidator::class)
         ->class(AuthenticatorAttestationResponseValidator::class)
@@ -52,7 +53,8 @@ return static function (ContainerConfigurator $container): void {
             ref(MetadataStatementRepository::class)->nullOnInvalid(),
             ref('webauthn.logger')->nullOnInvalid(),
         ])
-        ->public();
+        ->public()
+    ;
     $container->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
@@ -64,25 +66,29 @@ return static function (ContainerConfigurator $container): void {
             ref(Counter\CounterChecker::class)->nullOnInvalid(),
             ref('webauthn.logger')->nullOnInvalid(),
         ])
-        ->public();
+        ->public()
+    ;
     $container->set(PublicKeyCredentialLoader::class)
         ->args([
             ref(AttestationObjectLoader::class),
             ref('webauthn.logger')->nullOnInvalid(),
         ])
-        ->public();
+        ->public()
+    ;
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args([
             '%webauthn.creation_profiles%',
             ref(EventDispatcherInterface::class),
         ])
-        ->public();
+        ->public()
+    ;
     $container->set(PublicKeyCredentialRequestOptionsFactory::class)
         ->args([
             '%webauthn.request_profiles%',
             ref(EventDispatcherInterface::class),
         ])
-        ->public();
+        ->public()
+    ;
 
     $container->set(ExtensionOutputCheckerHandler::class);
     $container->set(AttestationStatement\AttestationObjectLoader::class)
@@ -90,7 +96,8 @@ return static function (ContainerConfigurator $container): void {
             ref(AttestationStatementSupportManager::class),
             null,
             ref('webauthn.logger')->nullOnInvalid(),
-        ]);
+        ])
+    ;
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
     $container->set(AttestationStatement\NoneAttestationStatementSupport::class);
 
@@ -101,7 +108,8 @@ return static function (ContainerConfigurator $container): void {
     $container->set(Counter\ThrowExceptionIfInvalid::class);
 
     $container->set(Loader::class)
-        ->tag('routing.loader');
+        ->tag('routing.loader')
+    ;
 
     $container->set(DummyControllerFactory::class);
     $container->set(DummyPublicKeyCredentialSourceRepository::class);

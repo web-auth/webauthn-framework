@@ -13,7 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\MetadataService;
 
+use function count;
 use Http\Message\RequestMatcher\RequestMatcher;
+use function in_array;
+use function is_array;
+use function is_object;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -29,6 +33,8 @@ use Webauthn\MetadataService\MetadataStatementRepository;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class MetadataServiceTest extends KernelTestCase
 {
@@ -121,17 +127,17 @@ class MetadataServiceTest extends KernelTestCase
         $availableMethods = array_filter($availableMethods, static function ($method) use ($object): bool {
             $classMethod = new ReflectionMethod($object, $method);
 
-            return !\in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === \count($classMethod->getParameters());
+            return !in_array($method, ['createFromArray', 'create', '__construct', 'jsonSerialize'], true) && 0 === count($classMethod->getParameters());
         });
         foreach ($availableMethods as $method) {
-            $value = $object->$method();
+            $value = $object->{$method}();
             switch (true) {
-                case \is_object($value):
+                case is_object($value):
                     $this->callObjectMethods($value);
                     break;
-                case \is_array($value):
+                case is_array($value):
                     foreach ($value as $item) {
-                        if (\is_object($item)) {
+                        if (is_object($item)) {
                             $this->callObjectMethods($item);
                         }
                     }

@@ -61,6 +61,31 @@ abstract class AbstractTestCase extends TestCase
      */
     private $publicKeyCredentialLoader;
 
+    /**
+     * @var AuthenticatorAttestationResponseValidator|null
+     */
+    private $authenticatorAttestationResponseValidator;
+
+    /**
+     * @var AuthenticatorAssertionResponseValidator|null
+     */
+    private $authenticatorAssertionResponseValidator;
+
+    /**
+     * @var AttestationObjectLoader|null
+     */
+    private $algorithmManager;
+
+    /**
+     * @var AttestationObjectLoader|null
+     */
+    private $attestationObjectLoader;
+
+    /**
+     * @var MetadataStatementRepositoryInterface|null
+     */
+    private $metadataStatementRepository;
+
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
         if (!$this->publicKeyCredentialLoader) {
@@ -71,11 +96,6 @@ abstract class AbstractTestCase extends TestCase
 
         return $this->publicKeyCredentialLoader;
     }
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator|null
-     */
-    private $authenticatorAttestationResponseValidator;
 
     protected function getAuthenticatorAttestationResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository, ?ClientInterface $client = null): AuthenticatorAttestationResponseValidator
     {
@@ -91,11 +111,6 @@ abstract class AbstractTestCase extends TestCase
 
         return $this->authenticatorAttestationResponseValidator;
     }
-
-    /**
-     * @var AuthenticatorAssertionResponseValidator|null
-     */
-    private $authenticatorAssertionResponseValidator;
 
     protected function getAuthenticatorAssertionResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository): AuthenticatorAssertionResponseValidator
     {
@@ -132,11 +147,6 @@ abstract class AbstractTestCase extends TestCase
         return $attestationStatementSupportManager;
     }
 
-    /**
-     * @var AttestationObjectLoader|null
-     */
-    private $algorithmManager;
-
     private function getAlgorithmManager(): Manager
     {
         if (!$this->algorithmManager) {
@@ -154,11 +164,6 @@ abstract class AbstractTestCase extends TestCase
         return $this->algorithmManager;
     }
 
-    /**
-     * @var AttestationObjectLoader|null
-     */
-    private $attestationObjectLoader;
-
     private function getAttestationObjectLoader(): AttestationObjectLoader
     {
         if (!$this->attestationObjectLoader) {
@@ -169,11 +174,6 @@ abstract class AbstractTestCase extends TestCase
 
         return $this->attestationObjectLoader;
     }
-
-    /**
-     * @var MetadataStatementRepositoryInterface|null
-     */
-    private $metadataStatementRepository;
 
     private function getMetadataStatementRepository(): MetadataStatementRepositoryInterface
     {

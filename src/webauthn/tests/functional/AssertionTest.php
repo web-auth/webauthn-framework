@@ -29,6 +29,8 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 /**
  * @group functional
  * @group Fido2
+ *
+ * @internal
  */
 class AssertionTest extends AbstractTestCase
 {

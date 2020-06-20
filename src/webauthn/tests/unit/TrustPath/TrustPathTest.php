@@ -22,6 +22,8 @@ use Webauthn\TrustPath\TrustPathLoader;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class TrustPathTest extends TestCase
 {

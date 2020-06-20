@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use Assert\Assertion;
+use function count;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -30,6 +32,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
@@ -206,7 +209,7 @@ class CreationListener
             );
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
             $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -223,7 +226,7 @@ class CreationListener
             $response = $this->onAssertionSuccess($request, $authenticatedToken);
         } catch (AuthenticationException $e) {
             $response = $this->onAssertionFailure($request, $e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -266,10 +269,15 @@ class CreationListener
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest
     {
-        $data = $this->serializer->deserialize($content, ServerPublicKeyCredentialCreationOptionsRequest::class, 'json');
+        $data = $this->serializer->deserialize(
+            $content,
+            ServerPublicKeyCredentialCreationOptionsRequest::class,
+            'json',
+            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+        );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
-        if (\count($errors) > 0) {
+        if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath().': '.$error->getMessage();
@@ -313,7 +321,7 @@ class CreationListener
             throw new AuthenticationException('Invalid assertion', 0, $throwable);
         }
 
-        $token = new WebauthnToken(
+        return new WebauthnToken(
             $userEntity,
             $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
@@ -326,7 +334,5 @@ class CreationListener
             $this->providerKey,
             []
         );
-
-        return $token;
     }
 }

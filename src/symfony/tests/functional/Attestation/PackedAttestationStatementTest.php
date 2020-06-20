@@ -32,6 +32,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class PackedAttestationStatementTest extends KernelTestCase
 {

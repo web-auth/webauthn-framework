@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cose\Key;
 
+use function array_key_exists;
 use Assert\Assertion;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\BitString;
@@ -28,17 +29,17 @@ class Ec2Key extends Key
     public const CURVE_P384 = 2;
     public const CURVE_P521 = 3;
 
+    public const DATA_CURVE = -1;
+    public const DATA_X = -2;
+    public const DATA_Y = -3;
+    public const DATA_D = -4;
+
     private const SUPPORTED_CURVES = [
         self::CURVE_P256,
         self::CURVE_P256K,
         self::CURVE_P384,
         self::CURVE_P521,
     ];
-
-    public const DATA_CURVE = -1;
-    public const DATA_X = -2;
-    public const DATA_Y = -3;
-    public const DATA_D = -4;
 
     private const NAMED_CURVE_OID = [
         self::CURVE_P256 => '1.2.840.10045.3.1.7', // NIST P-256 / secp256r1
@@ -86,7 +87,7 @@ class Ec2Key extends Key
 
     public function isPrivate(): bool
     {
-        return \array_key_exists(self::DATA_D, $this->getData());
+        return array_key_exists(self::DATA_D, $this->getData());
     }
 
     public function d(): string
@@ -108,7 +109,7 @@ class Ec2Key extends Key
                 new Integer(1),
                 new OctetString(bin2hex($this->d())),
                 new ExplicitlyTaggedObject(0, new ObjectIdentifier($this->getCurveOid())),
-                new ExplicitlyTaggedObject(1, new BitString(\bin2hex($this->getUncompressedCoordinates())))
+                new ExplicitlyTaggedObject(1, new BitString(bin2hex($this->getUncompressedCoordinates())))
             );
 
             return $this->pem('EC PRIVATE KEY', $der->getBinary());
@@ -119,20 +120,20 @@ class Ec2Key extends Key
                 new ObjectIdentifier('1.2.840.10045.2.1'),
                 new ObjectIdentifier($this->getCurveOid())
             ),
-            new BitString(\bin2hex($this->getUncompressedCoordinates()))
+            new BitString(bin2hex($this->getUncompressedCoordinates()))
         );
 
         return $this->pem('PUBLIC KEY', $der->getBinary());
     }
 
-    private function getCurveOid(): string
-    {
-        return self::NAMED_CURVE_OID[$this->curve()];
-    }
-
     public function getUncompressedCoordinates(): string
     {
         return "\x04".$this->x().$this->y();
+    }
+
+    private function getCurveOid(): string
+    {
+        return self::NAMED_CURVE_OID[$this->curve()];
     }
 
     private function pem(string $type, string $der): string

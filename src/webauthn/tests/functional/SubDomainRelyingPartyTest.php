@@ -22,6 +22,8 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 /**
  * @group functional
  * @group Fido2
+ *
+ * @internal
  */
 class SubDomainRelyingPartyTest extends AbstractTestCase
 {

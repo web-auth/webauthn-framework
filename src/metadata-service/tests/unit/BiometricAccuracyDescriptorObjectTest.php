@@ -19,6 +19,8 @@ use Webauthn\MetadataService\BiometricAccuracyDescriptor;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class BiometricAccuracyDescriptorObjectTest extends TestCase
 {

@@ -32,6 +32,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
 /**
  * @group functional
  * @group Fido2
+ *
+ * @internal
  */
 class W10Test extends AbstractTestCase
 {

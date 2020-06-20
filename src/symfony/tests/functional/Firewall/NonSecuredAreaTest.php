@@ -17,6 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class NonSecuredAreaTest extends WebTestCase
 {

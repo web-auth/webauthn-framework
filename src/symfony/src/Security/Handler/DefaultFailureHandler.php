@@ -18,16 +18,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Throwable;
 
-final class DefaultFailureHandler implements AuthenticationFailureHandlerInterface
+final class DefaultFailureHandler implements FailureHandler, AuthenticationFailureHandlerInterface
 {
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
+    public function onFailure(Request $request, Throwable $exception = null): Response
     {
         $data = [
             'status' => 'failed',
-            'errorMessage' => $exception->getMessage(),
+            'errorMessage' => $exception ? $exception->getMessage() : 'Authentication failed',
         ];
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
+    {
+        return $this->onFailure($request, $exception);
     }
 }

@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use function array_key_exists;
 use Cose\Algorithm\Algorithm;
+use function count;
+use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -93,6 +96,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $this->loadMetadataStatementSupports($container, $loader, $config);
         }
 
+        if (true === $config['controllers']['enabled']) {
+            $this->loadControllerSupport($container, $loader, $config);
+        }
+
         if (null !== $config['user_repository']) {
             $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         }
@@ -166,6 +173,75 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
+            return;
+        }
+        $configs = $container->getExtensionConfig('doctrine');
+        if (0 === count($configs)) {
+            return;
+        }
+        $config = current($configs);
+        if (!isset($config['dbal'])) {
+            $config['dbal'] = [];
+        }
+        if (!isset($config['dbal']['types'])) {
+            $config['dbal']['types'] = [];
+        }
+        $config['dbal']['types'] += [
+            'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
+            'aaguid' => DbalType\AAGUIDDataType::class,
+            'base64' => DbalType\Base64BinaryDataType::class,
+            'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
+            'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
+            'trust_path' => DbalType\TrustPathDataType::class,
+        ];
+        $container->prependExtensionConfig('doctrine', $config);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    {
+        $loader->load('controller.php');
+
+        $container->setAlias('webauthn.controller.http_message_factory', $config['controllers']['http_message_factory']);
+
+        foreach ($config['controllers']['creation'] as $name => $creationConfig) {
+            $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
+            $attestationRequestController = new Definition(\Webauthn\Bundle\Controller\AttestationRequestController::class);
+            $attestationRequestController->setFactory([new Reference(\Webauthn\Bundle\Controller\AttestationResponseControllerFactory::class), 'createAttestationRequestController']);
+            $attestationRequestController->setArguments([
+                new Reference($creationConfig['user_entity_guesser']),
+                $creationConfig['profile'],
+                new Reference($creationConfig['options_storage']),
+                new Reference($creationConfig['options_handler']),
+                new Reference($creationConfig['failure_handler']),
+            ]);
+            $attestationRequestController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['options_path'], 'host' => $creationConfig['host']]);
+            $attestationRequestController->addTag('controller.service_arguments');
+            $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
+
+            $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
+            $attestationResponseController = new Definition(\Webauthn\Bundle\Controller\AttestationResponseController::class);
+            $attestationResponseController->setFactory([new Reference(\Webauthn\Bundle\Controller\AttestationResponseControllerFactory::class), 'createAttestationResponseController']);
+            $attestationResponseController->setArguments([
+                new Reference($creationConfig['options_storage']),
+                new Reference($creationConfig['success_handler']),
+                new Reference($creationConfig['failure_handler']),
+            ]);
+            $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['result_path'], 'host' => $creationConfig['host']]);
+            $attestationResponseController->addTag('controller.service_arguments');
+            $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $config
      */
     private function loadMetadataStatementSupports(ContainerBuilder $container, LoaderInterface $loader, array $config): void
@@ -194,36 +270,5 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
         $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        $bundles = $container->getParameter('kernel.bundles');
-        if (!\is_array($bundles) || !\array_key_exists('DoctrineBundle', $bundles)) {
-            return;
-        }
-        $configs = $container->getExtensionConfig('doctrine');
-        if (0 === \count($configs)) {
-            return;
-        }
-        $config = current($configs);
-        if (!isset($config['dbal'])) {
-            $config['dbal'] = [];
-        }
-        if (!isset($config['dbal']['types'])) {
-            $config['dbal']['types'] = [];
-        }
-        $config['dbal']['types'] += [
-            'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
-            'aaguid' => DbalType\AAGUIDDataType::class,
-            'base64' => DbalType\Base64BinaryDataType::class,
-            'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
-            'public_key_credential_descriptor_collection' => DbalType\PublicKeyCredentialDescriptorCollectionType::class,
-            'trust_path' => DbalType\TrustPathDataType::class,
-        ];
-        $container->prependExtensionConfig('doctrine', $config);
     }
 }

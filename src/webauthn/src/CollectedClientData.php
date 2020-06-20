@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
@@ -108,7 +109,7 @@ class CollectedClientData
 
     public function has(string $key): bool
     {
-        return \array_key_exists($key, $this->data);
+        return array_key_exists($key, $this->data);
     }
 
     /**
@@ -130,7 +131,7 @@ class CollectedClientData
      */
     private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)
     {
-        if (!\array_key_exists($key, $json)) {
+        if (!array_key_exists($key, $json)) {
             if ($isRequired) {
                 throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
             }

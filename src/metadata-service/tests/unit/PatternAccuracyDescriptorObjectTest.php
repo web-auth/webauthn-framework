@@ -20,6 +20,8 @@ use Webauthn\MetadataService\PatternAccuracyDescriptor;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class PatternAccuracyDescriptorObjectTest extends TestCase
 {

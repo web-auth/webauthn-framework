@@ -28,6 +28,8 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoade
  * @group Fido2
  *
  * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader
+ *
+ * @internal
  */
 class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 {

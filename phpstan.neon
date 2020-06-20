@@ -9,6 +9,7 @@ parameters:
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'
         - '#Call to function is_array\(\) with array\<string\, string\> will always evaluate to true\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+        - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
     checkMissingIterableValueType: false

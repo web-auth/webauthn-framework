@@ -20,6 +20,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 /**
  * @group unit
  * @group Fido2
+ *
+ * @internal
  */
 class EntityTest extends TestCase
 {

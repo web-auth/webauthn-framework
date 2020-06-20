@@ -13,8 +13,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
+use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
@@ -34,7 +36,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
 
     public function has(string $id): bool
     {
-        return \array_key_exists($id, $this->publicKeyCredentialDescriptors);
+        return array_key_exists($id, $this->publicKeyCredentialDescriptors);
     }
 
     public function remove(string $id): void
@@ -56,7 +58,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
 
     public function count(int $mode = COUNT_NORMAL): int
     {
-        return \count($this->publicKeyCredentialDescriptors, $mode);
+        return count($this->publicKeyCredentialDescriptors, $mode);
     }
 
     /**

@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Assert\InvalidArgumentException;
 use Cose\Algorithms;
+use function count;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,6 +25,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -35,6 +37,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * @group functional
+ *
+ * @internal
  */
 class AttestationTest extends KernelTestCase
 {
@@ -44,6 +48,7 @@ class AttestationTest extends KernelTestCase
     public function anAttestationResponseCanBeLoadedAndVerified(): void
     {
         self::bootKernel();
+        self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
 
         $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
             new PublicKeyCredentialRpEntity('My Application'),
@@ -127,6 +132,7 @@ class AttestationTest extends KernelTestCase
     public function eddsa(): void
     {
         self::bootKernel();
+        self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
 
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
         $result = '{"id":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","rawId":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZydjc2lnWECRl1RciDxSF7hkhJbqVJeryUIFrX7r6QQMQq8bIP4wYRA6f96iOO4wiOo34l65kZ5v1erxSmIaH56VySUSMusEaGF1dGhEYXRhWIGWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAAykd_q15WeRHWtJpsNSCvgiQAgWT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YOkAQEDJyAGIVgg4smTlXUJnAP_RqNWNv2Eqkh8I7ZDS0IuSgotbPygd9k","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVoTlZ0M1Q4VjEyRkp2U0FjNTBuaEtuWi1NRWMta2Y4NHhlcERjR3lOMWciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
@@ -210,7 +216,7 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
         static::assertEquals([], $options->getExcludeCredentials());
-        static::assertEquals(11, \count($options->getPubKeyCredParams()));
+        static::assertEquals(11, count($options->getPubKeyCredParams()));
         static::assertEquals('none', $options->getAttestation());
         static::assertEquals(60000, $options->getTimeout());
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());

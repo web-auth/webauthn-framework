@@ -23,6 +23,8 @@ use PHPUnit\Framework\TestCase;
  * @see https://tools.ietf.org/html/rfc7520#section-4.2
  *
  * @group unit
+ *
+ * @internal
  */
 class RSAPSSSignatureTest extends TestCase
 {

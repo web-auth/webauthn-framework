@@ -25,7 +25,8 @@ return static function (ContainerConfigurator $container): void {
             HttpMessageFactoryInterface::class,
             ref('webauthn.transport_binding_profile.http_message_factory')
         )
-        ->autowire();
+        ->autowire()
+    ;
 
     $container->set(AttestationResponseControllerFactory::class);
     $container->set(AssertionResponseControllerFactory::class);

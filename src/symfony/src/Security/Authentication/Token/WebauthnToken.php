@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
+use function get_class;
 use JsonSerializable;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -96,6 +97,58 @@ class WebauthnToken extends AbstractToken
         $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function __serialize(): array
+    {
+        return [
+            $this->json_encode($this->publicKeyCredentialUserEntity),
+            $this->json_encode($this->publicKeyCredentialDescriptor),
+            get_class($this->publicKeyCredentialOptions),
+            $this->json_encode($this->publicKeyCredentialOptions),
+            $this->isUserPresent,
+            $this->isUserVerified,
+            $this->reservedForFutureUse1,
+            $this->reservedForFutureUse2,
+            $this->signCount,
+            $this->extensions,
+            $this->providerKey,
+            parent::__serialize(),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __unserialize(array $serialized): void
+    {
+        [
+            $publicKeyCredentialUserEntity,
+            $publicKeyCredentialDescriptor,
+            $publicKeyCredentialOptionsClass,
+            $publicKeyCredentialOptions,
+            $this->isUserPresent,
+            $this->isUserVerified,
+            $this->reservedForFutureUse1,
+            $this->reservedForFutureUse2,
+            $this->signCount,
+            $extensions,
+            $this->providerKey,
+            $parentData
+            ] = $serialized;
+        Assertion::subclassOf($publicKeyCredentialOptionsClass, PublicKeyCredentialOptions::class, 'Invalid PublicKeyCredentialOptions class');
+        $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString($publicKeyCredentialUserEntity);
+        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
+        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString($publicKeyCredentialOptions);
+
+        $this->extensions = null;
+        if (null !== $extensions) {
+            $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
+        }
+        parent::__unserialize($parentData);
+    }
+
     public function getCredentials(): PublicKeyCredentialDescriptor
     {
         return $this->getPublicKeyCredentialDescriptor();
@@ -151,33 +204,7 @@ class WebauthnToken extends AbstractToken
         return $this->providerKey;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return array<int, mixed>
-     */
-    public function __serialize(): array
-    {
-        return [
-            $this->json_encode($this->publicKeyCredentialUserEntity),
-            $this->json_encode($this->publicKeyCredentialDescriptor),
-            \get_class($this->publicKeyCredentialOptions),
-            $this->json_encode($this->publicKeyCredentialOptions),
-            $this->isUserPresent,
-            $this->isUserVerified,
-            $this->reservedForFutureUse1,
-            $this->reservedForFutureUse2,
-            $this->signCount,
-            $this->extensions,
-            $this->providerKey,
-            parent::__serialize(),
-        ];
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         $attributes = parent::getAttributes();
         if ($this->isUserVerified) {
@@ -188,39 +215,6 @@ class WebauthnToken extends AbstractToken
         }
 
         return $attributes;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param array<int, mixed> $serialized
-     */
-    public function __unserialize(array $serialized): void
-    {
-        [
-            $publicKeyCredentialUserEntity,
-            $publicKeyCredentialDescriptor,
-            $publicKeyCredentialOptionsClass,
-            $publicKeyCredentialOptions,
-            $this->isUserPresent,
-            $this->isUserVerified,
-            $this->reservedForFutureUse1,
-            $this->reservedForFutureUse2,
-            $this->signCount,
-            $extensions,
-            $this->providerKey,
-            $parentData
-            ] = $serialized;
-        Assertion::subclassOf($publicKeyCredentialOptionsClass, PublicKeyCredentialOptions::class, 'Invalid PublicKeyCredentialOptions class');
-        $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString($publicKeyCredentialUserEntity);
-        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString($publicKeyCredentialOptions);
-
-        $this->extensions = null;
-        if (null !== $extensions) {
-            $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
-        }
-        parent::__unserialize($parentData);
     }
 
     private function json_encode(JsonSerializable $value): string

@@ -31,6 +31,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 /**
  * @group functional
  * @group Fido2
+ *
+ * @internal
  */
 class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
 {
