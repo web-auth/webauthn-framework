@@ -22,7 +22,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
-use RuntimeException;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -30,8 +29,10 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\MetadataService\ExtendedMetadataStatement;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\StatusReport;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -201,11 +202,16 @@ class AuthenticatorAttestationResponseValidator
             return;
         }
 
+        $crls = [];
+        if ($metadataStatement instanceof ExtendedMetadataStatement) {
+            $crls = $metadataStatement->getCrls();
+        }
+
         $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
         foreach ($metadataStatementCertificates as $key => $attestationRootCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($attestationRootCertificate);
         }
-        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates);
+        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates, $crls);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
@@ -250,30 +256,30 @@ class AuthenticatorAttestationResponseValidator
         }
 
         // At this point, the Metadata Statement is mandatory
-        if (null === $metadataStatement) {
-            throw new RuntimeException(sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
+        Assertion::notNull($metadataStatement, sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
+
+        if ($metadataStatement instanceof ExtendedMetadataStatement) {
+            $statusReports = $metadataStatement->getStatusReports();
+        } else {
+            Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
+            $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
         }
 
         // We check the last status report
-        $this->checkStatusReport($aaguid);
+        $this->checkStatusReport($statusReports);
 
         // Check Attestation Type is allowed
         if (0 !== count($metadataStatement->getAttestationTypes())) {
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
         }
-
-        //FIXME: to decide later if relevant
-        /*Assertion::eq('fido2', $metadataStatement->getProtocolFamily(), sprintf('The protocol family of the authenticator "%s" should be "fido2". Got "%s".', $aaguid, $metadataStatement->getProtocolFamily()));
-        if (null !== $metadataStatement->getAssertionScheme()) {
-            Assertion::eq('FIDOV2', $metadataStatement->getAssertionScheme(), sprintf('The assertion scheme of the authenticator "%s" should be "FIDOV2". Got "%s".', $aaguid, $metadataStatement->getAssertionScheme()));
-        }*/
     }
 
-    private function checkStatusReport(string $aaguid): void
+    /**
+     * @param StatusReport[] $statusReports
+     */
+    private function checkStatusReport(array $statusReports): void
     {
-        Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
-        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
         if (0 !== count($statusReports)) {
             $lastStatusReport = reset($statusReports);
             if ($lastStatusReport->isCompromised()) {

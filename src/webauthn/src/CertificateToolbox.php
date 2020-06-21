@@ -24,8 +24,9 @@ class CertificateToolbox
     /**
      * @param array<string> $authenticatorCertificates
      * @param array<string> $trustedCertificates
+     * @param array<string> $crls
      */
-    public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
+    public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = [], array $crls = []): void
     {
         self::checkCertificatesValidity($authenticatorCertificates);
         self::checkCertificatesValidity($trustedCertificates);
@@ -35,17 +36,37 @@ class CertificateToolbox
         }
         $filenames = [];
 
-        $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
-        Assertion::string($leafFilename, 'Unable to get a temporary filename');
+        //$leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
+        //Assertion::string($leafFilename, 'Unable to get a temporary filename');
 
-        $leafCertificate = array_shift($authenticatorCertificates);
+        /*$leafCertificate = array_shift($authenticatorCertificates);
         $result = file_put_contents($leafFilename, $leafCertificate);
         Assertion::integer($result, 'Unable to write temporary data');
-        $filenames[] = $leafFilename;
+        $filenames[] = $leafFilename;*/
 
+        //We isolate the process from the current OpenSSL configuration
         $processArguments = ['--no-CApath', '--no-CAfile'];
 
+        $caFileContent = '';
         foreach ($trustedCertificates as $certificate) {
+            $caFileContent .= $certificate.PHP_EOL.PHP_EOL;
+        }
+        $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-cafile-');
+        Assertion::string($trustedFilename, 'Unable to get a temporary filename');
+        $result = file_put_contents($trustedFilename, $caFileContent, FILE_APPEND);
+        Assertion::integer($result, 'Unable to write temporary data');
+        $processArguments[] = '-CAfile';
+        $processArguments[] = $trustedFilename;
+        $filenames[] = $trustedFilename;
+
+        if (0 !== count($crls)) {
+            $processArguments[] = '-crl_check';
+            foreach ($crls as $crl) {
+                $caFileContent .= $crl.PHP_EOL.PHP_EOL;
+            }
+        }
+
+        /*foreach ($trustedCertificates as $certificate) {
             $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-trusted-');
             Assertion::string($trustedFilename, 'Unable to get a temporary filename');
             $result = file_put_contents($trustedFilename, $certificate, FILE_APPEND);
@@ -55,8 +76,33 @@ class CertificateToolbox
             $processArguments[] = '-trusted';
             $processArguments[] = $trustedFilename;
             $filenames[] = $trustedFilename;
-        }
+        }*/
+        /*if (count($crls) !== 0) {
+            $processArguments[] = '-crl_check';
+            foreach ($crls as $crl) {
+                $crlFilename = tempnam(sys_get_temp_dir(), 'webauthn-crl-');
+                Assertion::string($crlFilename, 'Unable to get a temporary filename');
+                $result = file_put_contents($crlFilename, $crl, FILE_APPEND);
+                Assertion::integer($result, 'Unable to write temporary data');
+                $result = file_put_contents($crlFilename, PHP_EOL, FILE_APPEND);
+                Assertion::integer($result, 'Unable to write temporary data');
+                $processArguments[] = $crlFilename;
+                $filenames[] = $crlFilename;
+            }
+        }*/
+
+        $untrustedCertificate = '';
         foreach ($authenticatorCertificates as $certificate) {
+            $untrustedCertificate .= $certificate.PHP_EOL.PHP_EOL;
+        }
+        $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
+        Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
+        $result = file_put_contents($untrustedFilename, $untrustedCertificate, FILE_APPEND);
+        Assertion::integer($result, 'Unable to write temporary data');
+        $processArguments[] = $untrustedFilename;
+        $filenames[] = $untrustedFilename;
+
+        /*foreach ($authenticatorCertificates as $certificate) {
             $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
             Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
             $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
@@ -66,16 +112,18 @@ class CertificateToolbox
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
-        }
+        }*/
 
-        $processArguments[] = $leafFilename;
+        //$processArguments[] = $leafFilename;
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
         $process->start();
+        dump($process->getCommandLine());
         while ($process->isRunning()) {
         }
         foreach ($filenames as $filename) {
+            dump(file_get_contents($filename));
             $result = unlink($filename);
             Assertion::true($result, 'Unable to delete temporary file');
         }
