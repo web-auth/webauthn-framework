@@ -74,7 +74,7 @@ class WebauthnListener
 
             return;
         }
-        if (false === mb_strpos($request->getRequestFormat(), 'json') && false === mb_strpos($request->getContentType(), 'json')) {
+        if (false === mb_strpos($request->getRequestFormat(), 'json') && false === mb_strpos($request->getContentType() ?: '', 'json')) {
             $this->logger->debug('The request format and the content type are not JSON. Ignored');
 
             return;
