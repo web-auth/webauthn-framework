@@ -25,7 +25,7 @@ final class DefaultFailureHandler implements FailureHandler
     {
         $data = [
             'status' => 'failed',
-            'errorMessage' => $exception ? $exception->getMessage() : 'An unexpected error occurred',
+            'errorMessage' => null === $exception ? 'An unexpected error occurred' : $exception->getMessage(),
         ];
 
         return new JsonResponse($data, Response::HTTP_BAD_REQUEST);

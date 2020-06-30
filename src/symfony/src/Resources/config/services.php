@@ -28,7 +28,7 @@ use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\Counter;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -63,8 +63,6 @@ return static function (ContainerConfigurator $container): void {
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
             ref(EventDispatcherInterface::class),
-            ref(Counter\CounterChecker::class)->nullOnInvalid(),
-            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public()
     ;
@@ -105,7 +103,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
     $container->set(TokenBinding\SecTokenBindingHandler::class);
 
-    $container->set(Counter\ThrowExceptionIfInvalid::class);
+    $container->set(ThrowExceptionIfInvalid::class);
 
     $container->set(Loader::class)
         ->tag('routing.loader')

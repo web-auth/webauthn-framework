@@ -67,7 +67,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
      */
     private $maxAge;
 
-    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, int $leeway = 0, int $maxAge = 60000)
+    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, ?int $leeway = null, ?int $maxAge = null)
     {
         if (!class_exists(Algorithm\RS256::class)) {
             throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
@@ -75,13 +75,53 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         if (!class_exists(JWKFactory::class)) {
             throw new RuntimeException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
         }
+        if (null !== $client) {
+            @trigger_error('The argument "client" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
+        }
+        if (null !== $apiKey) {
+            @trigger_error('The argument "apiKey" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
+        }
+        if (null !== $requestFactory) {
+            @trigger_error('The argument "requestFactory" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
+        }
+        if (null !== $maxAge) {
+            @trigger_error('The argument "maxAge" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setMaxAge".', E_USER_DEPRECATED);
+        }
+        if (null !== $leeway) {
+            @trigger_error('The argument "leeway" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setLeeway".', E_USER_DEPRECATED);
+        }
         $this->jwsSerializer = new CompactSerializer();
+        $this->initJwsVerifier();
+
+        //To be removed in 4.0
+        $this->leeway = $leeway ?? 0;
+        $this->maxAge = $maxAge ?? 60000;
         $this->apiKey = $apiKey;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
-        $this->initJwsVerifier();
-        $this->leeway = $leeway;
+    }
+
+    public function enableApiVerification(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory): self
+    {
+        $this->apiKey = $apiKey;
+        $this->client = $client;
+        $this->requestFactory = $requestFactory;
+
+        return $this;
+    }
+
+    public function setMaxAge(int $maxAge): self
+    {
         $this->maxAge = $maxAge;
+
+        return $this;
+    }
+
+    public function setLeeway(int $leeway): self
+    {
+        $this->leeway = $leeway;
+
+        return $this;
     }
 
     public function name(): string

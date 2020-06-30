@@ -54,17 +54,19 @@ final class PublicKeyCredentialCreationOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        $options = new PublicKeyCredentialCreationOptions(
-            $this->createRpEntity($profile),
-            $userEntity,
-            random_bytes($profile['challenge_length']),
-            $this->createCredentialParameters($profile),
-            $profile['timeout'],
-            $excludeCredentials,
-            $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile),
-            $attestationConveyance ?? $profile['attestation_conveyance'],
-            $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
-        );
+        $options = PublicKeyCredentialCreationOptions
+            ::create(
+                $this->createRpEntity($profile),
+                $userEntity,
+                random_bytes($profile['challenge_length']),
+                $this->createCredentialParameters($profile)
+            )
+                ->excludeCredentials($excludeCredentials)
+                ->setAuthenticatorSelection($authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile))
+                ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
+                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
+                ->setTimeout($profile['timeout'])
+        ;
         $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
 
         return $options;
