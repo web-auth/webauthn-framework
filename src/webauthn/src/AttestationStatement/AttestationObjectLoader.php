@@ -63,6 +63,11 @@ class AttestationObjectLoader
         $this->logger = $logger ?? new NullLogger();
     }
 
+    public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self
+    {
+        return new self($attestationStatementSupportManager);
+    }
+
     public function load(string $data): AttestationObject
     {
         try {

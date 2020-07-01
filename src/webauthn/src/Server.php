@@ -246,9 +246,12 @@ class Server
     public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
-        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
-        $attestationObjectLoader->setLogger($this->logger);
-        $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $this->logger);
+        $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
+            ->setLogger($this->logger)
+        ;
+        $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
+            ->setLogger($this->logger)
+        ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
@@ -269,9 +272,12 @@ class Server
     public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
-        $attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager);
-        $attestationObjectLoader->setLogger($this->logger);
-        $publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $this->logger);
+        $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
+            ->setLogger($this->logger)
+        ;
+        $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
+            ->setLogger($this->logger)
+        ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();

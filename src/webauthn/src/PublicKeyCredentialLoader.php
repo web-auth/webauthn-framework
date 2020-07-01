@@ -59,6 +59,11 @@ class PublicKeyCredentialLoader
         $this->logger = $logger ?? new NullLogger();
     }
 
+    public static function create(AttestationObjectLoader $attestationObjectLoader): self
+    {
+        return new self($attestationObjectLoader);
+    }
+
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;

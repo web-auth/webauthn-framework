@@ -213,17 +213,19 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             }
         }
 
-        return new self(
-            PublicKeyCredentialRpEntity::createFromArray($json['rp']),
-            PublicKeyCredentialUserEntity::createFromArray($json['user']),
-            Base64Url::decode($json['challenge']),
-            $pubKeyCredParams,
-            $json['timeout'] ?? null,
-            $excludeCredentials,
-            AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']),
-            $json['attestation'],
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs()
-        );
+        return self
+            ::create(
+                PublicKeyCredentialRpEntity::createFromArray($json['rp']),
+                PublicKeyCredentialUserEntity::createFromArray($json['user']),
+                Base64Url::decode($json['challenge']),
+                $pubKeyCredParams
+            )
+                ->excludeCredentials($excludeCredentials)
+                ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']))
+                ->setAttestation($json['attestation'])
+                ->setTimeout($json['timeout'] ?? null)
+                ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+        ;
     }
 
     /**

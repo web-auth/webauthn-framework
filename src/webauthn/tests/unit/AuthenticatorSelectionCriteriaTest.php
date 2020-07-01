@@ -31,7 +31,11 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
      */
     public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
     {
-        $authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria('authenticator_attachment', true, 'user_verification');
+        $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
+            ->setAuthenticatorAttachment('authenticator_attachment')
+            ->setRequireResidentKey(true)
+            ->setUserVerification('user_verification')
+        ;
 
         static::assertEquals('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertEquals('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
@@ -52,12 +56,12 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
      */
     public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
     {
-        $authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria(
-            'authenticator_attachment',
-            true,
-            'user_verification',
-            'resident_key'
-        );
+        $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
+            ->setAuthenticatorAttachment('authenticator_attachment')
+            ->setRequireResidentKey(true)
+            ->setUserVerification('user_verification')
+            ->setResidentKey('resident_key')
+        ;
 
         static::assertEquals('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertEquals('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());

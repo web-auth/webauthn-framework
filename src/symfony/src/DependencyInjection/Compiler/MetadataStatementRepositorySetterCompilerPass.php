@@ -16,26 +16,21 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\MetadataService\MetadataStatementRepository;
 
-final class LoggerSetterCompilerPass implements CompilerPassInterface
+final class MetadataStatementRepositorySetterCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias('webauthn.logger')) {
+        if (!$container->hasAlias(MetadataStatementRepository::class)) {
             return;
         }
 
-        $this->setLoggerToServiceDefinition($container, AuthenticatorAssertionResponseValidator::class);
         $this->setLoggerToServiceDefinition($container, AuthenticatorAttestationResponseValidator::class);
-        $this->setLoggerToServiceDefinition($container, PublicKeyCredentialLoader::class);
-        $this->setLoggerToServiceDefinition($container, AttestationObjectLoader::class);
     }
 
     private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
@@ -45,6 +40,6 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
         }
 
         $definition = $container->getDefinition($service);
-        $definition->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
+        $definition->addMethodCall('setMetadataStatementRepository', [new Reference(MetadataStatementRepository::class)]);
     }
 }

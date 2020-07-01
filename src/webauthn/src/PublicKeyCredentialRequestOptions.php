@@ -149,14 +149,13 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        return new self(
-            Base64Url::decode($json['challenge']),
-            $json['timeout'] ?? null,
-            $json['rpId'] ?? null,
-            $allowCredentials,
-            $json['userVerification'] ?? null,
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs()
-        );
+        return self::create(Base64Url::decode($json['challenge']))
+            ->setRpId($json['rpId'] ?? null)
+            ->allowCredentials($allowCredentials)
+            ->setUserVerification($json['userVerification'] ?? null)
+            ->setTimeout($json['timeout'] ?? null)
+            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+        ;
     }
 
     /**

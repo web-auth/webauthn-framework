@@ -90,12 +90,12 @@ final class PublicKeyCredentialCreationOptionsFactory
      */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
-        return new AuthenticatorSelectionCriteria(
-            $profile['authenticator_selection_criteria']['attachment_mode'],
-            $profile['authenticator_selection_criteria']['require_resident_key'],
-            $profile['authenticator_selection_criteria']['user_verification'],
-            $profile['authenticator_selection_criteria']['resident_key']
-        );
+        return AuthenticatorSelectionCriteria::create()
+            ->setAuthenticatorAttachment($profile['authenticator_selection_criteria']['attachment_mode'])
+            ->setRequireResidentKey($profile['authenticator_selection_criteria']['require_resident_key'])
+            ->setUserVerification($profile['authenticator_selection_criteria']['user_verification'])
+            ->setResidentKey($profile['authenticator_selection_criteria']['resident_key'])
+        ;
     }
 
     /**

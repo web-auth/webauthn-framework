@@ -16,7 +16,7 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Counter\CounterChecker;
 
 final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
@@ -31,6 +31,6 @@ final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
         }
 
         $definition = $container->getDefinition(AuthenticatorAssertionResponseValidator::class);
-        $definition->addMethodCall('setLogger', [new Reference(CounterChecker::class)]);
+        $definition->addMethodCall('setCounterChecker', [new Reference(CounterChecker::class)]);
     }
 }
