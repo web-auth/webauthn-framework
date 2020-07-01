@@ -104,9 +104,9 @@ abstract class AbstractTestCase extends TestCase
                 $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
                 new IgnoreTokenBindingHandler(),
-                new ExtensionOutputCheckerHandler(),
-                $this->getMetadataStatementRepository()
+                new ExtensionOutputCheckerHandler()
             );
+            $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository($this->getMetadataStatementRepository());
         }
 
         return $this->authenticatorAttestationResponseValidator;

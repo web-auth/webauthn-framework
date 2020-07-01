@@ -73,11 +73,10 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         parent::__construct($challenge, $timeout, $extensions);
         $this->rp = $rp;
         $this->user = $user;
-        $this
-            ->addPubKeyCredParams($pubKeyCredParams)
-            ->excludeCredentials($excludeCredentials)
-            ->setAuthenticatorSelection($authenticatorSelection ?? new AuthenticatorSelectionCriteria())
-            ->setAttestation($attestation ?? self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+        $this->pubKeyCredParams = $pubKeyCredParams;
+        $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
+        $this->attestation = $attestation ?? self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+        $this->excludeCredentials($excludeCredentials)
         ;
     }
 
