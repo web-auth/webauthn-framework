@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Webauthn\Exception\InvalidAuthenticatorResponseException;
 use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
@@ -20,7 +21,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use InvalidArgumentException;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -89,7 +89,7 @@ class PublicKeyCredentialLoader
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            throw $throwable;
+            throw new InvalidAuthenticatorResponseException('Invalid authenticator response', $throwable);
         }
     }
 
@@ -103,7 +103,7 @@ class PublicKeyCredentialLoader
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            throw $throwable;
+            throw new InvalidAuthenticatorResponseException('Invalid authenticator response', $throwable);
         }
 
         return $this->loadArray($json);
@@ -158,7 +158,7 @@ class PublicKeyCredentialLoader
                     $response['userHandle'] ?? null
                 );
             default:
-                throw new InvalidArgumentException('Unable to create the response object');
+                throw new InvalidAuthenticatorResponseException('Invalid authenticator response');
         }
     }
 }

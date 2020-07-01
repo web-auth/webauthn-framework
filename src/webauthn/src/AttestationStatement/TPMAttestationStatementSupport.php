@@ -24,12 +24,13 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
+use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use function count;
 use DateTimeImmutable;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
-use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
@@ -93,7 +94,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             case $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath:
                 return $this->processWithECDAA();
             default:
-                throw new InvalidArgumentException('Unsupported attestation statement');
+                throw new InvalidAttestationStatementException($this->name(), 'Unsupported trust path');
         }
     }
 
@@ -116,7 +117,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 $uniqueFromKey = (new RsaKey($key->getData()))->n();
                 break;
             default:
-                throw new InvalidArgumentException('Invalid or unsupported key type.');
+                throw new InvalidAttestationStatementException($this->name(), 'Invalid or unsupported key type.');
         }
 
         Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
@@ -220,7 +221,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                     'kdf' => $stream->read(2),
                 ];
             default:
-                throw new InvalidArgumentException('Unsupported type');
+                throw new InvalidAttestationStatementException($this->name(), 'Unsupported type');
         }
     }
 
@@ -241,7 +242,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             case '000d':
                 return 'sha512'; //: "TPM_ALG_SHA512",
             default:
-                throw new InvalidArgumentException('Unsupported hash algorithm');
+                throw new InvalidAttestationStatementException($this->name(), 'Unsupported hash algorithm');
         }
     }
 
@@ -302,8 +303,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         // TODO: For attestationRoot in metadata.attestationRootCertificates, generate verification chain verifX5C by appending attestationRoot to the x5c. Try verifying verifX5C. If successful go to next step. If fail try next attestationRoot. If no attestationRoots left to try, fail.
     }
 
+    /**
+     * @throws UnsupportedFeatureException
+     */
     private function processWithECDAA(): bool
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw new UnsupportedFeatureException('ECDAA', 'ECDAA not supported');
     }
 }

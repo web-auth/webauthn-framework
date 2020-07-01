@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
@@ -87,7 +89,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             case $trustPath instanceof EmptyTrustPath:
                 return $this->processWithSelfAttestation($clientDataJSONHash, $attestationStatement, $authenticatorData);
             default:
-                throw new InvalidArgumentException('Unsupported attestation statement');
+                throw new InvalidAttestationStatementException($this->name(), 'Unsupported trust path');
         }
     }
 
@@ -164,7 +166,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithECDAA(): bool
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw new UnsupportedFeatureException('ECDAA', 'ECDAA not supported');
     }
 
     private function processWithSelfAttestation(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool

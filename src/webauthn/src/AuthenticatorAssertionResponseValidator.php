@@ -191,11 +191,11 @@ class AuthenticatorAssertionResponseValidator
 
             /* @see 7.2.17 */
             $storedCounter = $publicKeyCredentialSource->getCounter();
-            $currentCounter = $authenticatorAssertionResponse->getAuthenticatorData()->getSignCount();
-            if (0 !== $currentCounter || 0 !== $storedCounter) {
-                $this->counterChecker->check($publicKeyCredentialSource, $currentCounter);
+            $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()->getSignCount();
+            if (0 !== $responseCounter || 0 !== $storedCounter) {
+                $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
             }
-            $publicKeyCredentialSource->setCounter($currentCounter);
+            $publicKeyCredentialSource->setCounter($responseCounter);
             $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 
             /* @see 7.2.18 */

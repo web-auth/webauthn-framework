@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Counter;
 
-use Assert\Assertion;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Throwable;
+use Webauthn\Exception\InvalidCounterException;
 use Webauthn\PublicKeyCredentialSource;
 
 final class ThrowExceptionIfInvalid implements CounterChecker
@@ -31,16 +30,20 @@ final class ThrowExceptionIfInvalid implements CounterChecker
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public function check(PublicKeyCredentialSource $publicKeyCredentialSource, int $currentCounter): void
+    public function check(PublicKeyCredentialSource $publicKeyCredentialSource, int $responseCounter): void
     {
-        try {
-            Assertion::greaterThan($currentCounter, $publicKeyCredentialSource->getCounter(), 'Invalid counter.');
-        } catch (Throwable $throwable) {
-            $this->logger->error('The counter is invalid', [
-                'current' => $currentCounter,
-                'new' => $publicKeyCredentialSource->getCounter(),
-            ]);
-            throw $throwable;
+        if ($responseCounter > $publicKeyCredentialSource->getCounter()) {
+            return;
         }
+
+        $this->logger->error('The counter is invalid', [
+            'current' => $responseCounter,
+            'new' => $publicKeyCredentialSource->getCounter(),
+        ]);
+        throw new InvalidCounterException(
+            $responseCounter,
+            $publicKeyCredentialSource->getCounter(),
+            'The counter is invalid'
+        );
     }
 }

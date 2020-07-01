@@ -26,6 +26,7 @@ use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 /**
@@ -94,7 +95,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidAttestationStatementException::class);
         $this->expectExceptionMessage('Invalid certificate or certificate chain');
         $support = new FidoU2FAttestationStatementSupport();
 

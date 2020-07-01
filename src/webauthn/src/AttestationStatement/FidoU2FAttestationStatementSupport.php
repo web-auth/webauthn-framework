@@ -23,6 +23,7 @@ use InvalidArgumentException;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -104,7 +105,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             $resource = openssl_pkey_get_public($publicKey);
             Assertion::isResource($resource, 'Unable to load the public key');
         } catch (Throwable $throwable) {
-            throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
+            throw new InvalidAttestationStatementException($this->name(), 'Invalid certificate or certificate chain',$throwable);
         }
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Invalid certificate or certificate chain');
