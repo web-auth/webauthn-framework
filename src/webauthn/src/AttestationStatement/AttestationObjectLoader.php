@@ -23,6 +23,7 @@ use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
+use function Safe\sprintf;
 use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;

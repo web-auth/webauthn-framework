@@ -19,7 +19,8 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Cose\Key\Ec2Key;
-use InvalidArgumentException;
+use function Safe\openssl_pkey_get_public;
+use function Safe\sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
@@ -103,9 +104,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         try {
             $resource = openssl_pkey_get_public($publicKey);
-            Assertion::isResource($resource, 'Unable to load the public key');
+            //Assertion::isResource($resource, 'Unable to load the public key');
         } catch (Throwable $throwable) {
-            throw new InvalidAttestationStatementException($this->name(), 'Invalid certificate or certificate chain',$throwable);
+            throw new InvalidAttestationStatementException($this->name(), 'Invalid certificate or certificate chain', $throwable);
         }
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Invalid certificate or certificate chain');

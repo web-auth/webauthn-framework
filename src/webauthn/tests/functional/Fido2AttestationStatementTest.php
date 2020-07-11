@@ -16,6 +16,7 @@ namespace Webauthn\Tests\Functional;
 use Cose\Algorithms;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorSelectionCriteria;

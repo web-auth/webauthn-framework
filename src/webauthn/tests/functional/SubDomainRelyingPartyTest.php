@@ -15,6 +15,7 @@ namespace Webauthn\Tests\Functional;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;

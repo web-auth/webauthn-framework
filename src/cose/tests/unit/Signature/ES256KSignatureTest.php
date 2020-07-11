@@ -16,6 +16,7 @@ namespace Cose\Tests\Unit\Signature;
 use Cose\Algorithm\Signature\ECDSA\ES256K;
 use Cose\Key\Ec2Key;
 use PHPUnit\Framework\TestCase;
+use function Safe\hex2bin;
 
 /**
  * @see https://tools.ietf.org/html/rfc7520#section-4.1

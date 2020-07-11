@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
-use Assert\Assertion;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialDescriptorCollection;
 
 final class PublicKeyCredentialDescriptorCollectionType extends Type
@@ -28,10 +28,8 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
         if (null === $value) {
             return $value;
         }
-        $data = json_encode($value);
-        Assertion::string($data, 'Unable to encode the data');
 
-        return $data;
+        return json_encode($value);
     }
 
     /**

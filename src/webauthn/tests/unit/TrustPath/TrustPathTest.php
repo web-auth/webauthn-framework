@@ -15,6 +15,8 @@ namespace Webauthn\Tests\Unit\TrustPath;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;

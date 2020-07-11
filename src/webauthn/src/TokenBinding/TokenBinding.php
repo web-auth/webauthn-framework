@@ -16,6 +16,7 @@ namespace Webauthn\TokenBinding;
 use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use function Safe\sprintf;
 
 class TokenBinding
 {

@@ -18,6 +18,8 @@ use Cose\Algorithms;
 use function count;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
+use function Safe\hex2bin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

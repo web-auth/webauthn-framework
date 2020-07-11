@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Firewall;
 
 use Base64Url\Base64Url;
+use function Safe\base64_decode;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

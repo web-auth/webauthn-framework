@@ -17,7 +17,8 @@ use function array_key_exists;
 use Assert\Assertion;
 use function in_array;
 use InvalidArgumentException;
-use function is_array;
+use function Safe\class_implements;
+use function Safe\sprintf;
 
 abstract class TrustPathLoader
 {
@@ -34,7 +35,7 @@ abstract class TrustPathLoader
                 return $oldTypes[$type]::createFromArray($data);
             case class_exists($type):
                 $implements = class_implements($type);
-                if (is_array($implements) && in_array(TrustPath::class, $implements, true)) {
+                if (in_array(TrustPath::class, $implements, true)) {
                     return $type::createFromArray($data);
                 }
                 // no break

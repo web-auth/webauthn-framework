@@ -15,6 +15,8 @@ namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\AttestedCredentialData;
 
 /**

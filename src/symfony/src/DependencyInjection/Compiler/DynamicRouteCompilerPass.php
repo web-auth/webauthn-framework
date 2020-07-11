@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection\Compiler;
 
 use Assert\Assertion;
+use function Safe\sprintf;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webauthn\Bundle\Routing\Loader;

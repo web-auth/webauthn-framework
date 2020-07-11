@@ -20,6 +20,7 @@ use CBOR\OtherObject\TrueObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 

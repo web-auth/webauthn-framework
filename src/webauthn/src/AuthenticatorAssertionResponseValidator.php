@@ -25,6 +25,7 @@ use function in_array;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function Safe\parse_url;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use function count;
+use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;

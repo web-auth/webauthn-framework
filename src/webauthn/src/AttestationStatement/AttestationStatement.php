@@ -16,6 +16,7 @@ namespace Webauthn\AttestationStatement;
 use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
+use function Safe\sprintf;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 

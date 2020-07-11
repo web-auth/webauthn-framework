@@ -40,10 +40,6 @@ final class ThrowExceptionIfInvalid implements CounterChecker
             'current' => $responseCounter,
             'new' => $publicKeyCredentialSource->getCounter(),
         ]);
-        throw new InvalidCounterException(
-            $responseCounter,
-            $publicKeyCredentialSource->getCounter(),
-            'The counter is invalid'
-        );
+        throw new InvalidCounterException($responseCounter, $publicKeyCredentialSource->getCounter(), 'The counter is invalid');
     }
 }

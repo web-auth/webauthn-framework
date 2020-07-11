@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 

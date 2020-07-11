@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use JsonSerializable;
+use function Safe\sprintf;
 
 class EcdaaTrustAnchor implements JsonSerializable
 {
