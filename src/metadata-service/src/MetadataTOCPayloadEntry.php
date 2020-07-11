@@ -75,9 +75,9 @@ class MetadataTOCPayloadEntry implements JsonSerializable
             throw new LogicException('If neither AAID nor AAGUID are set, the attestation certificate identifier list shall not be empty');
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            Assertion::string($attestationCertificateKeyIdentifier, Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
-            Assertion::notEmpty($attestationCertificateKeyIdentifier, Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
-            Assertion::regex($attestationCertificateKeyIdentifier, '/^[0-9a-f]+$/', Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            Assertion::string($attestationCertificateKeyIdentifier, 'Invalid attestation certificate identifier. Shall be a list of strings');
+            Assertion::notEmpty($attestationCertificateKeyIdentifier, 'Invalid attestation certificate identifier. Shall be a list of strings');
+            Assertion::regex($attestationCertificateKeyIdentifier, '/^[0-9a-f]+$/', 'Invalid attestation certificate identifier. Shall be a list of strings');
         }
         $this->aaid = $aaid;
         $this->aaguid = $aaguid;
@@ -147,9 +147,9 @@ class MetadataTOCPayloadEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'timeOfLastStatusChange', Utils::logicException('Invalid data. The parameter "timeOfLastStatusChange" is missing'));
-        Assertion::keyExists($data, 'statusReports', Utils::logicException('Invalid data. The parameter "statusReports" is missing'));
-        Assertion::isArray($data['statusReports'], Utils::logicException('Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'));
+        Assertion::keyExists($data, 'timeOfLastStatusChange', 'Invalid data. The parameter "timeOfLastStatusChange" is missing');
+        Assertion::keyExists($data, 'statusReports', 'Invalid data. The parameter "statusReports" is missing');
+        Assertion::isArray($data['statusReports'], 'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects');
         $object = new self(
         $data['aaid'] ?? null,
         $data['aaguid'] ?? null,

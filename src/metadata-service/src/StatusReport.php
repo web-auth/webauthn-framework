@@ -64,7 +64,7 @@ class StatusReport implements JsonSerializable
 
     public function __construct(string $status, ?string $effectiveDate, ?string $certificate, ?string $url, ?string $certificationDescriptor, ?string $certificateNumber, ?string $certificationPolicyVersion, ?string $certificationRequirementsVersion)
     {
-        Assertion::inArray($status, AuthenticatorStatus::list(), Utils::logicException('The value of the key "status" is not acceptable'));
+        Assertion::inArray($status, AuthenticatorStatus::list(), 'The value of the key "status" is not acceptable');
 
         $this->status = $status;
         $this->effectiveDate = $effectiveDate;
@@ -129,10 +129,10 @@ class StatusReport implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'status', Utils::logicException('The key "status" is missing'));
+        Assertion::keyExists($data, 'status', 'The key "status" is missing');
         foreach (['effectiveDate', 'certificate', 'url', 'certificationDescriptor', 'certificateNumber', 'certificationPolicyVersion', 'certificationRequirementsVersion'] as $key) {
             if (isset($data[$key])) {
-                Assertion::nullOrString($data[$key], Utils::logicException(sprintf('The value of the key "%s" is invalid', $key)));
+                Assertion::nullOrString($data[$key], sprintf('The value of the key "%s" is invalid', $key));
             }
         }
 

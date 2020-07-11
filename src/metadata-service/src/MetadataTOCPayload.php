@@ -81,13 +81,13 @@ class MetadataTOCPayload implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
-            Assertion::keyExists($data, $key, Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key)));
+            Assertion::keyExists($data, $key, sprintf('Invalid data. The parameter "%s" is missing', $key));
         }
-        Assertion::integer($data['no'], Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
-        Assertion::string($data['nextUpdate'], Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
-        Assertion::isArray($data['entries'], Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
+        Assertion::integer($data['no'], 'Invalid data. The parameter "no" shall be an integer');
+        Assertion::string($data['nextUpdate'], 'Invalid data. The parameter "nextUpdate" shall be a string');
+        Assertion::isArray($data['entries'], 'Invalid data. The parameter "entries" shall be a n array of entries');
         if (array_key_exists('legalHeader', $data)) {
-            Assertion::string($data['legalHeader'], Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
+            Assertion::string($data['legalHeader'], 'Invalid data. The parameter "legalHeader" shall be a string');
         }
         $object = new self(
             $data['no'],

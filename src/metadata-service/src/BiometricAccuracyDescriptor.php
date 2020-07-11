@@ -44,7 +44,7 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(?float $FAR, ?float $FRR, ?float $EER, ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
+        Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, 'Invalid data. The value of "maxReferenceDataSets" must be a positive integer');
         $this->FRR = $FRR;
         $this->FAR = $FAR;
         $this->EER = $EER;

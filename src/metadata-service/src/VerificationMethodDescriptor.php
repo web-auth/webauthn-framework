@@ -53,7 +53,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     public function __construct(int $userVerification, ?CodeAccuracyDescriptor $caDesc = null, ?BiometricAccuracyDescriptor $baDesc = null, ?PatternAccuracyDescriptor $paDesc = null)
     {
-        Assertion::greaterOrEqualThan($userVerification, 0, Utils::logicException('The parameter "userVerification" is invalid'));
+        Assertion::greaterOrEqualThan($userVerification, 0, 'The parameter "userVerification" is invalid');
         $this->userVerification = $userVerification;
         $this->caDesc = $caDesc;
         $this->baDesc = $baDesc;
@@ -138,11 +138,11 @@ class VerificationMethodDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'userVerification', Utils::logicException('The parameter "userVerification" is missing'));
-        Assertion::integer($data['userVerification'], Utils::logicException('The parameter "userVerification" is invalid'));
+        Assertion::keyExists($data, 'userVerification', 'The parameter "userVerification" is missing');
+        Assertion::integer($data['userVerification'], 'The parameter "userVerification" is invalid');
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
-                Assertion::isArray($data[$key], Utils::logicException(sprintf('Invalid parameter "%s"', $key)));
+                Assertion::isArray($data[$key], sprintf('Invalid parameter "%s"', $key));
             }
         }
 

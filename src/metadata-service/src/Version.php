@@ -36,8 +36,8 @@ class Version implements JsonSerializable
         if (null === $major && null === $minor) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
-        Assertion::greaterOrEqualThan($major, 0, Utils::logicException('Invalid argument "major"'));
-        Assertion::greaterOrEqualThan($minor, 0, Utils::logicException('Invalid argument "minor"'));
+        Assertion::greaterOrEqualThan($major, 0, 'Invalid argument "major"');
+        Assertion::greaterOrEqualThan($minor, 0, 'Invalid argument "minor"');
 
         $this->major = $major;
         $this->minor = $minor;

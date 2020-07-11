@@ -61,13 +61,13 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
-        Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
-        Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
-        Assertion::range($bitDepth, 0, 254, Utils::logicException('Invalid bit depth'));
-        Assertion::range($colorType, 0, 254, Utils::logicException('Invalid color type'));
-        Assertion::range($compression, 0, 254, Utils::logicException('Invalid compression'));
-        Assertion::range($filter, 0, 254, Utils::logicException('Invalid filter'));
-        Assertion::range($interlace, 0, 254, Utils::logicException('Invalid interlace'));
+        Assertion::greaterOrEqualThan($width, 0, 'Invalid width');
+        Assertion::greaterOrEqualThan($height, 0, 'Invalid height');
+        Assertion::range($bitDepth, 0, 254, 'Invalid bit depth');
+        Assertion::range($colorType, 0, 254, 'Invalid color type');
+        Assertion::range($compression, 0, 254, 'Invalid compression');
+        Assertion::range($filter, 0, 254, 'Invalid filter');
+        Assertion::range($interlace, 0, 254, 'Invalid interlace');
 
         $this->width = $width;
         $this->height = $height;
@@ -145,7 +145,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            Assertion::isArray($plte, Utils::logicException('Invalid "plte" parameter'));
+            Assertion::isArray($plte, 'Invalid "plte" parameter');
             foreach ($plte as $item) {
                 $object->addPalette(RgbPaletteEntry::createFromArray($item));
             }
