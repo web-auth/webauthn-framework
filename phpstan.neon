@@ -6,6 +6,8 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
+        - '#Method .* should return Webauthn\\PublicKeyCredential(Creation|Request)Options but returns Webauthn\\PublicKeyCredentialOptions\.#'
+        - '#Parameter .* of class .* expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
         - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'

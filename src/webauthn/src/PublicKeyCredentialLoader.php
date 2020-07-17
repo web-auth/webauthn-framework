@@ -139,7 +139,9 @@ class PublicKeyCredentialLoader
 
                 return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
-                $authData = Base64Url::decode($response['authenticatorData']);
+                $authenticatorData = $response['authenticatorData'];
+                Assertion::string($authenticatorData, 'Invalid authenticator data');
+                $authData = Base64Url::decode($authenticatorData);
 
                 $authDataStream = new StringStream($authData);
                 $rp_id_hash = $authDataStream->read(32);
@@ -166,12 +168,16 @@ class PublicKeyCredentialLoader
                 Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
                 $authDataStream->close();
                 $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
+                $userHandle = $response['userHandle'] ?? null;
+                Assertion::nullOrString($userHandle, 'Invalid user handle');
+                $signature = $response['signature'];
+                Assertion::string($signature, 'Invalid signature');
 
                 return new AuthenticatorAssertionResponse(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
-                    Base64Url::decode($response['signature']),
-                    $response['userHandle'] ?? null
+                    Base64Url::decode($signature),
+                    $userHandle
                 );
             default:
                 throw new InvalidAuthenticatorResponseException('Invalid authenticator response');

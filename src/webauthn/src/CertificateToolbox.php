@@ -74,7 +74,7 @@ class CertificateToolbox
         }
 
         if (!$process->isSuccessful()) {
-            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
 
