@@ -174,7 +174,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
             'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
             'hash' => Base64Url::encode($this->hash),
             'url' => $this->url,
-            'statusReports' => array_map(static function (StatusReport $object) {
+            'statusReports' => array_map(static function (StatusReport $object): array {
                 return $object->jsonSerialize();
             }, $this->statusReports),
             'timeOfLastStatusChange' => $this->timeOfLastStatusChange,

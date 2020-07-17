@@ -105,7 +105,7 @@ class MetadataTOCPayload implements JsonSerializable
             'legalHeader' => $this->legalHeader,
             'nextUpdate' => $this->nextUpdate,
             'no' => $this->no,
-            'entries' => array_map(static function (MetadataTOCPayloadEntry $object) {
+            'entries' => array_map(static function (MetadataTOCPayloadEntry $object): array {
                 return $object->jsonSerialize();
             }, $this->entries),
         ];

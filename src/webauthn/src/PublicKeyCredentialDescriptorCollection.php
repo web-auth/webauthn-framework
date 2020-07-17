@@ -64,7 +64,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
      */
     public function jsonSerialize(): array
     {
-        return array_map(static function (PublicKeyCredentialDescriptor $object) {
+        return array_map(static function (PublicKeyCredentialDescriptor $object): array {
             return $object->jsonSerialize();
         }, $this->publicKeyCredentialDescriptors);
     }
