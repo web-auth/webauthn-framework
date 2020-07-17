@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use JsonSerializable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
@@ -35,9 +36,48 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     public function __construct(string $challenge, ?int $timeout = null, ?AuthenticationExtensionsClientInputs $extensions = null)
     {
+        if (null !== $timeout) {
+            @trigger_error('The argument "timeout" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setTimeout".', E_USER_DEPRECATED);
+        }
+        if (null !== $extensions) {
+            @trigger_error('The argument "extensions" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addExtension" or "addExtensions".', E_USER_DEPRECATED);
+        }
         $this->challenge = $challenge;
-        $this->timeout = $timeout;
+        $this->setTimeout($timeout);
         $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
+    }
+
+    public function setTimeout(?int $timeout): self
+    {
+        $this->timeout = $timeout;
+
+        return $this;
+    }
+
+    public function addExtension(AuthenticationExtension $extension): self
+    {
+        $this->extensions->add($extension);
+
+        return $this;
+    }
+
+    /**
+     * @param AuthenticationExtension[] $extensions
+     */
+    public function addExtensions(array $extensions): self
+    {
+        foreach ($extensions as $extension) {
+            $this->addExtension($extension);
+        }
+
+        return $this;
+    }
+
+    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): self
+    {
+        $this->extensions = $extensions;
+
+        return $this;
     }
 
     public function getChallenge(): string

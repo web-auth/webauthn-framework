@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\Tests\Functional\Firewall;
 use Base64Url\Base64Url;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -83,19 +82,16 @@ class SecuredAreaTest extends WebTestCase
      */
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
-        $publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
-            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
-            60000,
-            'localhost',
-            [
-                new PublicKeyCredentialDescriptor(
-                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                    Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
-                ),
-            ],
-            PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-            new AuthenticationExtensionsClientInputs()
-        );
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
+            ::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
+                ->setTimeout(60000)
+                ->setRpId('localhost')
+                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+                ->allowCredential(new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
+            ))
+        ;
 
         $client = static::createClient();
         $session = $client->getContainer()->get('session');

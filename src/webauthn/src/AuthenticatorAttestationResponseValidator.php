@@ -70,12 +70,32 @@ class AuthenticatorAttestationResponseValidator
 
     public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
     {
+        if (null !== $logger) {
+            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
+        }
+        if (null !== $metadataStatementRepository) {
+            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
+        }
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->publicKeyCredentialSource = $publicKeyCredentialSource;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->logger = $logger ?? new NullLogger();
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
+    {
+        $this->metadataStatementRepository = $metadataStatementRepository;
+
+        return $this;
     }
 
     /**

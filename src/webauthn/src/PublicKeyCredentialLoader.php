@@ -51,9 +51,24 @@ class PublicKeyCredentialLoader
 
     public function __construct(AttestationObjectLoader $attestationObjectLoader, ?LoggerInterface $logger = null)
     {
+        if (null !== $logger) {
+            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
+        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationObjectLoader = $attestationObjectLoader;
         $this->logger = $logger ?? new NullLogger();
+    }
+
+    public static function create(AttestationObjectLoader $attestationObjectLoader): self
+    {
+        return new self($attestationObjectLoader);
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**

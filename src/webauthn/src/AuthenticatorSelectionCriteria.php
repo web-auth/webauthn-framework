@@ -51,12 +51,57 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
      */
     private $residentKey;
 
-    public function __construct(?string $authenticatorAttachment = null, bool $requireResidentKey = false, string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED, ?string $residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE)
+    public function __construct(?string $authenticatorAttachment = null, ?bool $requireResidentKey = null, ?string $userVerification = null, ?string $residentKey = null)
+    {
+        if (null !== $authenticatorAttachment) {
+            @trigger_error('The argument "authenticatorAttachment" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorAttachment".', E_USER_DEPRECATED);
+        }
+        if (null !== $requireResidentKey) {
+            @trigger_error('The argument "requireResidentKey" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRequireResidentKey".', E_USER_DEPRECATED);
+        }
+        if (null !== $userVerification) {
+            @trigger_error('The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".', E_USER_DEPRECATED);
+        }
+        if (null !== $residentKey) {
+            @trigger_error('The argument "residentKey" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setResidentKey".', E_USER_DEPRECATED);
+        }
+        $this->authenticatorAttachment = $authenticatorAttachment;
+        $this->requireResidentKey = $requireResidentKey ?? false;
+        $this->userVerification = $userVerification ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+        $this->residentKey = $residentKey ?? self::RESIDENT_KEY_REQUIREMENT_NONE;
+    }
+
+    public static function create(): self
+    {
+        return new self();
+    }
+
+    public function setAuthenticatorAttachment(?string $authenticatorAttachment): self
     {
         $this->authenticatorAttachment = $authenticatorAttachment;
+
+        return $this;
+    }
+
+    public function setRequireResidentKey(bool $requireResidentKey): self
+    {
         $this->requireResidentKey = $requireResidentKey;
+
+        return $this;
+    }
+
+    public function setUserVerification(string $userVerification): self
+    {
         $this->userVerification = $userVerification;
+
+        return $this;
+    }
+
+    public function setResidentKey(?string $residentKey): self
+    {
         $this->residentKey = $residentKey;
+
+        return $this;
     }
 
     public function getAuthenticatorAttachment(): ?string
@@ -93,12 +138,12 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        return new self(
-            $json['authenticatorAttachment'] ?? null,
-            $json['requireResidentKey'] ?? false,
-            $json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-            $json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_NONE
-        );
+        return self::create()
+            ->setAuthenticatorAttachment($json['authenticatorAttachment'] ?? null)
+            ->setRequireResidentKey($json['requireResidentKey'] ?? false)
+            ->setUserVerification($json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->setResidentKey($json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_NONE)
+        ;
     }
 
     /**

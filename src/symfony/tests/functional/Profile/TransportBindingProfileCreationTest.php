@@ -126,7 +126,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'ok');
+        static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], '');
@@ -154,7 +154,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'ok');
+        static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], '');
@@ -186,7 +186,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'ok');
+        static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals($data['errorMessage'], '');

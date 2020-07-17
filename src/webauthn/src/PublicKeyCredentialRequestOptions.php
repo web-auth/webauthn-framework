@@ -32,7 +32,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @var array<PublicKeyCredentialDescriptor>
      */
-    private $allowCredentials;
+    private $allowCredentials = [];
 
     /**
      * @var string|null
@@ -44,10 +44,69 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
      */
     public function __construct(string $challenge, ?int $timeout = null, ?string $rpId = null, array $allowCredentials = [], ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $extensions = null)
     {
+        if (0 !== count($allowCredentials)) {
+            @trigger_error('The argument "allowCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addAllowedCredentials" or "addAllowedCredential".', E_USER_DEPRECATED);
+        }
+        if (null !== $rpId) {
+            @trigger_error('The argument "rpId" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRpId".', E_USER_DEPRECATED);
+        }
+        if (null !== $userVerification) {
+            @trigger_error('The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".', E_USER_DEPRECATED);
+        }
         parent::__construct($challenge, $timeout, $extensions);
+        $this
+            ->setRpId($rpId)
+            ->allowCredentials($allowCredentials)
+            ->setUserVerification($userVerification)
+        ;
+    }
+
+    public static function create(string $challenge): self
+    {
+        return new self($challenge);
+    }
+
+    public function setRpId(?string $rpId): self
+    {
         $this->rpId = $rpId;
-        $this->allowCredentials = array_values($allowCredentials);
+
+        return $this;
+    }
+
+    public function allowCredential(PublicKeyCredentialDescriptor $allowCredential): self
+    {
+        $this->allowCredentials[] = $allowCredential;
+
+        return $this;
+    }
+
+    /**
+     * @param PublicKeyCredentialDescriptor[] $allowCredentials
+     */
+    public function allowCredentials(array $allowCredentials): self
+    {
+        foreach ($allowCredentials as $allowCredential) {
+            $this->allowCredential($allowCredential);
+        }
+
+        return $this;
+    }
+
+    public function setUserVerification(?string $userVerification): self
+    {
+        if (null === $userVerification) {
+            $this->rpId = null;
+
+            return $this;
+        }
+        Assertion::inArray($userVerification, [
+            self::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            self::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+        ], 'Invalid user verification requirement');
         $this->userVerification = $userVerification;
+
+        return $this;
     }
 
     public function getRpId(): ?string
@@ -90,14 +149,13 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        return new self(
-            Base64Url::decode($json['challenge']),
-            $json['timeout'] ?? null,
-            $json['rpId'] ?? null,
-            $allowCredentials,
-            $json['userVerification'] ?? null,
-            isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs()
-        );
+        return self::create(Base64Url::decode($json['challenge']))
+            ->setRpId($json['rpId'] ?? null)
+            ->allowCredentials($allowCredentials)
+            ->setUserVerification($json['userVerification'] ?? null)
+            ->setTimeout($json['timeout'] ?? null)
+            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+        ;
     }
 
     /**
