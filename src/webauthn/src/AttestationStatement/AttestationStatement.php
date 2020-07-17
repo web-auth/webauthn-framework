@@ -160,7 +160,7 @@ class AttestationStatement implements JsonSerializable
         return [
             'fmt' => $this->fmt,
             'attStmt' => $this->attStmt,
-            'trustPath' => $this->trustPath,
+            'trustPath' => $this->trustPath->jsonSerialize(),
             'type' => $this->type,
         ];
     }

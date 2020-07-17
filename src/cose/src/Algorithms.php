@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
 
 /**
  * @see https://www.iana.org/assignments/cose/cose.xhtml#algorithms
@@ -100,6 +101,9 @@ abstract class Algorithms
         self::COSE_ALGORITHM_RS1 => 'sha1',
     ];
 
+    /**
+     * @throws AssertionFailedException
+     */
     public static function getOpensslAlgorithmFor(int $algorithmIdentifier): int
     {
         Assertion::keyExists(self::COSE_ALGORITHM_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
@@ -107,6 +111,9 @@ abstract class Algorithms
         return self::COSE_ALGORITHM_MAP[$algorithmIdentifier];
     }
 
+    /**
+     * @throws AssertionFailedException
+     */
     public static function getHashAlgorithmFor(int $algorithmIdentifier): string
     {
         Assertion::keyExists(self::COSE_HASH_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');

@@ -206,7 +206,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'type' => $this->type,
             'transports' => $this->transports,
             'attestationType' => $this->attestationType,
-            'trustPath' => $this->trustPath,
+            'trustPath' => $this->trustPath->jsonSerialize(),
             'aaguid' => $this->aaguid->toString(),
             'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
             'userHandle' => Base64Url::encode($this->userHandle),
