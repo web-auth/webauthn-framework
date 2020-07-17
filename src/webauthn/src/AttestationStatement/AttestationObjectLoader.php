@@ -19,6 +19,7 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Webauthn\Exception\InvalidAttestationObjectException;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -126,7 +127,7 @@ class AttestationObjectLoader
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            throw $throwable;
+            throw new InvalidAttestationObjectException('Invalid attestation object', $throwable);
         }
     }
 }

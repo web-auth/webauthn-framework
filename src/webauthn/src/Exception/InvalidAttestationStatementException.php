@@ -28,13 +28,6 @@ final class InvalidAttestationStatementException extends WebauthnException
         $this->format = $format;
     }
 
-    public static function throw(string $format, string $message, Throwable $previous = null): callable
-    {
-        return static function () use ($format, $message, $previous): InvalidAttestationStatementException {
-            return new InvalidAttestationStatementException($format, $message, $previous);
-        };
-    }
-
     public function getFormat(): string
     {
         return $this->format;

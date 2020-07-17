@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
@@ -21,11 +22,16 @@ use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
+use Throwable;
+use Webauthn\Exception\InvalidAttestationStatementException;
 use function count;
 use FG\ASN1\ASNObject;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
+use Safe\Exceptions\OpensslException;
+use Safe\Exceptions\StringsException;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
@@ -53,43 +59,60 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
     /**
      * @param array<string, mixed> $attestation
+     *
+     * @throws InvalidAttestationStatementException
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
-        foreach (['sig', 'x5c', 'alg'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
-        }
-        $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
+        try {
+            Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+            foreach (['sig', 'x5c', 'alg'] as $key) {
+                Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
+            }
+            $certificates = $attestation['attStmt']['x5c'];
+            Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+            Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+            Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+            $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+            return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        } catch (Throwable $e) {
+            throw new InvalidAttestationStatementException($this->name(), 'The attestation statement is invalid', $e);
+        }
     }
 
+    /**
+     */
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
-        $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        try {
+            $trustPath = $attestationStatement->getTrustPath();
+            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
-        $certificates = $trustPath->getCertificates();
+            $certificates = $trustPath->getCertificates();
 
-        //Decode leaf attestation certificate
-        $leaf = $certificates[0];
-        $this->checkCertificateAndGetPublicKey($leaf, $clientDataJSONHash, $authenticatorData);
+            //Decode leaf attestation certificate
+            $leaf = $certificates[0];
+            $this->checkCertificateAndGetPublicKey($leaf, $clientDataJSONHash, $authenticatorData);
 
-        $signedData = $authenticatorData->getAuthData().$clientDataJSONHash;
-        $alg = $attestationStatement->get('alg');
+            $signedData = $authenticatorData->getAuthData().$clientDataJSONHash;
+            $alg = $attestationStatement->get('alg');
 
-        return 1 === openssl_verify($signedData, $attestationStatement->get('sig'), $leaf, Algorithms::getOpensslAlgorithmFor((int) $alg));
+            return 1 === openssl_verify($signedData, $attestationStatement->get('sig'), $leaf, Algorithms::getOpensslAlgorithmFor((int) $alg));
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
+    /**
+     * @throws AssertionFailedException
+     * @throws StringsException
+     * @throws ParserException
+     * @throws OpensslException
+     */
     private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
     {
         $resource = openssl_pkey_get_public($certificate);
-        //Assertion::isResource($resource, 'Unable to read the certificate');
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');
 
@@ -137,6 +160,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
     }
 
+    /**
+     * @throws AssertionFailedException
+     */
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void
     {
         foreach ($sequence->getChildren() as $tag) {

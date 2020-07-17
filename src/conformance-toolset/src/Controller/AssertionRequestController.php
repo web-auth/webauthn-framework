@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
 use function count;
 use function is_array;
 use Psr\Cache\CacheItemPoolInterface;
@@ -136,6 +137,9 @@ final class AssertionRequestController
         }, $credentialSources);
     }
 
+    /**
+     * @throws AssertionFailedException
+     */
     private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): ?PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
@@ -148,6 +152,9 @@ final class AssertionRequestController
         return $userEntity;
     }
 
+    /**
+     * @throws AssertionFailedException
+     */
     private function getServerPublicKeyCredentialRequestOptionsRequest(string $content): ServerPublicKeyCredentialRequestOptionsRequest
     {
         $data = $this->serializer->deserialize(
