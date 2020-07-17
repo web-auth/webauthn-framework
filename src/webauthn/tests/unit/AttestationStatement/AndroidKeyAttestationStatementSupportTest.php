@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\Exception\InvalidAttestationStatementException;

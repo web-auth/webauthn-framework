@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Firewall;
 
+use function is_string;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -68,7 +69,8 @@ class WebauthnListener
 
             return;
         }
-        if (false === mb_strpos($request->getRequestFormat(), 'json') && false === mb_strpos($request->getContentType() ?: '', 'json')) {
+        $content = is_string($request->getContentType()) ? $request->getContentType() : '';
+        if (false === mb_strpos($content, 'json') && false === mb_strpos($request->getRequestFormat(), 'json')) {
             $this->logger->debug('The request format and the content type are not JSON. Ignored');
 
             return;

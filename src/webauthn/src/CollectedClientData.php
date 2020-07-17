@@ -19,6 +19,8 @@ use Base64Url\Base64Url;
 use InvalidArgumentException;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use Throwable;
+use Webauthn\Exception\InvalidCollectedClientDataException;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -49,7 +51,12 @@ class CollectedClientData
     private $origin;
 
     /**
-     * @var array<string, mixed>|null
+     * @var bool|null
+     */
+    private $crossOrigin;
+
+    /**
+     * @var TokenBinding|null
      */
     private $tokenBinding;
 
@@ -58,10 +65,34 @@ class CollectedClientData
      */
     public function __construct(string $rawData, array $data)
     {
-        $this->type = $this->findData($data, 'type');
-        $this->challenge = $this->findData($data, 'challenge', true, true);
-        $this->origin = $this->findData($data, 'origin');
-        $this->tokenBinding = $this->findData($data, 'tokenBinding', false);
+        $this->type = $this->findData($data, 'type', true, false, static function ($data): string {
+            Assertion::string($data, 'Invalid collected client data type');
+
+            return $data;
+        });
+        $this->challenge = $this->findData($data, 'challenge', true, true, static function ($data): string {
+            Assertion::string($data, 'Invalid collected client data challenge');
+
+            return $data;
+        });
+        $this->origin = $this->findData($data, 'origin', true, false, static function ($data): string {
+            Assertion::string($data, 'Invalid collected client data origin');
+
+            return $data;
+        });
+        $this->crossOrigin = $this->findData($data, 'crossOrigin', false, false, static function ($data): ?bool {
+            Assertion::nullOrBoolean($data, 'Invalid collected client data crossOrigin');
+
+            return $data;
+        });
+        $this->tokenBinding = $this->findData($data, 'tokenBinding', false, false, static function ($data): ?TokenBinding {
+            Assertion::nullOrIsArray($data, 'Invalid token binding data');
+            try {
+                return null === $data ? null : TokenBinding::createFormArray($data);
+            } catch (Throwable $exception) {
+                throw new InvalidCollectedClientDataException('Invalid token binding data', $exception);
+            }
+        });
         $this->rawData = $rawData;
         $this->data = $data;
     }
@@ -90,9 +121,14 @@ class CollectedClientData
         return $this->origin;
     }
 
+    public function getCrossOrigin(): ?bool
+    {
+        return $this->crossOrigin;
+    }
+
     public function getTokenBinding(): ?TokenBinding
     {
-        return null === $this->tokenBinding ? null : TokenBinding::createFormArray($this->tokenBinding);
+        return $this->tokenBinding;
     }
 
     public function getRawData(): string
@@ -130,7 +166,7 @@ class CollectedClientData
      *
      * @return mixed|null
      */
-    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)
+    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false, callable $callable = null)
     {
         if (!array_key_exists($key, $json)) {
             if ($isRequired) {
@@ -140,6 +176,12 @@ class CollectedClientData
             return;
         }
 
-        return $isB64 ? Base64Url::decode($json[$key]) : $json[$key];
+        $data = $json[$key];
+        if ($isB64) {
+            Assertion::string($data, sprintf('Invalid collected client data %s', $key));
+            $data = Base64Url::decode($data);
+        }
+
+        return null === $callable ? $data : $callable($data);
     }
 }

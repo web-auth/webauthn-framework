@@ -19,7 +19,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use Webauthn\Exception\InvalidAttestationObjectException;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -29,6 +28,7 @@ use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\InvalidAttestationObjectException;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 

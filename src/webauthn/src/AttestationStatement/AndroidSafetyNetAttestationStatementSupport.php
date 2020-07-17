@@ -30,12 +30,12 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Safe\Exceptions\JsonException;
 use Safe\Exceptions\StringsException;
-use Throwable;
-use Webauthn\Exception\InvalidAttestationStatementException;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport

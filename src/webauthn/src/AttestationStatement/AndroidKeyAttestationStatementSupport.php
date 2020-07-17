@@ -22,8 +22,6 @@ use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use Throwable;
-use Webauthn\Exception\InvalidAttestationStatementException;
 use function count;
 use FG\ASN1\ASNObject;
 use FG\ASN1\Exception\ParserException;
@@ -35,8 +33,10 @@ use Safe\Exceptions\StringsException;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
+use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -81,8 +81,6 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         }
     }
 
-    /**
-     */
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
     {
         try {
