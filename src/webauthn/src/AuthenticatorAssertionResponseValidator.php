@@ -72,6 +72,12 @@ class AuthenticatorAssertionResponseValidator
 
     public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker = null, ?LoggerInterface $logger = null)
     {
+        if (null !== $logger) {
+            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
+        }
+        if (null !== $counterChecker) {
+            @trigger_error('The argument "counterChecker" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setCounterChecker".', E_USER_DEPRECATED);
+        }
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->tokenBindingHandler = $tokenBindingHandler;
@@ -211,6 +217,20 @@ class AuthenticatorAssertionResponseValidator
             ]);
             throw $throwable;
         }
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setCounterChecker(CounterChecker $counterChecker): self
+    {
+        $this->counterChecker = $counterChecker;
+
+        return $this;
     }
 
     /**

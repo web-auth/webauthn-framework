@@ -104,9 +104,9 @@ abstract class AbstractTestCase extends TestCase
                 $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
                 new IgnoreTokenBindingHandler(),
-                new ExtensionOutputCheckerHandler(),
-                $this->getMetadataStatementRepository()
+                new ExtensionOutputCheckerHandler()
             );
+            $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository($this->getMetadataStatementRepository());
         }
 
         return $this->authenticatorAttestationResponseValidator;
@@ -131,13 +131,13 @@ abstract class AbstractTestCase extends TestCase
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
         $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(
-            $client ?? new Client(),
-            'api_key',
-            new Psr17Factory(),
-            0,
-            99999999999
-        ));
+        $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
+        $androidSafetyNetAttestationStatementSupport
+            ->enableApiVerification($client ?? new Client(), 'api_key', new Psr17Factory())
+            ->setLeeway(0)
+            ->setMaxAge(99999999999)
+            ;
+        $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
             $this->getAlgorithmManager()

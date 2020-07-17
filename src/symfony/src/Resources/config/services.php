@@ -28,8 +28,7 @@ use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\Counter;
-use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding;
@@ -50,8 +49,6 @@ return static function (ContainerConfigurator $container): void {
             ref(TokenBindingHandler::class),
             ref(ExtensionOutputCheckerHandler::class),
             ref(EventDispatcherInterface::class),
-            ref(MetadataStatementRepository::class)->nullOnInvalid(),
-            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public()
     ;
@@ -63,15 +60,12 @@ return static function (ContainerConfigurator $container): void {
             ref(ExtensionOutputCheckerHandler::class),
             ref('webauthn.cose.algorithm.manager'),
             ref(EventDispatcherInterface::class),
-            ref(Counter\CounterChecker::class)->nullOnInvalid(),
-            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public()
     ;
     $container->set(PublicKeyCredentialLoader::class)
         ->args([
             ref(AttestationObjectLoader::class),
-            ref('webauthn.logger')->nullOnInvalid(),
         ])
         ->public()
     ;
@@ -94,8 +88,6 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AttestationStatement\AttestationObjectLoader::class)
         ->args([
             ref(AttestationStatementSupportManager::class),
-            null,
-            ref('webauthn.logger')->nullOnInvalid(),
         ])
     ;
     $container->set(AttestationStatement\AttestationStatementSupportManager::class);
@@ -105,7 +97,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(TokenBinding\TokenBindingNotSupportedHandler::class);
     $container->set(TokenBinding\SecTokenBindingHandler::class);
 
-    $container->set(Counter\ThrowExceptionIfInvalid::class);
+    $container->set(ThrowExceptionIfInvalid::class);
 
     $container->set(Loader::class)
         ->tag('routing.loader')

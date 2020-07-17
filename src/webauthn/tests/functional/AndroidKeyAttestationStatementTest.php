@@ -20,10 +20,8 @@ use Psr\Http\Message\UriInterface;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
 use Webauthn\AttestedCredentialData;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
-use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -44,19 +42,15 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
      */
     public function anAndroidSafetyNetAttestationCanBeVerified(): void
     {
-        $publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
-            new PublicKeyCredentialRpEntity('My Application'),
-            new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
-            base64_decode('Tf65bS6D5temh2BwvptqgBPb25iZDRxjwC5ans91IIJDrcrOpnWTK4LVgFjeUV4GDMe44w8SI5NsZssIXTUvDg==', true),
-            [
-                new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
-            ],
-            60000,
-            [],
-            new AuthenticatorSelectionCriteria(),
-            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
-            new AuthenticationExtensionsClientInputs()
-        );
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
+            ::create(
+                new PublicKeyCredentialRpEntity('My Application'),
+                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
+                base64_decode('Tf65bS6D5temh2BwvptqgBPb25iZDRxjwC5ans91IIJDrcrOpnWTK4LVgFjeUV4GDMe44w8SI5NsZssIXTUvDg==', true),
+                [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+            )
+                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
+        ;
 
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{
             "rawId": "AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c",
