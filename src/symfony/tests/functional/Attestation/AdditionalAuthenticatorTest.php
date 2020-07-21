@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use function count;
+use Prophecy\PhpUnit\ProphecyTrait;
+use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -32,6 +34,8 @@ use Webauthn\PublicKeyCredentialDescriptor;
  */
 class AdditionalAuthenticatorTest extends WebTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var KernelBrowser
      */

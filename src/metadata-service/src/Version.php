@@ -17,6 +17,7 @@ use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use LogicException;
+use function Safe\sprintf;
 
 class Version implements JsonSerializable
 {

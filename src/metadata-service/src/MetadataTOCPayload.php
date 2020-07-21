@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
+use function Safe\sprintf;
 
 class MetadataTOCPayload implements JsonSerializable
 {

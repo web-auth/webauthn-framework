@@ -20,6 +20,7 @@ use CBOR\MapObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -38,6 +39,8 @@ use Webauthn\TrustPath\CertificateTrustPath;
  */
 class FidoU2FAttestationStatementSupportTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
@@ -133,8 +136,8 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
         $attestedCredentialData->getCredentialId()->willReturn('CREDENTIAL_ID');
         $attestedCredentialData->getCredentialPublicKey()->willReturn(
             new MapObject([
-                new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-2)), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
-                new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-3)), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
+                new MapItem(SignedIntegerObject::create(-2), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
+                new MapItem(SignedIntegerObject::create(-3), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
             ])
         );
 

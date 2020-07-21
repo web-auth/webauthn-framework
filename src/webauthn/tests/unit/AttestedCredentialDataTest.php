@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 
@@ -27,6 +28,8 @@ use Webauthn\AttestedCredentialData;
  */
 class AttestedCredentialDataTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      * @dataProvider dataAAGUID

@@ -17,6 +17,10 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use Safe\Exceptions\FilesystemException;
+use function Safe\file_put_contents;
+use function Safe\tempnam;
+use function Safe\unlink;
 use Symfony\Component\Process\Process;
 
 class CertificateToolbox
@@ -36,33 +40,24 @@ class CertificateToolbox
         $filenames = [];
 
         $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
-        Assertion::string($leafFilename, 'Unable to get a temporary filename');
-
         $leafCertificate = array_shift($authenticatorCertificates);
-        $result = file_put_contents($leafFilename, $leafCertificate);
-        Assertion::integer($result, 'Unable to write temporary data');
+        file_put_contents($leafFilename, $leafCertificate);
         $filenames[] = $leafFilename;
 
         $processArguments = ['--no-CApath', '--no-CAfile'];
 
         foreach ($trustedCertificates as $certificate) {
             $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-trusted-');
-            Assertion::string($trustedFilename, 'Unable to get a temporary filename');
-            $result = file_put_contents($trustedFilename, $certificate, FILE_APPEND);
-            Assertion::integer($result, 'Unable to write temporary data');
-            $result = file_put_contents($trustedFilename, PHP_EOL, FILE_APPEND);
-            Assertion::integer($result, 'Unable to write temporary data');
+            file_put_contents($trustedFilename, $certificate, FILE_APPEND);
+            file_put_contents($trustedFilename, PHP_EOL, FILE_APPEND);
             $processArguments[] = '-trusted';
             $processArguments[] = $trustedFilename;
             $filenames[] = $trustedFilename;
         }
         foreach ($authenticatorCertificates as $certificate) {
             $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
-            Assertion::string($untrustedFilename, 'Unable to get a temporary filename');
-            $result = file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
-            Assertion::integer($result, 'Unable to write temporary data');
-            $result = file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
-            Assertion::integer($result, 'Unable to write temporary data');
+            file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
+            file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
@@ -76,8 +71,11 @@ class CertificateToolbox
         while ($process->isRunning()) {
         }
         foreach ($filenames as $filename) {
-            $result = unlink($filename);
-            Assertion::true($result, 'Unable to delete temporary file');
+            try {
+                unlink($filename);
+            } catch (FilesystemException $e) {
+                continue;
+            }
         }
 
         if (!$process->isSuccessful()) {

@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
 use JsonSerializable;
+use function Safe\json_decode;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
@@ -73,7 +74,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);
-        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

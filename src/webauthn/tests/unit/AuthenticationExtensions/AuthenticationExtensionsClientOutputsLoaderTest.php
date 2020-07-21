@@ -20,6 +20,7 @@ use CBOR\OtherObject\TrueObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -33,6 +34,8 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoade
  */
 class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
@@ -69,7 +72,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid extension key');
         $cbor = new MapObject([
-            new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-100)), new TrueObject()),
+            new MapItem(SignedIntegerObject::create(-100), new TrueObject()),
         ]);
 
         AuthenticationExtensionsClientOutputsLoader::load($cbor);

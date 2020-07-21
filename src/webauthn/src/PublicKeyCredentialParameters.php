@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JsonSerializable;
+use function Safe\json_decode;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
@@ -47,7 +48,6 @@ class PublicKeyCredentialParameters implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);
-        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

@@ -17,14 +17,14 @@ use Assert\Assertion;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
+use function Safe\openssl_sign;
 
 abstract class ECDSA implements Signature
 {
     public function sign(string $data, Key $key): string
     {
         $key = $this->handleKey($key);
-        $result = openssl_sign($data, $signature, $key->asPEM(), $this->getHashAlgorithm());
-        Assertion::true($result, 'Unable to sign the data');
+        openssl_sign($data, $signature, $key->asPEM(), $this->getHashAlgorithm());
 
         return ECSignature::fromAsn1($signature, $this->getSignaturePartLength());
     }

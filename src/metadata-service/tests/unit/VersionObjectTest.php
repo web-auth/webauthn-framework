@@ -15,6 +15,8 @@ namespace Webauthn\MetadataService\Tests\Unit;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\MetadataService\Version;
 
 /**

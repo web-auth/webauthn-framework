@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Firewall;
 
+use function is_string;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

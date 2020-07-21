@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use function in_array;
 use JsonSerializable;
+use function Safe\sprintf;
 
 class StatusReport implements JsonSerializable
 {

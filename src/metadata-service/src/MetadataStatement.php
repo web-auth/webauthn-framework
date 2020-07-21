@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
+use function Safe\sprintf;
 
 class MetadataStatement implements JsonSerializable
 {
