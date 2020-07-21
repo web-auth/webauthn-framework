@@ -517,11 +517,17 @@ class MetadataStatement implements JsonSerializable
             'isSecondFactorOnly' => $this->isSecondFactorOnly,
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
-            'tcDisplayPNGCharacteristics' => $this->tcDisplayPNGCharacteristics,
+            'tcDisplayPNGCharacteristics' => array_map(static function (DisplayPNGCharacteristicsDescriptor $object): array {
+                return $object->jsonSerialize();
+            }, $this->tcDisplayPNGCharacteristics),
             'attestationRootCertificates' => $this->attestationRootCertificates,
-            'ecdaaTrustAnchors' => $this->ecdaaTrustAnchors,
+            'ecdaaTrustAnchors' => array_map(static function (EcdaaTrustAnchor $object): array {
+                return $object->jsonSerialize();
+            }, $this->ecdaaTrustAnchors),
             'icon' => $this->icon,
-            'supportedExtensions' => $this->supportedExtensions,
+            'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
+                return $object->jsonSerialize();
+            }, $this->supportedExtensions),
         ];
 
         return Utils::filterNullValues($data);
