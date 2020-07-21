@@ -117,11 +117,13 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         }
 
         if (0 !== \count($this->allowCredentials)) {
-            $json['allowCredentials'] = $this->allowCredentials;
+            $json['allowCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
+                return $object->jsonSerialize();
+            }, $this->allowCredentials);
         }
 
         if (0 !== $this->extensions->count()) {
-            $json['extensions'] = $this->extensions;
+            $json['extensions'] = $this->extensions->jsonSerialize();
         }
 
         if (null !== $this->timeout) {

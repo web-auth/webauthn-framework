@@ -155,16 +155,20 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public function jsonSerialize(): array
     {
         $json = [
-            'rp' => $this->rp,
-            'pubKeyCredParams' => $this->pubKeyCredParams,
+            'rp' => $this->rp->jsonSerialize(),
+            'pubKeyCredParams' => array_map(static function (PublicKeyCredentialParameters $object): array {
+                return $object->jsonSerialize();
+            }, $this->pubKeyCredParams),
             'challenge' => Base64Url::encode($this->challenge),
             'attestation' => $this->attestation,
-            'user' => $this->user,
-            'authenticatorSelection' => $this->authenticatorSelection,
+            'user' => $this->user->jsonSerialize(),
+            'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),
         ];
 
         if (0 !== \count($this->excludeCredentials)) {
-            $json['excludeCredentials'] = $this->excludeCredentials;
+            $json['excludeCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
+                return $object->jsonSerialize();
+            }, $this->excludeCredentials);
         }
 
         if (0 !== $this->extensions->count()) {

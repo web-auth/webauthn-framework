@@ -66,7 +66,9 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     public function jsonSerialize(): array
     {
-        return $this->extensions;
+        return array_map(static function (AuthenticationExtension $object) {
+            return $object->jsonSerialize();
+        }, $this->extensions);
     }
 
     /**
