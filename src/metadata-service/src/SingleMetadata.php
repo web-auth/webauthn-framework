@@ -31,10 +31,10 @@ class SingleMetadata
      */
     private $isBase64Encoded;
 
-    public function __construct(string $data, bool $isBare64Encoded)
+    public function __construct(string $data, bool $isBase64Encoded)
     {
         $this->data = $data;
-        $this->isBase64Encoded = $isBare64Encoded;
+        $this->isBase64Encoded = $isBase64Encoded;
     }
 
     public function getMetadataStatement(): MetadataStatement

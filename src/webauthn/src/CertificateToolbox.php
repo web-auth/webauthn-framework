@@ -17,6 +17,7 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
 use function Safe\tempnam;
 use function Safe\unlink;
@@ -70,7 +71,11 @@ class CertificateToolbox
         while ($process->isRunning()) {
         }
         foreach ($filenames as $filename) {
-            unlink($filename);
+            try {
+                unlink($filename);
+            } catch (FilesystemException $e) {
+                continue;
+            }
         }
 
         if (!$process->isSuccessful()) {

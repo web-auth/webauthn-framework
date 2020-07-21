@@ -15,6 +15,7 @@ namespace Webauthn\Tests\Unit;
 
 use Base64Url\Base64Url;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\CollectedClientData;
 use Webauthn\TokenBinding\TokenBinding;
 
@@ -28,6 +29,8 @@ use Webauthn\TokenBinding\TokenBinding;
  */
 class CollectedClientDataTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

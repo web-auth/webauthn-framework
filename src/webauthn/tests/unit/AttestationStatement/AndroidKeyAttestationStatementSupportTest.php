@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\Exception\InvalidAttestationStatementException;
 
@@ -27,6 +28,8 @@ use Webauthn\Exception\InvalidAttestationStatementException;
  */
 class AndroidKeyAttestationStatementSupportTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

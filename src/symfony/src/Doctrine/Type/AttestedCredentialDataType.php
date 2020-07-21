@@ -31,7 +31,6 @@ final class AttestedCredentialDataType extends Type
         }
 
         return json_encode($value);
-        //Assertion::string($data, 'Unable to encode the data');
     }
 
     /**
@@ -43,7 +42,6 @@ final class AttestedCredentialDataType extends Type
             return $value;
         }
         $json = json_decode($value, true);
-        //Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Unable to decode the data');
 
         return AttestedCredentialData::createFromArray($json);
     }

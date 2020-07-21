@@ -19,6 +19,7 @@ use function in_array;
 use function is_array;
 use function is_object;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -38,6 +39,8 @@ use Webauthn\MetadataService\MetadataStatementRepository;
  */
 class MetadataServiceTest extends KernelTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

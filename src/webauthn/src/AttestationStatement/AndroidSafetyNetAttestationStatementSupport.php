@@ -246,7 +246,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->checkGoogleApiResponse($response);
         $responseBody = $this->getResponseBody($response);
         $responseBodyJson = json_decode($responseBody, true);
-        //Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid response.');
         Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
         Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
         Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');

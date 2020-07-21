@@ -56,10 +56,9 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
     public function getUserHandle(): ?string
     {
         if (null === $this->userHandle || '' === $this->userHandle) {
-            return $this->userHandle;
+            return null;
         }
 
         return base64_decode($this->userHandle, true);
-        //Assertion::string($decoded, 'Unable to decode the data');
     }
 }

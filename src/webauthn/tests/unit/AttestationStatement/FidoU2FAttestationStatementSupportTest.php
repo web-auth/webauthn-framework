@@ -20,6 +20,7 @@ use CBOR\MapObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Ramsey\Uuid\Uuid;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
@@ -41,6 +42,8 @@ use Webauthn\TrustPath\CertificateTrustPath;
  */
 class FidoU2FAttestationStatementSupportTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

@@ -39,7 +39,6 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);
-        //Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

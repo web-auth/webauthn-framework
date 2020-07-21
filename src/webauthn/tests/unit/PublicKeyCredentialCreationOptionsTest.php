@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\json_encode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -33,6 +34,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class PublicKeyCredentialCreationOptionsTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

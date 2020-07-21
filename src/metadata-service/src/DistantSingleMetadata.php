@@ -43,11 +43,11 @@ class DistantSingleMetadata extends SingleMetadata
      */
     private $isBase64Encoded;
 
-    public function __construct(string $uri, bool $isBare64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
+    public function __construct(string $uri, bool $isBase64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
     {
-        parent::__construct($uri, $isBare64Encoded); //Useless
+        parent::__construct($uri, $isBase64Encoded); //Useless
         $this->uri = $uri;
-        $this->isBase64Encoded = $isBare64Encoded;
+        $this->isBase64Encoded = $isBase64Encoded;
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
         $this->additionalHeaders = $additionalHeaders;

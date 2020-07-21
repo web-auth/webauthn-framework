@@ -104,11 +104,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         try {
             $resource = openssl_pkey_get_public($publicKey);
-            //Assertion::isResource($resource, 'Unable to load the public key');
+
+            $details = openssl_pkey_get_details($resource);
         } catch (Throwable $throwable) {
             throw new InvalidAttestationStatementException($this->name(), 'Invalid certificate or certificate chain', $throwable);
         }
-        $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Invalid certificate or certificate chain');
         Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
         Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');

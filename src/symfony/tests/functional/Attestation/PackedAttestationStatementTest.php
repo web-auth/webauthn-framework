@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Cose\Algorithms;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use function Safe\base64_decode;
@@ -36,6 +37,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 class PackedAttestationStatementTest extends KernelTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
