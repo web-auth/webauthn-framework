@@ -25,6 +25,8 @@ use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
+use function Safe\json_decode;
+use function Safe\sprintf;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -113,15 +115,14 @@ class PublicKeyCredentialLoader
         $this->logger->info('Trying to load data from a string', ['data' => $data]);
         try {
             $json = json_decode($data, true);
-            Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
+
+            return $this->loadArray($json);
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
             throw $throwable;
         }
-
-        return $this->loadArray($json);
     }
 
     /**

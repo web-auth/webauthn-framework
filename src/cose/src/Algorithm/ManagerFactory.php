@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Algorithm;
 
 use Assert\Assertion;
+use function Safe\sprintf;
 
 class ManagerFactory
 {

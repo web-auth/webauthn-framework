@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
+use function Safe\json_encode;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -15,12 +15,14 @@ namespace Webauthn\Bundle\Tests\Functional\Assertion;
 
 use Base64Url\Base64Url;
 use Http\Message\RequestMatcher\RequestMatcher;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -37,6 +39,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
  */
 class AssertionTest extends WebTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

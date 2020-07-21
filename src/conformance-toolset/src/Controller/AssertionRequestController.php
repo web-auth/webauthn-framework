@@ -103,8 +103,6 @@ final class AssertionRequestController
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $json = json_encode($content);
-            Assertion::string($json, 'Unable to encode the data');
             $allowedCredentials = null === $userEntity ? [] : $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -112,8 +110,6 @@ final class AssertionRequestController
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
-            $json = json_encode($publicKeyCredentialRequestOptions);
-            Assertion::string($json, 'Unable to encode the data');
             $data = array_merge(
                 ['status' => 'ok', 'errorMessage' => ''],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
@@ -124,6 +120,8 @@ final class AssertionRequestController
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
+            $this->logger->error($throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }

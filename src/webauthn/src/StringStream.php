@@ -15,6 +15,12 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Stream;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\rewind;
+use function Safe\sprintf;
 
 final class StringStream implements Stream
 {
@@ -37,11 +43,8 @@ final class StringStream implements Stream
     {
         $this->length = mb_strlen($data, '8bit');
         $resource = fopen('php://memory', 'rb+');
-        Assertion::isResource($resource, 'Unable to open memory');
-        $result = fwrite($resource, $data);
-        Assertion::integer($result, 'Unable to write memory');
-        $result = rewind($resource);
-        Assertion::true($result, 'Unable to read memory');
+        fwrite($resource, $data);
+        rewind($resource);
         $this->data = $resource;
     }
 
@@ -51,7 +54,6 @@ final class StringStream implements Stream
             return '';
         }
         $read = fread($this->data, $length);
-        Assertion::string($read, 'Unable to read memory');
         $bytesRead = mb_strlen($read, '8bit');
         Assertion::length($read, $length, sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead), null, '8bit');
         $this->totalRead += $bytesRead;
@@ -61,8 +63,7 @@ final class StringStream implements Stream
 
     public function close(): void
     {
-        $result = fclose($this->data);
-        Assertion::true($result, 'Unable to close the memory');
+        fclose($this->data);
     }
 
     public function isEOF(): bool

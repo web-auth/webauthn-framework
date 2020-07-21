@@ -17,6 +17,7 @@ use function array_key_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
 use function is_array;
+use function Safe\sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;

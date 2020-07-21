@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AuthenticatorSelectionCriteria;
 
 /**
@@ -26,6 +27,8 @@ use Webauthn\AuthenticatorSelectionCriteria;
  */
 class AuthenticatorSelectionCriteriaTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

@@ -16,6 +16,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
@@ -185,7 +186,6 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public static function createFromString(string $data): PublicKeyCredentialOptions
     {
         $data = json_decode($data, true);
-        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

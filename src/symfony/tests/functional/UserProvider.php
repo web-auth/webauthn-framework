@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use function Safe\sprintf;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;

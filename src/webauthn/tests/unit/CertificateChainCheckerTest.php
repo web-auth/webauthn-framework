@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\CertificateToolbox;
 
 /**
@@ -24,6 +25,8 @@ use Webauthn\CertificateToolbox;
  */
 class CertificateChainCheckerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      *

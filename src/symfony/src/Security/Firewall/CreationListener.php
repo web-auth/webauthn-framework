@@ -210,6 +210,7 @@ class CreationListener
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
             $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
         } catch (Exception $e) {
+            $this->logger->error('Unable to process the creation option request');
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
