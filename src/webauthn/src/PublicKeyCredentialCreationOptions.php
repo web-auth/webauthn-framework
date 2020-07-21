@@ -243,7 +243,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),
         ];
 
-        if (0 !== \count($this->excludeCredentials)) {
+        if (0 !== count($this->excludeCredentials)) {
             $json['excludeCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->excludeCredentials);
