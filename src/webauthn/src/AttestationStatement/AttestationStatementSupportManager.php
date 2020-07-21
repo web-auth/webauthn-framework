@@ -15,6 +15,7 @@ namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use function Safe\sprintf;
 
 class AttestationStatementSupportManager
 {

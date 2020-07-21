@@ -16,6 +16,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Base64Url\Base64Url;
 use Psr\Cache\CacheItemPoolInterface;
 use Ramsey\Uuid\Uuid;
+use function Safe\base64_decode;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;

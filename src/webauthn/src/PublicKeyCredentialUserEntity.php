@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function Safe\base64_decode;
+use function Safe\json_decode;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
@@ -47,7 +49,6 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true);
-        Assertion::eq(JSON_ERROR_NONE, json_last_error(), 'Invalid data');
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -62,7 +63,6 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
         Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
         $id = base64_decode($json['id'], true);
-        Assertion::string($id, 'Invalid parameter "id".');
 
         return new self(
             $json['name'],

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Routing;
 
+use function Safe\sprintf;
 use Symfony\Component\Config\Loader\Loader as SymfonyLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;

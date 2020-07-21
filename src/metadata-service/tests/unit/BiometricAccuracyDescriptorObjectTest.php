@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use function Safe\json_decode;
+use function Safe\json_encode;
 use Webauthn\MetadataService\BiometricAccuracyDescriptor;
 
 /**
@@ -24,6 +27,8 @@ use Webauthn\MetadataService\BiometricAccuracyDescriptor;
  */
 class BiometricAccuracyDescriptorObjectTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      * @dataProvider validObjectData

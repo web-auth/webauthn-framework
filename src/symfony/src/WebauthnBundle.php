@@ -15,6 +15,7 @@ namespace Webauthn\Bundle;
 
 use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -66,7 +67,6 @@ final class WebauthnBundle extends Bundle
     private function registerMappings(ContainerBuilder $container): void
     {
         $realPath = realpath(__DIR__.'/Resources/config/doctrine-mapping');
-        Assertion::string($realPath, sprintf('Unable to get the real path of "%s"', __DIR__.'/Resources/config/doctrine-mapping'));
         $mappings = [$realPath => 'Webauthn'];
         if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));

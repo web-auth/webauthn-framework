@@ -15,6 +15,7 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use JsonSerializable;
+use function Safe\sprintf;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {

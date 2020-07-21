@@ -17,6 +17,7 @@ use Assert\Assertion;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use function Safe\base64_decode;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
@@ -78,16 +79,13 @@ class AttestedCredentialData implements JsonSerializable
                 break;
             default: // Kept for compatibility with old format
                 $decoded = base64_decode($json['aaguid'], true);
-                Assertion::string($decoded, 'Unable to decode the data');
                 $uuid = Uuid::fromBytes($decoded);
         }
         $credentialId = base64_decode($json['credentialId'], true);
-        Assertion::string($credentialId, 'Unable to decode the data');
 
         $credentialPublicKey = null;
         if (isset($json['credentialPublicKey'])) {
             $credentialPublicKey = base64_decode($json['credentialPublicKey'], true);
-            Assertion::string($credentialPublicKey, 'Invalid Credential Public Key');
         }
 
         return new self(

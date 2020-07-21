@@ -27,7 +27,7 @@
         "psr/log": "^1.1",
         "ramsey/uuid": "^3.8|^4.0",
         "spomky-labs/base64url": "^2.0",
-        "spomky-labs/cbor-php": "^1.0.2",
+        "spomky-labs/cbor-php": "^1.1|^2.0",
         "symfony/process": "^3.0|^4.0|^5.0",
         "web-auth/cose-lib": "self.version",
         "web-auth/metadata-service": "self.version"

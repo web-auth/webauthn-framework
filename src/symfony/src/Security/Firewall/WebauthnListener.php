@@ -13,21 +13,16 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Firewall;
 
+use function is_string;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
 class WebauthnListener
 {
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
     /**
      * @var array<string, mixed>
      */

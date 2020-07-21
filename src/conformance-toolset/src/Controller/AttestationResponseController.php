@@ -102,14 +102,10 @@ final class AttestationResponseController
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
-            $json = json_encode($publicKeyCredentialCreationOptions->getUser());
-            Assertion::string($json, 'Unable to encode the data');
-
-            $json = json_encode($credentialSource);
-            Assertion::string($json, 'Unable to encode the data');
-
             return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
         } catch (Throwable $throwable) {
+            $this->logger->error($throwable->getMessage());
+
             return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
         }
     }
