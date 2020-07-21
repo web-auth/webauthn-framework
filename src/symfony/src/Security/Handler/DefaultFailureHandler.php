@@ -26,7 +26,7 @@ final class DefaultFailureHandler implements FailureHandler, AuthenticationFailu
     {
         $data = [
             'status' => 'failed',
-            'errorMessage' => $exception ? $exception->getMessage() : 'Authentication failed',
+            'errorMessage' => null === $exception ? 'Authentication failed' : $exception->getMessage(),
         ];
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);

@@ -109,12 +109,14 @@ final class AttestationRequestController
                 $content,
                 $userEntity
             );
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity));
 
-            return $this->creationOptionsHandler->onCreationOptions(
+            $response = $this->creationOptionsHandler->onCreationOptions(
                 $publicKeyCredentialCreationOptions,
                 $userEntity
             );
+            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
+
+            return $response;
         } catch (Throwable $throwable) {
             return $this->failureHandler->onFailure($request, $throwable);
         }

@@ -14,7 +14,6 @@ declare(strict_types=1);
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 
 return static function (ContainerConfigurator $container): void {
@@ -25,14 +24,12 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     if (class_exists(JWKFactory::class) && class_exists(RS256::class)) {
-        $container->set(AndroidSafetyNetAttestationStatementSupport::class)
-            ->args([
-                ref('webauthn.android_safetynet.http_client')->nullOnInvalid(),
-                '%webauthn.android_safetynet.api_key%',
-                ref('webauthn.android_safetynet.request_factory')->nullOnInvalid(),
-                '%webauthn.android_safetynet.leeway%',
-                '%webauthn.android_safetynet.max_age%',
-            ])
-        ;
+        $serviceConfigurator = $container->set(AndroidSafetyNetAttestationStatementSupport::class);
+        $serviceConfigurator->call('setMaxAge', [
+            '%webauthn.android_safetynet.max_age%',
+        ]);
+        $serviceConfigurator->call('setLeeway', [
+            '%webauthn.android_safetynet.leeway%',
+        ]);
     }
 };

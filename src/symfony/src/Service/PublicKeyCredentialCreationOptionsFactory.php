@@ -54,17 +54,19 @@ final class PublicKeyCredentialCreationOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        $options = new PublicKeyCredentialCreationOptions(
-            $this->createRpEntity($profile),
-            $userEntity,
-            random_bytes($profile['challenge_length']),
-            $this->createCredentialParameters($profile),
-            $profile['timeout'],
-            $excludeCredentials,
-            $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile),
-            $attestationConveyance ?? $profile['attestation_conveyance'],
-            $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
-        );
+        $options = PublicKeyCredentialCreationOptions
+            ::create(
+                $this->createRpEntity($profile),
+                $userEntity,
+                random_bytes($profile['challenge_length']),
+                $this->createCredentialParameters($profile)
+            )
+                ->excludeCredentials($excludeCredentials)
+                ->setAuthenticatorSelection($authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile))
+                ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
+                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
+                ->setTimeout($profile['timeout'])
+        ;
         $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
 
         return $options;
@@ -88,12 +90,12 @@ final class PublicKeyCredentialCreationOptionsFactory
      */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
-        return new AuthenticatorSelectionCriteria(
-            $profile['authenticator_selection_criteria']['attachment_mode'],
-            $profile['authenticator_selection_criteria']['require_resident_key'],
-            $profile['authenticator_selection_criteria']['user_verification'],
-            $profile['authenticator_selection_criteria']['resident_key']
-        );
+        return AuthenticatorSelectionCriteria::create()
+            ->setAuthenticatorAttachment($profile['authenticator_selection_criteria']['attachment_mode'])
+            ->setRequireResidentKey($profile['authenticator_selection_criteria']['require_resident_key'])
+            ->setUserVerification($profile['authenticator_selection_criteria']['user_verification'])
+            ->setResidentKey($profile['authenticator_selection_criteria']['resident_key'])
+        ;
     }
 
     /**
