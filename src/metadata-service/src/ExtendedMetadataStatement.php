@@ -87,7 +87,7 @@ class ExtendedMetadataStatement extends MetadataStatement
     public static function createFromMetadataStatement(MetadataStatement $metadataStatement): self
     {
         $objet = new self();
-        $properties = get_class_vars($metadataStatement);
+        $properties = get_class_vars(MetadataStatement::class);
         foreach ($properties as $property) {
             $objet->{$property} = $metadataStatement->{$property};
         }

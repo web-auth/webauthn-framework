@@ -27,7 +27,7 @@ use function Safe\sprintf;
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
-     * @var array<string, AuthenticationExtension>
+     * @var AuthenticationExtension[]
      */
     private $extensions = [];
 
@@ -45,7 +45,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFromArray(array $json): self
     {
@@ -73,7 +73,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     }
 
     /**
-     * @return array<string, AuthenticationExtension>
+     * @return AuthenticationExtension[]
      */
     public function jsonSerialize(): array
     {

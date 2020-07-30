@@ -34,7 +34,7 @@ class AttestationStatement implements JsonSerializable
     private $fmt;
 
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $attStmt;
 
@@ -49,7 +49,7 @@ class AttestationStatement implements JsonSerializable
     private $type;
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public function __construct(string $fmt, array $attStmt, string $type, TrustPath $trustPath)
     {
@@ -60,7 +60,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -68,7 +68,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public static function createBasic(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -76,7 +76,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public static function createSelf(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -84,7 +84,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public static function createAttCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -92,7 +92,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $attStmt
+     * @param mixed[] $attStmt
      */
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -105,7 +105,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function getAttStmt(): array
     {
@@ -138,7 +138,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param mixed[] $data
      */
     public static function createFromArray(array $data): self
     {
@@ -155,7 +155,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

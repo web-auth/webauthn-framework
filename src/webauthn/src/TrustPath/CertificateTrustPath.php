@@ -49,7 +49,7 @@ final class CertificateTrustPath implements TrustPath
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

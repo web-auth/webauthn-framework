@@ -26,9 +26,9 @@ use Symfony\Component\Process\Process;
 class CertificateToolbox
 {
     /**
-     * @param array<string> $authenticatorCertificates
-     * @param array<string> $trustedCertificates
-     * @param array<string> $crls
+     * @param string[] $authenticatorCertificates
+     * @param string[] $trustedCertificates
+     * @param string[] $crls
      */
     public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = [], array $crls = []): void
     {
@@ -39,11 +39,6 @@ class CertificateToolbox
             return;
         }
         $filenames = [];
-
-        $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
-        $leafCertificate = array_shift($authenticatorCertificates);
-        file_put_contents($leafFilename, $leafCertificate);
-        $filenames[] = $leafFilename;
 
         //We isolate the process from the current OpenSSL configuration
         $processArguments = ['--no-CApath', '--no-CAfile'];
@@ -65,28 +60,6 @@ class CertificateToolbox
             }
         }
 
-        /*foreach ($trustedCertificates as $certificate) {
-            $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-trusted-');
-            file_put_contents($trustedFilename, $certificate, FILE_APPEND);
-            file_put_contents($trustedFilename, PHP_EOL, FILE_APPEND);
-            $processArguments[] = '-trusted';
-            $processArguments[] = $trustedFilename;
-            $filenames[] = $trustedFilename;
-        }*/
-        /*if (count($crls) !== 0) {
-            $processArguments[] = '-crl_check';
-            foreach ($crls as $crl) {
-                $crlFilename = tempnam(sys_get_temp_dir(), 'webauthn-crl-');
-                Assertion::string($crlFilename, 'Unable to get a temporary filename');
-                $result = file_put_contents($crlFilename, $crl, FILE_APPEND);
-                Assertion::integer($result, 'Unable to write temporary data');
-                $result = file_put_contents($crlFilename, PHP_EOL, FILE_APPEND);
-                Assertion::integer($result, 'Unable to write temporary data');
-                $processArguments[] = $crlFilename;
-                $filenames[] = $crlFilename;
-            }
-        }*/
-
         $untrustedCertificate = '';
         foreach ($authenticatorCertificates as $certificate) {
             $untrustedCertificate .= $certificate.PHP_EOL.PHP_EOL;
@@ -96,22 +69,12 @@ class CertificateToolbox
         $processArguments[] = $untrustedFilename;
         $filenames[] = $untrustedFilename;
 
-        /*foreach ($authenticatorCertificates as $certificate) {
-            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
-            file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
-            file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
-            $processArguments[] = '-untrusted';
-            $processArguments[] = $untrustedFilename;
-            $filenames[] = $untrustedFilename;
-        }*/
-
-        //$processArguments[] = $leafFilename;
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
         $process->start();
-        dump($process->getCommandLine());
         while ($process->isRunning()) {
+            //Just wait
         }
         foreach ($filenames as $filename) {
             try {
@@ -143,9 +106,9 @@ class CertificateToolbox
     }
 
     /**
-     * @param array<string> $certificates
+     * @param string[] $certificates
      *
-     * @return array<string>
+     * @return string[]
      */
     public static function convertAllDERToPEM(array $certificates): array
     {
@@ -168,7 +131,7 @@ class CertificateToolbox
     }
 
     /**
-     * @param array<string> $certificates
+     * @param string[] $certificates
      */
     private static function checkCertificatesValidity(array $certificates): void
     {
@@ -183,7 +146,7 @@ class CertificateToolbox
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     private static function getCertificateHashes(): array
     {

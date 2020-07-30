@@ -59,7 +59,7 @@ class CreationListener
     private $tokenStorage;
 
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $options;
 
@@ -154,7 +154,7 @@ class CreationListener
     private $securedRelyingPartyId;
 
     /**
-     * @param array<string, mixed> $options
+     * @param mixed[] $options
      */
     public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
     {

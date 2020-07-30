@@ -45,7 +45,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
@@ -124,7 +124,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     private function checkCertInfo(string $data): array
     {
@@ -166,7 +166,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     private function checkPubArea(string $data): array
     {
@@ -199,7 +199,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     private function getParameters(string $type, StringStream $stream): array
     {

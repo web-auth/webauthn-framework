@@ -59,7 +59,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
@@ -92,7 +92,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     private function loadBasicType(array $attestation): AttestationStatement
     {
@@ -113,7 +113,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     private function loadEmptyType(array $attestation): AttestationStatement
     {

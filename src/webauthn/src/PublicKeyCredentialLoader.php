@@ -74,7 +74,7 @@ class PublicKeyCredentialLoader
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public function loadArray(array $json): PublicKeyCredential
     {
@@ -126,7 +126,7 @@ class PublicKeyCredentialLoader
     }
 
     /**
-     * @param array<string, mixed> $response
+     * @param mixed[] $response
      */
     private function createResponse(array $response): AuthenticatorResponse
     {

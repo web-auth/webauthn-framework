@@ -116,7 +116,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     public function loadTransportBindingProfile(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
@@ -205,7 +205,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
@@ -243,7 +243,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function loadMetadataStatementSupports(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
@@ -263,7 +263,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function loadMetadataServices(ContainerBuilder $container, array $config): void
     {

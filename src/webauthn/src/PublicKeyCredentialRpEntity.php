@@ -34,7 +34,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFromArray(array $json): self
     {
@@ -48,7 +48,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {
