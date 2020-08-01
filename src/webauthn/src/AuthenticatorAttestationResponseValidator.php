@@ -109,7 +109,7 @@ class AuthenticatorAttestationResponseValidator
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            Assertion::eq(mb_substr($clientDataRpId, -$rpIdLength), $facetId, 'rpId mismatch.');
+            Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
 
             if (!\in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
