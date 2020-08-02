@@ -227,11 +227,12 @@ class AuthenticatorAttestationResponseValidator
         $crls = [];
         if ($metadataStatement instanceof ExtendedMetadataStatement) {
             $crls = $metadataStatement->getCrls();
+            $authenticatorCertificates = array_merge($authenticatorCertificates, $metadataStatement->getRootCertificates());
         }
 
         $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
-        foreach ($metadataStatementCertificates as $key => $attestationRootCertificate) {
-            $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($attestationRootCertificate);
+        foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
+            $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
         CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates, $crls);
     }

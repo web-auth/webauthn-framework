@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use Assert\Assertion;
+use Assert\AssertionFailedException;
+
 class ExtendedMetadataStatement extends MetadataStatement
 {
     /**
@@ -93,5 +96,59 @@ class ExtendedMetadataStatement extends MetadataStatement
         }
 
         return $objet;
+    }
+
+    /**
+     * @throws AssertionFailedException
+     */
+    public static function createFromArray(array $data): MetadataStatement
+    {
+        $object = self::createFromMetadataStatement(parent::createFromArray($data));
+        if (!array_key_exists('extended', $data)) {
+            return $object;
+        }
+
+        if (array_key_exists('crls', $data['extended'])) {
+            Assertion::isArray($data['extended']['crls'], 'Invalid data');
+            Assertion::allString($data['extended']['crls'], 'Invalid data');
+            $object->setCrls($data['extended']['crls']);
+        }
+
+        if (array_key_exists('rootCertificates', $data['extended'])) {
+            Assertion::isArray($data['extended']['rootCertificates'], 'Invalid data');
+            Assertion::allString($data['extended']['rootCertificates'], 'Invalid data');
+            $object->setRootCertificates($data['extended']['rootCertificates']);
+        }
+
+        if (array_key_exists('rootCertificates', $data['extended'])) {
+            Assertion::isArray($data['extended']['rootCertificates'], 'Invalid data');
+            Assertion::allString($data['extended']['rootCertificates'], 'Invalid data');
+            $object->setRootCertificates($data['extended']['rootCertificates']);
+        }
+
+        if (array_key_exists('statusReports', $data['extended'])) {
+            Assertion::isArray($data['extended']['statusReports'], 'Invalid data');
+            $reports = [];
+            foreach ($data['extended']['statusReports'] as $report) {
+                $reports[] = StatusReport::createFromArray($report);
+            }
+            $object->setStatusReports($reports);
+        }
+
+        return $object;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = parent::jsonSerialize();
+        $data['extended'] = [
+            'crls' => $this->crls,
+            'rootCertificates' => $this->rootCertificates,
+            'statusReports' => array_map(static function (StatusReport $object): array {
+                return $object->jsonSerialize();
+            }, $this->statusReports),
+        ];
+
+        return $data;
     }
 }
