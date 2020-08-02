@@ -68,7 +68,13 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
 
     public function addService(string $url, array $additionalQueryStringParameters = [], array $additionalHeaders = []): void
     {
-        $this->metadataServices[] = new MetadataService($url, $this->httpClient, $this->requestFactory, $additionalQueryStringParameters, $additionalHeaders);
+        $service = new MetadataService($url, $this->httpClient, $this->requestFactory);
+        $service
+            ->addQueryStringValues($additionalQueryStringParameters)
+            ->addHeaders($additionalHeaders)
+        ;
+
+        $this->metadataServices[] = $service;
     }
 
     public function addStatusReport(string $aaguid, StatusReport $statusReport): void
