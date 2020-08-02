@@ -49,9 +49,9 @@ class MetadataServiceTest extends TestCase
         $service = new MetadataService(
             'https://foo',
             $this->getClient(),
-            new Psr17Factory(),
-            ['token' => '--TOKEN--']
+            new Psr17Factory()
         );
+        $service->addQueryStringValues(['token' => '--TOKEN--']);
 
         $data = $service->getMetadataTOCPayload();
         $entries = $data->getEntries();

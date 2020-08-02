@@ -55,12 +55,42 @@ class MetadataService
 
     public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalQueryStringValues = [], array $additionalHeaders = [], ?LoggerInterface $logger = null)
     {
+        if (0 !== count($additionalQueryStringValues)) {
+            @trigger_error('The argument "additionalQueryStringValues" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addQueryStringValues`.', E_USER_DEPRECATED);
+        }
+        if (0 !== count($additionalQueryStringValues)) {
+            @trigger_error('The argument "additionalHeaders" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addHeaders`.', E_USER_DEPRECATED);
+        }
+        if (null !== $logger) {
+            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.', E_USER_DEPRECATED);
+        }
         $this->serviceUri = $serviceUri;
         $this->httpClient = $httpClient;
         $this->requestFactory = $requestFactory;
         $this->additionalQueryStringValues = $additionalQueryStringValues;
         $this->additionalHeaders = $additionalHeaders;
         $this->logger = $logger ?? new NullLogger();
+    }
+
+    public function addQueryStringValues(array $additionalQueryStringValues): self
+    {
+        $this->additionalQueryStringValues= $additionalQueryStringValues;
+
+        return $this;
+    }
+
+    public function addHeaders(array $additionalHeaders): self
+    {
+        $this->additionalHeaders= $additionalHeaders;
+
+        return $this;
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger= $logger;
+
+        return $this;
     }
 
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
