@@ -17,8 +17,11 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
-use Safe\Exceptions\FilesystemException;
+use RuntimeException;
 use function Safe\file_put_contents;
+use function Safe\mkdir;
+use function Safe\rename;
+use function Safe\sprintf;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
@@ -41,50 +44,55 @@ class CertificateToolbox
         $filenames = [];
 
         //We isolate the process from the current OpenSSL configuration
-        $processArguments = ['--no-CApath', '--no-CAfile'];
+        $processArguments = [/*'--no-CApath', '--no-CAfile'*/];
 
-        $caFileContent = '';
+        $caDirname = self::createTemporaryDirectory();
+        $processArguments[] = '-CApath';
+        $processArguments[] = $caDirname;
+
         foreach ($trustedCertificates as $certificate) {
-            $caFileContent .= $certificate.PHP_EOL.PHP_EOL;
+            $filename = tempnam($caDirname, 'webauthn-trusted-');
+            rename($filename, $filename .= '.pem');
+            file_put_contents($filename, $certificate);
         }
-        $trustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-cafile-');
-        file_put_contents($trustedFilename, $caFileContent, FILE_APPEND);
-        $processArguments[] = '-CAfile';
-        $processArguments[] = $trustedFilename;
-        $filenames[] = $trustedFilename;
 
         if (0 !== count($crls)) {
             $processArguments[] = '-crl_check';
             foreach ($crls as $crl) {
-                $caFileContent .= $crl.PHP_EOL.PHP_EOL;
+                $filename = tempnam($caDirname, 'webauthn-crl-');
+                rename($filename, $filename .= '.pem');
+                file_put_contents($filename, $crl);
             }
+        }
+
+        $rehashProcess = new Process(['openssl', 'rehash', $caDirname]);
+        $rehashProcess->run();
+        while ($rehashProcess->isRunning()) {
+            //Just wait
         }
 
         $untrustedCertificate = '';
         foreach ($authenticatorCertificates as $certificate) {
-            $untrustedCertificate .= $certificate.PHP_EOL.PHP_EOL;
+            $untrustedCertificate .= $certificate.PHP_EOL;
         }
         $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
+        rename($untrustedFilename, $untrustedFilename .= '.crt');
         file_put_contents($untrustedFilename, $untrustedCertificate, FILE_APPEND);
         $processArguments[] = $untrustedFilename;
-        $filenames[] = $untrustedFilename;
 
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
-        $process->start();
+        $process->run();
         while ($process->isRunning()) {
             //Just wait
         }
-        foreach ($filenames as $filename) {
-            try {
-                unlink($filename);
-            } catch (FilesystemException $e) {
-                continue;
-            }
-        }
+
+        self::deleteDirectory($caDirname);
+        unlink($untrustedFilename);
 
         if (!$process->isSuccessful()) {
+            dump($process->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
         }
     }
@@ -158,5 +166,28 @@ class CertificateToolbox
             '6073c436dcd064a48127ddbf6032ac1a66fd59a0c24434f070d4e564c124c897',
             'ca993121846c464d666096d35f13bf44c1b05af205f9b4a1e00cf6cc10c5e511',
         ];
+    }
+
+    private static function createTemporaryDirectory(): string
+    {
+        $caDir = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
+        if (file_exists($caDir)) {
+            unlink($caDir);
+        }
+        mkdir($caDir);
+        if (!is_dir($caDir)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
+        }
+
+        return $caDir;
+    }
+
+    private static function deleteDirectory(string $dirname): void
+    {
+        $rehashProcess = new Process(['rm', '-rf', $dirname]);
+        $rehashProcess->run();
+        while ($rehashProcess->isRunning()) {
+            //Just wait
+        }
     }
 }

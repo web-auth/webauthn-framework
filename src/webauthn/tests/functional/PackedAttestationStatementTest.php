@@ -128,12 +128,6 @@ class PackedAttestationStatementTest extends AbstractTestCase
             $request->reveal()
         );
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
-            $publicKeyCredential->getResponse(),
-            $publicKeyCredentialCreationOptions,
-            $request->reveal()
-        );
-
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 
         static::assertEquals(base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true), Base64Url::decode($publicKeyCredential->getId()));
@@ -172,12 +166,6 @@ class PackedAttestationStatementTest extends AbstractTestCase
         $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getUri()->willReturn($uri->reveal());
-
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
-            $publicKeyCredential->getResponse(),
-            $publicKeyCredentialCreationOptions,
-            $request->reveal()
-        );
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
             $publicKeyCredential->getResponse(),

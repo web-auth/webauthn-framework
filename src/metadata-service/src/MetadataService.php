@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use function count;
 use League\Uri\Components\Query;
 use League\Uri\UriString;
 use LogicException;
@@ -74,21 +75,21 @@ class MetadataService
 
     public function addQueryStringValues(array $additionalQueryStringValues): self
     {
-        $this->additionalQueryStringValues= $additionalQueryStringValues;
+        $this->additionalQueryStringValues = $additionalQueryStringValues;
 
         return $this;
     }
 
     public function addHeaders(array $additionalHeaders): self
     {
-        $this->additionalHeaders= $additionalHeaders;
+        $this->additionalHeaders = $additionalHeaders;
 
         return $this;
     }
 
     public function setLogger(LoggerInterface $logger): self
     {
-        $this->logger= $logger;
+        $this->logger = $logger;
 
         return $this;
     }
