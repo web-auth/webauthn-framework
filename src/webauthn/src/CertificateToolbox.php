@@ -93,11 +93,6 @@ class CertificateToolbox
             //Just wait
         }
 
-        if (!$process->isSuccessful()) {
-            dump($process->getCommandLine());
-            throw new InvalidArgumentException('Invalid certificate or certificate chain');
-        }
-
         foreach ($filenames as $filename) {
             try {
                 unlink($filename);
@@ -106,6 +101,11 @@ class CertificateToolbox
             }
         }
         self::deleteDirectory($caDirname);
+
+        if (!$process->isSuccessful()) {
+            dump($process->getCommandLine());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain');
+        }
     }
 
     public static function fixPEMStructure(string $certificate): string
