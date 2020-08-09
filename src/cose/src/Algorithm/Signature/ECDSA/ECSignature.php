@@ -13,8 +13,14 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\ECDSA;
 
+use function bin2hex;
+use function dechex;
+use function hexdec;
 use InvalidArgumentException;
+use function mb_strlen;
+use function mb_substr;
 use function Safe\hex2bin;
+use function str_pad;
 use const STR_PAD_LEFT;
 
 /**
@@ -58,13 +64,14 @@ final class ECSignature
     public static function fromAsn1(string $signature, int $length): string
     {
         $message = bin2hex($signature);
+        $position = 0;
 
-        if (0 !== mb_strpos($message, self::ASN1_SEQUENCE, 0, '8bit')) {
+        if (self::ASN1_SEQUENCE !== self::readAsn1Content($message, $position, self::BYTE_SIZE)) {
             throw new InvalidArgumentException('Invalid data. Should start with a sequence.');
         }
 
-        $position = 2;
-        if (0 !== mb_strpos($message, self::ASN1_LENGTH_2BYTES, 2, '8bit')) {
+        // @phpstan-ignore-next-line
+        if (self::ASN1_LENGTH_2BYTES === self::readAsn1Content($message, $position, self::BYTE_SIZE)) {
             $position += self::BYTE_SIZE;
         }
 
@@ -85,8 +92,10 @@ final class ECSignature
             return self::ASN1_NEGATIVE_INTEGER.$data;
         }
 
-        while (0 === mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, 0, '8bit')
-            && mb_substr($data, 2, self::BYTE_SIZE, '8bit') <= self::ASN1_BIG_INTEGER_LIMIT) {
+        while (
+            self::ASN1_NEGATIVE_INTEGER === mb_substr($data, 0, self::BYTE_SIZE, '8bit')
+            && mb_substr($data, 2, self::BYTE_SIZE, '8bit') <= self::ASN1_BIG_INTEGER_LIMIT
+        ) {
             $data = mb_substr($data, 2, null, '8bit');
         }
 
@@ -114,8 +123,10 @@ final class ECSignature
 
     private static function retrievePositiveInteger(string $data): string
     {
-        while (0 === mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, 0, '8bit')
-            && mb_substr($data, 2, self::BYTE_SIZE, '8bit') > self::ASN1_BIG_INTEGER_LIMIT) {
+        while (
+            self::ASN1_NEGATIVE_INTEGER === mb_substr($data, 0, self::BYTE_SIZE, '8bit')
+            && mb_substr($data, 2, self::BYTE_SIZE, '8bit') > self::ASN1_BIG_INTEGER_LIMIT
+        ) {
             $data = mb_substr($data, 2, null, '8bit');
         }
 

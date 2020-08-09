@@ -230,9 +230,8 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if (null === $metadataStatement) {
-            null === $this->certificateChainChecker
-                ? CertificateToolbox::checkChain($authenticatorCertificates)
-                : $this->certificateChainChecker->check($authenticatorCertificates, []);
+            // @phpstan-ignore-next-line
+            null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, []);
 
             return;
         }
@@ -241,9 +240,8 @@ class AuthenticatorAttestationResponseValidator
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
-        null === $this->certificateChainChecker
-            ? CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates)
-            : $this->certificateChainChecker->check($authenticatorCertificates, $metadataStatementCertificates);
+        // @phpstan-ignore-next-line
+        null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $metadataStatementCertificates);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
