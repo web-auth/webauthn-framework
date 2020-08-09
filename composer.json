@@ -25,6 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Webauthn\\Tests\\": "tests/",
             "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
             "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
             "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
