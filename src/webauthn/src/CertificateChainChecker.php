@@ -136,15 +136,6 @@ class CertificateChainChecker
         }
     }
 
-    public function fixPEMStructure(string $certificate): string
-    {
-        $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
-        $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
-
-        return $pemCert;
-    }
-
     /**
      * @param string[] $certificates
      */
