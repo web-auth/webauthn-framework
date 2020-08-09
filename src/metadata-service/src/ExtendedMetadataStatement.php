@@ -22,35 +22,12 @@ class ExtendedMetadataStatement extends MetadataStatement
     /**
      * @var string[]
      */
-    private $crls = [];
-
-    /**
-     * @var string[]
-     */
     private $rootCertificates = [];
 
     /**
      * @var StatusReport[]
      */
     private $statusReports = [];
-
-    /**
-     * @return string[]
-     */
-    public function getCrls(): array
-    {
-        return $this->crls;
-    }
-
-    /**
-     * @param string[] $crls
-     */
-    public function setCrls(array $crls): self
-    {
-        $this->crls = $crls;
-
-        return $this;
-    }
 
     /**
      * @return string[]
@@ -109,12 +86,6 @@ class ExtendedMetadataStatement extends MetadataStatement
             return $object;
         }
 
-        if (array_key_exists('crls', $data['extended'])) {
-            Assertion::isArray($data['extended']['crls'], 'Invalid data');
-            Assertion::allString($data['extended']['crls'], 'Invalid data');
-            $object->setCrls($data['extended']['crls']);
-        }
-
         if (array_key_exists('rootCertificates', $data['extended'])) {
             Assertion::isArray($data['extended']['rootCertificates'], 'Invalid data');
             Assertion::allString($data['extended']['rootCertificates'], 'Invalid data');
@@ -143,7 +114,6 @@ class ExtendedMetadataStatement extends MetadataStatement
     {
         $data = parent::jsonSerialize();
         $data['extended'] = [
-            'crls' => $this->crls,
             'rootCertificates' => $this->rootCertificates,
             'statusReports' => array_map(static function (StatusReport $object): array {
                 return $object->jsonSerialize();

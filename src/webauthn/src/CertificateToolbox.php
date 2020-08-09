@@ -32,18 +32,22 @@ class CertificateToolbox
     /**
      * @param string[] $authenticatorCertificates
      * @param string[] $trustedCertificates
-     * @param string[] $crls
      */
-    public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = [], array $crls = []): void
+    public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
     {
-        self::checkCertificatesValidity($authenticatorCertificates);
-        self::checkCertificatesValidity($trustedCertificates);
-
         if (0 === count($trustedCertificates)) {
+            self::checkCertificatesValidity($authenticatorCertificates);
+
             return;
         }
 
-        $processArguments = [];
+        $processArguments = ['-no-CAfile', '-no-CApath'];
+        if (self::hasCRLs($authenticatorCertificates, $trustedCertificates)) {
+            $processArguments[] = '-crl_check';
+            $processArguments[] = '-crl_check_all';
+            $processArguments[] = '-extended_crl';
+            $processArguments[] = '-crl_download';
+        }
 
         $caDirname = self::createTemporaryDirectory();
         $processArguments[] = '--CApath';
@@ -55,15 +59,6 @@ class CertificateToolbox
             file_put_contents($filename, $certificate);
         }
 
-        if (0 !== count($crls)) {
-            $processArguments[] = '--crl_check';
-            foreach ($crls as $crl) {
-                $filename = tempnam($caDirname, 'webauthn-crl-');
-                rename($filename, $filename .= '.pem');
-                file_put_contents($filename, $crl);
-            }
-        }
-
         $rehashProcess = new Process(['openssl', 'rehash', $caDirname]);
         $rehashProcess->run();
         while ($rehashProcess->isRunning()) {
@@ -71,7 +66,7 @@ class CertificateToolbox
         }
         if (!$rehashProcess->isSuccessful()) {
             dump($rehashProcess->getCommandLine());
-            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$rehashProcess->getErrorOutput());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
 
         $filenames = [];
@@ -98,6 +93,11 @@ class CertificateToolbox
             //Just wait
         }
 
+        if (!$process->isSuccessful()) {
+            dump($process->getCommandLine());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain');
+        }
+
         foreach ($filenames as $filename) {
             try {
                 unlink($filename);
@@ -106,11 +106,6 @@ class CertificateToolbox
             }
         }
         self::deleteDirectory($caDirname);
-
-        if (!$process->isSuccessful()) {
-            dump($process->getCommandLine());
-            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$process->getErrorOutput());
-        }
     }
 
     public static function fixPEMStructure(string $certificate): string
@@ -205,5 +200,22 @@ class CertificateToolbox
         while ($rehashProcess->isRunning()) {
             //Just wait
         }
+    }
+
+    /**
+     * @param string[] $authenticatorCertificates
+     * @param string[] $trustedCertificates
+     */
+    private static function hasCRLs(array $authenticatorCertificates, array $trustedCertificates): bool
+    {
+        return false;
+        /*foreach ($authenticatorCertificates as $certificate) {
+            $parsed = openssl_x509_parse($certificate);
+            dump($parsed);
+        }
+        foreach ($trustedCertificates as $certificate) {
+            $parsed = openssl_x509_parse($certificate);
+            dump($parsed);
+        }*/
     }
 }

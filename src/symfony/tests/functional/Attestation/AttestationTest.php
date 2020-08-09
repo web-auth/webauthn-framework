@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
-use Assert\InvalidArgumentException;
 use Cose\Algorithms;
 use function count;
+use InvalidArgumentException;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -168,7 +168,7 @@ class AttestationTest extends KernelTestCase
     public function certificateExpired(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The certificate expired');
+        $this->expectExceptionMessage('Invalid certificate or certificate chain');
         self::bootKernel();
 
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"vK4TDySRYWO-ZMLS19rRzbuqSDBz-QZRLBb9MB6TVek","attestation":"direct","user":{"name":"KO5UZZdhgkrDan8uypFD","id":"MWY1ODk4M2MtN2JlMi00ZWIxLTllMjMtMDAwZWQwMTk3OGZh","displayName":"Sharyl Seguin"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';

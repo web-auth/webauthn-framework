@@ -224,9 +224,7 @@ class AuthenticatorAttestationResponseValidator
             return;
         }
 
-        $crls = [];
         if ($metadataStatement instanceof ExtendedMetadataStatement) {
-            $crls = $metadataStatement->getCrls();
             $authenticatorCertificates = array_merge($authenticatorCertificates, $metadataStatement->getRootCertificates());
         }
 
@@ -234,7 +232,7 @@ class AuthenticatorAttestationResponseValidator
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
-        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates, $crls);
+        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
