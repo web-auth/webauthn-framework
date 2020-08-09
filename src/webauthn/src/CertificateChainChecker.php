@@ -67,7 +67,12 @@ class CertificateChainChecker
         $processArguments[] = $caDirname;
 
         foreach ($trustedCertificates as $certificate) {
-            $this->prepareCertificate($caDirname, $certificate, 'webauthn-trusted-', '.pem', $hasCrls);
+            $this->saveToTemporaryFile($caDirname, $certificate, 'webauthn-trusted-', '.pem');
+            $crl = $this->getCrls($certificate);
+            if ('' !== $crl) {
+                $hasCrls = true;
+                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-trusted-crl-', '.pem');
+            }
         }
 
         $rehashProcess = new Process(['openssl', 'rehash', $caDirname]);
@@ -81,11 +86,21 @@ class CertificateChainChecker
 
         $filenames = [];
         $leafCertificate = array_shift($authenticatorCertificates);
-        $leafFilename = $this->prepareCertificate(sys_get_temp_dir(), $leafCertificate, 'webauthn-leaf-', '.pem', $hasCrls);
+        $leafFilename = $this->saveToTemporaryFile(sys_get_temp_dir(), $leafCertificate, 'webauthn-leaf-', '.pem');
+        $crl = $this->getCrls($leafCertificate);
+        if ('' !== $crl) {
+            $hasCrls = true;
+            $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-leaf-crl-', '.pem');
+        }
         $filenames[] = $leafFilename;
 
         foreach ($authenticatorCertificates as $certificate) {
-            $untrustedFilename = $this->prepareCertificate(sys_get_temp_dir(), $certificate, 'webauthn-untrusted-', '.pem', $hasCrls);
+            $untrustedFilename = $this->saveToTemporaryFile(sys_get_temp_dir(), $certificate, 'webauthn-untrusted-', '.pem');
+            $crl = $this->getCrls($certificate);
+            if ('' !== $crl) {
+                $hasCrls = true;
+                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-untrusted-crl-', '.pem');
+            }
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
@@ -94,6 +109,9 @@ class CertificateChainChecker
         $processArguments[] = $leafFilename;
         if ($hasCrls) {
             array_unshift($processArguments, '-crl_check');
+            array_unshift($processArguments, '-crl_check_all');
+            array_unshift($processArguments, '-crl_download');
+            array_unshift($processArguments, '-extended_crl');
         }
         array_unshift($processArguments, 'openssl', 'verify');
 
@@ -113,6 +131,7 @@ class CertificateChainChecker
         $this->deleteDirectory($caDirname);
 
         if (!$process->isSuccessful()) {
+            dump($process->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
@@ -164,26 +183,19 @@ class CertificateChainChecker
         }
     }
 
-    private function prepareCertificate(string $folder, string $certificate, string $prefix, string $suffix, bool &$hasCrls): string
+    private function saveToTemporaryFile(string $folder, string $certificate, string $prefix, string $suffix): string
     {
-        $untrustedFilename = tempnam($folder, $prefix);
-        rename($untrustedFilename, $untrustedFilename.$suffix);
-        file_put_contents($untrustedFilename.$suffix, $certificate, FILE_APPEND);
+        $filename = tempnam($folder, $prefix);
+        rename($filename, $filename.$suffix);
+        file_put_contents($filename.$suffix, $certificate, FILE_APPEND);
 
-        $crl = $this->getCrls($certificate);
-        if ('' !== $crl) {
-            $hasCrls = true;
-            file_put_contents($untrustedFilename.$suffix, PHP_EOL, FILE_APPEND);
-            file_put_contents($untrustedFilename.$suffix, $crl, FILE_APPEND);
-        }
-
-        return $untrustedFilename.$suffix;
+        return $filename.$suffix;
     }
 
     private function getCrls(string $certificate): string
     {
         $parsed = openssl_x509_parse($certificate);
-        if ($parsed === false || !isset($parsed['extensions']['crlDistributionPoints'])) {
+        if (false === $parsed || !isset($parsed['extensions']['crlDistributionPoints'])) {
             return '';
         }
         $endpoint = $parsed['extensions']['crlDistributionPoints'];
