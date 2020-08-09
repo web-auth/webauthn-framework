@@ -18,6 +18,7 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use RuntimeException;
+use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
 use function Safe\mkdir;
 use function Safe\rename;
@@ -41,13 +42,11 @@ class CertificateToolbox
         if (0 === count($trustedCertificates)) {
             return;
         }
-        $filenames = [];
 
-        //We isolate the process from the current OpenSSL configuration
-        $processArguments = [/*'--no-CApath', '--no-CAfile'*/];
+        $processArguments = [];
 
         $caDirname = self::createTemporaryDirectory();
-        $processArguments[] = '-CApath';
+        $processArguments[] = '--CApath';
         $processArguments[] = $caDirname;
 
         foreach ($trustedCertificates as $certificate) {
@@ -57,7 +56,7 @@ class CertificateToolbox
         }
 
         if (0 !== count($crls)) {
-            $processArguments[] = '-crl_check';
+            $processArguments[] = '--crl_check';
             foreach ($crls as $crl) {
                 $filename = tempnam($caDirname, 'webauthn-crl-');
                 rename($filename, $filename .= '.pem');
@@ -70,16 +69,27 @@ class CertificateToolbox
         while ($rehashProcess->isRunning()) {
             //Just wait
         }
-
-        $untrustedCertificate = '';
-        foreach ($authenticatorCertificates as $certificate) {
-            $untrustedCertificate .= $certificate.PHP_EOL;
+        if (!$rehashProcess->isSuccessful()) {
+            dump($rehashProcess->getCommandLine());
+            throw new InvalidArgumentException('Invalid certificate or certificate chain. Error is: '.$rehashProcess->getErrorOutput());
         }
-        $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
-        rename($untrustedFilename, $untrustedFilename .= '.crt');
-        file_put_contents($untrustedFilename, $untrustedCertificate, FILE_APPEND);
-        $processArguments[] = $untrustedFilename;
 
+        $filenames = [];
+        $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
+        $leafCertificate = array_shift($authenticatorCertificates);
+        file_put_contents($leafFilename, $leafCertificate);
+        $filenames[] = $leafFilename;
+
+        foreach ($authenticatorCertificates as $certificate) {
+            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
+            file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
+            file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            $processArguments[] = '-untrusted';
+            $processArguments[] = $untrustedFilename;
+            $filenames[] = $untrustedFilename;
+        }
+
+        $processArguments[] = $leafFilename;
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
@@ -88,8 +98,14 @@ class CertificateToolbox
             //Just wait
         }
 
+        foreach ($filenames as $filename) {
+            try {
+                unlink($filename);
+            } catch (FilesystemException $e) {
+                continue;
+            }
+        }
         self::deleteDirectory($caDirname);
-        unlink($untrustedFilename);
 
         if (!$process->isSuccessful()) {
             dump($process->getCommandLine());
