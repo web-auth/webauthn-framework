@@ -309,7 +309,7 @@ class AuthenticatorAttestationResponseValidator
     private function checkStatusReport(array $statusReports): void
     {
         if (0 !== count($statusReports)) {
-            $lastStatusReport = reset($statusReports);
+            $lastStatusReport = end($statusReports);
             if ($lastStatusReport->isCompromised()) {
                 throw new LogicException('The authenticator is compromised and cannot be used');
             }
