@@ -28,7 +28,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use ReflectionMethod;
 use Throwable;
-use Webauthn\MetadataService\MetadataService;
+use Webauthn\MetadataService\Object\MetadataService;
 
 /**
  * @group functional

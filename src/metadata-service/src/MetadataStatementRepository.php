@@ -15,10 +15,10 @@ namespace Webauthn\MetadataService;
 
 interface MetadataStatementRepository
 {
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatement;
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface;
 
     /**
-     * @return StatusReport[]
+     * @return StatusReportInterface[]
      */
     public function findStatusReportsByAAGUID(string $aaguid): array;
 }

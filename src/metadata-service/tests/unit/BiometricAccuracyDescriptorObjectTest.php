@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\MetadataService\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\Object\BiometricAccuracyDescriptor;
 
 /**
  * @group unit

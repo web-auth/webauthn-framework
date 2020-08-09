@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Webauthn\MetadataService\BiometricAccuracyDescriptor;
-use Webauthn\MetadataService\CodeAccuracyDescriptor;
-use Webauthn\MetadataService\PatternAccuracyDescriptor;
-use Webauthn\MetadataService\VerificationMethodANDCombinations;
-use Webauthn\MetadataService\VerificationMethodDescriptor;
+use Webauthn\MetadataService\Object\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\Object\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\Object\PatternAccuracyDescriptor;
+use Webauthn\MetadataService\Object\VerificationMethodANDCombinations;
+use Webauthn\MetadataService\Object\VerificationMethodDescriptor;
 
 /**
  * @group unit

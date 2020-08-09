@@ -6,7 +6,6 @@ parameters:
         - %currentWorkingDirectory%/src/*/tests/*
         - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
-        - '#Variable property access on Webauthn\\MetadataService\\(Extended)?MetadataStatement\.#'
         - '#Method .* should return Webauthn\\PublicKeyCredential(Creation|Request)Options but returns Webauthn\\PublicKeyCredentialOptions\.#'
         - '#Parameter .* of class .* expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'

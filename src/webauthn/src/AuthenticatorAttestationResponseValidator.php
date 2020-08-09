@@ -31,10 +31,9 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\MetadataService\ExtendedMetadataStatement;
-use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataStatementRepository;
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\StatusReportInterface;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -71,6 +70,11 @@ class AuthenticatorAttestationResponseValidator
      */
     private $metadataStatementRepository;
 
+    /**
+     * @var CertificateChainChecker|null
+     */
+    private $certificateChainChecker;
+
     public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
     {
         if (null !== $logger) {
@@ -90,6 +94,13 @@ class AuthenticatorAttestationResponseValidator
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setCertificateChainChecker(CertificateChainChecker $certificateChainChecker): self
+    {
+        $this->certificateChainChecker = $certificateChainChecker;
 
         return $this;
     }
@@ -210,7 +221,7 @@ class AuthenticatorAttestationResponseValidator
         }
     }
 
-    private function checkCertificateChain(AttestationStatement $attestationStatement, ?MetadataStatement $metadataStatement): void
+    private function checkCertificateChain(AttestationStatement $attestationStatement, ?MetadataStatementInterface $metadataStatement): void
     {
         $trustPath = $attestationStatement->getTrustPath();
         if (!$trustPath instanceof CertificateTrustPath) {
@@ -219,20 +230,20 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if (null === $metadataStatement) {
-            CertificateToolbox::checkChain($authenticatorCertificates);
+            null === $this->certificateChainChecker
+                ? CertificateToolbox::checkChain($authenticatorCertificates)
+                : $this->certificateChainChecker->check($authenticatorCertificates, []);
 
             return;
-        }
-
-        if ($metadataStatement instanceof ExtendedMetadataStatement) {
-            $authenticatorCertificates = array_merge($authenticatorCertificates, $metadataStatement->getRootCertificates());
         }
 
         $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
-        CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates);
+        null === $this->certificateChainChecker
+            ? CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates)
+            : $this->certificateChainChecker->check($authenticatorCertificates, $metadataStatementCertificates);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
@@ -243,11 +254,12 @@ class AuthenticatorAttestationResponseValidator
         $aaguid = $attestedCredentialData->getAaguid()->toString();
         if (PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE === $publicKeyCredentialCreationOptions->getAttestation()) {
             $this->logger->debug('No attestation is asked.');
-            //No attestation is asked. We shall ensure that the data is anonymized.
+            //No attestation is asked. We shall ensure that the data is anonymous.
             if (
                 '00000000-0000-0000-0000-000000000000' === $aaguid &&
                 (AttestationStatement::TYPE_NONE === $attestationStatement->getType() || AttestationStatement::TYPE_SELF === $attestationStatement->getType())) {
-                $this->logger->debug('Already anonymized.');
+                $this->logger->debug('The Attestation Statement is anonymous.');
+                $this->checkCertificateChain($attestationStatement, null);
 
                 return;
             }
@@ -278,13 +290,8 @@ class AuthenticatorAttestationResponseValidator
 
         // At this point, the Metadata Statement is mandatory
         Assertion::notNull($metadataStatement, sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
-
-        if ($metadataStatement instanceof ExtendedMetadataStatement) {
-            $statusReports = $metadataStatement->getStatusReports();
-        } else {
-            Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
-            $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
-        }
+        Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
+        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
 
         // We check the last status report
         $this->checkStatusReport($statusReports);
@@ -297,7 +304,7 @@ class AuthenticatorAttestationResponseValidator
     }
 
     /**
-     * @param StatusReport[] $statusReports
+     * @param StatusReportInterface[] $statusReports
      */
     private function checkStatusReport(array $statusReports): void
     {
@@ -328,13 +335,13 @@ class AuthenticatorAttestationResponseValidator
     {
         switch ($attestationStatement->getType()) {
             case AttestationStatement::TYPE_BASIC:
-                return MetadataStatement::ATTESTATION_BASIC_FULL;
+                return MetadataStatementInterface::ATTESTATION_BASIC_FULL;
             case AttestationStatement::TYPE_SELF:
-                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
+                return MetadataStatementInterface::ATTESTATION_BASIC_SURROGATE;
             case AttestationStatement::TYPE_ATTCA:
-                return MetadataStatement::ATTESTATION_ATTCA;
+                return MetadataStatementInterface::ATTESTATION_ATTCA;
             case AttestationStatement::TYPE_ECDAA:
-                return MetadataStatement::ATTESTATION_ECDAA;
+                return MetadataStatementInterface::ATTESTATION_ECDAA;
             default:
                 throw new InvalidArgumentException('Invalid attestation type');
         }

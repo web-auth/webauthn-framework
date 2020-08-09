@@ -13,23 +13,13 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use LogicException;
-use Throwable;
+use Webauthn\MetadataService\Object\Utils as BaseUtils;
 
 /**
  * @internal
+ *
+ * @deprecated "The class is deprecated since v3.3 and will be removed in v4.0"
  */
-abstract class Utils
+abstract class Utils extends BaseUtils
 {
-    public static function logicException(string $message, ?Throwable $previousException = null): callable
-    {
-        return static function () use ($message, $previousException): LogicException {
-            return new LogicException($message, 0, $previousException);
-        };
-    }
-
-    public static function filterNullValues(array $data): array
-    {
-        return array_filter($data, static function ($var): bool {return null !== $var; });
-    }
 }

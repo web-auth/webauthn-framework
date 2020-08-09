@@ -16,10 +16,13 @@ namespace Webauthn\MetadataService;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 
+/**
+ * @deprecated "The class is deprecated since v3.3 and will be removed in v4.0"
+ */
 class SingleMetadata
 {
     /**
-     * @var MetadataStatement
+     * @var MetadataStatementInterface
      */
     private $statement;
     /**
@@ -37,7 +40,7 @@ class SingleMetadata
         $this->isBase64Encoded = $isBase64Encoded;
     }
 
-    public function getMetadataStatement(): MetadataStatement
+    public function getMetadataStatement(): MetadataStatementInterface
     {
         if (null === $this->statement) {
             $json = $this->data;

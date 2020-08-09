@@ -30,6 +30,8 @@ use Symfony\Component\Process\Process;
 class CertificateToolbox
 {
     /**
+     * @deprecated "This method is deprecated since v3.3 and will be removed en v4.0. Please use Webauthn\CertificateChainChecker instead"
+     *
      * @param string[] $authenticatorCertificates
      * @param string[] $trustedCertificates
      */
@@ -42,21 +44,13 @@ class CertificateToolbox
         }
 
         $processArguments = ['-no-CAfile', '-no-CApath'];
-        if (self::hasCRLs($authenticatorCertificates, $trustedCertificates)) {
-            $processArguments[] = '-crl_check';
-            $processArguments[] = '-crl_check_all';
-            $processArguments[] = '-extended_crl';
-            $processArguments[] = '-crl_download';
-        }
 
         $caDirname = self::createTemporaryDirectory();
         $processArguments[] = '--CApath';
         $processArguments[] = $caDirname;
 
         foreach ($trustedCertificates as $certificate) {
-            $filename = tempnam($caDirname, 'webauthn-trusted-');
-            rename($filename, $filename .= '.pem');
-            file_put_contents($filename, $certificate);
+            self::prepareCertificate($caDirname, $certificate, 'webauthn-trusted-', '.pem');
         }
 
         $rehashProcess = new Process(['openssl', 'rehash', $caDirname]);
@@ -65,20 +59,16 @@ class CertificateToolbox
             //Just wait
         }
         if (!$rehashProcess->isSuccessful()) {
-            dump($rehashProcess->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
 
         $filenames = [];
-        $leafFilename = tempnam(sys_get_temp_dir(), 'webauthn-leaf-');
         $leafCertificate = array_shift($authenticatorCertificates);
-        file_put_contents($leafFilename, $leafCertificate);
+        $leafFilename = self::prepareCertificate(sys_get_temp_dir(), $leafCertificate, 'webauthn-leaf-', '.pem');
         $filenames[] = $leafFilename;
 
         foreach ($authenticatorCertificates as $certificate) {
-            $untrustedFilename = tempnam(sys_get_temp_dir(), 'webauthn-untrusted-');
-            file_put_contents($untrustedFilename, $certificate, FILE_APPEND);
-            file_put_contents($untrustedFilename, PHP_EOL, FILE_APPEND);
+            $untrustedFilename = self::prepareCertificate(sys_get_temp_dir(), $certificate, 'webauthn-untrusted-', '.pem');
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
@@ -103,25 +93,24 @@ class CertificateToolbox
         self::deleteDirectory($caDirname);
 
         if (!$process->isSuccessful()) {
-            dump($process->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
 
-    public static function fixPEMStructure(string $certificate): string
+    public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
-        $pemCert = '-----BEGIN CERTIFICATE-----'.PHP_EOL;
+        $pemCert = '-----BEGIN '.$type.'-----'.PHP_EOL;
         $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END CERTIFICATE-----'.PHP_EOL;
+        $pemCert .= '-----END '.$type.'-----'.PHP_EOL;
 
         return $pemCert;
     }
 
-    public static function convertDERToPEM(string $certificate): string
+    public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
     {
         $derCertificate = self::unusedBytesFix($certificate);
 
-        return self::fixPEMStructure(base64_encode($derCertificate));
+        return self::fixPEMStructure(base64_encode($derCertificate), $type);
     }
 
     /**
@@ -129,11 +118,11 @@ class CertificateToolbox
      *
      * @return string[]
      */
-    public static function convertAllDERToPEM(array $certificates): array
+    public static function convertAllDERToPEM(array $certificates, string $type = 'CERTIFICATE'): array
     {
         $certs = [];
         foreach ($certificates as $publicKey) {
-            $certs[] = self::convertDERToPEM($publicKey);
+            $certs[] = self::convertDERToPEM($publicKey, $type);
         }
 
         return $certs;
@@ -202,20 +191,13 @@ class CertificateToolbox
         }
     }
 
-    /**
-     * @param string[] $authenticatorCertificates
-     * @param string[] $trustedCertificates
-     */
-    private static function hasCRLs(array $authenticatorCertificates, array $trustedCertificates): bool
+    private static function prepareCertificate(string $folder, string $certificate, string $prefix, string $suffix): string
     {
-        return false;
-        /*foreach ($authenticatorCertificates as $certificate) {
-            $parsed = openssl_x509_parse($certificate);
-            dump($parsed);
-        }
-        foreach ($trustedCertificates as $certificate) {
-            $parsed = openssl_x509_parse($certificate);
-            dump($parsed);
-        }*/
+        $untrustedFilename = tempnam($folder, $prefix);
+        rename($untrustedFilename, $untrustedFilename.$suffix);
+        file_put_contents($untrustedFilename.$suffix, $certificate, FILE_APPEND);
+        file_put_contents($untrustedFilename.$suffix, PHP_EOL, FILE_APPEND);
+
+        return $untrustedFilename.$suffix;
     }
 }

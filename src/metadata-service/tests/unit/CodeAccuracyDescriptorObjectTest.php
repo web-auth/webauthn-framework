@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\MetadataService\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\Object\CodeAccuracyDescriptor;
 
 /**
  * @group unit

@@ -13,18 +13,18 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\SingleMetadata;
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\Object\MetadataService;
+use Webauthn\MetadataService\Object\SingleMetadata;
+use Webauthn\MetadataService\Object\StatusReport;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
     /**
      * @var SingleMetadata[]
      */
-    private $metadataStatements = [];
+    private $distantMetadataStatements = [];
 
     /**
      * @var MetadataService[]
@@ -38,7 +38,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
 
     public function addSingleStatement(SingleMetadata $metadataStatement): void
     {
-        $this->metadataStatements[] = $metadataStatement;
+        $this->distantMetadataStatements[] = $metadataStatement;
     }
 
     public function addService(MetadataService $metadataService): void
@@ -54,11 +54,11 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         $this->statusReports[$aaguid][] = $statusReport;
     }
 
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatement
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface
     {
-        foreach ($this->metadataStatements as $metadataStatement) {
-            if ($metadataStatement->getMetadataStatement()->getAaguid() === $aaguid) {
-                return $metadataStatement->getMetadataStatement();
+        foreach ($this->distantMetadataStatements as $distantMetadataStatement) {
+            if ($distantMetadataStatement->getMetadataStatement()->getAaguid() === $aaguid) {
+                return $distantMetadataStatement->getMetadataStatement();
             }
         }
         foreach ($this->metadataServices as $metadataService) {

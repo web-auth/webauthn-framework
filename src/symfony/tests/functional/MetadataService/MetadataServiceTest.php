@@ -27,10 +27,10 @@ use Psr\Http\Message\StreamInterface;
 use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
-use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataStatement;
-use Webauthn\MetadataService\MetadataStatementFetcher;
+use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\Object\MetadataService;
+use Webauthn\MetadataService\Object\MetadataStatementFetcher;
 
 /**
  * @group functional
@@ -92,7 +92,7 @@ class MetadataServiceTest extends KernelTestCase
             new Psr17Factory()
         );
 
-        /* @var MetadataStatement $ms */
+        /* @var MetadataStatementInterface $ms */
         static::assertEquals('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->getAAguid());
         static::assertEquals('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->getDescription());
         static::assertEquals([], $ms->getAlternativeDescriptions());

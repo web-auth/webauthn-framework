@@ -13,48 +13,11 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use Webauthn\MetadataService\Object\DistantSingleMetadata as BaseDistantSingleMetadata;
 
-class DistantSingleMetadata extends SingleMetadata
+/**
+ * @deprecated "The class is deprecated since v3.3 and will be removed in v4.0"
+ */
+class DistantSingleMetadata extends BaseDistantSingleMetadata
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $uri;
-
-    /**
-     * @var bool
-     */
-    private $isBase64Encoded;
-
-    public function __construct(string $uri, bool $isBase64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
-    {
-        parent::__construct($uri, $isBase64Encoded); //Useless
-        $this->uri = $uri;
-        $this->isBase64Encoded = $isBase64Encoded;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->additionalHeaders = $additionalHeaders;
-    }
-
-    public function getMetadataStatement(): MetadataStatement
-    {
-        return MetadataStatementFetcher::fetchMetadataStatement($this->uri, $this->isBase64Encoded, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
-    }
 }

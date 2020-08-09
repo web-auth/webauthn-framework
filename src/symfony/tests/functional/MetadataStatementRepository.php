@@ -16,12 +16,12 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Throwable;
-use Webauthn\MetadataService\DistantSingleMetadata;
-use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\SingleMetadata;
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\Object\DistantSingleMetadata;
+use Webauthn\MetadataService\Object\MetadataService;
+use Webauthn\MetadataService\Object\SingleMetadata;
+use Webauthn\MetadataService\Object\StatusReport;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
@@ -85,7 +85,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         $this->statusReports[$aaguid][] = $statusReport;
     }
 
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatement
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface
     {
         foreach ($this->metadataStatements as $metadataStatement) {
             try {

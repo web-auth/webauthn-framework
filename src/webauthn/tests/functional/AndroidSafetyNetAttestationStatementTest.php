@@ -37,7 +37,7 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
     /**
      * @test
      */
-    public function anAndroidSafetyNetAttestationCanBeVerified(): void
+    public function anExpiredAndroidSafetyNetAttestationCannotBeVerified(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The certificate expired');

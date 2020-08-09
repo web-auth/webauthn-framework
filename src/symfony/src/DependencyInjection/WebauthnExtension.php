@@ -93,6 +93,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $this->loadTransportBindingProfile($container, $loader, $config);
         $this->loadMetadataServices($container, $config);
+        if (true === $config['certificate_chain_checker']['enabled']) {
+            $this->loadCertificateChainChecker($container, $loader, $config);
+        }
+
         if (true === $config['metadata_service']['enabled']) {
             $this->loadMetadataStatementSupports($container, $loader, $config);
         }
@@ -239,6 +243,20 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $creationConfig['result_path'], 'host' => $creationConfig['host']]);
             $attestationResponseController->addTag('controller.service_arguments');
             $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
+        }
+    }
+
+    /**
+     * @param mixed[] $config
+     */
+    private function loadCertificateChainChecker(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    {
+        $loader->load('certificate_chain_checker.php');
+        if (null !== $config['certificate_chain_checker']['http_client']) {
+            $container->setAlias('webauthn.certificate_chain_checker.http_client', $config['certificate_chain_checker']['http_client']);
+        }
+        if (null !== $config['certificate_chain_checker']['request_factory']) {
+            $container->setAlias('webauthn.certificate_chain_checker.request_factory', $config['certificate_chain_checker']['request_factory']);
         }
     }
 
