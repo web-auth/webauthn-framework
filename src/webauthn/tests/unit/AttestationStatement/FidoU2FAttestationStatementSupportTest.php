@@ -131,8 +131,8 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
         $attestedCredentialData->getCredentialId()->willReturn('CREDENTIAL_ID');
         $attestedCredentialData->getCredentialPublicKey()->willReturn(
             new MapObject([
-                new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-2)), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
-                new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-3)), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
+                new MapItem(SignedIntegerObject::createFromString('-2'), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
+                new MapItem(SignedIntegerObject::createFromString('-3'), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
             ])
         );
 
