@@ -67,7 +67,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid extension key');
         $cbor = new MapObject([
-            new MapItem(SignedIntegerObject::createFromGmpValue(gmp_init(-100)), new TrueObject()),
+            new MapItem(SignedIntegerObject::createFromString('-100'), new TrueObject()),
         ]);
 
         AuthenticationExtensionsClientOutputsLoader::load($cbor);

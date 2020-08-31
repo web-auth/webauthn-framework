@@ -148,7 +148,7 @@ class AuthenticatorAssertionResponseValidator
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
+            Assertion::eq(mb_substr('.'.$clientDataRpId, -($rpIdLength + 1)), '.'.$facetId, 'rpId mismatch.');
 
             /* @see 7.2.10 */
             if (null !== $C->getTokenBinding()) {
@@ -160,9 +160,9 @@ class AuthenticatorAssertionResponseValidator
             Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /* @see 7.2.12 */
+            Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
             /* @see 7.2.13 */
             if (AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification()) {
-                Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
                 Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
             }
 
