@@ -132,9 +132,10 @@ class AuthenticatorAttestationResponseValidator
             Assertion::true(hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /* @see 7.1.10 */
+            Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
             /* @see 7.1.11 */
             if (AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification()) {
-                Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
+
                 Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
             }
 
