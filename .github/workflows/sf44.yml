@@ -1,4 +1,4 @@
-name: Tests with Code Coverage
+name: Tests on Symfony 4.4
 
 on: [push]
 
@@ -24,8 +24,4 @@ jobs:
         run: |
           wget -O phpunit https://phar.phpunit.de/phpunit-9.phar
           chmod +x phpunit
-          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
-          chmod +x php-coveralls.phar
-          mkdir -p build/logs
-          ./phpunit --coverage-clover build/logs/clover.xml
-          ./php-coveralls.phar --no-interaction
+          ./phpunit
