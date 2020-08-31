@@ -247,6 +247,7 @@ class AuthenticatorAttestationResponseValidator
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
     {
         $attestationStatement = $attestationObject->getAttStmt();
+        dump($attestationStatement);
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()->toString();
