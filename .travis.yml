@@ -36,17 +36,16 @@ jobs:
         - stage: Metrics and quality
           env: COVERAGE
           before_script:
-              - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
-              - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
-              - wget https://phar.phpunit.de/phpcov.phar
-              - chmod +x phpcov.phar
+              - wget -O phpunit https://phar.phpunit.de/phpunit-9.phar
+              - chmod +x phpunit
               - wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
               - chmod +x php-coveralls.phar
+              - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+              - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
           script:
-              - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-php build/cov/coverage.cov
+              - ./phpunit --coverage-clover build/logs/clover.xml
           after_script:
-              - phpcov.phar merge --clover build/logs/clover.xml build/cov
-              - php-coveralls.phar --no-interaction
+              - ./php-coveralls.phar --no-interaction
 
         - stage: Metrics and quality
           env: STATIC_ANALYSIS
