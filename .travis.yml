@@ -12,6 +12,9 @@ before_script:
 
 before_install:
     - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
+    - wget -O phpunit https://phar.phpunit.de/phpunit-9.phar
+    - chmod +x phpunit
+    - mkdir -p build/logs
 
 install:
   - if [[ $deps = 'low' ]]; then
@@ -21,7 +24,7 @@ install:
     fi
 
 script:
-    - ./vendor/bin/phpunit -c phpunit.xml.dist
+    - ./phpunit -c phpunit.xml.dist
 
 jobs:
     allow_failures:
