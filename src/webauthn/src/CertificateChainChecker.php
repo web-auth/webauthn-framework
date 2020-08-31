@@ -131,7 +131,6 @@ class CertificateChainChecker
         $this->deleteDirectory($caDirname);
 
         if (!$process->isSuccessful()) {
-            dump($process->getCommandLine());
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
