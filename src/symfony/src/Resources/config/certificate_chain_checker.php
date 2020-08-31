@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
-use Webauthn\CertificateChainChecker;
+use Webauthn\CertificateChainChecker\CertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()

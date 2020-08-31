@@ -43,7 +43,8 @@ use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\CertificateChainChecker;
+use Webauthn\CertificateChainChecker\CertificateChainChecker;
+use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Object\DistantSingleMetadata;
 use Webauthn\MetadataService\Object\MetadataService;
@@ -330,7 +331,7 @@ abstract class AbstractTestCase extends TestCase
         if (!$this->certificateChainChecker) {
             $psr18Client = Psr18ClientDiscovery::find();
             $psr17Factory = new Psr17Factory();
-            $this->certificateChainChecker = new CertificateChainChecker(
+            $this->certificateChainChecker = new OpenSSLCertificateChainChecker(
                 $psr18Client,
                 $psr17Factory
             );

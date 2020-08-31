@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn;
+namespace Webauthn\CertificateChainChecker;
 
 use Assert\Assertion;
 use function count;
@@ -28,8 +28,9 @@ use function Safe\sprintf;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
+use Webauthn\CertificateToolbox;
 
-class CertificateChainChecker
+final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
     /**
      * @var ClientInterface

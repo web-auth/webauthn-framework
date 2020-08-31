@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\CertificateChainChecker;
+use Webauthn\CertificateChainChecker\CertificateChainChecker;
 
 final class CertificateChainCheckerSetterCompilerPass implements CompilerPassInterface
 {
