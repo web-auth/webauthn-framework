@@ -30,7 +30,4 @@
     <server name="KERNEL_CLASS" value="Webauthn\Bundle\Tests\Functional\AppKernel"/>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0"/>
   </php>
-  <listeners>
-    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-  </listeners>
 </phpunit>
