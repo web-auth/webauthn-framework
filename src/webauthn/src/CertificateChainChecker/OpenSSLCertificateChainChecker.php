@@ -72,7 +72,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
             $crl = $this->getCrls($certificate);
             if ('' !== $crl) {
                 $hasCrls = true;
-                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-trusted-crl-', '.pem');
+                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-trusted-crl-', '.crl');
             }
         }
 
@@ -205,6 +205,6 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 
         $content = $response->getBody()->getContents();
 
-        return CertificateToolbox::convertDERToPEM($content, 'X509 CRL');
+        return $content;
     }
 }
