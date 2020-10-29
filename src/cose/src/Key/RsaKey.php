@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Key;
 
 use Assert\Assertion;
+use Brick\Math\BigInteger;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
@@ -185,7 +186,8 @@ class RsaKey extends Key
 
     private function fromBase64ToInteger(string $value): string
     {
-        return gmp_strval(gmp_init(current(unpack('H*', $value)), 16), 10);
+        $hex = current(unpack('H*', $value));
+        return BigInteger::fromBase($hex, 16)->toBase(10);
     }
 
     private function pem(string $type, string $der): string
