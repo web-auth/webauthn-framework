@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use Webauthn\Exception\CompromisedAuthenticatorException;
+use Webauthn\Exception\UnsupportedAAGUIDException;
 use function count;
 use function in_array;
 use InvalidArgumentException;
@@ -273,7 +275,7 @@ class AuthenticatorAttestationResponseValidator
 
         // At this point, the Metadata Statement is mandatory
         if (null === $metadataStatement) {
-            throw new RuntimeException(sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
+            throw new UnsupportedAAGUIDException($aaguid, sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
         }
 
         // We check the last status report
@@ -299,7 +301,7 @@ class AuthenticatorAttestationResponseValidator
         if (0 !== count($statusReports)) {
             $lastStatusReport = reset($statusReports);
             if ($lastStatusReport->isCompromised()) {
-                throw new LogicException('The authenticator is compromised and cannot be used');
+                throw new CompromisedAuthenticatorException($aaguid, $lastStatusReport, 'The authenticator is compromised and cannot be used');
             }
         }
     }

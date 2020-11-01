@@ -16,7 +16,7 @@ namespace Webauthn\Exception;
 use Exception;
 use Throwable;
 
-class WebauthnException extends Exception
+abstract class WebauthnException extends Exception
 {
     public function __construct(string $message, Throwable $previous = null)
     {

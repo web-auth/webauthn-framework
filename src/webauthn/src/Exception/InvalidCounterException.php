@@ -43,4 +43,11 @@ final class InvalidCounterException extends WebauthnException
     {
         return $this->new;
     }
+
+    public static function create(int $current, int $new, string $message, ?Throwable $previous = null): callable
+    {
+        return static function () use ($current, $new, $message, $previous) {
+            return new self($current, $new, $message, $previous);
+        };
+    }
 }

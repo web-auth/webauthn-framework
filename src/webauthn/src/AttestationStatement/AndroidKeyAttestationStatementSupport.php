@@ -22,6 +22,8 @@ use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
+use Webauthn\Exception\InvalidCertificateException;
+use Webauthn\Exception\InvalidTrustPathException;
 use function count;
 use FG\ASN1\ASNObject;
 use FG\ASN1\Exception\ParserException;
@@ -65,14 +67,29 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     public function load(array $attestation): AttestationStatement
     {
         try {
-            Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+            Assertion::keyExists($attestation, 'attStmt', InvalidAttestationStatementException::create(
+                $this->name(),
+                'Invalid attestation object'
+            ));
             foreach (['sig', 'x5c', 'alg'] as $key) {
-                Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
+                Assertion::keyExists($attestation['attStmt'], $key, InvalidAttestationStatementException::create(
+                    $this->name(),
+                    sprintf('The attestation statement value "%s" is missing.', $key)
+                ));
             }
             $certificates = $attestation['attStmt']['x5c'];
-            Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-            Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-            Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+            Assertion::isArray($certificates, InvalidAttestationStatementException::create(
+                $this->name(),
+                'The attestation statement value "x5c" must be a list with at least one certificate.'
+            ));
+            Assertion::greaterThan(count($certificates), 0, InvalidAttestationStatementException::create(
+                $this->name(),
+                'The attestation statement value "x5c" must be a list with at least one certificate.'
+            ));
+            Assertion::allString($certificates, InvalidAttestationStatementException::create(
+                $this->name(),
+                'The attestation statement value "x5c" must be a list with at least one certificate.'
+            ));
             $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
             return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
@@ -85,7 +102,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     {
         try {
             $trustPath = $attestationStatement->getTrustPath();
-            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class,  InvalidTrustPathException::create(
+                'Invalid trust path'
+            ));
 
             $certificates = $trustPath->getCertificates();
 
@@ -112,7 +131,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
-        Assertion::isArray($details, 'Unable to read the certificate');
+        Assertion::isArray($details, InvalidCertificateException::create(
+            $certificate,
+            'Unable to read the certificate'
+        ));
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
@@ -132,18 +154,39 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Android KeyStore Extension with OID “1.3.6.1.4.1.11129.2.1.17” in certificate extensions
-        Assertion::isArray($certDetails, 'The certificate is not valid');
-        Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
-        Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
-        Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17', 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing');
+        Assertion::isArray($certDetails, InvalidCertificateException::create(
+            $certificate,
+            'The certificate is not valid'
+        ));
+        Assertion::keyExists($certDetails, 'extensions',  InvalidCertificateException::create(
+            $certificate,
+            'The certificate has no extension'
+        ));
+        Assertion::isArray($certDetails['extensions'], InvalidCertificateException::create(
+            $certificate,
+            'The certificate has no extension'
+        ));
+        Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17',  InvalidCertificateException::create(
+            $certificate,
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
+        ));
         $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
         $extensionAsAsn1 = ASNObject::fromBinary($extension);
-        Assertion::isInstanceOf($extensionAsAsn1, Sequence::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        Assertion::isInstanceOf($extensionAsAsn1, Sequence::class,  InvalidCertificateException::create(
+            $certificate,
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        ));
         $objects = $extensionAsAsn1->getChildren();
 
         //Check that attestationChallenge is set to the clientDataHash.
-        Assertion::keyExists($objects, 4, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
-        Assertion::isInstanceOf($objects[4], OctetString::class, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        Assertion::keyExists($objects, 4,  InvalidCertificateException::create(
+            $certificate,
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        ));
+        Assertion::isInstanceOf($objects[4], OctetString::class,   InvalidCertificateException::create(
+            $certificate,
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        ));
         Assertion::eq($clientDataHash, hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
 
         //Check that both teeEnforced and softwareEnforced structures don’t contain allApplications(600) tag.

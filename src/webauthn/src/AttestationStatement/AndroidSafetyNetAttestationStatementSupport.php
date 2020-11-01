@@ -30,6 +30,7 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Safe\Exceptions\JsonException;
 use Safe\Exceptions\StringsException;
+use Webauthn\Exception\InvalidConfigurationException;
 use function Safe\json_decode;
 use function Safe\sprintf;
 use Throwable;
@@ -78,10 +79,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, ?int $leeway = null, ?int $maxAge = null)
     {
         if (!class_exists(Algorithm\RS256::class)) {
-            throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
+            throw new InvalidConfigurationException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
         }
         if (!class_exists(JWKFactory::class)) {
-            throw new RuntimeException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
+            throw new InvalidConfigurationException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
         }
         if (null !== $client) {
             @trigger_error('The argument "client" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);

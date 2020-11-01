@@ -22,14 +22,21 @@ final class UnsupportedFeatureException extends WebauthnException
      */
     private $feature;
 
-    public function __construct(string $current, string $message, Throwable $previous = null)
+    public function __construct(string $feature, string $message, Throwable $previous = null)
     {
         parent::__construct($message, $previous);
-        $this->feature = $current;
+        $this->feature = $feature;
     }
 
     public function getFeature(): string
     {
         return $this->feature;
+    }
+
+    public static function create(string $feature, string $message, ?Throwable $previous = null): callable
+    {
+        return static function () use ($feature, $message, $previous) {
+            return new self($feature, $message, $previous);
+        };
     }
 }

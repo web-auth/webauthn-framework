@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use Webauthn\Exception\UnsupportedAlgorithmException;
 use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
@@ -181,12 +182,13 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
         $publicKey = $publicKey->getNormalizedData(false);
         $publicKey = new Key($publicKey);
-        Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
+        $algorithmId = (int) $attestationStatement->get('alg');
+        Assertion::eq($publicKey->alg(), $algorithmId, 'The algorithm of the attestation statement and the key are not identical.');
 
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
-        $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
+        $algorithm = $this->algorithmManager->get($algorithmId);
         if (!$algorithm instanceof Signature) {
-            throw new RuntimeException('Invalid algorithm');
+            throw new UnsupportedAlgorithmException($algorithmId, 'Invalid algorithm');
         }
         $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);
 
