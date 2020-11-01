@@ -240,6 +240,34 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseController->addTag('controller.service_arguments');
             $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
         }
+
+        foreach ($config['controllers']['request'] as $name => $requestConfig) {
+            $assertionRequestControllerId = sprintf('webauthn.controller.request.request.%s', $name);
+            $assertionRequestController = new Definition(\Webauthn\Bundle\Controller\AssertionRequestController::class);
+            $assertionRequestController->setFactory([new Reference(\Webauthn\Bundle\Controller\AssertionResponseControllerFactory::class), 'createAssertionRequestController']);
+            $assertionRequestController->setArguments([
+                new Reference($requestConfig['user_entity_guesser']),
+                $requestConfig['profile'],
+                new Reference($requestConfig['options_storage']),
+                new Reference($requestConfig['options_handler']),
+                new Reference($requestConfig['failure_handler']),
+            ]);
+            $assertionRequestController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $requestConfig['options_path'], 'host' => $requestConfig['host']]);
+            $assertionRequestController->addTag('controller.service_arguments');
+            $container->setDefinition($assertionRequestControllerId, $assertionRequestController);
+
+            $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);
+            $assertionResponseController = new Definition(\Webauthn\Bundle\Controller\AssertionResponseController::class);
+            $assertionResponseController->setFactory([new Reference(\Webauthn\Bundle\Controller\AssertionResponseControllerFactory::class), 'createAssertionResponseController']);
+            $assertionResponseController->setArguments([
+                new Reference($requestConfig['options_storage']),
+                new Reference($requestConfig['success_handler']),
+                new Reference($requestConfig['failure_handler']),
+            ]);
+            $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, ['path' => $requestConfig['result_path'], 'host' => $requestConfig['host']]);
+            $assertionResponseController->addTag('controller.service_arguments');
+            $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
+        }
     }
 
     /**
