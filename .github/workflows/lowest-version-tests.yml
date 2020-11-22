@@ -37,7 +37,7 @@ jobs:
 
       - name: Install Composer dependencies
         run: |
-          composer install --no-progress --no-suggest --optimize-autoloader --prefer-lowest
+          composer update --no-progress --no-suggest --optimize-autoloader --prefer-lowest
 
       - name: Run tests
         run: vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --group=Unit
