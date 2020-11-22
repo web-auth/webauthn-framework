@@ -23,8 +23,8 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
-use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 

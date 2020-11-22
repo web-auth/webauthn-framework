@@ -19,7 +19,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class AdditionalPublicKeyCredentialRequestOptionsRequest
 {
     /**
-     * @var null|string
+     * @var string|null
      *
      * @Assert\Type("string")
      * @Assert\Choice({PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED})

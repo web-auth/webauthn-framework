@@ -1,0 +1,19 @@
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": "infection.log"
+    },
+    "mutators": {
+        "@default": true,
+        "MBString": {
+            "settings": {
+                "mb_substr": false,
+                "mb_strlen": false
+            }
+        }
+    }
+}
