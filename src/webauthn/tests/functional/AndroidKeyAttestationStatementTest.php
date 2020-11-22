@@ -38,7 +38,7 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
     /**
      * @test
      */
-    public function anAndroidSafetyNetAttestationCanBeVerified(): void
+    public function anAndroidKeyAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(

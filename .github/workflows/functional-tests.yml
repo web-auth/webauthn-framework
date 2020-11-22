@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-            extensions: json, mbstring, openssl
+          extensions: json, mbstring, openssl
           coverage: xdebug
 
       - name: Get composer cache directory
