@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ windows-latest, ubuntu-latest, macos-latest ]
-        php-versions: [ '7.3', '7.4', '8.0' ]
+        php-versions: [ '7.3', '7.4' ]
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
 
     steps:
@@ -23,17 +23,6 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: json, mbstring, openssl
           coverage: xdebug
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
         run: |
