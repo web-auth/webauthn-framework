@@ -22,6 +22,7 @@ return static function (ContainerConfigurator $container): void {
         ->autowire()
     ;
 
+    $container->set(AttestationStatement\AppleAttestationStatementSupport::class);
     $container->set(AttestationStatement\TPMAttestationStatementSupport::class);
     $container->set(AttestationStatement\FidoU2FAttestationStatementSupport::class);
     $container->set(AttestationStatement\AndroidKeyAttestationStatementSupport::class);
