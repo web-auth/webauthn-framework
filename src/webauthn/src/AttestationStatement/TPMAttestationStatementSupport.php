@@ -31,6 +31,7 @@ use function is_array;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\sprintf;
+use function Safe\unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;

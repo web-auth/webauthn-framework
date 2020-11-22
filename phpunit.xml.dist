@@ -28,6 +28,16 @@
     <ini name="intl.error_level" value="0"/>
     <ini name="memory_limit" value="-1"/>
     <server name="KERNEL_CLASS" value="Webauthn\Bundle\Tests\Functional\AppKernel"/>
-    <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+    <server name="SYMFONY_PHPUNIT_VERSION" value="9"/>
   </php>
+  <listeners>
+    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
+      <arguments>
+        <array>
+          <element key="time-sensitive"><string>Webauthn</string></element>
+        </array>
+      </arguments>
+    </listener>
+  </listeners>
 </phpunit>

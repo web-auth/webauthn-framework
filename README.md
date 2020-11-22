@@ -1,8 +1,17 @@
 Webauthn Framework
 ==================
 
-[![Coverage Status](https://coveralls.io/repos/github/web-auth/webauthn-framework/badge.svg?branch=v3.0)](https://coveralls.io/github/web-auth/webauthn-framework?branch=master)
-[![Build Status](https://travis-ci.org/web-auth/webauthn-framework.svg?branch=v3.0)](https://travis-ci.org/web-auth/webauthn-framework)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Coding%20Standards/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Static%20Analyze/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Security/badge.svg)
+
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Backwards%20compatibility%20verification/badge.svg)
+
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Unit%20Tests/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Functional%20Tests/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Lowest%20versions%20tests/badge.svg)
+
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Mutation%20Testing/badge.svg)
 
 [![Latest Stable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/stable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Total Downloads](https://poser.pugx.org/web-auth/webauthn-framework/downloads.png)](https://packagist.org/packages/web-auth/webauthn-framework)

@@ -34,6 +34,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
+use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -142,6 +143,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
         $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
         $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
         $androidSafetyNetAttestationStatementSupport
