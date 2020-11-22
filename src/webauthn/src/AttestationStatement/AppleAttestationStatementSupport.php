@@ -47,7 +47,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {

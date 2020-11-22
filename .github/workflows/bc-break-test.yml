@@ -15,18 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }}
-
-      - name: Setup PHP, with composer and extensions
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: json, mbstring, openssl
-          coverage: xdebug
-
-      - name: Install Composer dependencies
-        run: |
-          composer update --no-progress --no-suggest --prefer-dist --optimize-autoloader
+          fetch-depth: 0
 
       - name: BC Break verification
         uses: docker://nyholm/roave-bc-check-ga

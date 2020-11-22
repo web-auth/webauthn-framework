@@ -28,7 +28,6 @@ use function Safe\sprintf;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
-use Webauthn\CertificateToolbox;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
@@ -203,8 +202,6 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
             return '';
         }
 
-        $content = $response->getBody()->getContents();
-
-        return $content;
+        return $response->getBody()->getContents();
     }
 }
