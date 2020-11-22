@@ -32,7 +32,6 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
 
     public function __construct(?LoggerInterface $logger = null)
     {
-
         $this->logger = $logger ?? new NullLogger();
     }
 

@@ -34,7 +34,6 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
 
     public function __construct(?LoggerInterface $logger = null)
     {
-
         $this->logger = $logger ?? new NullLogger();
     }
 

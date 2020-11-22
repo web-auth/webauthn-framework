@@ -27,6 +27,7 @@ use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use function Safe\unpack;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;

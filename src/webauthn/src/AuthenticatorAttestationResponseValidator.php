@@ -257,6 +257,23 @@ class AuthenticatorAttestationResponseValidator
 
             return;
         }
+        if (AttestationStatement::TYPE_NONE === $attestationStatement->getType()) {
+            $this->logger->debug('No attestation returned.');
+            //No attestation is returned. We shall ensure that the AAGUID is a null one.
+            if ('00000000-0000-0000-0000-000000000000' !== $aaguid) {
+                $this->logger->debug('Anonymization required. AAGUID and Attestation Statement changed.', [
+                    'aaguid' => $aaguid,
+                    'AttestationStatement' => $attestationStatement,
+                ]);
+                $attestedCredentialData->setAaguid(
+                    Uuid::fromString('00000000-0000-0000-0000-000000000000')
+                );
+
+                return;
+            }
+
+            return;
+        }
 
         //The MDS Repository is mandatory here
         Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');

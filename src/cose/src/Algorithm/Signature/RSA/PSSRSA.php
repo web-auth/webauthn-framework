@@ -25,9 +25,9 @@ use Jose\Component\Core\Util\Hash;
 use function mb_strlen;
 use function mb_substr;
 use function ord;
-use function pack;
 use function random_bytes;
 use RuntimeException;
+use function Safe\pack;
 use function str_pad;
 use function str_repeat;
 

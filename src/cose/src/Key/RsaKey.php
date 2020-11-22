@@ -22,6 +22,7 @@ use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
 use function Safe\sprintf;
+use function Safe\unpack;
 
 class RsaKey extends Key
 {
@@ -189,6 +190,7 @@ class RsaKey extends Key
     private function fromBase64ToInteger(string $value): string
     {
         $hex = current(unpack('H*', $value));
+
         return BigInteger::fromBase($hex, 16)->toBase(10);
     }
 
