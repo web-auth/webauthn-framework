@@ -14,8 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        
+      - name: Fetch tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: BC Break verification
         uses: docker://nyholm/roave-bc-check-ga
