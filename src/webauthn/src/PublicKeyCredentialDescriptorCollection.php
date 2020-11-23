@@ -60,7 +60,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     }
 
     /**
-     * @return array<PublicKeyCredentialDescriptor>
+     * @return array<array<string, mixed>>
      */
     public function jsonSerialize(): array
     {

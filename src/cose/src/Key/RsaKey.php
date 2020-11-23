@@ -169,8 +169,8 @@ class RsaKey extends Key
     {
         Assertion::false($this->isPrivate(), 'Unsupported for private keys.');
         $bitSring = new Sequence(
-            new Integer($this->fromBase64ToInteger($this->n())),
-            new Integer($this->fromBase64ToInteger($this->e()))
+            new Integer((int) $this->fromBase64ToInteger($this->n())),
+            new Integer((int) $this->fromBase64ToInteger($this->e()))
         );
 
         $der = new Sequence(

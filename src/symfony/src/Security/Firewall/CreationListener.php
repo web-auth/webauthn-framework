@@ -238,6 +238,7 @@ class CreationListener
             $this->tokenStorage->setToken(null);
         }
 
+        /** @var mixed $response */
         $response = $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
 
         if (!$response instanceof Response) {
@@ -258,6 +259,7 @@ class CreationListener
 
         $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
 
+        /** @var mixed $response */
         if (!$response instanceof Response) {
             throw new RuntimeException('Authentication Success Handler did not return a Response.');
         }

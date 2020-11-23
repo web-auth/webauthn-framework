@@ -157,9 +157,9 @@ class VerificationMethodDescriptor implements JsonSerializable
     {
         $data = [
             'userVerification' => $this->userVerification,
-            'caDesc' => $this->caDesc ? $this->caDesc->jsonSerialize() : null,
-            'baDesc' => $this->baDesc ? $this->baDesc->jsonSerialize() : null,
-            'paDesc' => $this->paDesc ? $this->paDesc->jsonSerialize() : null,
+            'caDesc' => $this->caDesc instanceof CodeAccuracyDescriptor ? $this->caDesc->jsonSerialize() : null,
+            'baDesc' => $this->baDesc instanceof BiometricAccuracyDescriptor ? $this->baDesc->jsonSerialize() : null,
+            'paDesc' => $this->paDesc instanceof PatternAccuracyDescriptor ? $this->paDesc->jsonSerialize() : null,
         ];
 
         return Utils::filterNullValues($data);

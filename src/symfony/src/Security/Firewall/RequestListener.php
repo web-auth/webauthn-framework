@@ -232,6 +232,7 @@ class RequestListener
 
         $response = $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
 
+        /** @var mixed $response */
         if (!$response instanceof Response) {
             throw new RuntimeException('Authentication Failure Handler did not return a Response.');
         }
@@ -256,6 +257,7 @@ class RequestListener
 
         $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
 
+        /** @var mixed $response */
         if (!$response instanceof Response) {
             throw new RuntimeException('Authentication Success Handler did not return a Response.');
         }

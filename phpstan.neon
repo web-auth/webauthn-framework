@@ -1,19 +1,59 @@
 parameters:
     level: 7
-    paths:
-        - src
-    excludes_analyse:
-        - %currentWorkingDirectory%/src/*/tests/*
-        - %currentWorkingDirectory%/src/*/var/*
-    ignoreErrors:
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'
-        - '#Call to function is_array\(\) with array\<string\, string\> will always evaluate to true\.#'
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
-        - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-        - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
+    # TODO Add types inside arrays
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false
+    paths:
+        - src/conformance-toolset/src/
+        - src/cose/src/
+        - src/metadata-service/src/
+        - src/symfony/src/
+        - src/webauthn/src/
+    ignoreErrors:
+        # WebauthnToken is serialized into an array<int, mixed>
+        -
+            message: '#^Parameter \#1 \$serialized \(array<int, mixed>\) of method Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken::__unserialize\(\) should be contravariant with parameter \$data \(array\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\AbstractToken::__unserialize\(\)$#'
+            count: 1
+            path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+        -
+            message: '#^Parameter \#1 \$serialized \(array<int, mixed>\) of method Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken::__unserialize\(\) should be contravariant with parameter \$data \(array\) of method Symfony\\Component\\Security\\Core\\Authentication\\Token\\TokenInterface::__unserialize\(\)$#'
+            count: 1
+            path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+        # PHPStan bug https://github.com/phpstan/phpstan-src/blob/fa8a365e03f95023c4d9ab1709db6e2cecd76ec6/resources/functionMap.php#L952
+        -
+            message: '#^Call to function is_array\(\) with array<string, string> will always evaluate to true\.$#'
+            count: 1
+            path: src/webauthn/src/TrustPath/TrustPathLoader.php
+        # Too complex for a human mind.
+        -
+            message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.$#'
+            count: 1
+            path: src/symfony/src/DependencyInjection/Configuration.php
+        -
+            message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.$#'
+            count: 1
+            path: src/symfony/src/DependencyInjection/Configuration.php
+        -
+            message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.$#'
+            count: 1
+            path: src/symfony/src/Security/Factory/WebauthnSecurityFactory.php
+        # FIXME Sort out Symfony versions.
+        -
+          """
+              #^Call to deprecated function Symfony\\\\Component\\\\DependencyInjection\\\\Loader\\\\Configurator\\\\ref\\(\\)\\:
+              since Symfony 5\\.1, use service\\(\\) instead\\.$#
+          """
+        # TODO
+        -
+            message: '#^Parameter \#3 \$attributes \(array\<string, string\>\) of method Webauthn\\Bundle\\Security\\Voter\\IsUserPresentVoter\:\:vote\(\) should be contravariant with parameter \$attributes \(array\) of method Symfony\\Component\\Security\\Core\\Authorization\\Voter\\VoterInterface\:\:vote\(\)$#'
+            count: 1
+            path: src/symfony/src/Security/Voter/IsUserPresentVoter.php
+
+        -
+            message: '#^Parameter \#3 \$attributes \(array\<string, string\>\) of method Webauthn\\Bundle\\Security\\Voter\\IsUserVerifiedVoter\:\:vote\(\) should be contravariant with parameter \$attributes \(array\) of method Symfony\\Component\\Security\\Core\\Authorization\\Voter\\VoterInterface\:\:vote\(\)$#'
+            count: 1
+            path: src/symfony/src/Security/Voter/IsUserVerifiedVoter.php
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

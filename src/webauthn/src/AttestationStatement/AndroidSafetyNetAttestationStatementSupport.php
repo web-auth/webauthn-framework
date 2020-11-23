@@ -119,7 +119,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
 
-        $parsedCertificate = openssl_x509_parse(current($certificates));
+        $parsedCertificate = openssl_x509_parse($certificates[0]);
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
