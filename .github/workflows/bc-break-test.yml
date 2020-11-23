@@ -20,5 +20,3 @@ jobs:
 
       - name: BC Break verification
         uses: docker://nyholm/roave-bc-check-ga
-        with:
-          args: --from=${{ github.event.pull_request.base.sha }}
