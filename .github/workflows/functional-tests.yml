@@ -7,24 +7,26 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ windows-latest, ubuntu-latest, macos-latest ]
-        php-versions: [ '7.3', '7.4' ]
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.2', '7.3', '7.4']
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Setup PHP, with composer and extensions
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: json, mbstring, openssl
           coverage: xdebug
 
-      - name: Install Composer dependencies
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
         run: |
           composer update --no-progress --no-suggest --prefer-dist --optimize-autoloader
 
