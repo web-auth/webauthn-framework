@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface RgbPaletteEntryInterface extends JsonSerializable
 {
     public function getR(): int;

@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+/**
+ * @internal
+ */
 interface CodeAccuracyDescriptorInterface extends AbstractDescriptorInterface
 {
     public function getBase(): int;

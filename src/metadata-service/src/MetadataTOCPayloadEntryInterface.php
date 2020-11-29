@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface MetadataTOCPayloadEntryInterface extends JsonSerializable
 {
     public function getAaid(): ?string;

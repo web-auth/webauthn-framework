@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface MetadataTOCPayloadInterface extends JsonSerializable
 {
     public function getLegalHeader(): ?string;

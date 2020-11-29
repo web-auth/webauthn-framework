@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface EcdaaTrustAnchorInterface extends JsonSerializable
 {
     public function getX(): string;

@@ -46,7 +46,7 @@ class VerificationMethodANDCombinationsObjectTest extends TestCase
             [
                 (new VerificationMethodANDCombinations())
                     ->addVerificationMethodDescriptor(new VerificationMethodDescriptor(
-                        VerificationMethodDescriptor::USER_VERIFY_ALL | VerificationMethodDescriptor::USER_VERIFY_EYEPRINT | VerificationMethodDescriptor::USER_VERIFY_HANDPRINT,
+                        VerificationMethodDescriptor::USER_VERIFY_ALL | VerificationMethodDescriptor::USER_VERIFY_EYE_PRINT | VerificationMethodDescriptor::USER_VERIFY_HAND_PRINT,
                         new CodeAccuracyDescriptor(35, 5),
                         new BiometricAccuracyDescriptor(0.12, null, null, null, null),
                         new PatternAccuracyDescriptor(50)

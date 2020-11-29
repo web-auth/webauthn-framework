@@ -73,12 +73,12 @@ class VerificationMethodDescriptor implements VerificationMethodDescriptorInterf
 
     public function voicePrint(): bool
     {
-        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_VOICEPRINT);
+        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_VOICE_PRINT);
     }
 
     public function facePrint(): bool
     {
-        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_FACEPRINT);
+        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_FACE_PRINT);
     }
 
     public function location(): bool
@@ -88,7 +88,7 @@ class VerificationMethodDescriptor implements VerificationMethodDescriptorInterf
 
     public function eyePrint(): bool
     {
-        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_EYEPRINT);
+        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_EYE_PRINT);
     }
 
     public function pattern(): bool
@@ -98,7 +98,7 @@ class VerificationMethodDescriptor implements VerificationMethodDescriptorInterf
 
     public function handprint(): bool
     {
-        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_HANDPRINT);
+        return 0 !== ($this->userVerification & VerificationMethodDescriptorInterface::USER_VERIFY_HAND_PRINT);
     }
 
     public function none(): bool

@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+/**
+ * @internal
+ */
 interface BiometricAccuracyDescriptorInterface extends AbstractDescriptorInterface
 {
     public function getFAR(): ?float;

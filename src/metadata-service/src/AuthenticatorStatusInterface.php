@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+/**
+ * @internal
+ */
 interface AuthenticatorStatusInterface
 {
     public const NOT_FIDO_CERTIFIED = 'NOT_FIDO_CERTIFIED';
@@ -25,11 +28,23 @@ interface AuthenticatorStatusInterface
     public const REVOKED = 'REVOKED';
     public const SELF_ASSERTION_SUBMITTED = 'SELF_ASSERTION_SUBMITTED';
     public const FIDO_CERTIFIED_L1 = 'FIDO_CERTIFIED_L1';
+    /**
+     * @deprecated Will be removed in v4.0. Please use FIDO_CERTIFIED_L1PLUS instead
+     */
     public const FIDO_CERTIFIED_L1plus = 'FIDO_CERTIFIED_L1plus';
+    public const FIDO_CERTIFIED_L1PLUS = 'FIDO_CERTIFIED_L1plus';
     public const FIDO_CERTIFIED_L2 = 'FIDO_CERTIFIED_L2';
+    /**
+     * @deprecated Will be removed in v4.0. Please use FIDO_CERTIFIED_L2PLUS instead
+     */
     public const FIDO_CERTIFIED_L2plus = 'FIDO_CERTIFIED_L2plus';
+    public const FIDO_CERTIFIED_L2PLUS = 'FIDO_CERTIFIED_L2plus';
     public const FIDO_CERTIFIED_L3 = 'FIDO_CERTIFIED_L3';
+    /**
+     * @deprecated Will be removed in v4.0. Please use FIDO_CERTIFIED_L3PLUS instead
+     */
     public const FIDO_CERTIFIED_L3plus = 'FIDO_CERTIFIED_L3plus';
+    public const FIDO_CERTIFIED_L3PLUS = 'FIDO_CERTIFIED_L3plus';
     public const FIDO_CERTIFIED_L4 = 'FIDO_CERTIFIED_L4';
     public const FIDO_CERTIFIED_L5 = 'FIDO_CERTIFIED_L5';
 }

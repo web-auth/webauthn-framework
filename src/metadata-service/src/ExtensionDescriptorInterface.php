@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface ExtensionDescriptorInterface extends JsonSerializable
 {
     public function getId(): string;

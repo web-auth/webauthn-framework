@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface VersionInterface extends JsonSerializable
 {
     public function getMajor(): ?int;

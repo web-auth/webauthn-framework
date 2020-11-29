@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface BiometricStatusReportInterface extends JsonSerializable
 {
     public function getCertLevel(): int;

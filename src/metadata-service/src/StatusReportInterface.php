@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface StatusReportInterface extends JsonSerializable
 {
     public function isCompromised(): bool;

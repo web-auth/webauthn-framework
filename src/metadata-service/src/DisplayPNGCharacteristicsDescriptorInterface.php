@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface DisplayPNGCharacteristicsDescriptorInterface extends JsonSerializable
 {
     public function getWidth(): int;

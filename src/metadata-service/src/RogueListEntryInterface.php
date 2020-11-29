@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface RogueListEntryInterface extends JsonSerializable
 {
     public function getSk(): string;

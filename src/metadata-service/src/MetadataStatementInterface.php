@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface MetadataStatementInterface extends JsonSerializable
 {
     public const KEY_PROTECTION_SOFTWARE = 0x0001;

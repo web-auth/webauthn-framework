@@ -300,8 +300,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         // id-fido-gen-ce-aaguid OID check
         Assertion::false(in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
-
-        // TODO: For attestationRoot in metadata.attestationRootCertificates, generate verification chain verifX5C by appending attestationRoot to the x5c. Try verifying verifX5C. If successful go to next step. If fail try next attestationRoot. If no attestationRoots left to try, fail.
     }
 
     private function processWithECDAA(): bool
