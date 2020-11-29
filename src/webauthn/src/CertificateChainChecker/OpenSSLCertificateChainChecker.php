@@ -22,6 +22,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
 use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
+use function Safe\ksort;
 use function Safe\mkdir;
 use function Safe\rename;
 use function Safe\sprintf;
@@ -54,10 +55,11 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     public function check(array $authenticatorCertificates, array $trustedCertificates): void
     {
         if (0 === count($trustedCertificates)) {
-            $this->checkCertificatesValidity($authenticatorCertificates);
+            $this->checkCertificatesValidity($authenticatorCertificates, true);
 
             return;
         }
+        $this->checkCertificatesValidity($authenticatorCertificates, false);
 
         $hasCrls = false;
         $processArguments = ['-no-CAfile', '-no-CApath'];
@@ -138,16 +140,34 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     /**
      * @param string[] $certificates
      */
-    private function checkCertificatesValidity(array $certificates): void
+    private function checkCertificatesValidity(array $certificates, bool $allowRootCertificate): void
     {
         foreach ($certificates as $certificate) {
             $parsed = openssl_x509_parse($certificate);
             Assertion::isArray($parsed, 'Unable to read the certificate');
+            if (false === $allowRootCertificate) {
+                self::checkRootCertificate($parsed);
+            }
+
             Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
             Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
             Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
             Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
         }
+    }
+
+    /**
+     * @param array<string, mixed> $parsed
+     */
+    private static function checkRootCertificate(array $parsed): void
+    {
+        Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
+        Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
+        $subject = $parsed['subject'];
+        $issuer = $parsed['issuer'];
+        ksort($subject);
+        ksort($issuer);
+        Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
     }
 
     private function createTemporaryDirectory(): string

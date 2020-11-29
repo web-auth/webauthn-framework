@@ -40,7 +40,7 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
     public function anExpiredAndroidSafetyNetAttestationCannotBeVerified(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid certificate or certificate chain');
+        $this->expectExceptionMessage('The certificate expired');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 new PublicKeyCredentialRpEntity('My Application'),

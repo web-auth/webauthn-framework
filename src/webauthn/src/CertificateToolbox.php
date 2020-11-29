@@ -18,14 +18,17 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use RuntimeException;
+use function Safe\base64_decode;
 use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
+use function Safe\ksort;
 use function Safe\mkdir;
 use function Safe\rename;
 use function Safe\sprintf;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class CertificateToolbox
 {
@@ -38,10 +41,11 @@ class CertificateToolbox
     public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
     {
         if (0 === count($trustedCertificates)) {
-            self::checkCertificatesValidity($authenticatorCertificates);
+            self::checkCertificatesValidity($authenticatorCertificates, true);
 
             return;
         }
+        self::checkCertificatesValidity($authenticatorCertificates, false);
 
         $processArguments = ['-no-CAfile', '-no-CApath'];
 
@@ -106,8 +110,16 @@ class CertificateToolbox
         return $pemCert;
     }
 
+    /**
+     * @see https://github.com/fido-alliance/conformance-test-tools-resources/issues/593
+     */
     public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
     {
+        try {
+            $certificate = base64_decode($certificate, true);
+        } catch (Throwable $e) {
+            //Nothing to do
+        }
         $derCertificate = self::unusedBytesFix($certificate);
 
         return self::fixPEMStructure(base64_encode($derCertificate), $type);
@@ -141,16 +153,34 @@ class CertificateToolbox
     /**
      * @param string[] $certificates
      */
-    private static function checkCertificatesValidity(array $certificates): void
+    private static function checkCertificatesValidity(array $certificates, bool $allowRootCertificate): void
     {
         foreach ($certificates as $certificate) {
             $parsed = openssl_x509_parse($certificate);
             Assertion::isArray($parsed, 'Unable to read the certificate');
+            if (false === $allowRootCertificate) {
+                self::checkRootCertificate($parsed);
+            }
+
             Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
             Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
             Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
             Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
         }
+    }
+
+    /**
+     * @param array<string, mixed> $parsed
+     */
+    private static function checkRootCertificate(array $parsed): void
+    {
+        Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
+        Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
+        $subject = $parsed['subject'];
+        $issuer = $parsed['issuer'];
+        ksort($subject);
+        ksort($issuer);
+        Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
     }
 
     /**
