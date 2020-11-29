@@ -21,7 +21,7 @@ use Symfony\Bridge\PhpUnit\ClockMock;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -32,7 +32,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
 /**
  * @group functional
  * @group Fido2
- * @group time-sensitive
  *
  * @internal
  */
@@ -40,10 +39,11 @@ class AppleAttestationStatementTest extends AbstractTestCase
 {
     /**
      * @test
+     * @group time-sensitive
      */
     public function anAppleAttestationCanBeVerified(): void
     {
-        ClockMock::register(CertificateToolbox::class);
+        ClockMock::register(OpenSSLCertificateChainChecker::class);
         ClockMock::withClockMock(1600000000.0);
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions

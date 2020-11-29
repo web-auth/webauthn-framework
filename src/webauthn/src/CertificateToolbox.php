@@ -30,7 +30,7 @@ use Symfony\Component\Process\Process;
 class CertificateToolbox
 {
     /**
-     * @deprecated "This method is deprecated since v3.3 and will be removed en v4.0. Please use Webauthn\CertificateChainChecker instead"
+     * @deprecated "This method is deprecated since v3.3 and will be removed en v4.0. Please use Webauthn\CertificateChainChecker\CertificateChainChecker instead"
      *
      * @param string[] $authenticatorCertificates
      * @param string[] $trustedCertificates
