@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CollectedClientData;
@@ -29,19 +28,17 @@ use Webauthn\CollectedClientData;
  */
 class AuthenticatorAttestationResponseTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
     public function anAuthenticatorAttestationResponseCanBeCreatedAndValueAccessed(): void
     {
-        $clientDataJSON = $this->prophesize(CollectedClientData::class);
-        $attestationObject = $this->prophesize(AttestationObject::class);
+        $clientDataJSON = $this->createMock(CollectedClientData::class);
+        $attestationObject = $this->createMock(AttestationObject::class);
 
         $authenticatorAttestationResponse = new AuthenticatorAttestationResponse(
-            $clientDataJSON->reveal(),
-            $attestationObject->reveal()
+            $clientDataJSON,
+            $attestationObject
         );
 
         static::assertInstanceOf(CollectedClientData::class, $authenticatorAttestationResponse->getClientDataJSON());

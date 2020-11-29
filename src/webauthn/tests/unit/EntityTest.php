@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -26,8 +25,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class EntityTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      *

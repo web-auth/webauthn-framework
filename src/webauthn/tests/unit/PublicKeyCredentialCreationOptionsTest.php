@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -33,25 +32,31 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class PublicKeyCredentialCreationOptionsTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $rp = $this->prophesize(PublicKeyCredentialRpEntity::class);
-        $rp->jsonSerialize()->willReturn(['name' => 'RP']);
-        $user = $this->prophesize(PublicKeyCredentialUserEntity::class);
-        $user->jsonSerialize()->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR']);
+        $rp = $this->createMock(PublicKeyCredentialRpEntity::class);
+        $rp
+            ->expects(static::atLeastOnce())
+            ->method('jsonSerialize')
+            ->willReturn(['name' => 'RP'])
+        ;
+        $user = $this->createMock(PublicKeyCredentialUserEntity::class);
+        $user
+            ->expects(static::atLeastOnce())
+            ->method('jsonSerialize')
+            ->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR'])
+        ;
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
         $options = PublicKeyCredentialCreationOptions
             ::create(
-                $rp->reveal(),
-                $user->reveal(),
+                $rp,
+                $user,
                 'challenge',
                 [$credentialParameters]
             )
@@ -89,17 +94,25 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
     {
-        $rp = $this->prophesize(PublicKeyCredentialRpEntity::class);
-        $rp->jsonSerialize()->willReturn(['name' => 'RP']);
-        $user = $this->prophesize(PublicKeyCredentialUserEntity::class);
-        $user->jsonSerialize()->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR']);
+        $rp = $this->createMock(PublicKeyCredentialRpEntity::class);
+        $rp
+            ->expects(static::atLeastOnce())
+            ->method('jsonSerialize')
+            ->willReturn(['name' => 'RP'])
+        ;
+        $user = $this->createMock(PublicKeyCredentialUserEntity::class);
+        $user
+            ->expects(static::atLeastOnce())
+            ->method('jsonSerialize')
+            ->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR'])
+        ;
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
         $options = PublicKeyCredentialCreationOptions
             ::create(
-                $rp->reveal(),
-                $user->reveal(),
+                $rp,
+                $user,
                 'challenge',
                 [$credentialParameters]
             )

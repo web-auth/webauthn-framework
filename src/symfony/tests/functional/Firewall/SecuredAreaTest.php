@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Firewall;
 
 use Base64Url\Base64Url;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 use function Safe\json_encode;
@@ -31,8 +30,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class SecuredAreaTest extends WebTestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */

@@ -15,7 +15,6 @@ namespace Webauthn\MetadataService\Tests\Unit;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\MetadataService\Object\CodeAccuracyDescriptor;
@@ -29,8 +28,6 @@ use Webauthn\MetadataService\Object\CodeAccuracyDescriptor;
  */
 class CodeAccuracyDescriptorObjectTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      * @dataProvider validObjectData

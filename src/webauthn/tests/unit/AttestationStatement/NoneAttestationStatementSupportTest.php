@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticatorData;
@@ -29,8 +28,6 @@ use Webauthn\AuthenticatorData;
  */
 class NoneAttestationStatementSupportTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
@@ -38,12 +35,15 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = $this->prophesize(AttestationStatement::class);
-        $attestationStatement->getAttStmt()->willReturn([]);
-        $authenticatorData = $this->prophesize(AuthenticatorData::class);
+        $attestationStatement = $this->createMock(AttestationStatement::class);
+        $attestationStatement
+            ->expects(static::atLeastOnce())
+            ->method('getAttStmt')
+        ;
+        $authenticatorData = $this->createMock(AuthenticatorData::class);
 
         static::assertEquals('none', $support->name());
-        static::assertTrue($support->isValid('FOO', $attestationStatement->reveal(), $authenticatorData->reveal()));
+        static::assertTrue($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 
     /**
@@ -53,13 +53,15 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = $this->prophesize(AttestationStatement::class);
-        $attestationStatement->getAttStmt()->willReturn([
-            'x5c' => ['FOO'],
-        ]);
-        $authenticatorData = $this->prophesize(AuthenticatorData::class);
+        $attestationStatement = $this->createMock(AttestationStatement::class);
+        $attestationStatement
+            ->expects(static::atLeastOnce())
+            ->method('getAttStmt')
+            ->willReturn(['x5c' => ['FOO']])
+        ;
+        $authenticatorData = $this->createMock(AuthenticatorData::class);
 
         static::assertEquals('none', $support->name());
-        static::assertFalse($support->isValid('FOO', $attestationStatement->reveal(), $authenticatorData->reveal()));
+        static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 }

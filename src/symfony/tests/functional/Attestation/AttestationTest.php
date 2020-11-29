@@ -16,9 +16,6 @@ namespace Webauthn\Bundle\Tests\Functional\Attestation;
 use Cose\Algorithms;
 use function count;
 use InvalidArgumentException;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -35,6 +32,7 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MockedRequestTrait;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
@@ -45,8 +43,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 class AttestationTest extends KernelTestCase
 {
-    use ProphecyTrait;
-
+    use MockedRequestTrait;
     /**
      * @test
      */
@@ -76,15 +73,12 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_NONE, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('localhost');
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 
@@ -113,15 +107,12 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_BASIC, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(CertificateTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
         static::assertTrue(false);
     }
@@ -150,15 +141,12 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_SELF, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 
@@ -187,15 +175,12 @@ class AttestationTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_BASIC, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(CertificateTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 

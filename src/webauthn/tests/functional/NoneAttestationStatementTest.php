@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialParameters;
@@ -49,18 +47,20 @@ class NoneAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK', true))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('localhost');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 }

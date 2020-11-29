@@ -15,7 +15,6 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 
 /**
@@ -28,8 +27,6 @@ use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
  */
 class AppleAttestationStatementSupportTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */

@@ -20,7 +20,6 @@ use CBOR\OtherObject\TrueObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
@@ -34,8 +33,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoade
  */
 class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */

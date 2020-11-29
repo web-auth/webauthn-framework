@@ -15,8 +15,6 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Cose\Algorithms;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -54,24 +52,25 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::exactly(2))
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==', true))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
-
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $request = $this->createRequestWithHost('localhost');
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
@@ -114,18 +113,19 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
-
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
@@ -159,18 +159,19 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
-
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);

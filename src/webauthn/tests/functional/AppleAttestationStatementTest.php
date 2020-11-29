@@ -15,8 +15,6 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Cose\Algorithms;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Symfony\Bridge\PhpUnit\ClockMock;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -68,18 +66,20 @@ class AppleAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('dev.dontneeda.pw');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('dev.dontneeda.pw');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);

@@ -14,9 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
-use Prophecy\Argument;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -53,30 +50,40 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
-        $publicKeyCredentialSource->getUserHandle()->willReturn('foo');
-        $publicKeyCredentialSource->getCounter()->willReturn(100);
-        $publicKeyCredentialSource->setCounter(Argument::is(123))->will(function (): void {});
-        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
-            Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-            base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-            base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
-        ));
+        $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            'foo',
+            100,
+            new AttestedCredentialData(
+                Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+                base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
+                base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
+            )
+        );
+        $publicKeyCredentialSource
+            ->method('setCounter')
+            ->with(123)
+        ;
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))->willReturn($publicKeyCredentialSource->reveal());
-        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function (): void {});
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))
+            ->willReturn($publicKeyCredentialSource)
+        ;
+        $credentialRepository
+            ->expects(static::once())
+            ->method('saveCredentialSource')
+            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('localhost');
 
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal(),
+            $request,
             'foo'
         );
     }
@@ -101,30 +108,40 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
-        $publicKeyCredentialSource->getUserHandle()->willReturn('foo');
-        $publicKeyCredentialSource->getCounter()->willReturn(100);
-        $publicKeyCredentialSource->setCounter(Argument::is(148))->will(function (): void {});
-        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
-            Uuid::fromBytes(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
-            base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
-            base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
-        ));
+        $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            'foo',
+            100,
+            new AttestedCredentialData(
+                Uuid::fromBytes(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
+                base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
+                base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
+            )
+        );
+        $publicKeyCredentialSource
+            ->method('setCounter')
+            ->with(148)
+        ;
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))->willReturn($publicKeyCredentialSource->reveal());
-        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function (): void {});
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))
+            ->willReturn($publicKeyCredentialSource)
+        ;
+        $credentialRepository
+            ->expects(static::once())
+            ->method('saveCredentialSource')
+            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('localhost');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('localhost');
 
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal(),
+            $request,
             'foo'
         );
     }
@@ -149,30 +166,40 @@ class AssertionTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
-        $publicKeyCredentialSource = $this->prophesize(PublicKeyCredentialSource::class);
-        $publicKeyCredentialSource->getUserHandle()->willReturn('abfc8fdf-07f6-45a9-abec-fa192275b276');
-        $publicKeyCredentialSource->getCounter()->willReturn(100);
-        $publicKeyCredentialSource->setCounter(Argument::is(1548765641))->will(function (): void {});
-        $publicKeyCredentialSource->getAttestedCredentialData()->willReturn(new AttestedCredentialData(
-            Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-            base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
-            base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
-        ));
+        $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            'abfc8fdf-07f6-45a9-abec-fa192275b276',
+            100,
+            new AttestedCredentialData(
+                Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+                base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
+                base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
+            )
+        );
+        $publicKeyCredentialSource
+            ->method('setCounter')
+            ->with(1548765641)
+        ;
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))->willReturn($publicKeyCredentialSource->reveal());
-        $credentialRepository->saveCredentialSource(Argument::type(PublicKeyCredentialSource::class))->will(function (): void {});
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))
+            ->willReturn($publicKeyCredentialSource)
+        ;
+        $credentialRepository
+            ->expects(static::once())
+            ->method('saveCredentialSource')
+            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
 
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getRawId(),
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
-            $request->reveal(),
+            $request,
             null
         );
     }

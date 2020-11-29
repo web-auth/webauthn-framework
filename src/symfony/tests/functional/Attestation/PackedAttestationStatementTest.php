@@ -14,9 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Cose\Algorithms;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -28,6 +25,7 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MockedRequestTrait;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
@@ -37,8 +35,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 class PackedAttestationStatementTest extends KernelTestCase
 {
-    use ProphecyTrait;
-
+    use MockedRequestTrait;
     /**
      * @test
      */
@@ -68,15 +65,12 @@ class PackedAttestationStatementTest extends KernelTestCase
         static::assertEquals(AttestationStatement::TYPE_SELF, $response->getAttestationObject()->getAttStmt()->getType());
         static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('spomky-webauthn.herokuapp.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
 
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 }

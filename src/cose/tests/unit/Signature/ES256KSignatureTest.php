@@ -16,7 +16,6 @@ namespace Cose\Tests\Unit\Signature;
 use Cose\Algorithm\Signature\ECDSA\ES256K;
 use Cose\Key\Ec2Key;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\hex2bin;
 
 /**
@@ -28,8 +27,6 @@ use function Safe\hex2bin;
  */
 class ES256KSignatureTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */

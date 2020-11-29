@@ -20,7 +20,6 @@ use CBOR\MapObject;
 use CBOR\SignedIntegerObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -39,8 +38,6 @@ use Webauthn\TrustPath\CertificateTrustPath;
  */
 class FidoU2FAttestationStatementSupportTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
@@ -118,34 +115,65 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $support = new FidoU2FAttestationStatementSupport();
 
-        $attestationStatement = $this->prophesize(AttestationStatement::class);
-        $attestationStatement->getAttStmt()->willReturn([
-            'sig' => 'FOO',
-            'x5c' => [
-                Base64Url::decode('Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ'),
-            ],
-        ]);
-        $attestationStatement->has('sig')->willReturn(true);
-        $attestationStatement->get('sig')->willReturn(random_bytes(70));
-        $attestationStatement->has('x5c')->willReturn(true);
-        $attestationStatement->get('x5c')->willReturn([base64_decode('MIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAwWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2VyaWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/bjes6HtcOtjbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS/vCgkH7Rfzv/wp1NMhuc+KhKLOqgOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEwCwYJKoZIhvcNAQELA4IBAQB+0/tszCUgE/gvIYwqN9pgMdIOfzCB2vyusSj8f5sjORS/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3/vULJw4CifiENvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9pnAgWPwfLYebUwER6mDobGPxf6WUTMg/CqJphIs+44imwJ5rBZU/y7j0foOifgBypjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6/djkawTKQpDYVAtjS4hhYedYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk', true)]);
-        $attestationStatement->getTrustPath()->willReturn(new CertificateTrustPath([CertificateToolbox::convertDERToPEM(base64_decode('MIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAwWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2VyaWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/bjes6HtcOtjbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS/vCgkH7Rfzv/wp1NMhuc+KhKLOqgOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEwCwYJKoZIhvcNAQELA4IBAQB+0/tszCUgE/gvIYwqN9pgMdIOfzCB2vyusSj8f5sjORS/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3/vULJw4CifiENvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9pnAgWPwfLYebUwER6mDobGPxf6WUTMg/CqJphIs+44imwJ5rBZU/y7j0foOifgBypjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6/djkawTKQpDYVAtjS4hhYedYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk', true))]));
+        $attestationStatement = $this->createMock(AttestationStatement::class);
+        $attestationStatement
+            ->method('getAttStmt')
+            ->willReturn([
+                'sig' => 'FOO',
+                'x5c' => [
+                    Base64Url::decode('Ws1pyRaocwNNxYIXIHttjOO1628kVQ2EK6EVVZ_wWKs089-rszT2fkSnSfm4V6wV9ryz2-K8Vm5Fs_r7ctAcoQ'),
+                ],
+            ]
+            )
+        ;
+        $attestationStatement
+            ->method('has')
+            ->withConsecutive(['sig'], ['x5c'])
+            ->willReturnOnConsecutiveCalls(true, true)
+        ;
+        $attestationStatement
+            ->method('get')
+            ->withConsecutive(['sig'], ['x5c'])
+            ->willReturnOnConsecutiveCalls(
+                random_bytes(70),
+                [base64_decode('MIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAwWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2VyaWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/bjes6HtcOtjbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS/vCgkH7Rfzv/wp1NMhuc+KhKLOqgOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEwCwYJKoZIhvcNAQELA4IBAQB+0/tszCUgE/gvIYwqN9pgMdIOfzCB2vyusSj8f5sjORS/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3/vULJw4CifiENvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9pnAgWPwfLYebUwER6mDobGPxf6WUTMg/CqJphIs+44imwJ5rBZU/y7j0foOifgBypjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6/djkawTKQpDYVAtjS4hhYedYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk', true)]
+            )
+        ;
+        $attestationStatement
+            ->method('getTrustPath')
+            ->willReturn(new CertificateTrustPath([CertificateToolbox::convertDERToPEM(base64_decode('MIICLTCCARegAwIBAgIEBbYFeTALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAwWhgPMjA1MDA5MDQwMDAwMDBaMCgxJjAkBgNVBAMMHVl1YmljbyBVMkYgRUUgU2VyaWFsIDk1ODE1MDMzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/bjes6HtcOtjbAZutgBplqX5cPy124j8OzBdQeWWbwwbVLhS/vCgkH7Rfzv/wp1NMhuc+KhKLOqgOMq9NdWY3qMmMCQwIgYJKwYBBAGCxAoCBBUxLjMuNi4xLjQuMS40MTQ4Mi4xLjEwCwYJKoZIhvcNAQELA4IBAQB+0/tszCUgE/gvIYwqN9pgMdIOfzCB2vyusSj8f5sjORS/tk1hNfF84iH6dk9FPvEnOozpZZVkQrsvHkdIP3N9y8mLWFN3/vULJw4CifiENvGtz0myYh7l4wLfVVuat0Jy4Gn5GBSbPexPEiKLEMD4jeNq9Yp0u0Qrha4AU2S9pnAgWPwfLYebUwER6mDobGPxf6WUTMg/CqJphIs+44imwJ5rBZU/y7j0foOifgBypjwyrWSGTpJtcRL6GZf3g5ZW+7Mr6PeInQ8BRVGaJ6/djkawTKQpDYVAtjS4hhYedYjIYpnc3WQ10WeKOm8KdIKcTdP3DDUk0d3xbXit0htk', true))]))
+        ;
 
-        $attestedCredentialData = $this->prophesize(AttestedCredentialData::class);
-        $attestedCredentialData->getAaguid()->willReturn(Uuid::fromString('00000000-0000-0000-0000-000000000000'));
-        $attestedCredentialData->getCredentialId()->willReturn('CREDENTIAL_ID');
-        $attestedCredentialData->getCredentialPublicKey()->willReturn(
-            new MapObject([
-                new MapItem(SignedIntegerObject::create(-2), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
-                new MapItem(SignedIntegerObject::create(-3), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
-            ])
-        );
+        $attestedCredentialData = $this->createMock(AttestedCredentialData::class);
+        $attestedCredentialData
+            ->method('getAaguid')
+            ->willReturn(Uuid::fromString('00000000-0000-0000-0000-000000000000'))
+        ;
+        $attestedCredentialData
+            ->method('getCredentialId')
+            ->willReturn('CREDENTIAL_ID')
+        ;
+        $attestedCredentialData
+            ->method('getCredentialPublicKey')
+            ->willReturn(
+                (string) (new MapObject([
+                    new MapItem(SignedIntegerObject::create(-2), new ByteStringObject(hex2bin('C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'))),
+                    new MapItem(SignedIntegerObject::create(-3), new ByteStringObject(hex2bin('60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'))),
+                ]))
+        )
+        ;
 
-        $authenticatorData = $this->prophesize(AuthenticatorData::class);
-        $authenticatorData->getRpIdHash()->willReturn('FOO');
-        $authenticatorData->getAttestedCredentialData()->willReturn($attestedCredentialData->reveal());
+        $authenticatorData = $this->createMock(AuthenticatorData::class);
+        $authenticatorData
+            ->method('getRpIdHash')
+            ->willReturn('FOO')
+        ;
+        $authenticatorData
+            ->method('getAttestedCredentialData')
+            ->willReturn($attestedCredentialData)
+        ;
 
         static::assertEquals('fido-u2f', $support->name());
-        static::assertFalse($support->isValid('FOO', $attestationStatement->reveal(), $authenticatorData->reveal()));
+        static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 }

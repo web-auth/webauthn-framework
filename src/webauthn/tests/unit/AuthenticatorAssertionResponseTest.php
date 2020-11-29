@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\CollectedClientData;
@@ -29,19 +28,17 @@ use Webauthn\CollectedClientData;
  */
 class AuthenticatorAssertionResponseTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
     public function anAuthenticatorAssertionResponseCanBeCreatedAndValueAccessed(): void
     {
-        $clientDataJSON = $this->prophesize(CollectedClientData::class);
-        $authenticatorData = $this->prophesize(AuthenticatorData::class);
+        $clientDataJSON = $this->createMock(CollectedClientData::class);
+        $authenticatorData = $this->createMock(AuthenticatorData::class);
 
         $authenticatorAssertionResponse = new AuthenticatorAssertionResponse(
-            $clientDataJSON->reveal(),
-            $authenticatorData->reveal(),
+            $clientDataJSON,
+            $authenticatorData,
             'signature',
             base64_encode('user_handle')
         );

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticatorData;
@@ -29,17 +28,15 @@ use Webauthn\AuthenticatorData;
  */
 class AuthenticatorDataTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
-        $attestedCredentialData = $this->prophesize(AttestedCredentialData::class);
-        $extensions = $this->prophesize(AuthenticationExtensionsClientOutputs::class);
+        $attestedCredentialData = $this->createMock(AttestedCredentialData::class);
+        $extensions = $this->createMock(AuthenticationExtensionsClientOutputs::class);
 
-        $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData->reveal(), $extensions->reveal());
+        $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
 
         static::assertEquals('auth_data', $authenticatorData->getAuthData());
         static::assertEquals('rp_id_hash', $authenticatorData->getRpIdHash());

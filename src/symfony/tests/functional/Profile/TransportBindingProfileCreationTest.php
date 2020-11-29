@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\Profile;
 
-use Prophecy\PhpUnit\ProphecyTrait;
 use function Safe\json_decode;
 use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -26,8 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class TransportBindingProfileCreationTest extends WebTestCase
 {
-    use ProphecyTrait;
-
     /**
      * @test
      */

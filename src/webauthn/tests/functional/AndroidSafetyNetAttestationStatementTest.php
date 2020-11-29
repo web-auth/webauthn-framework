@@ -17,8 +17,6 @@ use Cose\Algorithms;
 use Http\Mock\Client;
 use InvalidArgumentException;
 use Nyholm\Psr7\Response;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialParameters;
@@ -55,13 +53,9 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=', true))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.morselli.fr');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.morselli.fr');
 
         $client = new Client();
         $httpResponse = new Response();
@@ -70,10 +64,10 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
         $httpResponse->getBody()->rewind();
         $client->setDefaultResponse($httpResponse);
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal(), $client)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, $client)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 }

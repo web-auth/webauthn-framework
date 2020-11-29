@@ -15,8 +15,6 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -45,18 +43,20 @@ class AttestationTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(hex2bin('4787c0563f68b2055564bef21dfb4f7953a68e89b7c70e192caec3b7ff26cce3'))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(hex2bin('4787c0563f68b2055564bef21dfb4f7953a68e89b7c70e192caec3b7ff26cce3'))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
@@ -93,18 +93,20 @@ class AttestationTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(hex2bin('1c0ec9c0a458849b6176fbb07cfb7a1334bf40a4a3d92bba9c964cb4fe6ab581'))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(hex2bin('1c0ec9c0a458849b6176fbb07cfb7a1334bf40a4a3d92bba9c964cb4fe6ab581'))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         static::fail('This test should fail');
@@ -123,18 +125,20 @@ class AttestationTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(hex2bin('1c0ec9c0a458849b6176fbb07cfb7a1334bf40a4a3d92bba9c964cb4fe6ab581'))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(hex2bin('54a957f3f3e5ac1c01fa762c1fb67781dcbc43d799913f41d0e1a6435355eb45'))
+            ->willReturn(null)
+        ;
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         static::fail('This test should fail');
@@ -154,18 +158,14 @@ class AttestationTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(hex2bin('1c0ec9c0a458849b6176fbb07cfb7a1334bf40a4a3d92bba9c964cb4fe6ab581'))->willReturn(null);
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.spomky-labs.com');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
     }
 

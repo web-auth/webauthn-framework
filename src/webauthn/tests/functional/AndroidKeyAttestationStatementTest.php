@@ -15,8 +15,6 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Cose\Algorithms;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -62,20 +60,21 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = $this->prophesize(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository->findOneByCredentialId(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))->willReturn(null);
-
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getHost()->willReturn('webauthn.org');
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getUri()->willReturn($uri->reveal());
+        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository
+            ->expects(static::once())
+            ->method('findOneByCredentialId')
+            ->with(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))
+            ->willReturn(null)
+        ;
+        $request = $this->createRequestWithHost('webauthn.org');
 
         static::markTestIncomplete('This test should be finished when AAGUID "28f37d2b-92b8-41c4-b02a-860cef7cc034" will be available');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository->reveal())->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
-            $request->reveal()
+            $request
         );
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
