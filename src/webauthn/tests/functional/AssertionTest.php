@@ -15,12 +15,10 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Ramsey\Uuid\Uuid;
-use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -51,31 +49,15 @@ class AssertionTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
         $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             'foo',
             100,
-            new AttestedCredentialData(
-                Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-                base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
-                base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
-            )
+            Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+            base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
         );
-        $publicKeyCredentialSource
-            ->method('setCounter')
-            ->with(123)
-        ;
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true))
-            ->willReturn($publicKeyCredentialSource)
-        ;
-        $credentialRepository
-            ->expects(static::once())
-            ->method('saveCredentialSource')
-            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
+        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
 
         $request = $this->createRequestWithHost('localhost');
 
@@ -86,6 +68,8 @@ class AssertionTest extends AbstractTestCase
             $request,
             'foo'
         );
+
+        static::assertEquals(123, $publicKeyCredentialSource->getCounter());
     }
 
     /**
@@ -109,31 +93,15 @@ class AssertionTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
         $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
             'foo',
             100,
-            new AttestedCredentialData(
-                Uuid::fromBytes(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
-                base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true),
-                base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
-            )
+            Uuid::fromBytes(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
+            base64_decode('pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=', true)
         );
-        $publicKeyCredentialSource
-            ->method('setCounter')
-            ->with(148)
-        ;
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))
-            ->willReturn($publicKeyCredentialSource)
-        ;
-        $credentialRepository
-            ->expects(static::once())
-            ->method('saveCredentialSource')
-            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
+        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
 
         $request = $this->createRequestWithHost('localhost');
 
@@ -144,6 +112,8 @@ class AssertionTest extends AbstractTestCase
             $request,
             'foo'
         );
+
+        static::assertEquals(148, $publicKeyCredentialSource->getCounter());
     }
 
     /**
@@ -167,31 +137,15 @@ class AssertionTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
 
         $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
             'abfc8fdf-07f6-45a9-abec-fa192275b276',
             100,
-            new AttestedCredentialData(
-                Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-                base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true),
-                base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
-            )
+            Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+            base64_decode('pQECAyYgASFYIAilQMlKgtJyC4tEMoERzfa/rzaLpE+PLpIVmcVMGPZBIlggbwNLQKmmGPIXJkH3HIJOsoOyv9LmJfmGGJ1YtF0//sE=', true)
         );
-        $publicKeyCredentialSource
-            ->method('setCounter')
-            ->with(1548765641)
-        ;
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true))
-            ->willReturn($publicKeyCredentialSource)
-        ;
-        $credentialRepository
-            ->expects(static::once())
-            ->method('saveCredentialSource')
-            ->with(static::isInstanceOf(PublicKeyCredentialSource::class))
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
+        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
 
         $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
 
@@ -202,5 +156,7 @@ class AssertionTest extends AbstractTestCase
             $request,
             null
         );
+
+        static::assertEquals(1548765641, $publicKeyCredentialSource->getCounter());
     }
 }

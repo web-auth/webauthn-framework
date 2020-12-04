@@ -16,6 +16,9 @@ namespace Webauthn\MetadataService\Object;
 use Assert\Assertion;
 use Webauthn\MetadataService\RogueListEntryInterface;
 
+/**
+ * @internal
+ */
 class RogueListEntry implements RogueListEntryInterface
 {
     /**

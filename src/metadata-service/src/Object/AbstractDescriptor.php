@@ -16,6 +16,9 @@ namespace Webauthn\MetadataService\Object;
 use Assert\Assertion;
 use Webauthn\MetadataService\AbstractDescriptorInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractDescriptor implements AbstractDescriptorInterface
 {
     /**

@@ -15,7 +15,7 @@ namespace Webauthn\Tests\Functional;
 
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -35,13 +35,7 @@ class SubDomainRelyingPartyTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('+cGSjQwC4UBTsh2Mw6guep2uTdLXOExla3QJrVpByOkEWJaOljo54PWOazmHtxBuV5DeysX7qjohoGYK2YibdA==', true))
-            ->willReturn(null)
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('localhost');
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(

@@ -18,6 +18,9 @@ use Base64Url\Base64Url;
 use function Safe\sprintf;
 use Webauthn\MetadataService\EcdaaTrustAnchorInterface;
 
+/**
+ * @internal
+ */
 class EcdaaTrustAnchor implements EcdaaTrustAnchorInterface
 {
     /**

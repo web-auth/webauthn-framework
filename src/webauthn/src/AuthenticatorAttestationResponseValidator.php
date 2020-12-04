@@ -232,7 +232,7 @@ class AuthenticatorAttestationResponseValidator
 
         if (null === $metadataStatement) {
             // @phpstan-ignore-next-line
-            null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, []);
+            null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, [], null);
 
             return;
         }
@@ -241,6 +241,7 @@ class AuthenticatorAttestationResponseValidator
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
+
         // @phpstan-ignore-next-line
         null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $metadataStatementCertificates);
     }
@@ -294,6 +295,10 @@ class AuthenticatorAttestationResponseValidator
         //The MDS Repository is mandatory here
         Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
+        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
+
+        // We check the last status report
+        $this->checkStatusReport($statusReports);
 
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
@@ -306,11 +311,6 @@ class AuthenticatorAttestationResponseValidator
 
         // At this point, the Metadata Statement is mandatory
         Assertion::notNull($metadataStatement, sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
-        Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository shall be set when Metadata Statements are asked');
-        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
-
-        // We check the last status report
-        $this->checkStatusReport($statusReports);
 
         // Check Attestation Type is allowed
         if (0 !== count($metadataStatement->getAttestationTypes())) {

@@ -37,18 +37,8 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $rp = $this->createMock(PublicKeyCredentialRpEntity::class);
-        $rp
-            ->expects(static::atLeastOnce())
-            ->method('jsonSerialize')
-            ->willReturn(['name' => 'RP'])
-        ;
-        $user = $this->createMock(PublicKeyCredentialUserEntity::class);
-        $user
-            ->expects(static::atLeastOnce())
-            ->method('jsonSerialize')
-            ->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR'])
-        ;
+        $rp = new PublicKeyCredentialRpEntity('RP');
+        $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
@@ -74,7 +64,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
         static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
-        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}', json_encode($options));
+        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}', json_encode($options));
 
         $data = PublicKeyCredentialCreationOptions::createFromString('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}');
         static::assertEquals('challenge', $data->getChallenge());
@@ -94,18 +84,8 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
     {
-        $rp = $this->createMock(PublicKeyCredentialRpEntity::class);
-        $rp
-            ->expects(static::atLeastOnce())
-            ->method('jsonSerialize')
-            ->willReturn(['name' => 'RP'])
-        ;
-        $user = $this->createMock(PublicKeyCredentialUserEntity::class);
-        $user
-            ->expects(static::atLeastOnce())
-            ->method('jsonSerialize')
-            ->willReturn(['name' => 'USER', 'id' => 'aWQ', 'displayName' => 'FOO BAR'])
-        ;
+        $rp = new PublicKeyCredentialRpEntity('RP');
+        $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
@@ -121,7 +101,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         ;
 
         $json = json_encode($options);
-        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}', $json);
+        static::assertEquals('{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}', $json);
         $data = PublicKeyCredentialCreationOptions::createFromString($json);
         static::assertEquals([], $data->getExcludeCredentials());
     }

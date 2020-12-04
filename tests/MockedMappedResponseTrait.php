@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Webauthn\Tests;
 
 use Http\Message\RequestMatcher\RequestMatcher;
+use Nyholm\Psr7\Response;
+use Nyholm\Psr7\Stream;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 trait MockedMappedResponseTrait
 {
@@ -26,34 +26,14 @@ trait MockedMappedResponseTrait
         $requestMatcher = new RequestMatcher();
         $map = $this->getResponsesMap();
         $client->on($requestMatcher, function (RequestInterface $request) use ($map) {
-            $response = $this->createMock(ResponseInterface::class);
-
-            if (!isset($map[$request->getUri()->getPath()])) {
-                $response
-                    ->method('getStatusCode')
-                    ->willReturn(404)
-                ;
-
-                return $response->reveal();
+            if (!isset($map[$request->getUri()->__toString()])) {
+                return new Response(404);
             }
 
-            $body = $this->createMock(StreamInterface::class);
-            $body
-                ->method('getContents')
-                ->willReturn($map[$request->getUri()->getPath()])
-            ;
-            $response
-                ->expects(static::atLeastOnce())
-                ->method('getStatusCode')
-                ->willReturn(200)
-            ;
-            $response
-                ->expects(static::atLeastOnce())
-                ->method('getBody')
-                ->willReturn($body)
-            ;
+            $body = Stream::create($map[$request->getUri()->__toString()]);
+            $body->rewind();
 
-            return $response;
+            return new Response(200, [], $body);
         });
     }
 

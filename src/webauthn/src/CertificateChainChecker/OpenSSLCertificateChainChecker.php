@@ -146,7 +146,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
             $parsed = openssl_x509_parse($certificate);
             Assertion::isArray($parsed, 'Unable to read the certificate');
             if (false === $allowRootCertificate) {
-                self::checkRootCertificate($parsed);
+                $this->checkRootCertificate($parsed);
             }
 
             Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
@@ -159,7 +159,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     /**
      * @param array<string, mixed> $parsed
      */
-    private static function checkRootCertificate(array $parsed): void
+    private function checkRootCertificate(array $parsed): void
     {
         Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
         Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');

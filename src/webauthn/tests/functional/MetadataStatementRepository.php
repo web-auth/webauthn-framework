@@ -15,62 +15,40 @@ namespace Webauthn\Tests\Functional;
 
 use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\Object\MetadataService;
-use Webauthn\MetadataService\Object\SingleMetadata;
-use Webauthn\MetadataService\Object\StatusReport;
+use Webauthn\MetadataService\StatusReportInterface;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
     /**
-     * @var SingleMetadata[]
-     */
-    private $distantMetadataStatements = [];
-
-    /**
-     * @var MetadataService[]
-     */
-    private $metadataServices = [];
-
-    /**
-     * @var StatusReport[][]
+     * @var array<string, array<int, StatusReportInterface>>
      */
     private $statusReports = [];
 
-    public function addSingleStatement(SingleMetadata $metadataStatement): void
+    /**
+     * @var array<string, MetadataStatementInterface>
+     */
+    private $metadataStatements;
+
+    public function add(MetadataStatementInterface $metadataStatement): self
     {
-        $this->distantMetadataStatements[] = $metadataStatement;
+        $this->metadataStatements[$metadataStatement->getAaguid()] = $metadataStatement;
+
+        return $this;
     }
 
-    public function addService(MetadataService $metadataService): void
-    {
-        $this->metadataServices[] = $metadataService;
-    }
-
-    public function addStatusReport(string $aaguid, StatusReport $statusReport): void
+    public function addStatusReport(string $aaguid, StatusReportInterface $statusReport): self
     {
         if (!isset($this->statusReports[$aaguid])) {
             $this->statusReports[$aaguid] = [];
         }
         $this->statusReports[$aaguid][] = $statusReport;
+
+        return $this;
     }
 
     public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface
     {
-        foreach ($this->distantMetadataStatements as $distantMetadataStatement) {
-            if ($distantMetadataStatement->getMetadataStatement()->getAaguid() === $aaguid) {
-                return $distantMetadataStatement->getMetadataStatement();
-            }
-        }
-        foreach ($this->metadataServices as $metadataService) {
-            $toc = $metadataService->getMetadataTOCPayload();
-            foreach ($toc->getEntries() as $entry) {
-                if ($entry->getAaguid() === $aaguid) {
-                    return $metadataService->getMetadataStatementFor($entry);
-                }
-            }
-        }
-
-        return null;
+        return $this->metadataStatements[$aaguid] ?? null;
     }
 
     /**

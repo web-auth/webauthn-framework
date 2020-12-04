@@ -13,30 +13,26 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use Webauthn\AttestedCredentialData;
+use Ramsey\Uuid\UuidInterface;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
+use Webauthn\TrustPath\EmptyTrustPath;
+use Webauthn\TrustPath\TrustPath;
 
 trait MockedPublicKeyCredentialSourceTrait
 {
-    protected function createPublicKeyCredentialSource(string $userHandle, int $counter, AttestedCredentialData $attestedCredentialData): MockObject
+    protected function createPublicKeyCredentialSource(string $id, string $userHandle, int $counter, UuidInterface $aaguid, $publicKey, array $transport = [], string $attestationType = 'none', ?TrustPath $trustPath = null): PublicKeyCredentialSource
     {
-        $publicKeyCredentialSource = $this->createMock(PublicKeyCredentialSource::class);
-        $publicKeyCredentialSource
-            ->method('getUserHandle')
-            ->willReturn($userHandle)
-        ;
-        $publicKeyCredentialSource
-            ->method('getCounter')
-            ->willReturn($counter)
-        ;
-        $publicKeyCredentialSource
-            ->method('getAttestedCredentialData')
-            ->willReturn($attestedCredentialData)
-        ;
-
-        return $publicKeyCredentialSource;
+        return new PublicKeyCredentialSource(
+            $id,
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            $transport,
+            $attestationType,
+            $trustPath ?? new EmptyTrustPath(),
+            $aaguid,
+            $publicKey,
+            $userHandle,
+            $counter
+        );
     }
-
-    abstract protected function createMock(string $originalClassName): MockObject;
 }

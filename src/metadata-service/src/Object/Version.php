@@ -19,6 +19,9 @@ use LogicException;
 use function Safe\sprintf;
 use Webauthn\MetadataService\VersionInterface;
 
+/**
+ * @internal
+ */
 class Version implements VersionInterface
 {
     /**

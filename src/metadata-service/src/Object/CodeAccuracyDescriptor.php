@@ -16,6 +16,9 @@ namespace Webauthn\MetadataService\Object;
 use Assert\Assertion;
 use Webauthn\MetadataService\CodeAccuracyDescriptorInterface;
 
+/**
+ * @internal
+ */
 class CodeAccuracyDescriptor extends AbstractDescriptor implements CodeAccuracyDescriptorInterface
 {
     /**

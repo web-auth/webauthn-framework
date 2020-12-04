@@ -13,26 +13,18 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests;
 
+use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 
 trait MockedRequestTrait
 {
-    protected function createRequestWithHost(string $host): MockObject
+    protected function createRequestWithHost(string $host): ServerRequestInterface
     {
-        $uri = $this->createMock(UriInterface::class);
-        $uri
-            ->method('getHost')
-            ->willReturn($host)
-        ;
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getUri')
-            ->willReturn($uri)
-        ;
+        $uri = new Uri('https://'.$host);
 
-        return $request;
+        return new ServerRequest('POST', $uri);
     }
 
     abstract protected function createMock(string $originalClassName): MockObject;

@@ -22,8 +22,8 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -38,6 +38,10 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
      */
     public function anAndroidKeyAttestationCanBeVerified(): void
     {
+        static::markTestIncomplete('This test should be finished when AAGUID "28f37d2b-92b8-41c4-b02a-860cef7cc034" will be available');
+        //Given
+        $request = $this->createRequestWithHost('webauthn.org');
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 new PublicKeyCredentialRpEntity('My Application'),
@@ -48,6 +52,7 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
                 ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
         ;
 
+        //When
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{
             "rawId": "AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c",
             "id": "AZD7huwZVx7aW1efRa6Uq3JTQNorj3qA9yrLINXEcgvCQYtWiSQa1eOIVrXfCmip6MzP8KaITOvRLjy3TUHO7/c",
@@ -58,24 +63,15 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
             "type": "public-key"
         }');
 
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('AVUvAmX241vMKYd7ZBdmkNWaYcNYhoSZCJjFRGmROb6I4ygQUVmH6k9IMwcbZGeAQ4v4WMNphORudwje5h7ty9A=', true))
-            ->willReturn(null)
-        ;
-        $request = $this->createRequestWithHost('webauthn.org');
-
-        static::markTestIncomplete('This test should be finished when AAGUID "28f37d2b-92b8-41c4-b02a-860cef7cc034" will be available');
-
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request
         );
+
+        //Then
+
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 

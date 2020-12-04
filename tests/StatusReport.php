@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\MetadataService\Object;
+namespace Webauthn\Tests;
 
 use Assert\Assertion;
 use function in_array;
@@ -152,7 +152,7 @@ class StatusReport implements StatusReportInterface
 
     public function jsonSerialize(): array
     {
-        $data = [
+        return [
             'status' => $this->status,
             'effectiveDate' => $this->effectiveDate,
             'certificate' => $this->certificate,
@@ -162,7 +162,5 @@ class StatusReport implements StatusReportInterface
             'certificationPolicyVersion' => $this->certificationPolicyVersion,
             'certificationRequirementsVersion' => $this->certificationRequirementsVersion,
         ];
-
-        return Utils::filterNullValues($data);
     }
 }

@@ -17,6 +17,9 @@ use function Safe\base64_decode;
 use function Safe\json_decode;
 use Webauthn\MetadataService\MetadataStatementInterface;
 
+/**
+ * @internal
+ */
 class SingleMetadata
 {
     /**

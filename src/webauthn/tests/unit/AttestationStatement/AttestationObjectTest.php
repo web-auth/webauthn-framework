@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorData;
+use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * @group unit
@@ -33,8 +34,8 @@ class AttestationObjectTest extends TestCase
      */
     public function anAttestationObjectCanBeCreated(): void
     {
-        $attestationStatement = $this->createMock(AttestationStatement::class);
-        $authenticatorData = $this->createMock(AuthenticatorData::class);
+        $attestationStatement = new AttestationStatement('', [], '', new EmptyTrustPath());
+        $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         $object = new AttestationObject(
             'rawAttestationObject',

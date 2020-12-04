@@ -20,6 +20,9 @@ use Webauthn\MetadataService\CodeAccuracyDescriptorInterface;
 use Webauthn\MetadataService\PatternAccuracyDescriptorInterface;
 use Webauthn\MetadataService\VerificationMethodDescriptorInterface;
 
+/**
+ * @internal
+ */
 class VerificationMethodDescriptor implements VerificationMethodDescriptorInterface
 {
     /**

@@ -22,8 +22,8 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -52,17 +52,11 @@ class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true))
-            ->willReturn(null)
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('webauthn.morselli.fr');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request

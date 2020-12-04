@@ -20,6 +20,9 @@ use LogicException;
 use Webauthn\MetadataService\MetadataTOCPayloadEntryInterface;
 use Webauthn\MetadataService\StatusReportInterface;
 
+/**
+ * @internal
+ */
 class MetadataTOCPayloadEntry implements MetadataTOCPayloadEntryInterface
 {
     /**

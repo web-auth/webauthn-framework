@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticatorData;
+use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * @group unit
@@ -35,12 +36,8 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = $this->createMock(AttestationStatement::class);
-        $attestationStatement
-            ->expects(static::atLeastOnce())
-            ->method('getAttStmt')
-        ;
-        $authenticatorData = $this->createMock(AuthenticatorData::class);
+        $attestationStatement = new AttestationStatement('none', [], '', new EmptyTrustPath());
+        $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         static::assertEquals('none', $support->name());
         static::assertTrue($support->isValid('FOO', $attestationStatement, $authenticatorData));
@@ -53,13 +50,8 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = $this->createMock(AttestationStatement::class);
-        $attestationStatement
-            ->expects(static::atLeastOnce())
-            ->method('getAttStmt')
-            ->willReturn(['x5c' => ['FOO']])
-        ;
-        $authenticatorData = $this->createMock(AuthenticatorData::class);
+        $attestationStatement = new AttestationStatement('none', ['x5c' => ['FOO']], '', new EmptyTrustPath());
+        $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         static::assertEquals('none', $support->name());
         static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));

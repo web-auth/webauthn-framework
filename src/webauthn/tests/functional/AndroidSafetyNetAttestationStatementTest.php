@@ -21,8 +21,8 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -53,7 +53,7 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('webauthn.morselli.fr');
 

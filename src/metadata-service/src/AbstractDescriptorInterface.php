@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService;
 
 use JsonSerializable;
 
+/**
+ * @internal
+ */
 interface AbstractDescriptorInterface extends JsonSerializable
 {
     public function getMaxRetries(): ?int;

@@ -18,6 +18,9 @@ use function Safe\sprintf;
 use Webauthn\MetadataService\DisplayPNGCharacteristicsDescriptorInterface;
 use Webauthn\MetadataService\RgbPaletteEntryInterface;
 
+/**
+ * @internal
+ */
 class DisplayPNGCharacteristicsDescriptor implements DisplayPNGCharacteristicsDescriptorInterface
 {
     /**

@@ -15,6 +15,9 @@ namespace Webauthn\MetadataService\Object;
 
 use Webauthn\MetadataService\BiometricStatusReportInterface;
 
+/**
+ * @internal
+ */
 class BiometricStatusReport implements BiometricStatusReportInterface
 {
     /**

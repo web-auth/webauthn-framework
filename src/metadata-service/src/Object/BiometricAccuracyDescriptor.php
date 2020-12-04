@@ -16,6 +16,9 @@ namespace Webauthn\MetadataService\Object;
 use Assert\Assertion;
 use Webauthn\MetadataService\BiometricAccuracyDescriptorInterface;
 
+/**
+ * @internal
+ */
 class BiometricAccuracyDescriptor extends AbstractDescriptor implements BiometricAccuracyDescriptorInterface
 {
     /**

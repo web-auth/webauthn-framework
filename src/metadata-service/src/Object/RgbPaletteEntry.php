@@ -17,6 +17,9 @@ use Assert\Assertion;
 use function Safe\sprintf;
 use Webauthn\MetadataService\RgbPaletteEntryInterface;
 
+/**
+ * @internal
+ */
 class RgbPaletteEntry implements RgbPaletteEntryInterface
 {
     /**

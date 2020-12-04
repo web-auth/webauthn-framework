@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticatorData;
@@ -33,8 +34,8 @@ class AuthenticatorDataTest extends TestCase
      */
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
-        $attestedCredentialData = $this->createMock(AttestedCredentialData::class);
-        $extensions = $this->createMock(AuthenticationExtensionsClientOutputs::class);
+        $attestedCredentialData = new AttestedCredentialData(Uuid::uuid4(), '', null);
+        $extensions = new AuthenticationExtensionsClientOutputs();
 
         $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
 

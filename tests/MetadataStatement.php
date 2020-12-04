@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\MetadataService\Object;
+namespace Webauthn\Tests;
 
 use Assert\Assertion;
 use InvalidArgumentException;
@@ -20,7 +20,12 @@ use Webauthn\MetadataService\DisplayPNGCharacteristicsDescriptorInterface;
 use Webauthn\MetadataService\EcdaaTrustAnchorInterface;
 use Webauthn\MetadataService\ExtensionDescriptorInterface;
 use Webauthn\MetadataService\MetadataStatementInterface;
+use Webauthn\MetadataService\Object\DisplayPNGCharacteristicsDescriptor;
+use Webauthn\MetadataService\Object\ExtensionDescriptor;
+use Webauthn\MetadataService\Object\VerificationMethodANDCombinations;
+use Webauthn\MetadataService\Object\Version;
 use Webauthn\MetadataService\VerificationMethodANDCombinationsInterface;
+use Webauthn\MetadataService\VersionInterface;
 
 /**
  * @internal
@@ -67,7 +72,7 @@ class MetadataStatement implements MetadataStatementInterface
     private $protocolFamily;
 
     /**
-     * @var Version[]
+     * @var VersionInterface[]
      */
     private $upv = [];
 
@@ -228,7 +233,7 @@ class MetadataStatement implements MetadataStatementInterface
     }
 
     /**
-     * @return Version[]
+     * @return VersionInterface[]
      */
     public function getUpv(): array
     {
@@ -369,6 +374,11 @@ class MetadataStatement implements MetadataStatementInterface
         return $this->supportedExtensions;
     }
 
+    public static function createFromString(string $data): self
+    {
+        return self::createFromArray(json_decode($data, true));
+    }
+
     public static function createFromArray(array $data): self
     {
         $object = new self();
@@ -442,7 +452,7 @@ class MetadataStatement implements MetadataStatementInterface
 
     public function jsonSerialize(): array
     {
-        $data = [
+        return [
             'legalHeader' => $this->legalHeader,
             'aaid' => $this->aaid,
             'aaguid' => $this->aaguid,
@@ -481,7 +491,5 @@ class MetadataStatement implements MetadataStatementInterface
                 return $object->jsonSerialize();
             }, $this->supportedExtensions),
         ];
-
-        return Utils::filterNullValues($data);
     }
 }

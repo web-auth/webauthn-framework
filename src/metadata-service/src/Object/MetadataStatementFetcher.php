@@ -25,6 +25,9 @@ use function Safe\sprintf;
 use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataTOCPayloadInterface;
 
+/**
+ * @internal
+ */
 class MetadataStatementFetcher
 {
     public static function fetchTableOfContent(string $uri, ClientInterface $client, RequestFactoryInterface $requestFactory, array $additionalHeaders = []): MetadataTOCPayloadInterface

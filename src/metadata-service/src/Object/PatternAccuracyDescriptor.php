@@ -18,6 +18,9 @@ use Assert\Assertion;
 use function Safe\sprintf;
 use Webauthn\MetadataService\PatternAccuracyDescriptorInterface;
 
+/**
+ * @internal
+ */
 class PatternAccuracyDescriptor extends AbstractDescriptor implements PatternAccuracyDescriptorInterface
 {
     /**

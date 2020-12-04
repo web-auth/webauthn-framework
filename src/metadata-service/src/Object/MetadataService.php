@@ -26,6 +26,9 @@ use Webauthn\MetadataService\MetadataStatementInterface;
 use Webauthn\MetadataService\MetadataTOCPayloadEntryInterface;
 use Webauthn\MetadataService\MetadataTOCPayloadInterface;
 
+/**
+ * @internal
+ */
 class MetadataService
 {
     /**

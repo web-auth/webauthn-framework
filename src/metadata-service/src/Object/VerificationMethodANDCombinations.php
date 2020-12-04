@@ -17,6 +17,9 @@ use Assert\Assertion;
 use Webauthn\MetadataService\VerificationMethodANDCombinationsInterface;
 use Webauthn\MetadataService\VerificationMethodDescriptorInterface;
 
+/**
+ * @internal
+ */
 class VerificationMethodANDCombinations implements VerificationMethodANDCombinationsInterface
 {
     /**

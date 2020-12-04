@@ -17,6 +17,9 @@ use function array_key_exists;
 use Assert\Assertion;
 use Webauthn\MetadataService\ExtensionDescriptorInterface;
 
+/**
+ * @internal
+ */
 class ExtensionDescriptor implements ExtensionDescriptorInterface
 {
     /**

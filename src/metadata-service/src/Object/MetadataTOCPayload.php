@@ -19,6 +19,9 @@ use function Safe\sprintf;
 use Webauthn\MetadataService\MetadataTOCPayloadEntryInterface;
 use Webauthn\MetadataService\MetadataTOCPayloadInterface;
 
+/**
+ * @internal
+ */
 class MetadataTOCPayload implements MetadataTOCPayloadInterface
 {
     /**

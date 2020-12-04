@@ -22,8 +22,8 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @group functional
@@ -52,22 +52,16 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::exactly(2))
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==', true))
-            ->willReturn(null)
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('localhost');
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request
         );
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request
@@ -113,13 +107,7 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve', true))
-            ->willReturn(null)
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
@@ -159,16 +147,10 @@ class PackedAttestationStatementTest extends AbstractTestCase
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
-        $credentialRepository = static::createMock(PublicKeyCredentialSourceRepository::class);
-        $credentialRepository
-            ->expects(static::once())
-            ->method('findOneByCredentialId')
-            ->with(base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true))
-            ->willReturn(null)
-        ;
+        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request

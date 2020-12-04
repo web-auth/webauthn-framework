@@ -17,6 +17,9 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Webauthn\MetadataService\MetadataStatementInterface;
 
+/**
+ * @internal
+ */
 class DistantSingleMetadata extends SingleMetadata
 {
     /**
