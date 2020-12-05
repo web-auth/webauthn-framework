@@ -17,10 +17,10 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\MetadataService\Object\BiometricAccuracyDescriptor;
-use Webauthn\MetadataService\Object\CodeAccuracyDescriptor;
-use Webauthn\MetadataService\Object\PatternAccuracyDescriptor;
-use Webauthn\MetadataService\Object\VerificationMethodDescriptor;
+use Webauthn\MetadataService\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\PatternAccuracyDescriptor;
+use Webauthn\MetadataService\VerificationMethodDescriptor;
 
 /**
  * @group unit

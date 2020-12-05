@@ -56,7 +56,7 @@ class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 
         $request = $this->createRequestWithHost('webauthn.morselli.fr');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request

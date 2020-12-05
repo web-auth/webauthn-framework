@@ -32,9 +32,9 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
-use Webauthn\MetadataService\MetadataStatementInterface;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
-use Webauthn\MetadataService\StatusReportInterface;
+use Webauthn\MetadataService\StatusReport;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -222,7 +222,7 @@ class AuthenticatorAttestationResponseValidator
         }
     }
 
-    private function checkCertificateChain(AttestationStatement $attestationStatement, ?MetadataStatementInterface $metadataStatement): void
+    private function checkCertificateChain(AttestationStatement $attestationStatement, ?MetadataStatement $metadataStatement): void
     {
         $trustPath = $attestationStatement->getTrustPath();
         if (!$trustPath instanceof CertificateTrustPath) {
@@ -238,12 +238,17 @@ class AuthenticatorAttestationResponseValidator
         }
 
         $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
+        $rootStatementCertificates = $metadataStatement->getRootCertificates();
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
+        $trustedCertificates = array_merge(
+            $metadataStatementCertificates,
+            $rootStatementCertificates
+        );
 
         // @phpstan-ignore-next-line
-        null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $metadataStatementCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $metadataStatementCertificates);
+        null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $trustedCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
@@ -295,10 +300,9 @@ class AuthenticatorAttestationResponseValidator
         //The MDS Repository is mandatory here
         Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-        $statusReports = $this->metadataStatementRepository->findStatusReportsByAAGUID($aaguid);
 
         // We check the last status report
-        $this->checkStatusReport($statusReports);
+        $this->checkStatusReport(null === $metadataStatement ? [] : $metadataStatement->getStatusReports());
 
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
@@ -320,7 +324,7 @@ class AuthenticatorAttestationResponseValidator
     }
 
     /**
-     * @param StatusReportInterface[] $statusReports
+     * @param StatusReport[] $statusReports
      */
     private function checkStatusReport(array $statusReports): void
     {
@@ -351,13 +355,13 @@ class AuthenticatorAttestationResponseValidator
     {
         switch ($attestationStatement->getType()) {
             case AttestationStatement::TYPE_BASIC:
-                return MetadataStatementInterface::ATTESTATION_BASIC_FULL;
+                return MetadataStatement::ATTESTATION_BASIC_FULL;
             case AttestationStatement::TYPE_SELF:
-                return MetadataStatementInterface::ATTESTATION_BASIC_SURROGATE;
+                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
             case AttestationStatement::TYPE_ATTCA:
-                return MetadataStatementInterface::ATTESTATION_ATTCA;
+                return MetadataStatement::ATTESTATION_ATTCA;
             case AttestationStatement::TYPE_ECDAA:
-                return MetadataStatementInterface::ATTESTATION_ECDAA;
+                return MetadataStatement::ATTESTATION_ECDAA;
             default:
                 throw new InvalidArgumentException('Invalid attestation type');
         }

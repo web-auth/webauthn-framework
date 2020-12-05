@@ -42,10 +42,22 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
      */
     private $requestFactory;
 
+    /**
+     * @var string[]
+     */
+    private $rootCertificates = [];
+
     public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory)
     {
         $this->client = $client;
         $this->requestFactory = $requestFactory;
+    }
+
+    public function addRootCertificate(string $certificate): self
+    {
+        $this->rootCertificates[] = $certificate;
+
+        return $this;
     }
 
     /**
@@ -112,7 +124,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         if ($hasCrls) {
             array_unshift($processArguments, '-crl_check');
             array_unshift($processArguments, '-crl_check_all');
-            array_unshift($processArguments, '-crl_download');
+            //array_unshift($processArguments, '-crl_download');
             array_unshift($processArguments, '-extended_crl');
         }
         array_unshift($processArguments, 'openssl', 'verify');

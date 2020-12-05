@@ -21,10 +21,10 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
-use Webauthn\MetadataService\MetadataStatementInterface;
+use Webauthn\MetadataService\MetadataService;
+use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\MetadataStatementFetcher;
 use Webauthn\MetadataService\MetadataStatementRepository;
-use Webauthn\MetadataService\Object\MetadataService;
-use Webauthn\MetadataService\Object\MetadataStatementFetcher;
 use Webauthn\Tests\MockedMappedResponseTrait;
 use Webauthn\Tests\MockedRequestTrait;
 
@@ -89,7 +89,7 @@ class MetadataServiceTest extends KernelTestCase
             new Psr17Factory()
         );
 
-        /* @var MetadataStatementInterface $ms */
+        /* @var MetadataStatement $ms */
         static::assertEquals('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->getAAguid());
         static::assertEquals('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->getDescription());
         static::assertEquals([], $ms->getAlternativeDescriptions());

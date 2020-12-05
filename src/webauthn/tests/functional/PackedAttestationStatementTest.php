@@ -15,6 +15,8 @@ namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
 use Cose\Algorithms;
+use function Safe\base64_decode;
+use function Safe\hex2bin;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -55,13 +57,13 @@ class PackedAttestationStatementTest extends AbstractTestCase
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('localhost');
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request
         );
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request
@@ -150,7 +152,7 @@ class PackedAttestationStatementTest extends AbstractTestCase
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialCreationOptions,
             $request

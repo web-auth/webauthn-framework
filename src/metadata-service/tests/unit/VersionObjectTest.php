@@ -17,7 +17,7 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\MetadataService\Object\Version;
+use Webauthn\MetadataService\Version;
 
 /**
  * @group unit

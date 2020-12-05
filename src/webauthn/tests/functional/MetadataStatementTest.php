@@ -15,9 +15,7 @@ namespace Webauthn\Tests\Functional;
 
 use Nyholm\Psr7\ServerRequest;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
-use Webauthn\TrustPath\CertificateTrustPath;
 
 /**
  * @group functional
@@ -27,36 +25,6 @@ use Webauthn\TrustPath\CertificateTrustPath;
  */
 final class MetadataStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
-    public function theAttestationCanBeVerified(): void
-    {
-        //Given
-        $request = new ServerRequest('POST', 'https://localhost/');
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $options = PublicKeyCredentialCreationOptions::createFromString('{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-46},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"jWqRerNGC8LSQB2vc2gc78R_QAWLF6OqwTm_OTjPnTU","attestation":"direct","user":{"name":"ox2tmfkBqG8nHHxyoZ--","id":"ZjVmYzRkYTUtYzYxOS00MDRiLWIzNzktZWM5NzUyM2RiMzNi","displayName":"Mozell Shue"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}');
-
-        //When
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{"id":"sB7SPH45S9KZLBiEjJ8OyiUuK-rTXriaqf0QActC9v4","rawId":"sB7SPH45S9KZLBiEjJ8OyiUuK-rTXriaqf0QActC9v4","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEYwRAIhAJFVVNYsNNetE4_BMnEhSW_THSkRStv6r0HyhXix2bnTAh8fFLiw8jLsp4SaUK7DLEHnC6Z8zWE_2SYnF1dfbN8bY3g1Y4FZBEUwggRBMIICKaADAgECAgEBMA0GCSqGSIb3DQEBCwUAMIGhMRgwFgYDVQQDDA9GSURPMiBURVNUIFJPT1QxMTAvBgkqhkiG9w0BCQEWImNvbmZvcm1hbmNlLXRvb2xzQGZpZG9hbGxpYW5jZS5vcmcxFjAUBgNVBAoMDUZJRE8gQWxsaWFuY2UxDDAKBgNVBAsMA0NXRzELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk1ZMRIwEAYDVQQHDAlXYWtlZmllbGQwHhcNMTgwNTIzMTQzOTQzWhcNMjgwNTIwMTQzOTQzWjCBwjEjMCEGA1UEAwwaRklETzIgQkFUQ0ggS0VZIHByaW1lMjU2djExMTAvBgkqhkiG9w0BCQEWImNvbmZvcm1hbmNlLXRvb2xzQGZpZG9hbGxpYW5jZS5vcmcxFjAUBgNVBAoMDUZJRE8gQWxsaWFuY2UxIjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNWTESMBAGA1UEBwwJV2FrZWZpZWxkMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETzpeXqtsH7yul_bfZEmWdix773IAQCp2xvIw9lVvF6qZm1l_xL9Qiq-OnvDNAT9aub0nkUvwgEN4y8yxG4m1RqMsMCowCQYDVR0TBAIwADAdBgNVHQ4EFgQUVk33wPjGVbahH2xNGfO_QeL9AXkwDQYJKoZIhvcNAQELBQADggIBAIfdoJ_4IIkF0S1Bzgmk6dR6XAYbDsPGcEyiQccGCvMnEOf0EVwXDEYvGsVXsR9h6FA04P7vg5Lx9lGBmI1_0QMYBiIeHT4Kyl8FZ3bTMIiOUJ0MFzKHCrc8snrkkL-iDcJP0AriS-SzgMj7TVFjE2_1LwnHWFo7WWBTnmEEivU_-nbVkqelwISE-MH9wgWscmovmIkZ9534teeL1K6rbg4eenjgyu_iHs4PZ6W7nJZ918Vv5EYbZNhREUgZgaKOyKLT3fDRkwE58FL7der8Osd5ltmus2RjjnmAkJnl5Xzc2u30n39QXRVkeX-HCdIBQL9ve03-XRmUL2Q9w3MkPTiXid0UEPYp19DYcZNfunJtYtnvIfYEze6LY6mJpxo7N3s4T3WsdgHa5nJDuN2DbnIX0zxAj00cz-K0KN0G8Bi3hAJPx1fqCZmIgZHYX9hdkCzJu0nXqmdSY4NVtbzSU9vPL49RBhfv2il4P27owGivOv2DTwSWlvUXcOBJ3xVIuWxHZA-WUqXgBwkMwg59kc5AY7Nq0xXuKkRVFrQvkWeMBakce9I1yyMPgK6XnraY7cyUjakLKj5RL6cjMbldmY567gNv8rD90Q86jbO0fCVTSoontEQGxu3reN1C2XAu6IsfCSmLCesA5l_Bssu71jPi0vV4mVB9-7BL8CiWzPscaGF1dGhEYXRhWKSWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAApwJp7V85GQfurkhhm5AF_hgAgsB7SPH45S9KZLBiEjJ8OyiUuK-rTXriaqf0QActC9v6lAQIDJiABIVggFHT6ds3xrCkJzYqqPxliE5GrhXU9qEBr5ltXFR8VengiWCBdbcvQ3nspGXPvh-s5K2xE-V2JZWZO1UMN1RZI4O188Q","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6ImpXcVJlck5HQzhMU1FCMnZjMmdjNzhSX1FBV0xGNk9xd1RtX09UalBuVFUiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}');
-
-        //Then
-        $source = $this->getAuthenticatorAttestationResponseValidator($credentialRepository, null, false)->check(
-            $publicKeyCredential->getResponse(),
-            $options,
-            $request
-        );
-
-        static::assertEquals(hex2bin('b01ed23c7e394bd2992c18848c9f0eca252e2bead35eb89aa9fd1001cb42f6fe'), $source->getPublicKeyCredentialId());
-        static::assertInstanceOf(CertificateTrustPath::class, $source->getTrustPath());
-        static::assertEquals(hex2bin('a50102032620012158201474fa76cdf1ac2909cd8aaa3f19621391ab85753da8406be65b57151f157a782258205d6dcbd0de7b291973ef87eb392b6c44f95d8965664ed5430dd51648e0ed7cf1'), $source->getCredentialPublicKey());
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $source->getType());
-        static::assertEquals('c09a7b57-ce46-41fb-ab92-1866e4017f86', $source->getAaguid()->toString());
-        static::assertEquals('basic', $source->getAttestationType());
-        static::assertEquals(41, $source->getCounter());
-        static::assertEquals('f5fc4da5-c619-404b-b379-ec97523db33b', $source->getUserHandle());
-    }
-
     /**
      * @test
      * @dataProvider dataInvalidAttestation

@@ -13,42 +13,47 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Webauthn\MetadataService\MetadataStatementInterface;
+use Webauthn\MetadataService\MetadataService;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\StatusReportInterface;
+use Webauthn\MetadataService\SingleMetadata;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
     /**
-     * @var array<string, array<int, StatusReportInterface>>
+     * @var SingleMetadata[]
      */
-    private $statusReports = [];
+    private $metadataStatements = [];
 
     /**
-     * @var array<string, MetadataStatementInterface>
+     * @var MetadataService[]
      */
-    private $metadataStatements;
+    private $metadataServices = [];
 
-    public function add(MetadataStatementInterface $metadataStatement): self
+    public function addSingleStatement(SingleMetadata $metadataStatement): void
     {
-        $this->metadataStatements[$metadataStatement->getAaguid()] = $metadataStatement;
-
-        return $this;
+        $this->metadataStatements[] = $metadataStatement;
     }
 
-    public function addStatusReport(string $aaguid, StatusReportInterface $statusReport): self
+    public function addService(MetadataService $metadataService): void
     {
-        if (!isset($this->statusReports[$aaguid])) {
-            $this->statusReports[$aaguid] = [];
+        $this->metadataServices[] = $metadataService;
+    }
+
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatement
+    {
+        foreach ($this->metadataStatements as $metadataStatement) {
+            if ($metadataStatement->getMetadataStatement()->getAaguid() === $aaguid) {
+                return $metadataStatement->getMetadataStatement();
+            }
         }
-        $this->statusReports[$aaguid][] = $statusReport;
+        foreach ($this->metadataServices as $metadataService) {
+            if ($metadataService->has($aaguid)) {
+                return $metadataService->get($aaguid);
+            }
+        }
 
-        return $this;
-    }
-
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface
-    {
-        return $this->metadataStatements[$aaguid] ?? null;
+        return null;
     }
 
     /**
@@ -56,6 +61,6 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
      */
     public function findStatusReportsByAAGUID(string $aaguid): array
     {
-        return $this->statusReports[$aaguid] ?? [];
+        return [];
     }
 }

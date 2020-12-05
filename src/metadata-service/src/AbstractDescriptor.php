@@ -13,11 +13,37 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Webauthn\MetadataService\Object\AbstractDescriptor as BaseAbstractDescriptor;
+use Assert\Assertion;
+use JsonSerializable;
 
-/**
- * @deprecated "The class is deprecated since v3.3 and will be an interface in v4.0"
- */
-abstract class AbstractDescriptor extends BaseAbstractDescriptor
+abstract class AbstractDescriptor implements JsonSerializable
 {
+    /**
+     * @var int|null
+     */
+    private $maxRetries;
+
+    /**
+     * @var int|null
+     */
+    private $blockSlowdown;
+
+    public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
+    {
+        Assertion::greaterOrEqualThan($maxRetries, 0, Utils::logicException('Invalid data. The value of "maxRetries" must be a positive integer'));
+        Assertion::greaterOrEqualThan($blockSlowdown, 0, Utils::logicException('Invalid data. The value of "blockSlowdown" must be a positive integer'));
+
+        $this->maxRetries = $maxRetries;
+        $this->blockSlowdown = $blockSlowdown;
+    }
+
+    public function getMaxRetries(): ?int
+    {
+        return $this->maxRetries;
+    }
+
+    public function getBlockSlowdown(): ?int
+    {
+        return $this->blockSlowdown;
+    }
 }

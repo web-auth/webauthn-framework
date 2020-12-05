@@ -16,12 +16,12 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Throwable;
-use Webauthn\MetadataService\MetadataStatementInterface;
+use Webauthn\MetadataService\DistantSingleMetadata;
+use Webauthn\MetadataService\MetadataService;
+use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\Object\DistantSingleMetadata;
-use Webauthn\MetadataService\Object\MetadataService;
-use Webauthn\MetadataService\Object\SingleMetadata;
-use Webauthn\MetadataService\Object\StatusReport;
+use Webauthn\MetadataService\SingleMetadata;
+use Webauthn\MetadataService\StatusReport;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
@@ -85,7 +85,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         $this->statusReports[$aaguid][] = $statusReport;
     }
 
-    public function findOneByAAGUID(string $aaguid): ?MetadataStatementInterface
+    public function findOneByAAGUID(string $aaguid): ?MetadataStatement
     {
         foreach ($this->metadataStatements as $metadataStatement) {
             try {
@@ -99,15 +99,8 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         }
         foreach ($this->metadataServices as $metadataService) {
             try {
-                $toc = $metadataService->getMetadataTOCPayload();
-                foreach ($toc->getEntries() as $entry) {
-                    if ($entry->getAaguid() === $aaguid) {
-                        try {
-                            return $metadataService->getMetadataStatementFor($entry);
-                        } catch (Throwable $throwable) {
-                            continue;
-                        }
-                    }
+                if ($metadataService->has($aaguid)) {
+                    return $metadataService->get($aaguid);
                 }
             } catch (Throwable $throwable) {
                 continue;

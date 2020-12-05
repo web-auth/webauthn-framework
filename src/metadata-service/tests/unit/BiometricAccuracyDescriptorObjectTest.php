@@ -16,7 +16,7 @@ namespace Webauthn\MetadataService\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use Webauthn\MetadataService\Object\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\BiometricAccuracyDescriptor;
 
 /**
  * @group unit
