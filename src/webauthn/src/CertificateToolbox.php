@@ -18,7 +18,6 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use RuntimeException;
-use function Safe\base64_decode;
 use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
 use function Safe\ksort;
@@ -110,16 +109,8 @@ class CertificateToolbox
         return $pemCert;
     }
 
-    /**
-     * @see https://github.com/fido-alliance/conformance-test-tools-resources/issues/593
-     */
     public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
     {
-        try {
-            $certificate = base64_decode($certificate, true);
-        } catch (Throwable $e) {
-            //Nothing to do
-        }
         $derCertificate = self::unusedBytesFix($certificate);
 
         return self::fixPEMStructure(base64_encode($derCertificate), $type);
