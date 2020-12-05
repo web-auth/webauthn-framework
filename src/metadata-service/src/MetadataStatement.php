@@ -504,6 +504,15 @@ class MetadataStatement implements JsonSerializable
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
+        $object->rootCertificates = $data['rootCertificates'] ?? [];
+        if (isset($data['statusReports'])) {
+            $reports = $data['statusReports'];
+            Assertion::isArray($reports, 'Invalid Metadata Statement');
+            foreach ($reports as $report) {
+                Assertion::isArray($report, 'Invalid Metadata Statement');
+                $object->statusReports[] = StatusReport::createFromArray($report);
+            }
+        }
 
         return $object;
     }
@@ -548,6 +557,8 @@ class MetadataStatement implements JsonSerializable
             'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->supportedExtensions),
+            'rootCertificates' => $this->rootCertificates,
+            'statusReports' => $this->statusReports,
         ];
 
         return Utils::filterNullValues($data);

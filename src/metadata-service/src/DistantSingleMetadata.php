@@ -20,9 +20,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
-/**
- * @internal
- */
 class DistantSingleMetadata extends SingleMetadata
 {
     /**

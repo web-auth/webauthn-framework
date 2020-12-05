@@ -64,6 +64,8 @@ class StatusReport implements JsonSerializable
 
     public function __construct(string $status, ?string $effectiveDate, ?string $certificate, ?string $url, ?string $certificationDescriptor, ?string $certificateNumber, ?string $certificationPolicyVersion, ?string $certificationRequirementsVersion)
     {
+        Assertion::inArray($status, AuthenticatorStatus::list(), Utils::logicException('The value of the key "status" is not acceptable'));
+
         $this->status = $status;
         $this->effectiveDate = $effectiveDate;
         $this->certificate = $certificate;

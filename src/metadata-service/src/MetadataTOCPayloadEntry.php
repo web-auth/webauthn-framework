@@ -114,7 +114,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         return $this->url;
     }
 
-    public function addStatusReports(StatusReport $statusReport): MetadataTOCPayloadEntry
+    public function addStatusReports(StatusReport $statusReport): self
     {
         $this->statusReports[] = $statusReport;
 

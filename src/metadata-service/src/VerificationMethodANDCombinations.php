@@ -23,7 +23,7 @@ class VerificationMethodANDCombinations implements JsonSerializable
      */
     private $verificationMethods = [];
 
-    public function addVerificationMethodDescriptor(VerificationMethodDescriptor $verificationMethodDescriptor): VerificationMethodANDCombinations
+    public function addVerificationMethodDescriptor(VerificationMethodDescriptor $verificationMethodDescriptor): self
     {
         $this->verificationMethods[] = $verificationMethodDescriptor;
 

@@ -17,9 +17,6 @@ use Assert\Assertion;
 use JsonSerializable;
 use function Safe\sprintf;
 
-/**
- * @internal
- */
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
     /**
@@ -81,7 +78,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         $this->interlace = $interlace;
     }
 
-    public function addPalette(RgbPaletteEntry $rgbPaletteEntry): DisplayPNGCharacteristicsDescriptor
+    public function addPalette(RgbPaletteEntry $rgbPaletteEntry): self
     {
         $this->plte[] = $rgbPaletteEntry;
 
