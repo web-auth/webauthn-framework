@@ -26,7 +26,7 @@ use function Safe\json_decode;
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
-     * @var array<string, PublicKeyCredentialDescriptor>
+     * @var PublicKeyCredentialDescriptor[]
      */
     private $publicKeyCredentialDescriptors = [];
 
@@ -81,7 +81,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFromArray(array $json): self
     {

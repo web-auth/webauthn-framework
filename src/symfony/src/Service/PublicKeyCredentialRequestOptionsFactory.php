@@ -25,7 +25,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class PublicKeyCredentialRequestOptionsFactory
 {
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $profiles;
 
@@ -35,7 +35,7 @@ final class PublicKeyCredentialRequestOptionsFactory
     private $eventDispatcher;
 
     /**
-     * @param array<string, mixed> $profiles
+     * @param mixed[] $profiles
      */
     public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
@@ -44,7 +44,7 @@ final class PublicKeyCredentialRequestOptionsFactory
     }
 
     /**
-     * @param array<PublicKeyCredentialDescriptor> $allowCredentials
+     * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
     public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
     {
@@ -65,7 +65,7 @@ final class PublicKeyCredentialRequestOptionsFactory
     }
 
     /**
-     * @param array<string, mixed> $profile
+     * @param mixed[] $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {

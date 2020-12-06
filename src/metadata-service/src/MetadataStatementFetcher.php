@@ -23,6 +23,9 @@ use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
+/**
+ * @deprecated This class is deprecated since v3.3 and will be removed in v4.0
+ */
 class MetadataStatementFetcher
 {
     public static function fetchTableOfContent(string $uri, ClientInterface $client, RequestFactoryInterface $requestFactory, array $additionalHeaders = []): MetadataTOCPayload

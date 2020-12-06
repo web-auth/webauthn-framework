@@ -1,6 +1,7 @@
 name: Backwards compatibility verification
 
-on: [push]
+on:
+  pull_request:
 
 jobs:
   bc-check:
@@ -14,21 +15,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Setup PHP, with composer and extensions
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: json, mbstring, openssl
-          coverage: xdebug
-
-      - name: Install Composer dependencies
-        run: |
-          composer update --no-progress --no-suggest --prefer-dist --optimize-autoloader
+        
+      - name: Fetch tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: BC Break verification
         uses: docker://nyholm/roave-bc-check-ga
-        with:
-          args: --from=${{ github.event.pull_request.base.sha }}

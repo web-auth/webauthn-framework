@@ -31,7 +31,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     private $rpId;
 
     /**
-     * @var array<PublicKeyCredentialDescriptor>
+     * @var PublicKeyCredentialDescriptor[]
      */
     private $allowCredentials = [];
 
@@ -116,7 +116,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     }
 
     /**
-     * @return array<PublicKeyCredentialDescriptor>
+     * @return PublicKeyCredentialDescriptor[]
      */
     public function getAllowCredentials(): array
     {
@@ -137,7 +137,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
@@ -159,7 +159,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

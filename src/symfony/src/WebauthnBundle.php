@@ -20,6 +20,7 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\CertificateChainCheckerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
@@ -53,6 +54,7 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new EnforcedSafetyNetApiKeyVerificationCompilerPass());
         $container->addCompilerPass(new LoggerSetterCompilerPass());
         $container->addCompilerPass(new CounterCheckerSetterCompilerPass());
+        $container->addCompilerPass(new CertificateChainCheckerSetterCompilerPass());
         $container->addCompilerPass(new MetadataStatementRepositorySetterCompilerPass());
 
         $this->registerMappings($container);

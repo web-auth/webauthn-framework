@@ -228,7 +228,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

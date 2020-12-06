@@ -1,3 +1,4 @@
 .phpunit.result.cache
 report.md
 composer.lock
+vendor

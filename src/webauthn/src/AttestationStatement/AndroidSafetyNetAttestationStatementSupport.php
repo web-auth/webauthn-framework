@@ -132,7 +132,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
@@ -256,9 +256,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     /**
-     * @param array<string> $certificates
+     * @param string[] $certificates
      *
-     * @return array<string>
+     * @return string[]
      */
     private function convertCertificatesToPem(array $certificates): array
     {

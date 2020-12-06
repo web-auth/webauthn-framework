@@ -33,7 +33,7 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     }
 
     /**
-     * @return array<string, string>
+     * @return string[]
      */
     public function jsonSerialize(): array
     {

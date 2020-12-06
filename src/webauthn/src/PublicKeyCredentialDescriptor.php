@@ -44,7 +44,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     protected $transports;
 
     /**
-     * @param array<string> $transports
+     * @param string[] $transports
      */
     public function __construct(string $type, string $id, array $transports = [])
     {
@@ -64,7 +64,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getTransports(): array
     {
@@ -80,7 +80,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFromArray(array $json): self
     {
@@ -95,7 +95,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {
