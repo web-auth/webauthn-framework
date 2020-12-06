@@ -56,15 +56,15 @@ final class Configuration implements ConfigurationInterface
             ->beforeNormalization()
             ->ifArray()
             ->then(static function ($v): array {
-                    if (!isset($v['creation_profiles'])) {
-                        $v['creation_profiles'] = null;
-                    }
-                    if (!isset($v['request_profiles'])) {
-                        $v['request_profiles'] = null;
-                    }
+                if (!isset($v['creation_profiles'])) {
+                    $v['creation_profiles'] = null;
+                }
+                if (!isset($v['request_profiles'])) {
+                    $v['request_profiles'] = null;
+                }
 
-                    return $v;
-                })
+                return $v;
+            })
             ->end()
             ->children()
             ->scalarNode('logger')
