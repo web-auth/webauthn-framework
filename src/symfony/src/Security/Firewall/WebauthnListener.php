@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\HttpUtils;
 class WebauthnListener
 {
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $options;
 
@@ -49,7 +49,7 @@ class WebauthnListener
     private $creationListener;
 
     /**
-     * @param array<string, mixed> $options
+     * @param mixed[] $options
      */
     public function __construct(HttpUtils $httpUtils, ?LoggerInterface $logger, RequestListener $requestListener, CreationListener $creationListener, array $options)
     {

@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
+use function Safe\json_decode;
 use function Safe\sprintf;
 
 class MetadataStatement implements JsonSerializable
@@ -229,6 +230,24 @@ class MetadataStatement implements JsonSerializable
      * @var ExtensionDescriptor[]
      */
     private $supportedExtensions = [];
+
+    /**
+     * @var array<int, StatusReport>
+     */
+    private $statusReports = [];
+
+    /**
+     * @var string[]
+     */
+    private $rootCertificates = [];
+
+    public static function createFromString(string $statement): self
+    {
+        $data = json_decode($statement, true);
+        Assertion::isArray($data, 'Invalid Metadata Statement');
+
+        return self::createFromArray($data);
+    }
 
     public function getLegalHeader(): ?string
     {
@@ -485,6 +504,15 @@ class MetadataStatement implements JsonSerializable
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
+        $object->rootCertificates = $data['rootCertificates'] ?? [];
+        if (isset($data['statusReports'])) {
+            $reports = $data['statusReports'];
+            Assertion::isArray($reports, 'Invalid Metadata Statement');
+            foreach ($reports as $report) {
+                Assertion::isArray($report, 'Invalid Metadata Statement');
+                $object->statusReports[] = StatusReport::createFromArray($report);
+            }
+        }
 
         return $object;
     }
@@ -529,8 +557,46 @@ class MetadataStatement implements JsonSerializable
             'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->supportedExtensions),
+            'rootCertificates' => $this->rootCertificates,
+            'statusReports' => $this->statusReports,
         ];
 
         return Utils::filterNullValues($data);
+    }
+
+    /**
+     * @return StatusReport[]
+     */
+    public function getStatusReports(): array
+    {
+        return $this->statusReports;
+    }
+
+    /**
+     * @param StatusReport[] $statusReports
+     */
+    public function setStatusReports(array $statusReports): self
+    {
+        $this->statusReports = $statusReports;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRootCertificates(): array
+    {
+        return $this->rootCertificates;
+    }
+
+    /**
+     * @param string[] $rootCertificates
+     */
+    public function setRootCertificates(array $rootCertificates): self
+    {
+        $this->rootCertificates = $rootCertificates;
+
+        return $this;
     }
 }

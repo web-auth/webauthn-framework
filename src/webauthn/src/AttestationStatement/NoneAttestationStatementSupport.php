@@ -26,7 +26,7 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {

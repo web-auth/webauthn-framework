@@ -40,6 +40,11 @@ class MetadataTOCPayload implements JsonSerializable
      */
     private $entries = [];
 
+    /**
+     * @var string[]
+     */
+    private $rootCertificates;
+
     public function __construct(int $no, string $nextUpdate, ?string $legalHeader = null)
     {
         $this->no = $no;
@@ -97,6 +102,7 @@ class MetadataTOCPayload implements JsonSerializable
         foreach ($data['entries'] as $k => $entry) {
             $object->addEntry(MetadataTOCPayloadEntry::createFromArray($entry));
         }
+        $object->rootCertificates = $data['rootCertificates'] ?? [];
 
         return $object;
     }
@@ -110,8 +116,27 @@ class MetadataTOCPayload implements JsonSerializable
             'entries' => array_map(static function (MetadataTOCPayloadEntry $object): array {
                 return $object->jsonSerialize();
             }, $this->entries),
+            'rootCertificates' => $this->rootCertificates,
         ];
 
         return Utils::filterNullValues($data);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRootCertificates(): array
+    {
+        return $this->rootCertificates;
+    }
+
+    /**
+     * @param string[] $rootCertificates
+     */
+    public function setRootCertificates(array $rootCertificates): self
+    {
+        $this->rootCertificates = $rootCertificates;
+
+        return $this;
     }
 }

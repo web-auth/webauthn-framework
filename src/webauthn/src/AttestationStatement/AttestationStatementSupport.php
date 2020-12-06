@@ -20,7 +20,7 @@ interface AttestationStatementSupport
     public function name(): string;
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement;
 

@@ -40,7 +40,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      * @param string      $userProviderId
      * @param string|null $defaultEntryPoint
      *
-     * @return array<int, string>
+     * @return string[]
      */
     public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPoint): array
     {
@@ -133,7 +133,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createListener(ContainerBuilder $container, string $id, array $config): string
     {
@@ -156,7 +156,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createRequestControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
@@ -169,7 +169,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createRequestListener(ContainerBuilder $container, string $id, array $config): string
     {
@@ -191,7 +191,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createCreationControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
@@ -204,7 +204,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createCreationListener(ContainerBuilder $container, string $id, array $config): string
     {
@@ -226,7 +226,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param mixed[] $config
      */
     private function createEntryPoint(ContainerBuilder $container, string $id, array $config): string
     {

@@ -26,6 +26,7 @@ use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
 use function Safe\sprintf;
+use function Safe\unpack;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -74,7 +75,7 @@ class PublicKeyCredentialLoader
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public function loadArray(array $json): PublicKeyCredential
     {
@@ -126,7 +127,7 @@ class PublicKeyCredentialLoader
     }
 
     /**
-     * @param array<string, mixed> $response
+     * @param mixed[] $response
      */
     private function createResponse(array $response): AuthenticatorResponse
     {

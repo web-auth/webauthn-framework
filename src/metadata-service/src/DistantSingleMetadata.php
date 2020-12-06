@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use Assert\Assertion;
+use Base64Url\Base64Url;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use function Safe\json_decode;
+use function Safe\sprintf;
 
 class DistantSingleMetadata extends SingleMetadata
 {
@@ -55,6 +59,24 @@ class DistantSingleMetadata extends SingleMetadata
 
     public function getMetadataStatement(): MetadataStatement
     {
-        return MetadataStatementFetcher::fetchMetadataStatement($this->uri, $this->isBase64Encoded, $this->httpClient, $this->requestFactory, $this->additionalHeaders);
+        $payload = $this->fetch();
+        $json = $this->isBase64Encoded ? Base64Url::decode($payload) : $payload;
+        $data = json_decode($json, true);
+
+        return MetadataStatement::createFromArray($data);
+    }
+
+    private function fetch(): string
+    {
+        $request = $this->requestFactory->createRequest('GET', $this->uri);
+        foreach ($this->additionalHeaders as $k => $v) {
+            $request = $request->withHeader($k, $v);
+        }
+        $response = $this->httpClient->sendRequest($request);
+        Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
+        $content = $response->getBody()->getContents();
+        Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+
+        return $content;
     }
 }

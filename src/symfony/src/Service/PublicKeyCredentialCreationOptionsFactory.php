@@ -29,7 +29,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class PublicKeyCredentialCreationOptionsFactory
 {
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $profiles;
 
@@ -39,7 +39,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     private $eventDispatcher;
 
     /**
-     * @param array<string, mixed> $profiles
+     * @param mixed[] $profiles
      */
     public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
     {
@@ -48,7 +48,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     }
 
     /**
-     * @param array<PublicKeyCredentialDescriptor> $excludeCredentials
+     * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
     public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestationConveyance = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialCreationOptions
     {
@@ -74,7 +74,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     }
 
     /**
-     * @param array<string, mixed> $profile
+     * @param mixed[] $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
@@ -87,7 +87,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     }
 
     /**
-     * @param array<string, mixed> $profile
+     * @param mixed[] $profile
      */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
@@ -100,7 +100,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     }
 
     /**
-     * @param array<string, mixed> $profile
+     * @param mixed[] $profile
      */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
@@ -108,9 +108,9 @@ final class PublicKeyCredentialCreationOptionsFactory
     }
 
     /**
-     * @param array<string, mixed> $profile
+     * @param mixed[] $profile
      *
-     * @return array<PublicKeyCredentialParameters>
+     * @return PublicKeyCredentialParameters[]
      */
     private function createCredentialParameters(array $profile): array
     {

@@ -42,7 +42,7 @@ class TokenBinding
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      */
     public static function createFormArray(array $json): self
     {

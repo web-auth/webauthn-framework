@@ -23,7 +23,7 @@ use function Safe\sprintf;
 abstract class TrustPathLoader
 {
     /**
-     * @param array<string, mixed> $data
+     * @param mixed[] $data
      */
     public static function loadTrustPath(array $data): TrustPath
     {
@@ -45,7 +45,7 @@ abstract class TrustPathLoader
     }
 
     /**
-     * @return array<string, string>
+     * @return string[]
      */
     private static function oldTrustPathTypes(): array
     {

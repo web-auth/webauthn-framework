@@ -31,7 +31,7 @@ class CollectedClientData
     private $rawData;
 
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $data;
 
@@ -61,7 +61,7 @@ class CollectedClientData
     private $tokenBinding;
 
     /**
-     * @param array<string, mixed> $data
+     * @param mixed[] $data
      */
     public function __construct(string $rawData, array $data)
     {
@@ -162,7 +162,7 @@ class CollectedClientData
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param mixed[] $json
      *
      * @return mixed|null
      */

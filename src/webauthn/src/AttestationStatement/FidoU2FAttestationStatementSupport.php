@@ -46,7 +46,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
