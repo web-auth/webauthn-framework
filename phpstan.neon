@@ -2,9 +2,6 @@ parameters:
     level: 7
     paths:
         - src
-    excludes_analyse:
-        - %currentWorkingDirectory%/src/*/tests/*
-        - %currentWorkingDirectory%/src/*/var/*
     ignoreErrors:
         - '#Method .* should return Webauthn\\PublicKeyCredential(Creation|Request)Options but returns Webauthn\\PublicKeyCredentialOptions\.#'
         - '#Parameter .* of class .* expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'

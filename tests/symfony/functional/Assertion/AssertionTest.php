@@ -33,6 +33,7 @@ use Webauthn\Tests\MockedRequestTrait;
 class AssertionTest extends WebTestCase
 {
     use MockedRequestTrait;
+
     /**
      * @test
      */

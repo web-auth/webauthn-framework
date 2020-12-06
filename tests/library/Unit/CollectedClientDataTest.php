@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace Webauthn\Tests\Unit;
+namespace Webauthn\Tests\Unit7;
 
 use Base64Url\Base64Url;
 use PHPUnit\Framework\TestCase;

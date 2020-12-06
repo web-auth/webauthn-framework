@@ -2,22 +2,12 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" executionOrder="default" backupGlobals="false" backupStaticAttributes="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage>
     <include>
-      <directory suffix=".php">./</directory>
+      <directory suffix=".php">./src</directory>
     </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./src/*/var/</directory>
-      <directory>./src/*/tests/</directory>
-      <directory suffix="Test.php">./src</directory>
-    </exclude>
   </coverage>
   <testsuites>
     <testsuite name="Test Suite">
       <directory>tests/</directory>
-      <directory>src/cose/tests/</directory>
-      <directory>src/metadata-service/tests/</directory>
-      <directory>src/symfony/tests/</directory>
-      <directory>src/webauthn/tests/</directory>
     </testsuite>
   </testsuites>
   <php>

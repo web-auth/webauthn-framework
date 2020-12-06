@@ -23,7 +23,7 @@ framework:
     http_method_override: true
     router:
         utf8: true
-        resource: "%kernel.project_dir%/tests/config/routing.php"
+        resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
 
 services:
     _defaults:

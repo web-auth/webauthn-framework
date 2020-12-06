@@ -107,7 +107,7 @@ class MetadataService
     public function has(string $aaguid): bool
     {
         try {
-            $toc = $this->getMetadataTOCPayload();
+            $toc = $this->fetchMetadataTOCPayload();
         } catch (Throwable $e) {
             return false;
         }
@@ -122,10 +122,10 @@ class MetadataService
 
     public function get(string $aaguid): MetadataStatement
     {
-        $toc = $this->getMetadataTOCPayload();
+        $toc = $this->fetchMetadataTOCPayload();
         foreach ($toc->getEntries() as $entry) {
             if ($entry->getAaguid() === $aaguid && null !== $entry->getUrl()) {
-                $mds = $this->getMetadataStatementFor($entry);
+                $mds = $this->fetchMetadataStatementFor($entry);
                 $mds
                     ->setStatusReports($entry->getStatusReports())
                     ->setRootCertificates($toc->getRootCertificates())
@@ -142,6 +142,11 @@ class MetadataService
      * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
      */
     public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
+    {
+        return $this->fetchMetadataStatementFor($entry, $hashingFunction);
+    }
+
+    public function fetchMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
     {
         $this->logger->info('Trying to get the metadata statement for a given entry', ['entry' => $entry]);
         try {
@@ -168,6 +173,11 @@ class MetadataService
      * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
      */
     public function getMetadataTOCPayload(): MetadataTOCPayload
+    {
+        return $this->fetchMetadataTOCPayload();
+    }
+
+    private function fetchMetadataTOCPayload(): MetadataTOCPayload
     {
         $this->logger->info('Trying to get the metadata service TOC payload');
         try {

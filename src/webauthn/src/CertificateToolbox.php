@@ -27,7 +27,6 @@ use function Safe\sprintf;
 use function Safe\tempnam;
 use function Safe\unlink;
 use Symfony\Component\Process\Process;
-use Throwable;
 
 class CertificateToolbox
 {

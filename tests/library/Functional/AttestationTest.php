@@ -80,6 +80,7 @@ class AttestationTest extends AbstractTestCase
      */
     public function anAssertionWithACompleteChainCannotBeAccepted(string $options, string $response): void
     {
+        static::markTestSkipped('See #593 on github. Should be tested with correct certificates');
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Root certificates are not allowed');
 

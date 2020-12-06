@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Base64Url\Base64Url;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES384;

@@ -18,7 +18,7 @@
         "test:unit": "./vendor/bin/phpunit --color",
         "test:typing": "./vendor/bin/phpstan analyse",
         "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
-        "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0  --test-framework-options=\"--group Unit\""
+        "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0"
     },
     "autoload": {
         "psr-4": {
@@ -31,13 +31,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Webauthn\\Tests\\": "tests/",
-            "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
-            "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
-            "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
-            "Webauthn\\MetadataService\\Tests\\Functional\\": "src/metadata-service/tests/functional/",
-            "Webauthn\\MetadataService\\Tests\\Unit\\": "src/metadata-service/tests/unit/"
+            "Cose\\Tests\\Unit\\": "tests/cose/unit/",
+            "Webauthn\\Tests\\": [
+                "tests/framework",
+                "tests/library/"
+            ],
+            "Webauthn\\Tests\\Functional\\": "tests/library/",
+            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/symfony/functional/",
+            "Webauthn\\Tests\\MetadataService\\Unit\\": "tests/MDS/unit/"
         }
     },
     "require": {

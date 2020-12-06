@@ -22,7 +22,7 @@ use Traversable;
  */
 class ComposerJsonTest extends TestCase
 {
-    private const SRC_DIR = __DIR__.'/../src';
+    private const SRC_DIR = __DIR__.'/../../src';
 
     /**
      * @test
@@ -30,7 +30,7 @@ class ComposerJsonTest extends TestCase
     public function packageDependenciesEqualRootDependencies(): void
     {
         $usedDependencies = ['symfony/symfony']; // Some builds add this to composer.json
-        $rootDependencies = $this->getComposerDependencies(__DIR__.'/../composer.json');
+        $rootDependencies = $this->getComposerDependencies(__DIR__.'/../../composer.json');
 
         foreach ($this->listSubPackages() as $package) {
             $packageDependencies = $this->getComposerDependencies(self::SRC_DIR.'/'.$package.'/composer.json');
@@ -60,7 +60,7 @@ class ComposerJsonTest extends TestCase
      */
     public function rootReplacesSubPackages(): void
     {
-        $rootReplaces = $this->getComposerReplaces(__DIR__.'/../composer.json');
+        $rootReplaces = $this->getComposerReplaces(__DIR__.'/../../composer.json');
         foreach ($this->listSubPackages() as $package) {
             $packageName = $this->getComposerPackageName(self::SRC_DIR.'/'.$package.'/composer.json');
             $message = sprintf('Root composer.json must replace the sub-packages "%s"', $packageName);

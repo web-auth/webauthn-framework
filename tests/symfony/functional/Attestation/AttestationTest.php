@@ -44,6 +44,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
 class AttestationTest extends KernelTestCase
 {
     use MockedRequestTrait;
+
     /**
      * @test
      */
