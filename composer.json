@@ -14,6 +14,12 @@
             "homepage": "https://github.com/web-auth/webauthn-framework/contributors"
         }
     ],
+    "scripts": {
+        "test:unit": "./vendor/bin/phpunit --color",
+        "test:typing": "./vendor/bin/phpstan analyse",
+        "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
+        "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0"
+    },
     "autoload": {
         "psr-4": {
             "Cose\\": "src/cose/src/",
@@ -25,13 +31,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Webauthn\\Tests\\": "tests/",
-            "Cose\\Tests\\Unit\\": "src/cose/tests/unit/",
-            "Webauthn\\Tests\\Functional\\": "src/webauthn/tests/functional/",
-            "Webauthn\\Tests\\Unit\\": "src/webauthn/tests/unit/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "src/symfony/tests/functional/",
-            "Webauthn\\MetadataService\\Tests\\Functional\\": "src/metadata-service/tests/functional/",
-            "Webauthn\\MetadataService\\Tests\\Unit\\": "src/metadata-service/tests/unit/"
+            "Cose\\Tests\\Unit\\": "tests/cose/unit/",
+            "Webauthn\\Tests\\": [
+                "tests/framework",
+                "tests/library/"
+            ],
+            "Webauthn\\Tests\\Functional\\": "tests/library/",
+            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/symfony/functional/",
+            "Webauthn\\Tests\\MetadataService\\Unit\\": "tests/MDS/unit/"
         }
     },
     "require": {
@@ -80,24 +87,25 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.7",
-        "doctrine/dbal": "^2.9",
+        "doctrine/dbal": "^2.9|^3.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
-        "infection/infection": "^0.20.2",
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "infection/infection": "^0.15||^0.16||^0.17||^0.18||^0.19||^0.20",
         "monolog/monolog": "^2.0",
         "nyholm/psr7": "^1.1",
         "php-http/curl-client": "^2.0",
         "php-http/mock-client": "^1.3",
-        "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^0.12",
         "phpstan/phpstan-beberlei-assert": "^0.12",
         "phpstan/phpstan-deprecation-rules": "^0.12",
         "phpstan/phpstan-phpunit": "^0.12",
         "phpstan/phpstan-strict-rules": "^0.12",
-        "phpunit/phpunit": "^9.4",
+        "phpunit/phpunit": "^8.0||^9.0",
         "symfony/browser-kit": "^4.4|^5.0",
         "symfony/http-client": "^4.4|^5.0",
         "symfony/monolog-bundle": "^3.5",
+        "symfony/phpunit-bridge": "^5.1",
         "symfony/security-bundle": "^4.4|^5.0",
         "symfony/serializer": "^4.4|^5.0",
         "symfony/translation": "^4.4|^5.0",

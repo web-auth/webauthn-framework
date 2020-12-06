@@ -132,7 +132,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
@@ -160,8 +160,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
+        $firstCertificate = current($certificates);
+        Assertion::string($firstCertificate, 'No certificate');
 
-        $parsedCertificate = openssl_x509_parse(current($certificates));
+        $parsedCertificate = openssl_x509_parse($firstCertificate);
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
         Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
@@ -254,9 +256,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     /**
-     * @param array<string> $certificates
+     * @param string[] $certificates
      *
-     * @return array<string>
+     * @return string[]
      */
     private function convertCertificatesToPem(array $certificates): array
     {

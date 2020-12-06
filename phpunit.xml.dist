@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" executionOrder="default" backupGlobals="false" backupStaticAttributes="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage>
     <include>
-      <directory suffix=".php">./</directory>
+      <directory suffix=".php">./src</directory>
     </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./src/*/var/</directory>
-      <directory>./src/*/tests/</directory>
-      <directory suffix="Test.php">./src</directory>
-    </exclude>
   </coverage>
   <testsuites>
     <testsuite name="Test Suite">
-      <directory>./src/tests/</directory>
-      <directory>./src/cose/tests/</directory>
-      <directory>./src/u2f/tests/</directory>
-      <directory>./src/webauthn/tests/</directory>
-      <directory>./src/metadata-service/tests/</directory>
-      <directory>./src/symfony/tests/</directory>
-      <directory>./src/conformance-toolset/tests/</directory>
+      <directory>tests/</directory>
     </testsuite>
   </testsuites>
   <php>
@@ -28,6 +16,17 @@
     <ini name="intl.error_level" value="0"/>
     <ini name="memory_limit" value="-1"/>
     <server name="KERNEL_CLASS" value="Webauthn\Bundle\Tests\Functional\AppKernel"/>
-    <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+    <server name="SYMFONY_PHPUNIT_VERSION" value="9"/>
   </php>
+  <listeners>
+    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
+      <arguments>
+        <array>
+          <element key="time-sensitive"><string>Webauthn</string></element>
+          <element key="time-sensitive"><string>Webauthn\CertificateChainChecker</string></element>
+        </array>
+      </arguments>
+    </listener>
+  </listeners>
 </phpunit>

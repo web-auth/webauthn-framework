@@ -60,7 +60,7 @@ class RequestListener
     private $tokenStorage;
 
     /**
-     * @var array<string, mixed>
+     * @var mixed[]
      */
     private $options;
 

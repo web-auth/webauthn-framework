@@ -22,6 +22,7 @@ use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
 use function Safe\sprintf;
+use function Safe\unpack;
 
 class RsaKey extends Key
 {

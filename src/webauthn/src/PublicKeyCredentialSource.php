@@ -76,7 +76,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     protected $counter;
 
     /**
-     * @param array<string> $transports
+     * @param string[] $transports
      */
     public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
     {
@@ -163,7 +163,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param mixed[] $data
      */
     public static function createFromArray(array $data): self
     {
@@ -198,7 +198,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

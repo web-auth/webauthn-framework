@@ -197,7 +197,7 @@ class Server
     }
 
     /**
-     * @param array<PublicKeyCredentialDescriptor> $excludedPublicKeyDescriptors
+     * @param PublicKeyCredentialDescriptor[] $excludedPublicKeyDescriptors
      */
     public function generatePublicKeyCredentialCreationOptions(PublicKeyCredentialUserEntity $userEntity, ?string $attestationMode = null, array $excludedPublicKeyDescriptors = [], ?AuthenticatorSelectionCriteria $criteria = null, ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialCreationOptions
     {
@@ -229,7 +229,7 @@ class Server
     }
 
     /**
-     * @param array<PublicKeyCredentialDescriptor> $allowedPublicKeyDescriptors
+     * @param PublicKeyCredentialDescriptor[] $allowedPublicKeyDescriptors
      */
     public function generatePublicKeyCredentialRequestOptions(?string $userVerification = null, array $allowedPublicKeyDescriptors = [], ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
     {

@@ -94,13 +94,13 @@ class ExtensionDescriptor implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $data = [
+        $result = [
             'id' => $this->id,
             'tag' => $this->tag,
             'data' => $this->data,
             'fail_if_unknown' => $this->fail_if_unknown,
         ];
 
-        return Utils::filterNullValues($data);
+        return Utils::filterNullValues($result);
     }
 }

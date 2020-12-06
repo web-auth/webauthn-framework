@@ -52,7 +52,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     /**
-     * @param array<string, mixed> $attestation
+     * @param mixed[] $attestation
      */
     public function load(array $attestation): AttestationStatement
     {

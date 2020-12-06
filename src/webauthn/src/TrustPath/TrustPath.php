@@ -18,7 +18,7 @@ use JsonSerializable;
 interface TrustPath extends JsonSerializable
 {
     /**
-     * @param array<string, mixed> $data
+     * @param mixed[] $data
      */
     public static function createFromArray(array $data): self;
 }
