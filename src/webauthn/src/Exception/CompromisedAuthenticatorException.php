@@ -47,7 +47,7 @@ final class CompromisedAuthenticatorException extends WebauthnException
 
     public static function create(string $aaguid, StatusReport $statusReport, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($aaguid, $statusReport, $message, $previous) {
+        return static function () use ($aaguid, $statusReport, $message, $previous): self {
             return new self($aaguid, $statusReport, $message, $previous);
         };
     }

@@ -35,7 +35,7 @@ final class UnsupportedAAGUIDException extends WebauthnException
 
     public static function create(string $aaguid, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($aaguid, $message, $previous) {
+        return static function () use ($aaguid, $message, $previous): self {
             return new self($aaguid, $message, $previous);
         };
     }

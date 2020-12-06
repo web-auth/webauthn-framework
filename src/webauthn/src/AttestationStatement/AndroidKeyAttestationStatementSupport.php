@@ -22,8 +22,6 @@ use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use Webauthn\Exception\InvalidCertificateException;
-use Webauthn\Exception\InvalidTrustPathException;
 use function count;
 use FG\ASN1\ASNObject;
 use FG\ASN1\Exception\ParserException;
@@ -39,6 +37,8 @@ use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\InvalidCertificateException;
+use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -60,7 +60,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     /**
-<<<<<<< HEAD
+     * <<<<<<< HEAD
      * @param array<string, mixed> $attestation
      *
      * @throws InvalidAttestationStatementException
@@ -103,7 +103,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     {
         try {
             $trustPath = $attestationStatement->getTrustPath();
-            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class,  InvalidTrustPathException::create(
+            Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, InvalidTrustPathException::create(
                 'Invalid trust path'
             ));
 
@@ -159,7 +159,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             $certificate,
             'The certificate is not valid'
         ));
-        Assertion::keyExists($certDetails, 'extensions',  InvalidCertificateException::create(
+        Assertion::keyExists($certDetails, 'extensions', InvalidCertificateException::create(
             $certificate,
             'The certificate has no extension'
         ));
@@ -167,24 +167,24 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             $certificate,
             'The certificate has no extension'
         ));
-        Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17',  InvalidCertificateException::create(
+        Assertion::keyExists($certDetails['extensions'], '1.3.6.1.4.1.11129.2.1.17', InvalidCertificateException::create(
             $certificate,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
         ));
         $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
         $extensionAsAsn1 = ASNObject::fromBinary($extension);
-        Assertion::isInstanceOf($extensionAsAsn1, Sequence::class,  InvalidCertificateException::create(
+        Assertion::isInstanceOf($extensionAsAsn1, Sequence::class, InvalidCertificateException::create(
             $certificate,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         ));
         $objects = $extensionAsAsn1->getChildren();
 
         //Check that attestationChallenge is set to the clientDataHash.
-        Assertion::keyExists($objects, 4,  InvalidCertificateException::create(
+        Assertion::keyExists($objects, 4, InvalidCertificateException::create(
             $certificate,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         ));
-        Assertion::isInstanceOf($objects[4], OctetString::class,   InvalidCertificateException::create(
+        Assertion::isInstanceOf($objects[4], OctetString::class, InvalidCertificateException::create(
             $certificate,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         ));

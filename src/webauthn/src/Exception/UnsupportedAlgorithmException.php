@@ -35,7 +35,7 @@ final class UnsupportedAlgorithmException extends WebauthnException
 
     public static function create(int $algorithm, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($algorithm, $message, $previous) {
+        return static function () use ($algorithm, $message, $previous): self {
             return new self($algorithm, $message, $previous);
         };
     }

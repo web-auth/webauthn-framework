@@ -35,7 +35,7 @@ final class InvalidAttestationStatementException extends WebauthnException
 
     public static function create(string $format, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($format, $message, $previous) {
+        return static function () use ($format, $message, $previous): self {
             return new self($format, $message, $previous);
         };
     }

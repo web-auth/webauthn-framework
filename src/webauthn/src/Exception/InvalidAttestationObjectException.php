@@ -19,7 +19,7 @@ final class InvalidAttestationObjectException extends WebauthnException
 {
     public static function create(string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($message, $previous) {
+        return static function () use ($message, $previous): self {
             return new self($message, $previous);
         };
     }

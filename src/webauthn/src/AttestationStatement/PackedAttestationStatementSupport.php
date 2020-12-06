@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Webauthn\Exception\UnsupportedAlgorithmException;
 use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
@@ -26,10 +25,10 @@ use Cose\Algorithms;
 use Cose\Key\Key;
 use function in_array;
 use function is_array;
-use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedAlgorithmException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;

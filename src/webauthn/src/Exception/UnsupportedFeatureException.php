@@ -35,7 +35,7 @@ final class UnsupportedFeatureException extends WebauthnException
 
     public static function create(string $feature, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($feature, $message, $previous) {
+        return static function () use ($feature, $message, $previous): self {
             return new self($feature, $message, $previous);
         };
     }

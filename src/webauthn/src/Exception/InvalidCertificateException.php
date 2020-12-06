@@ -35,8 +35,8 @@ final class InvalidCertificateException extends WebauthnException
 
     public static function create(string $certificate, string $message, ?Throwable $previous = null): callable
     {
-        return static function () use ($certificate,  $message, $previous) {
-            return new self($certificate,  $message, $previous);
+        return static function () use ($certificate, $message, $previous): self {
+            return new self($certificate, $message, $previous);
         };
     }
 }
