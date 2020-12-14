@@ -208,7 +208,12 @@ webauthn:
                 attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
                 require_resident_key: false
                 user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-            extensions: []
+            extensions:
+                loc: true
+                uvi: true
+                biometricPercomfBounds:
+                    FAR: 0.3
+                    FRR: 0.3
 #            public_key_credential_parameters:
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
 #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256

@@ -159,7 +159,7 @@ final class Configuration implements ConfigurationInterface
                                 ->treatTrueLike([])
                                 ->treatNullLike([])
                                 ->useAttributeAsKey('name')
-                                ->scalarPrototype()->end()
+                                ->variablePrototype()->end()
                             ->end()
                             ->arrayNode('public_key_credential_parameters')
                                 ->integerPrototype()->end()
