@@ -210,7 +210,7 @@ final class Configuration implements ConfigurationInterface
                                 ->treatTrueLike([])
                                 ->treatNullLike([])
                                 ->useAttributeAsKey('name')
-                                ->scalarPrototype()->end()
+                                ->variablePrototype()->end()
                             ->end()
                         ->end()
                     ->end()

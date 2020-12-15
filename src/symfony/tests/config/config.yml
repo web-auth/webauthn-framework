@@ -233,6 +233,12 @@ webauthn:
             challenge_length: 32
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+            extensions:
+                loc: true
+                uvi: true
+                biometricPercomfBounds:
+                    FAR: 0.3
+                    FRR: 0.3
     transport_binding_profile:
         http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
         creation:
