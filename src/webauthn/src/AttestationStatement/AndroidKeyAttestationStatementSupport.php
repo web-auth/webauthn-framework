@@ -60,7 +60,8 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     /**
-     * <<<<<<< HEAD
+     * <<<<<<< HEAD.
+     *
      * @param array<string, mixed> $attestation
      *
      * @throws InvalidAttestationStatementException

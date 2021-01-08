@@ -101,9 +101,9 @@ class CertificateToolbox
 
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
-        $pemCert = '-----BEGIN '.$type.'-----'.PHP_EOL;
-        $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END '.$type.'-----'.PHP_EOL;
+        $pemCert = '-----BEGIN '.$type.'-----'."\n";
+        $pemCert .= chunk_split($certificate, 64, "\n");
+        $pemCert .= '-----END '.$type.'-----'."\n";
 
         return $pemCert;
     }
@@ -216,7 +216,7 @@ class CertificateToolbox
         $untrustedFilename = tempnam($folder, $prefix);
         rename($untrustedFilename, $untrustedFilename.$suffix);
         file_put_contents($untrustedFilename.$suffix, $certificate, FILE_APPEND);
-        file_put_contents($untrustedFilename.$suffix, PHP_EOL, FILE_APPEND);
+        file_put_contents($untrustedFilename.$suffix, "\n", FILE_APPEND);
 
         return $untrustedFilename.$suffix;
     }
