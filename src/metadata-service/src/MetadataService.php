@@ -17,10 +17,10 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
 use InvalidArgumentException;
+use function is_array;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use League\Uri\Components\Query;
 use League\Uri\UriString;
 use LogicException;
 use Psr\Http\Client\ClientInterface;
@@ -199,11 +199,22 @@ class MetadataService
     {
         $parsedUri = UriString::parse($uri);
         $queryString = $parsedUri['query'];
-        $query = Query::createFromRFC3986($queryString);
-        foreach ($this->additionalQueryStringValues as $k => $v) {
-            $query = $query->withPair($k, $v);
+        $query = [];
+        if (null !== $queryString) {
+            parse_str($queryString, $query);
         }
-        $parsedUri['query'] = 0 === $query->count() ? null : $query->__toString();
+        foreach ($this->additionalQueryStringValues as $k => $v) {
+            if (!isset($query[$k])) {
+                $query[$k] = $v;
+                continue;
+            }
+            if (!is_array($query[$k])) {
+                $query[$k] = [$query[$k], $v];
+                continue;
+            }
+            $query[$k][] = $v;
+        }
+        $parsedUri['query'] = 0 === count($query) ? null : http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
         return UriString::build($parsedUri);
     }
