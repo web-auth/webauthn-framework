@@ -25,11 +25,11 @@ final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerP
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(AndroidSafetyNetAttestationStatementSupport::class) ||
-            !$container->hasAlias('webauthn.android_safetynet.http_client') ||
-            !$container->hasParameter('webauthn.android_safetynet.api_key') ||
-            null === $container->getParameter('webauthn.android_safetynet.api_key') ||
-            !$container->hasAlias('webauthn.android_safetynet.request_factory')
+        if (!$container->hasDefinition(AndroidSafetyNetAttestationStatementSupport::class)
+            || !$container->hasAlias('webauthn.android_safetynet.http_client')
+            || !$container->hasParameter('webauthn.android_safetynet.api_key')
+            || null === $container->getParameter('webauthn.android_safetynet.api_key')
+            || !$container->hasAlias('webauthn.android_safetynet.request_factory')
         ) {
             return;
         }
