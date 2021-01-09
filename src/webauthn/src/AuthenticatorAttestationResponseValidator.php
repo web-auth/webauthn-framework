@@ -261,8 +261,8 @@ class AuthenticatorAttestationResponseValidator
             $this->logger->debug('No attestation is asked.');
             //No attestation is asked. We shall ensure that the data is anonymous.
             if (
-                '00000000-0000-0000-0000-000000000000' === $aaguid &&
-                (AttestationStatement::TYPE_NONE === $attestationStatement->getType() || AttestationStatement::TYPE_SELF === $attestationStatement->getType())) {
+                '00000000-0000-0000-0000-000000000000' === $aaguid
+                && (AttestationStatement::TYPE_NONE === $attestationStatement->getType() || AttestationStatement::TYPE_SELF === $attestationStatement->getType())) {
                 $this->logger->debug('The Attestation Statement is anonymous.');
                 $this->checkCertificateChain($attestationStatement, null);
 

@@ -20,7 +20,6 @@
         "ext-json": "*",
         "beberlei/assert": "^3.2",
         "league/uri": "^6.0",
-        "league/uri-components": "^2.1",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/log": "^1.1"
