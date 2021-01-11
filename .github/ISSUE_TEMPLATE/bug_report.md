@@ -24,13 +24,13 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS (+version): [e.g. iOS (Big Sure)]
- - Browser (+version) [e.g. Chrome (85)]
+ - OS (+version): [e.g. macOS (Big Sur)]
+ - Browser (+version) [e.g. Chrome (87)]
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS (+version): [e.g. Android (10)]
- - Browser (+version) [e.g. Firefox Android (65)]
+ - Device: [e.g. Samsung Galaxy S20]
+ - OS (+version): [e.g. Android (11)]
+ - Browser (+version) [e.g. Firefox Android (84)]
 
 **Additional context**
 Add any other context about the problem here.
