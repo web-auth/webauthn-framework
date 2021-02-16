@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use Psr\Log\NullLogger;
 use Cose\Algorithm\Algorithm;
 use Cose\Algorithm\ManagerFactory;
 use Cose\Algorithm\Signature\ECDSA;
@@ -247,10 +248,10 @@ class Server
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
-            ->setLogger($this->logger)
+            ->setLogger($this->logger ?? new NullLogger())
         ;
         $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
-            ->setLogger($this->logger)
+            ->setLogger($this->logger ?? new NullLogger())
         ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -262,9 +263,9 @@ class Server
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
-            $this->metadataStatementRepository,
-            $this->logger
+            $this->metadataStatementRepository
         );
+        $authenticatorAttestationResponseValidator->setLogger($this->logger ?? new NullLogger());
 
         return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest, $this->securedRelyingPartyId);
     }
@@ -273,10 +274,10 @@ class Server
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
-            ->setLogger($this->logger)
+            ->setLogger($this->logger ?? new NullLogger())
         ;
         $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
-            ->setLogger($this->logger)
+            ->setLogger($this->logger ?? new NullLogger())
         ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -288,9 +289,9 @@ class Server
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
             $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms),
-            $this->counterChecker,
-            $this->logger
+            $this->counterChecker
         );
+        $authenticatorAssertionResponseValidator->setLogger($this->logger ?? new NullLogger());
 
         return $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
@@ -332,11 +333,13 @@ class Server
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         if (class_exists(RS256::class) && class_exists(JWKFactory::class)) {
             $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
-            $androidSafetyNetAttestationStatementSupport
-                ->enableApiVerification($this->httpClient, $this->googleApiKey, $this->requestFactory)
-                ->setLeeway(2000)
-                ->setMaxAge(60000)
-            ;
+            if ($this->httpClient) {
+                $androidSafetyNetAttestationStatementSupport
+                    ->enableApiVerification($this->httpClient, $this->googleApiKey, $this->requestFactory)
+                    ->setLeeway(2000)
+                    ->setMaxAge(60000)
+                ;
+            }
             $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         }
         $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
