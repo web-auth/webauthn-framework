@@ -90,7 +90,7 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "infection/infection": "^0.15||^0.16||^0.17||^0.18||^0.19||^0.20",
+        "infection/infection": "^0.15||^0.16||^0.17||^0.18||^0.19||^0.20||^0.21",
         "monolog/monolog": "^2.0",
         "nyholm/psr7": "^1.1",
         "php-http/curl-client": "^2.0",

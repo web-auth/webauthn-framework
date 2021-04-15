@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Psr\Log\NullLogger;
 use Cose\Algorithm\Algorithm;
 use Cose\Algorithm\ManagerFactory;
 use Cose\Algorithm\Signature\ECDSA;
@@ -26,6 +25,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -89,17 +89,17 @@ class Server
     private $metadataStatementRepository;
 
     /**
-     * @var ClientInterface
+     * @var ClientInterface|null
      */
     private $httpClient;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $googleApiKey;
 
     /**
-     * @var RequestFactoryInterface
+     * @var RequestFactoryInterface|null
      */
     private $requestFactory;
 
@@ -109,7 +109,7 @@ class Server
     private $counterChecker;
 
     /**
-     * @var LoggerInterface|null
+     * @var LoggerInterface
      */
     private $logger;
 
@@ -124,6 +124,7 @@ class Server
             @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
         }
         $this->rpEntity = $relyingParty;
+        $this->logger = new NullLogger();
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
         $this->coseAlgorithmManagerFactory->add('RS1', new RSA\RS1());
@@ -248,10 +249,10 @@ class Server
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
-            ->setLogger($this->logger ?? new NullLogger())
+            ->setLogger($this->logger)
         ;
         $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
-            ->setLogger($this->logger ?? new NullLogger())
+            ->setLogger($this->logger)
         ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -265,7 +266,7 @@ class Server
             $this->extensionOutputCheckerHandler,
             $this->metadataStatementRepository
         );
-        $authenticatorAttestationResponseValidator->setLogger($this->logger ?? new NullLogger());
+        $authenticatorAttestationResponseValidator->setLogger($this->logger);
 
         return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest, $this->securedRelyingPartyId);
     }
@@ -274,10 +275,10 @@ class Server
     {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
-            ->setLogger($this->logger ?? new NullLogger())
+            ->setLogger($this->logger)
         ;
         $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($attestationObjectLoader)
-            ->setLogger($this->logger ?? new NullLogger())
+            ->setLogger($this->logger)
         ;
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
@@ -291,7 +292,7 @@ class Server
             $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms),
             $this->counterChecker
         );
-        $authenticatorAssertionResponseValidator->setLogger($this->logger ?? new NullLogger());
+        $authenticatorAssertionResponseValidator->setLogger($this->logger);
 
         return $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
@@ -333,7 +334,7 @@ class Server
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         if (class_exists(RS256::class) && class_exists(JWKFactory::class)) {
             $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
-            if ($this->httpClient) {
+            if (null !== $this->httpClient && null !== $this->googleApiKey && null !== $this->requestFactory) {
                 $androidSafetyNetAttestationStatementSupport
                     ->enableApiVerification($this->httpClient, $this->googleApiKey, $this->requestFactory)
                     ->setLeeway(2000)

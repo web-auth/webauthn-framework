@@ -15,6 +15,7 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\KeyManagement\JWKFactory;
@@ -280,6 +281,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $algorithms = [];
         foreach ($algorithmClasses as $key => $algorithm) {
             if (class_exists($algorithm)) {
+                /* @var AlgorithmInterface $algorithm */
                 $algorithms[] = new $algorithm();
             }
         }
