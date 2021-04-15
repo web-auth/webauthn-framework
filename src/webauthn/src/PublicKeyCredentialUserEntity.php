@@ -32,6 +32,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public function __construct(string $name, string $id, string $displayName, ?string $icon = null)
     {
         parent::__construct($name, $icon);
+        Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
         $this->id = $id;
         $this->displayName = $displayName;
     }
