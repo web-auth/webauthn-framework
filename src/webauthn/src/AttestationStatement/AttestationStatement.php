@@ -27,6 +27,7 @@ class AttestationStatement implements JsonSerializable
     public const TYPE_SELF = 'self';
     public const TYPE_ATTCA = 'attca';
     public const TYPE_ECDAA = 'ecdaa';
+    public const TYPE_ANONCA = 'anonca';
 
     /**
      * @var string
@@ -97,6 +98,11 @@ class AttestationStatement implements JsonSerializable
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ECDAA, $trustPath);
+    }
+
+    public static function createAnonymizationCA(string $fmt, array $attStmt, TrustPath $trustPath): self
+    {
+        return new self($fmt, $attStmt, self::TYPE_ANONCA, $trustPath);
     }
 
     public function getFmt(): string

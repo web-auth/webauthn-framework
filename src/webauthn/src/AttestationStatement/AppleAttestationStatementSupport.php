@@ -61,7 +61,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createAnonymizationCA($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
     }
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
