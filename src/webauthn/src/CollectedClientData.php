@@ -24,9 +24,6 @@ use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
 {
-    /**
-     * @var mixed[]
-     */
     private array $data;
 
     private string $type;

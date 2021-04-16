@@ -129,7 +129,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             ->allowCredentials($allowCredentials)
             ->setUserVerification($json['userVerification'] ?? null)
             ->setTimeout($json['timeout'] ?? null)
-            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : AuthenticationExtensionsClientInputs::create())
         ;
     }
 

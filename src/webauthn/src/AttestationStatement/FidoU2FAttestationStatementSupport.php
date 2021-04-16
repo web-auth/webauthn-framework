@@ -60,7 +60,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
         $this->checkCertificate($certificates[0]);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], CertificateTrustPath::create($certificates));
     }
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool

@@ -34,7 +34,7 @@ class TrustPathTest extends TestCase
      */
     public function aCertificateTrustPathCanBeCreated(): void
     {
-        $tp = new CertificateTrustPath(['cert#1']);
+        $tp = CertificateTrustPath::create(['cert#1']);
 
         static::assertEquals(['cert#1'], $tp->getCertificates());
     }

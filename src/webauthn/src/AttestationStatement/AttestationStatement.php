@@ -31,6 +31,7 @@ class AttestationStatement implements JsonSerializable
     public const TYPE_ECDAA = 'ecdaa';
     public const TYPE_ANONCA = 'anonca';
 
+    #[Pure]
     public function __construct(private string $fmt, private array $attStmt, private string $type, private TrustPath $trustPath)
     {
     }
@@ -89,7 +90,6 @@ class AttestationStatement implements JsonSerializable
         return array_key_exists($key, $this->attStmt);
     }
 
-    #[Pure]
     public function get(string $key): mixed
     {
         Assertion::true($this->has($key), sprintf('The attestation statement has no key "%s".', $key));
@@ -107,9 +107,6 @@ class AttestationStatement implements JsonSerializable
         return $this->type;
     }
 
-    /**
-     * @param mixed[] $data
-     */
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {

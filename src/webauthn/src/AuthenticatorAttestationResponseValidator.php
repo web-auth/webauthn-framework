@@ -246,7 +246,7 @@ class AuthenticatorAttestationResponseValidator
             $attestedCredentialData->setAaguid(
                 Uuid::fromString('00000000-0000-0000-0000-000000000000')
             );
-            $attestationObject->setAttStmt(AttestationStatement::createNone('none', [], new EmptyTrustPath()));
+            $attestationObject->setAttStmt(AttestationStatement::createNone('none', [], EmptyTrustPath::create()));
 
             return;
         }

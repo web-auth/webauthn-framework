@@ -22,6 +22,7 @@ use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
 use FG\ASN1\Universal\Sequence;
+use JetBrains\PhpStorm\Pure;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
@@ -33,19 +34,18 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 {
     private Decoder $decoder;
 
+    #[Pure]
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
+    #[Pure]
     public function name(): string
     {
         return 'apple';
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
@@ -58,7 +58,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createAnonymizationCA($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createAnonymizationCA($attestation['fmt'], $attestation['attStmt'], CertificateTrustPath::create($certificates));
     }
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool

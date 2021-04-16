@@ -34,7 +34,7 @@ class AttestationObjectTest extends TestCase
      */
     public function anAttestationObjectCanBeCreated(): void
     {
-        $attestationStatement = new AttestationStatement('', [], '', new EmptyTrustPath());
+        $attestationStatement = new AttestationStatement('', [], '', EmptyTrustPath::create());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         $object = new AttestationObject(

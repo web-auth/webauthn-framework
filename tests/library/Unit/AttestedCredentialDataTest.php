@@ -33,7 +33,7 @@ class AttestedCredentialDataTest extends TestCase
      */
     public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
     {
-        $attestedCredentialData = new AttestedCredentialData(Uuid::fromString($uuid), 'credential_id', 'credential_public_key');
+        $attestedCredentialData = AttestedCredentialData::create(Uuid::fromString($uuid), 'credential_id', 'credential_public_key');
 
         static::assertEquals($uuid, $attestedCredentialData->getAaguid()->toString());
         static::assertEquals($uuid, $attestedCredentialData->getAaguid()->toString());

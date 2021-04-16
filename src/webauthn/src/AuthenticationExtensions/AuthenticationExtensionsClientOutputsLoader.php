@@ -23,10 +23,10 @@ abstract class AuthenticationExtensionsClientOutputsLoader
     {
         Assertion::isInstanceOf($object, MapObject::class, 'Invalid extension object');
         $data = $object->getNormalizedData();
-        $extensions = new AuthenticationExtensionsClientOutputs();
+        $extensions = AuthenticationExtensionsClientOutputs::create();
         foreach ($data as $key => $value) {
             Assertion::string($key, 'Invalid extension key');
-            $extensions->add(new AuthenticationExtension($key, $value));
+            $extensions->add(AuthenticationExtension::create($key, $value));
         }
 
         return $extensions;

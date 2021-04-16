@@ -32,6 +32,12 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     private array $extensions = [];
 
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function add(AuthenticationExtension $extension): self
     {
         $this->extensions[$extension->name()] = $extension;
@@ -54,7 +60,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     {
         $object = new self();
         foreach ($json as $k => $v) {
-            $object->add(new AuthenticationExtension($k, $v));
+            $object->add(AuthenticationExtension::create($k, $v));
         }
 
         return $object;

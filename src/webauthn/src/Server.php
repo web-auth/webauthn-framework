@@ -103,8 +103,8 @@ class Server
         $this->coseAlgorithmManagerFactory->add('Ed25519', new Ed25519());
 
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
-        $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
-        $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+        $this->tokenBindingHandler = IgnoreTokenBindingHandler::create();
+        $this->extensionOutputCheckerHandler = ExtensionOutputCheckerHandler::create();
     }
 
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
@@ -171,8 +171,8 @@ class Server
                 $algorithm::identifier()
             );
         }
-        $criteria = $criteria ?? new AuthenticatorSelectionCriteria();
-        $extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
+        $criteria = $criteria ?? AuthenticatorSelectionCriteria::create();
+        $extensions = $extensions ?? AuthenticationExtensionsClientInputs::create();
         $challenge = random_bytes($this->challengeSize);
 
         return PublicKeyCredentialCreationOptions
@@ -201,7 +201,7 @@ class Server
                 ->setUserVerification($userVerification ?? PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
                 ->allowCredentials($allowedPublicKeyDescriptors)
                 ->setTimeout($this->timeout)
-                ->setExtensions($extensions ?? new AuthenticationExtensionsClientInputs())
+                ->setExtensions($extensions ?? AuthenticationExtensionsClientInputs::create())
         ;
     }
 

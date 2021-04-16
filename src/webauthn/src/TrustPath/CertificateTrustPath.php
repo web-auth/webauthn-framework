@@ -19,12 +19,15 @@ use JetBrains\PhpStorm\Pure;
 
 final class CertificateTrustPath implements TrustPath
 {
-    public function __construct(
-        /*
-         * @var string[]
-         */
-        private array $certificates
-    ) {
+    #[Pure]
+    public function __construct(private array $certificates)
+    {
+    }
+
+    #[Pure]
+    public static function create(array $certificates): self
+    {
+        return new self($certificates);
     }
 
     /**
@@ -42,7 +45,7 @@ final class CertificateTrustPath implements TrustPath
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
 
-        return new CertificateTrustPath($data['x5c']);
+        return CertificateTrustPath::create($data['x5c']);
     }
 
     #[Pure]

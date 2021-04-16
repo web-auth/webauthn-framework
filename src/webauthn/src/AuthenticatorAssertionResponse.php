@@ -28,6 +28,12 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
     }
 
     #[Pure]
+    public static function create(CollectedClientData $clientDataJSON, AuthenticatorData $authenticatorData, string $signature, ?string $userHandle): self
+    {
+        return new self($clientDataJSON, $authenticatorData, $signature, $userHandle);
+    }
+
+    #[Pure]
     public function getAuthenticatorData(): AuthenticatorData
     {
         return $this->authenticatorData;

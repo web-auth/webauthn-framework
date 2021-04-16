@@ -41,12 +41,12 @@ class ServerTest extends AbstractTestCase
 
         $userEntity = new PublicKeyCredentialUserEntity('john-doe', 'foo', 'John Doe', 'data://png:john-doe.avatar');
         $conveyanceMode = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
-        $criteria = new AuthenticatorSelectionCriteria(
-            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
-            true,
-            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
-        );
+        $criteria = AuthenticatorSelectionCriteria::create()
+            ->setAuthenticatorAttachment(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM)
+            ->setUserVerification(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED)
+            ->setRequireResidentKey(true)
+            ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
+        ;
         $excluded = [
             new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
@@ -55,7 +55,7 @@ class ServerTest extends AbstractTestCase
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
             ]),
         ];
-        $extensions = new AuthenticationExtensionsClientInputs();
+        $extensions = AuthenticationExtensionsClientInputs::create();
 
         $options = $server->generatePublicKeyCredentialCreationOptions($userEntity, $conveyanceMode, $excluded, $criteria, $extensions);
 
@@ -80,7 +80,7 @@ class ServerTest extends AbstractTestCase
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
             ]),
         ];
-        $extensions = new AuthenticationExtensionsClientInputs();
+        $extensions = AuthenticationExtensionsClientInputs::create();
 
         $options = $server->generatePublicKeyCredentialRequestOptions(
             PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
@@ -96,7 +96,7 @@ class ServerTest extends AbstractTestCase
 
     private function getServer(): Server
     {
-        $rpEntity = new PublicKeyCredentialRpEntity('rp', 'foo.example', 'data://png:nice-picture');
+        $rpEntity = PublicKeyCredentialRpEntity::create('rp', 'foo.example', 'data://png:nice-picture');
         $pkRepository = $this->getPublicKeyCredentialRepository();
 
         return new Server($rpEntity, $pkRepository);

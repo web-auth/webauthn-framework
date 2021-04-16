@@ -42,7 +42,7 @@ class PackedAttestationStatementTest extends AbstractTestCase
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('32urRB1LDfyfYeU9myCPfrhrvNoVI27//+PWWYVxAISpIm3GqgX+jNudPgvOZy96UPNvEkCWCArW0jtpQZFGAg==', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
@@ -97,7 +97,7 @@ class PackedAttestationStatementTest extends AbstractTestCase
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]

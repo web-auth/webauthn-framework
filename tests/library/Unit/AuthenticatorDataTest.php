@@ -34,8 +34,8 @@ class AuthenticatorDataTest extends TestCase
      */
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
-        $attestedCredentialData = new AttestedCredentialData(Uuid::uuid4(), '', null);
-        $extensions = new AuthenticationExtensionsClientOutputs();
+        $attestedCredentialData = AttestedCredentialData::create(Uuid::uuid4(), '', null);
+        $extensions = AuthenticationExtensionsClientOutputs::create();
 
         $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
 

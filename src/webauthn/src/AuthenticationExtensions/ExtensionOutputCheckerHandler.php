@@ -13,12 +13,20 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
+use JetBrains\PhpStorm\Pure;
+
 class ExtensionOutputCheckerHandler
 {
     /**
      * @var ExtensionOutputChecker[]
      */
     private array $checkers = [];
+
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
 
     public function add(ExtensionOutputChecker $checker): self
     {

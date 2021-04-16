@@ -47,7 +47,7 @@ class AppleAttestationStatementTest extends AbstractTestCase
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]

@@ -33,7 +33,7 @@ class AuthenticationExtensionsClientTest extends TestCase
      */
     public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
     {
-        $extension = new AuthenticationExtension('name', ['value']);
+        $extension = AuthenticationExtension::create('name', ['value']);
 
         static::assertEquals('name', $extension->name());
         static::assertEquals(['value'], $extension->value());
@@ -47,9 +47,9 @@ class AuthenticationExtensionsClientTest extends TestCase
      */
     public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
-        $extension = new AuthenticationExtension('name', ['value']);
+        $extension = AuthenticationExtension::create('name', ['value']);
 
-        $inputs = new AuthenticationExtensionsClientInputs();
+        $inputs = AuthenticationExtensionsClientInputs::create();
         $inputs->add($extension);
 
         static::assertEquals(1, $inputs->count());
@@ -66,9 +66,9 @@ class AuthenticationExtensionsClientTest extends TestCase
      */
     public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
-        $extension = new AuthenticationExtension('name', ['value']);
+        $extension = AuthenticationExtension::create('name', ['value']);
 
-        $inputs = new AuthenticationExtensionsClientOutputs();
+        $inputs = AuthenticationExtensionsClientOutputs::create();
         $inputs->add($extension);
 
         static::assertEquals(1, $inputs->count());

@@ -24,6 +24,12 @@ class AuthenticationExtension implements JsonSerializable
     }
 
     #[Pure]
+    public static function create(string $name, mixed $value): self
+    {
+        return new self($name, $value);
+    }
+
+    #[Pure]
     public function name(): string
     {
         return $this->name;

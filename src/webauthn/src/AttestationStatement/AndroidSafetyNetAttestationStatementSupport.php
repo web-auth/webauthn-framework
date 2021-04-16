@@ -15,6 +15,7 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
@@ -93,14 +94,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return $this;
     }
 
+    #[Pure]
     public function name(): string
     {
         return 'android-safetynet';
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
@@ -118,7 +117,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return AttestationStatement::createBasic(
             $this->name(),
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
     }
 

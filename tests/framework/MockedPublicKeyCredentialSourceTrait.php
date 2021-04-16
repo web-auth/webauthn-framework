@@ -28,7 +28,7 @@ trait MockedPublicKeyCredentialSourceTrait
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transport,
             $attestationType,
-            $trustPath ?? new EmptyTrustPath(),
+            $trustPath ?? EmptyTrustPath::create(),
             $aaguid,
             $publicKey,
             $userHandle,

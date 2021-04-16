@@ -31,6 +31,12 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     private array $extensions = [];
 
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function add(AuthenticationExtension $extension): self
     {
         $this->extensions[$extension->name()] = $extension;
@@ -38,19 +44,17 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return $this;
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $json): self
     {
         $object = new self();
         foreach ($json as $k => $v) {
-            $object->add(new AuthenticationExtension($k, $v));
+            $object->add(AuthenticationExtension::create($k, $v));
         }
 
         return $object;
     }
 
+    #[Pure]
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->extensions);
@@ -66,6 +70,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
     /**
      * @return AuthenticationExtension[]
      */
+    #[Pure]
     public function jsonSerialize(): array
     {
         return array_map(static function (AuthenticationExtension $object) {

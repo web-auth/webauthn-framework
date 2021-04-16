@@ -27,7 +27,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     #[Pure]
     public function __construct(protected string $challenge)
     {
-        $this->extensions = new AuthenticationExtensionsClientInputs();
+        $this->extensions = AuthenticationExtensionsClientInputs::create();
     }
 
     public function setTimeout(?int $timeout): static

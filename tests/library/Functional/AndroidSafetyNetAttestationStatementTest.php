@@ -41,7 +41,7 @@ class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
         $this->expectExceptionMessage('The certificate expired');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('kmns43CWVswbMovrKPkgd1lEpc6LZdfk0UQ/nuZbp00jW5C61PEW1dNaptZ0GkrIK9WRtaAXWkndIEEBgNICRw', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]

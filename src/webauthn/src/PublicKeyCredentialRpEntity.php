@@ -26,6 +26,12 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     }
 
     #[Pure]
+    public static function create(string $name, ?string $id = null, ?string $icon = null): self
+    {
+        return new self($name, $id, $icon);
+    }
+
+    #[Pure]
     public function getId(): ?string
     {
         return $this->id;
@@ -43,7 +49,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     }
 
     #[Pure]
-    #[ArrayShape(['name' => 'string', 'icon' => "\null|string", 'id' => 'null|string'])]
+    #[ArrayShape(['name' => 'string', 'icon' => 'null|string', 'id' => 'null|string'])]
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

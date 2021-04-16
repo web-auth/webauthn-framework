@@ -26,6 +26,7 @@ use Cose\Key\Key;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
@@ -39,19 +40,18 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 {
     private Decoder $decoder;
 
+    #[Pure]
     public function __construct(private Manager $algorithmManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
+    #[Pure]
     public function name(): string
     {
         return 'packed';
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation['attStmt'], 'sig', 'The attestation statement value "sig" is missing.');
@@ -82,9 +82,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         }
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     private function loadBasicType(array $attestation): AttestationStatement
     {
         $certificates = $attestation['attStmt']['x5c'];
@@ -92,7 +89,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], CertificateTrustPath::create($certificates));
     }
 
     private function loadEcdaaType(array $attestation): AttestationStatement
@@ -100,15 +97,13 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
         Assertion::string($ecdaaKeyId, 'The attestation statement value "ecdaaKeyId" is invalid.');
 
-        return AttestationStatement::createEcdaa($attestation['fmt'], $attestation['attStmt'], new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId']));
+        return AttestationStatement::createEcdaa($attestation['fmt'], $attestation['attStmt'], EcdaaKeyIdTrustPath::create($attestation['ecdaaKeyId']));
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
+    #[Pure]
     private function loadEmptyType(array $attestation): AttestationStatement
     {
-        return AttestationStatement::createSelf($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());
+        return AttestationStatement::createSelf($attestation['fmt'], $attestation['attStmt'], EmptyTrustPath::create());
     }
 
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void

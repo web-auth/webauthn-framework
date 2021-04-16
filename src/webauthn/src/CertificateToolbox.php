@@ -52,6 +52,7 @@ class CertificateToolbox
         return $certs;
     }
 
+    #[Pure]
     private static function unusedBytesFix(string $certificate): string
     {
         $certificateHash = hash('sha256', $certificate);

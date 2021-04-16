@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -23,24 +24,34 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
         parent::__construct($name, $id, $displayName, $icon);
     }
 
+    public static function create(string $name, string $id, string $displayName, ?string $icon = null, array $roles = []): self
+    {
+        return new self($name, $id, $displayName, $icon, $roles);
+    }
+
+    #[Pure]
     public function getRoles(): array
     {
         return array_unique($this->roles + ['ROLE_USER']);
     }
 
+    #[Pure]
     public function getPassword(): void
     {
     }
 
+    #[Pure]
     public function getSalt(): void
     {
     }
 
+    #[Pure]
     public function getUsername(): string
     {
         return $this->getName();
     }
 
+    #[Pure]
     public function eraseCredentials(): void
     {
     }

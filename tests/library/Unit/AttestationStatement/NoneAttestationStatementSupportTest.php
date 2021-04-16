@@ -36,7 +36,7 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = new AttestationStatement('none', [], '', new EmptyTrustPath());
+        $attestationStatement = new AttestationStatement('none', [], '', EmptyTrustPath::create());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         static::assertEquals('none', $support->name());
@@ -50,7 +50,7 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = new AttestationStatement('none', ['x5c' => ['FOO']], '', new EmptyTrustPath());
+        $attestationStatement = new AttestationStatement('none', ['x5c' => ['FOO']], '', EmptyTrustPath::create());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         static::assertEquals('none', $support->name());

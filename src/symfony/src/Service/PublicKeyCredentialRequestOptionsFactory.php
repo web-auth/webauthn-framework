@@ -53,9 +53,9 @@ final class PublicKeyCredentialRequestOptionsFactory
 
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
+        $extensions = AuthenticationExtensionsClientInputs::create();
         foreach ($profile['extensions'] as $k => $v) {
-            $extensions->add(new AuthenticationExtension($k, $v));
+            $extensions->add(AuthenticationExtension::create($k, $v));
         }
 
         return $extensions;

@@ -62,9 +62,9 @@ final class PublicKeyCredentialCreationOptionsFactory
 
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
+        $extensions = AuthenticationExtensionsClientInputs::create();
         foreach ($profile['extensions'] as $k => $v) {
-            $extensions->add(new AuthenticationExtension($k, $v));
+            $extensions->add(AuthenticationExtension::create($k, $v));
         }
 
         return $extensions;
@@ -83,7 +83,7 @@ final class PublicKeyCredentialCreationOptionsFactory
     #[Pure]
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
-        return new PublicKeyCredentialRpEntity($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
+        return PublicKeyCredentialRpEntity::create($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
     }
 
     /**

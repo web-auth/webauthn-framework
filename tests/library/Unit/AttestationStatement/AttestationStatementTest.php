@@ -34,7 +34,7 @@ class AttestationStatementTest extends TestCase
      */
     public function anAttestationStatementOfNoneTypeReturnsTheExpectedProperties(): void
     {
-        $attestationStatement = AttestationStatement::createNone('fmt', ['bar' => 'FOO'], new EmptyTrustPath());
+        $attestationStatement = AttestationStatement::createNone('fmt', ['bar' => 'FOO'], EmptyTrustPath::create());
         static::assertEquals('fmt', $attestationStatement->getFmt());
         static::assertEquals(['bar' => 'FOO'], $attestationStatement->getAttStmt());
         static::assertTrue($attestationStatement->has('bar'));
@@ -64,7 +64,7 @@ class AttestationStatementTest extends TestCase
      */
     public function anAttestationStatementOfBasicTypeReturnsTheExpectedProperties(): void
     {
-        $attestationStatement = AttestationStatement::createBasic('fmt', ['bar' => 'FOO'], new CertificateTrustPath(['key_id']));
+        $attestationStatement = AttestationStatement::createBasic('fmt', ['bar' => 'FOO'], CertificateTrustPath::create(['key_id']));
         static::assertEquals('fmt', $attestationStatement->getFmt());
         static::assertEquals(['bar' => 'FOO'], $attestationStatement->getAttStmt());
         static::assertTrue($attestationStatement->has('bar'));
@@ -79,7 +79,7 @@ class AttestationStatementTest extends TestCase
      */
     public function anAttestationStatementOfAttCATypeReturnsTheExpectedProperties(): void
     {
-        $attestationStatement = AttestationStatement::createAttCA('fmt', ['bar' => 'FOO'], new CertificateTrustPath(['key_id']));
+        $attestationStatement = AttestationStatement::createAttCA('fmt', ['bar' => 'FOO'], CertificateTrustPath::create(['key_id']));
         static::assertEquals('fmt', $attestationStatement->getFmt());
         static::assertEquals(['bar' => 'FOO'], $attestationStatement->getAttStmt());
         static::assertTrue($attestationStatement->has('bar'));
@@ -94,7 +94,7 @@ class AttestationStatementTest extends TestCase
      */
     public function anAttestationStatementOfSelfTypeReturnsTheExpectedProperties(): void
     {
-        $attestationStatement = AttestationStatement::createSelf('fmt', ['bar' => 'FOO'], new CertificateTrustPath([]));
+        $attestationStatement = AttestationStatement::createSelf('fmt', ['bar' => 'FOO'], CertificateTrustPath::create([]));
         static::assertEquals('fmt', $attestationStatement->getFmt());
         static::assertEquals(['bar' => 'FOO'], $attestationStatement->getAttStmt());
         static::assertTrue($attestationStatement->has('bar'));

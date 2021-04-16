@@ -26,6 +26,7 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
+use JetBrains\PhpStorm\Pure;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
@@ -38,11 +39,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 {
     private Decoder $decoder;
 
+    #[Pure]
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
+    #[Pure]
     public function name(): string
     {
         return 'android-key';
@@ -63,7 +66,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], CertificateTrustPath::create($certificates));
     }
 
     public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool

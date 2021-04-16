@@ -30,6 +30,11 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         $this->id = $id;
     }
 
+    public static function create(string $name, string $id, string $displayName, ?string $icon = null): self
+    {
+        return new self($name, $id, $displayName, $icon);
+    }
+
     #[Pure]
     public function getId(): string
     {
@@ -68,7 +73,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         );
     }
 
-    #[ArrayShape(['name' => 'string', 'icon' => "\null|string", 'displayName' => 'string', 'id' => 'string'])]
+    #[ArrayShape(['name' => 'string', 'icon' => 'null|string', 'displayName' => 'string', 'id' => 'string'])]
     #[Pure]
     public function jsonSerialize(): array
     {

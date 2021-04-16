@@ -82,7 +82,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     #[Pure]
     public function getAttestedCredentialData(): AttestedCredentialData
     {
-        return new AttestedCredentialData(
+        return AttestedCredentialData::create(
             $this->aaguid,
             $this->publicKeyCredentialId,
             $this->credentialPublicKey

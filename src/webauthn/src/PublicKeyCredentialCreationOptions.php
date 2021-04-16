@@ -45,7 +45,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public function __construct(private PublicKeyCredentialRpEntity $rp, private PublicKeyCredentialUserEntity $user, string $challenge, private array $pubKeyCredParams)
     {
         parent::__construct($challenge);
-        $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
+        $this->authenticatorSelection = AuthenticatorSelectionCriteria::create();
         $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
     }
 
@@ -198,7 +198,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
                 ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']))
                 ->setAttestation($json['attestation'])
                 ->setTimeout($json['timeout'] ?? null)
-                ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+                ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : AuthenticationExtensionsClientInputs::create())
         ;
     }
 

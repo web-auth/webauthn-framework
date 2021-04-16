@@ -29,6 +29,7 @@ use function in_array;
 use InvalidArgumentException;
 use function is_array;
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\sprintf;
@@ -41,14 +42,12 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
+    #[Pure]
     public function name(): string
     {
         return 'tpm';
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
@@ -76,7 +75,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         return AttestationStatement::createAttCA(
             $this->name(),
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
     }
 

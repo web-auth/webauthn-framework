@@ -15,6 +15,7 @@ namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class AttestationStatementSupportManager
@@ -31,6 +32,7 @@ class AttestationStatementSupportManager
         return $this;
     }
 
+    #[Pure]
     public function has(string $name): bool
     {
         return array_key_exists($name, $this->attestationStatementSupports);

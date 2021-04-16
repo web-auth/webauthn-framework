@@ -92,8 +92,8 @@ abstract class AbstractTestCase extends TestCase
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
-                new IgnoreTokenBindingHandler(),
-                new ExtensionOutputCheckerHandler()
+                IgnoreTokenBindingHandler::create(),
+                ExtensionOutputCheckerHandler::create()
             );
             $this->authenticatorAttestationResponseValidator->setCertificateChainChecker($this->getCertificateChainChecker());
             $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository($this->getMetadataStatementRepository($client));
@@ -107,8 +107,8 @@ abstract class AbstractTestCase extends TestCase
         if (null === $this->authenticatorAssertionResponseValidator) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
-                new TokenBindingNotSupportedHandler(),
-                new ExtensionOutputCheckerHandler(),
+                TokenBindingNotSupportedHandler::create(),
+                ExtensionOutputCheckerHandler::create(),
                 $this->getAlgorithmManager()
             );
         }

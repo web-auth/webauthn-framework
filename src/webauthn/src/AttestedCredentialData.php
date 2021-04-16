@@ -32,6 +32,12 @@ class AttestedCredentialData implements JsonSerializable
     }
 
     #[Pure]
+    public static function create(UuidInterface $aaguid, string $credentialId, ?string $credentialPublicKey): self
+    {
+        return new self($aaguid, $credentialId, $credentialPublicKey);
+    }
+
+    #[Pure]
     public function getAaguid(): UuidInterface
     {
         return $this->aaguid;

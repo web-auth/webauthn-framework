@@ -37,7 +37,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('RP');
+        $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
@@ -84,7 +84,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('RP');
+        $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Counter;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
@@ -23,9 +24,17 @@ final class ThrowExceptionIfInvalid implements CounterChecker
 {
     private LoggerInterface $logger;
 
-    public function __construct(?LoggerInterface $logger = null)
+    #[Pure]
+    public function __construct()
     {
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     public function check(PublicKeyCredentialSource $publicKeyCredentialSource, int $currentCounter): void

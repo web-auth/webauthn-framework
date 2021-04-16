@@ -144,7 +144,7 @@ class PublicKeyCredentialLoader
                     $credentialId = $authDataStream->read($credentialLength);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
                     Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');
-                    $attestedCredentialData = new AttestedCredentialData($aaguid, $credentialId, (string) $credentialPublicKey);
+                    $attestedCredentialData = AttestedCredentialData::create($aaguid, $credentialId, $credentialPublicKey->__toString());
                 }
 
                 $extension = null;
@@ -156,7 +156,7 @@ class PublicKeyCredentialLoader
                 $authDataStream->close();
                 $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
 
-                return new AuthenticatorAssertionResponse(
+                return AuthenticatorAssertionResponse::create(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
                     Base64Url::decode($response['signature']),

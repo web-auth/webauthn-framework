@@ -16,6 +16,7 @@ namespace Webauthn\TokenBinding;
 use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class TokenBinding
@@ -35,9 +36,6 @@ class TokenBinding
         $this->id = $id;
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFormArray(array $json): self
     {
         Assertion::keyExists($json, 'status', 'The member "status" is required');
@@ -52,11 +50,13 @@ class TokenBinding
         return new self($status, $id);
     }
 
+    #[Pure]
     public function getStatus(): string
     {
         return $this->status;
     }
 
+    #[Pure]
     public function getId(): ?string
     {
         return $this->id;
@@ -65,6 +65,7 @@ class TokenBinding
     /**
      * @return string[]
      */
+    #[Pure]
     private static function getSupportedStatus(): array
     {
         return [

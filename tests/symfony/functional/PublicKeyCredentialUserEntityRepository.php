@@ -23,14 +23,14 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 {
     public function __construct(private CacheItemPoolInterface $cacheItemPool)
     {
-        $this->saveUserEntity(new User(
+        $this->saveUserEntity(User::create(
             'admin',
             'foo',
             'Foo BAR (-_-)',
             null,
             ['ROLE_ADMIN', 'ROLE_USER']
         ));
-        $this->saveUserEntity(new User(
+        $this->saveUserEntity(User::create(
             'XY5nn3p_6olTLjoB2Jbb',
         '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
             'Bennie Moneypenny',
@@ -61,7 +61,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function createUserEntity(string $username, string $displayName, ?string $icon): PublicKeyCredentialUserEntity
     {
-        return new User(
+        return User::create(
             $username,
             Uuid::uuid4()->toString(),
             $displayName,
@@ -72,7 +72,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         if (!$userEntity instanceof User) {
-            $userEntity = new User(
+            $userEntity = User::create(
                 $userEntity->getName(),
                 $userEntity->getId(),
                 $userEntity->getDisplayName(),

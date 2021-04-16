@@ -34,8 +34,8 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialRequestOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
-        $extensions->add(new AuthenticationExtension('foo', 'bar'));
+        $extensions = AuthenticationExtensionsClientInputs::create();
+        $extensions->add(AuthenticationExtension::create('foo', 'bar'));
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
 

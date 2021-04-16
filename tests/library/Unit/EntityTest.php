@@ -50,7 +50,7 @@ class EntityTest extends TestCase
      */
     public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('name', 'id', 'icon');
+        $rp = PublicKeyCredentialRpEntity::create('name', 'id', 'icon');
 
         static::assertEquals('name', $rp->getName());
         static::assertEquals('icon', $rp->getIcon());
