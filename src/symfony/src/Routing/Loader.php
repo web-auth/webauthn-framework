@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Routing;
 
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Component\Config\Loader\Loader as SymfonyLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ class Loader extends SymfonyLoader
 {
     private RouteCollection $routes;
 
+    #[Pure]
     public function __construct()
     {
         $this->routes = new RouteCollection();
@@ -49,6 +51,7 @@ class Loader extends SymfonyLoader
      * @param mixed       $resource
      * @param string|null $type
      */
+    #[Pure]
     public function supports($resource, $type = null): bool
     {
         return 'webauthn' === $type;

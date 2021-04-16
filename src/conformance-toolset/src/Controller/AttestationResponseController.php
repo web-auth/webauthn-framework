@@ -15,6 +15,7 @@ namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -31,6 +32,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseController
 {
+    #[Pure]
     public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialUserEntityRepository $userEntityRepository, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private string $sessionParameterName, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool)
     {
     }

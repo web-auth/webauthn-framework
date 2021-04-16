@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -79,11 +80,13 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
         $this->manager->flush();
     }
 
+    #[Pure]
     protected function getClass(): string
     {
         return $this->class;
     }
 
+    #[Pure]
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->manager;

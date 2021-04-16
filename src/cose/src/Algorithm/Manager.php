@@ -15,6 +15,7 @@ namespace Cose\Algorithm;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 
 class Manager
 {
@@ -44,6 +45,7 @@ class Manager
         yield from $this->algorithms;
     }
 
+    #[Pure]
     public function has(int $identifier): bool
     {
         return array_key_exists($identifier, $this->algorithms);

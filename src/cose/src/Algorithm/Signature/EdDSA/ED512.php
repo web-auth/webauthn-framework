@@ -14,11 +14,13 @@ declare(strict_types=1);
 namespace Cose\Algorithm\Signature\EdDSA;
 
 use Cose\Key\Key;
+use JetBrains\PhpStorm\Pure;
 
 final class ED512 extends EdDSA
 {
     public const ID = -261;
 
+    #[Pure]
     public static function identifier(): int
     {
         return self::ID;

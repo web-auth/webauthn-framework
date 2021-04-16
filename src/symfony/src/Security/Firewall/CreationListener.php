@@ -57,18 +57,14 @@ class CreationListener
 
     private string $providerKey;
 
-    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private PublicKeyCredentialUserEntityRepository $publicKeyUserEntityRepository, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, private TokenStorageInterface $tokenStorage, private AuthenticationManagerInterface $authenticationManager, private SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, /*
-     * @var mixed[]
-     */
-    private array $options, private AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, private AuthenticationFailureHandlerInterface $authenticationFailureHandler, private CreationOptionsHandler $optionsHandler, private OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, private ?EventDispatcherInterface $dispatcher = null, /*
+    /*
      * @var string[]
      */
-    private array $securedRelyingPartyId = [])
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private PublicKeyCredentialUserEntityRepository $publicKeyUserEntityRepository, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, private TokenStorageInterface $tokenStorage, private AuthenticationManagerInterface $authenticationManager, private SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, private array $options, private AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, private AuthenticationFailureHandlerInterface $authenticationFailureHandler, private CreationOptionsHandler $optionsHandler, private OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, private ?EventDispatcherInterface $dispatcher = null, private array $securedRelyingPartyId = [])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
         $this->providerKey = $providerKey;
         $this->logger = $logger ?? new NullLogger();
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function processWithCreationOptions(RequestEvent $event): void

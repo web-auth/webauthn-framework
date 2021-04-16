@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use JetBrains\PhpStorm\Pure;
 use function Safe\base64_decode;
 
 final class Base64BinaryDataType extends Type
@@ -54,6 +55,7 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function getName(): string
     {
         return 'base64';
@@ -62,6 +64,7 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

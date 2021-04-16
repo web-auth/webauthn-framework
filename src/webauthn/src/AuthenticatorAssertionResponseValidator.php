@@ -43,6 +43,7 @@ class AuthenticatorAssertionResponseValidator
     private CounterChecker $counterChecker;
     private LoggerInterface $logger;
 
+    #[Pure]
     public function __construct(private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private TokenBindingHandler $tokenBindingHandler, private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, private ?Manager $algorithmManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
@@ -50,6 +51,7 @@ class AuthenticatorAssertionResponseValidator
         $this->logger = new NullLogger();
     }
 
+    #[Pure]
     public static function create(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager): self
     {
         return new self($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);

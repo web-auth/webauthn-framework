@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\json_encode;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,15 +56,14 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    /**
-     * @return array|Data
-     */
-    public function getData()
+    #[Pure]
+    public function getData(): Data | array
     {
         return $this->data;
     }
 
-    public function getName()
+    #[Pure]
+    public function getName(): string
     {
         return 'webauthn_collector';
     }
@@ -72,6 +73,8 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->data = [];
     }
 
+    #[Pure]
+    #[ArrayShape([PublicKeyCredentialCreationOptionsCreatedEvent::class => 'string[]', PublicKeyCredentialRequestOptionsCreatedEvent::class => 'string[]', AuthenticatorAttestationResponseValidationSucceededEvent::class => 'string[]', AuthenticatorAttestationResponseValidationFailedEvent::class => 'string[]', AuthenticatorAssertionResponseValidationSucceededEvent::class => 'string[]', AuthenticatorAssertionResponseValidationFailedEvent::class => 'string[]'])]
     public static function getSubscribedEvents(): array
     {
         return [

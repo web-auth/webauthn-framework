@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use JetBrains\PhpStorm\Pure;
 use function Safe\json_encode;
 use Webauthn\PublicKeyCredentialDescriptorCollection;
 
@@ -55,6 +56,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function getName(): string
     {
         return 'public_key_credential_descriptor_collection';
@@ -63,6 +65,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

@@ -16,6 +16,7 @@ namespace Webauthn\MetadataService;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use LogicException;
 
@@ -56,26 +57,31 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         $this->hash = Base64Url::decode($hash);
     }
 
+    #[Pure]
     public function getAaid(): ?string
     {
         return $this->aaid;
     }
 
+    #[Pure]
     public function getAaguid(): ?string
     {
         return $this->aaguid;
     }
 
+    #[Pure]
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
     }
 
+    #[Pure]
     public function getHash(): ?string
     {
         return $this->hash;
     }
 
+    #[Pure]
     public function getUrl(): ?string
     {
         return $this->url;
@@ -91,21 +97,25 @@ class MetadataTOCPayloadEntry implements JsonSerializable
     /**
      * @return StatusReport[]
      */
+    #[Pure]
     public function getStatusReports(): array
     {
         return $this->statusReports;
     }
 
+    #[Pure]
     public function getTimeOfLastStatusChange(): string
     {
         return $this->timeOfLastStatusChange;
     }
 
+    #[Pure]
     public function getRogueListURL(): string
     {
         return $this->rogueListURL;
     }
 
+    #[Pure]
     public function getRogueListHash(): string
     {
         return $this->rogueListHash;
@@ -134,6 +144,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         return $object;
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
@@ -26,26 +27,31 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
+    #[Pure]
     public function getFAR(): ?float
     {
         return $this->FAR;
     }
 
+    #[Pure]
     public function getFRR(): ?float
     {
         return $this->FRR;
     }
 
+    #[Pure]
     public function getEER(): ?float
     {
         return $this->EER;
     }
 
+    #[Pure]
     public function getFAAR(): ?float
     {
         return $this->FAAR;
     }
 
+    #[Pure]
     public function getMaxReferenceDataSets(): ?int
     {
         return $this->maxReferenceDataSets;
@@ -64,6 +70,7 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

@@ -21,6 +21,7 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class Ec2Key extends Key
@@ -76,6 +77,7 @@ class Ec2Key extends Key
         return new self($data);
     }
 
+    #[Pure]
     public function x(): string
     {
         return $this->get(self::DATA_X);

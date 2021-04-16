@@ -11,10 +11,9 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
-use Webauthn\CertificateChainChecker\CertificateChainChecker;
-use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
@@ -23,11 +22,7 @@ return static function (ContainerConfigurator $container): void {
         ->autowire()
     ;
 
-    $container->set(CertificateChainChecker::class)
-        ->class(OpenSSLCertificateChainChecker::class)
-        ->args([
-            service('webauthn.certificate_chain_checker.http_client'),
-            service('webauthn.certificate_chain_checker.request_factory'),
-        ])
+    $container->set(HttpMessageFactoryInterface::class)
+        ->class(PsrHttpFactory::class)
     ;
 };

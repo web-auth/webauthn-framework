@@ -18,6 +18,7 @@ use Base64Url\Base64Url;
 use function count;
 use InvalidArgumentException;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -40,6 +41,7 @@ class MetadataService
 
     private LoggerInterface $logger;
 
+    #[Pure]
     public function __construct(private string $serviceUri, private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory)
     {
         $this->additionalQueryStringValues = [];

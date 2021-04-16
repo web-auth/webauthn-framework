@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Factory;
 
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -54,6 +55,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function getPosition(): string
     {
         return 'form';
@@ -62,6 +64,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function getKey(): string
     {
         return 'webauthn';
@@ -77,7 +80,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->children()
             ->scalarNode('user_provider')->defaultNull()->end()
             ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
-            ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
             ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
             ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
             ->arrayNode('secured_rp_ids')
@@ -175,7 +177,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         $abstractRequestListenerId = 'security.authentication.listener.webauthn.request';
         $requestListener = new ChildDefinition($abstractRequestListenerId);
-        $requestListener->replaceArgument(0, new Reference($config['http_message_factory']));
         $requestListener->replaceArgument(11, $id);
         $requestListener->replaceArgument(12, $config['authentication']);
         $requestListener->replaceArgument(13, new Reference($config['success_handler']));
@@ -210,7 +211,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     {
         $abstractCreationListenerId = 'security.authentication.listener.webauthn.creation';
         $creationListener = new ChildDefinition($abstractCreationListenerId);
-        $creationListener->replaceArgument(0, new Reference($config['http_message_factory']));
         $creationListener->replaceArgument(11, $id);
         $creationListener->replaceArgument(12, $config['registration']);
         $creationListener->replaceArgument(13, new Reference($config['success_handler']));

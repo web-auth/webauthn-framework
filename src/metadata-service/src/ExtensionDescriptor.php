@@ -15,6 +15,7 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class ExtensionDescriptor implements JsonSerializable
@@ -29,21 +30,25 @@ class ExtensionDescriptor implements JsonSerializable
         $this->tag = $tag;
     }
 
+    #[Pure]
     public function getId(): string
     {
         return $this->id;
     }
 
+    #[Pure]
     public function getTag(): ?int
     {
         return $this->tag;
     }
 
+    #[Pure]
     public function getData(): ?string
     {
         return $this->data;
     }
 
+    #[Pure]
     public function isFailIfUnknown(): bool
     {
         return $this->fail_if_unknown;
@@ -71,6 +76,7 @@ class ExtensionDescriptor implements JsonSerializable
         );
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $result = [
