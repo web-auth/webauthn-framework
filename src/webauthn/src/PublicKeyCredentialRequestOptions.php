@@ -40,28 +40,6 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
      */
     private $userVerification;
 
-    /**
-     * @param PublicKeyCredentialDescriptor[] $allowCredentials
-     */
-    public function __construct(string $challenge, ?int $timeout = null, ?string $rpId = null, array $allowCredentials = [], ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $extensions = null)
-    {
-        if (0 !== count($allowCredentials)) {
-            @trigger_error('The argument "allowCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addAllowedCredentials" or "addAllowedCredential".', E_USER_DEPRECATED);
-        }
-        if (null !== $rpId) {
-            @trigger_error('The argument "rpId" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRpId".', E_USER_DEPRECATED);
-        }
-        if (null !== $userVerification) {
-            @trigger_error('The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".', E_USER_DEPRECATED);
-        }
-        parent::__construct($challenge, $timeout, $extensions);
-        $this
-            ->setRpId($rpId)
-            ->allowCredentials($allowCredentials)
-            ->setUserVerification($userVerification)
-        ;
-    }
-
     public static function create(string $challenge): self
     {
         return new self($challenge);

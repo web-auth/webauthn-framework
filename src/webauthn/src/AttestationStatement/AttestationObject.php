@@ -36,15 +36,12 @@ class AttestationObject
      */
     private $metadataStatement;
 
-    public function __construct(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData, ?MetadataStatement $metadataStatement = null)
+    public function __construct(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData)
     {
-        if (null !== $metadataStatement) {
-            @trigger_error('The argument "metadataStatement" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatement".', E_USER_DEPRECATED);
-        }
         $this->rawAttestationObject = $rawAttestationObject;
         $this->attStmt = $attStmt;
         $this->authData = $authData;
-        $this->metadataStatement = $metadataStatement;
+        $this->metadataStatement = null;
     }
 
     public function getRawAttestationObject(): string

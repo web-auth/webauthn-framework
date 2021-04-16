@@ -69,27 +69,20 @@ class AuthenticatorAttestationResponseValidator
     /**
      * @var MetadataStatementRepository|null
      */
-    private $metadataStatementRepository;
+    private $metadataStatementRepository = null;
 
     /**
      * @var CertificateChainChecker|null
      */
     private $certificateChainChecker;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
+    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
-        }
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->publicKeyCredentialSource = $publicKeyCredentialSource;
         $this->tokenBindingHandler = $tokenBindingHandler;
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->metadataStatementRepository = $metadataStatementRepository;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -231,8 +224,7 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if (null === $metadataStatement) {
-            // @phpstan-ignore-next-line
-            null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, [], null);
+            $this->certificateChainChecker->check($authenticatorCertificates, []);
 
             return;
         }
@@ -247,8 +239,7 @@ class AuthenticatorAttestationResponseValidator
             $rootStatementCertificates
         );
 
-        // @phpstan-ignore-next-line
-        null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $trustedCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
+        $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void

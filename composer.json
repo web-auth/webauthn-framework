@@ -42,7 +42,7 @@
         }
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=8.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
@@ -101,6 +101,7 @@
         "phpstan/phpstan-phpunit": "^0.12",
         "phpstan/phpstan-strict-rules": "^0.12",
         "phpunit/phpunit": "^8.0||^9.0",
+        "rector/rector": "^0.10.6",
         "symfony/browser-kit": "^4.4|^5.0",
         "symfony/http-client": "^4.4|^5.0",
         "symfony/monolog-bundle": "^3.5",

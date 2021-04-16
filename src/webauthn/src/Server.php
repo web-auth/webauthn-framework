@@ -118,11 +118,8 @@ class Server
      */
     private $securedRelyingPartyId = [];
 
-    public function __construct(PublicKeyCredentialRpEntity $relyingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(PublicKeyCredentialRpEntity $relyingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
-        }
         $this->rpEntity = $relyingParty;
         $this->logger = new NullLogger();
 
@@ -144,7 +141,7 @@ class Server
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
-        $this->metadataStatementRepository = $metadataStatementRepository;
+        $this->metadataStatementRepository = null;
     }
 
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
