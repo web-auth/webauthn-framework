@@ -16,6 +16,7 @@ namespace Webauthn\Tests\Functional;
 use Base64Url\Base64Url;
 use Cose\Algorithms;
 use Symfony\Bridge\PhpUnit\ClockMock;
+use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -85,6 +86,10 @@ class AppleAttestationStatementTest extends AbstractTestCase
 
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
+
+        /** @var AttestationStatement $attestationStatement */
+        $attestationStatement = $publicKeyCredential->getResponse()->getAttestationObject()->getAttStmt();
+        static::assertEquals(AttestationStatement::TYPE_ANONCA, $attestationStatement->getType());
 
         static::assertEquals(hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'), $authenticatorData->getRpIdHash());
         static::assertTrue($authenticatorData->isUserPresent());

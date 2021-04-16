@@ -76,9 +76,14 @@ class PublicKeyCredentialSource implements JsonSerializable
     protected $counter;
 
     /**
+     * @var array|null
+     */
+    protected $otherUI;
+
+    /**
      * @param string[] $transports
      */
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter)
+    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter, ?array $otherUI = null)
     {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
@@ -89,6 +94,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         $this->counter = $counter;
         $this->attestationType = $attestationType;
         $this->trustPath = $trustPath;
+        $this->otherUI = $otherUI;
     }
 
     public function getPublicKeyCredentialId(): string
@@ -160,6 +166,18 @@ class PublicKeyCredentialSource implements JsonSerializable
     public function setCounter(int $counter): void
     {
         $this->counter = $counter;
+    }
+
+    public function getOtherUI(): ?array
+    {
+        return $this->otherUI;
+    }
+
+    public function setOtherUI(?array $otherUI): self
+    {
+        $this->otherUI = $otherUI;
+
+        return $this;
     }
 
     /**

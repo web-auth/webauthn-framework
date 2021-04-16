@@ -3,7 +3,6 @@ Webauthn Framework
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Coding%20Standards/badge.svg)
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Static%20Analyze/badge.svg)
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Security/badge.svg)
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Backwards%20compatibility%20verification/badge.svg)
 
@@ -20,7 +19,7 @@ Webauthn Framework
 
 Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web applications, for the purpose of strongly authenticating users.
 
-This framework contains PHP libraries and Symfony bundle to allow developpers to integrate that authentication mechanism into their web applications.
+This framework contains PHP libraries and Symfony bundle to allow developers to integrate that authentication mechanism into their web applications.
 
 # Documentation
 
