@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
  use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -96,7 +97,7 @@ return static function (ContainerConfigurator $container): void {
         ->abstract()
         ->private()
         ->args([
-            '', // HTTP Message Factory
+            service(HttpMessageFactoryInterface::class),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialRequestOptionsFactory::class),
