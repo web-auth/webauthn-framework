@@ -43,6 +43,12 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
     #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
+    #[Pure]
     public function name(): string
     {
         return 'tpm';
@@ -102,20 +108,20 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     private function checkUniquePublicKey(string $unique, string $cborPublicKey): void
     {
         $cborDecoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
+        $publicKey = $cborDecoder->decode(StringStream::create($cborPublicKey));
         Assertion::isInstanceOf($publicKey, MapObject::class, 'Invalid public key');
-        $key = new Key($publicKey->getNormalizedData(false));
+        $key = Key::create($publicKey->getNormalizedData(false));
 
         switch ($key->type()) {
             case Key::TYPE_OKP:
-                $uniqueFromKey = (new OkpKey($key->getData()))->x();
+                $uniqueFromKey = OkpKey::create($key->getData())->x();
                 break;
             case Key::TYPE_EC2:
-                $ec2Key = new Ec2Key($key->getData());
+                $ec2Key = Ec2Key::create($key->getData());
                 $uniqueFromKey = "\x04".$ec2Key->x().$ec2Key->y();
                 break;
             case Key::TYPE_RSA:
-                $uniqueFromKey = (new RsaKey($key->getData()))->n();
+                $uniqueFromKey = RsaKey::create($key->getData())->n();
                 break;
             default:
                 throw new InvalidArgumentException('Invalid or unsupported key type.');
@@ -127,7 +133,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     #[ArrayShape(['magic' => 'string', 'type' => 'string', 'qualifiedSigner' => 'string', 'extraData' => 'string', 'clockInfo' => 'string', 'firmwareVersion' => 'string', 'attestedName' => 'string', 'attestedQualifiedName' => 'string'])]
     private function checkCertInfo(string $data): array
     {
-        $certInfo = new StringStream($data);
+        $certInfo = StringStream::create($data);
 
         $magic = $certInfo->read(4);
         Assertion::eq('ff544347', bin2hex($magic), 'Invalid attestation object');
@@ -167,7 +173,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     #[ArrayShape(['type' => 'string', 'nameAlg' => 'string', 'objectAttributes' => 'string', 'authPolicy' => 'string', 'parameters' => 'mixed[]', 'unique' => 'string'])]
     private function checkPubArea(string $data): array
     {
-        $pubArea = new StringStream($data);
+        $pubArea = StringStream::create($data);
 
         $type = $pubArea->read(2);
 

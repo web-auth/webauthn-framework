@@ -107,6 +107,11 @@ class Server
         $this->extensionOutputCheckerHandler = ExtensionOutputCheckerHandler::create();
     }
 
+    public static function create(PublicKeyCredentialRpEntity $rpEntity, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository): self
+    {
+        return new self($rpEntity, $publicKeyCredentialSourceRepository);
+    }
+
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
     {
         $this->metadataStatementRepository = $metadataStatementRepository;
@@ -166,7 +171,7 @@ class Server
         $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $publicKeyCredentialParametersList = [];
         foreach ($coseAlgorithmManager->all() as $algorithm) {
-            $publicKeyCredentialParametersList[] = new PublicKeyCredentialParameters(
+            $publicKeyCredentialParametersList[] = PublicKeyCredentialParameters::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 $algorithm::identifier()
             );
@@ -291,11 +296,9 @@ class Server
 
     private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
     {
-        $attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
+        $attestationStatementSupportManager = AttestationStatementSupportManager::create();
         if (class_exists(RS256::class) && class_exists(JWKFactory::class)) {
-            $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
+            $androidSafetyNetAttestationStatementSupport = AndroidSafetyNetAttestationStatementSupport::create();
             if (null !== $this->httpClient && null !== $this->googleApiKey && null !== $this->requestFactory) {
                 $androidSafetyNetAttestationStatementSupport
                     ->enableApiVerification($this->httpClient, $this->googleApiKey, $this->requestFactory)
@@ -305,10 +308,14 @@ class Server
             }
             $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         }
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
         $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
+        $attestationStatementSupportManager
+            ->add(NoneAttestationStatementSupport::create())
+            ->add(FidoU2FAttestationStatementSupport::create())
+            ->add(AndroidKeyAttestationStatementSupport::create())
+            ->add(TPMAttestationStatementSupport::create())
+            ->add(PackedAttestationStatementSupport::create($coseAlgorithmManager))
+        ;
 
         return $attestationStatementSupportManager;
     }

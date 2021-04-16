@@ -136,7 +136,7 @@ class FidoU2FAttestationStatementSupportTest extends TestCase
             ]))
         );
 
-        $authenticatorData = new AuthenticatorData(
+        $authenticatorData = AuthenticatorData::create(
             '',
             'FOO',
             '',

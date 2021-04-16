@@ -24,6 +24,12 @@ class Manager
      */
     private array $algorithms = [];
 
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function add(Algorithm $algorithm): self
     {
         $identifier = $algorithm::identifier();

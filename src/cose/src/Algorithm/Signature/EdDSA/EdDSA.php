@@ -62,6 +62,6 @@ class EdDSA implements Signature
 
     private function handleKey(Key $key): OkpKey
     {
-        return new OkpKey($key->getData());
+        return OkpKey::create($key->getData());
     }
 }

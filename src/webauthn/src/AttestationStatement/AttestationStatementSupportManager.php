@@ -25,6 +25,12 @@ class AttestationStatementSupportManager
      */
     private array $attestationStatementSupports = [];
 
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function add(AttestationStatementSupport $attestationStatementSupport): self
     {
         $this->attestationStatementSupports[$attestationStatementSupport->name()] = $attestationStatementSupport;

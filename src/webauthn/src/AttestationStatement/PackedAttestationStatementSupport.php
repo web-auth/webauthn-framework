@@ -47,6 +47,12 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     #[Pure]
+    public static function create(Manager $algorithmManager): self
+    {
+        return new self($algorithmManager);
+    }
+
+    #[Pure]
     public function name(): string
     {
         return 'packed';
@@ -159,13 +165,13 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($credentialPublicKey, 'No credential public key available');
-        $publicKeyStream = new StringStream($credentialPublicKey);
+        $publicKeyStream = StringStream::create($credentialPublicKey);
         $publicKey = $this->decoder->decode($publicKeyStream);
         Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
         $publicKeyStream->close();
         Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
         $publicKey = $publicKey->getNormalizedData(false);
-        $publicKey = new Key($publicKey);
+        $publicKey = Key::create($publicKey);
         Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
 
         $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;

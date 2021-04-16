@@ -48,6 +48,11 @@ class RsaKey extends Key
         Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
     }
 
+    public static function create(array $data): self
+    {
+        return new self($data);
+    }
+
     public function n(): string
     {
         return $this->get(self::DATA_N);

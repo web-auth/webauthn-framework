@@ -37,7 +37,7 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
         $extensions = AuthenticationExtensionsClientInputs::create();
         $extensions->add(AuthenticationExtension::create('foo', 'bar'));
 
-        $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
+        $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
 
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
             ::create('challenge')

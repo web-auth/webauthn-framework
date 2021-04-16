@@ -30,6 +30,12 @@ final class ThrowExceptionIfInvalid implements CounterChecker
         $this->logger = new NullLogger();
     }
 
+    #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;

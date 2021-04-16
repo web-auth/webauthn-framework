@@ -28,6 +28,12 @@ class AttestationObject
     }
 
     #[Pure]
+    public static function create(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData): self
+    {
+        return new self($rawAttestationObject, $attStmt, $authData);
+    }
+
+    #[Pure]
     public function getRawAttestationObject(): string
     {
         return $this->rawAttestationObject;

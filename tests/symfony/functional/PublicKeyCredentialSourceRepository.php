@@ -28,7 +28,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
 {
     public function __construct(private CacheItemPoolInterface $cacheItemPool)
     {
-        $publicKeyCredentialSource1 = new PublicKeyCredentialSource(
+        $publicKeyCredentialSource1 = PublicKeyCredentialSource::create(
             base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],

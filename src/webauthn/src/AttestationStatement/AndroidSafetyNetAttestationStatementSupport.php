@@ -71,6 +71,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->initJwsVerifier();
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function enableApiVerification(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory): self
     {
         $this->apiKey = $apiKey;

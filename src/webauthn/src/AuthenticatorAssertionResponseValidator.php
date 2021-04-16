@@ -47,7 +47,7 @@ class AuthenticatorAssertionResponseValidator
     public function __construct(private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private TokenBindingHandler $tokenBindingHandler, private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, private ?Manager $algorithmManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->counterChecker = new ThrowExceptionIfInvalid();
+        $this->counterChecker = ThrowExceptionIfInvalid::create();
         $this->logger = new NullLogger();
     }
 
@@ -97,7 +97,7 @@ class AuthenticatorAssertionResponseValidator
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
             Assertion::notNull($credentialPublicKey, 'No public key available.');
-            $stream = new StringStream($credentialPublicKey);
+            $stream = StringStream::create($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
             Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
             $stream->close();
@@ -160,7 +160,7 @@ class AuthenticatorAssertionResponseValidator
             /* @see 7.2.16 */
             $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()->getAuthData().$getClientDataJSONHash;
             $signature = $authenticatorAssertionResponse->getSignature();
-            $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
+            $coseKey = Key::create($credentialPublicKeyStream->getNormalizedData());
             $algorithm = $this->algorithmManager->get($coseKey->alg());
             Assertion::isInstanceOf($algorithm, Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
             $signature = CoseSignatureFixer::fix($signature, $algorithm);

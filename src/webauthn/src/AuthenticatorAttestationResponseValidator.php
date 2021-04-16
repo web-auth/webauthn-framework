@@ -309,7 +309,7 @@ class AuthenticatorAttestationResponseValidator
 
     private function createPublicKeyCredentialSource(string $credentialId, AttestedCredentialData $attestedCredentialData, AttestationObject $attestationObject, string $userHandle): PublicKeyCredentialSource
     {
-        return new PublicKeyCredentialSource(
+        return PublicKeyCredentialSource::create(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],

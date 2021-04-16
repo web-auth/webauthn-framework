@@ -51,6 +51,6 @@ class PublicKeyCredential extends Credential implements Stringable
     #[Pure]
     public function getPublicKeyCredentialDescriptor(array $transport = []): PublicKeyCredentialDescriptor
     {
-        return new PublicKeyCredentialDescriptor($this->getType(), $this->getRawId(), $transport);
+        return PublicKeyCredentialDescriptor::create($this->getType(), $this->getRawId(), $transport);
     }
 }

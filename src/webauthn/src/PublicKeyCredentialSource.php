@@ -52,6 +52,12 @@ class PublicKeyCredentialSource implements JsonSerializable
     }
 
     #[Pure]
+    public static function create(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter, ?array $otherUI = null): self
+    {
+        return new self($publicKeyCredentialId, $type, $transports, $attestationType, $trustPath, $aaguid, $credentialPublicKey, $userHandle, $counter, $otherUI);
+    }
+
+    #[Pure]
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;
@@ -60,7 +66,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     #[Pure]
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
-        return new PublicKeyCredentialDescriptor(
+        return PublicKeyCredentialDescriptor::create(
             $this->type,
             $this->publicKeyCredentialId,
             $this->transports

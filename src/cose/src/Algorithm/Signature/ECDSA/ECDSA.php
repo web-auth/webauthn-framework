@@ -46,7 +46,7 @@ abstract class ECDSA implements Signature
 
     private function handleKey(Key $key): Ec2Key
     {
-        $key = new Ec2Key($key->getData());
+        $key = Ec2Key::create($key->getData());
         Assertion::eq($key->curve(), $this->getCurve(), 'This key cannot be used with this algorithm');
 
         return $key;

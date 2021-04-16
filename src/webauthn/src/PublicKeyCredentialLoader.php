@@ -126,11 +126,11 @@ class PublicKeyCredentialLoader
                 Assertion::string($response['attestationObject'], 'Invalid data. The parameter "attestationObject   " is invalid');
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
-                return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);
+                return AuthenticatorAttestationResponse::create(CollectedClientData::createFormJson($response['clientDataJSON']), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
                 $authData = Base64Url::decode($response['authenticatorData']);
 
-                $authDataStream = new StringStream($authData);
+                $authDataStream = StringStream::create($authData);
                 $rp_id_hash = $authDataStream->read(32);
                 $flags = $authDataStream->read(1);
                 $signCount = $authDataStream->read(4);
@@ -154,7 +154,7 @@ class PublicKeyCredentialLoader
                 }
                 Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
                 $authDataStream->close();
-                $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
+                $authenticatorData = AuthenticatorData::create($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
 
                 return AuthenticatorAssertionResponse::create(
                     CollectedClientData::createFormJson($response['clientDataJSON']),

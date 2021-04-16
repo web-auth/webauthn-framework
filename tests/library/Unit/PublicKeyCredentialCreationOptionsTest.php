@@ -40,7 +40,7 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
-        $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
+        $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
         $options = PublicKeyCredentialCreationOptions

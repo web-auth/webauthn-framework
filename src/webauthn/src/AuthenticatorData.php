@@ -35,6 +35,12 @@ class AuthenticatorData
     }
 
     #[Pure]
+    public static function create(string $authData, string $rpIdHash, string $flags, int $signCount, ?AttestedCredentialData $attestedCredentialData, ?AuthenticationExtensionsClientOutputs $extensions): self
+    {
+        return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
+    }
+
+    #[Pure]
     public function getAuthData(): string
     {
         return $this->authData;

@@ -182,30 +182,28 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
             $client = new Client();
             $this->prepareResponsesMap($client);
         }
-        $attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
-        $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
-        $androidSafetyNetAttestationStatementSupport
+
+        $androidSafetyNetAttestationStatementSupport = AndroidSafetyNetAttestationStatementSupport::create()
             ->enableApiVerification($client, 'api_key', new Psr17Factory())
             ->setLeeway(0)
             ->setMaxAge(99999999999)
-            ;
-        $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
-            $this->getAlgorithmManager()
-        ));
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
+        ;
 
-        return $attestationStatementSupportManager;
+        return AttestationStatementSupportManager::create()
+            ->add(NoneAttestationStatementSupport::create())
+            ->add(AppleAttestationStatementSupport::create())
+            ->add(AndroidKeyAttestationStatementSupport::create())
+            ->add($androidSafetyNetAttestationStatementSupport)
+            ->add(FidoU2FAttestationStatementSupport::create())
+            ->add(PackedAttestationStatementSupport::create($this->getAlgorithmManager()))
+            ->add(TPMAttestationStatementSupport::create())
+        ;
     }
 
     private function getAlgorithmManager(): Manager
     {
         if (null === $this->algorithmManager) {
-            $this->algorithmManager = new Manager();
+            $this->algorithmManager = Manager::create();
             $this->algorithmManager->add(new ES256());
             $this->algorithmManager->add(new ES384());
             $this->algorithmManager->add(new ES512());

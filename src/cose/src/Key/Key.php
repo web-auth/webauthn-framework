@@ -38,16 +38,21 @@ class Key
         $this->data = $data;
     }
 
+    public static function create(array $data): self
+    {
+        return new self($data);
+    }
+
     public static function createFromData(array $data): self
     {
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
         switch ($data[self::TYPE]) {
             case 1:
-                return new OkpKey($data);
+                return OkpKey::create($data);
             case 2:
-                return new Ec2Key($data);
+                return Ec2Key::create($data);
             case 3:
-                return new RsaKey($data);
+                return RsaKey::create($data);
             case 4:
                 return new SymmetricKey($data);
             default:

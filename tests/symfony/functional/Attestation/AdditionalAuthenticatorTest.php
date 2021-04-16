@@ -135,7 +135,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         $token = new WebauthnToken(
             $user,
             $publicKeyCredentialCreationOptions,
-            new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, '0123456789'),
+            PublicKeyCredentialDescriptor::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, '0123456789'),
             true,
             false,
             0,

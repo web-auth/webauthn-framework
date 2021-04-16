@@ -35,9 +35,9 @@ class AttestationObjectTest extends TestCase
     public function anAttestationObjectCanBeCreated(): void
     {
         $attestationStatement = new AttestationStatement('', [], '', EmptyTrustPath::create());
-        $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
+        $authenticatorData = AuthenticatorData::create('', '', '', 0, null, null);
 
-        $object = new AttestationObject(
+        $object = AttestationObject::create(
             'rawAttestationObject',
             $attestationStatement,
             $authenticatorData

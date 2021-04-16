@@ -90,7 +90,7 @@ class SecuredAreaTest extends WebTestCase
                 ->setTimeout(60000)
                 ->setRpId('localhost')
                 ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+                ->allowCredential(PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
             ))

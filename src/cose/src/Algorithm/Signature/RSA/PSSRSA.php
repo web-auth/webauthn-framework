@@ -94,7 +94,7 @@ abstract class PSSRSA implements Signature
 
     private function handleKey(Key $key): RsaKey
     {
-        return new RsaKey($key->getData());
+        return RsaKey::create($key->getData());
     }
 
     private function convertIntegerToOctetString(BigInteger $x, int $xLen): string

@@ -37,7 +37,7 @@ class AuthenticatorDataTest extends TestCase
         $attestedCredentialData = AttestedCredentialData::create(Uuid::uuid4(), '', null);
         $extensions = AuthenticationExtensionsClientOutputs::create();
 
-        $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
+        $authenticatorData = AuthenticatorData::create('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
 
         static::assertEquals('auth_data', $authenticatorData->getAuthData());
         static::assertEquals('rp_id_hash', $authenticatorData->getRpIdHash());

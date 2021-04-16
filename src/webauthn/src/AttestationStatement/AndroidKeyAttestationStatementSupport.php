@@ -46,6 +46,12 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     #[Pure]
+    public static function create(): self
+    {
+        return new self();
+    }
+
+    #[Pure]
     public function name(): string
     {
         return 'android-key';
@@ -97,7 +103,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($publicKeyData, 'No attested public key found');
-        $publicDataStream = new StringStream($publicKeyData);
+        $publicDataStream = StringStream::create($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
         Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
         $publicDataStream->close();

@@ -28,6 +28,12 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
     }
 
     #[Pure]
+    public static function create(CollectedClientData $clientDataJSON, AttestationObject $attestationObject): self
+    {
+        return new self($clientDataJSON, $attestationObject);
+    }
+
+    #[Pure]
     public function getAttestationObject(): AttestationObject
     {
         return $this->attestationObject;

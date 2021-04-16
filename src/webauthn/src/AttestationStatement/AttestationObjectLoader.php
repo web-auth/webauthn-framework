@@ -59,7 +59,7 @@ class AttestationObjectLoader
         try {
             $this->logger->info('Trying to load the data', ['data' => $data]);
             $decodedData = Base64Url::decode($data);
-            $stream = new StringStream($decodedData);
+            $stream = StringStream::create($decodedData);
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
@@ -77,7 +77,7 @@ class AttestationObjectLoader
             $this->logger->info('Attestation Statement loaded');
             $this->logger->debug('Attestation Statement loaded', ['attestationStatement' => $attestationStatement]);
 
-            $authDataStream = new StringStream($authData);
+            $authDataStream = StringStream::create($authData);
             $rp_id_hash = $authDataStream->read(32);
             $flags = $authDataStream->read(1);
             $signCount = $authDataStream->read(4);
@@ -109,8 +109,8 @@ class AttestationObjectLoader
             Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
             $authDataStream->close();
 
-            $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
-            $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData);
+            $authenticatorData = AuthenticatorData::create($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
+            $attestationObject = AttestationObject::create($data, $attestationStatement, $authenticatorData);
             $this->logger->info('Attestation Object loaded');
             $this->logger->debug('Attestation Object', ['ed' => $attestationObject]);
 

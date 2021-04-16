@@ -38,7 +38,7 @@ class AssertionTest extends AbstractTestCase
                 ->setTimeout(60000)
                 ->setRpId('localhost')
                 ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+                ->allowCredential(PublicKeyCredentialDescriptor::create(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
             ))
@@ -82,7 +82,7 @@ class AssertionTest extends AbstractTestCase
                 ->setTimeout(60000)
                 ->setRpId('webauthn.morselli.fr')
                 ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+                ->allowCredential(PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true)
             ))
@@ -126,7 +126,7 @@ class AssertionTest extends AbstractTestCase
                 ->setTimeout(60000)
                 ->setRpId('spomky-webauthn.herokuapp.com')
                 ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+                ->allowCredential(PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true)
             ))

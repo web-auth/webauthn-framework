@@ -26,6 +26,11 @@ class SymmetricKey extends Key
         Assertion::keyExists($data, self::DATA_K, 'Invalid symmetric key. The parameter "k" is missing');
     }
 
+    public static function create(array $data): self
+    {
+        return new self($data);
+    }
+
     public function k(): string
     {
         return $this->get(self::DATA_K);

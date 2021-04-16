@@ -48,7 +48,7 @@ class ServerTest extends AbstractTestCase
             ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
         ;
         $excluded = [
-            new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
+            PublicKeyCredentialDescriptor::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
@@ -73,7 +73,7 @@ class ServerTest extends AbstractTestCase
         $server = $this->getServer();
 
         $allowed = [
-            new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
+            PublicKeyCredentialDescriptor::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
                 PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
@@ -99,7 +99,7 @@ class ServerTest extends AbstractTestCase
         $rpEntity = PublicKeyCredentialRpEntity::create('rp', 'foo.example', 'data://png:nice-picture');
         $pkRepository = $this->getPublicKeyCredentialRepository();
 
-        return new Server($rpEntity, $pkRepository);
+        return Server::create($rpEntity, $pkRepository);
     }
 
     private function getPublicKeyCredentialRepository(): MemoryPublicKeyCredentialSourceRepository

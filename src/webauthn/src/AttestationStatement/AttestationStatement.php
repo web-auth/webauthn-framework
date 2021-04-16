@@ -37,6 +37,12 @@ class AttestationStatement implements JsonSerializable
     }
 
     #[Pure]
+    public static function create(string $fmt, array $attStmt, string $type, TrustPath $trustPath): self
+    {
+        return new self($fmt, $attStmt, $type, $trustPath);
+    }
+
+    #[Pure]
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_NONE, $trustPath);
