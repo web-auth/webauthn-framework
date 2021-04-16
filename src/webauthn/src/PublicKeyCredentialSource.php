@@ -76,9 +76,9 @@ class PublicKeyCredentialSource implements JsonSerializable
     protected $counter;
 
     /**
-     * @var null|array
+     * @var array|null
      */
-    protected $otherUI = null;
+    protected $otherUI;
 
     /**
      * @param string[] $transports
@@ -168,9 +168,6 @@ class PublicKeyCredentialSource implements JsonSerializable
         $this->counter = $counter;
     }
 
-    /**
-     * @return array|null
-     */
     public function getOtherUI(): ?array
     {
         return $this->otherUI;

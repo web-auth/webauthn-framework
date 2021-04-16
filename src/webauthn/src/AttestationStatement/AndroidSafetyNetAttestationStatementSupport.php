@@ -278,8 +278,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             Algorithm\ES256::class, Algorithm\ES384::class, Algorithm\ES512::class,
             Algorithm\EdDSA::class,
         ];
+        /* @var AlgorithmInterface[] $algorithms */
         $algorithms = [];
-        foreach ($algorithmClasses as $key => $algorithm) {
+        foreach ($algorithmClasses as $algorithm) {
             if (class_exists($algorithm)) {
                 /* @var AlgorithmInterface $algorithm */
                 $algorithms[] = new $algorithm();
