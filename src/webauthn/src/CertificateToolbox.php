@@ -13,23 +13,12 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
-use function count;
 use function in_array;
-use InvalidArgumentException;
-use RuntimeException;
-use Safe\Exceptions\FilesystemException;
-use function Safe\file_put_contents;
-use function Safe\ksort;
-use function Safe\mkdir;
-use function Safe\rename;
-use function Safe\sprintf;
-use function Safe\tempnam;
-use function Safe\unlink;
-use Symfony\Component\Process\Process;
+use JetBrains\PhpStorm\Pure;
 
 class CertificateToolbox
 {
+    #[Pure]
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
         $pemCert = '-----BEGIN '.$type.'-----'.PHP_EOL;
@@ -39,6 +28,7 @@ class CertificateToolbox
         return $pemCert;
     }
 
+    #[Pure]
     public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
     {
         $derCertificate = self::unusedBytesFix($certificate);
@@ -51,6 +41,7 @@ class CertificateToolbox
      *
      * @return string[]
      */
+    #[Pure]
     public static function convertAllDERToPEM(array $certificates, string $type = 'CERTIFICATE'): array
     {
         $certs = [];
@@ -72,41 +63,9 @@ class CertificateToolbox
     }
 
     /**
-     * @param string[] $certificates
-     */
-    private static function checkCertificatesValidity(array $certificates, bool $allowRootCertificate): void
-    {
-        foreach ($certificates as $certificate) {
-            $parsed = openssl_x509_parse($certificate);
-            Assertion::isArray($parsed, 'Unable to read the certificate');
-            if (false === $allowRootCertificate) {
-                self::checkRootCertificate($parsed);
-            }
-
-            Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
-            Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
-            Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
-            Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $parsed
-     */
-    private static function checkRootCertificate(array $parsed): void
-    {
-        Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
-        Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
-        $subject = $parsed['subject'];
-        $issuer = $parsed['issuer'];
-        ksort($subject);
-        ksort($issuer);
-        Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
-    }
-
-    /**
      * @return string[]
      */
+    #[Pure]
     private static function getCertificateHashes(): array
     {
         return [
@@ -117,38 +76,5 @@ class CertificateToolbox
             '6073c436dcd064a48127ddbf6032ac1a66fd59a0c24434f070d4e564c124c897',
             'ca993121846c464d666096d35f13bf44c1b05af205f9b4a1e00cf6cc10c5e511',
         ];
-    }
-
-    private static function createTemporaryDirectory(): string
-    {
-        $caDir = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
-        if (file_exists($caDir)) {
-            unlink($caDir);
-        }
-        mkdir($caDir);
-        if (!is_dir($caDir)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
-        }
-
-        return $caDir;
-    }
-
-    private static function deleteDirectory(string $dirname): void
-    {
-        $rehashProcess = new Process(['rm', '-rf', $dirname]);
-        $rehashProcess->run();
-        while ($rehashProcess->isRunning()) {
-            //Just wait
-        }
-    }
-
-    private static function prepareCertificate(string $folder, string $certificate, string $prefix, string $suffix): string
-    {
-        $untrustedFilename = tempnam($folder, $prefix);
-        rename($untrustedFilename, $untrustedFilename.$suffix);
-        file_put_contents($untrustedFilename.$suffix, $certificate, FILE_APPEND);
-        file_put_contents($untrustedFilename.$suffix, PHP_EOL, FILE_APPEND);
-
-        return $untrustedFilename.$suffix;
     }
 }

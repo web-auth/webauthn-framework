@@ -12,7 +12,8 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
@@ -23,9 +24,10 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container->set(CertificateChainChecker::class)
+        ->class(OpenSSLCertificateChainChecker::class)
         ->args([
-            ref('webauthn.certificate_chain_checker.http_client'),
-            ref('webauthn.certificate_chain_checker.request_factory'),
+            service('webauthn.certificate_chain_checker.http_client'),
+            service('webauthn.certificate_chain_checker.request_factory'),
         ])
     ;
 };

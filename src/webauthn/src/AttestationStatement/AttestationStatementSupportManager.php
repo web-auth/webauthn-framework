@@ -22,11 +22,13 @@ class AttestationStatementSupportManager
     /**
      * @var AttestationStatementSupport[]
      */
-    private $attestationStatementSupports = [];
+    private array $attestationStatementSupports = [];
 
-    public function add(AttestationStatementSupport $attestationStatementSupport): void
+    public function add(AttestationStatementSupport $attestationStatementSupport): self
     {
         $this->attestationStatementSupports[$attestationStatementSupport->name()] = $attestationStatementSupport;
+
+        return $this;
     }
 
     public function has(string $name): bool

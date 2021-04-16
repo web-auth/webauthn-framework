@@ -42,7 +42,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['status'], 'failed');
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
+        static::assertEquals('username: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -62,49 +62,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals($data['status'], 'failed');
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should not be blank.');
-    }
-
-    /**
-     * @test
-     */
-    public function aRequestWithADisplayNameCannotBeProcessed(): void
-    {
-        $content = [
-            'username' => 'foo',
-            'displayName' => 123,
-        ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
-        $response = $client->getResponse();
-        $data = json_decode($response->getContent(), true);
-
-        static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
-    }
-
-    /**
-     * @test
-     */
-    public function aRequestWithAnInvalidUsernameCannotBeProcessed(): void
-    {
-        $content = [
-            'username' => 123,
-            'displayName' => 'FOO',
-        ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
-        $response = $client->getResponse();
-        $data = json_decode($response->getContent(), true);
-
-        static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
+        static::assertEquals('displayName: This value should not be blank.', $data['errorMessage']);
     }
 
     /**

@@ -7,9 +7,7 @@ parameters:
         - '#Parameter .* of class .* expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
-        - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-        - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
         - '#Parameter (.*) of class Jose\\Component\\Core\\AlgorithmManager constructor expects array\<Jose\\Component\\Core\\Algorithm\>\, array\<int\, object\> given\.#'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false

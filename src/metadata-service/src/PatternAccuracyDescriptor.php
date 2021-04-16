@@ -19,10 +19,7 @@ use function Safe\sprintf;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
-    /**
-     * @var int
-     */
-    private $minComplexity;
+    private int $minComplexity;
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {

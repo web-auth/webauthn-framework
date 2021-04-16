@@ -18,21 +18,13 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 final class AdditionalPublicKeyCredentialCreationOptionsRequest
 {
-    /**
-     * @var array|null
-     */
-    public $authenticatorSelection;
+    public ?array $authenticatorSelection = null;
 
     /**
-     * @var string
-     *
      * @Assert\Type("string")
      * @Assert\Choice({PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT})
      */
-    public $attestation;
+    public string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
 
-    /**
-     * @var array|null
-     */
-    public $extensions;
+    public ?array $extensions = null;
 }

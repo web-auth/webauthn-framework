@@ -28,6 +28,7 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use JetBrains\PhpStorm\ArrayShape;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\sprintf;
@@ -124,9 +125,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['magic' => 'string', 'type' => 'string', 'qualifiedSigner' => 'string', 'extraData' => 'string', 'clockInfo' => 'string', 'firmwareVersion' => 'string', 'attestedName' => 'string', 'attestedQualifiedName' => 'string'])]
     private function checkCertInfo(string $data): array
     {
         $certInfo = new StringStream($data);
@@ -166,9 +165,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         ];
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['type' => 'string', 'nameAlg' => 'string', 'objectAttributes' => 'string', 'authPolicy' => 'string', 'parameters' => 'mixed[]', 'unique' => 'string'])]
     private function checkPubArea(string $data): array
     {
         $pubArea = new StringStream($data);
@@ -199,31 +196,22 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         ];
     }
 
-    /**
-     * @return mixed[]
-     */
     private function getParameters(string $type, StringStream $stream): array
     {
-        switch (bin2hex($type)) {
-            case '0001':
-            case '0014':
-            case '0016':
-                return [
-                    'symmetric' => $stream->read(2),
-                    'scheme' => $stream->read(2),
-                    'keyBits' => unpack('n', $stream->read(2))[1],
-                    'exponent' => $this->getExponent($stream->read(4)),
-                ];
-            case '0018':
-                return [
-                    'symmetric' => $stream->read(2),
-                    'scheme' => $stream->read(2),
-                    'curveId' => $stream->read(2),
-                    'kdf' => $stream->read(2),
-                ];
-            default:
-                throw new InvalidArgumentException('Unsupported type');
-        }
+        return match (bin2hex($type)) {
+            '0001', '0014', '0016' => [
+                'symmetric' => $stream->read(2),
+                'scheme' => $stream->read(2),
+                'keyBits' => unpack('n', $stream->read(2))[1],
+                'exponent' => $this->getExponent($stream->read(4)),
+            ],
+            '0018' => [
+                'symmetric' => $stream->read(2),
+                'scheme' => $stream->read(2),
+                'curveId' => $stream->read(2),
+                'kdf' => $stream->read(2),
+            ],
+            default => throw new InvalidArgumentException('Unsupported type'), };
     }
 
     private function getExponent(string $exponent): string
@@ -233,18 +221,12 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function getTPMHash(string $nameAlg): string
     {
-        switch (bin2hex($nameAlg)) {
-            case '0004':
-                return 'sha1'; //: "TPM_ALG_SHA1",
-            case '000b':
-                return 'sha256'; //: "TPM_ALG_SHA256",
-            case '000c':
-                return 'sha384'; //: "TPM_ALG_SHA384",
-            case '000d':
-                return 'sha512'; //: "TPM_ALG_SHA512",
-            default:
-                throw new InvalidArgumentException('Unsupported hash algorithm');
-        }
+        return match (bin2hex($nameAlg)) {
+            '0004' => 'sha1',
+            '000b' => 'sha256',
+            '000c' => 'sha384',
+            '000d' => 'sha512',
+            default => throw new InvalidArgumentException('Unsupported hash algorithm'), };
     }
 
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool

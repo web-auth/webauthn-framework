@@ -26,68 +26,8 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseControllerFactory
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
-
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $publicKeyCredentialUserEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool, private PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->logger = $logger;
-        $this->cacheItemPool = $cacheItemPool;
-        $this->publicKeyCredentialUserEntityRepository = $publicKeyCredentialUserEntityRepository;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
     public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController

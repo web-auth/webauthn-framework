@@ -19,35 +19,14 @@ use JsonSerializable;
 
 class ExtensionDescriptor implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $id;
+    private ?int $tag;
 
-    /**
-     * @var int|null
-     */
-    private $tag;
-
-    /**
-     * @var string|null
-     */
-    private $data;
-
-    /**
-     * @var bool
-     */
-    private $fail_if_unknown;
-
-    public function __construct(string $id, ?int $tag, ?string $data, bool $fail_if_unknown)
+    public function __construct(private string $id, ?int $tag, private ?string $data, private bool $fail_if_unknown)
     {
         if (null !== $tag) {
             Assertion::greaterOrEqualThan($tag, 0, Utils::logicException('Invalid data. The parameter "tag" shall be a positive integer'));
         }
-        $this->id = $id;
         $this->tag = $tag;
-        $this->data = $data;
-        $this->fail_if_unknown = $fail_if_unknown;
     }
 
     public function getId(): string

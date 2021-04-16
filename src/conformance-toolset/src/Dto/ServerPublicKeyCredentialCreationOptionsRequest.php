@@ -19,36 +19,24 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 final class ServerPublicKeyCredentialCreationOptionsRequest
 {
     /**
-     * @var string
-     *
      * @Assert\Type("string")
      * @Assert\NotBlank
      */
-    public $username;
+    public string $username = '';
 
     /**
-     * @var string
-     *
      * @Assert\Type("string")
      * @Assert\NotBlank
      */
-    public $displayName;
+    public string $displayName = '';
+
+    public ?array $authenticatorSelection = null;
 
     /**
-     * @var array|null
-     */
-    public $authenticatorSelection;
-
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
+     * @Assert\NotBlank(allowNull=true)
      * @Assert\Choice({PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT})
      */
-    public $attestation;
+    public ?string $attestation = null;
 
-    /**
-     * @var array|null
-     */
-    public $extensions;
+    public ?array $extensions = null;
 }

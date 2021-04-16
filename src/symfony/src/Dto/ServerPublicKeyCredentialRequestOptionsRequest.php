@@ -19,22 +19,15 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class ServerPublicKeyCredentialRequestOptionsRequest
 {
     /**
-     * @var string|null
-     *
      * @Assert\NotBlank(allowNull=true)
      */
-    public $username;
+    public ?string $username = null;
 
     /**
-     * @var string|null
-     *
      * @Assert\NotBlank(allowNull=true)
      * @Assert\Choice({PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED})
      */
-    public $userVerification;
+    public ?string $userVerification = null;
 
-    /**
-     * @var array|null
-     */
-    public $extensions;
+    public ?array $extensions = null;
 }

@@ -24,15 +24,9 @@ class TokenBinding
     public const TOKEN_BINDING_STATUS_SUPPORTED = 'supported';
     public const TOKEN_BINDING_STATUS_NOT_SUPPORTED = 'not-supported';
 
-    /**
-     * @var string
-     */
-    private $status;
+    private string $status;
 
-    /**
-     * @var string|null
-     */
-    private $id;
+    private ?string $id;
 
     public function __construct(string $status, ?string $id)
     {

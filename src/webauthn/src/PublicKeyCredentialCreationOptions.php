@@ -16,6 +16,8 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -27,52 +29,30 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rp;
-
-    /**
-     * @var PublicKeyCredentialUserEntity
-     */
-    private $user;
-
-    /**
-     * @var PublicKeyCredentialParameters[]
-     */
-    private $pubKeyCredParams = [];
-
-    /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $excludeCredentials = [];
+    private array $excludeCredentials = [];
 
-    /**
-     * @var AuthenticatorSelectionCriteria
-     */
-    private $authenticatorSelection;
+    private AuthenticatorSelectionCriteria $authenticatorSelection;
 
-    /**
-     * @var string
-     */
-    private $attestation;
+    private string $attestation;
 
-    /**
-     * @param PublicKeyCredentialParameters[] $pubKeyCredParams
+    /*
+     * @var PublicKeyCredentialParameters[]
      */
-    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout = null, ?AuthenticationExtensionsClientInputs $extensions = null)
+
+    #[Pure]
+    public function __construct(private PublicKeyCredentialRpEntity $rp, private PublicKeyCredentialUserEntity $user, string $challenge, private array $pubKeyCredParams)
     {
-        parent::__construct($challenge, $timeout, $extensions);
-        $this->rp = $rp;
-        $this->user = $user;
-        $this->pubKeyCredParams = $pubKeyCredParams;
+        parent::__construct($challenge);
         $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
         $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
-        ;
     }
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
+    #[Pure]
     public static function create(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams): self
     {
         return new self($rp, $user, $challenge, $pubKeyCredParams);
@@ -136,11 +116,13 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    #[Pure]
     public function getRp(): PublicKeyCredentialRpEntity
     {
         return $this->rp;
     }
 
+    #[Pure]
     public function getUser(): PublicKeyCredentialUserEntity
     {
         return $this->user;
@@ -149,6 +131,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialParameters[]
      */
+    #[Pure]
     public function getPubKeyCredParams(): array
     {
         return $this->pubKeyCredParams;
@@ -157,16 +140,19 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
+    #[Pure]
     public function getExcludeCredentials(): array
     {
         return $this->excludeCredentials;
     }
 
+    #[Pure]
     public function getAuthenticatorSelection(): AuthenticatorSelectionCriteria
     {
         return $this->authenticatorSelection;
     }
 
+    #[Pure]
     public function getAttestation(): string
     {
         return $this->attestation;
@@ -216,9 +202,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         ;
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['rp' => 'mixed[]', 'pubKeyCredParams' => 'array[]', 'challenge' => 'string', 'attestation' => 'string', 'user' => 'mixed[]', 'authenticatorSelection' => 'array', 'timeout' => 'int|null', 'extensions' => AuthenticationExtensionsClientInputs::class, 'excludeCredentials' => 'array[]'])]
     public function jsonSerialize(): array
     {
         $json = [

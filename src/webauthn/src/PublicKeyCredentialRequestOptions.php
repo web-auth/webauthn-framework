@@ -16,6 +16,8 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -25,21 +27,16 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    /**
-     * @var string|null
-     */
-    private $rpId;
+    private ?string $rpId = null;
 
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $allowCredentials = [];
+    private array $allowCredentials = [];
 
-    /**
-     * @var string|null
-     */
-    private $userVerification;
+    private ?string $userVerification = null;
 
+    #[Pure]
     public static function create(string $challenge): self
     {
         return new self($challenge);
@@ -88,6 +85,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    #[Pure]
     public function getRpId(): ?string
     {
         return $this->rpId;
@@ -96,11 +94,13 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
+    #[Pure]
     public function getAllowCredentials(): array
     {
         return $this->allowCredentials;
     }
 
+    #[Pure]
     public function getUserVerification(): ?string
     {
         return $this->userVerification;
@@ -114,9 +114,6 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return self::createFromArray($data);
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
@@ -136,9 +133,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         ;
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['challenge' => 'string', 'timeout' => 'int|null', 'extensions' => '\\Webauthn\\AuthenticationExtensions\\AuthenticationExtension[]', 'allowCredentials' => 'array[]', 'userVerification' => 'null|string', 'rpId' => 'null|string'])]
     public function jsonSerialize(): array
     {
         $json = [

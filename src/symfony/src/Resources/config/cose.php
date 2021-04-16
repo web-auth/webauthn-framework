@@ -12,7 +12,29 @@ declare(strict_types=1);
  */
 
 use Cose\Algorithm\Manager;
-use Cose\Algorithm\Signature;
+use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\ECDSA\ES256K;
+use Cose\Algorithm\Signature\ECDSA\ES384;
+use Cose\Algorithm\Signature\ECDSA\ES512;
+use Cose\Algorithm\Signature\EdDSA\Ed25519;
+use Cose\Algorithm\Signature\EdDSA\ED256;
+use Cose\Algorithm\Signature\EdDSA\ED512;
+use Cose\Algorithm\Signature\RSA\PS256;
+use Cose\Algorithm\Signature\RSA\PS384;
+use Cose\Algorithm\Signature\RSA\PS512;
+use Cose\Algorithm\Signature\RSA\RS1;
+use Cose\Algorithm\Signature\RSA\RS256;
+use Cose\Algorithm\Signature\RSA\RS384;
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014-2020 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
+
+use Cose\Algorithm\Signature\RSA\RS512;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return static function (ContainerConfigurator $container): void {
@@ -27,48 +49,48 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container->set('webauthn.cose.algoritm.RS1')
-        ->class(Signature\RSA\RS1::class)
+        ->class(RS1::class)
     ;
     $container->set('webauthn.cose.algoritm.RS256')
-        ->class(Signature\RSA\RS256::class)
+        ->class(RS256::class)
     ;
     $container->set('webauthn.cose.algoritm.RS384')
-        ->class(Signature\RSA\RS384::class)
+        ->class(RS384::class)
     ;
     $container->set('webauthn.cose.algoritm.RS512')
-        ->class(Signature\RSA\RS512::class)
+        ->class(RS512::class)
     ;
 
     $container->set('webauthn.cose.algoritm.PS256')
-        ->class(Signature\RSA\PS256::class)
+        ->class(PS256::class)
     ;
     $container->set('webauthn.cose.algoritm.PS384')
-        ->class(Signature\RSA\PS384::class)
+        ->class(PS384::class)
     ;
     $container->set('webauthn.cose.algoritm.PS512')
-        ->class(Signature\RSA\PS512::class)
+        ->class(PS512::class)
     ;
 
     $container->set('webauthn.cose.algoritm.ES256K')
-        ->class(Signature\ECDSA\ES256K::class)
+        ->class(ES256K::class)
     ;
     $container->set('webauthn.cose.algoritm.ES256')
-        ->class(Signature\ECDSA\ES256::class)
+        ->class(ES256::class)
     ;
     $container->set('webauthn.cose.algoritm.ES384')
-        ->class(Signature\ECDSA\ES384::class)
+        ->class(ES384::class)
     ;
     $container->set('webauthn.cose.algoritm.ES512')
-        ->class(Signature\ECDSA\ES512::class)
+        ->class(ES512::class)
     ;
 
     $container->set('webauthn.cose.algoritm.ED256')
-        ->class(Signature\EdDSA\ED256::class)
+        ->class(ED256::class)
     ;
     $container->set('webauthn.cose.algoritm.ED512')
-        ->class(Signature\EdDSA\ED512::class)
+        ->class(ED512::class)
     ;
     $container->set('webauthn.cose.algoritm.Ed25519ph')
-        ->class(Signature\EdDSA\Ed25519::class)
+        ->class(Ed25519::class)
     ;
 };

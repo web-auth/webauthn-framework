@@ -18,23 +18,10 @@ use function Safe\json_decode;
 
 class SingleMetadata
 {
-    /**
-     * @var MetadataStatement
-     */
-    private $statement;
-    /**
-     * @var string
-     */
-    private $data;
-    /**
-     * @var bool
-     */
-    private $isBase64Encoded;
+    private ?MetadataStatement $statement = null;
 
-    public function __construct(string $data, bool $isBase64Encoded)
+    public function __construct(private string $data, private bool $isBase64Encoded)
     {
-        $this->data = $data;
-        $this->isBase64Encoded = $isBase64Encoded;
     }
 
     public function getMetadataStatement(): MetadataStatement

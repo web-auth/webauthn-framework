@@ -19,20 +19,11 @@ use function Safe\sprintf;
 
 class RgbPaletteEntry implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $r;
+    private int $r;
 
-    /**
-     * @var int
-     */
-    private $g;
+    private int $g;
 
-    /**
-     * @var int
-     */
-    private $b;
+    private int $b;
 
     public function __construct(int $r, int $g, int $b)
     {

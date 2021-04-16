@@ -29,10 +29,7 @@ class Key
     public const KEY_OPS = 4;
     public const BASE_IV = 5;
 
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {
@@ -80,10 +77,7 @@ class Key
         return array_key_exists($key, $this->data);
     }
 
-    /**
-     * @return mixed
-     */
-    public function get(int $key)
+    public function get(int $key): mixed
     {
         Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 

@@ -18,20 +18,8 @@ use JsonSerializable;
 
 class RogueListEntry implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $sk;
-
-    /**
-     * @var string
-     */
-    private $date;
-
-    public function __construct(string $sk, string $date)
+    public function __construct(private string $sk, private string $date)
     {
-        $this->sk = $sk;
-        $this->date = $date;
     }
 
     public function getSk(): string

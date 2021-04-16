@@ -15,6 +15,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Stream;
+use JetBrains\PhpStorm\Pure;
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\fread;
@@ -29,15 +30,9 @@ final class StringStream implements Stream
      */
     private $data;
 
-    /**
-     * @var int
-     */
-    private $length;
+    private int $length;
 
-    /**
-     * @var int
-     */
-    private $totalRead = 0;
+    private int $totalRead = 0;
 
     public function __construct(string $data)
     {
@@ -66,6 +61,7 @@ final class StringStream implements Stream
         fclose($this->data);
     }
 
+    #[Pure]
     public function isEOF(): bool
     {
         return $this->totalRead === $this->length;

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Base64Url\Base64Url;
-use InvalidArgumentException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -81,23 +80,6 @@ class AttestationTest extends AbstractTestCase
     public function anAssertionWithACompleteChainCannotBeAccepted(string $options, string $response): void
     {
         static::markTestSkipped('See #593 on github. Should be tested with correct certificates');
-        static::expectException(InvalidArgumentException::class);
-        static::expectExceptionMessage('Root certificates are not allowed');
-
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load($response);
-
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-
-        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
-
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
-            $publicKeyCredential->getResponse(),
-            $publicKeyCredentialCreationOptions,
-            $request
-        );
     }
 
     /**

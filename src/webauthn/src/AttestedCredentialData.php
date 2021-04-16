@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -24,51 +26,36 @@ use function Safe\base64_decode;
  */
 class AttestedCredentialData implements JsonSerializable
 {
-    /**
-     * @var UuidInterface
-     */
-    private $aaguid;
-
-    /**
-     * @var string
-     */
-    private $credentialId;
-
-    /**
-     * @var string|null
-     */
-    private $credentialPublicKey;
-
-    public function __construct(UuidInterface $aaguid, string $credentialId, ?string $credentialPublicKey)
+    #[Pure]
+    public function __construct(private UuidInterface $aaguid, private string $credentialId, private ?string $credentialPublicKey)
     {
-        $this->aaguid = $aaguid;
-        $this->credentialId = $credentialId;
-        $this->credentialPublicKey = $credentialPublicKey;
     }
 
+    #[Pure]
     public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
     }
 
-    public function setAaguid(UuidInterface $aaguid): void
+    public function setAaguid(UuidInterface $aaguid): self
     {
         $this->aaguid = $aaguid;
+
+        return $this;
     }
 
+    #[Pure]
     public function getCredentialId(): string
     {
         return $this->credentialId;
     }
 
+    #[Pure]
     public function getCredentialPublicKey(): ?string
     {
         return $this->credentialPublicKey;
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
@@ -95,9 +82,8 @@ class AttestedCredentialData implements JsonSerializable
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[Pure]
+    #[ArrayShape(['aaguid' => 'string', 'credentialId' => 'string', 'credentialPublicKey' => 'string'])]
     public function jsonSerialize(): array
     {
         $result = [

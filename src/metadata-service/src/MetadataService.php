@@ -34,41 +34,14 @@ use Webauthn\CertificateToolbox;
 
 class MetadataService
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
+    private array $additionalQueryStringValues;
 
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
+    private array $additionalHeaders;
 
-    /**
-     * @var array
-     */
-    private $additionalQueryStringValues;
+    private LoggerInterface $logger;
 
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $serviceUri;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory)
+    public function __construct(private string $serviceUri, private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory)
     {
-        $this->serviceUri = $serviceUri;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
         $this->additionalQueryStringValues = [];
         $this->additionalHeaders = [];
         $this->logger = new NullLogger();
@@ -99,7 +72,7 @@ class MetadataService
     {
         try {
             $toc = $this->fetchMetadataTOCPayload();
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return false;
         }
         foreach ($toc->getEntries() as $entry) {

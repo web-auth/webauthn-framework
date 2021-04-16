@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
@@ -32,26 +34,15 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public const RESIDENT_KEY_REQUIREMENT_PREFERRED = 'preferred';
     public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    /**
-     * @var string|null
-     */
-    private $authenticatorAttachment;
+    private ?string $authenticatorAttachment;
 
-    /**
-     * @var bool
-     */
-    private $requireResidentKey;
+    private bool $requireResidentKey;
 
-    /**
-     * @var string
-     */
-    private $userVerification;
+    private string $userVerification;
 
-    /**
-     * @var string|null
-     */
-    private $residentKey;
+    private ?string $residentKey;
 
+    #[Pure]
     public function __construct()
     {
         $this->authenticatorAttachment = null;
@@ -60,6 +51,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
     }
 
+    #[Pure]
     public static function create(): self
     {
         return new self();
@@ -93,21 +85,25 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
+    #[Pure]
     public function getAuthenticatorAttachment(): ?string
     {
         return $this->authenticatorAttachment;
     }
 
+    #[Pure]
     public function isRequireResidentKey(): bool
     {
         return $this->requireResidentKey;
     }
 
+    #[Pure]
     public function getUserVerification(): string
     {
         return $this->userVerification;
     }
 
+    #[Pure]
     public function getResidentKey(): ?string
     {
         return $this->residentKey;
@@ -121,9 +117,6 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return self::createFromArray($data);
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $json): self
     {
         return self::create()
@@ -134,9 +127,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         ;
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[Pure]
+    #[ArrayShape(['requireResidentKey' => 'bool', 'userVerification' => 'string', 'residentKey' => 'null|string', 'authenticatorAttachment' => 'null|string'])]
     public function jsonSerialize(): array
     {
         $json = [

@@ -20,14 +20,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class UserProvider implements UserProviderInterface
 {
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userRepository;
-
-    public function __construct(PublicKeyCredentialUserEntityRepository $userRepository)
+    public function __construct(private PublicKeyCredentialUserEntityRepository $userRepository)
     {
-        $this->userRepository = $userRepository;
     }
 
     /**

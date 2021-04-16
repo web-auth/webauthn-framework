@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\Pure;
 use Webauthn\AttestationStatement\AttestationObject;
 
 /**
@@ -20,17 +21,13 @@ use Webauthn\AttestationStatement\AttestationObject;
  */
 class AuthenticatorAttestationResponse extends AuthenticatorResponse
 {
-    /**
-     * @var AttestationObject
-     */
-    private $attestationObject;
-
-    public function __construct(CollectedClientData $clientDataJSON, AttestationObject $attestationObject)
+    #[Pure]
+    public function __construct(CollectedClientData $clientDataJSON, private AttestationObject $attestationObject)
     {
         parent::__construct($clientDataJSON);
-        $this->attestationObject = $attestationObject;
     }
 
+    #[Pure]
     public function getAttestationObject(): AttestationObject
     {
         return $this->attestationObject;

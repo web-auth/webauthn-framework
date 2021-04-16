@@ -21,52 +21,23 @@ use LogicException;
 
 class MetadataTOCPayloadEntry implements JsonSerializable
 {
-    /**
-     * @var string|null
-     */
-    private $aaid;
+    private ?string $aaid;
 
-    /**
-     * @var string|null
-     */
-    private $aaguid;
+    private ?string $aaguid;
 
     /**
      * @var string[]
      */
-    private $attestationCertificateKeyIdentifiers = [];
+    private array $attestationCertificateKeyIdentifiers = [];
 
-    /**
-     * @var string|null
-     */
-    private $hash;
-
-    /**
-     * @var string|null
-     */
-    private $url;
+    private ?string $hash;
 
     /**
      * @var StatusReport[]
      */
-    private $statusReports = [];
+    private array $statusReports = [];
 
-    /**
-     * @var string
-     */
-    private $timeOfLastStatusChange;
-
-    /**
-     * @var string
-     */
-    private $rogueListURL;
-
-    /**
-     * @var string
-     */
-    private $rogueListHash;
-
-    public function __construct(?string $aaid, ?string $aaguid, array $attestationCertificateKeyIdentifiers, ?string $hash, ?string $url, string $timeOfLastStatusChange, ?string $rogueListURL, ?string $rogueListHash)
+    public function __construct(?string $aaid, ?string $aaguid, array $attestationCertificateKeyIdentifiers, ?string $hash, private ?string $url, private string $timeOfLastStatusChange, private ?string $rogueListURL, private ?string $rogueListHash)
     {
         if (null !== $aaid && null !== $aaguid) {
             throw new LogicException('Authenticators cannot support both AAID and AAGUID');
@@ -83,10 +54,6 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         $this->aaguid = $aaguid;
         $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
         $this->hash = Base64Url::decode($hash);
-        $this->url = $url;
-        $this->timeOfLastStatusChange = $timeOfLastStatusChange;
-        $this->rogueListURL = $rogueListURL;
-        $this->rogueListHash = $rogueListHash;
     }
 
     public function getAaid(): ?string

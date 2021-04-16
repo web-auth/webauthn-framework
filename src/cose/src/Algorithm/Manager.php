@@ -21,12 +21,14 @@ class Manager
     /**
      * @var Algorithm[]
      */
-    private $algorithms = [];
+    private array $algorithms = [];
 
-    public function add(Algorithm $algorithm): void
+    public function add(Algorithm $algorithm): self
     {
         $identifier = $algorithm::identifier();
         $this->algorithms[$identifier] = $algorithm;
+
+        return $this;
     }
 
     public function list(): iterable

@@ -26,7 +26,7 @@ final class CertificateChainCheckerSetterCompilerPass implements CompilerPassInt
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias(CertificateChainChecker::class) || !$container->hasDefinition(AuthenticatorAttestationResponseValidator::class)) {
+        if (!$container->hasDefinition(CertificateChainChecker::class) || !$container->hasDefinition(AuthenticatorAttestationResponseValidator::class)) {
             return;
         }
 

@@ -30,35 +30,17 @@ use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
-    /**
-     * @var array
-     */
-    private $publicKeyCredentialCreationOptions = [];
+    private array $publicKeyCredentialCreationOptions = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAttestationResponseValidationSucceeded = [];
+    private array $authenticatorAttestationResponseValidationSucceeded = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAttestationResponseValidationFailed = [];
+    private array $authenticatorAttestationResponseValidationFailed = [];
 
-    /**
-     * @var array
-     */
-    private $publicKeyCredentialRequestOptions = [];
+    private array $publicKeyCredentialRequestOptions = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAssertionResponseValidationSucceeded = [];
+    private array $authenticatorAssertionResponseValidationSucceeded = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAssertionResponseValidationFailed = [];
+    private array $authenticatorAssertionResponseValidationFailed = [];
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
@@ -102,16 +84,18 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    public function addPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsCreatedEvent $event): void
+    public function addPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsCreatedEvent $event): self
     {
         $cloner = new VarCloner();
         $this->publicKeyCredentialCreationOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
             'json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
         ];
+
+        return $this;
     }
 
-    public function addAuthenticatorAttestationResponseValidationSucceeded(AuthenticatorAttestationResponseValidationSucceededEvent $event): void
+    public function addAuthenticatorAttestationResponseValidationSucceeded(AuthenticatorAttestationResponseValidationSucceededEvent $event): self
     {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
@@ -120,9 +104,11 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
+
+        return $this;
     }
 
-    public function addAuthenticatorAttestationResponseValidationFailed(AuthenticatorAttestationResponseValidationFailedEvent $event): void
+    public function addAuthenticatorAttestationResponseValidationFailed(AuthenticatorAttestationResponseValidationFailedEvent $event): self
     {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationFailed[] = [
@@ -131,18 +117,22 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
+
+        return $this;
     }
 
-    public function addPublicKeyCredentialRequestOptions(PublicKeyCredentialRequestOptionsCreatedEvent $event): void
+    public function addPublicKeyCredentialRequestOptions(PublicKeyCredentialRequestOptionsCreatedEvent $event): self
     {
         $cloner = new VarCloner();
         $this->publicKeyCredentialRequestOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
             'json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
         ];
+
+        return $this;
     }
 
-    public function addAuthenticatorAssertionResponseValidationSucceeded(AuthenticatorAssertionResponseValidationSucceededEvent $event): void
+    public function addAuthenticatorAssertionResponseValidationSucceeded(AuthenticatorAssertionResponseValidationSucceededEvent $event): self
     {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationSucceeded[] = [
@@ -153,9 +143,11 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
+
+        return $this;
     }
 
-    public function addAuthenticatorAssertionResponseValidationFailed(AuthenticatorAssertionResponseValidationFailedEvent $event): void
+    public function addAuthenticatorAssertionResponseValidationFailed(AuthenticatorAssertionResponseValidationFailedEvent $event): self
     {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [
@@ -166,5 +158,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
+
+        return $this;
     }
 }

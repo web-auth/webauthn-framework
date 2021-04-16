@@ -14,6 +14,11 @@ declare(strict_types=1);
 namespace Webauthn\Util;
 
 use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\ECDSA\ECSignature;
+use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\ECDSA\ES256K;
+use Cose\Algorithm\Signature\ECDSA\ES384;
+use Cose\Algorithm\Signature\ECDSA\ES512;
 use Cose\Algorithm\Signature\Signature;
 
 /**
@@ -28,25 +33,25 @@ abstract class CoseSignatureFixer
     public static function fix(string $signature, Signature $algorithm): string
     {
         switch ($algorithm::identifier()) {
-            case ECDSA\ES256K::ID:
-            case ECDSA\ES256::ID:
+            case ES256K::ID:
+            case ES256::ID:
                 if (64 === mb_strlen($signature, '8bit')) {
                     return $signature;
                 }
 
-                return ECDSA\ECSignature::fromAsn1($signature, 64); //TODO: fix this hardcoded value by adding a dedicated method for the algorithms
-            case ECDSA\ES384::ID:
+                return ECSignature::fromAsn1($signature, 64); //TODO: fix this hardcoded value by adding a dedicated method for the algorithms
+            case ES384::ID:
                 if (96 === mb_strlen($signature, '8bit')) {
                     return $signature;
                 }
 
-                return ECDSA\ECSignature::fromAsn1($signature, 96);
-            case ECDSA\ES512::ID:
+                return ECSignature::fromAsn1($signature, 96);
+            case ES512::ID:
                 if (132 === mb_strlen($signature, '8bit')) {
                     return $signature;
                 }
 
-                return ECDSA\ECSignature::fromAsn1($signature, 132);
+                return ECSignature::fromAsn1($signature, 132);
         }
 
         return $signature;

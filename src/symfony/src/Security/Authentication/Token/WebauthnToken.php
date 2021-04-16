@@ -26,60 +26,14 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken
 {
-    /**
-     * @var string
-     */
-    private $providerKey;
+    private string $providerKey;
 
-    /**
-     * @var PublicKeyCredentialUserEntity
-     */
-    private $publicKeyCredentialUserEntity;
-
-    /**
-     * @var PublicKeyCredentialDescriptor
-     */
-    private $publicKeyCredentialDescriptor;
-
-    /**
-     * @var bool
-     */
-    private $isUserPresent;
-
-    /**
-     * @var bool
-     */
-    private $isUserVerified;
-
-    /**
-     * @var int
-     */
-    private $signCount;
-
-    /**
-     * @var AuthenticationExtensionsClientOutputs|null
-     */
-    private $extensions;
-
-    /**
-     * @var int
-     */
-    private $reservedForFutureUse1;
-
-    /**
-     * @var int
-     */
-    private $reservedForFutureUse2;
-
-    /**
-     * @var PublicKeyCredentialOptions
-     */
-    private $publicKeyCredentialOptions;
+    private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, PublicKeyCredentialOptions $publicKeyCredentialOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
+    public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, private PublicKeyCredentialOptions $publicKeyCredentialOptions, private PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, private bool $isUserPresent, private bool $isUserVerified, private int $reservedForFutureUse1, private int $reservedForFutureUse2, private int $signCount, private ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -87,14 +41,6 @@ class WebauthnToken extends AbstractToken
         $this->setUser($publicKeyCredentialUserEntity->getName());
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
         $this->providerKey = $providerKey;
-        $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
-        $this->isUserPresent = $isUserPresent;
-        $this->isUserVerified = $isUserVerified;
-        $this->signCount = $signCount;
-        $this->extensions = $extensions;
-        $this->reservedForFutureUse1 = $reservedForFutureUse1;
-        $this->reservedForFutureUse2 = $reservedForFutureUse2;
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
     }
 
     /**

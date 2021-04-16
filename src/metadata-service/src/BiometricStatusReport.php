@@ -17,40 +17,19 @@ use JsonSerializable;
 
 class BiometricStatusReport implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $certLevel;
+    private ?int $certLevel = null;
 
-    /**
-     * @var int
-     */
-    private $modality;
+    private ?int $modality = null;
 
-    /**
-     * @var string|null
-     */
-    private $effectiveDate;
+    private ?string $effectiveDate = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationDescriptor;
+    private ?string $certificationDescriptor = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificateNumber;
+    private ?string $certificateNumber = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationPolicyVersion;
+    private ?string $certificationPolicyVersion = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationRequirementsVersion;
+    private ?string $certificationRequirementsVersion = null;
 
     public function getCertLevel(): int
     {

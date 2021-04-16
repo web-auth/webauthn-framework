@@ -18,29 +18,10 @@ use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    /**
-     * @var string
-     */
-    private $rawAttestationObject;
-    /**
-     * @var AttestationStatement
-     */
-    private $attStmt;
-    /**
-     * @var AuthenticatorData
-     */
-    private $authData;
+    private ?MetadataStatement $metadataStatement;
 
-    /**
-     * @var MetadataStatement|null
-     */
-    private $metadataStatement;
-
-    public function __construct(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData)
+    public function __construct(private string $rawAttestationObject, private AttestationStatement $attStmt, private AuthenticatorData $authData)
     {
-        $this->rawAttestationObject = $rawAttestationObject;
-        $this->attStmt = $attStmt;
-        $this->authData = $authData;
         $this->metadataStatement = null;
     }
 
@@ -54,9 +35,11 @@ class AttestationObject
         return $this->attStmt;
     }
 
-    public function setAttStmt(AttestationStatement $attStmt): void
+    public function setAttStmt(AttestationStatement $attStmt): self
     {
         $this->attStmt = $attStmt;
+
+        return $this;
     }
 
     public function getAuthData(): AuthenticatorData

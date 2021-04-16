@@ -16,6 +16,8 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -30,78 +32,32 @@ use Webauthn\TrustPath\TrustPathLoader;
  */
 class PublicKeyCredentialSource implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $publicKeyCredentialId;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
+    /*
      * @var string[]
      */
-    protected $transports;
 
-    /**
-     * @var string
-     */
-    protected $attestationType;
-
-    /**
-     * @var TrustPath
-     */
-    protected $trustPath;
-
-    /**
-     * @var UuidInterface
-     */
-    protected $aaguid;
-
-    /**
-     * @var string
-     */
-    protected $credentialPublicKey;
-
-    /**
-     * @var string
-     */
-    protected $userHandle;
-
-    /**
-     * @var int
-     */
-    protected $counter;
-
-    /**
-     * @var array|null
-     */
-    protected $otherUI;
-
-    /**
-     * @param string[] $transports
-     */
-    public function __construct(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter, ?array $otherUI = null)
-    {
-        $this->publicKeyCredentialId = $publicKeyCredentialId;
-        $this->type = $type;
-        $this->transports = $transports;
-        $this->aaguid = $aaguid;
-        $this->credentialPublicKey = $credentialPublicKey;
-        $this->userHandle = $userHandle;
-        $this->counter = $counter;
-        $this->attestationType = $attestationType;
-        $this->trustPath = $trustPath;
-        $this->otherUI = $otherUI;
+    #[Pure]
+    public function __construct(
+        protected string $publicKeyCredentialId,
+        protected string $type,
+        protected array $transports,
+        protected string $attestationType,
+        protected TrustPath $trustPath,
+        protected UuidInterface $aaguid,
+        protected string $credentialPublicKey,
+        protected string $userHandle,
+        protected int $counter,
+        protected ?array $otherUI = null
+    ) {
     }
 
+    #[Pure]
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;
     }
 
+    #[Pure]
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
         return new PublicKeyCredentialDescriptor(
@@ -111,16 +67,19 @@ class PublicKeyCredentialSource implements JsonSerializable
         );
     }
 
+    #[Pure]
     public function getAttestationType(): string
     {
         return $this->attestationType;
     }
 
+    #[Pure]
     public function getTrustPath(): TrustPath
     {
         return $this->trustPath;
     }
 
+    #[Pure]
     public function getAttestedCredentialData(): AttestedCredentialData
     {
         return new AttestedCredentialData(
@@ -130,6 +89,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         );
     }
 
+    #[Pure]
     public function getType(): string
     {
         return $this->type;
@@ -138,36 +98,44 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @return string[]
      */
+    #[Pure]
     public function getTransports(): array
     {
         return $this->transports;
     }
 
+    #[Pure]
     public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
     }
 
+    #[Pure]
     public function getCredentialPublicKey(): string
     {
         return $this->credentialPublicKey;
     }
 
+    #[Pure]
     public function getUserHandle(): string
     {
         return $this->userHandle;
     }
 
+    #[Pure]
     public function getCounter(): int
     {
         return $this->counter;
     }
 
-    public function setCounter(int $counter): void
+    public function setCounter(int $counter): self
     {
         $this->counter = $counter;
+
+        return $this;
     }
 
+    #[Pure]
     public function getOtherUI(): ?array
     {
         return $this->otherUI;
@@ -180,9 +148,6 @@ class PublicKeyCredentialSource implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @param mixed[] $data
-     */
     public static function createFromArray(array $data): self
     {
         $keys = array_keys(get_class_vars(self::class));
@@ -215,9 +180,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         }
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['publicKeyCredentialId' => 'string', 'type' => 'string', 'transports' => 'array', 'attestationType' => 'string', 'trustPath' => 'mixed', 'aaguid' => 'string', 'credentialPublicKey' => 'string', 'userHandle' => 'string', 'counter' => 'int'])]
     public function jsonSerialize(): array
     {
         return [

@@ -14,34 +14,29 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
-    /**
-     * @var string
-     */
-    protected $displayName;
-
-    public function __construct(string $name, string $id, string $displayName, ?string $icon = null)
+    public function __construct(string $name, string $id, protected string $displayName, ?string $icon = null)
     {
         parent::__construct($name, $icon);
         Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
         $this->id = $id;
-        $this->displayName = $displayName;
     }
 
+    #[Pure]
     public function getId(): string
     {
         return $this->id;
     }
 
+    #[Pure]
     public function getDisplayName(): string
     {
         return $this->displayName;
@@ -73,9 +68,8 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['name' => 'string', 'icon' => "\null|string", 'displayName' => 'string', 'id' => 'string'])]
+    #[Pure]
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

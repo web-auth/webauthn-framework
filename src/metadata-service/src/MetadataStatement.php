@@ -77,169 +77,109 @@ class MetadataStatement implements JsonSerializable
     public const ATTESTATION_ECDAA = 0x3E09;
     public const ATTESTATION_ATTCA = 0x3E0A;
 
-    /**
-     * @var string|null
-     */
-    private $legalHeader;
+    private ?string $legalHeader = null;
 
-    /**
-     * @var string|null
-     */
-    private $aaid;
+    private ?string $aaid = null;
 
-    /**
-     * @var string|null
-     */
-    private $aaguid;
+    private ?string $aaguid = null;
     /**
      * @var string[]
      */
-    private $attestationCertificateKeyIdentifiers = [];
+    private array $attestationCertificateKeyIdentifiers = [];
 
-    /**
-     * @var string
-     */
-    private $description;
+    private string $description = '';
 
     /**
      * @var string[]
      */
-    private $alternativeDescriptions = [];
+    private array $alternativeDescriptions = [];
 
-    /**
-     * @var int
-     */
-    private $authenticatorVersion;
+    private int $authenticatorVersion = 0;
 
-    /**
-     * @var string
-     */
-    private $protocolFamily;
+    private string $protocolFamily = '';
 
     /**
      * @var Version[]
      */
-    private $upv = [];
+    private array $upv = [];
 
-    /**
-     * @var string|null
-     */
-    private $assertionScheme;
+    private ?string $assertionScheme = null;
 
-    /**
-     * @var int|null
-     */
-    private $authenticationAlgorithm;
+    private ?int $authenticationAlgorithm = null;
 
     /**
      * @var int[]
      */
-    private $authenticationAlgorithms = [];
+    private array $authenticationAlgorithms = [];
 
-    /**
-     * @var int|null
-     */
-    private $publicKeyAlgAndEncoding;
+    private ?int $publicKeyAlgAndEncoding = null;
 
     /**
      * @var int[]
      */
-    private $publicKeyAlgAndEncodings = [];
+    private array $publicKeyAlgAndEncodings = [];
 
     /**
      * @var int[]
      */
-    private $attestationTypes = [];
+    private array $attestationTypes = [];
 
     /**
      * @var VerificationMethodANDCombinations[]
      */
-    private $userVerificationDetails = [];
+    private array $userVerificationDetails = [];
 
-    /**
-     * @var int
-     */
-    private $keyProtection;
+    private int $keyProtection = 0;
 
-    /**
-     * @var bool|null
-     */
-    private $isKeyRestricted;
+    private ?bool $isKeyRestricted = null;
 
-    /**
-     * @var bool|null
-     */
-    private $isFreshUserVerificationRequired;
+    private ?bool $isFreshUserVerificationRequired = null;
 
-    /**
-     * @var int
-     */
-    private $matcherProtection;
+    private int $matcherProtection = 0;
 
-    /**
-     * @var int|null
-     */
-    private $cryptoStrength;
+    private ?int $cryptoStrength = null;
 
-    /**
-     * @var string|null
-     */
-    private $operatingEnv;
+    private ?string $operatingEnv = null;
 
-    /**
-     * @var int
-     */
-    private $attachmentHint = 0;
+    private int $attachmentHint = 0;
 
-    /**
-     * @var bool|null
-     */
-    private $isSecondFactorOnly;
+    private ?bool $isSecondFactorOnly = null;
 
-    /**
-     * @var int
-     */
-    private $tcDisplay;
+    private int $tcDisplay = 0;
 
-    /**
-     * @var string|null
-     */
-    private $tcDisplayContentType;
+    private ?string $tcDisplayContentType = null;
 
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
      */
-    private $tcDisplayPNGCharacteristics = [];
+    private array $tcDisplayPNGCharacteristics = [];
 
     /**
      * @var string[]
      */
-    private $attestationRootCertificates = [];
+    private array $attestationRootCertificates = [];
 
     /**
      * @var EcdaaTrustAnchor[]
      */
-    private $ecdaaTrustAnchors = [];
+    private array $ecdaaTrustAnchors = [];
 
-    /**
-     * @var string|null
-     */
-    private $icon;
+    private ?string $icon = null;
 
     /**
      * @var ExtensionDescriptor[]
      */
-    private $supportedExtensions = [];
+    private array $supportedExtensions = [];
 
     /**
      * @var array<int, StatusReport>
      */
-    private $statusReports = [];
+    private array $statusReports = [];
 
     /**
      * @var string[]
      */
-    private $rootCertificates = [];
+    private array $rootCertificates = [];
 
     public static function createFromString(string $statement): self
     {

@@ -18,20 +18,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class StoredData
 {
-    /**
-     * @var PublicKeyCredentialOptions
-     */
-    private $publicKeyCredentialOptions;
-
-    /**
-     * @var PublicKeyCredentialUserEntity|null
-     */
-    private $publicKeyCredentialUserEntity;
-
-    public function __construct(PublicKeyCredentialOptions $publicKeyCredentialOptions, ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity)
+    public function __construct(private PublicKeyCredentialOptions $publicKeyCredentialOptions, private ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity)
     {
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
-        $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
     }
 
     public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions

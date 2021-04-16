@@ -20,44 +20,8 @@ use function Safe\sprintf;
 
 class EcdaaTrustAnchor implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $X;
-
-    /**
-     * @var string
-     */
-    private $Y;
-
-    /**
-     * @var string
-     */
-    private $c;
-
-    /**
-     * @var string
-     */
-    private $sx;
-
-    /**
-     * @var string
-     */
-    private $sy;
-
-    /**
-     * @var string
-     */
-    private $G1Curve;
-
-    public function __construct(string $X, string $Y, string $c, string $sx, string $sy, string $G1Curve)
+    public function __construct(private string $X, private string $Y, private string $c, private string $sx, private string $sy, private string $G1Curve)
     {
-        $this->X = $X;
-        $this->Y = $Y;
-        $this->c = $c;
-        $this->sx = $sx;
-        $this->sy = $sy;
-        $this->G1Curve = $G1Curve;
     }
 
     public function getX(): string

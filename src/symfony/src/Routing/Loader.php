@@ -21,10 +21,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class Loader extends SymfonyLoader
 {
-    /**
-     * @var RouteCollection
-     */
-    private $routes;
+    private RouteCollection $routes;
 
     public function __construct()
     {

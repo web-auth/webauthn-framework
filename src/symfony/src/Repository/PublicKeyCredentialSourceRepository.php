@@ -29,10 +29,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
      */
     private $manager;
 
-    /**
-     * @var string
-     */
-    private $class;
+    private string $class;
 
     public function __construct(ManagerRegistry $registry, string $class)
     {

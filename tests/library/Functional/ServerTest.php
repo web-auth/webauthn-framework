@@ -91,7 +91,7 @@ class ServerTest extends AbstractTestCase
         static::assertEquals('foo.example', $options->getRpId());
         static::assertEquals(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, $options->getUserVerification());
         static::assertCount(1, $options->getAllowCredentials());
-        static::assertEquals(60000, $options->getTimeout());
+        static::assertNull($options->getTimeout());
     }
 
     private function getServer(): Server

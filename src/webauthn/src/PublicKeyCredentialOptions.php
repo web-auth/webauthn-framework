@@ -13,30 +13,20 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $challenge;
+    protected ?int $timeout = null;
 
-    /**
-     * @var int|null
-     */
-    protected $timeout;
+    protected AuthenticationExtensionsClientInputs $extensions;
 
-    /**
-     * @var AuthenticationExtensionsClientInputs
-     */
-    protected $extensions;
-
-    public function __construct(string $challenge)
+    #[Pure]
+    public function __construct(protected string $challenge)
     {
-        $this->challenge = $challenge;
         $this->extensions = new AuthenticationExtensionsClientInputs();
     }
 
@@ -73,16 +63,19 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this;
     }
 
+    #[Pure]
     public function getChallenge(): string
     {
         return $this->challenge;
     }
 
+    #[Pure]
     public function getTimeout(): ?int
     {
         return $this->timeout;
     }
 
+    #[Pure]
     public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;

@@ -21,14 +21,8 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 
 final class WebauthnEntryPoint implements AuthenticationEntryPointInterface
 {
-    /**
-     * @var AuthenticationFailureHandlerInterface
-     */
-    private $failureHandler;
-
-    public function __construct(AuthenticationFailureHandlerInterface $failureHandler)
+    public function __construct(private AuthenticationFailureHandlerInterface $failureHandler)
     {
-        $this->failureHandler = $failureHandler;
     }
 
     /**

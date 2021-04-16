@@ -18,20 +18,8 @@ namespace Webauthn;
  */
 abstract class Credential
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    public function __construct(string $id, string $type)
+    public function __construct(protected string $id, protected string $type)
     {
-        $this->id = $id;
-        $this->type = $type;
     }
 
     public function getId(): string

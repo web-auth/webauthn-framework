@@ -13,24 +13,14 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 abstract class PublicKeyCredentialEntity implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $icon;
-
-    public function __construct(string $name, ?string $icon)
+    public function __construct(protected string $name, protected ?string $icon)
     {
-        $this->name = $name;
-        $this->icon = $icon;
     }
 
     public function getName(): string
@@ -43,9 +33,8 @@ abstract class PublicKeyCredentialEntity implements JsonSerializable
         return $this->icon;
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['name' => 'string', 'icon' => 'null|string'])]
+    #[Pure]
     public function jsonSerialize(): array
     {
         $json = [

@@ -20,6 +20,7 @@ use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Throwable;
@@ -30,24 +31,20 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
+    #[Pure]
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
+    #[Pure]
     public function name(): string
     {
         return 'fido-u2f';
     }
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');

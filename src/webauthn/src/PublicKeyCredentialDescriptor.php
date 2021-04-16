@@ -16,6 +16,8 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
@@ -28,36 +30,22 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
     public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
+    /*
      * @var string[]
      */
-    protected $transports;
 
-    /**
-     * @param string[] $transports
-     */
-    public function __construct(string $type, string $id, array $transports = [])
+    #[Pure]
+    public function __construct(protected string $type, protected string $id, protected array $transports = [])
     {
-        $this->type = $type;
-        $this->id = $id;
-        $this->transports = $transports;
     }
 
+    #[Pure]
     public function getType(): string
     {
         return $this->type;
     }
 
+    #[Pure]
     public function getId(): string
     {
         return $this->id;
@@ -66,6 +54,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @return string[]
      */
+    #[Pure]
     public function getTransports(): array
     {
         return $this->transports;
@@ -94,9 +83,8 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[Pure]
+    #[ArrayShape(['type' => 'string', 'id' => 'string', 'transports' => 'array'])]
     public function jsonSerialize(): array
     {
         $json = [

@@ -18,11 +18,13 @@ class ExtensionOutputCheckerHandler
     /**
      * @var ExtensionOutputChecker[]
      */
-    private $checkers = [];
+    private array $checkers = [];
 
-    public function add(ExtensionOutputChecker $checker): void
+    public function add(ExtensionOutputChecker $checker): self
     {
         $this->checkers[] = $checker;
+
+        return $this;
     }
 
     /**

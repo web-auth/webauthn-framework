@@ -29,7 +29,6 @@ use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -37,25 +36,13 @@ class AttestationObjectLoader
     private const FLAG_AT = 0b01000000;
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
-
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager)
+    public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->logger = new NullLogger();
     }
 

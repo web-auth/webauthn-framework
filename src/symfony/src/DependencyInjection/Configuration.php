@@ -31,14 +31,8 @@ use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
-    /**
-     * @var string
-     */
-    private $alias;
-
-    public function __construct(string $alias)
+    public function __construct(private string $alias)
     {
-        $this->alias = $alias;
     }
 
     /**

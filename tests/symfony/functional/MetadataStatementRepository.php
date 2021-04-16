@@ -28,32 +28,20 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
     /**
      * @var SingleMetadata[]
      */
-    private $metadataStatements = [];
+    private array $metadataStatements = [];
 
     /**
      * @var MetadataService[]
      */
-    private $metadataServices = [];
+    private array $metadataServices = [];
 
     /**
      * @var StatusReport[][]
      */
-    private $statusReports = [];
+    private array $statusReports = [];
 
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory)
+    public function __construct(private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory)
     {
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
     }
 
     public function addSingleStatement(string $data, bool $isBare64Encoded = false): void
@@ -93,7 +81,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                 if ($mds->getAaguid() === $aaguid) {
                     return $mds;
                 }
-            } catch (Throwable $throwable) {
+            } catch (Throwable) {
                 continue;
             }
         }
@@ -102,7 +90,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
                 if ($metadataService->has($aaguid)) {
                     return $metadataService->get($aaguid);
                 }
-            } catch (Throwable $throwable) {
+            } catch (Throwable) {
                 continue;
             }
         }

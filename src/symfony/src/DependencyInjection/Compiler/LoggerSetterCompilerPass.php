@@ -32,19 +32,23 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
             return;
         }
 
-        $this->setLoggerToServiceDefinition($container, AuthenticatorAssertionResponseValidator::class);
-        $this->setLoggerToServiceDefinition($container, AuthenticatorAttestationResponseValidator::class);
-        $this->setLoggerToServiceDefinition($container, PublicKeyCredentialLoader::class);
-        $this->setLoggerToServiceDefinition($container, AttestationObjectLoader::class);
+        $this
+            ->setLoggerToServiceDefinition($container, AuthenticatorAssertionResponseValidator::class)
+            ->setLoggerToServiceDefinition($container, AuthenticatorAttestationResponseValidator::class)
+            ->setLoggerToServiceDefinition($container, PublicKeyCredentialLoader::class)
+            ->setLoggerToServiceDefinition($container, AttestationObjectLoader::class)
+        ;
     }
 
-    private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
+    private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): LoggerSetterCompilerPass
     {
         if (!$container->hasDefinition($service)) {
-            return;
+            return $this;
         }
 
         $definition = $container->getDefinition($service);
         $definition->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
+
+        return $this;
     }
 }

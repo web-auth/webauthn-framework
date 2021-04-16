@@ -14,28 +14,23 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    public function __construct(string $name, ?string $id = null, ?string $icon = null)
+    #[Pure]
+    public function __construct(string $name, protected ?string $id = null, ?string $icon = null)
     {
         parent::__construct($name, $icon);
-        $this->id = $id;
     }
 
+    #[Pure]
     public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
@@ -47,9 +42,8 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[Pure]
+    #[ArrayShape(['name' => 'string', 'icon' => "\null|string", 'id' => 'null|string'])]
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

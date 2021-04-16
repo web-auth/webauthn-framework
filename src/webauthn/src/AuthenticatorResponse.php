@@ -18,14 +18,8 @@ namespace Webauthn;
  */
 abstract class AuthenticatorResponse
 {
-    /**
-     * @var CollectedClientData
-     */
-    private $clientDataJSON;
-
-    public function __construct(CollectedClientData $clientDataJSON)
+    public function __construct(private CollectedClientData $clientDataJSON)
     {
-        $this->clientDataJSON = $clientDataJSON;
     }
 
     public function getClientDataJSON(): CollectedClientData

@@ -21,44 +21,8 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class AuthenticatorAssertionResponseValidationFailedEvent extends Event
 {
-    /**
-     * @var string
-     */
-    private $credentialId;
-
-    /**
-     * @var AuthenticatorAssertionResponse
-     */
-    private $authenticatorAssertionResponse;
-
-    /**
-     * @var PublicKeyCredentialRequestOptions
-     */
-    private $publicKeyCredentialRequestOptions;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    private $request;
-
-    /**
-     * @var string|null
-     */
-    private $userHandle;
-
-    /**
-     * @var Throwable
-     */
-    private $throwable;
-
-    public function __construct(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, Throwable $throwable)
+    public function __construct(private string $credentialId, private AuthenticatorAssertionResponse $authenticatorAssertionResponse, private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, private ServerRequestInterface $request, private ?string $userHandle, private Throwable $throwable)
     {
-        $this->credentialId = $credentialId;
-        $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
-        $this->request = $request;
-        $this->userHandle = $userHandle;
-        $this->throwable = $throwable;
     }
 
     public function getCredentialId(): string

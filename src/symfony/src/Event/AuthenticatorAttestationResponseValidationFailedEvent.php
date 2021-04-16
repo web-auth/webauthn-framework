@@ -21,32 +21,8 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 class AuthenticatorAttestationResponseValidationFailedEvent extends Event
 {
-    /**
-     * @var AuthenticatorAttestationResponse
-     */
-    private $authenticatorAttestationResponse;
-
-    /**
-     * @var PublicKeyCredentialCreationOptions
-     */
-    private $publicKeyCredentialCreationOptions;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    private $request;
-
-    /**
-     * @var Throwable
-     */
-    private $throwable;
-
-    public function __construct(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, Throwable $throwable)
+    public function __construct(private AuthenticatorAttestationResponse $authenticatorAttestationResponse, private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, private ServerRequestInterface $request, private Throwable $throwable)
     {
-        $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
-        $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
-        $this->request = $request;
-        $this->throwable = $throwable;
     }
 
     public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse

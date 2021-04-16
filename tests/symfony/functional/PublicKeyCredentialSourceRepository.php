@@ -26,11 +26,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
 {
-    private $cacheItemPool;
-
-    public function __construct(CacheItemPoolInterface $cacheItemPool)
+    public function __construct(private CacheItemPoolInterface $cacheItemPool)
     {
-        $this->cacheItemPool = $cacheItemPool;
         $publicKeyCredentialSource1 = new PublicKeyCredentialSource(
             base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,

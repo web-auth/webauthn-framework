@@ -36,10 +36,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
     public function __construct()
     {
