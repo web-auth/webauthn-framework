@@ -169,7 +169,7 @@ class AuthenticatorAttestationResponseValidator
             Assertion::true(hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /* @see 7.1.10 */
-            //Nothing to do. The verification of the bit is done during the authenticator data loading
+            Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
             /* @see 7.1.11 */
             if (AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification()) {
                 Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
