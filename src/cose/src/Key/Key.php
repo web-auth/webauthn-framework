@@ -15,6 +15,7 @@ namespace Cose\Key;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class Key
@@ -29,10 +30,7 @@ class Key
     public const KEY_OPS = 4;
     public const BASE_IV = 5;
 
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {
@@ -57,10 +55,8 @@ class Key
         }
     }
 
-    /**
-     * @return int|string
-     */
-    public function type()
+    #[Pure]
+    public function type(): int | string
     {
         return $this->data[self::TYPE];
     }
@@ -70,6 +66,7 @@ class Key
         return (int) $this->get(self::ALG);
     }
 
+    #[Pure]
     public function getData(): array
     {
         return $this->data;
@@ -80,10 +77,7 @@ class Key
         return array_key_exists($key, $this->data);
     }
 
-    /**
-     * @return mixed
-     */
-    public function get(int $key)
+    public function get(int $key): mixed
     {
         Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 

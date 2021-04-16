@@ -14,31 +14,24 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class RogueListEntry implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $sk;
-
-    /**
-     * @var string
-     */
-    private $date;
-
-    public function __construct(string $sk, string $date)
+    #[Pure]
+    public function __construct(private string $sk, private string $date)
     {
-        $this->sk = $sk;
-        $this->date = $date;
     }
 
+    #[Pure]
     public function getSk(): string
     {
         return $this->sk;
     }
 
+    #[Pure]
     public function getDate(): ?string
     {
         return $this->date;
@@ -57,6 +50,8 @@ class RogueListEntry implements JsonSerializable
         );
     }
 
+    #[Pure]
+    #[ArrayShape(['sk' => 'string', 'date' => 'string'])]
     public function jsonSerialize(): array
     {
         return [

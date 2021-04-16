@@ -13,80 +13,68 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class BiometricStatusReport implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $certLevel;
+    private ?int $certLevel = null;
 
-    /**
-     * @var int
-     */
-    private $modality;
+    private ?int $modality = null;
 
-    /**
-     * @var string|null
-     */
-    private $effectiveDate;
+    private ?string $effectiveDate = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationDescriptor;
+    private ?string $certificationDescriptor = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificateNumber;
+    private ?string $certificateNumber = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationPolicyVersion;
+    private ?string $certificationPolicyVersion = null;
 
-    /**
-     * @var string|null
-     */
-    private $certificationRequirementsVersion;
+    private ?string $certificationRequirementsVersion = null;
 
+    #[Pure]
     public function getCertLevel(): int
     {
         return $this->certLevel;
     }
 
+    #[Pure]
     public function getModality(): int
     {
         return $this->modality;
     }
 
+    #[Pure]
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
+    #[Pure]
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
+    #[Pure]
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
+    #[Pure]
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
+    #[Pure]
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
     }
 
+    #[Pure]
     public static function createFromArray(array $data): self
     {
         $object = new self();
@@ -101,6 +89,7 @@ class BiometricStatusReport implements JsonSerializable
         return $object;
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

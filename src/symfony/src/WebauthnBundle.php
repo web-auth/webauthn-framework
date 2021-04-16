@@ -15,9 +15,11 @@ namespace Webauthn\Bundle;
 
 use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use JetBrains\PhpStorm\Pure;
 use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CertificateChainCheckerSetterCompilerPass;
@@ -36,7 +38,8 @@ final class WebauthnBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function getContainerExtension()
+    #[Pure]
+    public function getContainerExtension(): ExtensionInterface
     {
         return new WebauthnExtension('webauthn');
     }

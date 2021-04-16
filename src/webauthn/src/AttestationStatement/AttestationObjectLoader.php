@@ -29,7 +29,6 @@ use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -37,32 +36,14 @@ class AttestationObjectLoader
     private const FLAG_AT = 0b01000000;
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
-
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
+    public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager)
     {
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.', E_USER_DEPRECATED);
-        }
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.', E_USER_DEPRECATED);
-        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->attestationStatementSupportManager = $attestationStatementSupportManager;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self

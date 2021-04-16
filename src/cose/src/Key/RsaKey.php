@@ -21,6 +21,7 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use function Safe\unpack;
 
@@ -127,6 +128,7 @@ class RsaKey extends Key
         return $this->get(self::DATA_TI);
     }
 
+    #[Pure]
     public function hasPrimes(): bool
     {
         return $this->has(self::DATA_P) && $this->has(self::DATA_Q);
@@ -140,6 +142,7 @@ class RsaKey extends Key
         ];
     }
 
+    #[Pure]
     public function hasExponents(): bool
     {
         return $this->has(self::DATA_DP) && $this->has(self::DATA_DQ);
@@ -153,16 +156,19 @@ class RsaKey extends Key
         ];
     }
 
+    #[Pure]
     public function hasCoefficient(): bool
     {
         return $this->has(self::DATA_QI);
     }
 
+    #[Pure]
     public function isPublic(): bool
     {
         return !$this->isPrivate();
     }
 
+    #[Pure]
     public function isPrivate(): bool
     {
         return array_key_exists(self::DATA_D, $this->getData());

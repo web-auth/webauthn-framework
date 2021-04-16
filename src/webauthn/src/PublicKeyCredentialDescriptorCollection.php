@@ -20,6 +20,7 @@ use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
@@ -28,25 +29,30 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $publicKeyCredentialDescriptors = [];
+    private array $publicKeyCredentialDescriptors = [];
 
-    public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): void
+    public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): self
     {
         $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->getId()] = $publicKeyCredentialDescriptor;
+
+        return $this;
     }
 
+    #[Pure]
     public function has(string $id): bool
     {
         return array_key_exists($id, $this->publicKeyCredentialDescriptors);
     }
 
-    public function remove(string $id): void
+    public function remove(string $id): self
     {
         if (!$this->has($id)) {
-            return;
+            return $this;
         }
 
         unset($this->publicKeyCredentialDescriptors[$id]);
+
+        return $this;
     }
 
     /**
@@ -57,6 +63,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
         return new ArrayIterator($this->publicKeyCredentialDescriptors);
     }
 
+    #[Pure]
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->publicKeyCredentialDescriptors, $mode);

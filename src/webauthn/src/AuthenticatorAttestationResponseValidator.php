@@ -17,6 +17,8 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use function is_string;
+use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -41,55 +43,22 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 class AuthenticatorAttestationResponseValidator
 {
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
+    private LoggerInterface $logger;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSource;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
+    private ?CertificateChainChecker $certificateChainChecker = null;
 
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    /**
-     * @var CertificateChainChecker|null
-     */
-    private $certificateChainChecker;
-
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
+    #[Pure]
+    public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager, private PublicKeyCredentialSourceRepository $publicKeyCredentialSource, private TokenBindingHandler $tokenBindingHandler, private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
-        }
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
-        }
-        $this->attestationStatementSupportManager = $attestationStatementSupportManager;
-        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
-        $this->tokenBindingHandler = $tokenBindingHandler;
-        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->metadataStatementRepository = $metadataStatementRepository;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
+    }
+
+    #[Pure]
+    public static function create(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler): self
+    {
+        return new self($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -231,8 +200,9 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if (null === $metadataStatement) {
-            // @phpstan-ignore-next-line
-            null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, [], null);
+            if (null !== $this->certificateChainChecker) {
+                $this->certificateChainChecker->check($authenticatorCertificates, []);
+            }
 
             return;
         }
@@ -247,8 +217,9 @@ class AuthenticatorAttestationResponseValidator
             $rootStatementCertificates
         );
 
-        // @phpstan-ignore-next-line
-        null === $this->certificateChainChecker ? CertificateToolbox::checkChain($authenticatorCertificates, $trustedCertificates) : $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
+        if (null !== $this->certificateChainChecker) {
+            $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
+        }
     }
 
     private function checkMetadataStatement(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, AttestationObject $attestationObject): void
@@ -369,14 +340,15 @@ class AuthenticatorAttestationResponseValidator
 
     private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
     {
-        switch (true) {
-            case null === $authenticationExtensionsClientOutputs:
-            case !$authenticationExtensionsClientOutputs->has('appid'):
-            case true !== $authenticationExtensionsClientOutputs->get('appid'):
-            case !$authenticationExtensionsClientInputs->has('appid'):
-                return $rpId;
-            default:
-                return $authenticationExtensionsClientInputs->get('appid');
+        if (null === $authenticationExtensionsClientOutputs || !$authenticationExtensionsClientInputs->has('appid') || !$authenticationExtensionsClientOutputs->has('appid')) {
+            return $rpId;
         }
+        $appId = $authenticationExtensionsClientInputs->get('appid')->value();
+        $wasUsed = $authenticationExtensionsClientOutputs->get('appid')->value();
+        if (!is_string($appId) || true !== $wasUsed) {
+            return $rpId;
+        }
+
+        return $appId;
     }
 }

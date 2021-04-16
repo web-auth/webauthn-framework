@@ -31,20 +31,14 @@ use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
-    /**
-     * @var string
-     */
-    private $alias;
-
-    public function __construct(string $alias)
+    public function __construct(private string $alias)
     {
-        $this->alias = $alias;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
         /** @var ArrayNodeDefinition $rootNode */
@@ -142,7 +136,6 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('controllers')
             ->canBeEnabled()
             ->children()
-            ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
             ->arrayNode('creation')
             ->treatFalseLike([])
             ->treatNullLike([])
@@ -308,10 +301,6 @@ final class Configuration implements ConfigurationInterface
             ->treatNullLike([])
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('http_message_factory')
-            ->defaultValue('sensio_framework_extra.psr7.http_message_factory')
-            ->info('Service used to convert Symfony Requests/Responses into PSR-7 ones')
-            ->end()
             ->arrayNode('creation')
             ->treatFalseLike([])
             ->treatNullLike([])

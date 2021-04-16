@@ -13,32 +13,25 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\Pure;
+
 /**
  * @see https://w3c.github.io/webappsec-credential-management/#credential
  */
 abstract class Credential
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    public function __construct(string $id, string $type)
+    #[Pure]
+    public function __construct(protected string $id, protected string $type)
     {
-        $this->id = $id;
-        $this->type = $type;
     }
 
+    #[Pure]
     public function getId(): string
     {
         return $this->id;
     }
 
+    #[Pure]
     public function getType(): string
     {
         return $this->type;

@@ -19,7 +19,16 @@ use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\KeyManagement\JWKFactory;
-use Jose\Component\Signature\Algorithm;
+use Jose\Component\Signature\Algorithm\EdDSA;
+use Jose\Component\Signature\Algorithm\ES256;
+use Jose\Component\Signature\Algorithm\ES384;
+use Jose\Component\Signature\Algorithm\ES512;
+use Jose\Component\Signature\Algorithm\PS256;
+use Jose\Component\Signature\Algorithm\PS384;
+use Jose\Component\Signature\Algorithm\PS512;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\Algorithm\RS384;
+use Jose\Component\Signature\Algorithm\RS512;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -35,73 +44,30 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var string|null
-     */
-    private $apiKey;
+    private ?string $apiKey = null;
 
-    /**
-     * @var ClientInterface|null
-     */
-    private $client;
+    private ?ClientInterface $client = null;
 
-    /**
-     * @var CompactSerializer
-     */
-    private $jwsSerializer;
+    private CompactSerializer $jwsSerializer;
 
-    /**
-     * @var JWSVerifier|null
-     */
-    private $jwsVerifier;
+    private ?JWSVerifier $jwsVerifier = null;
 
-    /**
-     * @var RequestFactoryInterface|null
-     */
-    private $requestFactory;
+    private ?RequestFactoryInterface $requestFactory = null;
 
-    /**
-     * @var int
-     */
-    private $leeway;
+    private int $leeway = 0;
 
-    /**
-     * @var int
-     */
-    private $maxAge;
+    private int $maxAge = 60000;
 
-    public function __construct(?ClientInterface $client = null, ?string $apiKey = null, ?RequestFactoryInterface $requestFactory = null, ?int $leeway = null, ?int $maxAge = null)
+    public function __construct()
     {
-        if (!class_exists(Algorithm\RS256::class)) {
+        if (!class_exists(RS256::class)) {
             throw new RuntimeException('The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?');
         }
         if (!class_exists(JWKFactory::class)) {
             throw new RuntimeException('The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?');
         }
-        if (null !== $client) {
-            @trigger_error('The argument "client" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
-        }
-        if (null !== $apiKey) {
-            @trigger_error('The argument "apiKey" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
-        }
-        if (null !== $requestFactory) {
-            @trigger_error('The argument "requestFactory" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".', E_USER_DEPRECATED);
-        }
-        if (null !== $maxAge) {
-            @trigger_error('The argument "maxAge" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setMaxAge".', E_USER_DEPRECATED);
-        }
-        if (null !== $leeway) {
-            @trigger_error('The argument "leeway" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setLeeway".', E_USER_DEPRECATED);
-        }
         $this->jwsSerializer = new CompactSerializer();
         $this->initJwsVerifier();
-
-        //To be removed in 4.0
-        $this->leeway = $leeway ?? 0;
-        $this->maxAge = $maxAge ?? 60000;
-        $this->apiKey = $apiKey;
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
     }
 
     public function enableApiVerification(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory): self
@@ -273,10 +239,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private function initJwsVerifier(): void
     {
         $algorithmClasses = [
-            Algorithm\RS256::class, Algorithm\RS384::class, Algorithm\RS512::class,
-            Algorithm\PS256::class, Algorithm\PS384::class, Algorithm\PS512::class,
-            Algorithm\ES256::class, Algorithm\ES384::class, Algorithm\ES512::class,
-            Algorithm\EdDSA::class,
+            RS256::class, RS384::class, RS512::class,
+            PS256::class, PS384::class, PS512::class,
+            ES256::class, ES384::class, ES512::class,
+            EdDSA::class,
         ];
         /* @var AlgorithmInterface[] $algorithms */
         $algorithms = [];

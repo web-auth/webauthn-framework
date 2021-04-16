@@ -15,18 +15,21 @@ namespace Cose\Algorithm;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 
 class Manager
 {
     /**
      * @var Algorithm[]
      */
-    private $algorithms = [];
+    private array $algorithms = [];
 
-    public function add(Algorithm $algorithm): void
+    public function add(Algorithm $algorithm): self
     {
         $identifier = $algorithm::identifier();
         $this->algorithms[$identifier] = $algorithm;
+
+        return $this;
     }
 
     public function list(): iterable
@@ -42,6 +45,7 @@ class Manager
         yield from $this->algorithms;
     }
 
+    #[Pure]
     public function has(int $identifier): bool
     {
         return array_key_exists($identifier, $this->algorithms);

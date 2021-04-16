@@ -22,7 +22,7 @@ final class MemoryPublicKeyCredentialSourceRepository implements PublicKeyCreden
     /**
      * @var PublicKeyCredentialSource[]
      */
-    private $sources;
+    private ?array $sources;
 
     public function findOneByCredentialId(string $id): ?PublicKeyCredentialSource
     {

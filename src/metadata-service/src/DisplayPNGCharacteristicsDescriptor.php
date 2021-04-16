@@ -14,50 +14,30 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $width;
+    private int $width;
 
-    /**
-     * @var int
-     */
-    private $height;
+    private int $height;
 
-    /**
-     * @var int
-     */
-    private $bitDepth;
+    private int $bitDepth;
 
-    /**
-     * @var int
-     */
-    private $colorType;
+    private int $colorType;
 
-    /**
-     * @var int
-     */
-    private $compression;
+    private int $compression;
 
-    /**
-     * @var int
-     */
-    private $filter;
+    private int $filter;
 
-    /**
-     * @var int
-     */
-    private $interlace;
+    private int $interlace;
 
     /**
      * @var RgbPaletteEntry[]
      */
-    private $plte = [];
+    private array $plte = [];
 
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
@@ -85,36 +65,43 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $this;
     }
 
+    #[Pure]
     public function getWidth(): int
     {
         return $this->width;
     }
 
+    #[Pure]
     public function getHeight(): int
     {
         return $this->height;
     }
 
+    #[Pure]
     public function getBitDepth(): int
     {
         return $this->bitDepth;
     }
 
+    #[Pure]
     public function getColorType(): int
     {
         return $this->colorType;
     }
 
+    #[Pure]
     public function getCompression(): int
     {
         return $this->compression;
     }
 
+    #[Pure]
     public function getFilter(): int
     {
         return $this->filter;
     }
 
+    #[Pure]
     public function getInterlace(): int
     {
         return $this->interlace;
@@ -123,6 +110,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     /**
      * @return RgbPaletteEntry[]
      */
+    #[Pure]
     public function getPlte(): array
     {
         return $this->plte;
@@ -154,6 +142,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $object;
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

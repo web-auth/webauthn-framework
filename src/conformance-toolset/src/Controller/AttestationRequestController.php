@@ -16,6 +16,7 @@ namespace Webauthn\ConformanceToolset\Controller;
 use Assert\Assertion;
 use function count;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -38,58 +39,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationRequestController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var string
-     */
-    private $profile;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-    /**
-     * @var string
-     */
-    private $sessionParameterName;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
-
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    #[Pure]
+    public function __construct(private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialUserEntityRepository $userEntityRepository, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private string $profile, private string $sessionParameterName, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->profile = $profile;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
-        $this->sessionParameterName = $sessionParameterName;
-        $this->logger = $logger;
-        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response

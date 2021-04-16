@@ -16,6 +16,8 @@ namespace Webauthn;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -27,63 +29,30 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rp;
-
-    /**
-     * @var PublicKeyCredentialUserEntity
-     */
-    private $user;
-
-    /**
-     * @var PublicKeyCredentialParameters[]
-     */
-    private $pubKeyCredParams = [];
-
-    /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $excludeCredentials = [];
+    private array $excludeCredentials = [];
 
-    /**
-     * @var AuthenticatorSelectionCriteria
-     */
-    private $authenticatorSelection;
+    private AuthenticatorSelectionCriteria $authenticatorSelection;
 
-    /**
-     * @var string
-     */
-    private $attestation;
+    private string $attestation;
 
-    /**
-     * @param PublicKeyCredentialParameters[] $pubKeyCredParams
-     * @param PublicKeyCredentialDescriptor[] $excludeCredentials
+    /*
+     * @var PublicKeyCredentialParameters[]
      */
-    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout = null, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestation = null, ?AuthenticationExtensionsClientInputs $extensions = null)
+
+    #[Pure]
+    public function __construct(private PublicKeyCredentialRpEntity $rp, private PublicKeyCredentialUserEntity $user, string $challenge, private array $pubKeyCredParams)
     {
-        if (0 !== count($excludeCredentials)) {
-            @trigger_error('The argument "excludeCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "excludeCredentials" or "excludeCredential".', E_USER_DEPRECATED);
-        }
-        if (null !== $authenticatorSelection) {
-            @trigger_error('The argument "authenticatorSelection" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorSelection".', E_USER_DEPRECATED);
-        }
-        if (null !== $attestation) {
-            @trigger_error('The argument "attestation" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAttestation".', E_USER_DEPRECATED);
-        }
-        parent::__construct($challenge, $timeout, $extensions);
-        $this->rp = $rp;
-        $this->user = $user;
-        $this->pubKeyCredParams = $pubKeyCredParams;
-        $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
-        $this->attestation = $attestation ?? self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
-        $this->excludeCredentials($excludeCredentials)
-        ;
+        parent::__construct($challenge);
+        $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
+        $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
     }
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
+    #[Pure]
     public static function create(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams): self
     {
         return new self($rp, $user, $challenge, $pubKeyCredParams);
@@ -147,11 +116,13 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    #[Pure]
     public function getRp(): PublicKeyCredentialRpEntity
     {
         return $this->rp;
     }
 
+    #[Pure]
     public function getUser(): PublicKeyCredentialUserEntity
     {
         return $this->user;
@@ -160,6 +131,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialParameters[]
      */
+    #[Pure]
     public function getPubKeyCredParams(): array
     {
         return $this->pubKeyCredParams;
@@ -168,16 +140,19 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
+    #[Pure]
     public function getExcludeCredentials(): array
     {
         return $this->excludeCredentials;
     }
 
+    #[Pure]
     public function getAuthenticatorSelection(): AuthenticatorSelectionCriteria
     {
         return $this->authenticatorSelection;
     }
 
+    #[Pure]
     public function getAttestation(): string
     {
         return $this->attestation;
@@ -227,9 +202,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         ;
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[ArrayShape(['rp' => 'mixed[]', 'pubKeyCredParams' => 'array[]', 'challenge' => 'string', 'attestation' => 'string', 'user' => 'mixed[]', 'authenticatorSelection' => 'array', 'timeout' => 'int|null', 'extensions' => AuthenticationExtensionsClientInputs::class, 'excludeCredentials' => 'array[]'])]
     public function jsonSerialize(): array
     {
         $json = [

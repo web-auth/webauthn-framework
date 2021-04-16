@@ -22,6 +22,8 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use function count;
 use function in_array;
+use function is_string;
+use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -37,54 +39,22 @@ use Webauthn\Util\CoseSignatureFixer;
 
 class AuthenticatorAssertionResponseValidator
 {
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
+    private Decoder $decoder;
+    private CounterChecker $counterChecker;
+    private LoggerInterface $logger;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
-
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
-
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
-
-    /**
-     * @var Manager|null
-     */
-    private $algorithmManager;
-    /**
-     * @var CounterChecker
-     */
-    private $counterChecker;
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
-
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, ?CounterChecker $counterChecker = null, ?LoggerInterface $logger = null)
+    #[Pure]
+    public function __construct(private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private TokenBindingHandler $tokenBindingHandler, private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, private ?Manager $algorithmManager)
     {
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
-        }
-        if (null !== $counterChecker) {
-            @trigger_error('The argument "counterChecker" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setCounterChecker".', E_USER_DEPRECATED);
-        }
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->tokenBindingHandler = $tokenBindingHandler;
-        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->algorithmManager = $algorithmManager;
-        $this->counterChecker = $counterChecker ?? new ThrowExceptionIfInvalid();
-        $this->logger = $logger ?? new NullLogger();
+        $this->counterChecker = new ThrowExceptionIfInvalid();
+        $this->logger = new NullLogger();
+    }
+
+    #[Pure]
+    public static function create(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager): self
+    {
+        return new self($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);
     }
 
     /**
@@ -236,6 +206,7 @@ class AuthenticatorAssertionResponseValidator
     /**
      * @param array<PublicKeyCredentialDescriptor> $allowedCredentials
      */
+    #[Pure]
     private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool
     {
         foreach ($allowedCredentials as $allowedCredential) {
@@ -249,14 +220,15 @@ class AuthenticatorAssertionResponseValidator
 
     private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
     {
-        switch (true) {
-            case null === $authenticationExtensionsClientOutputs:
-            case !$authenticationExtensionsClientOutputs->has('appid'):
-            case true !== $authenticationExtensionsClientOutputs->get('appid'):
-            case !$authenticationExtensionsClientInputs->has('appid'):
-                return $rpId;
-            default:
-                return $authenticationExtensionsClientInputs->get('appid');
+        if (null === $authenticationExtensionsClientOutputs || !$authenticationExtensionsClientInputs->has('appid') || !$authenticationExtensionsClientOutputs->has('appid')) {
+            return $rpId;
         }
+        $appId = $authenticationExtensionsClientInputs->get('appid')->value();
+        $wasUsed = $authenticationExtensionsClientOutputs->get('appid')->value();
+        if (!is_string($appId) || true !== $wasUsed) {
+            return $rpId;
+        }
+
+        return $appId;
     }
 }

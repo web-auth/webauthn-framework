@@ -61,40 +61,19 @@ abstract class AbstractTestCase extends TestCase
     use MockedPublicKeyCredentialSourceTrait;
     use MockedMappedResponseTrait;
 
-    /**
-     * @var PublicKeyCredentialLoader|null
-     */
-    private $publicKeyCredentialLoader;
+    private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
-    /**
-     * @var AuthenticatorAttestationResponseValidator|null
-     */
-    private $authenticatorAttestationResponseValidator;
+    private ?AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator = null;
 
-    /**
-     * @var AuthenticatorAssertionResponseValidator|null
-     */
-    private $authenticatorAssertionResponseValidator;
+    private ?AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null;
 
-    /**
-     * @var Manager|null
-     */
-    private $algorithmManager;
+    private ?Manager $algorithmManager = null;
 
-    /**
-     * @var AttestationObjectLoader|null
-     */
-    private $attestationObjectLoader;
+    private ?AttestationObjectLoader $attestationObjectLoader = null;
 
-    /**
-     * @var MetadataStatementRepositoryInterface|null
-     */
-    private $metadataStatementRepository;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
-    /**
-     * @var CertificateChainChecker|null
-     */
-    private $certificateChainChecker;
+    private ?OpenSSLCertificateChainChecker $certificateChainChecker = null;
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
@@ -259,7 +238,7 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
         }
         if (null === $this->metadataStatementRepository) {
             $this->metadataStatementRepository = new MetadataStatementRepository();
-            foreach ($this->getSingleStatements() as $name => $statement) {
+            foreach ($this->getSingleStatements() as $statement) {
                 $this->metadataStatementRepository->addSingleStatement(new SingleMetadata($statement, false));
             }
 

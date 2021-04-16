@@ -15,6 +15,7 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
+use JetBrains\PhpStorm\Pure;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
@@ -22,39 +23,16 @@ use function Safe\sprintf;
 
 class DistantSingleMetadata extends SingleMetadata
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
+    private string $uri;
 
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
+    private bool $isBase64Encoded;
 
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $uri;
-
-    /**
-     * @var bool
-     */
-    private $isBase64Encoded;
-
-    public function __construct(string $uri, bool $isBase64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
+    #[Pure]
+    public function __construct(string $uri, bool $isBase64Encoded, private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory, private array $additionalHeaders = [])
     {
         parent::__construct($uri, $isBase64Encoded); //Useless
         $this->uri = $uri;
         $this->isBase64Encoded = $isBase64Encoded;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->additionalHeaders = $additionalHeaders;
     }
 
     public function getMetadataStatement(): MetadataStatement

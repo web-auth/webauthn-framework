@@ -21,6 +21,7 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -37,31 +38,18 @@ class PublicKeyCredentialLoader
     private const FLAG_AT = 0b01000000;
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var AttestationObjectLoader
-     */
-    private $attestationObjectLoader;
+    private Decoder $decoder;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(AttestationObjectLoader $attestationObjectLoader, ?LoggerInterface $logger = null)
+    #[Pure]
+    public function __construct(private AttestationObjectLoader $attestationObjectLoader)
     {
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".', E_USER_DEPRECATED);
-        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->attestationObjectLoader = $attestationObjectLoader;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
+    #[Pure]
     public static function create(AttestationObjectLoader $attestationObjectLoader): self
     {
         return new self($attestationObjectLoader);

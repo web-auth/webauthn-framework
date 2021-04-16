@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -28,23 +29,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class PublicKeyCredentialCreationOptionsFactory
 {
-    /**
-     * @var mixed[]
-     */
-    private $profiles;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @param mixed[] $profiles
-     */
-    public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
+    #[Pure]
+    public function __construct(private array $profiles, private EventDispatcherInterface $eventDispatcher)
     {
-        $this->profiles = $profiles;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -73,9 +60,6 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $options;
     }
 
-    /**
-     * @param mixed[] $profile
-     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
         $extensions = new AuthenticationExtensionsClientInputs();
@@ -86,9 +70,6 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $extensions;
     }
 
-    /**
-     * @param mixed[] $profile
-     */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
         return AuthenticatorSelectionCriteria::create()
@@ -99,17 +80,13 @@ final class PublicKeyCredentialCreationOptionsFactory
         ;
     }
 
-    /**
-     * @param mixed[] $profile
-     */
+    #[Pure]
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
         return new PublicKeyCredentialRpEntity($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
     }
 
     /**
-     * @param mixed[] $profile
-     *
      * @return PublicKeyCredentialParameters[]
      */
     private function createCredentialParameters(array $profile): array

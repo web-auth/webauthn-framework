@@ -13,46 +13,30 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class AuthenticationExtension implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var mixed
-     */
-    private $value;
-
-    /**
-     * @param mixed $value
-     */
-    public function __construct(string $name, $value)
+    #[Pure]
+    public function __construct(private string $name, private mixed $value)
     {
-        $this->name = $name;
-        $this->value = $value;
     }
 
+    #[Pure]
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function value()
+    #[Pure]
+    public function value(): mixed
     {
         return $this->value;
     }
 
-    /**
-     * @return mixed
-     */
-    public function jsonSerialize()
+    #[Pure]
+    public function jsonSerialize(): mixed
     {
         return $this->value;
     }

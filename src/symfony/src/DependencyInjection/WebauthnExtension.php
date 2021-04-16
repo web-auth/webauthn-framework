@@ -17,7 +17,9 @@ use function array_key_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -49,20 +51,16 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
-    /**
-     * @var string
-     */
-    private $alias;
-
-    public function __construct(string $alias)
+    #[Pure]
+    public function __construct(private string $alias)
     {
-        $this->alias = $alias;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAlias()
+    #[Pure]
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -90,6 +88,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
         $loader->load('cose.php');
         $loader->load('security.php');
+        if (!$container->hasAlias(HttpMessageFactoryInterface::class)) {
+            $loader->load('http_message_factory.php');
+        }
 
         $this->loadTransportBindingProfile($container, $loader, $config);
         $this->loadMetadataServices($container, $config);
@@ -114,21 +115,17 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
+    #[Pure]
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
     }
 
-    /**
-     * @param mixed[] $config
-     */
     public function loadTransportBindingProfile(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         if (!class_exists(AttestationRequestController::class)) {
             return;
         }
-
-        $container->setAlias('webauthn.transport_binding_profile.http_message_factory', $config['transport_binding_profile']['http_message_factory']);
 
         $loader->load('transport_binding_profile.php');
 
@@ -208,14 +205,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->prependExtensionConfig('doctrine', $config);
     }
 
-    /**
-     * @param mixed[] $config
-     */
     private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         $loader->load('controller.php');
-
-        $container->setAlias('webauthn.controller.http_message_factory', $config['controllers']['http_message_factory']);
 
         foreach ($config['controllers']['creation'] as $name => $creationConfig) {
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
@@ -246,9 +238,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    /**
-     * @param mixed[] $config
-     */
     private function loadCertificateChainChecker(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         $loader->load('certificate_chain_checker.php');
@@ -260,9 +249,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    /**
-     * @param mixed[] $config
-     */
     private function loadMetadataStatementSupports(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         $loader->load('metadata_statement_supports.php');
@@ -280,9 +266,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('android_safetynet.php');
     }
 
-    /**
-     * @param mixed[] $config
-     */
     private function loadMetadataServices(ContainerBuilder $container, array $config): void
     {
         if (false === $config['metadata_service']['enabled']) {

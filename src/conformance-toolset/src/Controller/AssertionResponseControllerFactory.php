@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\ConformanceToolset\Controller;
 
+use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -26,70 +27,12 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AssertionResponseControllerFactory
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialRequestOptionsFactory
-     */
-    private $publicKeyCredentialRequestOptionsFactory;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAssertionResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
-
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $publicKeyCredentialUserEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    #[Pure]
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAssertionResponseValidator $attestationResponseValidator, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool, private PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->logger = $logger;
-        $this->cacheItemPool = $cacheItemPool;
-        $this->publicKeyCredentialUserEntityRepository = $publicKeyCredentialUserEntityRepository;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
+    #[Pure]
     public function createAssertionRequestController(string $profile, string $sessionParameterName): AssertionRequestController
     {
         return new AssertionRequestController(
@@ -105,6 +48,7 @@ final class AssertionResponseControllerFactory
         );
     }
 
+    #[Pure]
     public function createAssertionResponseController(string $sessionParameterName): AssertionResponseController
     {
         return new AssertionResponseController(

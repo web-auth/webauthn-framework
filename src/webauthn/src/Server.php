@@ -16,9 +16,18 @@ namespace Webauthn;
 use Assert\Assertion;
 use Cose\Algorithm\Algorithm;
 use Cose\Algorithm\ManagerFactory;
-use Cose\Algorithm\Signature\ECDSA;
-use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\ECDSA\ES256K;
+use Cose\Algorithm\Signature\ECDSA\ES384;
+use Cose\Algorithm\Signature\ECDSA\ES512;
+use Cose\Algorithm\Signature\EdDSA\Ed25519;
 use Cose\Algorithm\Signature\RSA;
+use Cose\Algorithm\Signature\RSA\PS256;
+use Cose\Algorithm\Signature\RSA\PS384;
+use Cose\Algorithm\Signature\RSA\PS512;
+use Cose\Algorithm\Signature\RSA\RS1;
+use Cose\Algorithm\Signature\RSA\RS384;
+use Cose\Algorithm\Signature\RSA\RS512;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Psr\Http\Client\ClientInterface;
@@ -43,108 +52,59 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 class Server
 {
-    /**
-     * @var int
-     */
-    public $timeout = 60000;
+    public ?int $timeout = null;
 
-    /**
-     * @var int
-     */
-    public $challengeSize = 32;
+    public int $challengeSize = 32;
 
-    /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rpEntity;
+    private ManagerFactory $coseAlgorithmManagerFactory;
 
-    /**
-     * @var ManagerFactory
-     */
-    private $coseAlgorithmManagerFactory;
+    private TokenBindingHandler $tokenBindingHandler;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
-
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
+    private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
 
     /**
      * @var string[]
      */
-    private $selectedAlgorithms;
+    private array $selectedAlgorithms;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
-    /**
-     * @var ClientInterface|null
-     */
-    private $httpClient;
+    private ?ClientInterface $httpClient = null;
 
-    /**
-     * @var string|null
-     */
-    private $googleApiKey;
+    private ?string $googleApiKey = null;
 
-    /**
-     * @var RequestFactoryInterface|null
-     */
-    private $requestFactory;
+    private ?RequestFactoryInterface $requestFactory = null;
 
-    /**
-     * @var CounterChecker|null
-     */
-    private $counterChecker;
+    private ?CounterChecker $counterChecker = null;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var string[]
      */
-    private $securedRelyingPartyId = [];
+    private array $securedRelyingPartyId = [];
 
-    public function __construct(PublicKeyCredentialRpEntity $relyingParty, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?MetadataStatementRepository $metadataStatementRepository = null)
+    public function __construct(private PublicKeyCredentialRpEntity $rpEntity, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".', E_USER_DEPRECATED);
-        }
-        $this->rpEntity = $relyingParty;
         $this->logger = new NullLogger();
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
-        $this->coseAlgorithmManagerFactory->add('RS1', new RSA\RS1());
+        $this->coseAlgorithmManagerFactory->add('RS1', new RS1());
         $this->coseAlgorithmManagerFactory->add('RS256', new RSA\RS256());
-        $this->coseAlgorithmManagerFactory->add('RS384', new RSA\RS384());
-        $this->coseAlgorithmManagerFactory->add('RS512', new RSA\RS512());
-        $this->coseAlgorithmManagerFactory->add('PS256', new RSA\PS256());
-        $this->coseAlgorithmManagerFactory->add('PS384', new RSA\PS384());
-        $this->coseAlgorithmManagerFactory->add('PS512', new RSA\PS512());
-        $this->coseAlgorithmManagerFactory->add('ES256', new ECDSA\ES256());
-        $this->coseAlgorithmManagerFactory->add('ES256K', new ECDSA\ES256K());
-        $this->coseAlgorithmManagerFactory->add('ES384', new ECDSA\ES384());
-        $this->coseAlgorithmManagerFactory->add('ES512', new ECDSA\ES512());
-        $this->coseAlgorithmManagerFactory->add('Ed25519', new EdDSA\Ed25519());
+        $this->coseAlgorithmManagerFactory->add('RS384', new RS384());
+        $this->coseAlgorithmManagerFactory->add('RS512', new RS512());
+        $this->coseAlgorithmManagerFactory->add('PS256', new PS256());
+        $this->coseAlgorithmManagerFactory->add('PS384', new PS384());
+        $this->coseAlgorithmManagerFactory->add('PS512', new PS512());
+        $this->coseAlgorithmManagerFactory->add('ES256', new ES256());
+        $this->coseAlgorithmManagerFactory->add('ES256K', new ES256K());
+        $this->coseAlgorithmManagerFactory->add('ES384', new ES384());
+        $this->coseAlgorithmManagerFactory->add('ES512', new ES512());
+        $this->coseAlgorithmManagerFactory->add('Ed25519', new Ed25519());
 
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
-        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
@@ -259,14 +219,15 @@ class Server
         $authenticatorResponse = $publicKeyCredential->getResponse();
         Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAttestationResponse::class, 'Not an authenticator attestation response');
 
-        $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
+        $authenticatorAttestationResponseValidator = AuthenticatorAttestationResponseValidator::create(
             $attestationStatementSupportManager,
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
-            $this->extensionOutputCheckerHandler,
-            $this->metadataStatementRepository
-        );
-        $authenticatorAttestationResponseValidator->setLogger($this->logger);
+            $this->extensionOutputCheckerHandler
+        )
+            ->setMetadataStatementRepository($this->metadataStatementRepository)
+            ->setLogger($this->logger)
+        ;
 
         return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest, $this->securedRelyingPartyId);
     }
@@ -285,14 +246,15 @@ class Server
         $authenticatorResponse = $publicKeyCredential->getResponse();
         Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAssertionResponse::class, 'Not an authenticator assertion response');
 
-        $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
+        $authenticatorAssertionResponseValidator = AuthenticatorAssertionResponseValidator::create(
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
-            $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms),
-            $this->counterChecker
-        );
-        $authenticatorAssertionResponseValidator->setLogger($this->logger);
+            $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
+        )
+            ->setCounterChecker($this->counterChecker)
+            ->setLogger($this->logger)
+        ;
 
         return $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),

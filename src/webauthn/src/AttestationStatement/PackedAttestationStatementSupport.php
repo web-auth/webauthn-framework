@@ -37,20 +37,11 @@ use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
-    /**
-     * @var Manager
-     */
-    private $algorithmManager;
-
-    public function __construct(Manager $algorithmManager)
+    public function __construct(private Manager $algorithmManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->algorithmManager = $algorithmManager;
     }
 
     public function name(): string

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -24,23 +25,9 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class PublicKeyCredentialRequestOptionsFactory
 {
-    /**
-     * @var mixed[]
-     */
-    private $profiles;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @param mixed[] $profiles
-     */
-    public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
+    #[Pure]
+    public function __construct(private array $profiles, private EventDispatcherInterface $eventDispatcher)
     {
-        $this->profiles = $profiles;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -64,9 +51,6 @@ final class PublicKeyCredentialRequestOptionsFactory
         return $options;
     }
 
-    /**
-     * @param mixed[] $profile
-     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
         $extensions = new AuthenticationExtensionsClientInputs();

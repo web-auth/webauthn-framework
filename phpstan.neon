@@ -1,16 +1,50 @@
 parameters:
     level: 7
     paths:
-        - src
+        - src/conformance-toolset/src/
+        - src/cose/src/
+        - src/metadata-service/src/
+        - src/symfony/src/
+        - src/webauthn/src/
     ignoreErrors:
-        - '#Method .* should return Webauthn\\PublicKeyCredential(Creation|Request)Options but returns Webauthn\\PublicKeyCredentialOptions\.#'
-        - '#Parameter .* of class .* expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::arrayNode\(\)\.#'
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
-        - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
-        - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-        - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
-        - '#Parameter (.*) of class Jose\\Component\\Core\\AlgorithmManager constructor expects array\<Jose\\Component\\Core\\Algorithm\>\, array\<int\, object\> given\.#'
+        -
+             message: '#Parameter (.*) of class Jose\\Component\\Core\\AlgorithmManager constructor expects array\<Jose\\Component\\Core\\Algorithm\>\, array\<int\, object\> given\.#'
+             count: 1
+             path: 'src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php'
+
+        # Symfony Configuration
+        -
+             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::scalarNode\(\)\.#'
+             count: 1
+             path: 'src/symfony/src/DependencyInjection/Configuration.php'
+        -
+             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+             count: 1
+             path: 'src/symfony/src/DependencyInjection/Configuration.php'
+        -
+             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+             count: 1
+             path: 'src/symfony/src/Security/Factory/WebauthnSecurityFactory.php'
+
+        #FGrosse ASN.1 library
+        -
+             message: '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
+             count: 2
+             path: 'src/cose/src/Key/RsaKey.php'
+
+        # OpenSSL
+        -
+             message: '#Parameter (.*) of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
+             count: 1
+             path: 'src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php'
+        -
+             message: '#Parameter (.*) of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
+             count: 1
+             path: 'src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php'
+        -
+             message: '#Parameter (.*) of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
+             count: 1
+             path: 'src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false

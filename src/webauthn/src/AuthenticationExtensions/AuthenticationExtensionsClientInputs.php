@@ -20,6 +20,7 @@ use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
@@ -28,11 +29,13 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
     /**
      * @var AuthenticationExtension[]
      */
-    private $extensions = [];
+    private array $extensions = [];
 
-    public function add(AuthenticationExtension $extension): void
+    public function add(AuthenticationExtension $extension): self
     {
         $this->extensions[$extension->name()] = $extension;
+
+        return $this;
     }
 
     /**
@@ -53,10 +56,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return array_key_exists($key, $this->extensions);
     }
 
-    /**
-     * @return mixed
-     */
-    public function get(string $key)
+    public function get(string $key): AuthenticationExtension
     {
         Assertion::true($this->has($key), sprintf('The extension with key "%s" is not available', $key));
 
@@ -81,6 +81,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return new ArrayIterator($this->extensions);
     }
 
+    #[Pure]
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->extensions, $mode);

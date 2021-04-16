@@ -18,6 +18,7 @@ use Base64Url\Base64Url;
 use function count;
 use InvalidArgumentException;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -34,53 +35,18 @@ use Webauthn\CertificateToolbox;
 
 class MetadataService
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
+    private array $additionalQueryStringValues;
 
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
+    private array $additionalHeaders;
 
-    /**
-     * @var array
-     */
-    private $additionalQueryStringValues;
+    private LoggerInterface $logger;
 
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $serviceUri;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(string $serviceUri, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalQueryStringValues = [], array $additionalHeaders = [], ?LoggerInterface $logger = null)
+    #[Pure]
+    public function __construct(private string $serviceUri, private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory)
     {
-        if (0 !== count($additionalQueryStringValues)) {
-            @trigger_error('The argument "additionalQueryStringValues" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addQueryStringValues`.', E_USER_DEPRECATED);
-        }
-        if (0 !== count($additionalQueryStringValues)) {
-            @trigger_error('The argument "additionalHeaders" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addHeaders`.', E_USER_DEPRECATED);
-        }
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.', E_USER_DEPRECATED);
-        }
-        $this->serviceUri = $serviceUri;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->additionalQueryStringValues = $additionalQueryStringValues;
-        $this->additionalHeaders = $additionalHeaders;
-        $this->logger = $logger ?? new NullLogger();
+        $this->additionalQueryStringValues = [];
+        $this->additionalHeaders = [];
+        $this->logger = new NullLogger();
     }
 
     public function addQueryStringValues(array $additionalQueryStringValues): self
@@ -108,7 +74,7 @@ class MetadataService
     {
         try {
             $toc = $this->fetchMetadataTOCPayload();
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return false;
         }
         foreach ($toc->getEntries() as $entry) {
@@ -138,14 +104,6 @@ class MetadataService
         throw new InvalidArgumentException(sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
     }
 
-    /**
-     * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
-     */
-    public function getMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
-    {
-        return $this->fetchMetadataStatementFor($entry, $hashingFunction);
-    }
-
     public function fetchMetadataStatementFor(MetadataTOCPayloadEntry $entry, string $hashingFunction = 'sha256'): MetadataStatement
     {
         $this->logger->info('Trying to get the metadata statement for a given entry', ['entry' => $entry]);
@@ -167,14 +125,6 @@ class MetadataService
             ]);
             throw $throwable;
         }
-    }
-
-    /**
-     * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
-     */
-    public function getMetadataTOCPayload(): MetadataTOCPayload
-    {
-        return $this->fetchMetadataTOCPayload();
     }
 
     private function fetchMetadataTOCPayload(): MetadataTOCPayload

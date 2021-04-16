@@ -13,21 +13,18 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Event;
 
+use JetBrains\PhpStorm\Pure;
 use Symfony\Contracts\EventDispatcher\Event;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
-    /**
-     * @var PublicKeyCredentialCreationOptions
-     */
-    private $publicKeyCredentialCreationOptions;
-
-    public function __construct(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions)
+    #[Pure]
+    public function __construct(private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions)
     {
-        $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
     }
 
+    #[Pure]
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;

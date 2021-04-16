@@ -15,6 +15,7 @@ namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -31,53 +32,9 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseController
 {
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userEntityRepository;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-    /**
-     * @var string
-     */
-    private $sessionParameterName;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    #[Pure]
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialUserEntityRepository $userEntityRepository, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private string $sessionParameterName, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool)
     {
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->userEntityRepository = $userEntityRepository;
-        $this->credentialSourceRepository = $credentialSourceRepository;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->sessionParameterName = $sessionParameterName;
-        $this->logger = $logger;
-        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response

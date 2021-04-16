@@ -21,11 +21,13 @@ class ManagerFactory
     /**
      * @var Algorithm[]
      */
-    private $algorithms = [];
+    private array $algorithms = [];
 
-    public function add(string $alias, Algorithm $algorithm): void
+    public function add(string $alias, Algorithm $algorithm): self
     {
         $this->algorithms[$alias] = $algorithm;
+
+        return $this;
     }
 
     public function list(): iterable

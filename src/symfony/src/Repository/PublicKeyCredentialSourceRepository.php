@@ -17,6 +17,7 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
@@ -24,15 +25,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, ServiceEntityRepositoryInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    private EntityManagerInterface $manager;
 
-    /**
-     * @var string
-     */
-    private $class;
+    private string $class;
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
@@ -88,11 +83,13 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             ;
     }
 
+    #[Pure]
     protected function getClass(): string
     {
         return $this->class;
     }
 
+    #[Pure]
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->manager;

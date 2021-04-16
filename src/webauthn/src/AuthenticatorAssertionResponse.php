@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\Pure;
 use function Safe\base64_decode;
 
 /**
@@ -20,34 +21,19 @@ use function Safe\base64_decode;
  */
 class AuthenticatorAssertionResponse extends AuthenticatorResponse
 {
-    /**
-     * @var AuthenticatorData
-     */
-    private $authenticatorData;
-
-    /**
-     * @var string
-     */
-    private $signature;
-
-    /**
-     * @var string|null
-     */
-    private $userHandle;
-
-    public function __construct(CollectedClientData $clientDataJSON, AuthenticatorData $authenticatorData, string $signature, ?string $userHandle)
+    #[Pure]
+    public function __construct(CollectedClientData $clientDataJSON, private AuthenticatorData $authenticatorData, private string $signature, private ?string $userHandle)
     {
         parent::__construct($clientDataJSON);
-        $this->authenticatorData = $authenticatorData;
-        $this->signature = $signature;
-        $this->userHandle = $userHandle;
     }
 
+    #[Pure]
     public function getAuthenticatorData(): AuthenticatorData
     {
         return $this->authenticatorData;
     }
 
+    #[Pure]
     public function getSignature(): string
     {
         return $this->signature;

@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface OptionsStorage
 {
-    public function store(Request $request, StoredData $data, ?Response $response = null): void;
+    public function store(Request $request, StoredData $data, Response $response): void;
 
     public function get(Request $request): StoredData;
 }

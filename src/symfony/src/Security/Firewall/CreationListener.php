@@ -53,134 +53,18 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 class CreationListener
 {
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
+    private LoggerInterface $logger;
 
-    /**
-     * @var mixed[]
-     */
-    private $options;
+    private string $providerKey;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var AuthenticationManagerInterface
-     */
-    private $authenticationManager;
-
-    /**
-     * @var string
-     */
-    private $providerKey;
-
-    /**
-     * @var SessionAuthenticationStrategyInterface
-     */
-    private $sessionStrategy;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatcher;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $publicKeyUserEntityRepository;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $authenticatorAttestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var AuthenticationSuccessHandlerInterface
-     */
-    private $authenticationSuccessHandler;
-
-    /**
-     * @var AuthenticationFailureHandlerInterface
-     */
-    private $authenticationFailureHandler;
-
-    /**
-     * @var OptionsStorage
-     */
-    private $optionsStorage;
-
-    /**
-     * @var CreationOptionsHandler
-     */
-    private $optionsHandler;
-
-    /**
+    /*
      * @var string[]
      */
-    private $securedRelyingPartyId;
-
-    /**
-     * @param mixed[] $options
-     */
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, CreationOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private PublicKeyCredentialUserEntityRepository $publicKeyUserEntityRepository, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, private TokenStorageInterface $tokenStorage, private AuthenticationManagerInterface $authenticationManager, private SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, private array $options, private AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, private AuthenticationFailureHandlerInterface $authenticationFailureHandler, private CreationOptionsHandler $optionsHandler, private OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, private ?EventDispatcherInterface $dispatcher = null, private array $securedRelyingPartyId = [])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
-
-        $this->tokenStorage = $tokenStorage;
-        $this->authenticationManager = $authenticationManager;
-        $this->sessionStrategy = $sessionStrategy;
         $this->providerKey = $providerKey;
-        $this->options = $options;
         $this->logger = $logger ?? new NullLogger();
-        $this->dispatcher = $dispatcher;
-        $this->tokenStorage = $tokenStorage;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->publicKeyUserEntityRepository = $userEntityRepository;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-        $this->serializer = $serializer;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->validator = $validator;
-        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
-        $this->authenticationFailureHandler = $authenticationFailureHandler;
-        $this->optionsStorage = $optionsStorage;
-        $this->optionsHandler = $optionsHandler;
-        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     public function processWithCreationOptions(RequestEvent $event): void
@@ -241,13 +125,7 @@ class CreationListener
             $this->tokenStorage->setToken(null);
         }
 
-        $response = $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
-
-        if (!$response instanceof Response) {
-            throw new RuntimeException('Authentication Failure Handler did not return a Response.');
-        }
-
-        return $response;
+        return $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
     }
 
     private function onAssertionSuccess(Request $request, TokenInterface $token): Response
@@ -259,13 +137,7 @@ class CreationListener
             $this->dispatcher->dispatch($loginEvent);
         }
 
-        $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
-
-        if (!$response instanceof Response) {
-            throw new RuntimeException('Authentication Success Handler did not return a Response.');
-        }
-
-        return $response;
+        return $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
     }
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest

@@ -14,25 +14,18 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
 class RgbPaletteEntry implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $r;
+    private int $r;
 
-    /**
-     * @var int
-     */
-    private $g;
+    private int $g;
 
-    /**
-     * @var int
-     */
-    private $b;
+    private int $b;
 
     public function __construct(int $r, int $g, int $b)
     {
@@ -44,16 +37,19 @@ class RgbPaletteEntry implements JsonSerializable
         $this->b = $b;
     }
 
+    #[Pure]
     public function getR(): int
     {
         return $this->r;
     }
 
+    #[Pure]
     public function getG(): int
     {
         return $this->g;
     }
 
+    #[Pure]
     public function getB(): int
     {
         return $this->b;
@@ -73,6 +69,8 @@ class RgbPaletteEntry implements JsonSerializable
         );
     }
 
+    #[Pure]
+    #[ArrayShape(['r' => 'int', 'g' => 'int', 'b' => 'int'])]
     public function jsonSerialize(): array
     {
         return [

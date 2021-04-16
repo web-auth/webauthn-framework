@@ -14,32 +14,25 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var int
-     */
-    private $alg;
-
-    public function __construct(string $type, int $alg)
+    #[Pure]
+    public function __construct(private string $type, private int $alg)
     {
-        $this->type = $type;
-        $this->alg = $alg;
     }
 
+    #[Pure]
     public function getType(): string
     {
         return $this->type;
     }
 
+    #[Pure]
     public function getAlg(): int
     {
         return $this->alg;
@@ -69,9 +62,8 @@ class PublicKeyCredentialParameters implements JsonSerializable
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    #[Pure]
+    #[ArrayShape(['type' => 'string', 'alg' => 'int'])]
     public function jsonSerialize(): array
     {
         return [

@@ -15,67 +15,25 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use function in_array;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
 class StatusReport implements JsonSerializable
 {
     /**
-     * @var string
-     *
      * @see AuthenticatorStatus
      */
-    private $status;
+    private string $status;
 
-    /**
-     * @var string|null
-     */
-    private $effectiveDate;
-
-    /**
-     * @var string|null
-     */
-    private $certificate;
-
-    /**
-     * @var string|null
-     */
-    private $url;
-
-    /**
-     * @var string|null
-     */
-    private $certificationDescriptor;
-
-    /**
-     * @var string|null
-     */
-    private $certificateNumber;
-
-    /**
-     * @var string|null
-     */
-    private $certificationPolicyVersion;
-
-    /**
-     * @var string|null
-     */
-    private $certificationRequirementsVersion;
-
-    public function __construct(string $status, ?string $effectiveDate, ?string $certificate, ?string $url, ?string $certificationDescriptor, ?string $certificateNumber, ?string $certificationPolicyVersion, ?string $certificationRequirementsVersion)
+    public function __construct(string $status, private ?string $effectiveDate, private ?string $certificate, private ?string $url, private ?string $certificationDescriptor, private ?string $certificateNumber, private ?string $certificationPolicyVersion, private ?string $certificationRequirementsVersion)
     {
         Assertion::inArray($status, AuthenticatorStatus::list(), Utils::logicException('The value of the key "status" is not acceptable'));
 
         $this->status = $status;
-        $this->effectiveDate = $effectiveDate;
-        $this->certificate = $certificate;
-        $this->url = $url;
-        $this->certificationDescriptor = $certificationDescriptor;
-        $this->certificateNumber = $certificateNumber;
-        $this->certificationPolicyVersion = $certificationPolicyVersion;
-        $this->certificationRequirementsVersion = $certificationRequirementsVersion;
     }
 
+    #[Pure]
     public function isCompromised(): bool
     {
         return in_array($this->status, [
@@ -86,41 +44,49 @@ class StatusReport implements JsonSerializable
         ], true);
     }
 
+    #[Pure]
     public function getStatus(): string
     {
         return $this->status;
     }
 
+    #[Pure]
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
+    #[Pure]
     public function getCertificate(): ?string
     {
         return $this->certificate;
     }
 
+    #[Pure]
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
+    #[Pure]
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
+    #[Pure]
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
+    #[Pure]
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
+    #[Pure]
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
@@ -148,6 +114,7 @@ class StatusReport implements JsonSerializable
         );
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

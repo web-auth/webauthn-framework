@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Event;
 
+use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -21,70 +22,42 @@ use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAssertionResponseValidationSucceededEvent extends Event
 {
-    /**
-     * @var string
-     */
-    private $credentialId;
-
-    /**
-     * @var AuthenticatorAssertionResponse
-     */
-    private $authenticatorAssertionResponse;
-
-    /**
-     * @var PublicKeyCredentialRequestOptions
-     */
-    private $publicKeyCredentialRequestOptions;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    private $request;
-
-    /**
-     * @var string|null
-     */
-    private $userHandle;
-    /**
-     * @var PublicKeyCredentialSource
-     */
-    private $publicKeyCredentialSource;
-
-    public function __construct(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, PublicKeyCredentialSource $publicKeyCredentialSource)
+    #[Pure]
+    public function __construct(private string $credentialId, private AuthenticatorAssertionResponse $authenticatorAssertionResponse, private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, private ServerRequestInterface $request, private ?string $userHandle, private PublicKeyCredentialSource $publicKeyCredentialSource)
     {
-        $this->credentialId = $credentialId;
-        $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
-        $this->request = $request;
-        $this->userHandle = $userHandle;
-        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
     }
 
+    #[Pure]
     public function getCredentialId(): string
     {
         return $this->credentialId;
     }
 
+    #[Pure]
     public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse
     {
         return $this->authenticatorAssertionResponse;
     }
 
+    #[Pure]
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
     {
         return $this->publicKeyCredentialRequestOptions;
     }
 
+    #[Pure]
     public function getRequest(): ServerRequestInterface
     {
         return $this->request;
     }
 
+    #[Pure]
     public function getUserHandle(): ?string
     {
         return $this->userHandle;
     }
 
+    #[Pure]
     public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
     {
         return $this->publicKeyCredentialSource;

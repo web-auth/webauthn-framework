@@ -244,7 +244,6 @@ webauthn:
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
     transport_binding_profile:
-        http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
         creation:
             default:
                 profile_name: 'default'
@@ -264,15 +263,12 @@ webauthn:
         repository: 'Webauthn\Bundle\Tests\Functional\MetadataStatementRepository'
     certificate_chain_checker:
         enabled: true
-        http_client: '@nyholm.psr7.psr17_factory'
-        request_factory: '@nyholm.psr7.psr18_factory'
-
+        http_client: 'Psr\Http\Client\ClientInterface'
+        request_factory: 'nyholm.psr7.psr17_factory'
 
 sensio_framework_extra:
     router:
         annotations: false
-    psr_message:
-        enabled: true
 
 security:
     providers:
@@ -285,7 +281,6 @@ security:
             webauthn:
 #               user_provider: null
                options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
-#               http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
                registration:

@@ -15,6 +15,7 @@ namespace Webauthn\ConformanceToolset\Controller;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -30,42 +31,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AssertionResponseController
 {
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAssertionResponseValidator
-     */
-    private $assertionResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var string
-     */
-    private $sessionParameterName;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheItemPool;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $assertionResponseValidator, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    #[Pure]
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAssertionResponseValidator $assertionResponseValidator, private string $sessionParameterName, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool)
     {
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->assertionResponseValidator = $assertionResponseValidator;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->sessionParameterName = $sessionParameterName;
-        $this->logger = $logger;
-        $this->cacheItemPool = $cacheItemPool;
     }
 
     public function __invoke(Request $request): Response

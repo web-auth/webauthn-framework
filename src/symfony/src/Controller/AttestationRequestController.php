@@ -16,6 +16,7 @@ namespace Webauthn\Bundle\Controller;
 use Assert\Assertion;
 use function count;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,62 +40,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationRequestController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var string
-     */
-    private $profile;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-
-    /**
-     * @var OptionsStorage
-     */
-    private $optionsStorage;
-
-    /**
-     * @var UserEntityGuesser
-     */
-    private $userEntityGuesser;
-
-    /**
-     * @var CreationOptionsHandler
-     */
-    private $creationOptionsHandler;
-
-    /**
-     * @var FailureHandler
-     */
-    private $failureHandler;
-
-    public function __construct(UserEntityGuesser $userEntityGuesser, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, OptionsStorage $sessionParameterName, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler)
+    #[Pure]
+    public function __construct(private UserEntityGuesser $userEntityGuesser, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private string $profile, private OptionsStorage $optionsStorage, private CreationOptionsHandler $creationOptionsHandler, private FailureHandler $failureHandler)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->profile = $profile;
-        $this->credentialSourceRepository = $credentialSourceRepository;
-        $this->optionsStorage = $sessionParameterName;
-        $this->userEntityGuesser = $userEntityGuesser;
-        $this->creationOptionsHandler = $creationOptionsHandler;
-        $this->failureHandler = $failureHandler;
     }
 
     public function __invoke(Request $request): Response

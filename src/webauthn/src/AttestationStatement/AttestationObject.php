@@ -18,33 +18,11 @@ use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    /**
-     * @var string
-     */
-    private $rawAttestationObject;
-    /**
-     * @var AttestationStatement
-     */
-    private $attStmt;
-    /**
-     * @var AuthenticatorData
-     */
-    private $authData;
+    private ?MetadataStatement $metadataStatement;
 
-    /**
-     * @var MetadataStatement|null
-     */
-    private $metadataStatement;
-
-    public function __construct(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData, ?MetadataStatement $metadataStatement = null)
+    public function __construct(private string $rawAttestationObject, private AttestationStatement $attStmt, private AuthenticatorData $authData)
     {
-        if (null !== $metadataStatement) {
-            @trigger_error('The argument "metadataStatement" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatement".', E_USER_DEPRECATED);
-        }
-        $this->rawAttestationObject = $rawAttestationObject;
-        $this->attStmt = $attStmt;
-        $this->authData = $authData;
-        $this->metadataStatement = $metadataStatement;
+        $this->metadataStatement = null;
     }
 
     public function getRawAttestationObject(): string
@@ -57,9 +35,11 @@ class AttestationObject
         return $this->attStmt;
     }
 
-    public function setAttStmt(AttestationStatement $attStmt): void
+    public function setAttStmt(AttestationStatement $attStmt): self
     {
         $this->attStmt = $attStmt;
+
+        return $this;
     }
 
     public function getAuthData(): AuthenticatorData

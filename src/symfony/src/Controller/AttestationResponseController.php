@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,50 +31,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationResponseController
 {
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $credentialSourceRepository;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var OptionsStorage
-     */
-    private $optionStorage;
-
-    /**
-     * @var SuccessHandler
-     */
-    private $successHandler;
-
-    /**
-     * @var FailureHandler
-     */
-    private $failureHandler;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialSourceRepository $credentialSourceRepository, OptionsStorage $optionStorage, SuccessHandler $successHandler, FailureHandler $failureHandler)
+    #[Pure]
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private OptionsStorage $optionStorage, private SuccessHandler $successHandler, private FailureHandler $failureHandler)
     {
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->credentialSourceRepository = $credentialSourceRepository;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->optionStorage = $optionStorage;
-        $this->successHandler = $successHandler;
-        $this->failureHandler = $failureHandler;
     }
 
     public function __invoke(Request $request): Response

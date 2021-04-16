@@ -14,65 +14,44 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
-    /**
-     * @var float|null
-     */
-    private $FAR;
+    private ?int $maxReferenceDataSets;
 
-    /**
-     * @var float|null
-     */
-    private $FRR;
-
-    /**
-     * @var float|null
-     */
-    private $EER;
-
-    /**
-     * @var float|null
-     */
-    private $FAAR;
-
-    /**
-     * @var int|null
-     */
-    private $maxReferenceDataSets;
-
-    public function __construct(?float $FAR, ?float $FRR, ?float $EER, ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
+    public function __construct(private ?float $FAR, private ?float $FRR, private ?float $EER, private ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
         Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
-        $this->FRR = $FRR;
-        $this->FAR = $FAR;
-        $this->EER = $EER;
-        $this->FAAR = $FAAR;
         $this->maxReferenceDataSets = $maxReferenceDataSets;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
+    #[Pure]
     public function getFAR(): ?float
     {
         return $this->FAR;
     }
 
+    #[Pure]
     public function getFRR(): ?float
     {
         return $this->FRR;
     }
 
+    #[Pure]
     public function getEER(): ?float
     {
         return $this->EER;
     }
 
+    #[Pure]
     public function getFAAR(): ?float
     {
         return $this->FAAR;
     }
 
+    #[Pure]
     public function getMaxReferenceDataSets(): ?int
     {
         return $this->maxReferenceDataSets;
@@ -91,6 +70,7 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

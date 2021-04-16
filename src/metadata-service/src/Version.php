@@ -15,21 +15,16 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use LogicException;
 use function Safe\sprintf;
 
 class Version implements JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    private $major;
+    private ?int $major;
 
-    /**
-     * @var int|null
-     */
-    private $minor;
+    private ?int $minor;
 
     public function __construct(?int $major, ?int $minor)
     {
@@ -43,11 +38,13 @@ class Version implements JsonSerializable
         $this->minor = $minor;
     }
 
+    #[Pure]
     public function getMajor(): ?int
     {
         return $this->major;
     }
 
+    #[Pure]
     public function getMinor(): ?int
     {
         return $this->minor;
@@ -68,6 +65,7 @@ class Version implements JsonSerializable
         );
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

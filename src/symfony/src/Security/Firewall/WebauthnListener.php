@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use function is_string;
+use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,41 +24,12 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 class WebauthnListener
 {
-    /**
-     * @var mixed[]
-     */
-    private $options;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var HttpUtils
-     */
-    private $httpUtils;
-
-    /**
-     * @var RequestListener
-     */
-    private $requestListener;
-
-    /**
-     * @var CreationListener
-     */
-    private $creationListener;
-
-    /**
-     * @param mixed[] $options
-     */
-    public function __construct(HttpUtils $httpUtils, ?LoggerInterface $logger, RequestListener $requestListener, CreationListener $creationListener, array $options)
+    #[Pure]
+    public function __construct(private HttpUtils $httpUtils, ?LoggerInterface $logger, private RequestListener $requestListener, private CreationListener $creationListener, private array $options)
     {
-        $this->httpUtils = $httpUtils;
-        $this->options = $options;
         $this->logger = $logger ?? new NullLogger();
-        $this->requestListener = $requestListener;
-        $this->creationListener = $creationListener;
     }
 
     public function __invoke(RequestEvent $event): void

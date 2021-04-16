@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
+use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -28,52 +29,12 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseControllerFactory
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    #[Pure]
+    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
+    #[Pure]
     public function createAttestationRequestController(UserEntityGuesser $userEntityGuesser, string $profile, OptionsStorage $optionStorage, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler): AttestationRequestController
     {
         return new AttestationRequestController(
@@ -89,6 +50,7 @@ final class AttestationResponseControllerFactory
         );
     }
 
+    #[Pure]
     public function createAttestationResponseController(OptionsStorage $optionStorage, SuccessHandler $successHandler, FailureHandler $failureHandler): AttestationResponseController
     {
         return new AttestationResponseController(

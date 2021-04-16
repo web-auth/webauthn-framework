@@ -60,7 +60,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         static::assertEquals('failed', $data['status']);
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
+        static::assertEquals('User not found', $data['errorMessage']);
     }
 
     /**

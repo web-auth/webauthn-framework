@@ -17,6 +17,8 @@ use function array_key_exists;
 use Assert\Assertion;
 use function in_array;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use function Safe\class_implements;
 use function Safe\sprintf;
 
@@ -44,9 +46,8 @@ abstract class TrustPathLoader
         }
     }
 
-    /**
-     * @return string[]
-     */
+    #[Pure]
+    #[ArrayShape(['empty' => 'string', 'ecdaa_key_id' => 'string', 'x5c' => 'string'])]
     private static function oldTrustPathTypes(): array
     {
         return [

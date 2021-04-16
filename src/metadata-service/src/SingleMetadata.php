@@ -13,28 +13,17 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use JetBrains\PhpStorm\Pure;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 
 class SingleMetadata
 {
-    /**
-     * @var MetadataStatement
-     */
-    private $statement;
-    /**
-     * @var string
-     */
-    private $data;
-    /**
-     * @var bool
-     */
-    private $isBase64Encoded;
+    private ?MetadataStatement $statement = null;
 
-    public function __construct(string $data, bool $isBase64Encoded)
+    #[Pure]
+    public function __construct(private string $data, private bool $isBase64Encoded)
     {
-        $this->data = $data;
-        $this->isBase64Encoded = $isBase64Encoded;
     }
 
     public function getMetadataStatement(): MetadataStatement

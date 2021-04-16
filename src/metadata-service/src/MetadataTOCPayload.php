@@ -15,41 +15,25 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
 class MetadataTOCPayload implements JsonSerializable
 {
     /**
-     * @var string|null
-     */
-    private $legalHeader;
-
-    /**
-     * @var int
-     */
-    private $no;
-
-    /**
-     * @var string
-     */
-    private $nextUpdate;
-
-    /**
      * @var MetadataTOCPayloadEntry[]
      */
-    private $entries = [];
+    private array $entries = [];
 
     /**
      * @var string[]
      */
-    private $rootCertificates;
+    private ?array $rootCertificates = null;
 
-    public function __construct(int $no, string $nextUpdate, ?string $legalHeader = null)
+    #[Pure]
+    public function __construct(private int $no, private string $nextUpdate, private ?string $legalHeader = null)
     {
-        $this->no = $no;
-        $this->nextUpdate = $nextUpdate;
-        $this->legalHeader = $legalHeader;
     }
 
     public function addEntry(MetadataTOCPayloadEntry $entry): self
@@ -59,16 +43,19 @@ class MetadataTOCPayload implements JsonSerializable
         return $this;
     }
 
+    #[Pure]
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
+    #[Pure]
     public function getNo(): int
     {
         return $this->no;
     }
 
+    #[Pure]
     public function getNextUpdate(): string
     {
         return $this->nextUpdate;
@@ -77,6 +64,7 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @return MetadataTOCPayloadEntry[]
      */
+    #[Pure]
     public function getEntries(): array
     {
         return $this->entries;
@@ -99,7 +87,7 @@ class MetadataTOCPayload implements JsonSerializable
             $data['nextUpdate'],
             $data['legalHeader'] ?? null
         );
-        foreach ($data['entries'] as $k => $entry) {
+        foreach ($data['entries'] as $entry) {
             $object->addEntry(MetadataTOCPayloadEntry::createFromArray($entry));
         }
         $object->rootCertificates = $data['rootCertificates'] ?? [];
@@ -107,6 +95,7 @@ class MetadataTOCPayload implements JsonSerializable
         return $object;
     }
 
+    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [
@@ -125,6 +114,7 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @return string[]
      */
+    #[Pure]
     public function getRootCertificates(): array
     {
         return $this->rootCertificates;

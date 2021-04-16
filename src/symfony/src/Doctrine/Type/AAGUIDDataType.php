@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use JetBrains\PhpStorm\Pure;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function Safe\base64_decode;
@@ -62,6 +63,7 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function getName(): string
     {
         return 'aaguid';
@@ -70,6 +72,7 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
+    #[Pure]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

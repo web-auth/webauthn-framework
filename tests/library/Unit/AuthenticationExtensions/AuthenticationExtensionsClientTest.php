@@ -54,7 +54,7 @@ class AuthenticationExtensionsClientTest extends TestCase
 
         static::assertEquals(1, $inputs->count());
         static::assertEquals('{"name":["value"]}', json_encode($inputs));
-        foreach ($inputs as $k => $input) {
+        foreach ($inputs as $input) {
             static::assertInstanceOf(AuthenticationExtension::class, $input);
         }
     }
@@ -73,7 +73,7 @@ class AuthenticationExtensionsClientTest extends TestCase
 
         static::assertEquals(1, $inputs->count());
         static::assertEquals('{"name":["value"]}', json_encode($inputs));
-        foreach ($inputs as $k => $input) {
+        foreach ($inputs as $input) {
             static::assertInstanceOf(AuthenticationExtension::class, $input);
         }
     }

@@ -13,48 +13,31 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $challenge;
+    protected ?int $timeout = null;
 
-    /**
-     * @var int|null
-     */
-    protected $timeout;
+    protected AuthenticationExtensionsClientInputs $extensions;
 
-    /**
-     * @var AuthenticationExtensionsClientInputs
-     */
-    protected $extensions;
-
-    public function __construct(string $challenge, ?int $timeout = null, ?AuthenticationExtensionsClientInputs $extensions = null)
+    #[Pure]
+    public function __construct(protected string $challenge)
     {
-        if (null !== $timeout) {
-            @trigger_error('The argument "timeout" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setTimeout".', E_USER_DEPRECATED);
-        }
-        if (null !== $extensions) {
-            @trigger_error('The argument "extensions" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addExtension" or "addExtensions".', E_USER_DEPRECATED);
-        }
-        $this->challenge = $challenge;
-        $this->setTimeout($timeout);
-        $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
+        $this->extensions = new AuthenticationExtensionsClientInputs();
     }
 
-    public function setTimeout(?int $timeout): self
+    public function setTimeout(?int $timeout): static
     {
         $this->timeout = $timeout;
 
         return $this;
     }
 
-    public function addExtension(AuthenticationExtension $extension): self
+    public function addExtension(AuthenticationExtension $extension): static
     {
         $this->extensions->add($extension);
 
@@ -64,7 +47,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     /**
      * @param AuthenticationExtension[] $extensions
      */
-    public function addExtensions(array $extensions): self
+    public function addExtensions(array $extensions): static
     {
         foreach ($extensions as $extension) {
             $this->addExtension($extension);
@@ -73,23 +56,26 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this;
     }
 
-    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): self
+    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
     {
         $this->extensions = $extensions;
 
         return $this;
     }
 
+    #[Pure]
     public function getChallenge(): string
     {
         return $this->challenge;
     }
 
+    #[Pure]
     public function getTimeout(): ?int
     {
         return $this->timeout;
     }
 
+    #[Pure]
     public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;
