@@ -126,7 +126,7 @@ return static function (ContainerConfigurator $container): void {
         ->abstract()
         ->private()
         ->args([
-            '', // HTTP Message Factory
+            service(HttpMessageFactoryInterface::class),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),
