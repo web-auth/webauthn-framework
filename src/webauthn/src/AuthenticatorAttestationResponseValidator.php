@@ -369,14 +369,15 @@ class AuthenticatorAttestationResponseValidator
 
     private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
     {
-        switch (true) {
-            case null === $authenticationExtensionsClientOutputs:
-            case !$authenticationExtensionsClientOutputs->has('appid'):
-            case true !== $authenticationExtensionsClientOutputs->get('appid'):
-            case !$authenticationExtensionsClientInputs->has('appid'):
-                return $rpId;
-            default:
-                return $authenticationExtensionsClientInputs->get('appid');
+        if (null === $authenticationExtensionsClientOutputs || !$authenticationExtensionsClientInputs->has('appid') || !$authenticationExtensionsClientOutputs->has('appid')) {
+            return $rpId;
         }
+        $appId = $authenticationExtensionsClientInputs->get('appid')->value();
+        $wasUsed = $authenticationExtensionsClientOutputs->get('appid')->value();
+        if (!is_string($appId) || true !== $wasUsed) {
+            return $rpId;
+        }
+
+        return $appId;
     }
 }
