@@ -208,7 +208,8 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $uuid,
                 Base64Url::decode($data['credentialPublicKey']),
                 Base64Url::decode($data['userHandle']),
-                $data['counter']
+                $data['counter'],
+                $data['otherUI'] ?? null
             );
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
@@ -230,6 +231,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
             'userHandle' => Base64Url::encode($this->userHandle),
             'counter' => $this->counter,
+            'otherUI' => $this->otherUI,
         ];
     }
 }

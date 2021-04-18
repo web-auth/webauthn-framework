@@ -17,6 +17,7 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use function is_string;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
