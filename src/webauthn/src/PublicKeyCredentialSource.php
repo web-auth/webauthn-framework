@@ -32,10 +32,6 @@ use Webauthn\TrustPath\TrustPathLoader;
  */
 class PublicKeyCredentialSource implements JsonSerializable
 {
-    /*
-     * @var string[]
-     */
-
     #[Pure]
     public function __construct(
         protected string $publicKeyCredentialId,
@@ -157,6 +153,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $keys = array_keys(get_class_vars(self::class));
+        unset($keys['otherUI']);
         foreach ($keys as $key) {
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
@@ -179,14 +176,15 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $uuid,
                 Base64Url::decode($data['credentialPublicKey']),
                 Base64Url::decode($data['userHandle']),
-                $data['counter']
+                $data['counter'],
+                $data['otherUI'] ?? null
             );
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
         }
     }
 
-    #[ArrayShape(['publicKeyCredentialId' => 'string', 'type' => 'string', 'transports' => 'array', 'attestationType' => 'string', 'trustPath' => 'mixed', 'aaguid' => 'string', 'credentialPublicKey' => 'string', 'userHandle' => 'string', 'counter' => 'int'])]
+    #[ArrayShape(['publicKeyCredentialId' => 'string', 'type' => 'string', 'transports' => 'array', 'attestationType' => 'string', 'trustPath' => 'mixed', 'aaguid' => 'string', 'credentialPublicKey' => 'string', 'userHandle' => 'string', 'counter' => 'int', 'otherUI' => 'null|array'])]
     public function jsonSerialize(): array
     {
         return [
@@ -199,6 +197,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
             'userHandle' => Base64Url::encode($this->userHandle),
             'counter' => $this->counter,
+            'otherUI' => $this->otherUI,
         ];
     }
 }
