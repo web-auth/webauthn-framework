@@ -15,7 +15,6 @@ namespace Webauthn\Bundle;
 
 use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\HttpMessageFactoryCompilerPass;
 use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,6 +26,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPas
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerificationCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\HttpMessageFactoryCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementRepositorySetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
