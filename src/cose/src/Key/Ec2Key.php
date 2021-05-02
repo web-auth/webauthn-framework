@@ -21,7 +21,6 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use function Safe\sprintf;
 
 class Ec2Key extends Key
 {

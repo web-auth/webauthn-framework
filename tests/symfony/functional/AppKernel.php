@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -44,7 +43,6 @@ final class AppKernel extends Kernel
             new DoctrineBundle(),
             new SecurityBundle(),
             new MonologBundle(),
-            new SensioFrameworkExtraBundle(),
 
             new WebauthnBundle(),
         ];

@@ -88,6 +88,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
         $loader->load('services.php');
+        $loader->load('http_message_factory.php');
         $loader->load('cose.php');
         $loader->load('security.php');
 

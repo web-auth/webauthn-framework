@@ -21,8 +21,7 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
-use function Safe\sprintf;
-use function Safe\unpack;
+use InvalidArgumentException;
 
 class RsaKey extends Key
 {
@@ -189,7 +188,12 @@ class RsaKey extends Key
 
     private function fromBase64ToInteger(string $value): string
     {
-        $hex = current(unpack('H*', $value));
+        $data = unpack('H*', $value);
+        if (false === $data) {
+            throw new InvalidArgumentException('Unable to convert to an integer');
+        }
+
+        $hex = current($data);
 
         return BigInteger::fromBase($hex, 16)->toBase(10);
     }

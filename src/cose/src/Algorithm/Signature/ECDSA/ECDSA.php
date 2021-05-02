@@ -17,7 +17,6 @@ use Assert\Assertion;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
-use function Safe\openssl_sign;
 
 abstract class ECDSA implements Signature
 {

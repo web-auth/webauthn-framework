@@ -185,7 +185,6 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $client = self::createClient([], ['HTTPS' => 'on']);
         $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
         $response = $client->getResponse();
-        dump($response->getContent());
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
