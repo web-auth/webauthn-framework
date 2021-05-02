@@ -15,7 +15,6 @@ namespace Cose\Key;
 
 use function array_key_exists;
 use Assert\Assertion;
-use function Safe\sprintf;
 
 class Key
 {

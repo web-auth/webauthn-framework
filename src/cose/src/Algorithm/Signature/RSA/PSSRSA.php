@@ -27,7 +27,6 @@ use function mb_substr;
 use function ord;
 use function random_bytes;
 use RuntimeException;
-use function Safe\pack;
 use function str_pad;
 use function str_repeat;
 
