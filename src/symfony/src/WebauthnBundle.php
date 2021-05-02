@@ -15,6 +15,7 @@ namespace Webauthn\Bundle;
 
 use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\HttpMessageFactoryCompilerPass;
 use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -56,6 +57,7 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new CounterCheckerSetterCompilerPass());
         $container->addCompilerPass(new CertificateChainCheckerSetterCompilerPass());
         $container->addCompilerPass(new MetadataStatementRepositorySetterCompilerPass());
+        $container->addCompilerPass(new HttpMessageFactoryCompilerPass());
 
         $this->registerMappings($container);
 

@@ -44,7 +44,7 @@ final class AppKernel extends Kernel
             new DoctrineBundle(),
             new SecurityBundle(),
             new MonologBundle(),
-            new SensioFrameworkExtraBundle(),
+            //new SensioFrameworkExtraBundle(),
 
             new WebauthnBundle(),
         ];

@@ -268,11 +268,11 @@ webauthn:
         request_factory: '@nyholm.psr7.psr18_factory'
 
 
-sensio_framework_extra:
-    router:
-        annotations: false
-    psr_message:
-        enabled: true
+#sensio_framework_extra:
+#    router:
+#        annotations: false
+    #psr_message:
+    #    enabled: true
 
 security:
     providers:
