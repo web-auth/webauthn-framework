@@ -6,7 +6,7 @@
 | ------- | ------------------ |
 | 4.0.x   | :white_check_mark: |
 | 3.3.x   | :white_check_mark: |
-| < 3.3.x | :x: *except security issues until end of 2020* |
+| < 3.3.x | :x: *except security issues until end of 2021* |
 
 ## Reporting a Vulnerability
 
