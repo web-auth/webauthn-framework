@@ -61,7 +61,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
 
         /** @var SessionInterface $session */
-        $session = self::$container->get('session');
+        $session = self::getContainer()->get('session');
         static::assertTrue($session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
     }
 
@@ -81,7 +81,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
 
-        $session = self::$container->get('session');
+        $session = self::getContainer()->get('session');
         $session->set('WEBAUTHN_PUBLIC_KEY_OPTIONS', [
             'options' => $publicKeyCredentialCreationOptions,
             'userEntity' => $publicKeyCredentialCreationOptions->getUser(),
@@ -110,7 +110,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
 
         /** @var SessionInterface $session */
-        $session = self::$container->get('session');
+        $session = self::getContainer()->get('session');
         static::assertFalse($session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
 
         $newNumberOfRegisteredCredentials = count($publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser()));
@@ -119,7 +119,7 @@ class AdditionalAuthenticatorTest extends WebTestCase
 
     private function logIn(): void
     {
-        $session = self::$container->get('session');
+        $session = self::getContainer()->get('session');
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);

@@ -80,7 +80,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('userVerification', $data);
         static::assertEquals(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, $data['userVerification']);

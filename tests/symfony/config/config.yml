@@ -21,6 +21,9 @@ framework:
         storage_id: 'session.storage.mock_file'
     fragments:       ~
     http_method_override: true
+    annotations: ~
+    serializer: ~
+    validation: ~
     router:
         utf8: true
         resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
