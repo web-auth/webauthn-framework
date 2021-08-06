@@ -17,9 +17,9 @@
     ],
     "require": {
         "spomky-labs/cbor-bundle": "^2.0",
-        "symfony/config": "^4.4|^5.0",
-        "symfony/dependency-injection": "^4.4|^5.0",
-        "symfony/framework-bundle": "^4.4|^5.0",
+        "symfony/config": "^5.3",
+        "symfony/dependency-injection": "^5.3",
+        "symfony/framework-bundle": "^5.3",
         "web-auth/webauthn-lib": "self.version",
         "web-token/jwt-signature": "^2.0.9"
     },

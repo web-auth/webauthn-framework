@@ -27,6 +27,7 @@ class Loader extends SymfonyLoader
     #[Pure]
     public function __construct()
     {
+        parent::__construct();
         $this->routes = new RouteCollection();
     }
 

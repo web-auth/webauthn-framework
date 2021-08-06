@@ -12,7 +12,7 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__.'/src')
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config)
     ->setRules([
         '@PSR1' => true,
         '@PSR2' => true,
@@ -50,11 +50,10 @@ return PhpCsFixer\Config::create()
             'comment_type' => 'all_multiline',
         ],
         'php_unit_test_annotation' => [
-            'case' => 'snake',
             'style' => 'annotation',
         ],
         'php_unit_test_case_static_method_calls' => true,
-        'method_chaining_indentation' => true,
+        'method_chaining_indentation' => false,
         'php_unit_expectation' => true,
         'php_unit_test_class_requires_covers' => false,
         'global_namespace_import' => [

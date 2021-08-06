@@ -153,7 +153,10 @@ class PublicKeyCredentialSource implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $keys = array_keys(get_class_vars(self::class));
-        unset($keys['otherUI']);
+        $otherUIKey = array_search('otherUI', $keys, true);
+        if (false !== $otherUIKey) {
+            unset($keys[$otherUIKey]);
+        }
         foreach ($keys as $key) {
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }

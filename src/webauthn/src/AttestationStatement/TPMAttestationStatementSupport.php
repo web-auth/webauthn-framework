@@ -216,7 +216,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 'curveId' => $stream->read(2),
                 'kdf' => $stream->read(2),
             ],
-            default => throw new InvalidArgumentException('Unsupported type'), };
+            default => throw new InvalidArgumentException('Unsupported type'),
+        };
     }
 
     private function getExponent(string $exponent): string
@@ -231,7 +232,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             '000b' => 'sha256',
             '000c' => 'sha384',
             '000d' => 'sha512',
-            default => throw new InvalidArgumentException('Unsupported hash algorithm'), };
+            default => throw new InvalidArgumentException('Unsupported hash algorithm'),
+        };
     }
 
     private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
