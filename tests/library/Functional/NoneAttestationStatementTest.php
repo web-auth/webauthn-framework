@@ -28,7 +28,7 @@ class NoneAttestationStatementTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 PublicKeyCredentialRpEntity::create('My Application'),
-                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
+                new PublicKeyCredentialUserEntity('test@foo.com', bin2hex(random_bytes(16)), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )

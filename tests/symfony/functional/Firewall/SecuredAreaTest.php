@@ -98,15 +98,14 @@ class SecuredAreaTest extends WebTestCase
         $assertion = '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAew==","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ==","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}';
 
         $client->request('POST', '/login', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'localhost', 'HTTPS' => 'on'], $assertion);
-
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        static::assertEquals('{"status":"ok","errorMessage":"","username":"admin"}', $client->getResponse()->getContent());
+        static::assertEquals('{"status":"ok","errorMessage":"","username":"foo"}', $client->getResponse()->getContent());
         static::assertTrue($session->has('_security_main'));
         static::assertTrue($client->getResponse()->headers->has('set-cookie'));
 
         $client->request('GET', '/admin', [], [], ['HTTPS' => 'on']);
 
         static::assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        static::assertEquals('["Hello admin"]', $client->getResponse()->getContent());
+        static::assertEquals('["Hello foo"]', $client->getResponse()->getContent());
     }
 }

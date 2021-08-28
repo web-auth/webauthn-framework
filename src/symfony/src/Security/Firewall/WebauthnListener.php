@@ -67,8 +67,6 @@ class WebauthnListener
                 return;
             default:
                 $this->logger->debug('The path does not corresponds to any configured path. Ignored', ['query' => $request->getQueryString()]);
-
-                return;
         }
     }
 }

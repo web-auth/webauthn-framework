@@ -212,7 +212,7 @@ class RegistrationAreaTest extends WebTestCase
      */
     public function aValidRegistrationResultRequestIsCorrectlyManaged(): void
     {
-        $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity');
+        $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', bin2hex(random_bytes(16)), 'Test PublicKeyCredentialUserEntity');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 PublicKeyCredentialRpEntity::create('My Application'),

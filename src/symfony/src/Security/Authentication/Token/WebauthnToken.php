@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
-use function get_class;
 use JetBrains\PhpStorm\Pure;
 use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
@@ -43,7 +42,7 @@ class WebauthnToken extends AbstractToken
         return [
             json_encode($this->publicKeyCredentialUserEntity),
             json_encode($this->publicKeyCredentialDescriptor),
-            get_class($this->publicKeyCredentialOptions),
+            $this->publicKeyCredentialOptions::class,
             json_encode($this->publicKeyCredentialOptions),
             $this->isUserPresent,
             $this->isUserVerified,
@@ -85,6 +84,12 @@ class WebauthnToken extends AbstractToken
             $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
         }
         parent::__unserialize($parentData);
+    }
+
+    #[Pure]
+    public function getUserIdentifier(): string
+    {
+        return $this->publicKeyCredentialUserEntity->getId();
     }
 
     #[Pure]

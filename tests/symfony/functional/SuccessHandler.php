@@ -16,7 +16,7 @@ final class SuccessHandler implements AuthenticationSuccessHandlerInterface
         $data = [
             'status' => 'ok',
             'errorMessage' => '',
-            'username' => $token->getUsername(),
+            'username' => $token->getUserIdentifier(),
         ];
 
         return new JsonResponse($data, JsonResponse::HTTP_OK);

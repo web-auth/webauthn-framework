@@ -25,24 +25,20 @@ class EdDSA implements Signature
         $d = $key->d();
         $secret = $d.$x;
 
-        switch ($key->curve()) {
-            case OkpKey::CURVE_ED25519:
-                return sodium_crypto_sign_detached($data, $secret);
-            default:
-                throw new InvalidArgumentException('Unsupported curve');
-        }
+        return match ($key->curve()) {
+            OkpKey::CURVE_ED25519 => sodium_crypto_sign_detached($data, $secret),
+            default => throw new InvalidArgumentException('Unsupported curve'),
+        };
     }
 
     public function verify(string $data, Key $key, string $signature): bool
     {
         $key = $this->handleKey($key);
 
-        switch ($key->curve()) {
-            case OkpKey::CURVE_ED25519:
-                return sodium_crypto_sign_verify_detached($signature, $data, $key->x());
-            default:
-                throw new InvalidArgumentException('Unsupported curve');
-        }
+        return match ($key->curve()) {
+            OkpKey::CURVE_ED25519 => sodium_crypto_sign_verify_detached($signature, $data, $key->x()),
+            default => throw new InvalidArgumentException('Unsupported curve'),
+        };
     }
 
     #[Pure]

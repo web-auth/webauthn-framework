@@ -7,10 +7,6 @@ parameters:
         - src/symfony/src/
         - src/webauthn/src/
     ignoreErrors:
-        -
-             message: '#Parameter (.*) of class Jose\\Component\\Core\\AlgorithmManager constructor expects array\<Jose\\Component\\Core\\Algorithm\>\, array\<int\, object\> given\.#'
-             count: 1
-             path: 'src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php'
         # Symfony Deprecation
         -
              message: '#Class Webauthn\\Bundle\\Security\\Authentication\\Provider\\WebauthnProvider implements deprecated interface Symfony\\Component\\Security\\Core\\Authentication\\Provider\\AuthenticationProviderInterface#'

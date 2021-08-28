@@ -86,14 +86,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()
         );
 
-        switch (true) {
-            case $attestationStatement->getTrustPath() instanceof CertificateTrustPath:
-                return $this->processWithCertificate($clientDataJSONHash, $attestationStatement, $authenticatorData);
-            case $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath:
-                return $this->processWithECDAA();
-            default:
-                throw new InvalidArgumentException('Unsupported attestation statement');
-        }
+        return match (true) {
+            $attestationStatement->getTrustPath() instanceof CertificateTrustPath => $this->processWithCertificate($clientDataJSONHash, $attestationStatement, $authenticatorData),
+            $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
+            default => throw new InvalidArgumentException('Unsupported attestation statement'),
+        };
     }
 
     private function checkUniquePublicKey(string $unique, string $cborPublicKey): void

@@ -20,14 +20,6 @@ final class UserProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username): UserInterface
     {
-        return $this->loadUserByIdentifier($username);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function loadUserByIdentifier(string $username): UserInterface
-    {
         $user = $this->userRepository->findOneByUsername($username);
         if (!$user instanceof User) {
             throw new UserNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
@@ -36,9 +28,22 @@ final class UserProvider implements UserProviderInterface
         return $user;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function loadUserByIdentifier(string $identifier): UserInterface
+    {
+        $user = $this->userRepository->findOneByUserHandle($identifier);
+        if (!$user instanceof User) {
+            throw new UserNotFoundException(sprintf('The user with identifier "%s" cannot be found', $identifier));
+        }
+
+        return $user;
+    }
+
     public function refreshUser(UserInterface $user): UserInterface
     {
-        return $this->loadUserByUsername($user->getUsername());
+        return $this->loadUserByIdentifier($user->getUserIdentifier());
     }
 
     /**

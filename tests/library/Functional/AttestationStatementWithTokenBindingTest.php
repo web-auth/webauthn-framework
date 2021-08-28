@@ -32,7 +32,7 @@ class AttestationStatementWithTokenBindingTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 PublicKeyCredentialRpEntity::create('My Application'),
-                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
+                new PublicKeyCredentialUserEntity('test@foo.com', bin2hex(random_bytes(16)), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('SkehMoAkGv+cqmuiEqpOgGhswj5oDa9kIPxgG1IihzkxPe4LNfP8bUyFiNn/MXBlqiOY6IpHFZl1XfIM07kRZw==', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )

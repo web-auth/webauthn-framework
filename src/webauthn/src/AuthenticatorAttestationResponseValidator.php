@@ -315,18 +315,13 @@ class AuthenticatorAttestationResponseValidator
 
     private function getAttestationType(AttestationStatement $attestationStatement): int
     {
-        switch ($attestationStatement->getType()) {
-            case AttestationStatement::TYPE_BASIC:
-                return MetadataStatement::ATTESTATION_BASIC_FULL;
-            case AttestationStatement::TYPE_SELF:
-                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
-            case AttestationStatement::TYPE_ATTCA:
-                return MetadataStatement::ATTESTATION_ATTCA;
-            case AttestationStatement::TYPE_ECDAA:
-                return MetadataStatement::ATTESTATION_ECDAA;
-            default:
-                throw new InvalidArgumentException('Invalid attestation type');
-        }
+        return match ($attestationStatement->getType()) {
+            AttestationStatement::TYPE_BASIC => MetadataStatement::ATTESTATION_BASIC_FULL,
+            AttestationStatement::TYPE_SELF => MetadataStatement::ATTESTATION_BASIC_SURROGATE,
+            AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
+            AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
+            default => throw new InvalidArgumentException('Invalid attestation type'),
+        };
     }
 
     private function getFacetId(string $rpId, AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs, ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs): string
