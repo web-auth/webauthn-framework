@@ -21,7 +21,6 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
-use FG\ASN1\Universal\Sequence;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
