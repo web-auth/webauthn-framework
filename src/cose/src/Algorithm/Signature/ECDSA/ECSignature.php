@@ -92,7 +92,7 @@ final class ECSignature
 
     private static function octetLength(string $data): int
     {
-        return (int) (mb_strlen($data, '8bit') / self::BYTE_SIZE);
+        return intdiv(mb_strlen($data, '8bit'), self::BYTE_SIZE);
     }
 
     private static function preparePositiveInteger(string $data): string
