@@ -23,7 +23,7 @@ abstract class Hmac implements Mac
         $this->checKey($key);
         $signature = hash_hmac($this->getHashAlgorithm(), $data, $key->get(-1), true);
 
-        return mb_substr($signature, 0, $this->getSignatureLength() / 8, '8bit');
+        return mb_substr($signature, 0, intdiv($this->getSignatureLength(), 8), '8bit');
     }
 
     public function verify(string $data, Key $key, string $signature): bool
