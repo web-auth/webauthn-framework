@@ -74,7 +74,7 @@ class AttestedCredentialData implements JsonSerializable
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
         switch (true) {
-            case 36 === mb_strlen($json['aaguid'], '8bit'):
+            case mb_strlen($json['aaguid'], '8bit') === 36:
                 $uuid = Uuid::fromString($json['aaguid']);
                 break;
             default: // Kept for compatibility with old format
@@ -88,11 +88,7 @@ class AttestedCredentialData implements JsonSerializable
             $credentialPublicKey = base64_decode($json['credentialPublicKey'], true);
         }
 
-        return new self(
-            $uuid,
-            $credentialId,
-            $credentialPublicKey
-        );
+        return new self($uuid, $credentialId, $credentialPublicKey);
     }
 
     /**
@@ -104,7 +100,7 @@ class AttestedCredentialData implements JsonSerializable
             'aaguid' => $this->aaguid->toString(),
             'credentialId' => base64_encode($this->credentialId),
         ];
-        if (null !== $this->credentialPublicKey) {
+        if ($this->credentialPublicKey !== null) {
             $result['credentialPublicKey'] = base64_encode($this->credentialPublicKey);
         }
 

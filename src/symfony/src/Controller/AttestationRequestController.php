@@ -84,7 +84,17 @@ final class AttestationRequestController
      */
     private $failureHandler;
 
-    public function __construct(UserEntityGuesser $userEntityGuesser, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, OptionsStorage $sessionParameterName, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler)
+    public function __construct(
+        UserEntityGuesser $userEntityGuesser,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        string $profile,
+        OptionsStorage $sessionParameterName,
+        CreationOptionsHandler $creationOptionsHandler,
+        FailureHandler $failureHandler
+    )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -114,7 +124,11 @@ final class AttestationRequestController
                 $publicKeyCredentialCreationOptions,
                 $userEntity
             );
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
+            $this->optionsStorage->store(
+                $request,
+                new StoredData($publicKeyCredentialCreationOptions, $userEntity),
+                $response
+            );
 
             return $response;
         } catch (Throwable $throwable) {
@@ -134,7 +148,10 @@ final class AttestationRequestController
         }, $credentialSources);
     }
 
-    private function getPublicKeyCredentialCreationOptions(string $content, PublicKeyCredentialUserEntity $userEntity): PublicKeyCredentialCreationOptions
+    private function getPublicKeyCredentialCreationOptions(
+        string $content,
+        PublicKeyCredentialUserEntity $userEntity
+    ): PublicKeyCredentialCreationOptions
     {
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
@@ -157,15 +174,21 @@ final class AttestationRequestController
         );
     }
 
-    private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): AdditionalPublicKeyCredentialCreationOptionsRequest
+    private function getServerPublicKeyCredentialCreationOptionsRequest(
+        string $content
+    ): AdditionalPublicKeyCredentialCreationOptionsRequest
     {
-        $data = $this->serializer->deserialize($content, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'json');
+        $data = $this->serializer->deserialize(
+            $content,
+            AdditionalPublicKeyCredentialCreationOptionsRequest::class,
+            'json'
+        );
         Assertion::isInstanceOf($data, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }

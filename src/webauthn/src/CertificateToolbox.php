@@ -15,8 +15,10 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use function count;
+use const FILE_APPEND;
 use function in_array;
 use InvalidArgumentException;
+use const PHP_EOL;
 use RuntimeException;
 use Safe\Exceptions\FilesystemException;
 use function Safe\file_put_contents;
@@ -38,7 +40,7 @@ class CertificateToolbox
      */
     public static function checkChain(array $authenticatorCertificates, array $trustedCertificates = []): void
     {
-        if (0 === count($trustedCertificates)) {
+        if (count($trustedCertificates) === 0) {
             self::checkCertificatesValidity($authenticatorCertificates, true);
 
             return;
@@ -60,7 +62,7 @@ class CertificateToolbox
         while ($rehashProcess->isRunning()) {
             //Just wait
         }
-        if (!$rehashProcess->isSuccessful()) {
+        if (! $rehashProcess->isSuccessful()) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
 
@@ -70,7 +72,12 @@ class CertificateToolbox
         $filenames[] = $leafFilename;
 
         foreach ($authenticatorCertificates as $certificate) {
-            $untrustedFilename = self::prepareCertificate(sys_get_temp_dir(), $certificate, 'webauthn-untrusted-', '.pem');
+            $untrustedFilename = self::prepareCertificate(
+                sys_get_temp_dir(),
+                $certificate,
+                'webauthn-untrusted-',
+                '.pem'
+            );
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
@@ -94,16 +101,16 @@ class CertificateToolbox
         }
         self::deleteDirectory($caDirname);
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain');
         }
     }
 
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
-        $pemCert = '-----BEGIN '.$type.'-----'.PHP_EOL;
+        $pemCert = '-----BEGIN ' . $type . '-----' . PHP_EOL;
         $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END '.$type.'-----'.PHP_EOL;
+        $pemCert .= '-----END ' . $type . '-----' . PHP_EOL;
 
         return $pemCert;
     }
@@ -148,7 +155,7 @@ class CertificateToolbox
         foreach ($certificates as $certificate) {
             $parsed = openssl_x509_parse($certificate);
             Assertion::isArray($parsed, 'Unable to read the certificate');
-            if (false === $allowRootCertificate) {
+            if ($allowRootCertificate === false) {
                 self::checkRootCertificate($parsed);
             }
 
@@ -195,7 +202,7 @@ class CertificateToolbox
             unlink($caDir);
         }
         mkdir($caDir);
-        if (!is_dir($caDir)) {
+        if (! is_dir($caDir)) {
             throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
         }
 
@@ -211,13 +218,18 @@ class CertificateToolbox
         }
     }
 
-    private static function prepareCertificate(string $folder, string $certificate, string $prefix, string $suffix): string
+    private static function prepareCertificate(
+        string $folder,
+        string $certificate,
+        string $prefix,
+        string $suffix
+    ): string
     {
         $untrustedFilename = tempnam($folder, $prefix);
-        rename($untrustedFilename, $untrustedFilename.$suffix);
-        file_put_contents($untrustedFilename.$suffix, $certificate, FILE_APPEND);
-        file_put_contents($untrustedFilename.$suffix, PHP_EOL, FILE_APPEND);
+        rename($untrustedFilename, $untrustedFilename . $suffix);
+        file_put_contents($untrustedFilename . $suffix, $certificate, FILE_APPEND);
+        file_put_contents($untrustedFilename . $suffix, PHP_EOL, FILE_APPEND);
 
-        return $untrustedFilename.$suffix;
+        return $untrustedFilename . $suffix;
     }
 }

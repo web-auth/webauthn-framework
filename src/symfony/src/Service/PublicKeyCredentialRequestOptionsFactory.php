@@ -46,7 +46,12 @@ final class PublicKeyCredentialRequestOptionsFactory
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
-    public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
+    public function create(
+        string $key,
+        array $allowCredentials,
+        ?string $userVerification = null,
+        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+    ): PublicKeyCredentialRequestOptions
     {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];

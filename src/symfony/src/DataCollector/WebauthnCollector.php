@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
+use const JSON_PRETTY_PRINT;
 use function Safe\json_encode;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,10 +96,18 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         return [
             PublicKeyCredentialCreationOptionsCreatedEvent::class => ['addPublicKeyCredentialCreationOptions'],
             PublicKeyCredentialRequestOptionsCreatedEvent::class => ['addPublicKeyCredentialRequestOptions'],
-            AuthenticatorAttestationResponseValidationSucceededEvent::class => ['addAuthenticatorAttestationResponseValidationSucceeded'],
-            AuthenticatorAttestationResponseValidationFailedEvent::class => ['addAuthenticatorAttestationResponseValidationFailed'],
-            AuthenticatorAssertionResponseValidationSucceededEvent::class => ['addAuthenticatorAssertionResponseValidationSucceeded'],
-            AuthenticatorAssertionResponseValidationFailedEvent::class => ['addAuthenticatorAssertionResponseValidationFailed'],
+            AuthenticatorAttestationResponseValidationSucceededEvent::class => [
+                'addAuthenticatorAttestationResponseValidationSucceeded',
+            ],
+            AuthenticatorAttestationResponseValidationFailedEvent::class => [
+                'addAuthenticatorAttestationResponseValidationFailed',
+            ],
+            AuthenticatorAssertionResponseValidationSucceededEvent::class => [
+                'addAuthenticatorAssertionResponseValidationSucceeded',
+            ],
+            AuthenticatorAssertionResponseValidationFailedEvent::class => [
+                'addAuthenticatorAssertionResponseValidationFailed',
+            ],
         ];
     }
 
@@ -111,7 +120,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    public function addAuthenticatorAttestationResponseValidationSucceeded(AuthenticatorAttestationResponseValidationSucceededEvent $event): void
+    public function addAuthenticatorAttestationResponseValidationSucceeded(
+        AuthenticatorAttestationResponseValidationSucceededEvent $event
+    ): void
     {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
@@ -122,7 +133,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    public function addAuthenticatorAttestationResponseValidationFailed(AuthenticatorAttestationResponseValidationFailedEvent $event): void
+    public function addAuthenticatorAttestationResponseValidationFailed(
+        AuthenticatorAttestationResponseValidationFailedEvent $event
+    ): void
     {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationFailed[] = [
@@ -142,7 +155,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    public function addAuthenticatorAssertionResponseValidationSucceeded(AuthenticatorAssertionResponseValidationSucceededEvent $event): void
+    public function addAuthenticatorAssertionResponseValidationSucceeded(
+        AuthenticatorAssertionResponseValidationSucceededEvent $event
+    ): void
     {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationSucceeded[] = [
@@ -155,7 +170,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    public function addAuthenticatorAssertionResponseValidationFailed(AuthenticatorAssertionResponseValidationFailedEvent $event): void
+    public function addAuthenticatorAssertionResponseValidationFailed(
+        AuthenticatorAssertionResponseValidationFailedEvent $event
+    ): void
     {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [

@@ -55,20 +55,32 @@ final class AttestationResponseController
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
+
     /**
      * @var string
      */
     private $sessionParameterName;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var CacheItemPoolInterface
      */
     private $cacheItemPool;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(
+        HttpMessageFactoryInterface $httpMessageFactory,
+        PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        string $sessionParameterName,
+        LoggerInterface $logger,
+        CacheItemPoolInterface $cacheItemPool
+    )
     {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
@@ -92,21 +104,35 @@ final class AttestationResponseController
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
 
             $item = $this->cacheItemPool->getItem($this->sessionParameterName);
-            if (!$item->isHit()) {
+            if (! $item->isHit()) {
                 throw new InvalidArgumentException('Unable to find the public key credential creation options');
             }
             $publicKeyCredentialCreationOptions = $item->get();
-            Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
-            $credentialSource = $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+            Assertion::isInstanceOf(
+                $publicKeyCredentialCreationOptions,
+                PublicKeyCredentialCreationOptions::class,
+                'Unable to find the public key credential creation options'
+            );
+            $credentialSource = $this->attestationResponseValidator->check(
+                $response,
+                $publicKeyCredentialCreationOptions,
+                $psr7Request
+            );
 
             $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
-            return new JsonResponse(['status' => 'ok', 'errorMessage' => '']);
+            return new JsonResponse([
+                'status' => 'ok',
+                'errorMessage' => '',
+            ]);
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
-            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
+            return new JsonResponse([
+                'status' => 'failed',
+                'errorMessage' => $throwable->getMessage(),
+            ], 400);
         }
     }
 }

@@ -53,18 +53,40 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['x5c'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists(
+                $attestation['attStmt'],
+                $key,
+                sprintf('The attestation statement value "%s" is missing.', $key)
+            );
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::greaterThan(count($certificates), 0, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        Assertion::isArray(
+            $certificates,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
+        Assertion::greaterThan(
+            count($certificates),
+            0,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
+        Assertion::allString(
+            $certificates,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createAnonymizationCA($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createAnonymizationCA(
+            $attestation['fmt'],
+            $attestation['attStmt'],
+            new CertificateTrustPath($certificates)
+        );
     }
 
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
@@ -79,7 +101,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         return true;
     }
 
-    private function checkCertificateAndGetPublicKey(string $certificate, string $clientDataHash, AuthenticatorData $authenticatorData): void
+    private function checkCertificateAndGetPublicKey(
+        string $certificate,
+        string $clientDataHash,
+        AuthenticatorData $authenticatorData
+    ): void
     {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
@@ -91,7 +117,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($publicKeyData, 'No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
-        $coseKey = $this->decoder->decode($publicDataStream)->getNormalizedData(false);
+        $coseKey = $this->decoder->decode($publicDataStream)
+            ->getNormalizedData(false)
+        ;
         Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
         $publicDataStream->close();
         $publicKey = Key::createFromData($coseKey);
@@ -108,13 +136,17 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         Assertion::isArray($certDetails, 'The certificate is not valid');
         Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
         Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
-        Assertion::keyExists($certDetails['extensions'], '1.2.840.113635.100.8.2', 'The certificate extension "1.2.840.113635.100.8.2" is missing');
+        Assertion::keyExists(
+            $certDetails['extensions'],
+            '1.2.840.113635.100.8.2',
+            'The certificate extension "1.2.840.113635.100.8.2" is missing'
+        );
         $extension = $certDetails['extensions']['1.2.840.113635.100.8.2'];
 
-        $nonceToHash = $authenticatorData->getAuthData().$clientDataHash;
+        $nonceToHash = $authenticatorData->getAuthData() . $clientDataHash;
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
-        Assertion::eq('3024a1220420'.$nonce, bin2hex($extension), 'The client data hash is not valid');
+        Assertion::eq('3024a1220420' . $nonce, bin2hex($extension), 'The client data hash is not valid');
     }
 }

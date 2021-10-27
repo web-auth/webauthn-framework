@@ -16,7 +16,6 @@ namespace Webauthn\Bundle\Tests\Functional;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class AdminController
 {
@@ -25,15 +24,9 @@ final class AdminController
      */
     private $tokenStorage;
 
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
-    public function __construct(TokenStorageInterface $tokenStorage, AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(TokenStorageInterface $tokenStorage)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function admin(): Response
@@ -41,8 +34,6 @@ final class AdminController
         $token = $this->tokenStorage->getToken();
         $user = $token->getUser();
 
-        return new JsonResponse([
-            'Hello '.$user->getUsername(),
-        ]);
+        return new JsonResponse(['Hello ' . $user->getUsername()]);
     }
 }

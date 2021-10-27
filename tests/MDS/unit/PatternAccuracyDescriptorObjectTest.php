@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
@@ -20,33 +21,42 @@ use function Safe\json_encode;
 use Webauthn\MetadataService\PatternAccuracyDescriptor;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class PatternAccuracyDescriptorObjectTest extends TestCase
+final class PatternAccuracyDescriptorObjectTest extends TestCase
 {
     /**
      * @test
      * @dataProvider validObjectData
      */
-    public function validObject(PatternAccuracyDescriptor $object, int $minComplexity, ?int $maxRetries, ?int $blockSlowdown, string $expectedJson): void
+    public function validObject(
+        PatternAccuracyDescriptor $object,
+        int $minComplexity,
+        ?int $maxRetries,
+        ?int $blockSlowdown,
+        string $expectedJson
+    ): void
     {
-        static::assertEquals($minComplexity, $object->getMinComplexity());
-        static::assertEquals($maxRetries, $object->getMaxRetries());
-        static::assertEquals($blockSlowdown, $object->getBlockSlowdown());
-        static::assertEquals($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($minComplexity, $object->getMinComplexity());
+        static::assertSame($maxRetries, $object->getMaxRetries());
+        static::assertSame($blockSlowdown, $object->getBlockSlowdown());
+        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
 
         $loaded = PatternAccuracyDescriptor::createFromArray(json_decode($expectedJson, true));
-        static::assertEquals($object, $loaded);
+        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array
     {
         return [
             [new PatternAccuracyDescriptor(10), 10, null, null, '{"minComplexity":10}'],
-            [new PatternAccuracyDescriptor(10, 50, 15), 10, 50, 15, '{"minComplexity":10,"maxRetries":50,"blockSlowdown":15}'],
+            [
+                new PatternAccuracyDescriptor(10, 50, 15),
+                10,
+                50,
+                15,
+                '{"minComplexity":10,"maxRetries":50,"blockSlowdown":15}',
+            ],
         ];
     }
 
@@ -54,7 +64,12 @@ class PatternAccuracyDescriptorObjectTest extends TestCase
      * @test
      * @dataProvider invalidObjectData
      */
-    public function invalidObject(int $minComplexity, ?int $maxRetries, ?int $blockSlowdown, string $expectedMessage): void
+    public function invalidObject(
+        int $minComplexity,
+        ?int $maxRetries,
+        ?int $blockSlowdown,
+        string $expectedMessage
+    ): void
     {
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage($expectedMessage);

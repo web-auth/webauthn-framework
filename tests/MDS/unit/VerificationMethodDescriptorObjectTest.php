@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
@@ -23,12 +24,9 @@ use Webauthn\MetadataService\PatternAccuracyDescriptor;
 use Webauthn\MetadataService\VerificationMethodDescriptor;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class VerificationMethodDescriptorObjectTest extends TestCase
+final class VerificationMethodDescriptorObjectTest extends TestCase
 {
     /**
      * @test
@@ -36,10 +34,10 @@ class VerificationMethodDescriptorObjectTest extends TestCase
      */
     public function validObject(VerificationMethodDescriptor $object, string $expectedJson): void
     {
-        static::assertEquals($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
 
         $loaded = VerificationMethodDescriptor::createFromArray(json_decode($expectedJson, true));
-        static::assertEquals($object, $loaded);
+        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array
@@ -80,8 +78,6 @@ class VerificationMethodDescriptorObjectTest extends TestCase
 
     public function invalidObjectData(): array
     {
-        return [
-            [-1, 'The parameter "userVerification" is invalid'],
-        ];
+        return [[-1, 'The parameter "userVerification" is invalid']];
     }
 }

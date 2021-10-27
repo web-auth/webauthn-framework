@@ -21,11 +21,9 @@ use function Safe\hex2bin;
 /**
  * @see https://tools.ietf.org/html/rfc7520#section-4.1
  *
- * @group unit
- *
  * @internal
  */
-class ES256KSignatureTest extends TestCase
+final class ES256KSignatureTest extends TestCase
 {
     /**
      * @test

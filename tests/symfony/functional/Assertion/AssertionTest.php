@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional\Assertion;
 
-use Base64Url\Base64Url;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -26,11 +26,9 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\Tests\MockedRequestTrait;
 
 /**
- * @group functional
- *
  * @internal
  */
-class AssertionTest extends WebTestCase
+final class AssertionTest extends WebTestCase
 {
     use MockedRequestTrait;
 
@@ -47,17 +45,27 @@ class AssertionTest extends WebTestCase
                 ->setRpId('localhost')
                 ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
                 ->allowCredential(new PublicKeyCredentialDescriptor(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
-            ))
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    Base64UrlSafe::decode(
+                        'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
+                    )
+                ))
         ;
 
-        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load('{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAew==","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ==","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}');
+        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load(
+            '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAew==","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ==","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}'
+        );
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(
+            base64_decode(
+                'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
+                true
+            ),
+            $descriptor->getId()
+        );
+        static::assertSame([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
@@ -84,7 +92,9 @@ class AssertionTest extends WebTestCase
         $allowedCredentials = [
             new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
+                Base64UrlSafe::decode(
+                    'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
+                )
             ),
         ];
 
@@ -92,10 +102,10 @@ class AssertionTest extends WebTestCase
         $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
         $options = $factory->create('default', $allowedCredentials);
 
-        static::assertEquals(30000, $options->getTimeout());
-        static::assertEquals('localhost', $options->getRpId());
-        static::assertEquals($allowedCredentials, $options->getAllowCredentials());
-        static::assertEquals('preferred', $options->getUserVerification());
+        static::assertSame(30000, $options->getTimeout());
+        static::assertSame('localhost', $options->getRpId());
+        static::assertSame($allowedCredentials, $options->getAllowCredentials());
+        static::assertSame('preferred', $options->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
     }
 }

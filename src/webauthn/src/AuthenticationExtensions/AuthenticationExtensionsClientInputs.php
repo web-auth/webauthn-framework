@@ -17,6 +17,7 @@ use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
 use function count;
+use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
@@ -53,9 +54,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return array_key_exists($key, $this->extensions);
     }
 
-    /**
-     * @return mixed
-     */
     public function get(string $key)
     {
         Assertion::true($this->has($key), sprintf('The extension with key "%s" is not available', $key));

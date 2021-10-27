@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cose\Algorithm\Signature\ECDSA;
 
 use Cose\Key\Ec2Key;
+use const OPENSSL_ALGO_SHA512;
 
 final class ES512 extends ECDSA
 {

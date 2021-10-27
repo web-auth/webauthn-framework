@@ -40,11 +40,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     {
         Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
 
-        return new self(
-            $json['name'],
-            $json['id'] ?? null,
-            $json['icon'] ?? null
-        );
+        return new self($json['name'], $json['id'] ?? null, $json['icon'] ?? null);
     }
 
     /**
@@ -53,7 +49,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
-        if (null !== $this->id) {
+        if ($this->id !== null) {
             $json['id'] = $this->id;
         }
 

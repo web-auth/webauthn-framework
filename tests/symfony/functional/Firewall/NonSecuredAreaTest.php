@@ -16,11 +16,9 @@ namespace Webauthn\Bundle\Tests\Functional\Firewall;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @group functional
- *
  * @internal
  */
-class NonSecuredAreaTest extends WebTestCase
+final class NonSecuredAreaTest extends WebTestCase
 {
     /**
      * @test
@@ -28,9 +26,11 @@ class NonSecuredAreaTest extends WebTestCase
     public function aClientWantsToAccessOnNonSecuredResource(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/', [], [], ['HTTPS' => 'on']);
+        $client->request('GET', '/', [], [], [
+            'HTTPS' => 'on',
+        ]);
 
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
-        static::assertEquals('Home', $client->getResponse()->getContent());
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+        static::assertSame('Home', $client->getResponse()->getContent());
     }
 }

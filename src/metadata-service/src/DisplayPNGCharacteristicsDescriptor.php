@@ -59,7 +59,15 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
      */
     private $plte = [];
 
-    public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
+    public function __construct(
+        int $width,
+        int $height,
+        int $bitDepth,
+        int $colorType,
+        int $compression,
+        int $filter,
+        int $interlace
+    )
     {
         Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
         Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
@@ -131,7 +139,16 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        foreach (['width', 'compression', 'height', 'bitDepth', 'colorType', 'compression', 'filter', 'interlace'] as $key) {
+        foreach ([
+            'width',
+            'compression',
+            'height',
+            'bitDepth',
+            'colorType',
+            'compression',
+            'filter',
+            'interlace',
+        ] as $key) {
             Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
         }
         $object = new self(

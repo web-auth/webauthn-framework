@@ -63,10 +63,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
         Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
         Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
 
-        return new self(
-            $json['type'],
-            $json['alg']
-        );
+        return new self($json['type'], $json['alg']);
     }
 
     /**

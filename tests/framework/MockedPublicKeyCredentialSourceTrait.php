@@ -21,7 +21,16 @@ use Webauthn\TrustPath\TrustPath;
 
 trait MockedPublicKeyCredentialSourceTrait
 {
-    protected function createPublicKeyCredentialSource(string $id, string $userHandle, int $counter, UuidInterface $aaguid, $publicKey, array $transport = [], string $attestationType = 'none', ?TrustPath $trustPath = null): PublicKeyCredentialSource
+    protected function createPublicKeyCredentialSource(
+        string $id,
+        string $userHandle,
+        int $counter,
+        UuidInterface $aaguid,
+        $publicKey,
+        array $transport = [],
+        string $attestationType = 'none',
+        ?TrustPath $trustPath = null
+    ): PublicKeyCredentialSource
     {
         return new PublicKeyCredentialSource(
             $id,

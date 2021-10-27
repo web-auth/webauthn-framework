@@ -86,20 +86,29 @@ class MetadataTOCPayload implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
-            Assertion::keyExists($data, $key, Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key)));
+            Assertion::keyExists(
+                $data,
+                $key,
+                Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key))
+            );
         }
         Assertion::integer($data['no'], Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
-        Assertion::string($data['nextUpdate'], Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
-        Assertion::isArray($data['entries'], Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
-        if (array_key_exists('legalHeader', $data)) {
-            Assertion::string($data['legalHeader'], Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
-        }
-        $object = new self(
-            $data['no'],
+        Assertion::string(
             $data['nextUpdate'],
-            $data['legalHeader'] ?? null
+            Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string')
         );
-        foreach ($data['entries'] as $k => $entry) {
+        Assertion::isArray(
+            $data['entries'],
+            Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries')
+        );
+        if (array_key_exists('legalHeader', $data)) {
+            Assertion::string(
+                $data['legalHeader'],
+                Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string')
+            );
+        }
+        $object = new self($data['no'], $data['nextUpdate'], $data['legalHeader'] ?? null);
+        foreach ($data['entries'] as $entry) {
             $object->addEntry(MetadataTOCPayloadEntry::createFromArray($entry));
         }
         $object->rootCertificates = $data['rootCertificates'] ?? [];

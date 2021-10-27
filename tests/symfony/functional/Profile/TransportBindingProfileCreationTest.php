@@ -19,11 +19,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @group functional
- *
  * @internal
  */
-class TransportBindingProfileCreationTest extends WebTestCase
+final class TransportBindingProfileCreationTest extends WebTestCase
 {
     /**
      * @test
@@ -33,16 +31,21 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $content = [
             'displayName' => 'FOO',
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        static::assertSame('failed', $data['status']);
+        static::assertSame(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
+        static::assertSame('username: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -53,16 +56,21 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $content = [
             'username' => 'foo',
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        static::assertSame('failed', $data['status']);
+        static::assertSame(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should not be blank.');
+        static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -74,16 +82,21 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'username' => 'foo',
             'displayName' => 123,
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        static::assertSame('failed', $data['status']);
+        static::assertSame(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
+        static::assertSame('displayName: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -95,16 +108,21 @@ class TransportBindingProfileCreationTest extends WebTestCase
             'username' => 123,
             'displayName' => 'FOO',
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        static::assertSame('failed', $data['status']);
+        static::assertSame(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
+        static::assertSame('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -122,22 +140,31 @@ class TransportBindingProfileCreationTest extends WebTestCase
             ],
             'attestation' => 'indirect',
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'localhost'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'localhost',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('ok', $data['status']);
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertSame('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals($data['attestation'], 'indirect');
+        static::assertSame('indirect', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
-        static::assertEquals($data['authenticatorSelection'], ['authenticatorAttachment' => 'cross-platform', 'userVerification' => 'preferred', 'requireResidentKey' => true]);
+        static::assertSame([
+            'authenticatorAttachment' => 'cross-platform',
+            'userVerification' => 'preferred',
+            'requireResidentKey' => true,
+        ], $data['authenticatorSelection']);
     }
 
     /**
@@ -148,24 +175,34 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => ['requireResidentKey' => true],
+            'authenticatorSelection' => [
+                'requireResidentKey' => true,
+            ],
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'webauth.app'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'webauth.app',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('ok', $data['status']);
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertSame('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals('none', $data['attestation']);
+        static::assertSame('none', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
-        static::assertEquals(['userVerification' => 'preferred', 'requireResidentKey' => true], $data['authenticatorSelection']);
+        static::assertSame([
+            'userVerification' => 'preferred',
+            'requireResidentKey' => true,
+        ], $data['authenticatorSelection']);
     }
 
     /**
@@ -182,21 +219,30 @@ class TransportBindingProfileCreationTest extends WebTestCase
                 'requireResidentKey' => true,
             ],
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/attestation/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/attestation/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('ok', $data['status']);
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertSame('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals('none', $data['attestation']);
+        static::assertSame('none', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
-        static::assertEquals(['authenticatorAttachment' => 'platform', 'userVerification' => 'required', 'requireResidentKey' => true], $data['authenticatorSelection']);
+        static::assertSame([
+            'authenticatorAttachment' => 'platform',
+            'userVerification' => 'required',
+            'requireResidentKey' => true,
+        ], $data['authenticatorSelection']);
     }
 }

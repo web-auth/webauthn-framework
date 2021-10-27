@@ -27,7 +27,7 @@ final class TrustPathDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
@@ -39,7 +39,7 @@ final class TrustPathDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?TrustPath
     {
-        if (null === $value || $value instanceof TrustPath) {
+        if ($value === null || $value instanceof TrustPath) {
             return $value;
         }
         $json = json_decode($value, true);

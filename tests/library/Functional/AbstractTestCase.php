@@ -51,14 +51,12 @@ use Webauthn\Tests\MockedRequestTrait;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
-/**
- * @group functional
- * @group Fido2
- */
 abstract class AbstractTestCase extends TestCase
 {
     use MockedRequestTrait;
+
     use MockedPublicKeyCredentialSourceTrait;
+
     use MockedMappedResponseTrait;
 
     /**
@@ -98,34 +96,41 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
-        if (null === $this->publicKeyCredentialLoader) {
-            $this->publicKeyCredentialLoader = new PublicKeyCredentialLoader(
-                $this->getAttestationObjectLoader()
-            );
+        if ($this->publicKeyCredentialLoader === null) {
+            $this->publicKeyCredentialLoader = new PublicKeyCredentialLoader($this->getAttestationObjectLoader());
         }
 
         return $this->publicKeyCredentialLoader;
     }
 
-    protected function getAuthenticatorAttestationResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository, ?ClientInterface $client = null): AuthenticatorAttestationResponseValidator
+    protected function getAuthenticatorAttestationResponseValidator(
+        PublicKeyCredentialSourceRepository $credentialRepository,
+        ?ClientInterface $client = null
+    ): AuthenticatorAttestationResponseValidator
     {
-        if (null === $this->authenticatorAttestationResponseValidator) {
+        if ($this->authenticatorAttestationResponseValidator === null) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
                 new IgnoreTokenBindingHandler(),
                 new ExtensionOutputCheckerHandler()
             );
-            $this->authenticatorAttestationResponseValidator->setCertificateChainChecker($this->getCertificateChainChecker());
-            $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository($this->getMetadataStatementRepository($client));
+            $this->authenticatorAttestationResponseValidator->setCertificateChainChecker(
+                $this->getCertificateChainChecker()
+            );
+            $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository(
+                $this->getMetadataStatementRepository($client)
+            );
         }
 
         return $this->authenticatorAttestationResponseValidator;
     }
 
-    protected function getAuthenticatorAssertionResponseValidator(PublicKeyCredentialSourceRepository $credentialRepository): AuthenticatorAssertionResponseValidator
+    protected function getAuthenticatorAssertionResponseValidator(
+        PublicKeyCredentialSourceRepository $credentialRepository
+    ): AuthenticatorAssertionResponseValidator
     {
-        if (null === $this->authenticatorAssertionResponseValidator) {
+        if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
                 new TokenBindingNotSupportedHandler(),
@@ -199,7 +204,7 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
 
     private function getAttestationStatementSupportManager(?ClientInterface $client): AttestationStatementSupportManager
     {
-        if (null === $client) {
+        if ($client === null) {
             $client = new Client();
             $this->prepareResponsesMap($client);
         }
@@ -225,7 +230,7 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
 
     private function getAlgorithmManager(): Manager
     {
-        if (null === $this->algorithmManager) {
+        if ($this->algorithmManager === null) {
             $this->algorithmManager = new Manager();
             $this->algorithmManager->add(new ES256());
             $this->algorithmManager->add(new ES384());
@@ -242,7 +247,7 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
 
     private function getAttestationObjectLoader(): AttestationObjectLoader
     {
-        if (null === $this->attestationObjectLoader) {
+        if ($this->attestationObjectLoader === null) {
             $this->attestationObjectLoader = new AttestationObjectLoader(
                 $this->getAttestationStatementSupportManager(null)
             );
@@ -253,21 +258,51 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
 
     private function getMetadataStatementRepository(?ClientInterface $client): MetadataStatementRepositoryInterface
     {
-        if (null === $client) {
+        if ($client === null) {
             $client = new Client();
             $this->prepareResponsesMap($client);
         }
-        if (null === $this->metadataStatementRepository) {
+        if ($this->metadataStatementRepository === null) {
             $this->metadataStatementRepository = new MetadataStatementRepository();
-            foreach ($this->getSingleStatements() as $name => $statement) {
+            foreach ($this->getSingleStatements() as $statement) {
                 $this->metadataStatementRepository->addSingleStatement(new SingleMetadata($statement, false));
             }
 
-            $this->metadataStatementRepository->addService(new MetadataService('https://mds.certinfra.fidoalliance.org/execute/0fdcfc99b393efd496c165ee387e1f3949c3a16f85cfb0aa9c02bca979e75bdb', $client, new Psr17Factory()));
-            $this->metadataStatementRepository->addService(new MetadataService('https://mds.certinfra.fidoalliance.org/execute/4926abdc35e558244ceaea24a384dee5cc5bf97fb7fec060f184be4fed07d82e', $client, new Psr17Factory()));
-            $this->metadataStatementRepository->addService(new MetadataService('https://mds.certinfra.fidoalliance.org/execute/ba5a161e75d267f70c00c2546234dcb271a3b8e5c189e5b978e9e1c4ccc8f7a4', $client, new Psr17Factory()));
-            $this->metadataStatementRepository->addService(new MetadataService('https://mds.certinfra.fidoalliance.org/execute/bd578e0ef8b075efa44400616e976a47aa56292d2e07c446d854e826b7451022', $client, new Psr17Factory()));
-            $this->metadataStatementRepository->addService(new MetadataService('https://mds.certinfra.fidoalliance.org/execute/cccf981a98027d2bef4376e5a8fca839db552f35dd1e87e874c32e04d8c95e81', $client, new Psr17Factory()));
+            $this->metadataStatementRepository->addService(
+                new MetadataService(
+                    'https://mds.certinfra.fidoalliance.org/execute/0fdcfc99b393efd496c165ee387e1f3949c3a16f85cfb0aa9c02bca979e75bdb',
+                    $client,
+                    new Psr17Factory()
+                )
+            );
+            $this->metadataStatementRepository->addService(
+                new MetadataService(
+                    'https://mds.certinfra.fidoalliance.org/execute/4926abdc35e558244ceaea24a384dee5cc5bf97fb7fec060f184be4fed07d82e',
+                    $client,
+                    new Psr17Factory()
+                )
+            );
+            $this->metadataStatementRepository->addService(
+                new MetadataService(
+                    'https://mds.certinfra.fidoalliance.org/execute/ba5a161e75d267f70c00c2546234dcb271a3b8e5c189e5b978e9e1c4ccc8f7a4',
+                    $client,
+                    new Psr17Factory()
+                )
+            );
+            $this->metadataStatementRepository->addService(
+                new MetadataService(
+                    'https://mds.certinfra.fidoalliance.org/execute/bd578e0ef8b075efa44400616e976a47aa56292d2e07c446d854e826b7451022',
+                    $client,
+                    new Psr17Factory()
+                )
+            );
+            $this->metadataStatementRepository->addService(
+                new MetadataService(
+                    'https://mds.certinfra.fidoalliance.org/execute/cccf981a98027d2bef4376e5a8fca839db552f35dd1e87e874c32e04d8c95e81',
+                    $client,
+                    new Psr17Factory()
+                )
+            );
         }
 
         return $this->metadataStatementRepository;
@@ -303,15 +338,12 @@ A5eG2BqhHXfIrp7DLgxJYWaXF7lIk/e5yFpYqJDksq0ZGIyK+CGS8QIwXIbqlrb0
 
     private function getCertificateChainChecker(): CertificateChainChecker
     {
-        if (null === $this->certificateChainChecker) {
+        if ($this->certificateChainChecker === null) {
             $psr18Client = new Client();
             $this->prepareResponsesMap($psr18Client);
 
             $psr17Factory = new Psr17Factory();
-            $this->certificateChainChecker = new OpenSSLCertificateChainChecker(
-                $psr18Client,
-                $psr17Factory
-            );
+            $this->certificateChainChecker = new OpenSSLCertificateChainChecker($psr18Client, $psr17Factory);
         }
 
         return $this->certificateChainChecker;

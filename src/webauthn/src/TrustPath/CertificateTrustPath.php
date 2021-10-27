@@ -45,7 +45,7 @@ final class CertificateTrustPath implements TrustPath
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
 
-        return new CertificateTrustPath($data['x5c']);
+        return new self($data['x5c']);
     }
 
     /**

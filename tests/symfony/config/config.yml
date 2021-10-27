@@ -17,6 +17,11 @@ monolog:
 framework:
     test: ~
     secret: 'test'
+    annotations: ~
+    serializer:
+        enabled: true
+    validation:
+        enabled: true
     session:
         storage_id: 'session.storage.mock_file'
     fragments:       ~
@@ -28,6 +33,9 @@ framework:
 services:
     _defaults:
         public: true
+
+    Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
+        tags: [serializer.normalizer]
 
     httplug.client.mock:
         class: 'Http\Mock\Client'

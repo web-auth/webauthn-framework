@@ -26,7 +26,7 @@ final class AAGUIDDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
@@ -38,11 +38,11 @@ final class AAGUIDDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
     {
-        if (null === $value || $value instanceof UuidInterface) {
+        if ($value === null || $value instanceof UuidInterface) {
             return $value;
         }
         switch (true) {
-            case 36 === mb_strlen($value, '8bit'):
+            case mb_strlen($value, '8bit') === 36:
                 return Uuid::fromString($value);
             default: // Kept for compatibility with old format
                 $decoded = base64_decode($value, true);

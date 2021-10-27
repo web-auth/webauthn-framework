@@ -23,10 +23,15 @@ use Webauthn\TrustPath\TrustPathLoader;
 class AttestationStatement implements JsonSerializable
 {
     public const TYPE_NONE = 'none';
+
     public const TYPE_BASIC = 'basic';
+
     public const TYPE_SELF = 'self';
+
     public const TYPE_ATTCA = 'attca';
+
     public const TYPE_ECDAA = 'ecdaa';
+
     public const TYPE_ANONCA = 'anonca';
 
     /**
@@ -123,9 +128,6 @@ class AttestationStatement implements JsonSerializable
         return array_key_exists($key, $this->attStmt);
     }
 
-    /**
-     * @return mixed
-     */
     public function get(string $key)
     {
         Assertion::true($this->has($key), sprintf('The attestation statement has no key "%s".', $key));

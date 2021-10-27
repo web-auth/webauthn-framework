@@ -154,7 +154,28 @@ class RequestListener
      */
     private $securedRelyingPartyId;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, array $options, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, AuthenticationFailureHandlerInterface $authenticationFailureHandler, RequestOptionsHandler $optionsHandler, OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, ?EventDispatcherInterface $dispatcher = null, array $securedRelyingPartyId = [])
+    public function __construct(
+        HttpMessageFactoryInterface $httpMessageFactory,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
+        TokenStorageInterface $tokenStorage,
+        AuthenticationManagerInterface $authenticationManager,
+        SessionAuthenticationStrategyInterface $sessionStrategy,
+        string $providerKey,
+        array $options,
+        AuthenticationSuccessHandlerInterface $authenticationSuccessHandler,
+        AuthenticationFailureHandlerInterface $authenticationFailureHandler,
+        RequestOptionsHandler $optionsHandler,
+        OptionsStorage $optionsStorage,
+        ?LoggerInterface $logger = null,
+        ?EventDispatcherInterface $dispatcher = null,
+        array $securedRelyingPartyId = [
+    ])
     {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
@@ -188,9 +209,13 @@ class RequestListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-            $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
-            $userEntity = null === $creationOptionsRequest->username ? null : $this->userEntityRepository->findOneByUsername($creationOptionsRequest->username);
-            $allowedCredentials = null !== $userEntity ? $this->getCredentials($userEntity) : [];
+            $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
+                $creationOptionsRequest->extensions
+            ) : null;
+            $userEntity = $creationOptionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
+                $creationOptionsRequest->username
+            );
+            $allowedCredentials = $userEntity !== null ? $this->getCredentials($userEntity) : [];
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->options['profile'],
                 $allowedCredentials,
@@ -198,9 +223,15 @@ class RequestListener
                 $extensions
             );
             $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialRequestOptions, $userEntity), $response);
+            $this->optionsStorage->store(
+                $request,
+                new StoredData($publicKeyCredentialRequestOptions, $userEntity),
+                $response
+            );
         } catch (Throwable $e) {
-            $this->logger->error('An error occurred', ['exception' => $e]);
+            $this->logger->error('An error occurred', [
+                'exception' => $e,
+            ]);
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
         }
 
@@ -231,13 +262,7 @@ class RequestListener
             $this->tokenStorage->setToken(null);
         }
 
-        $response = $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
-
-        if (!$response instanceof Response) {
-            throw new RuntimeException('Authentication Failure Handler did not return a Response.');
-        }
-
-        return $response;
+        return $this->authenticationFailureHandler->onAuthenticationFailure($request, $failed);
     }
 
     /**
@@ -250,34 +275,32 @@ class RequestListener
     {
         $this->tokenStorage->setToken($token);
 
-        if (null !== $this->dispatcher) {
+        if ($this->dispatcher !== null) {
             $loginEvent = new InteractiveLoginEvent($request, $token);
             $this->dispatcher->dispatch($loginEvent);
         }
 
-        $response = $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
-
-        if (!$response instanceof Response) {
-            throw new RuntimeException('Authentication Success Handler did not return a Response.');
-        }
-
-        return $response;
+        return $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
     }
 
-    private function getServerPublicKeyCredentialRequestOptionsRequest(string $content): ServerPublicKeyCredentialRequestOptionsRequest
+    private function getServerPublicKeyCredentialRequestOptionsRequest(
+        string $content
+    ): ServerPublicKeyCredentialRequestOptionsRequest
     {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialRequestOptionsRequest::class,
             'json',
-            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+            [
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            ]
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }
@@ -293,7 +316,7 @@ class RequestListener
         $assertion = trim($assertion);
         $publicKeyCredential = $this->publicKeyCredentialLoader->load($assertion);
         $response = $publicKeyCredential->getResponse();
-        if (!$response instanceof AuthenticatorAssertionResponse) {
+        if (! $response instanceof AuthenticatorAssertionResponse) {
             throw new AuthenticationException('Invalid assertion');
         }
 
@@ -309,11 +332,15 @@ class RequestListener
                 $response,
                 $options,
                 $psr7Request,
-                null === $userEntity ? null : $userEntity->getId(),
+                $userEntity === null ? null : $userEntity->getId(),
                 $this->securedRelyingPartyId
             );
             $userEntity = $this->userEntityRepository->findOneByUserHandle($publicKeyCredentialSource->getUserHandle());
-            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the associated user entity');
+            Assertion::isInstanceOf(
+                $userEntity,
+                PublicKeyCredentialUserEntity::class,
+                'Unable to find the associated user entity'
+            );
         } catch (Throwable $throwable) {
             throw new AuthenticationException('Invalid assertion', 0, $throwable);
         }
@@ -322,12 +349,18 @@ class RequestListener
             $userEntity,
             $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
-            $response->getAuthenticatorData()->isUserPresent(),
-            $response->getAuthenticatorData()->isUserVerified(),
-            $response->getAuthenticatorData()->getReservedForFutureUse1(),
-            $response->getAuthenticatorData()->getReservedForFutureUse2(),
-            $response->getAuthenticatorData()->getSignCount(),
-            $response->getAuthenticatorData()->getExtensions(),
+            $response->getAuthenticatorData()
+                ->isUserPresent(),
+            $response->getAuthenticatorData()
+                ->isUserVerified(),
+            $response->getAuthenticatorData()
+                ->getReservedForFutureUse1(),
+            $response->getAuthenticatorData()
+                ->getReservedForFutureUse2(),
+            $response->getAuthenticatorData()
+                ->getSignCount(),
+            $response->getAuthenticatorData()
+                ->getExtensions(),
             $this->providerKey,
             []
         );

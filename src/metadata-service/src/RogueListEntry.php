@@ -51,10 +51,7 @@ class RogueListEntry implements JsonSerializable
         Assertion::keyExists($data, 'date', 'The key "date" is missing');
         Assertion::string($data['date'], 'The key "date" is invalid');
 
-        return new self(
-            $data['sk'],
-            $data['date']
-        );
+        return new self($data['sk'], $data['date']);
     }
 
     public function jsonSerialize(): array

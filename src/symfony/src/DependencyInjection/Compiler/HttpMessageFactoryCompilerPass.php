@@ -23,7 +23,7 @@ final class HttpMessageFactoryCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition('sensio_framework_extra.psr7.http_message_factory')) {
+        if (! $container->hasDefinition('sensio_framework_extra.psr7.http_message_factory')) {
             $container->setAlias('sensio_framework_extra.psr7.http_message_factory', 'webauthn.http.factory');
         }
     }

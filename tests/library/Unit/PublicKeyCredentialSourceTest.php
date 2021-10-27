@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use function Safe\json_decode;
@@ -20,14 +21,9 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\TokenBinding\TokenBinding
- *
  * @internal
  */
-class PublicKeyCredentialSourceTest extends TestCase
+final class PublicKeyCredentialSourceTest extends TestCase
 {
     /**
      * @test
@@ -38,7 +34,7 @@ class PublicKeyCredentialSourceTest extends TestCase
         $json = json_decode($data, true);
         $source = PublicKeyCredentialSource::createFromArray($json);
 
-        static::assertEquals('publicKeyCredentialId', $source->getPublicKeyCredentialId());
+        static::assertSame('publicKeyCredentialId', $source->getPublicKeyCredentialId());
     }
 
     /**
@@ -58,6 +54,9 @@ class PublicKeyCredentialSourceTest extends TestCase
             123456789
         );
 
-        static::assertEquals('{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null}', json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES));
+        static::assertSame(
+            '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null}',
+            json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES)
+        );
     }
 }

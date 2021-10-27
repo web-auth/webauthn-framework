@@ -14,16 +14,22 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use function count;
+use const E_USER_DEPRECATED;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use function Safe\json_decode;
+use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
+
     public const ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT = 'indirect';
+
     public const ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT = 'direct';
+
     public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
@@ -60,16 +66,35 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
-    public function __construct(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams, ?int $timeout = null, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestation = null, ?AuthenticationExtensionsClientInputs $extensions = null)
+    public function __construct(
+        PublicKeyCredentialRpEntity $rp,
+        PublicKeyCredentialUserEntity $user,
+        string $challenge,
+        array $pubKeyCredParams,
+        ?int $timeout = null,
+        array $excludeCredentials = [],
+        ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
+        ?string $attestation = null,
+        ?AuthenticationExtensionsClientInputs $extensions = null
+    )
     {
-        if (0 !== count($excludeCredentials)) {
-            @trigger_error('The argument "excludeCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "excludeCredentials" or "excludeCredential".', E_USER_DEPRECATED);
+        if (count($excludeCredentials) !== 0) {
+            @trigger_error(
+                'The argument "excludeCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "excludeCredentials" or "excludeCredential".',
+                E_USER_DEPRECATED
+            );
         }
-        if (null !== $authenticatorSelection) {
-            @trigger_error('The argument "authenticatorSelection" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorSelection".', E_USER_DEPRECATED);
+        if ($authenticatorSelection !== null) {
+            @trigger_error(
+                'The argument "authenticatorSelection" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorSelection".',
+                E_USER_DEPRECATED
+            );
         }
-        if (null !== $attestation) {
-            @trigger_error('The argument "attestation" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAttestation".', E_USER_DEPRECATED);
+        if ($attestation !== null) {
+            @trigger_error(
+                'The argument "attestation" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAttestation".',
+                E_USER_DEPRECATED
+            );
         }
         parent::__construct($challenge, $timeout, $extensions);
         $this->rp = $rp;
@@ -84,7 +109,12 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
-    public static function create(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams): self
+    public static function create(
+        PublicKeyCredentialRpEntity $rp,
+        PublicKeyCredentialUserEntity $user,
+        string $challenge,
+        array $pubKeyCredParams
+    ): self
     {
         return new self($rp, $user, $challenge, $pubKeyCredParams);
     }
@@ -212,18 +242,30 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             }
         }
 
+        try {
+            $challenge = Base64UrlSafe::decode($json['challenge']);
+        } catch (Throwable $t) {
+            $challenge = Base64::decode($json['challenge']);
+        }
+
         return self
             ::create(
                 PublicKeyCredentialRpEntity::createFromArray($json['rp']),
                 PublicKeyCredentialUserEntity::createFromArray($json['user']),
-                Base64Url::decode($json['challenge']),
+                $challenge,
                 $pubKeyCredParams
             )
                 ->excludeCredentials($excludeCredentials)
-                ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']))
+                ->setAuthenticatorSelection(
+                    AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection'])
+                )
                 ->setAttestation($json['attestation'])
                 ->setTimeout($json['timeout'] ?? null)
-                ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+                ->setExtensions(
+                    isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
+                        $json['extensions']
+                    ) : new AuthenticationExtensionsClientInputs()
+                )
         ;
     }
 
@@ -237,23 +279,23 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             'pubKeyCredParams' => array_map(static function (PublicKeyCredentialParameters $object): array {
                 return $object->jsonSerialize();
             }, $this->pubKeyCredParams),
-            'challenge' => Base64Url::encode($this->challenge),
+            'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
             'attestation' => $this->attestation,
             'user' => $this->user->jsonSerialize(),
             'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),
         ];
 
-        if (0 !== count($this->excludeCredentials)) {
+        if (count($this->excludeCredentials) !== 0) {
             $json['excludeCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->excludeCredentials);
         }
 
-        if (0 !== $this->extensions->count()) {
+        if ($this->extensions->count() !== 0) {
             $json['extensions'] = $this->extensions;
         }
 
-        if (null !== $this->timeout) {
+        if ($this->timeout !== null) {
             $json['timeout'] = $this->timeout;
         }
 

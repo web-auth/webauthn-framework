@@ -66,11 +66,7 @@ class RgbPaletteEntry implements JsonSerializable
             Assertion::integer($data[$key], sprintf('The key "%s" is invalid', $key));
         }
 
-        return new self(
-            $data['r'],
-            $data['g'],
-            $data['b']
-        );
+        return new self($data['r'], $data['g'], $data['b']);
     }
 
     public function jsonSerialize(): array

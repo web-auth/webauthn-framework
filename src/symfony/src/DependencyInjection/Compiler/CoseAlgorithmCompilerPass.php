@@ -26,7 +26,7 @@ final class CoseAlgorithmCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition('webauthn.cose.algorithm.manager')) {
+        if (! $container->hasDefinition('webauthn.cose.algorithm.manager')) {
             return;
         }
 

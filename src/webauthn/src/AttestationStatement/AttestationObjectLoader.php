@@ -14,12 +14,14 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use const E_USER_DEPRECATED;
 use function ord;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
@@ -35,6 +37,7 @@ use Webauthn\StringStream;
 class AttestationObjectLoader
 {
     private const FLAG_AT = 0b01000000;
+
     private const FLAG_ED = 0b10000000;
 
     /**
@@ -52,13 +55,23 @@ class AttestationObjectLoader
      */
     private $logger;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
+    public function __construct(
+        AttestationStatementSupportManager $attestationStatementSupportManager,
+        ?MetadataStatementRepository $metadataStatementRepository = null,
+        ?LoggerInterface $logger = null
+    )
     {
-        if (null !== $metadataStatementRepository) {
-            @trigger_error('The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.', E_USER_DEPRECATED);
+        if ($metadataStatementRepository !== null) {
+            @trigger_error(
+                'The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.',
+                E_USER_DEPRECATED
+            );
         }
-        if (null !== $logger) {
-            @trigger_error('The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.', E_USER_DEPRECATED);
+        if ($logger !== null) {
+            @trigger_error(
+                'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.',
+                E_USER_DEPRECATED
+            );
         }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->attestationStatementSupportManager = $attestationStatementSupportManager;
@@ -73,8 +86,14 @@ class AttestationObjectLoader
     public function load(string $data): AttestationObject
     {
         try {
-            $this->logger->info('Trying to load the data', ['data' => $data]);
-            $decodedData = Base64Url::decode($data);
+            $this->logger->info('Trying to load the data', [
+                'data' => $data,
+            ]);
+            try {
+                $decodedData = Base64UrlSafe::decode($data);
+            } catch (Throwable $t) {
+                $decodedData = Base64::decode($data);
+            }
             $stream = new StringStream($decodedData);
             $parsed = $this->decoder->decode($stream);
 
@@ -91,7 +110,9 @@ class AttestationObjectLoader
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);
             $attestationStatement = $attestationStatementSupport->load($attestationObject);
             $this->logger->info('Attestation Statement loaded');
-            $this->logger->debug('Attestation Statement loaded', ['attestationStatement' => $attestationStatement]);
+            $this->logger->debug('Attestation Statement loaded', [
+                'attestationStatement' => $attestationStatement,
+            ]);
 
             $authDataStream = new StringStream($authData);
             $rp_id_hash = $authDataStream->read(32);
@@ -108,10 +129,20 @@ class AttestationObjectLoader
                 $credentialLength = unpack('n', $credentialLength)[1];
                 $credentialId = $authDataStream->read($credentialLength);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
-                Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');
-                $attestedCredentialData = new AttestedCredentialData($aaguid, $credentialId, (string) $credentialPublicKey);
+                Assertion::isInstanceOf(
+                    $credentialPublicKey,
+                    MapObject::class,
+                    'The data does not contain a valid credential public key.'
+                );
+                $attestedCredentialData = new AttestedCredentialData(
+                    $aaguid,
+                    $credentialId,
+                    (string) $credentialPublicKey
+                );
                 $this->logger->info('Attested Credential Data loaded');
-                $this->logger->debug('Attested Credential Data loaded', ['at' => $attestedCredentialData]);
+                $this->logger->debug('Attested Credential Data loaded', [
+                    'at' => $attestedCredentialData,
+                ]);
             }
 
             $extension = null;
@@ -120,15 +151,26 @@ class AttestationObjectLoader
                 $extension = $this->decoder->decode($authDataStream);
                 $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 $this->logger->info('Extension Data loaded');
-                $this->logger->debug('Extension Data loaded', ['ed' => $extension]);
+                $this->logger->debug('Extension Data loaded', [
+                    'ed' => $extension,
+                ]);
             }
             Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
             $authDataStream->close();
 
-            $authenticatorData = new AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
+            $authenticatorData = new AuthenticatorData(
+                $authData,
+                $rp_id_hash,
+                $flags,
+                $signCount,
+                $attestedCredentialData,
+                $extension
+            );
             $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData);
             $this->logger->info('Attestation Object loaded');
-            $this->logger->debug('Attestation Object', ['ed' => $attestationObject]);
+            $this->logger->debug('Attestation Object', [
+                'ed' => $attestationObject,
+            ]);
 
             return $attestationObject;
         } catch (Throwable $throwable) {

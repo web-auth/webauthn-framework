@@ -14,18 +14,23 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use function count;
 use JsonSerializable;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use function Safe\json_decode;
+use Throwable;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
     public const CREDENTIAL_TYPE_PUBLIC_KEY = 'public-key';
 
     public const AUTHENTICATOR_TRANSPORT_USB = 'usb';
+
     public const AUTHENTICATOR_TRANSPORT_NFC = 'nfc';
+
     public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
+
     public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
     /**
@@ -87,11 +92,13 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
 
-        return new self(
-            $json['type'],
-            Base64Url::decode($json['id']),
-            $json['transports'] ?? []
-        );
+        try {
+            $id = Base64UrlSafe::decode($json['id']);
+        } catch (Throwable $t) {
+            $id = Base64::decode($json['id']);
+        }
+
+        return new self($json['type'], $id, $json['transports'] ?? []);
     }
 
     /**
@@ -101,9 +108,9 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     {
         $json = [
             'type' => $this->type,
-            'id' => Base64Url::encode($this->id),
+            'id' => Base64UrlSafe::encodeUnpadded($this->id),
         ];
-        if (0 !== count($this->transports)) {
+        if (count($this->transports) !== 0) {
             $json['transports'] = $this->transports;
         }
 

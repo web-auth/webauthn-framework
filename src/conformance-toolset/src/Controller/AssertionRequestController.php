@@ -61,24 +61,38 @@ final class AssertionRequestController
      * @var PublicKeyCredentialUserEntityRepository
      */
     private $userEntityRepository;
+
     /**
      * @var PublicKeyCredentialSourceRepository
      */
     private $credentialSourceRepository;
+
     /**
      * @var string
      */
     private $sessionParameterName;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var CacheItemPoolInterface
      */
     private $cacheItemPool;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
+        string $profile,
+        string $sessionParameterName,
+        LoggerInterface $logger,
+        CacheItemPoolInterface $cacheItemPool
+    )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -103,7 +117,7 @@ final class AssertionRequestController
                 $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
             }
             $userEntity = $this->getUserEntity($creationOptionsRequest);
-            $allowedCredentials = null === $userEntity ? [] : $this->getCredentials($userEntity);
+            $allowedCredentials = $userEntity === null ? [] : $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
                 $allowedCredentials,
@@ -111,18 +125,27 @@ final class AssertionRequestController
                 $extensions
             );
             $data = array_merge(
-                ['status' => 'ok', 'errorMessage' => ''],
+                [
+                    'status' => 'ok',
+                    'errorMessage' => '',
+                ],
                 $publicKeyCredentialRequestOptions->jsonSerialize()
             );
             $item = $this->cacheItemPool->getItem($this->sessionParameterName);
-            $item->set(['options' => $publicKeyCredentialRequestOptions, 'userEntity' => $userEntity]);
+            $item->set([
+                'options' => $publicKeyCredentialRequestOptions,
+                'userEntity' => $userEntity,
+            ]);
             $this->cacheItemPool->save($item);
 
             return new JsonResponse($data);
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
-            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
+            return new JsonResponse([
+                'status' => 'failed',
+                'errorMessage' => $throwable->getMessage(),
+            ], 400);
         }
     }
 
@@ -138,10 +161,12 @@ final class AssertionRequestController
         }, $credentialSources);
     }
 
-    private function getUserEntity(ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest): ?PublicKeyCredentialUserEntity
+    private function getUserEntity(
+        ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest
+    ): ?PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
-        if (null === $username) {
+        if ($username === null) {
             return null;
         }
         $userEntity = $this->userEntityRepository->findOneByUsername($username);
@@ -150,20 +175,24 @@ final class AssertionRequestController
         return $userEntity;
     }
 
-    private function getServerPublicKeyCredentialRequestOptionsRequest(string $content): ServerPublicKeyCredentialRequestOptionsRequest
+    private function getServerPublicKeyCredentialRequestOptionsRequest(
+        string $content
+    ): ServerPublicKeyCredentialRequestOptionsRequest
     {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialRequestOptionsRequest::class,
             'json',
-            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+            [
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            ]
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }

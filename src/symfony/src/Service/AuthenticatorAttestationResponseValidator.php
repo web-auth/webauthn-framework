@@ -36,16 +36,34 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
      */
     private $eventDispatcher;
 
-    public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, EventDispatcherInterface $eventDispatcher, ?MetadataStatementRepository $metadataStatementRepository = null, ?LoggerInterface $logger = null)
+    public function __construct(
+        AttestationStatementSupportManager $attestationStatementSupportManager,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
+        TokenBindingHandler $tokenBindingHandler,
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        EventDispatcherInterface $eventDispatcher,
+        ?MetadataStatementRepository $metadataStatementRepository = null,
+        ?LoggerInterface $logger = null
+    )
     {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $metadataStatementRepository, $logger);
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function check(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, array $securedRelyingPartyId = []): PublicKeyCredentialSource
+    public function check(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        array $securedRelyingPartyId = [
+    ]): PublicKeyCredentialSource
     {
         try {
-            $result = parent::check($authenticatorAttestationResponse, $publicKeyCredentialCreationOptions, $request, $securedRelyingPartyId);
+            $result = parent::check(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $securedRelyingPartyId
+            );
             $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationSucceededEvent(
                 $authenticatorAttestationResponse,
                 $publicKeyCredentialCreationOptions,

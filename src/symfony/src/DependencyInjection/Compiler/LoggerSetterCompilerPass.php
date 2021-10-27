@@ -28,7 +28,7 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias('webauthn.logger')) {
+        if (! $container->hasAlias('webauthn.logger')) {
             return;
         }
 
@@ -40,7 +40,7 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
 
     private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
     {
-        if (!$container->hasDefinition($service)) {
+        if (! $container->hasDefinition($service)) {
             return;
         }
 

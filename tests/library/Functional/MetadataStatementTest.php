@@ -18,9 +18,6 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
- * @group functional
- * @group Fido2
- *
  * @internal
  */
 final class MetadataStatementTest extends AbstractTestCase
@@ -40,12 +37,12 @@ final class MetadataStatementTest extends AbstractTestCase
         $pkOptions = PublicKeyCredentialCreationOptions::createFromString($options);
 
         //When
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load($response);
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
-            $publicKeyCredential->getResponse(),
-            $pkOptions,
-            $request
-        );
+        $publicKeyCredential = $this->getPublicKeyCredentialLoader()
+            ->load($response)
+        ;
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+            ->check($publicKeyCredential->getResponse(), $pkOptions, $request)
+        ;
     }
 
     /**

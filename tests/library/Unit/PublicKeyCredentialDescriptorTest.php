@@ -17,14 +17,9 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\PublicKeyCredentialDescriptor
- *
  * @internal
  */
-class PublicKeyCredentialDescriptorTest extends TestCase
+final class PublicKeyCredentialDescriptorTest extends TestCase
 {
     /**
      * @test
@@ -33,12 +28,14 @@ class PublicKeyCredentialDescriptorTest extends TestCase
     {
         $descriptor = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
 
-        static::assertEquals('type', $descriptor->getType());
-        static::assertEquals('id', $descriptor->getId());
-        static::assertEquals(['transport'], $descriptor->getTransports());
-        static::assertEquals('{"type":"type","id":"aWQ","transports":["transport"]}', json_encode($descriptor));
+        static::assertSame('type', $descriptor->getType());
+        static::assertSame('id', $descriptor->getId());
+        static::assertSame(['transport'], $descriptor->getTransports());
+        static::assertSame('{"type":"type","id":"aWQ","transports":["transport"]}', json_encode($descriptor));
 
-        $created = PublicKeyCredentialDescriptor::createFromString('{"type":"type","id":"aWQ=","transports":["transport"]}');
-        static::assertEquals($descriptor, $created);
+        $created = PublicKeyCredentialDescriptor::createFromString(
+            '{"type":"type","id":"aWQ=","transports":["transport"]}'
+        );
+        static::assertSame($descriptor, $created);
     }
 }

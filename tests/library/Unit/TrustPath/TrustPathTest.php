@@ -20,12 +20,9 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class TrustPathTest extends TestCase
+final class TrustPathTest extends TestCase
 {
     /**
      * @test
@@ -36,7 +33,7 @@ class TrustPathTest extends TestCase
     {
         $tp = new CertificateTrustPath(['cert#1']);
 
-        static::assertEquals(['cert#1'], $tp->getCertificates());
+        static::assertSame(['cert#1'], $tp->getCertificates());
     }
 
     /**
@@ -48,7 +45,7 @@ class TrustPathTest extends TestCase
     {
         $tp = new EcdaaKeyIdTrustPath('id');
 
-        static::assertEquals('id', $tp->getEcdaaKeyId());
+        static::assertSame('id', $tp->getEcdaaKeyId());
     }
 
     /**
@@ -87,7 +84,9 @@ class TrustPathTest extends TestCase
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported');
+        $this->expectExceptionMessage(
+            'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
+        );
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);
@@ -106,7 +105,7 @@ class TrustPathTest extends TestCase
         ]);
 
         static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertEquals('key_id', $loadedTrustPath->getEcdaaKeyId());
+        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
     }
 
     /**
@@ -121,6 +120,6 @@ class TrustPathTest extends TestCase
         $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
 
         static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertEquals('key_id', $loadedTrustPath->getEcdaaKeyId());
+        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
     }
 }

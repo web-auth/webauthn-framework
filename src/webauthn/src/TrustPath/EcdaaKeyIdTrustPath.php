@@ -50,6 +50,6 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     {
         Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
 
-        return new EcdaaKeyIdTrustPath($data['ecdaaKeyId']);
+        return new self($data['ecdaaKeyId']);
     }
 }

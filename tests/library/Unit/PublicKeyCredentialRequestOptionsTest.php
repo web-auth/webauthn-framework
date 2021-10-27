@@ -20,14 +20,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\PublicKeyCredentialRequestOptions
- *
  * @internal
  */
-class PublicKeyCredentialRequestOptionsTest extends TestCase
+final class PublicKeyCredentialRequestOptionsTest extends TestCase
 {
     /**
      * @test
@@ -48,21 +43,32 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
                 ->setExtensions($extensions)
         ;
 
-        static::assertEquals('challenge', $publicKeyCredentialRequestOptions->getChallenge());
-        static::assertEquals(1000, $publicKeyCredentialRequestOptions->getTimeout());
-        static::assertEquals('rp_id', $publicKeyCredentialRequestOptions->getRpId());
-        static::assertEquals([$credential], $publicKeyCredentialRequestOptions->getAllowCredentials());
-        static::assertEquals('preferred', $publicKeyCredentialRequestOptions->getUserVerification());
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $publicKeyCredentialRequestOptions->getExtensions());
-        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($publicKeyCredentialRequestOptions));
+        static::assertSame('challenge', $publicKeyCredentialRequestOptions->getChallenge());
+        static::assertSame(1000, $publicKeyCredentialRequestOptions->getTimeout());
+        static::assertSame('rp_id', $publicKeyCredentialRequestOptions->getRpId());
+        static::assertSame([$credential], $publicKeyCredentialRequestOptions->getAllowCredentials());
+        static::assertSame('preferred', $publicKeyCredentialRequestOptions->getUserVerification());
+        static::assertInstanceOf(
+            AuthenticationExtensionsClientInputs::class,
+            $publicKeyCredentialRequestOptions->getExtensions()
+        );
+        static::assertSame(
+            '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}',
+            json_encode($publicKeyCredentialRequestOptions)
+        );
 
-        $data = PublicKeyCredentialRequestOptions::createFromString('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}');
-        static::assertEquals('challenge', $data->getChallenge());
-        static::assertEquals(1000, $data->getTimeout());
-        static::assertEquals('rp_id', $data->getRpId());
-        static::assertEquals([$credential], $data->getAllowCredentials());
-        static::assertEquals('preferred', $data->getUserVerification());
+        $data = PublicKeyCredentialRequestOptions::createFromString(
+            '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}'
+        );
+        static::assertSame('challenge', $data->getChallenge());
+        static::assertSame(1000, $data->getTimeout());
+        static::assertSame('rp_id', $data->getRpId());
+        static::assertSame([$credential], $data->getAllowCredentials());
+        static::assertSame('preferred', $data->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
-        static::assertEquals('{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}', json_encode($data));
+        static::assertSame(
+            '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}',
+            json_encode($data)
+        );
     }
 }

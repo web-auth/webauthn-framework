@@ -61,12 +61,26 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         $this->metadataStatements[] = new SingleMetadata($data, $isBare64Encoded);
     }
 
-    public function addDistantSingleStatement(string $uri, bool $isBare64Encoded = false, array $additionalHeaders = []): void
+    public function addDistantSingleStatement(
+        string $uri,
+        bool $isBare64Encoded = false,
+        array $additionalHeaders = [
+    ]): void
     {
-        $this->metadataStatements[] = new DistantSingleMetadata($uri, $isBare64Encoded, $this->httpClient, $this->requestFactory, $additionalHeaders);
+        $this->metadataStatements[] = new DistantSingleMetadata(
+            $uri,
+            $isBare64Encoded,
+            $this->httpClient,
+            $this->requestFactory,
+            $additionalHeaders
+        );
     }
 
-    public function addService(string $url, array $additionalQueryStringParameters = [], array $additionalHeaders = []): void
+    public function addService(
+        string $url,
+        array $additionalQueryStringParameters = [],
+        array $additionalHeaders = [
+    ]): void
     {
         $service = new MetadataService($url, $this->httpClient, $this->requestFactory);
         $service
@@ -79,7 +93,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
 
     public function addStatusReport(string $aaguid, StatusReport $statusReport): void
     {
-        if (!isset($this->statusReports[$aaguid])) {
+        if (! isset($this->statusReports[$aaguid])) {
             $this->statusReports[$aaguid] = [];
         }
         $this->statusReports[$aaguid][] = $statusReport;

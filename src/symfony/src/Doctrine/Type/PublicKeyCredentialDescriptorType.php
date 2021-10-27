@@ -25,7 +25,7 @@ final class PublicKeyCredentialDescriptorType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
@@ -37,7 +37,7 @@ final class PublicKeyCredentialDescriptorType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?PublicKeyCredentialDescriptor
     {
-        if (null === $value || $value instanceof PublicKeyCredentialDescriptor) {
+        if ($value === null || $value instanceof PublicKeyCredentialDescriptor) {
             return $value;
         }
 

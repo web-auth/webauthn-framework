@@ -43,12 +43,14 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 return static function (ContainerConfigurator $container): void {
-    $container->services()->set(WebauthnProvider::class)
+    $container->services()
+        ->set(WebauthnProvider::class)
         ->private()
         ->arg(0, ref(UserCheckerInterface::class))
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn')
+    $container->services()
+        ->set('security.authentication.listener.webauthn')
         ->class(WebauthnListener::class)
         ->abstract()
         ->private()
@@ -74,24 +76,31 @@ return static function (ContainerConfigurator $container): void {
             ref(LoggerInterface::class)->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
         ])
-        ->tag('monolog.logger', ['channel' => 'security'])
+        ->tag('monolog.logger', [
+            'channel' => 'security',
+        ])
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn')
+    $container->services()
+        ->set('security.authentication.listener.webauthn')
         ->class(WebauthnListener::class)
         ->abstract()
         ->private()
         ->args([
             ref(HttpUtils::class),
-            ref('webauthn.logger')->nullOnInvalid(),
+            ref('webauthn.logger')
+                ->nullOnInvalid(),
             null, // Request Listener
             null, // Creation Listener
             [], // Options
         ])
-        ->tag('monolog.logger', ['channel' => 'security'])
+        ->tag('monolog.logger', [
+            'channel' => 'security',
+        ])
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn.request')
+    $container->services()
+        ->set('security.authentication.listener.webauthn.request')
         ->class(RequestListener::class)
         ->abstract()
         ->private()
@@ -113,14 +122,18 @@ return static function (ContainerConfigurator $container): void {
             null, // Authentication failure handler
             null, // Options handler
             null, // Options Storage
-            ref('webauthn.logger')->nullOnInvalid(),
+            ref('webauthn.logger')
+                ->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
             [], // Secured Relying Party IDs
         ])
-        ->tag('monolog.logger', ['channel' => 'security'])
+        ->tag('monolog.logger', [
+            'channel' => 'security',
+        ])
     ;
 
-    $container->services()->set('security.authentication.listener.webauthn.creation')
+    $container->services()
+        ->set('security.authentication.listener.webauthn.creation')
         ->class(CreationListener::class)
         ->abstract()
         ->private()
@@ -142,14 +155,18 @@ return static function (ContainerConfigurator $container): void {
             null, // Authentication failure handler
             null, // Options handler
             null, // Options Storage
-            ref('webauthn.logger')->nullOnInvalid(),
+            ref('webauthn.logger')
+                ->nullOnInvalid(),
             ref(EventDispatcherInterface::class)->nullOnInvalid(),
             [], // Secured Relying Party IDs
         ])
-        ->tag('monolog.logger', ['channel' => 'security'])
+        ->tag('monolog.logger', [
+            'channel' => 'security',
+        ])
     ;
 
-    $container->services()->set(WebauthnEntryPoint::class)
+    $container->services()
+        ->set(WebauthnEntryPoint::class)
         ->abstract()
         ->private()
         ->args([
@@ -157,33 +174,40 @@ return static function (ContainerConfigurator $container): void {
         ])
     ;
 
-    $container->services()->set(IsUserPresentVoter::class)
+    $container->services()
+        ->set(IsUserPresentVoter::class)
         ->private()
         ->tag('security.voter')
     ;
 
-    $container->services()->set(IsUserVerifiedVoter::class)
+    $container->services()
+        ->set(IsUserVerifiedVoter::class)
         ->private()
         ->tag('security.voter')
     ;
 
-    $container->services()->set(DefaultSuccessHandler::class)
+    $container->services()
+        ->set(DefaultSuccessHandler::class)
         ->private()
     ;
 
-    $container->services()->set(DefaultFailureHandler::class)
+    $container->services()
+        ->set(DefaultFailureHandler::class)
         ->private()
     ;
 
-    $container->services()->set(SessionStorage::class)
+    $container->services()
+        ->set(SessionStorage::class)
         ->private()
     ;
 
-    $container->services()->set(DefaultCreationOptionsHandler::class)
+    $container->services()
+        ->set(DefaultCreationOptionsHandler::class)
         ->private()
     ;
 
-    $container->services()->set(DefaultRequestOptionsHandler::class)
+    $container->services()
+        ->set(DefaultRequestOptionsHandler::class)
         ->private()
     ;
 };

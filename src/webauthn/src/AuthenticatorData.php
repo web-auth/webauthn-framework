@@ -22,11 +22,17 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 class AuthenticatorData
 {
     private const FLAG_UP = 0b00000001;
+
     private const FLAG_RFU1 = 0b00000010;
+
     private const FLAG_UV = 0b00000100;
+
     private const FLAG_RFU2 = 0b00111000;
+
     private const FLAG_AT = 0b01000000;
+
     private const FLAG_ED = 0b10000000;
+
     /**
      * @var string
      */
@@ -57,7 +63,14 @@ class AuthenticatorData
      */
     protected $extensions;
 
-    public function __construct(string $authData, string $rpIdHash, string $flags, int $signCount, ?AttestedCredentialData $attestedCredentialData, ?AuthenticationExtensionsClientOutputs $extensions)
+    public function __construct(
+        string $authData,
+        string $rpIdHash,
+        string $flags,
+        int $signCount,
+        ?AttestedCredentialData $attestedCredentialData,
+        ?AuthenticationExtensionsClientOutputs $extensions
+    )
     {
         $this->rpIdHash = $rpIdHash;
         $this->flags = $flags;
@@ -119,6 +132,6 @@ class AuthenticatorData
 
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {
-        return null !== $this->extensions && $this->hasExtensions() ? $this->extensions : null;
+        return $this->extensions !== null && $this->hasExtensions() ? $this->extensions : null;
     }
 }

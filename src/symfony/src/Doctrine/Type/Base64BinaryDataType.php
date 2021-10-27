@@ -24,7 +24,7 @@ final class Base64BinaryDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
@@ -36,7 +36,7 @@ final class Base64BinaryDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 

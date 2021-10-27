@@ -20,14 +20,9 @@ use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestationStatement\AttestationObject
- *
  * @internal
  */
-class AttestationObjectTest extends TestCase
+final class AttestationObjectTest extends TestCase
 {
     /**
      * @test
@@ -37,13 +32,9 @@ class AttestationObjectTest extends TestCase
         $attestationStatement = new AttestationStatement('', [], '', new EmptyTrustPath());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
-        $object = new AttestationObject(
-            'rawAttestationObject',
-            $attestationStatement,
-            $authenticatorData
-        );
+        $object = new AttestationObject('rawAttestationObject', $attestationStatement, $authenticatorData);
 
-        static::assertEquals('rawAttestationObject', $object->getRawAttestationObject());
+        static::assertSame('rawAttestationObject', $object->getRawAttestationObject());
         static::assertInstanceOf(AttestationStatement::class, $object->getAttStmt());
         static::assertInstanceOf(AuthenticatorData::class, $object->getAuthData());
     }

@@ -15,6 +15,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use function array_key_exists;
 use Assert\Assertion;
+use const E_USER_DEPRECATED;
 use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,13 +33,19 @@ final class CustomSessionStorage implements OptionsStorage
 
     public function store(Request $request, StoredData $data, ?Response $response = null): void
     {
-        if (null === $response) {
-            @trigger_error('Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.', E_USER_DEPRECATED);
+        if ($response === null) {
+            @trigger_error(
+                'Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.',
+                E_USER_DEPRECATED
+            );
         }
         $session = $request->getSession();
         Assertion::notNull($session, 'This authentication method requires a session.');
 
-        $session->set(self::SESSION_PARAMETER, ['options' => $data->getPublicKeyCredentialOptions(), 'userEntity' => $data->getPublicKeyCredentialUserEntity()]);
+        $session->set(self::SESSION_PARAMETER, [
+            'options' => $data->getPublicKeyCredentialOptions(),
+            'userEntity' => $data->getPublicKeyCredentialUserEntity(),
+        ]);
     }
 
     public function get(Request $request): StoredData
@@ -47,14 +54,17 @@ final class CustomSessionStorage implements OptionsStorage
         Assertion::notNull($session, 'This authentication method requires a session.');
 
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
-        if (!is_array($sessionValue) || !array_key_exists('options', $sessionValue) || !array_key_exists('userEntity', $sessionValue)) {
+        if (! is_array($sessionValue) || ! array_key_exists('options', $sessionValue) || ! array_key_exists(
+            'userEntity',
+            $sessionValue
+        )) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
 
-        if (!$publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
+        if (! $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
         }
 

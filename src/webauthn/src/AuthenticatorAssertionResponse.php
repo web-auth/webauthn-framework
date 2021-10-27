@@ -35,7 +35,12 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
      */
     private $userHandle;
 
-    public function __construct(CollectedClientData $clientDataJSON, AuthenticatorData $authenticatorData, string $signature, ?string $userHandle)
+    public function __construct(
+        CollectedClientData $clientDataJSON,
+        AuthenticatorData $authenticatorData,
+        string $signature,
+        ?string $userHandle
+    )
     {
         parent::__construct($clientDataJSON);
         $this->authenticatorData = $authenticatorData;
@@ -55,7 +60,7 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
 
     public function getUserHandle(): ?string
     {
-        if (null === $this->userHandle || '' === $this->userHandle) {
+        if ($this->userHandle === null || $this->userHandle === '') {
             return $this->userHandle;
         }
 

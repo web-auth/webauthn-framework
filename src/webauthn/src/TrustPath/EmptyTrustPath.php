@@ -30,6 +30,6 @@ final class EmptyTrustPath implements TrustPath
      */
     public static function createFromArray(array $data): TrustPath
     {
-        return new EmptyTrustPath();
+        return new self();
     }
 }

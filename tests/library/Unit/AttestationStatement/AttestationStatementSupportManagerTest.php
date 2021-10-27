@@ -18,14 +18,9 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestationStatement\AttestationStatementSupportManager
- *
  * @internal
  */
-class AttestationStatementSupportManagerTest extends TestCase
+final class AttestationStatementSupportManagerTest extends TestCase
 {
     /**
      * @test

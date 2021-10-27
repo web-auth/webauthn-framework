@@ -35,8 +35,12 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         return AttestationStatement::createNone($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());
     }
 
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
-        return 0 === count($attestationStatement->getAttStmt());
+        return count($attestationStatement->getAttStmt()) === 0;
     }
 }

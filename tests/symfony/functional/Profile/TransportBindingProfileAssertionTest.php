@@ -20,27 +20,29 @@ use Symfony\Component\HttpFoundation\Request;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 /**
- * @group functional
- *
  * @internal
  */
-class TransportBindingProfileAssertionTest extends WebTestCase
+final class TransportBindingProfileAssertionTest extends WebTestCase
 {
     /**
      * @test
      */
     public function aRequestWithoutUsernameCannotBeProcessed(): void
     {
-        $content = [
-        ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $content = [];
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('ok', $data['status']);
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -51,16 +53,21 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         $content = [
             'username' => 123,
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'test.com'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('failed', $data['status']);
-        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        static::assertSame('failed', $data['status']);
+        static::assertSame(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
+        static::assertSame('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -72,17 +79,25 @@ class TransportBindingProfileAssertionTest extends WebTestCase
             'username' => 'admin',
             'userVerification' => PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
         ];
-        $client = self::createClient([], ['HTTPS' => 'on']);
-        $client->request(Request::METHOD_POST, '/assertion/options', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'localhost'], json_encode($content));
+        $client = self::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/assertion/options', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'localhost',
+        ], json_encode($content));
         $response = $client->getResponse();
         $data = json_decode($response->getContent(), true);
         static::assertArrayHasKey('status', $data);
-        static::assertEquals('ok', $data['status']);
-        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertSame('', $data['errorMessage']);
 
         static::assertArrayHasKey('userVerification', $data);
-        static::assertEquals(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, $data['userVerification']);
+        static::assertSame(
+            PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+            $data['userVerification']
+        );
     }
 }

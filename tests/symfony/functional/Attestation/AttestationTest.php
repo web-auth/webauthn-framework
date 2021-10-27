@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use Cose\Algorithms;
-use function count;
 use InvalidArgumentException;
 use function Safe\base64_decode;
 use function Safe\hex2bin;
@@ -37,11 +36,9 @@ use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
- * @group functional
- *
  * @internal
  */
-class AttestationTest extends KernelTestCase
+final class AttestationTest extends KernelTestCase
 {
     use MockedRequestTrait;
 
@@ -56,23 +53,42 @@ class AttestationTest extends KernelTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 new PublicKeyCredentialRpEntity('My Application'),
-                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
-                base64_decode('9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==', true),
+                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
+                    64
+                ), 'Test PublicKeyCredentialUserEntity'),
+                base64_decode(
+                    '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
+                    true
+                ),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )
         ;
 
-        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load('{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}');
+        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load(
+            '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}'
+        );
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(base64_decode('mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK', true), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(
+            base64_decode(
+                'mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK',
+                true
+            ),
+            $descriptor->getId()
+        );
+        static::assertSame([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertEquals(AttestationStatement::TYPE_NONE, $response->getAttestationObject()->getAttStmt()->getType());
-        static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
+        static::assertSame(
+            AttestationStatement::TYPE_NONE,
+            $response->getAttestationObject()->getAttStmt()->getType()
+        );
+        static::assertInstanceOf(
+            EmptyTrustPath::class,
+            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+        );
 
         $request = $this->createRequestWithHost('localhost');
 
@@ -89,7 +105,9 @@ class AttestationTest extends KernelTestCase
     public function aFullCertificateChainShouldNotBeUsedForThisSelfAttestation(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid attestation statement. The attestation type is not allowed for this authenticator');
+        $this->expectExceptionMessage(
+            'Invalid attestation statement. The attestation type is not allowed for this authenticator'
+        );
 
         self::bootKernel();
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"h8lQZpu-S0rTLOOeAr7BeWoPPTkhtqcEzlHizEyzVeQ","attestation":"direct","user":{"name":"fwOcfew16ujF_p7Hl5eh","id":"ZTc4N2YzZmItMDgwZS00ZDNjLTlhZDItYmE3OTAwYTVlNTg1","displayName":"Gretchen Mo"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
@@ -99,14 +117,23 @@ class AttestationTest extends KernelTestCase
         $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load($result);
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(hex2bin('89c50e5513d3f283bd590869684f74cfa8e528269cf09767733a47eadebde094'), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(
+            hex2bin('89c50e5513d3f283bd590869684f74cfa8e528269cf09767733a47eadebde094'),
+            $descriptor->getId()
+        );
+        static::assertSame([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertEquals(AttestationStatement::TYPE_BASIC, $response->getAttestationObject()->getAttStmt()->getType());
-        static::assertInstanceOf(CertificateTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
+        static::assertSame(
+            AttestationStatement::TYPE_BASIC,
+            $response->getAttestationObject()->getAttStmt()->getType()
+        );
+        static::assertInstanceOf(
+            CertificateTrustPath::class,
+            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+        );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
@@ -127,20 +154,29 @@ class AttestationTest extends KernelTestCase
         self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
 
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
-        $result = '{"id":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","rawId":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZydjc2lnWECRl1RciDxSF7hkhJbqVJeryUIFrX7r6QQMQq8bIP4wYRA6f96iOO4wiOo34l65kZ5v1erxSmIaH56VySUSMusEaGF1dGhEYXRhWIGWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAAykd_q15WeRHWtJpsNSCvgiQAgWT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YOkAQEDJyAGIVgg4smTlXUJnAP_RqNWNv2Eqkh8I7ZDS0IuSgotbPygd9k","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVoTlZ0M1Q4VjEyRkp2U0FjNTBuaEtuWi1NRWMta2Y4NHhlcERjR3lOMWciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
+        $result = '{"id":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","rawId":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS/SpmMpv2sG2YM","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZydjc2lnWECRl1RciDxSF7hkhJbqVJeryUIFrX7r6QQMQq8bIP4wYRA6f96iOO4wiOo34l65kZ5v1erxSmIaH56VySUSMusEaGF1dGhEYXRhWIGWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAAykd_q15WeRHWtJpsNSCvgiQAgWT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YOkAQEDJyAGIVgg4smTlXUJnAP_RqNWNv2Eqkh8I7ZDS0IuSgotbPygd9k","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVoTlZ0M1Q4VjEyRkp2U0FjNTBuaEtuWi1NRWMta2Y4NHhlcERjR3lOMWciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
         $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load($result);
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(hex2bin('593edaf7d335cc0dd750106f1305ea3f33f40b7ccda12fd2a66329bf6b06d983'), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(
+            hex2bin('593edaf7d335cc0dd750106f1305ea3f33f40b7ccda12fd2a66329bf6b06d983'),
+            $descriptor->getId()
+        );
+        static::assertSame([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertEquals(AttestationStatement::TYPE_SELF, $response->getAttestationObject()->getAttStmt()->getType());
-        static::assertInstanceOf(EmptyTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
+        static::assertSame(
+            AttestationStatement::TYPE_SELF,
+            $response->getAttestationObject()->getAttStmt()->getType()
+        );
+        static::assertInstanceOf(
+            EmptyTrustPath::class,
+            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+        );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
@@ -167,14 +203,23 @@ class AttestationTest extends KernelTestCase
         $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load($result);
 
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
-        static::assertEquals(hex2bin('bb4572635d0ca7faf41e78c2471fae54bfeecb33002b7d342a6b459304157c9a'), $descriptor->getId());
-        static::assertEquals([], $descriptor->getTransports());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(
+            hex2bin('bb4572635d0ca7faf41e78c2471fae54bfeecb33002b7d342a6b459304157c9a'),
+            $descriptor->getId()
+        );
+        static::assertSame([], $descriptor->getTransports());
 
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertEquals(AttestationStatement::TYPE_BASIC, $response->getAttestationObject()->getAttStmt()->getType());
-        static::assertInstanceOf(CertificateTrustPath::class, $response->getAttestationObject()->getAttStmt()->getTrustPath());
+        static::assertSame(
+            AttestationStatement::TYPE_BASIC,
+            $response->getAttestationObject()->getAttStmt()->getType()
+        );
+        static::assertInstanceOf(
+            CertificateTrustPath::class,
+            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+        );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
 
@@ -199,12 +244,12 @@ class AttestationTest extends KernelTestCase
             new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity')
         );
 
-        static::assertEquals(32, mb_strlen($options->getChallenge(), '8bit'));
+        static::assertSame(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
-        static::assertEquals([], $options->getExcludeCredentials());
-        static::assertEquals(11, count($options->getPubKeyCredParams()));
-        static::assertEquals('none', $options->getAttestation());
-        static::assertEquals(60000, $options->getTimeout());
+        static::assertSame([], $options->getExcludeCredentials());
+        static::assertCount(11, $options->getPubKeyCredParams());
+        static::assertSame('none', $options->getAttestation());
+        static::assertSame(60000, $options->getTimeout());
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
         static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
         static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());

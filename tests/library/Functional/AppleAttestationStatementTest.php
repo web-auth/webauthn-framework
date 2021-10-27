@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Base64Url\Base64Url;
 use Cose\Algorithms;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Bridge\PhpUnit\ClockMock;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
@@ -29,16 +29,12 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
- * @group functional
- * @group Fido2
- *
  * @internal
  */
-class AppleAttestationStatementTest extends AbstractTestCase
+final class AppleAttestationStatementTest extends AbstractTestCase
 {
     /**
      * @test
-     * @group time-sensitive
      */
     public function anAppleAttestationCanBeVerified(): void
     {
@@ -48,14 +44,17 @@ class AppleAttestationStatementTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
                 new PublicKeyCredentialRpEntity('My Application'),
-                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
+                new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
+                    64
+                ), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )
                 ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
         ;
 
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()->load('{
+        $publicKeyCredential = $this->getPublicKeyCredentialLoader()
+            ->load('{
             "id": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
             "rawId": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
             "response": {
@@ -63,7 +62,8 @@ class AppleAttestationStatementTest extends AbstractTestCase
                 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiaDV4U3lJUk14MklRUHIxbVFrNkdEOThYU1FPQkhnTUhWcEpJa01WOU5rYyIsIm9yaWdpbiI6Imh0dHBzOi8vZGV2LmRvbnRuZWVkYS5wdyJ9"
             },
             "type": "public-key"
-        }');
+        }')
+        ;
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
@@ -71,33 +71,49 @@ class AppleAttestationStatementTest extends AbstractTestCase
 
         $request = $this->createRequestWithHost('dev.dontneeda.pw');
 
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)->check(
-            $publicKeyCredential->getResponse(),
-            $publicKeyCredentialCreationOptions,
-            $request
-        );
+        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $request)
+        ;
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 
-        static::assertEquals(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), Base64Url::decode($publicKeyCredential->getId()));
-        static::assertEquals(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredentialDescriptor->getId());
-        static::assertEquals(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredentialDescriptor->getType());
-        static::assertEquals(['usb'], $publicKeyCredentialDescriptor->getTransports());
+        static::assertSame(
+            base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true),
+            Base64UrlSafe::decode($publicKeyCredential->getId())
+        );
+        static::assertSame(
+            base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true),
+            $publicKeyCredentialDescriptor->getId()
+        );
+        static::assertSame(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            $publicKeyCredentialDescriptor->getType()
+        );
+        static::assertSame(['usb'], $publicKeyCredentialDescriptor->getTransports());
 
         /** @var AuthenticatorData $authenticatorData */
-        $authenticatorData = $publicKeyCredential->getResponse()->getAttestationObject()->getAuthData();
+        $authenticatorData = $publicKeyCredential->getResponse()
+            ->getAttestationObject()
+            ->getAuthData()
+        ;
 
         /** @var AttestationStatement $attestationStatement */
-        $attestationStatement = $publicKeyCredential->getResponse()->getAttestationObject()->getAttStmt();
-        static::assertEquals(AttestationStatement::TYPE_ANONCA, $attestationStatement->getType());
+        $attestationStatement = $publicKeyCredential->getResponse()
+            ->getAttestationObject()
+            ->getAttStmt()
+        ;
+        static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->getType());
 
-        static::assertEquals(hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'), $authenticatorData->getRpIdHash());
+        static::assertSame(
+            hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'),
+            $authenticatorData->getRpIdHash()
+        );
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse1());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertEquals(0, $authenticatorData->getSignCount());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
+        static::assertSame(0, $authenticatorData->getSignCount());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
 

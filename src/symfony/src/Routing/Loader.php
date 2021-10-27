@@ -34,13 +34,14 @@ class Loader extends SymfonyLoader
     public function add(string $pattern, ?string $host, string $name): void
     {
         $controllerId = sprintf('%s:__invoke', $name);
-        $defaults = ['_controller' => $controllerId];
+        $defaults = [
+            '_controller' => $controllerId,
+        ];
         $route = new Route($pattern, $defaults, [], [], $host, ['https'], [Request::METHOD_POST]);
         $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 
     /**
-     * @param mixed       $resource
      * @param string|null $type
      */
     public function load($resource, $type = null): RouteCollection
@@ -49,11 +50,10 @@ class Loader extends SymfonyLoader
     }
 
     /**
-     * @param mixed       $resource
      * @param string|null $type
      */
     public function supports($resource, $type = null): bool
     {
-        return 'webauthn' === $type;
+        return $type === 'webauthn';
     }
 }

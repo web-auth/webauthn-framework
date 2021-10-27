@@ -72,49 +72,75 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     public function addConfiguration(NodeDefinition $node): void
     {
-        /* @var ArrayNodeDefinition $node */
+        /** @var ArrayNodeDefinition $node */
         $node
             ->children()
-            ->scalarNode('user_provider')->defaultNull()->end()
-            ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
-            ->scalarNode('http_message_factory')->defaultValue('sensio_framework_extra.psr7.http_message_factory')->end()
-            ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
-            ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
+            ->scalarNode('user_provider')
+            ->defaultNull()
+            ->end()
+            ->scalarNode('options_storage')
+            ->defaultValue(SessionStorage::class)->end()
+            ->scalarNode('http_message_factory')
+            ->defaultValue('sensio_framework_extra.psr7.http_message_factory')
+            ->end()
+            ->scalarNode('success_handler')
+            ->defaultValue(DefaultSuccessHandler::class)->end()
+            ->scalarNode('failure_handler')
+            ->defaultValue(DefaultFailureHandler::class)->end()
             ->arrayNode('secured_rp_ids')
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
             ->useAttributeAsKey('name')
-            ->scalarPrototype()->end()
+            ->scalarPrototype()
+            ->end()
             ->end()
             ->arrayNode('authentication')
             ->canBeDisabled()
             ->children()
-            ->scalarNode('profile')->defaultValue('default')->end()
+            ->scalarNode('profile')
+            ->defaultValue('default')
+            ->end()
             ->arrayNode('routes')
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('host')->defaultNull()->end()
-            ->scalarNode('options_path')->defaultValue('/login/options')->end()
-            ->scalarNode('result_path')->defaultValue('/login')->end()
+            ->scalarNode('host')
+            ->defaultNull()
+            ->end()
+            ->scalarNode('options_path')
+            ->defaultValue('/login/options')
+            ->end()
+            ->scalarNode('result_path')
+            ->defaultValue('/login')
             ->end()
             ->end()
-            ->scalarNode('options_handler')->defaultValue(DefaultRequestOptionsHandler::class)->end()
+            ->end()
+            ->scalarNode('options_handler')
+            ->defaultValue(DefaultRequestOptionsHandler::class)->end()
             ->end()
             ->end()
             ->arrayNode('registration')
             ->canBeEnabled()
             ->children()
-            ->scalarNode('profile')->defaultValue('default')->end()
+            ->scalarNode('profile')
+            ->defaultValue('default')
+            ->end()
             ->arrayNode('routes')
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('host')->defaultNull()->end()
-            ->scalarNode('options_path')->defaultValue('/register/options')->end()
-            ->scalarNode('result_path')->defaultValue('/register')->end()
+            ->scalarNode('host')
+            ->defaultNull()
+            ->end()
+            ->scalarNode('options_path')
+            ->defaultValue('/register/options')
+            ->end()
+            ->scalarNode('result_path')
+            ->defaultValue('/register')
             ->end()
             ->end()
-            ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
+            ->end()
+            ->scalarNode('options_handler')
+            ->defaultValue(DefaultCreationOptionsHandler::class)->end()
             ->end()
             ->end()
             ->end()
@@ -123,7 +149,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
 
     private function createAuthProvider(ContainerBuilder $container, string $id, string $userProviderId): string
     {
-        $providerId = 'security.authentication.provider.webauthn.'.$id;
+        $providerId = 'security.authentication.provider.webauthn.' . $id;
         $container
             ->setDefinition($providerId, new ChildDefinition(WebauthnProvider::class))
             ->setArgument(1, new Reference($userProviderId))
@@ -149,7 +175,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $listener->replaceArgument(3, new Reference($creationListenerId));
         $listener->replaceArgument(4, $config);
 
-        $listenerId = $abstractListenerId.'.'.$id;
+        $listenerId = $abstractListenerId . '.' . $id;
         $container->setDefinition($listenerId, $listener);
 
         return $listenerId;
@@ -160,12 +186,26 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     private function createRequestControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
-        if (false === $config['authentication']['enabled']) {
+        if ($config['authentication']['enabled'] === false) {
             return;
         }
 
-        $this->createControllerAndRoute($container, 'request', 'options', $id, $config['authentication']['routes']['options_path'], $config['authentication']['routes']['host']);
-        $this->createControllerAndRoute($container, 'request', 'result', $id, $config['authentication']['routes']['result_path'], $config['authentication']['routes']['host']);
+        $this->createControllerAndRoute(
+            $container,
+            'request',
+            'options',
+            $id,
+            $config['authentication']['routes']['options_path'],
+            $config['authentication']['routes']['host']
+        );
+        $this->createControllerAndRoute(
+            $container,
+            'request',
+            'result',
+            $id,
+            $config['authentication']['routes']['result_path'],
+            $config['authentication']['routes']['host']
+        );
     }
 
     /**
@@ -184,7 +224,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $requestListener->replaceArgument(16, new Reference($config['options_storage']));
         $requestListener->replaceArgument(19, $config['secured_rp_ids']);
 
-        $requestListenerId = $abstractRequestListenerId.'.'.$id;
+        $requestListenerId = $abstractRequestListenerId . '.' . $id;
         $container->setDefinition($requestListenerId, $requestListener);
 
         return $requestListenerId;
@@ -195,12 +235,26 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     private function createCreationControllersAndRoutes(ContainerBuilder $container, string $id, array $config): void
     {
-        if (false === $config['registration']['enabled']) {
+        if ($config['registration']['enabled'] === false) {
             return;
         }
 
-        $this->createControllerAndRoute($container, 'creation', 'options', $id, $config['registration']['routes']['options_path'], $config['registration']['routes']['host']);
-        $this->createControllerAndRoute($container, 'creation', 'result', $id, $config['registration']['routes']['result_path'], $config['registration']['routes']['host']);
+        $this->createControllerAndRoute(
+            $container,
+            'creation',
+            'options',
+            $id,
+            $config['registration']['routes']['options_path'],
+            $config['registration']['routes']['host']
+        );
+        $this->createControllerAndRoute(
+            $container,
+            'creation',
+            'result',
+            $id,
+            $config['registration']['routes']['result_path'],
+            $config['registration']['routes']['host']
+        );
     }
 
     /**
@@ -219,7 +273,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         $creationListener->replaceArgument(16, new Reference($config['options_storage']));
         $creationListener->replaceArgument(19, $config['secured_rp_ids']);
 
-        $creationListenerId = $abstractCreationListenerId.'.'.$id;
+        $creationListenerId = $abstractCreationListenerId . '.' . $id;
         $container->setDefinition($creationListenerId, $creationListener);
 
         return $creationListenerId;
@@ -230,7 +284,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     private function createEntryPoint(ContainerBuilder $container, string $id, array $config): string
     {
-        $entryPointId = 'security.authentication.entrypoint.'.$id;
+        $entryPointId = 'security.authentication.entrypoint.' . $id;
         $entryPoint = new ChildDefinition(WebauthnEntryPoint::class);
         $entryPoint->replaceArgument(0, new Reference($config['failure_handler']));
 
@@ -239,11 +293,21 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         return $entryPointId;
     }
 
-    private function createControllerAndRoute(ContainerBuilder $container, string $name, string $operation, string $id, string $path, ?string $host): void
+    private function createControllerAndRoute(
+        ContainerBuilder $container,
+        string $name,
+        string $operation,
+        string $id,
+        string $path,
+        ?string $host
+    ): void
     {
         $controller = new Definition(DummyController::class);
         $controller->setFactory([new Reference(DummyControllerFactory::class), 'create']);
-        $controller->addTag(DynamicRouteCompilerPass::TAG, ['path' => $path, 'host' => $host]);
+        $controller->addTag(DynamicRouteCompilerPass::TAG, [
+            'path' => $path,
+            'host' => $host,
+        ]);
         $controller->addTag('controller.service_arguments');
 
         $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $name, $operation, $id);

@@ -76,7 +76,18 @@ final class AttestationResponseControllerFactory
      */
     private $publicKeyCredentialSourceRepository;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool, PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    public function __construct(
+        HttpMessageFactoryInterface $httpMessageFactory,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        LoggerInterface $logger,
+        CacheItemPoolInterface $cacheItemPool,
+        PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+    )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -90,7 +101,10 @@ final class AttestationResponseControllerFactory
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAttestationRequestController(string $profile, string $sessionParameterName): AttestationRequestController
+    public function createAttestationRequestController(
+        string $profile,
+        string $sessionParameterName
+    ): AttestationRequestController
     {
         return new AttestationRequestController(
             $this->serializer,

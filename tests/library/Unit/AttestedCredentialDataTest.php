@@ -13,19 +13,15 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AttestedCredentialData;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestedCredentialData
- *
  * @internal
  */
-class AttestedCredentialDataTest extends TestCase
+final class AttestedCredentialDataTest extends TestCase
 {
     /**
      * @test
@@ -33,17 +29,25 @@ class AttestedCredentialDataTest extends TestCase
      */
     public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
     {
-        $attestedCredentialData = new AttestedCredentialData(Uuid::fromString($uuid), 'credential_id', 'credential_public_key');
+        $attestedCredentialData = new AttestedCredentialData(Uuid::fromString(
+            $uuid
+        ), 'credential_id', 'credential_public_key');
 
-        static::assertEquals($uuid, $attestedCredentialData->getAaguid()->toString());
-        static::assertEquals($uuid, $attestedCredentialData->getAaguid()->toString());
-        static::assertEquals('credential_id', $attestedCredentialData->getCredentialId());
-        static::assertEquals('credential_public_key', $attestedCredentialData->getCredentialPublicKey());
-        static::assertEquals('{"aaguid":"'.$uuid.'","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES));
+        static::assertSame($uuid, $attestedCredentialData->getAaguid()->toString());
+        static::assertSame($uuid, $attestedCredentialData->getAaguid()->toString());
+        static::assertSame('credential_id', $attestedCredentialData->getCredentialId());
+        static::assertSame('credential_public_key', $attestedCredentialData->getCredentialPublicKey());
+        static::assertSame(
+            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
+            json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES)
+        );
 
-        $json = json_decode('{"aaguid":"'.$uuid.'","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}', true);
+        $json = json_decode(
+            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
+            true
+        );
         $created = AttestedCredentialData::createFromArray($json);
-        static::assertEquals($attestedCredentialData, $created);
+        static::assertSame($attestedCredentialData, $created);
     }
 
     public function dataAAGUID(): array

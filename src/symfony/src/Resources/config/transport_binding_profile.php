@@ -18,13 +18,11 @@ use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
 use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
-        ->bind(
-            HttpMessageFactoryInterface::class,
-            ref('webauthn.transport_binding_profile.http_message_factory')
-        )
+        ->bind(HttpMessageFactoryInterface::class, ref('webauthn.transport_binding_profile.http_message_factory'))
         ->autowire()
     ;
 

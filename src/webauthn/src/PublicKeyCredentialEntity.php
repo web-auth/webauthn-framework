@@ -51,7 +51,7 @@ abstract class PublicKeyCredentialEntity implements JsonSerializable
         $json = [
             'name' => $this->name,
         ];
-        if (null !== $this->icon) {
+        if ($this->icon !== null) {
             $json['icon'] = $this->icon;
         }
 

@@ -20,14 +20,9 @@ use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestationStatement\NoneAttestationStatementSupport
- *
  * @internal
  */
-class NoneAttestationStatementSupportTest extends TestCase
+final class NoneAttestationStatementSupportTest extends TestCase
 {
     /**
      * @test
@@ -39,7 +34,7 @@ class NoneAttestationStatementSupportTest extends TestCase
         $attestationStatement = new AttestationStatement('none', [], '', new EmptyTrustPath());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
-        static::assertEquals('none', $support->name());
+        static::assertSame('none', $support->name());
         static::assertTrue($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 
@@ -50,10 +45,12 @@ class NoneAttestationStatementSupportTest extends TestCase
     {
         $support = new NoneAttestationStatementSupport();
 
-        $attestationStatement = new AttestationStatement('none', ['x5c' => ['FOO']], '', new EmptyTrustPath());
+        $attestationStatement = new AttestationStatement('none', [
+            'x5c' => ['FOO'],
+        ], '', new EmptyTrustPath());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
-        static::assertEquals('none', $support->name());
+        static::assertSame('none', $support->name());
         static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 }

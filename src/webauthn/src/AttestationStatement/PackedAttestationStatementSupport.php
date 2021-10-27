@@ -76,16 +76,29 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         }
     }
 
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
         $trustPath = $attestationStatement->getTrustPath();
         switch (true) {
             case $trustPath instanceof CertificateTrustPath:
-                return $this->processWithCertificate($clientDataJSONHash, $attestationStatement, $authenticatorData, $trustPath);
+                return $this->processWithCertificate(
+                    $clientDataJSONHash,
+                    $attestationStatement,
+                    $authenticatorData,
+                    $trustPath
+                );
             case $trustPath instanceof EcdaaKeyIdTrustPath:
                 return $this->processWithECDAA();
             case $trustPath instanceof EmptyTrustPath:
-                return $this->processWithSelfAttestation($clientDataJSONHash, $attestationStatement, $authenticatorData);
+                return $this->processWithSelfAttestation(
+                    $clientDataJSONHash,
+                    $attestationStatement,
+                    $authenticatorData
+                );
             default:
                 throw new InvalidArgumentException('Unsupported attestation statement');
         }
@@ -97,11 +110,22 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function loadBasicType(array $attestation): AttestationStatement
     {
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with at least one certificate.');
-        Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        Assertion::isArray(
+            $certificates,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
+        Assertion::minCount(
+            $certificates,
+            1,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic($attestation['fmt'], $attestation['attStmt'], new CertificateTrustPath($certificates));
+        return AttestationStatement::createBasic(
+            $attestation['fmt'],
+            $attestation['attStmt'],
+            new CertificateTrustPath($certificates)
+        );
     }
 
     private function loadEcdaaType(array $attestation): AttestationStatement
@@ -109,7 +133,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
         Assertion::string($ecdaaKeyId, 'The attestation statement value "ecdaaKeyId" is invalid.');
 
-        return AttestationStatement::createEcdaa($attestation['fmt'], $attestation['attStmt'], new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId']));
+        return AttestationStatement::createEcdaa(
+            $attestation['fmt'],
+            $attestation['attStmt'],
+            new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId'])
+        );
     }
 
     /**
@@ -126,25 +154,45 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::isArray($parsed, 'Invalid certificate');
 
         //Check version
-        Assertion::false(!isset($parsed['version']) || 2 !== $parsed['version'], 'Invalid certificate version');
+        Assertion::false(! isset($parsed['version']) || $parsed['version'] !== 2, 'Invalid certificate version');
 
         //Check subject field
-        Assertion::false(!isset($parsed['name']) || false === mb_strpos($parsed['name'], '/OU=Authenticator Attestation'), 'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"');
+        Assertion::false(
+            ! isset($parsed['name']) || mb_strpos($parsed['name'], '/OU=Authenticator Attestation') === false,
+            'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
+        );
 
         //Check extensions
-        Assertion::false(!isset($parsed['extensions']) || !is_array($parsed['extensions']), 'Certificate extensions are missing');
+        Assertion::false(
+            ! isset($parsed['extensions']) || ! is_array($parsed['extensions']),
+            'Certificate extensions are missing'
+        );
 
         //Check certificate is not a CA cert
-        Assertion::false(!isset($parsed['extensions']['basicConstraints']) || 'CA:FALSE' !== $parsed['extensions']['basicConstraints'], 'The Basic Constraints extension must have the CA component set to false');
+        Assertion::false(
+            ! isset($parsed['extensions']['basicConstraints']) || $parsed['extensions']['basicConstraints'] !== 'CA:FALSE',
+            'The Basic Constraints extension must have the CA component set to false'
+        );
 
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
 
         // id-fido-gen-ce-aaguid OID check
-        Assertion::false(in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($attestedCredentialData->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
+        Assertion::false(
+            in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
+                $attestedCredentialData->getAaguid()->getBytes(),
+                $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
+            ),
+            'The value of the "aaguid" does not match with the certificate'
+        );
     }
 
-    private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData, CertificateTrustPath $trustPath): bool
+    private function processWithCertificate(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData,
+        CertificateTrustPath $trustPath
+    ): bool
     {
         $certificates = $trustPath->getCertificates();
 
@@ -156,10 +204,15 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         // Verification of the signature
-        $signedData = $authenticatorData->getAuthData().$clientDataJSONHash;
-        $result = openssl_verify($signedData, $attestationStatement->get('sig'), $certificates[0], $opensslAlgorithmIdentifier);
+        $signedData = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $result = openssl_verify(
+            $signedData,
+            $attestationStatement->get('sig'),
+            $certificates[0],
+            $opensslAlgorithmIdentifier
+        );
 
-        return 1 === $result;
+        return $result === 1;
     }
 
     private function processWithECDAA(): bool
@@ -167,7 +220,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         throw new RuntimeException('ECDAA not supported');
     }
 
-    private function processWithSelfAttestation(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    private function processWithSelfAttestation(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
@@ -177,14 +234,22 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $publicKey = $this->decoder->decode($publicKeyStream);
         Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
         $publicKeyStream->close();
-        Assertion::isInstanceOf($publicKey, MapObject::class, 'The attested credential data does not contain a valid public key.');
+        Assertion::isInstanceOf(
+            $publicKey,
+            MapObject::class,
+            'The attested credential data does not contain a valid public key.'
+        );
         $publicKey = $publicKey->getNormalizedData(false);
         $publicKey = new Key($publicKey);
-        Assertion::eq($publicKey->alg(), (int) $attestationStatement->get('alg'), 'The algorithm of the attestation statement and the key are not identical.');
+        Assertion::eq(
+            $publicKey->alg(),
+            (int) $attestationStatement->get('alg'),
+            'The algorithm of the attestation statement and the key are not identical.'
+        );
 
-        $dataToVerify = $authenticatorData->getAuthData().$clientDataJSONHash;
+        $dataToVerify = $authenticatorData->getAuthData() . $clientDataJSONHash;
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
-        if (!$algorithm instanceof Signature) {
+        if (! $algorithm instanceof Signature) {
             throw new RuntimeException('Invalid algorithm');
         }
         $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);

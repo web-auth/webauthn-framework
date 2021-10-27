@@ -20,15 +20,25 @@ use function Safe\sprintf;
 class VerificationMethodDescriptor implements JsonSerializable
 {
     public const USER_VERIFY_PRESENCE = 0x00000001;
+
     public const USER_VERIFY_FINGERPRINT = 0x00000002;
+
     public const USER_VERIFY_PASSCODE = 0x00000004;
+
     public const USER_VERIFY_VOICEPRINT = 0x00000008;
+
     public const USER_VERIFY_FACEPRINT = 0x00000010;
+
     public const USER_VERIFY_LOCATION = 0x00000020;
+
     public const USER_VERIFY_EYEPRINT = 0x00000040;
+
     public const USER_VERIFY_PATTERN = 0x00000080;
+
     public const USER_VERIFY_HANDPRINT = 0x00000100;
+
     public const USER_VERIFY_NONE = 0x00000200;
+
     public const USER_VERIFY_ALL = 0x00000400;
 
     /**
@@ -51,9 +61,18 @@ class VerificationMethodDescriptor implements JsonSerializable
      */
     private $paDesc;
 
-    public function __construct(int $userVerification, ?CodeAccuracyDescriptor $caDesc = null, ?BiometricAccuracyDescriptor $baDesc = null, ?PatternAccuracyDescriptor $paDesc = null)
+    public function __construct(
+        int $userVerification,
+        ?CodeAccuracyDescriptor $caDesc = null,
+        ?BiometricAccuracyDescriptor $baDesc = null,
+        ?PatternAccuracyDescriptor $paDesc = null
+    )
     {
-        Assertion::greaterOrEqualThan($userVerification, 0, Utils::logicException('The parameter "userVerification" is invalid'));
+        Assertion::greaterOrEqualThan(
+            $userVerification,
+            0,
+            Utils::logicException('The parameter "userVerification" is invalid')
+        );
         $this->userVerification = $userVerification;
         $this->caDesc = $caDesc;
         $this->baDesc = $baDesc;
@@ -138,8 +157,15 @@ class VerificationMethodDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'userVerification', Utils::logicException('The parameter "userVerification" is missing'));
-        Assertion::integer($data['userVerification'], Utils::logicException('The parameter "userVerification" is invalid'));
+        Assertion::keyExists(
+            $data,
+            'userVerification',
+            Utils::logicException('The parameter "userVerification" is missing')
+        );
+        Assertion::integer(
+            $data['userVerification'],
+            Utils::logicException('The parameter "userVerification" is invalid')
+        );
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
                 Assertion::isArray($data[$key], Utils::logicException(sprintf('Invalid parameter "%s"', $key)));
@@ -158,9 +184,9 @@ class VerificationMethodDescriptor implements JsonSerializable
     {
         $data = [
             'userVerification' => $this->userVerification,
-            'caDesc' => null === $this->caDesc ? null : $this->caDesc->jsonSerialize(),
-            'baDesc' => null === $this->baDesc ? null : $this->baDesc->jsonSerialize(),
-            'paDesc' => null === $this->paDesc ? null : $this->paDesc->jsonSerialize(),
+            'caDesc' => $this->caDesc === null ? null : $this->caDesc->jsonSerialize(),
+            'baDesc' => $this->baDesc === null ? null : $this->baDesc->jsonSerialize(),
+            'paDesc' => $this->paDesc === null ? null : $this->paDesc->jsonSerialize(),
         ];
 
         return Utils::filterNullValues($data);

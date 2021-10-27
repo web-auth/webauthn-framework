@@ -41,7 +41,12 @@ class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
      */
     private $publicKeyCredentialSource;
 
-    public function __construct(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, PublicKeyCredentialSource $publicKeyCredentialSource)
+    public function __construct(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    )
     {
         $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
         $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;

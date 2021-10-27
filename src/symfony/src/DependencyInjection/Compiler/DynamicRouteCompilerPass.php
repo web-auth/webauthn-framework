@@ -28,7 +28,7 @@ final class DynamicRouteCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(Loader::class)) {
+        if (! $container->hasDefinition(Loader::class)) {
             return;
         }
 

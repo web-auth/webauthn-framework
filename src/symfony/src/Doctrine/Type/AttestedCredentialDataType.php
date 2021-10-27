@@ -26,7 +26,7 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
@@ -38,7 +38,7 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?AttestedCredentialData
     {
-        if (null === $value || $value instanceof AttestedCredentialData) {
+        if ($value === null || $value instanceof AttestedCredentialData) {
             return $value;
         }
         $json = json_decode($value, true);

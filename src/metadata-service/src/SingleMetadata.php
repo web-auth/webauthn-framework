@@ -22,10 +22,12 @@ class SingleMetadata
      * @var MetadataStatement
      */
     private $statement;
+
     /**
      * @var string
      */
     private $data;
+
     /**
      * @var bool
      */
@@ -39,7 +41,7 @@ class SingleMetadata
 
     public function getMetadataStatement(): MetadataStatement
     {
-        if (null === $this->statement) {
+        if ($this->statement === null) {
             $json = $this->data;
             if ($this->isBase64Encoded) {
                 $json = base64_decode($this->data, true);

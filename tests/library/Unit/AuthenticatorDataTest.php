@@ -20,14 +20,9 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticatorData;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestedCredentialData
- *
  * @internal
  */
-class AuthenticatorDataTest extends TestCase
+final class AuthenticatorDataTest extends TestCase
 {
     /**
      * @test
@@ -37,15 +32,22 @@ class AuthenticatorDataTest extends TestCase
         $attestedCredentialData = new AttestedCredentialData(Uuid::uuid4(), '', null);
         $extensions = new AuthenticationExtensionsClientOutputs();
 
-        $authenticatorData = new AuthenticatorData('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
+        $authenticatorData = new AuthenticatorData(
+            'auth_data',
+            'rp_id_hash',
+            'A',
+            100,
+            $attestedCredentialData,
+            $extensions
+        );
 
-        static::assertEquals('auth_data', $authenticatorData->getAuthData());
-        static::assertEquals('rp_id_hash', $authenticatorData->getRpIdHash());
+        static::assertSame('auth_data', $authenticatorData->getAuthData());
+        static::assertSame('rp_id_hash', $authenticatorData->getRpIdHash());
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertFalse($authenticatorData->isUserVerified());
-        static::assertEquals(100, $authenticatorData->getSignCount());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse1());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse2());
+        static::assertSame(100, $authenticatorData->getSignCount());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());

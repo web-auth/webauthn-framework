@@ -41,7 +41,12 @@ class AuthenticatorAttestationResponseValidationFailedEvent extends Event
      */
     private $throwable;
 
-    public function __construct(AuthenticatorAttestationResponse $authenticatorAttestationResponse, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $request, Throwable $throwable)
+    public function __construct(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        Throwable $throwable
+    )
     {
         $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
         $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;

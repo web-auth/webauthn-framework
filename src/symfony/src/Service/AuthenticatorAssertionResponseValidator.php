@@ -36,7 +36,15 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
      */
     private $eventDispatcher;
 
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, EventDispatcherInterface $eventDispatcher, ?CounterChecker $counterChecker = null, ?LoggerInterface $logger = null)
+    public function __construct(
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        TokenBindingHandler $tokenBindingHandler,
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        Manager $algorithmManager,
+        EventDispatcherInterface $eventDispatcher,
+        ?CounterChecker $counterChecker = null,
+        ?LoggerInterface $logger = null
+    )
     {
         parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker, $logger);
         $this->eventDispatcher = $eventDispatcher;
@@ -45,10 +53,24 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
     /**
      * {@inheritdoc}
      */
-    public function check(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, array $securedRelyingPartyId = []): PublicKeyCredentialSource
+    public function check(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        array $securedRelyingPartyId = [
+    ]): PublicKeyCredentialSource
     {
         try {
-            $result = parent::check($credentialId, $authenticatorAssertionResponse, $publicKeyCredentialRequestOptions, $request, $userHandle, $securedRelyingPartyId);
+            $result = parent::check(
+                $credentialId,
+                $authenticatorAssertionResponse,
+                $publicKeyCredentialRequestOptions,
+                $request,
+                $userHandle,
+                $securedRelyingPartyId
+            );
             $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationSucceededEvent(
                 $credentialId,
                 $authenticatorAssertionResponse,

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use function Safe\json_decode;
@@ -20,12 +21,9 @@ use function Safe\json_encode;
 use Webauthn\MetadataService\Version;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class VersionObjectTest extends TestCase
+final class VersionObjectTest extends TestCase
 {
     /**
      * @test
@@ -33,12 +31,12 @@ class VersionObjectTest extends TestCase
      */
     public function validObject(Version $object, ?int $major, ?int $minor, string $expectedJson): void
     {
-        static::assertEquals($major, $object->getMajor());
-        static::assertEquals($minor, $object->getMinor());
-        static::assertEquals($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($major, $object->getMajor());
+        static::assertSame($minor, $object->getMinor());
+        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
 
         $loaded = Version::createFromArray(json_decode($expectedJson, true));
-        static::assertEquals($object, $loaded);
+        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array
@@ -64,8 +62,6 @@ class VersionObjectTest extends TestCase
 
     public function invalidObjectData(): array
     {
-        return [
-            [null, null, 'Invalid data. Must contain at least one item'],
-        ];
+        return [[null, null, 'Invalid data. Must contain at least one item']];
     }
 }

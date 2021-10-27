@@ -31,7 +31,7 @@ class EdDSA implements Signature
 
         $x = $key->x();
         $d = $key->d();
-        $secret = $d.$x;
+        $secret = $d . $x;
 
         switch ($key->curve()) {
             case OkpKey::CURVE_ED25519:

@@ -79,7 +79,19 @@ class WebauthnToken extends AbstractToken
     /**
      * {@inheritdoc}
      */
-    public function __construct(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity, PublicKeyCredentialOptions $publicKeyCredentialOptions, PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor, bool $isUserPresent, bool $isUserVerified, int $reservedForFutureUse1, int $reservedForFutureUse2, int $signCount, ?AuthenticationExtensionsClientOutputs $extensions, string $providerKey, array $roles = [])
+    public function __construct(
+        PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
+        PublicKeyCredentialOptions $publicKeyCredentialOptions,
+        PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
+        bool $isUserPresent,
+        bool $isUserVerified,
+        int $reservedForFutureUse1,
+        int $reservedForFutureUse2,
+        int $signCount,
+        ?AuthenticationExtensionsClientOutputs $extensions,
+        string $providerKey,
+        array $roles = [
+    ])
     {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
@@ -137,13 +149,23 @@ class WebauthnToken extends AbstractToken
             $this->providerKey,
             $parentData
             ] = $serialized;
-        Assertion::subclassOf($publicKeyCredentialOptionsClass, PublicKeyCredentialOptions::class, 'Invalid PublicKeyCredentialOptions class');
-        $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString($publicKeyCredentialUserEntity);
-        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString($publicKeyCredentialDescriptor);
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString($publicKeyCredentialOptions);
+        Assertion::subclassOf(
+            $publicKeyCredentialOptionsClass,
+            PublicKeyCredentialOptions::class,
+            'Invalid PublicKeyCredentialOptions class'
+        );
+        $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString(
+            $publicKeyCredentialUserEntity
+        );
+        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString(
+            $publicKeyCredentialDescriptor
+        );
+        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString(
+            $publicKeyCredentialOptions
+        );
 
         $this->extensions = null;
-        if (null !== $extensions) {
+        if ($extensions !== null) {
             $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
         }
         parent::__unserialize($parentData);

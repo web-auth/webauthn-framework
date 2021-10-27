@@ -50,12 +50,18 @@ final class StringStream implements Stream
 
     public function read(int $length): string
     {
-        if (0 === $length) {
+        if ($length === 0) {
             return '';
         }
         $read = fread($this->data, $length);
         $bytesRead = mb_strlen($read, '8bit');
-        Assertion::length($read, $length, sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead), null, '8bit');
+        Assertion::length(
+            $read,
+            $length,
+            sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead),
+            null,
+            '8bit'
+        );
         $this->totalRead += $bytesRead;
 
         return $read;

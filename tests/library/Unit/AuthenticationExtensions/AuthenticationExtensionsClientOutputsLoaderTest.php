@@ -24,29 +24,22 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader
- *
  * @internal
  */
-class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
+final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 {
     /**
      * @test
      */
     public function theExtensionsCanBeLoaded(): void
     {
-        $cbor = new MapObject([
-            new MapItem(new ByteStringObject('loc'), new TrueObject()),
-        ]);
+        $cbor = new MapObject([new MapItem(new ByteStringObject('loc'), new TrueObject())]);
 
         $extensions = AuthenticationExtensionsClientOutputsLoader::load($cbor);
 
         static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
         static::assertCount(1, $extensions);
-        static::assertEquals('{"loc":true}', json_encode($extensions));
+        static::assertSame('{"loc":true}', json_encode($extensions));
     }
 
     /**
@@ -68,9 +61,7 @@ class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid extension key');
-        $cbor = new MapObject([
-            new MapItem(SignedIntegerObject::create(-100), new TrueObject()),
-        ]);
+        $cbor = new MapObject([new MapItem(SignedIntegerObject::create(-100), new TrueObject())]);
 
         AuthenticationExtensionsClientOutputsLoader::load($cbor);
     }

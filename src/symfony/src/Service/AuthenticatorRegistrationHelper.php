@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
-use Assert\AssertionFailedException;
 use function count;
 use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -23,7 +22,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -88,7 +86,17 @@ class AuthenticatorRegistrationHelper
      */
     private $securedRelyingPartyId;
 
-    public function __construct(PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, SessionStorage $optionsStorage, HttpMessageFactoryInterface $httpMessageFactory, array $securedRelyingPartyId = [])
+    public function __construct(
+        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
+        SessionStorage $optionsStorage,
+        HttpMessageFactoryInterface $httpMessageFactory,
+        array $securedRelyingPartyId = [
+    ])
     {
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
         $this->serializer = $serializer;
@@ -101,16 +109,21 @@ class AuthenticatorRegistrationHelper
         $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
-    /**
-     * @throws AssertionFailedException
-     */
-    public function generateOptions(PublicKeyCredentialUserEntity $userEntity, Request $request, string $profile = 'default'): PublicKeyCredentialCreationOptions
+    public function generateOptions(
+        PublicKeyCredentialUserEntity $userEntity,
+        Request $request,
+        string $profile = 'default'
+    ): PublicKeyCredentialCreationOptions
     {
         $content = $request->getContent();
         Assertion::string($content, 'Invalid data');
         $creationOptionsRequest = $this->getAdditionalPublicKeyCredentialCreationOptionsRequest($content);
-        $authenticatorSelection = null !== $creationOptionsRequest->authenticatorSelection ? AuthenticatorSelectionCriteria::createFromArray($creationOptionsRequest->authenticatorSelection) : null;
-        $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
+        $authenticatorSelection = $creationOptionsRequest->authenticatorSelection !== null ? AuthenticatorSelectionCriteria::createFromArray(
+            $creationOptionsRequest->authenticatorSelection
+        ) : null;
+        $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
+            $creationOptionsRequest->extensions
+        ) : null;
         $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptionsFactory->create(
             $profile,
             $userEntity,
@@ -124,9 +137,6 @@ class AuthenticatorRegistrationHelper
         return $publicKeyCredentialCreationOptions;
     }
 
-    /**
-     * @throws Throwable
-     */
     public function validateResponse(PublicKeyCredentialUserEntity $user, Request $request): PublicKeyCredentialSource
     {
         $storedData = $this->optionsStorage->get($request);
@@ -135,7 +145,7 @@ class AuthenticatorRegistrationHelper
         $assertion = trim($assertion);
         $publicKeyCredential = $this->publicKeyCredentialLoader->load($assertion);
         $response = $publicKeyCredential->getResponse();
-        if (!$response instanceof AuthenticatorAttestationResponse) {
+        if (! $response instanceof AuthenticatorAttestationResponse) {
             throw new AuthenticationException('Invalid assertion');
         }
 
@@ -158,23 +168,24 @@ class AuthenticatorRegistrationHelper
         return $publicKeyCredentialSource;
     }
 
-    /**
-     * @throws AssertionFailedException
-     */
-    private function getAdditionalPublicKeyCredentialCreationOptionsRequest(string $content): AdditionalPublicKeyCredentialCreationOptionsRequest
+    private function getAdditionalPublicKeyCredentialCreationOptionsRequest(
+        string $content
+    ): AdditionalPublicKeyCredentialCreationOptionsRequest
     {
         $data = $this->serializer->deserialize(
             $content,
             AdditionalPublicKeyCredentialCreationOptionsRequest::class,
             'json',
-            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+            [
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            ]
         );
         Assertion::isInstanceOf($data, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }
@@ -189,8 +200,11 @@ class AuthenticatorRegistrationHelper
     {
         $list = $this->publicKeyCredentialSourceRepository->findAllForUserEntity($userEntity);
 
-        return array_map(static function (PublicKeyCredentialSource $publicKeyCredentialSource): PublicKeyCredentialDescriptor {
+        return array_map(
+            static function (PublicKeyCredentialSource $publicKeyCredentialSource): PublicKeyCredentialDescriptor {
             return $publicKeyCredentialSource->getPublicKeyCredentialDescriptor();
-        }, $list);
+        },
+            $list
+        );
     }
 }

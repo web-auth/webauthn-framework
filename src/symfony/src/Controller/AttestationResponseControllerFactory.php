@@ -63,7 +63,15 @@ final class AttestationResponseControllerFactory
      */
     private $publicKeyCredentialSourceRepository;
 
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory, SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $attestationResponseValidator, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
+    public function __construct(
+        HttpMessageFactoryInterface $httpMessageFactory,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+    )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -74,7 +82,13 @@ final class AttestationResponseControllerFactory
         $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
-    public function createAttestationRequestController(UserEntityGuesser $userEntityGuesser, string $profile, OptionsStorage $optionStorage, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler): AttestationRequestController
+    public function createAttestationRequestController(
+        UserEntityGuesser $userEntityGuesser,
+        string $profile,
+        OptionsStorage $optionStorage,
+        CreationOptionsHandler $creationOptionsHandler,
+        FailureHandler $failureHandler
+    ): AttestationRequestController
     {
         return new AttestationRequestController(
             $userEntityGuesser,
@@ -89,7 +103,11 @@ final class AttestationResponseControllerFactory
         );
     }
 
-    public function createAttestationResponseController(OptionsStorage $optionStorage, SuccessHandler $successHandler, FailureHandler $failureHandler): AttestationResponseController
+    public function createAttestationResponseController(
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
+        FailureHandler $failureHandler
+    ): AttestationResponseController
     {
         return new AttestationResponseController(
             $this->httpMessageFactory,

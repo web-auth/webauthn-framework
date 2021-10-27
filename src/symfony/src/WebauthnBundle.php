@@ -63,15 +63,21 @@ final class WebauthnBundle extends Bundle
 
         if ($container->hasExtension('security')) {
             $extension = $container->getExtension('security');
-            Assertion::isInstanceOf($extension, SecurityExtension::class, 'The security extension is missing or invalid');
+            Assertion::isInstanceOf(
+                $extension,
+                SecurityExtension::class,
+                'The security extension is missing or invalid'
+            );
             $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
         }
     }
 
     private function registerMappings(ContainerBuilder $container): void
     {
-        $realPath = realpath(__DIR__.'/Resources/config/doctrine-mapping');
-        $mappings = [$realPath => 'Webauthn'];
+        $realPath = realpath(__DIR__ . '/Resources/config/doctrine-mapping');
+        $mappings = [
+            $realPath => 'Webauthn',
+        ];
         if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));
         }

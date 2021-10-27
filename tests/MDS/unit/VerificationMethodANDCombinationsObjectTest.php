@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Tests\Unit;
 
+use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\BiometricAccuracyDescriptor;
 use Webauthn\MetadataService\CodeAccuracyDescriptor;
@@ -21,12 +22,9 @@ use Webauthn\MetadataService\VerificationMethodANDCombinations;
 use Webauthn\MetadataService\VerificationMethodDescriptor;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class VerificationMethodANDCombinationsObjectTest extends TestCase
+final class VerificationMethodANDCombinationsObjectTest extends TestCase
 {
     /**
      * @test
@@ -34,10 +32,10 @@ class VerificationMethodANDCombinationsObjectTest extends TestCase
      */
     public function validObject(VerificationMethodANDCombinations $object, string $expectedJson): void
     {
-        static::assertEquals($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
 
         $loaded = VerificationMethodANDCombinations::createFromArray(json_decode($expectedJson, true));
-        static::assertEquals($object, $loaded);
+        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array

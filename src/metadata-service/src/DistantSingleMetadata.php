@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\json_decode;
@@ -47,7 +47,13 @@ class DistantSingleMetadata extends SingleMetadata
      */
     private $isBase64Encoded;
 
-    public function __construct(string $uri, bool $isBase64Encoded, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, array $additionalHeaders = [])
+    public function __construct(
+        string $uri,
+        bool $isBase64Encoded,
+        ClientInterface $httpClient,
+        RequestFactoryInterface $requestFactory,
+        array $additionalHeaders = [
+    ])
     {
         parent::__construct($uri, $isBase64Encoded); //Useless
         $this->uri = $uri;
@@ -60,7 +66,7 @@ class DistantSingleMetadata extends SingleMetadata
     public function getMetadataStatement(): MetadataStatement
     {
         $payload = $this->fetch();
-        $json = $this->isBase64Encoded ? Base64Url::decode($payload) : $payload;
+        $json = $this->isBase64Encoded ? Base64UrlSafe::decode($payload) : $payload;
         $data = json_decode($json, true);
 
         return MetadataStatement::createFromArray($data);
@@ -73,8 +79,14 @@ class DistantSingleMetadata extends SingleMetadata
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        Assertion::eq(200, $response->getStatusCode(), sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
-        $content = $response->getBody()->getContents();
+        Assertion::eq(
+            200,
+            $response->getStatusCode(),
+            sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
+        );
+        $content = $response->getBody()
+            ->getContents()
+        ;
         Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
         return $content;

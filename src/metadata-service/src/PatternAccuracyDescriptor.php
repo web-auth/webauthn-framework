@@ -26,7 +26,11 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($minComplexity, 0, Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer'));
+        Assertion::greaterOrEqualThan(
+            $minComplexity,
+            0,
+            Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer')
+        );
         $this->minComplexity = $minComplexity;
         parent::__construct($maxRetries, $blockSlowdown);
     }
@@ -42,15 +46,14 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         Assertion::keyExists($data, 'minComplexity', Utils::logicException('The key "minComplexity" is missing'));
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
-                Assertion::integer($data[$key], Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
+                Assertion::integer(
+                    $data[$key],
+                    Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key))
+                );
             }
         }
 
-        return new self(
-            $data['minComplexity'],
-        $data['maxRetries'] ?? null,
-        $data['blockSlowdown'] ?? null
-        );
+        return new self($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
     }
 
     public function jsonSerialize(): array

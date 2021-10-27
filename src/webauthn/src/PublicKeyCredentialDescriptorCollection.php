@@ -17,6 +17,7 @@ use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
 use function count;
+use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
@@ -42,7 +43,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
 
     public function remove(string $id): void
     {
-        if (!$this->has($id)) {
+        if (! $this->has($id)) {
             return;
         }
 

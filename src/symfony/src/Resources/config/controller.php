@@ -19,13 +19,11 @@ use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
-        ->bind(
-            HttpMessageFactoryInterface::class,
-            ref('webauthn.controller.http_message_factory')
-        )
+        ->bind(HttpMessageFactoryInterface::class, ref('webauthn.controller.http_message_factory'))
         ->autowire()
     ;
 

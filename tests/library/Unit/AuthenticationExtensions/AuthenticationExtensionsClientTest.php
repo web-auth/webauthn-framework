@@ -19,31 +19,24 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class AuthenticationExtensionsClientTest extends TestCase
+final class AuthenticationExtensionsClientTest extends TestCase
 {
     /**
      * @test
-     *
-     * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtension
      */
     public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
 
-        static::assertEquals('name', $extension->name());
-        static::assertEquals(['value'], $extension->value());
-        static::assertEquals('["value"]', json_encode($extension));
+        static::assertSame('name', $extension->name());
+        static::assertSame(['value'], $extension->value());
+        static::assertSame('["value"]', json_encode($extension));
     }
 
     /**
      * @test
-     *
-     * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs
      */
     public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
@@ -52,17 +45,13 @@ class AuthenticationExtensionsClientTest extends TestCase
         $inputs = new AuthenticationExtensionsClientInputs();
         $inputs->add($extension);
 
-        static::assertEquals(1, $inputs->count());
-        static::assertEquals('{"name":["value"]}', json_encode($inputs));
-        foreach ($inputs as $k => $input) {
-            static::assertInstanceOf(AuthenticationExtension::class, $input);
-        }
+        static::assertSame(1, $inputs->count());
+        static::assertSame('{"name":["value"]}', json_encode($inputs));
+        static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 
     /**
      * @test
-     *
-     * @covers \Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs
      */
     public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
@@ -71,10 +60,8 @@ class AuthenticationExtensionsClientTest extends TestCase
         $inputs = new AuthenticationExtensionsClientOutputs();
         $inputs->add($extension);
 
-        static::assertEquals(1, $inputs->count());
-        static::assertEquals('{"name":["value"]}', json_encode($inputs));
-        foreach ($inputs as $k => $input) {
-            static::assertInstanceOf(AuthenticationExtension::class, $input);
-        }
+        static::assertSame(1, $inputs->count());
+        static::assertSame('{"name":["value"]}', json_encode($inputs));
+        static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 }

@@ -16,7 +16,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()

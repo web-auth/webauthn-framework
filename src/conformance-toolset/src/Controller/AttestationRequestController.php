@@ -62,24 +62,38 @@ final class AttestationRequestController
      * @var PublicKeyCredentialUserEntityRepository
      */
     private $userEntityRepository;
+
     /**
      * @var PublicKeyCredentialSourceRepository
      */
     private $credentialSourceRepository;
+
     /**
      * @var string
      */
     private $sessionParameterName;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var CacheItemPoolInterface
      */
     private $cacheItemPool;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, PublicKeyCredentialUserEntityRepository $userEntityRepository, PublicKeyCredentialSourceRepository $credentialSourceRepository, PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, string $profile, string $sessionParameterName, LoggerInterface $logger, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        string $profile,
+        string $sessionParameterName,
+        LoggerInterface $logger,
+        CacheItemPoolInterface $cacheItemPool
+    )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -118,7 +132,10 @@ final class AttestationRequestController
                 $extensions
             );
             $data = array_merge(
-                ['status' => 'ok', 'errorMessage' => ''],
+                [
+                    'status' => 'ok',
+                    'errorMessage' => '',
+                ],
                 $publicKeyCredentialCreationOptions->jsonSerialize()
             );
             $item = $this->cacheItemPool->getItem($this->sessionParameterName);
@@ -129,7 +146,10 @@ final class AttestationRequestController
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
-            return new JsonResponse(['status' => 'failed', 'errorMessage' => $throwable->getMessage()], 400);
+            return new JsonResponse([
+                'status' => 'failed',
+                'errorMessage' => $throwable->getMessage(),
+            ], 400);
         }
     }
 
@@ -145,31 +165,41 @@ final class AttestationRequestController
         }, $credentialSources);
     }
 
-    private function getUserEntity(ServerPublicKeyCredentialCreationOptionsRequest $creationOptionsRequest): PublicKeyCredentialUserEntity
+    private function getUserEntity(
+        ServerPublicKeyCredentialCreationOptionsRequest $creationOptionsRequest
+    ): PublicKeyCredentialUserEntity
     {
         $username = $creationOptionsRequest->username;
         $userEntity = $this->userEntityRepository->findOneByUsername($username);
-        if (null === $userEntity) {
-            $userEntity = $this->userEntityRepository->createUserEntity($username, $creationOptionsRequest->displayName, null);
+        if ($userEntity === null) {
+            $userEntity = $this->userEntityRepository->createUserEntity(
+                $username,
+                $creationOptionsRequest->displayName,
+                null
+            );
         }
 
         return $userEntity;
     }
 
-    private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest
+    private function getServerPublicKeyCredentialCreationOptionsRequest(
+        string $content
+    ): ServerPublicKeyCredentialCreationOptionsRequest
     {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialCreationOptionsRequest::class,
             'json',
-            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+            [
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            ]
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }

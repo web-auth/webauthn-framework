@@ -26,7 +26,7 @@ abstract class RSA implements Signature
         $key = $this->handleKey($key);
         Assertion::true($key->isPrivate(), 'The key is not private');
 
-        if (false === openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm())) {
+        if (openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm()) === false) {
             throw new InvalidArgumentException('Unable to sign the data');
         }
 
@@ -37,7 +37,7 @@ abstract class RSA implements Signature
     {
         $key = $this->handleKey($key);
 
-        return 1 === openssl_verify($data, $signature, $key->asPem(), $this->getHashAlgorithm());
+        return openssl_verify($data, $signature, $key->asPem(), $this->getHashAlgorithm()) === 1;
     }
 
     abstract protected function getHashAlgorithm(): int;

@@ -33,7 +33,7 @@ class Version implements JsonSerializable
 
     public function __construct(?int $major, ?int $minor)
     {
-        if (null === $major && null === $minor) {
+        if ($major === null && $minor === null) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
         Assertion::greaterOrEqualThan($major, 0, Utils::logicException('Invalid argument "major"'));
@@ -62,10 +62,7 @@ class Version implements JsonSerializable
             }
         }
 
-        return new self(
-            $data['major'] ?? null,
-            $data['minor'] ?? null
-        );
+        return new self($data['major'] ?? null, $data['minor'] ?? null);
     }
 
     public function jsonSerialize(): array

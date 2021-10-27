@@ -14,15 +14,20 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use function count;
+use const E_USER_DEPRECATED;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use function Safe\json_decode;
+use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
+
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
+
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
     /**
@@ -43,16 +48,32 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
-    public function __construct(string $challenge, ?int $timeout = null, ?string $rpId = null, array $allowCredentials = [], ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $extensions = null)
+    public function __construct(
+        string $challenge,
+        ?int $timeout = null,
+        ?string $rpId = null,
+        array $allowCredentials = [],
+        ?string $userVerification = null,
+        ?AuthenticationExtensionsClientInputs $extensions = null
+    )
     {
-        if (0 !== count($allowCredentials)) {
-            @trigger_error('The argument "allowCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addAllowedCredentials" or "addAllowedCredential".', E_USER_DEPRECATED);
+        if (count($allowCredentials) !== 0) {
+            @trigger_error(
+                'The argument "allowCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addAllowedCredentials" or "addAllowedCredential".',
+                E_USER_DEPRECATED
+            );
         }
-        if (null !== $rpId) {
-            @trigger_error('The argument "rpId" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRpId".', E_USER_DEPRECATED);
+        if ($rpId !== null) {
+            @trigger_error(
+                'The argument "rpId" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRpId".',
+                E_USER_DEPRECATED
+            );
         }
-        if (null !== $userVerification) {
-            @trigger_error('The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".', E_USER_DEPRECATED);
+        if ($userVerification !== null) {
+            @trigger_error(
+                'The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".',
+                E_USER_DEPRECATED
+            );
         }
         parent::__construct($challenge, $timeout, $extensions);
         $this
@@ -95,7 +116,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public function setUserVerification(?string $userVerification): self
     {
-        if (null === $userVerification) {
+        if ($userVerification === null) {
             $this->rpId = null;
 
             return $this;
@@ -149,12 +170,22 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        return self::create(Base64Url::decode($json['challenge']))
+        try {
+            $challenge = Base64UrlSafe::decode($json['challenge']);
+        } catch (Throwable $t) {
+            $challenge = Base64::decode($json['challenge']);
+        }
+
+        return self::create($challenge)
             ->setRpId($json['rpId'] ?? null)
             ->allowCredentials($allowCredentials)
             ->setUserVerification($json['userVerification'] ?? null)
             ->setTimeout($json['timeout'] ?? null)
-            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+            ->setExtensions(
+                isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
+                    $json['extensions']
+                ) : new AuthenticationExtensionsClientInputs()
+            )
         ;
     }
 
@@ -164,28 +195,28 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     public function jsonSerialize(): array
     {
         $json = [
-            'challenge' => Base64Url::encode($this->challenge),
+            'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
         ];
 
-        if (null !== $this->rpId) {
+        if ($this->rpId !== null) {
             $json['rpId'] = $this->rpId;
         }
 
-        if (null !== $this->userVerification) {
+        if ($this->userVerification !== null) {
             $json['userVerification'] = $this->userVerification;
         }
 
-        if (0 !== count($this->allowCredentials)) {
+        if (count($this->allowCredentials) !== 0) {
             $json['allowCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->allowCredentials);
         }
 
-        if (0 !== $this->extensions->count()) {
+        if ($this->extensions->count() !== 0) {
             $json['extensions'] = $this->extensions->jsonSerialize();
         }
 
-        if (null !== $this->timeout) {
+        if ($this->timeout !== null) {
             $json['timeout'] = $this->timeout;
         }
 

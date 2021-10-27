@@ -45,12 +45,20 @@ class AuthenticatorAssertionResponseValidationSucceededEvent extends Event
      * @var string|null
      */
     private $userHandle;
+
     /**
      * @var PublicKeyCredentialSource
      */
     private $publicKeyCredentialSource;
 
-    public function __construct(string $credentialId, AuthenticatorAssertionResponse $authenticatorAssertionResponse, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ServerRequestInterface $request, ?string $userHandle, PublicKeyCredentialSource $publicKeyCredentialSource)
+    public function __construct(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    )
     {
         $this->credentialId = $credentialId;
         $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;

@@ -19,13 +19,21 @@ use Assert\Assertion;
 class Key
 {
     public const TYPE = 1;
+
     public const TYPE_OKP = 1;
+
     public const TYPE_EC2 = 2;
+
     public const TYPE_RSA = 3;
+
     public const TYPE_OCT = 4;
+
     public const KID = 2;
+
     public const ALG = 3;
+
     public const KEY_OPS = 4;
+
     public const BASE_IV = 5;
 
     /**
@@ -79,9 +87,6 @@ class Key
         return array_key_exists($key, $this->data);
     }
 
-    /**
-     * @return mixed
-     */
     public function get(int $key)
     {
         Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));

@@ -45,7 +45,11 @@ class WebauthnProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token): WebauthnToken
     {
-        Assertion::isInstanceOf($token, WebauthnToken::class, 'The token is not supported by this authentication provider.');
+        Assertion::isInstanceOf(
+            $token,
+            WebauthnToken::class,
+            'The token is not supported by this authentication provider.'
+        );
         $user = $this->userProvider->loadUserByUsername($token->getUsername());
         try {
             $this->userChecker->checkPreAuth($user);

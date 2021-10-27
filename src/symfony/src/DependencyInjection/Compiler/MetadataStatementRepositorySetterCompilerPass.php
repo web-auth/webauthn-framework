@@ -26,7 +26,7 @@ final class MetadataStatementRepositorySetterCompilerPass implements CompilerPas
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias(MetadataStatementRepository::class)) {
+        if (! $container->hasAlias(MetadataStatementRepository::class)) {
             return;
         }
 
@@ -35,11 +35,14 @@ final class MetadataStatementRepositorySetterCompilerPass implements CompilerPas
 
     private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
     {
-        if (!$container->hasDefinition($service)) {
+        if (! $container->hasDefinition($service)) {
             return;
         }
 
         $definition = $container->getDefinition($service);
-        $definition->addMethodCall('setMetadataStatementRepository', [new Reference(MetadataStatementRepository::class)]);
+        $definition->addMethodCall(
+            'setMetadataStatementRepository',
+            [new Reference(MetadataStatementRepository::class)]
+        );
     }
 }

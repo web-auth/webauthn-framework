@@ -13,20 +13,15 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit7;
 
-use Base64Url\Base64Url;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
 use Webauthn\CollectedClientData;
 use Webauthn\TokenBinding\TokenBinding;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\CollectedClientData
- *
  * @internal
  */
-class CollectedClientDataTest extends TestCase
+final class CollectedClientDataTest extends TestCase
 {
     /**
      * @test
@@ -38,21 +33,27 @@ class CollectedClientDataTest extends TestCase
             [
                 'type' => 'type',
                 'origin' => 'origin',
-                'challenge' => Base64Url::encode('challenge'),
+                'challenge' => Base64UrlSafe::encodeUnpadded('challenge'),
                 'extensions' => 'extensions',
-                'tokenBinding' => ['status' => 'present', 'id' => Base64Url::encode('id')],
+                'tokenBinding' => [
+                    'status' => 'present',
+                    'id' => Base64UrlSafe::encodeUnpadded('id'),
+                ],
             ]
         );
 
-        static::assertEquals('raw_data', $collectedClientData->getRawData());
-        static::assertEquals('origin', $collectedClientData->getOrigin());
-        static::assertEquals('challenge', $collectedClientData->getChallenge());
+        static::assertSame('raw_data', $collectedClientData->getRawData());
+        static::assertSame('origin', $collectedClientData->getOrigin());
+        static::assertSame('challenge', $collectedClientData->getChallenge());
         static::assertInstanceOf(TokenBinding::class, $collectedClientData->getTokenBinding());
-        static::assertEquals('id', $collectedClientData->getTokenBinding()->getId());
-        static::assertEquals('present', $collectedClientData->getTokenBinding()->getStatus());
-        static::assertEquals('type', $collectedClientData->getType());
-        static::assertEquals(['type', 'origin', 'challenge', 'extensions', 'tokenBinding'], $collectedClientData->all());
+        static::assertSame('id', $collectedClientData->getTokenBinding()->getId());
+        static::assertSame('present', $collectedClientData->getTokenBinding()->getStatus());
+        static::assertSame('type', $collectedClientData->getType());
+        static::assertSame(
+            ['type', 'origin', 'challenge', 'extensions', 'tokenBinding'],
+            $collectedClientData->all()
+        );
         static::assertTrue($collectedClientData->has('extensions'));
-        static::assertEquals('extensions', $collectedClientData->get('extensions'));
+        static::assertSame('extensions', $collectedClientData->get('extensions'));
     }
 }

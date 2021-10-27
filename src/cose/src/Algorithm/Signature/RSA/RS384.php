@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
+use const OPENSSL_ALGO_SHA384;
+
 final class RS384 extends RSA
 {
     public const ID = -258;

@@ -18,14 +18,9 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport
- *
  * @internal
  */
-class AndroidKeyAttestationStatementSupportTest extends TestCase
+final class AndroidKeyAttestationStatementSupportTest extends TestCase
 {
     /**
      * @test
@@ -36,7 +31,7 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
         $support = new AndroidKeyAttestationStatementSupport();
 
-        static::assertEquals('android-key', $support->name());
+        static::assertSame('android-key', $support->name());
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [],
@@ -82,10 +77,12 @@ class AndroidKeyAttestationStatementSupportTest extends TestCase
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with at least one certificate.');
+        $this->expectExceptionMessage(
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
         $support = new AndroidKeyAttestationStatementSupport();
 
-        static::assertEquals('android-key', $support->name());
+        static::assertSame('android-key', $support->name());
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [

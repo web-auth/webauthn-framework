@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
@@ -28,6 +27,7 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\sprintf;
@@ -53,7 +53,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         Assertion::keyNotExists($attestation['attStmt'], 'ecdaaKeyId', 'ECDAA not supported');
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
-            Assertion::keyExists($attestation['attStmt'], $key, sprintf('The attestation statement value "%s" is missing.', $key));
+            Assertion::keyExists(
+                $attestation['attStmt'],
+                $key,
+                sprintf('The attestation statement value "%s" is missing.', $key)
+            );
         }
         Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
 
@@ -63,14 +67,18 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
         $pubAreaAttestedNameAlg = mb_substr($certInfo['attestedName'], 0, 2, '8bit');
         $pubAreaHash = hash($this->getTPMHash($pubAreaAttestedNameAlg), $attestation['attStmt']['pubArea'], true);
-        $attestedName = $pubAreaAttestedNameAlg.$pubAreaHash;
+        $attestedName = $pubAreaAttestedNameAlg . $pubAreaHash;
         Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
-        Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        Assertion::minCount(
+            $certificates,
+            1,
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
 
         return AttestationStatement::createAttCA(
             $this->name(),
@@ -79,14 +87,27 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
     }
 
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
-        $attToBeSigned = $authenticatorData->getAuthData().$clientDataJSONHash;
-        $attToBeSignedHash = hash(Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')), $attToBeSigned, true);
-        Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
+        $attToBeSigned = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $attToBeSignedHash = hash(
+            Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')),
+            $attToBeSigned,
+            true
+        );
+        Assertion::eq(
+            $attestationStatement->get('parsedCertInfo')['extraData'],
+            $attToBeSignedHash,
+            'Invalid attestation hash'
+        );
         $this->checkUniquePublicKey(
             $attestationStatement->get('parsedPubArea')['unique'],
-            $authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()
+            $authenticatorData->getAttestedCredentialData()
+                ->getCredentialPublicKey()
         );
 
         switch (true) {
@@ -112,7 +133,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 break;
             case Key::TYPE_EC2:
                 $ec2Key = new Ec2Key($key->getData());
-                $uniqueFromKey = "\x04".$ec2Key->x().$ec2Key->y();
+                $uniqueFromKey = "\x04" . $ec2Key->x() . $ec2Key->y();
                 break;
             case Key::TYPE_RSA:
                 $uniqueFromKey = (new RsaKey($key->getData()))->n();
@@ -228,7 +249,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function getExponent(string $exponent): string
     {
-        return '00000000' === bin2hex($exponent) ? Base64Url::decode('AQAB') : $exponent;
+        return bin2hex($exponent) === '00000000' ? Base64UrlSafe::decode('AQAB') : $exponent;
     }
 
     private function getTPMHash(string $nameAlg): string
@@ -247,7 +268,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         }
     }
 
-    private function processWithCertificate(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
+    private function processWithCertificate(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool
     {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
@@ -261,9 +286,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $coseAlgorithmIdentifier = (int) $attestationStatement->get('alg');
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
-        $result = openssl_verify($attestationStatement->get('certInfo'), $attestationStatement->get('sig'), $certificates[0], $opensslAlgorithmIdentifier);
+        $result = openssl_verify(
+            $attestationStatement->get('certInfo'),
+            $attestationStatement->get('sig'),
+            $certificates[0],
+            $opensslAlgorithmIdentifier
+        );
 
-        return 1 === $result;
+        return $result === 1;
     }
 
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
@@ -272,10 +302,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::isArray($parsed, 'Invalid certificate');
 
         //Check version
-        Assertion::false(!isset($parsed['version']) || 2 !== $parsed['version'], 'Invalid certificate version');
+        Assertion::false(! isset($parsed['version']) || $parsed['version'] !== 2, 'Invalid certificate version');
 
         //Check subject field is empty
-        Assertion::false(!isset($parsed['subject']) || !is_array($parsed['subject']) || 0 !== count($parsed['subject']), 'Invalid certificate name. The Subject should be empty');
+        Assertion::false(
+            ! isset($parsed['subject']) || ! is_array($parsed['subject']) || count($parsed['subject']) !== 0,
+            'Invalid certificate name. The Subject should be empty'
+        );
 
         // Check period of validity
         Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
@@ -289,17 +322,26 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::true($endDate > new DateTimeImmutable(), 'Invalid certificate end date.');
 
         //Check extensions
-        Assertion::false(!isset($parsed['extensions']) || !is_array($parsed['extensions']), 'Certificate extensions are missing');
+        Assertion::false(
+            ! isset($parsed['extensions']) || ! is_array($parsed['extensions']),
+            'Certificate extensions are missing'
+        );
 
         //Check subjectAltName
-        Assertion::false(!isset($parsed['extensions']['subjectAltName']), 'The "subjectAltName" is missing');
+        Assertion::false(! isset($parsed['extensions']['subjectAltName']), 'The "subjectAltName" is missing');
 
         //Check extendedKeyUsage
-        Assertion::false(!isset($parsed['extensions']['extendedKeyUsage']), 'The "subjectAltName" is missing');
+        Assertion::false(! isset($parsed['extensions']['extendedKeyUsage']), 'The "subjectAltName" is missing');
         Assertion::eq($parsed['extensions']['extendedKeyUsage'], '2.23.133.8.3', 'The "extendedKeyUsage" is invalid');
 
         // id-fido-gen-ce-aaguid OID check
-        Assertion::false(in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
+        Assertion::false(
+            in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
+                $authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(),
+                $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
+            ),
+            'The value of the "aaguid" does not match with the certificate'
+        );
     }
 
     private function processWithECDAA(): bool
