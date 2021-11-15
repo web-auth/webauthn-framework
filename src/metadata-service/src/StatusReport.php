@@ -71,8 +71,7 @@ class StatusReport implements JsonSerializable
         ?string $certificateNumber,
         ?string $certificationPolicyVersion,
         ?string $certificationRequirementsVersion
-    )
-    {
+    ) {
         Assertion::inArray(
             $status,
             AuthenticatorStatus::list(),

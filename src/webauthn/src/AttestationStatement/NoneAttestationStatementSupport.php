@@ -39,8 +39,7 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         return count($attestationStatement->getAttStmt()) === 0;
     }
 }

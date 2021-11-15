@@ -67,8 +67,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $compression,
         int $filter,
         int $interlace
-    )
-    {
+    ) {
         Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
         Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
         Assertion::range($bitDepth, 0, 254, Utils::logicException('Invalid bit depth'));

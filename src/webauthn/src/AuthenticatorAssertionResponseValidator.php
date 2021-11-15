@@ -81,8 +81,7 @@ class AuthenticatorAssertionResponseValidator
         Manager $algorithmManager,
         ?CounterChecker $counterChecker = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         if ($logger !== null) {
             @trigger_error(
                 'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".',
@@ -113,9 +112,8 @@ class AuthenticatorAssertionResponseValidator
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface $request,
         ?string $userHandle,
-        array $securedRelyingPartyId = [
-    ]): PublicKeyCredentialSource
-    {
+        array $securedRelyingPartyId = []
+    ): PublicKeyCredentialSource {
         try {
             $this->logger->info('Checking the authenticator assertion response', [
                 'credentialId' => $credentialId,
@@ -188,7 +186,8 @@ class AuthenticatorAssertionResponseValidator
             $facetId = $this->getFacetId(
                 $rpId,
                 $publicKeyCredentialRequestOptions->getExtensions(),
-                $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions()
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->getExtensions()
             );
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
@@ -215,13 +214,15 @@ class AuthenticatorAssertionResponseValidator
 
             /* @see 7.2.12 */
             Assertion::true(
-                $authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(),
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->isUserPresent(),
                 'User was not present'
             );
             /* @see 7.2.13 */
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 Assertion::true(
-                    $authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(),
+                    $authenticatorAssertionResponse->getAuthenticatorData()
+                        ->isUserVerified(),
                     'User authentication required.'
                 );
             }
@@ -240,7 +241,8 @@ class AuthenticatorAssertionResponseValidator
             /** @see 7.2.15 */
             $getClientDataJSONHash = hash(
                 'sha256',
-                $authenticatorAssertionResponse->getClientDataJSON()->getRawData(),
+                $authenticatorAssertionResponse->getClientDataJSON()
+                    ->getRawData(),
                 true
             );
 
@@ -317,13 +319,10 @@ class AuthenticatorAssertionResponseValidator
         string $rpId,
         AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs,
         ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs
-    ): string
-    {
+    ): string {
         if ($authenticationExtensionsClientOutputs === null || ! $authenticationExtensionsClientInputs->has(
             'appid'
-        ) || ! $authenticationExtensionsClientOutputs->has(
-            'appid'
-        )) {
+        ) || ! $authenticationExtensionsClientOutputs->has('appid')) {
             return $rpId;
         }
         $appId = $authenticationExtensionsClientInputs->get('appid')

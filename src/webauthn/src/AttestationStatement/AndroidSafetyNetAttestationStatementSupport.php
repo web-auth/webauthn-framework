@@ -86,8 +86,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         ?RequestFactoryInterface $requestFactory = null,
         ?int $leeway = null,
         ?int $maxAge = null
-    )
-    {
+    ) {
         if (! class_exists(RS256::class)) {
             throw new RuntimeException(
                 'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?'
@@ -143,8 +142,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         ClientInterface $client,
         string $apiKey,
         RequestFactoryInterface $requestFactory
-    ): self
-    {
+    ): self {
         $this->apiKey = $apiKey;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
@@ -215,8 +213,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
@@ -247,8 +244,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         ?string $payload,
         string $clientDataJSONHash,
         AuthenticatorData $authenticatorData
-    ): void
-    {
+    ): void {
         Assertion::notNull($payload, 'Invalid attestation object');
         $payload = JsonConverter::decode($payload);
         Assertion::isArray($payload, 'Invalid attestation object');
@@ -266,12 +262,20 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::lessOrEqualThan(
             $payload['timestampMs'],
             $currentTime + $this->leeway,
-            sprintf('Invalid attestation object. Issued in the future. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs'])
+            sprintf(
+                'Invalid attestation object. Issued in the future. Current time: %d. Response time: %d',
+                $currentTime,
+                $payload['timestampMs']
+            )
         );
         Assertion::lessOrEqualThan(
             $currentTime - $payload['timestampMs'],
             $this->maxAge,
-            sprintf('Invalid attestation object. Too old. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs'])
+            sprintf(
+                'Invalid attestation object. Too old. Current time: %d. Response time: %d',
+                $currentTime,
+                $payload['timestampMs']
+            )
         );
     }
 

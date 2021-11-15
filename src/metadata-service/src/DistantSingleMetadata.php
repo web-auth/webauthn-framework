@@ -52,9 +52,8 @@ class DistantSingleMetadata extends SingleMetadata
         bool $isBase64Encoded,
         ClientInterface $httpClient,
         RequestFactoryInterface $requestFactory,
-        array $additionalHeaders = [
-    ])
-    {
+        array $additionalHeaders = []
+    ) {
         parent::__construct($uri, $isBase64Encoded); //Useless
         $this->uri = $uri;
         $this->isBase64Encoded = $isBase64Encoded;

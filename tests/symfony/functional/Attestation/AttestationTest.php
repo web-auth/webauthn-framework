@@ -83,11 +83,15 @@ final class AttestationTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(
             AttestationStatement::TYPE_NONE,
-            $response->getAttestationObject()->getAttStmt()->getType()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getType()
         );
         static::assertInstanceOf(
             EmptyTrustPath::class,
-            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getTrustPath()
         );
 
         $request = $this->createRequestWithHost('localhost');
@@ -128,11 +132,15 @@ final class AttestationTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(
             AttestationStatement::TYPE_BASIC,
-            $response->getAttestationObject()->getAttStmt()->getType()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getType()
         );
         static::assertInstanceOf(
             CertificateTrustPath::class,
-            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getTrustPath()
         );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
@@ -171,11 +179,15 @@ final class AttestationTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(
             AttestationStatement::TYPE_SELF,
-            $response->getAttestationObject()->getAttStmt()->getType()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getType()
         );
         static::assertInstanceOf(
             EmptyTrustPath::class,
-            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getTrustPath()
         );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
@@ -214,11 +226,15 @@ final class AttestationTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(
             AttestationStatement::TYPE_BASIC,
-            $response->getAttestationObject()->getAttStmt()->getType()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getType()
         );
         static::assertInstanceOf(
             CertificateTrustPath::class,
-            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getTrustPath()
         );
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');

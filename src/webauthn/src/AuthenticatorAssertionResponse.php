@@ -40,8 +40,7 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         AuthenticatorData $authenticatorData,
         string $signature,
         ?string $userHandle
-    )
-    {
+    ) {
         parent::__construct($clientDataJSON);
         $this->authenticatorData = $authenticatorData;
         $this->signature = $signature;

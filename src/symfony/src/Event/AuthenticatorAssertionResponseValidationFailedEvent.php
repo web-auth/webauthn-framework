@@ -58,8 +58,7 @@ class AuthenticatorAssertionResponseValidationFailedEvent extends Event
         ServerRequestInterface $request,
         ?string $userHandle,
         Throwable $throwable
-    )
-    {
+    ) {
         $this->credentialId = $credentialId;
         $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;
         $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;

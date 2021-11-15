@@ -94,8 +94,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         string $userHandle,
         int $counter,
         ?array $otherUI = null
-    )
-    {
+    ) {
         $this->publicKeyCredentialId = $publicKeyCredentialId;
         $this->type = $type;
         $this->transports = $transports;

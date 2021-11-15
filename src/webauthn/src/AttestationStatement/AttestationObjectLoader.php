@@ -59,8 +59,7 @@ class AttestationObjectLoader
         AttestationStatementSupportManager $attestationStatementSupportManager,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         if ($metadataStatementRepository !== null) {
             @trigger_error(
                 'The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.',

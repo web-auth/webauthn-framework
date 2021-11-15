@@ -65,8 +65,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         ?bool $requireResidentKey = null,
         ?string $userVerification = null,
         ?string $residentKey = null
-    )
-    {
+    ) {
         if ($authenticatorAttachment !== null) {
             @trigger_error(
                 'The argument "authenticatorAttachment" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorAttachment".',

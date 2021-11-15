@@ -15,7 +15,6 @@ namespace Webauthn\MetadataService\Tests\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\MetadataService\BiometricAccuracyDescriptor;
 
@@ -38,8 +37,7 @@ final class BiometricAccuracyDescriptorObjectTest extends TestCase
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedJson
-    ): void
-    {
+    ): void {
         static::assertSame($FAR, $object->getFAR());
         static::assertSame($FRR, $object->getFRR());
         static::assertSame($EER, $object->getEER());
@@ -48,9 +46,6 @@ final class BiometricAccuracyDescriptorObjectTest extends TestCase
         static::assertSame($maxRetries, $object->getMaxRetries());
         static::assertSame($blockSlowdown, $object->getBlockSlowdown());
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
-
-        $loaded = BiometricAccuracyDescriptor::createFromArray(json_decode($expectedJson, true));
-        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array

@@ -92,8 +92,7 @@ final class AssertionRequestController
         string $sessionParameterName,
         LoggerInterface $logger,
         CacheItemPoolInterface $cacheItemPool
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
@@ -163,8 +162,7 @@ final class AssertionRequestController
 
     private function getUserEntity(
         ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest
-    ): ?PublicKeyCredentialUserEntity
-    {
+    ): ?PublicKeyCredentialUserEntity {
         $username = $creationOptionsRequest->username;
         if ($username === null) {
             return null;
@@ -177,8 +175,7 @@ final class AssertionRequestController
 
     private function getServerPublicKeyCredentialRequestOptionsRequest(
         string $content
-    ): ServerPublicKeyCredentialRequestOptionsRequest
-    {
+    ): ServerPublicKeyCredentialRequestOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialRequestOptionsRequest::class,

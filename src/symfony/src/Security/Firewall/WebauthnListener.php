@@ -57,8 +57,7 @@ class WebauthnListener
         RequestListener $requestListener,
         CreationListener $creationListener,
         array $options
-    )
-    {
+    ) {
         $this->httpUtils = $httpUtils;
         $this->options = $options;
         $this->logger = $logger ?? new NullLogger();

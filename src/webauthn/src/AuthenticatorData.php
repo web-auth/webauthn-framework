@@ -70,8 +70,7 @@ class AuthenticatorData
         int $signCount,
         ?AttestedCredentialData $attestedCredentialData,
         ?AuthenticationExtensionsClientOutputs $extensions
-    )
-    {
+    ) {
         $this->rpIdHash = $rpIdHash;
         $this->flags = $flags;
         $this->signCount = $signCount;

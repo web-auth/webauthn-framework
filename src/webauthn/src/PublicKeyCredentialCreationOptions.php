@@ -76,8 +76,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
         ?string $attestation = null,
         ?AuthenticationExtensionsClientInputs $extensions = null
-    )
-    {
+    ) {
         if (count($excludeCredentials) !== 0) {
             @trigger_error(
                 'The argument "excludeCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "excludeCredentials" or "excludeCredential".',
@@ -114,8 +113,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         PublicKeyCredentialUserEntity $user,
         string $challenge,
         array $pubKeyCredParams
-    ): self
-    {
+    ): self {
         return new self($rp, $user, $challenge, $pubKeyCredParams);
     }
 

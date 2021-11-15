@@ -85,8 +85,7 @@ class AuthenticatorAttestationResponseValidator
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         if ($logger !== null) {
             @trigger_error(
                 'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".',
@@ -135,9 +134,8 @@ class AuthenticatorAttestationResponseValidator
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
-        array $securedRelyingPartyId = [
-    ]): PublicKeyCredentialSource
-    {
+        array $securedRelyingPartyId = []
+    ): PublicKeyCredentialSource {
         try {
             $this->logger->info('Checking the authenticator attestation response', [
                 'authenticatorAttestationResponse' => $authenticatorAttestationResponse,
@@ -168,7 +166,9 @@ class AuthenticatorAttestationResponseValidator
             $facetId = $this->getFacetId(
                 $rpId,
                 $publicKeyCredentialCreationOptions->getExtensions(),
-                $authenticatorAttestationResponse->getAttestationObject()->getAuthData()->getExtensions()
+                $authenticatorAttestationResponse->getAttestationObject()
+                    ->getAuthData()
+                    ->getExtensions()
             );
 
             $parsedRelyingPartyId = parse_url($C->getOrigin());
@@ -192,7 +192,8 @@ class AuthenticatorAttestationResponseValidator
             /** @see 7.1.7 */
             $clientDataJSONHash = hash(
                 'sha256',
-                $authenticatorAttestationResponse->getClientDataJSON()->getRawData(),
+                $authenticatorAttestationResponse->getClientDataJSON()
+                    ->getRawData(),
                 true
             );
 
@@ -249,7 +250,8 @@ class AuthenticatorAttestationResponseValidator
             /* @see 7.1.16 */
             /* @see 7.1.17 */
             Assertion::true(
-                $attestationObject->getAuthData()->hasAttestedCredentialData(),
+                $attestationObject->getAuthData()
+                    ->hasAttestedCredentialData(),
                 'There is no attested credential data.'
             );
             $attestedCredentialData = $attestationObject->getAuthData()
@@ -288,8 +290,7 @@ class AuthenticatorAttestationResponseValidator
     private function checkCertificateChain(
         AttestationStatement $attestationStatement,
         ?MetadataStatement $metadataStatement
-    ): void
-    {
+    ): void {
         $trustPath = $attestationStatement->getTrustPath();
         if (! $trustPath instanceof CertificateTrustPath) {
             return;
@@ -300,11 +301,7 @@ class AuthenticatorAttestationResponseValidator
             // @phpstan-ignore-next-line
             $this->certificateChainChecker === null ? CertificateToolbox::checkChain(
                 $authenticatorCertificates
-            ) : $this->certificateChainChecker->check(
-                $authenticatorCertificates,
-                [],
-                null
-            );
+            ) : $this->certificateChainChecker->check($authenticatorCertificates, []);
 
             return;
         }
@@ -320,17 +317,13 @@ class AuthenticatorAttestationResponseValidator
         $this->certificateChainChecker === null ? CertificateToolbox::checkChain(
             $authenticatorCertificates,
             $trustedCertificates
-        ) : $this->certificateChainChecker->check(
-            $authenticatorCertificates,
-            $trustedCertificates
-        );
+        ) : $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
     }
 
     private function checkMetadataStatement(
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         AttestationObject $attestationObject
-    ): void
-    {
+    ): void {
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()
             ->getAttestedCredentialData()
@@ -429,8 +422,7 @@ class AuthenticatorAttestationResponseValidator
         AttestedCredentialData $attestedCredentialData,
         AttestationObject $attestationObject,
         string $userHandle
-    ): PublicKeyCredentialSource
-    {
+    ): PublicKeyCredentialSource {
         return new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
@@ -467,13 +459,10 @@ class AuthenticatorAttestationResponseValidator
         string $rpId,
         AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs,
         ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs
-    ): string
-    {
+    ): string {
         if ($authenticationExtensionsClientOutputs === null || ! $authenticationExtensionsClientInputs->has(
             'appid'
-        ) || ! $authenticationExtensionsClientOutputs->has(
-            'appid'
-        )) {
+        ) || ! $authenticationExtensionsClientOutputs->has('appid')) {
             return $rpId;
         }
         $appId = $authenticationExtensionsClientInputs->get('appid')

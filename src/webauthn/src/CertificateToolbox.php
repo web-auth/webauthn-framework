@@ -223,8 +223,7 @@ class CertificateToolbox
         string $certificate,
         string $prefix,
         string $suffix
-    ): string
-    {
+    ): string {
         $untrustedFilename = tempnam($folder, $prefix);
         rename($untrustedFilename, $untrustedFilename . $suffix);
         file_put_contents($untrustedFilename . $suffix, $certificate, FILE_APPEND);

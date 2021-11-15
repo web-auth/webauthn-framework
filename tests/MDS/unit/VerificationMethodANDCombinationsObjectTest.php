@@ -33,9 +33,6 @@ final class VerificationMethodANDCombinationsObjectTest extends TestCase
     public function validObject(VerificationMethodANDCombinations $object, string $expectedJson): void
     {
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
-
-        $loaded = VerificationMethodANDCombinations::createFromArray(json_decode($expectedJson, true));
-        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array

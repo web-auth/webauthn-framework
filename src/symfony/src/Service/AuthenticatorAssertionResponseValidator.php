@@ -44,8 +44,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         EventDispatcherInterface $eventDispatcher,
         ?CounterChecker $counterChecker = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $counterChecker, $logger);
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -59,9 +58,8 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface $request,
         ?string $userHandle,
-        array $securedRelyingPartyId = [
-    ]): PublicKeyCredentialSource
-    {
+        array $securedRelyingPartyId = []
+    ): PublicKeyCredentialSource {
         try {
             $result = parent::check(
                 $credentialId,

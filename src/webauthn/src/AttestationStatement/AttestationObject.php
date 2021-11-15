@@ -44,8 +44,7 @@ class AttestationObject
         AttestationStatement $attStmt,
         AuthenticatorData $authData,
         ?MetadataStatement $metadataStatement = null
-    )
-    {
+    ) {
         if ($metadataStatement !== null) {
             @trigger_error(
                 'The argument "metadataStatement" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatement".',

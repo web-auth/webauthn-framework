@@ -66,8 +66,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         ?CodeAccuracyDescriptor $caDesc = null,
         ?BiometricAccuracyDescriptor $baDesc = null,
         ?PatternAccuracyDescriptor $paDesc = null
-    )
-    {
+    ) {
         Assertion::greaterOrEqualThan(
             $userVerification,
             0,

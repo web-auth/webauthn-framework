@@ -58,8 +58,7 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         string $username,
         string $displayName,
         ?string $icon
-    ): PublicKeyCredentialUserEntity
-    {
+    ): PublicKeyCredentialUserEntity {
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );

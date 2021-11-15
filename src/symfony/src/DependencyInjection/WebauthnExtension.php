@@ -131,8 +131,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         ContainerBuilder $container,
         LoaderInterface $loader,
         array $config
-    ): void
-    {
+    ): void {
         if (! class_exists(AttestationRequestController::class)) {
             return;
         }
@@ -316,8 +315,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         ContainerBuilder $container,
         LoaderInterface $loader,
         array $config
-    ): void
-    {
+    ): void {
         $loader->load('certificate_chain_checker.php');
         if ($config['certificate_chain_checker']['http_client'] !== null) {
             $container->setAlias(
@@ -340,8 +338,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         ContainerBuilder $container,
         LoaderInterface $loader,
         array $config
-    ): void
-    {
+    ): void {
         $loader->load('metadata_statement_supports.php');
 
         //Android SafetyNet

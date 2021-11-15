@@ -75,8 +75,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         string $timeOfLastStatusChange,
         ?string $rogueListURL,
         ?string $rogueListHash
-    )
-    {
+    ) {
         if ($aaid !== null && $aaguid !== null) {
             throw new LogicException('Authenticators cannot support both AAID and AAGUID');
         }
@@ -180,7 +179,9 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         );
         Assertion::isArray(
             $data['statusReports'],
-            Utils::logicException('Invalid data. The parameter "statusReports" shall be an array of StatusReport objects')
+            Utils::logicException(
+                'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
+            )
         );
         $object = new self(
             $data['aaid'] ?? null,

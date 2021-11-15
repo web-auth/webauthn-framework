@@ -54,7 +54,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return array_key_exists($key, $this->extensions);
     }
 
-    public function get(string $key)
+    public function get(string $key): AuthenticationExtension
     {
         Assertion::true($this->has($key), sprintf('The extension with key "%s" is not available', $key));
 

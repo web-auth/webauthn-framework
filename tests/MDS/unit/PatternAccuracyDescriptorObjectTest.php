@@ -16,7 +16,6 @@ namespace Webauthn\MetadataService\Tests\Unit;
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\MetadataService\PatternAccuracyDescriptor;
 
@@ -35,15 +34,11 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedJson
-    ): void
-    {
+    ): void {
         static::assertSame($minComplexity, $object->getMinComplexity());
         static::assertSame($maxRetries, $object->getMaxRetries());
         static::assertSame($blockSlowdown, $object->getBlockSlowdown());
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
-
-        $loaded = PatternAccuracyDescriptor::createFromArray(json_decode($expectedJson, true));
-        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array
@@ -69,8 +64,7 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedMessage
-    ): void
-    {
+    ): void {
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage($expectedMessage);
 

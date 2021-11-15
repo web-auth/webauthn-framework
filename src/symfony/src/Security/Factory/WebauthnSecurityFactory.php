@@ -300,8 +300,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
         string $id,
         string $path,
         ?string $host
-    ): void
-    {
+    ): void {
         $controller = new Definition(DummyController::class);
         $controller->setFactory([new Reference(DummyControllerFactory::class), 'create']);
         $controller->addTag(DynamicRouteCompilerPass::TAG, [

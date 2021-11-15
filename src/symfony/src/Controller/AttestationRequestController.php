@@ -94,8 +94,7 @@ final class AttestationRequestController
         OptionsStorage $sessionParameterName,
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler $failureHandler
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
@@ -151,8 +150,7 @@ final class AttestationRequestController
     private function getPublicKeyCredentialCreationOptions(
         string $content,
         PublicKeyCredentialUserEntity $userEntity
-    ): PublicKeyCredentialCreationOptions
-    {
+    ): PublicKeyCredentialCreationOptions {
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
         $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
@@ -176,8 +174,7 @@ final class AttestationRequestController
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): AdditionalPublicKeyCredentialCreationOptionsRequest
-    {
+    ): AdditionalPublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             AdditionalPublicKeyCredentialCreationOptionsRequest::class,

@@ -67,8 +67,7 @@ final class AssertionResponseController
         string $sessionParameterName,
         LoggerInterface $logger,
         CacheItemPoolInterface $cacheItemPool
-    )
-    {
+    ) {
         $this->httpMessageFactory = $httpMessageFactory;
         $this->assertionResponseValidator = $assertionResponseValidator;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;

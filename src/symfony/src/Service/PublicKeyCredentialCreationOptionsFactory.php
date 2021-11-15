@@ -57,8 +57,7 @@ final class PublicKeyCredentialCreationOptionsFactory
         ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
         ?string $attestationConveyance = null,
         ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
-    ): PublicKeyCredentialCreationOptions
-    {
+    ): PublicKeyCredentialCreationOptions {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 

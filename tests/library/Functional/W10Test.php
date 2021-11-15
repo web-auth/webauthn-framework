@@ -41,8 +41,7 @@ final class W10Test extends AbstractTestCase
         string $host,
         string $rpIdHash,
         int $signCount
-    ): void
-    {
+    ): void {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(
             $publicKeyCredentialCreationOptionsData
         );
@@ -82,7 +81,8 @@ final class W10Test extends AbstractTestCase
         if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             static::assertSame(
                 '00000000-0000-0000-0000-000000000000',
-                $publicKeyCredentialSource->getAaguid()->toString()
+                $publicKeyCredentialSource->getAaguid()
+                    ->toString()
             );
             static::assertSame('none', $publicKeyCredentialSource->getAttestationType());
             static::assertInstanceOf(EmptyTrustPath::class, $publicKeyCredentialSource->getTrustPath());

@@ -95,9 +95,8 @@ class AuthenticatorRegistrationHelper
         AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
         SessionStorage $optionsStorage,
         HttpMessageFactoryInterface $httpMessageFactory,
-        array $securedRelyingPartyId = [
-    ])
-    {
+        array $securedRelyingPartyId = []
+    ) {
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -113,8 +112,7 @@ class AuthenticatorRegistrationHelper
         PublicKeyCredentialUserEntity $userEntity,
         Request $request,
         string $profile = 'default'
-    ): PublicKeyCredentialCreationOptions
-    {
+    ): PublicKeyCredentialCreationOptions {
         $content = $request->getContent();
         Assertion::string($content, 'Invalid data');
         $creationOptionsRequest = $this->getAdditionalPublicKeyCredentialCreationOptionsRequest($content);
@@ -170,8 +168,7 @@ class AuthenticatorRegistrationHelper
 
     private function getAdditionalPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): AdditionalPublicKeyCredentialCreationOptionsRequest
-    {
+    ): AdditionalPublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             AdditionalPublicKeyCredentialCreationOptionsRequest::class,
@@ -202,8 +199,8 @@ class AuthenticatorRegistrationHelper
 
         return array_map(
             static function (PublicKeyCredentialSource $publicKeyCredentialSource): PublicKeyCredentialDescriptor {
-            return $publicKeyCredentialSource->getPublicKeyCredentialDescriptor();
-        },
+                return $publicKeyCredentialSource->getPublicKeyCredentialDescriptor();
+            },
             $list
         );
     }

@@ -90,9 +90,8 @@ class WebauthnToken extends AbstractToken
         int $signCount,
         ?AuthenticationExtensionsClientOutputs $extensions,
         string $providerKey,
-        array $roles = [
-    ])
-    {
+        array $roles = []
+    ) {
         parent::__construct($roles);
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 

@@ -155,9 +155,7 @@ final class MetadataServiceTest extends KernelTestCase
                 $method,
                 ['createFromArray', 'create', '__construct', 'jsonSerialize'],
                 true
-            ) && count(
-                $classMethod->getParameters()
-            ) === 0;
+            ) && count($classMethod->getParameters()) === 0;
         });
         foreach ($availableMethods as $method) {
             $value = $object->{$method}();

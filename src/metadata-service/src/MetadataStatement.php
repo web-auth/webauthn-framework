@@ -593,8 +593,8 @@ class MetadataStatement implements JsonSerializable
             'tcDisplayContentType' => $this->tcDisplayContentType,
             'tcDisplayPNGCharacteristics' => array_map(
                 static function (DisplayPNGCharacteristicsDescriptor $object): array {
-                return $object->jsonSerialize();
-            },
+                    return $object->jsonSerialize();
+                },
                 $this->tcDisplayPNGCharacteristics
             ),
             'attestationRootCertificates' => $this->attestationRootCertificates,

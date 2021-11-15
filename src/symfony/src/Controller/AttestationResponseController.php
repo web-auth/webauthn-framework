@@ -73,8 +73,7 @@ final class AttestationResponseController
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler $failureHandler
-    )
-    {
+    ) {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->credentialSourceRepository = $credentialSourceRepository;
         $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;

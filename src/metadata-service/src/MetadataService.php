@@ -73,8 +73,7 @@ class MetadataService
         array $additionalQueryStringValues = [],
         array $additionalHeaders = [],
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         if (count($additionalQueryStringValues) !== 0) {
             @trigger_error(
                 'The argument "additionalQueryStringValues" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addQueryStringValues`.',
@@ -162,16 +161,14 @@ class MetadataService
     public function getMetadataStatementFor(
         MetadataTOCPayloadEntry $entry,
         string $hashingFunction = 'sha256'
-    ): MetadataStatement
-    {
+    ): MetadataStatement {
         return $this->fetchMetadataStatementFor($entry, $hashingFunction);
     }
 
     public function fetchMetadataStatementFor(
         MetadataTOCPayloadEntry $entry,
         string $hashingFunction = 'sha256'
-    ): MetadataStatement
-    {
+    ): MetadataStatement {
         $this->logger->info('Trying to get the metadata statement for a given entry', [
             'entry' => $entry,
         ]);
@@ -267,8 +264,7 @@ class MetadataService
         bool $isBase64UrlEncoded,
         string $hash = '',
         string $hashingFunction = 'sha256'
-    ): MetadataStatement
-    {
+    ): MetadataStatement {
         $payload = $this->fetch($uri);
         if ($hash !== '') {
             Assertion::true(

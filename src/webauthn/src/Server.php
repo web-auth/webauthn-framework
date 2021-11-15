@@ -132,8 +132,7 @@ class Server
         PublicKeyCredentialRpEntity $relyingParty,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         ?MetadataStatementRepository $metadataStatementRepository = null
-    )
-    {
+    ) {
         if ($metadataStatementRepository !== null) {
             @trigger_error(
                 'The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".',
@@ -224,8 +223,7 @@ class Server
         array $excludedPublicKeyDescriptors = [],
         ?AuthenticatorSelectionCriteria $criteria = null,
         ?AuthenticationExtensionsClientInputs $extensions = null
-    ): PublicKeyCredentialCreationOptions
-    {
+    ): PublicKeyCredentialCreationOptions {
         $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $publicKeyCredentialParametersList = [];
         foreach ($coseAlgorithmManager->all() as $algorithm) {
@@ -257,8 +255,7 @@ class Server
         ?string $userVerification = null,
         array $allowedPublicKeyDescriptors = [],
         ?AuthenticationExtensionsClientInputs $extensions = null
-    ): PublicKeyCredentialRequestOptions
-    {
+    ): PublicKeyCredentialRequestOptions {
         return PublicKeyCredentialRequestOptions
             ::create(random_bytes($this->challengeSize))
                 ->setRpId($this->rpEntity->getId())
@@ -275,8 +272,7 @@ class Server
         string $data,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $serverRequest
-    ): PublicKeyCredentialSource
-    {
+    ): PublicKeyCredentialSource {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
             ->setLogger($this->logger)
@@ -315,8 +311,7 @@ class Server
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ?PublicKeyCredentialUserEntity $userEntity,
         ServerRequestInterface $serverRequest
-    ): PublicKeyCredentialSource
-    {
+    ): PublicKeyCredentialSource {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
             ->setLogger($this->logger)
@@ -370,8 +365,7 @@ class Server
         ClientInterface $client,
         string $apiKey,
         RequestFactoryInterface $requestFactory
-    ): self
-    {
+    ): self {
         $this->httpClient = $client;
         $this->googleApiKey = $apiKey;
         $this->requestFactory = $requestFactory;

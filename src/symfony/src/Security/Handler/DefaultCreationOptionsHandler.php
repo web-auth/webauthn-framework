@@ -23,8 +23,7 @@ final class DefaultCreationOptionsHandler implements CreationOptionsHandler
     public function onCreationOptions(
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         PublicKeyCredentialUserEntity $userEntity
-    ): Response
-    {
+    ): Response {
         $data = $publicKeyCredentialCreationOptions->jsonSerialize();
         $data['status'] = 'ok';
         $data['errorMessage'] = '';

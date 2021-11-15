@@ -64,9 +64,8 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
     public function addDistantSingleStatement(
         string $uri,
         bool $isBare64Encoded = false,
-        array $additionalHeaders = [
-    ]): void
-    {
+        array $additionalHeaders = []
+    ): void {
         $this->metadataStatements[] = new DistantSingleMetadata(
             $uri,
             $isBare64Encoded,
@@ -79,9 +78,8 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
     public function addService(
         string $url,
         array $additionalQueryStringParameters = [],
-        array $additionalHeaders = [
-    ]): void
-    {
+        array $additionalHeaders = []
+    ): void {
         $service = new MetadataService($url, $this->httpClient, $this->requestFactory);
         $service
             ->addQueryStringValues($additionalQueryStringParameters)

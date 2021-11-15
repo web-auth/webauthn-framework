@@ -50,8 +50,7 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         ?int $maxReferenceDataSets,
         ?int $maxRetries = null,
         ?int $blockSlowdown = null
-    )
-    {
+    ) {
         Assertion::greaterOrEqualThan(
             $maxReferenceDataSets,
             0,

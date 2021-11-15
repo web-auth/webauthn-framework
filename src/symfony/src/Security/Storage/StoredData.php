@@ -31,8 +31,7 @@ class StoredData
     public function __construct(
         PublicKeyCredentialOptions $publicKeyCredentialOptions,
         ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity
-    )
-    {
+    ) {
         $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
     }

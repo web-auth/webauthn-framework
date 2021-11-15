@@ -16,7 +16,6 @@ namespace Webauthn\MetadataService\Tests\Unit;
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\MetadataService\CodeAccuracyDescriptor;
 
@@ -36,16 +35,12 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedJson
-    ): void
-    {
+    ): void {
         static::assertSame($base, $object->getBase());
         static::assertSame($minLength, $object->getMinLength());
         static::assertSame($maxRetries, $object->getMaxRetries());
         static::assertSame($blockSlowdown, $object->getBlockSlowdown());
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
-
-        $loaded = CodeAccuracyDescriptor::createFromArray(json_decode($expectedJson, true));
-        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array
@@ -73,8 +68,7 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedMessage
-    ): void
-    {
+    ): void {
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage($expectedMessage);
 

@@ -41,7 +41,8 @@ final class SecuredAreaTest extends WebTestCase
         static::assertSame(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
         static::assertSame(
             '{"status":"error","errorMessage":"Full authentication is required to access this resource.","errorCode":0}',
-            $client->getResponse()->getContent()
+            $client->getResponse()
+                ->getContent()
         );
     }
 
@@ -92,7 +93,8 @@ final class SecuredAreaTest extends WebTestCase
         static::assertSame(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
         static::assertSame(
             '{"status":"error","errorMessage":"No public key credential options available for this session.","errorCode":0}',
-            $client->getResponse()->getContent()
+            $client->getResponse()
+                ->getContent()
         );
     }
 
@@ -135,7 +137,8 @@ final class SecuredAreaTest extends WebTestCase
         static::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         static::assertSame(
             '{"status":"ok","errorMessage":"","username":"admin"}',
-            $client->getResponse()->getContent()
+            $client->getResponse()
+                ->getContent()
         );
         static::assertTrue($session->has('_security_main'));
         static::assertTrue($client->getResponse()->headers->has('set-cookie'));

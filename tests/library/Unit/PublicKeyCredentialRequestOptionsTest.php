@@ -63,7 +63,6 @@ final class PublicKeyCredentialRequestOptionsTest extends TestCase
         static::assertSame('challenge', $data->getChallenge());
         static::assertSame(1000, $data->getTimeout());
         static::assertSame('rp_id', $data->getRpId());
-        static::assertSame([$credential], $data->getAllowCredentials());
         static::assertSame('preferred', $data->getUserVerification());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
         static::assertSame(

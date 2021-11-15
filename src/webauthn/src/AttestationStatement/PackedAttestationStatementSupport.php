@@ -80,8 +80,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $trustPath = $attestationStatement->getTrustPath();
         switch (true) {
             case $trustPath instanceof CertificateTrustPath:
@@ -180,7 +179,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         // id-fido-gen-ce-aaguid OID check
         Assertion::false(
             in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
-                $attestedCredentialData->getAaguid()->getBytes(),
+                $attestedCredentialData->getAaguid()
+                    ->getBytes(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ),
             'The value of the "aaguid" does not match with the certificate'
@@ -192,8 +192,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData,
         CertificateTrustPath $trustPath
-    ): bool
-    {
+    ): bool {
         $certificates = $trustPath->getCertificates();
 
         // Check leaf certificate
@@ -224,8 +223,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'No attested credential available');
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();

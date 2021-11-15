@@ -91,8 +91,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $attToBeSigned = $authenticatorData->getAuthData() . $clientDataJSONHash;
         $attToBeSignedHash = hash(
             Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')),
@@ -272,8 +271,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
@@ -337,7 +335,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         // id-fido-gen-ce-aaguid OID check
         Assertion::false(
             in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
-                $authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(),
+                $authenticatorData->getAttestedCredentialData()
+                    ->getAaguid()
+                    ->getBytes(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ),
             'The value of the "aaguid" does not match with the certificate'

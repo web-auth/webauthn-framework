@@ -122,8 +122,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
 
     public function addAuthenticatorAttestationResponseValidationSucceeded(
         AuthenticatorAttestationResponseValidationSucceededEvent $event
-    ): void
-    {
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
@@ -135,8 +134,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
 
     public function addAuthenticatorAttestationResponseValidationFailed(
         AuthenticatorAttestationResponseValidationFailedEvent $event
-    ): void
-    {
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationFailed[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
@@ -157,8 +155,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
 
     public function addAuthenticatorAssertionResponseValidationSucceeded(
         AuthenticatorAssertionResponseValidationSucceededEvent $event
-    ): void
-    {
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationSucceeded[] = [
             'user_handle' => $cloner->cloneVar($event->getUserHandle()),
@@ -172,8 +169,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
 
     public function addAuthenticatorAssertionResponseValidationFailed(
         AuthenticatorAssertionResponseValidationFailedEvent $event
-    ): void
-    {
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [
             'user_handle' => $cloner->cloneVar($event->getUserHandle()),

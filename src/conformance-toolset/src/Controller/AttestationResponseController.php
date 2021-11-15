@@ -80,8 +80,7 @@ final class AttestationResponseController
         string $sessionParameterName,
         LoggerInterface $logger,
         CacheItemPoolInterface $cacheItemPool
-    )
-    {
+    ) {
         $this->attestationResponseValidator = $attestationResponseValidator;
         $this->userEntityRepository = $userEntityRepository;
         $this->credentialSourceRepository = $credentialSourceRepository;

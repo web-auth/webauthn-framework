@@ -60,8 +60,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         string $username,
         string $displayName,
         ?string $icon
-    ): PublicKeyCredentialUserEntity
-    {
+    ): PublicKeyCredentialUserEntity {
         return new User($username, Uuid::uuid4()->toString(), $displayName, $icon);
     }
 

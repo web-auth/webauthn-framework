@@ -30,8 +30,7 @@ trait MockedPublicKeyCredentialSourceTrait
         array $transport = [],
         string $attestationType = 'none',
         ?TrustPath $trustPath = null
-    ): PublicKeyCredentialSource
-    {
+    ): PublicKeyCredentialSource {
         return new PublicKeyCredentialSource(
             $id,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,

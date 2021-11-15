@@ -194,23 +194,23 @@ final class Configuration implements ConfigurationInterface
                 'default' => [
                     'rp' => [
                         'name' => 'Secured Application',
-                        
-                        
-                    ], ], ])
+                    ],
+                ],
+            ])
             ->treatNullLike([
                 'default' => [
                     'rp' => [
                         'name' => 'Secured Application',
-                        
-                        
-                    ], ], ])
+                    ],
+                ],
+            ])
             ->treatTrueLike([
                 'default' => [
                     'rp' => [
                         'name' => 'Secured Application',
-                        
-                        
-                    ], ], ])
+                    ],
+                ],
+            ])
             ->useAttributeAsKey('name')
             ->arrayPrototype()
             ->addDefaultsIfNotSet()
@@ -362,7 +362,7 @@ final class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function appendTokenTransportBinding(): void
+    private function appendTokenTransportBinding(ArrayNodeDefinition $node): void
     {
         $node->children()
             ->arrayNode('transport_binding_profile')

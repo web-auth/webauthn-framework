@@ -46,8 +46,7 @@ class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
         PublicKeyCredentialSource $publicKeyCredentialSource
-    )
-    {
+    ) {
         $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
         $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
         $this->request = $request;

@@ -49,12 +49,12 @@ final class ServerTest extends AbstractTestCase
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 Uuid::uuid4()->toString(),
                 [
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            
-            ]),
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+                ]
+            ),
         ];
         $extensions = new AuthenticationExtensionsClientInputs();
 
@@ -90,12 +90,12 @@ final class ServerTest extends AbstractTestCase
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 Uuid::uuid4()->toString(),
                 [
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            
-            ]),
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+                ]
+            ),
         ];
         $extensions = new AuthenticationExtensionsClientInputs();
 

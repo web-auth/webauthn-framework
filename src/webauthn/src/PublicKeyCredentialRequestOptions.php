@@ -55,8 +55,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         array $allowCredentials = [],
         ?string $userVerification = null,
         ?AuthenticationExtensionsClientInputs $extensions = null
-    )
-    {
+    ) {
         if (count($allowCredentials) !== 0) {
             @trigger_error(
                 'The argument "allowCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addAllowedCredentials" or "addAllowedCredential".',

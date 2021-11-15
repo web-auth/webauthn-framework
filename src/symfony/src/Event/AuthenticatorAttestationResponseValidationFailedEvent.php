@@ -46,8 +46,7 @@ class AuthenticatorAttestationResponseValidationFailedEvent extends Event
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
         Throwable $throwable
-    )
-    {
+    ) {
         $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
         $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
         $this->request = $request;

@@ -91,8 +91,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
@@ -117,8 +116,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         string $certificate,
         string $clientDataHash,
         AuthenticatorData $authenticatorData
-    ): void
-    {
+    ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');

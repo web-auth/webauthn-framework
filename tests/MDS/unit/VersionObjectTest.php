@@ -16,7 +16,6 @@ namespace Webauthn\MetadataService\Tests\Unit;
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\MetadataService\Version;
 
@@ -34,9 +33,6 @@ final class VersionObjectTest extends TestCase
         static::assertSame($major, $object->getMajor());
         static::assertSame($minor, $object->getMinor());
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
-
-        $loaded = Version::createFromArray(json_decode($expectedJson, true));
-        static::assertSame($object, $loaded);
     }
 
     public function validObjectData(): array

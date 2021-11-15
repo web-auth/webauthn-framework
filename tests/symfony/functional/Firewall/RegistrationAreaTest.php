@@ -170,9 +170,9 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'authenticatorAttachment' => 'cross-platform',
-            'userVerification' => 'preferred',
             'requireResidentKey' => true,
+            'userVerification' => 'preferred',
+            'authenticatorAttachment' => 'cross-platform',
         ], $data['authenticatorSelection']);
     }
 
@@ -209,8 +209,8 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'userVerification' => 'preferred',
             'requireResidentKey' => true,
+            'userVerification' => 'preferred',
         ], $data['authenticatorSelection']);
     }
 
@@ -257,9 +257,9 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'authenticatorAttachment' => 'platform',
-            'userVerification' => 'required',
             'requireResidentKey' => true,
+            'userVerification' => 'required',
+            'authenticatorAttachment' => 'platform',
         ], $data['authenticatorSelection']);
     }
 

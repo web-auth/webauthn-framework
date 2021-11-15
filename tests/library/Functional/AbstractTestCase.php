@@ -106,8 +106,7 @@ abstract class AbstractTestCase extends TestCase
     protected function getAuthenticatorAttestationResponseValidator(
         PublicKeyCredentialSourceRepository $credentialRepository,
         ?ClientInterface $client = null
-    ): AuthenticatorAttestationResponseValidator
-    {
+    ): AuthenticatorAttestationResponseValidator {
         if ($this->authenticatorAttestationResponseValidator === null) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
@@ -128,8 +127,7 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getAuthenticatorAssertionResponseValidator(
         PublicKeyCredentialSourceRepository $credentialRepository
-    ): AuthenticatorAssertionResponseValidator
-    {
+    ): AuthenticatorAssertionResponseValidator {
         if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,

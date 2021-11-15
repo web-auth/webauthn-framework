@@ -51,8 +51,7 @@ final class PublicKeyCredentialRequestOptionsFactory
         array $allowCredentials,
         ?string $userVerification = null,
         ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
-    ): PublicKeyCredentialRequestOptions
-    {
+    ): PublicKeyCredentialRequestOptions {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 

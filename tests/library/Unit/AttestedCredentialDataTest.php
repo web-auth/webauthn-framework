@@ -46,8 +46,6 @@ final class AttestedCredentialDataTest extends TestCase
             '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
             true
         );
-        $created = AttestedCredentialData::createFromArray($json);
-        static::assertSame($attestedCredentialData, $created);
     }
 
     public function dataAAGUID(): array

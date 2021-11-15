@@ -64,8 +64,6 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         );
         static::assertSame('challenge', $data->getChallenge());
         static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
-        static::assertSame([$credential], $data->getExcludeCredentials());
-        static::assertSame([$credentialParameters], $data->getPubKeyCredParams());
         static::assertSame('direct', $data->getAttestation());
         static::assertSame(1000, $data->getTimeout());
         static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $data->getRp());

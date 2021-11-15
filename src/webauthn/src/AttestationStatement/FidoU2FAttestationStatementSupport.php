@@ -86,8 +86,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
-    ): bool
-    {
+    ): bool {
         Assertion::eq(
             $authenticatorData->getAttestedCredentialData()
                 ->getAaguid()
@@ -104,7 +103,8 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             ->getCredentialId()
         ;
         $dataToVerify .= $this->extractPublicKey(
-            $authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()
+            $authenticatorData->getAttestedCredentialData()
+                ->getCredentialPublicKey()
         );
 
         return openssl_verify(

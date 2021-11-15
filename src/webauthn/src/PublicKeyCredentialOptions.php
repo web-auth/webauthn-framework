@@ -39,8 +39,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         string $challenge,
         ?int $timeout = null,
         ?AuthenticationExtensionsClientInputs $extensions = null
-    )
-    {
+    ) {
         if ($timeout !== null) {
             @trigger_error(
                 'The argument "timeout" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setTimeout".',

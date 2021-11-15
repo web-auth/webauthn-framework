@@ -32,9 +32,8 @@ class MetadataStatementFetcher
         string $uri,
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
-        array $additionalHeaders = [
-    ]): MetadataTOCPayload
-    {
+        array $additionalHeaders = []
+    ): MetadataTOCPayload {
         $content = self::fetch($uri, $client, $requestFactory, $additionalHeaders);
         $payload = self::getJwsPayload($content);
         $data = json_decode($payload, true);
@@ -50,8 +49,7 @@ class MetadataStatementFetcher
         array $additionalHeaders = [],
         string $hash = '',
         string $hashingFunction = 'sha256'
-    ): MetadataStatement
-    {
+    ): MetadataStatement {
         $payload = self::fetch($uri, $client, $requestFactory, $additionalHeaders);
         if ($hash !== '') {
             Assertion::true(
@@ -69,9 +67,8 @@ class MetadataStatementFetcher
         string $uri,
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
-        array $additionalHeaders = [
-    ]): string
-    {
+        array $additionalHeaders = []
+    ): string {
         $request = $requestFactory->createRequest('GET', $uri);
         foreach ($additionalHeaders as $k => $v) {
             $request = $request->withHeader($k, $v);

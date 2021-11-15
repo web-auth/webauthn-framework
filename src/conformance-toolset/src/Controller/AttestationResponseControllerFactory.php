@@ -87,8 +87,7 @@ final class AttestationResponseControllerFactory
         CacheItemPoolInterface $cacheItemPool,
         PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
@@ -104,8 +103,7 @@ final class AttestationResponseControllerFactory
     public function createAttestationRequestController(
         string $profile,
         string $sessionParameterName
-    ): AttestationRequestController
-    {
+    ): AttestationRequestController {
         return new AttestationRequestController(
             $this->serializer,
             $this->validator,

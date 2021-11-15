@@ -174,9 +174,8 @@ class RequestListener
         OptionsStorage $optionsStorage,
         ?LoggerInterface $logger = null,
         ?EventDispatcherInterface $dispatcher = null,
-        array $securedRelyingPartyId = [
-    ])
-    {
+        array $securedRelyingPartyId = []
+    ) {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
 
         $this->tokenStorage = $tokenStorage;
@@ -285,8 +284,7 @@ class RequestListener
 
     private function getServerPublicKeyCredentialRequestOptionsRequest(
         string $content
-    ): ServerPublicKeyCredentialRequestOptionsRequest
-    {
+    ): ServerPublicKeyCredentialRequestOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialRequestOptionsRequest::class,

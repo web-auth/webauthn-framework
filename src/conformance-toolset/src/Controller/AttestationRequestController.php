@@ -93,8 +93,7 @@ final class AttestationRequestController
         string $sessionParameterName,
         LoggerInterface $logger,
         CacheItemPoolInterface $cacheItemPool
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
@@ -167,8 +166,7 @@ final class AttestationRequestController
 
     private function getUserEntity(
         ServerPublicKeyCredentialCreationOptionsRequest $creationOptionsRequest
-    ): PublicKeyCredentialUserEntity
-    {
+    ): PublicKeyCredentialUserEntity {
         $username = $creationOptionsRequest->username;
         $userEntity = $this->userEntityRepository->findOneByUsername($username);
         if ($userEntity === null) {
@@ -184,8 +182,7 @@ final class AttestationRequestController
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): ServerPublicKeyCredentialCreationOptionsRequest
-    {
+    ): ServerPublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialCreationOptionsRequest::class,

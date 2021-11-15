@@ -73,11 +73,15 @@ final class PackedAttestationStatementTest extends KernelTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(
             AttestationStatement::TYPE_SELF,
-            $response->getAttestationObject()->getAttStmt()->getType()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getType()
         );
         static::assertInstanceOf(
             EmptyTrustPath::class,
-            $response->getAttestationObject()->getAttStmt()->getTrustPath()
+            $response->getAttestationObject()
+                ->getAttStmt()
+                ->getTrustPath()
         );
 
         $request = $this->createRequestWithHost('spomky-webauthn.herokuapp.com');

@@ -44,8 +44,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         EventDispatcherInterface $eventDispatcher,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $metadataStatementRepository, $logger);
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -54,9 +53,8 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
-        array $securedRelyingPartyId = [
-    ]): PublicKeyCredentialSource
-    {
+        array $securedRelyingPartyId = []
+    ): PublicKeyCredentialSource {
         try {
             $result = parent::check(
                 $authenticatorAttestationResponse,

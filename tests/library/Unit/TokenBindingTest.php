@@ -43,8 +43,7 @@ final class TokenBindingTest extends TestCase
         ?array $exception,
         ?string $expectedStatus,
         ?string $expectedId
-    ): void
-    {
+    ): void {
         if ($exception !== null) {
             static::expectException($exception['class']);
             static::expectExceptionMessage($exception['message']);

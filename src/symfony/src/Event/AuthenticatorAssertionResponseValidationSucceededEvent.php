@@ -58,8 +58,7 @@ class AuthenticatorAssertionResponseValidationSucceededEvent extends Event
         ServerRequestInterface $request,
         ?string $userHandle,
         PublicKeyCredentialSource $publicKeyCredentialSource
-    )
-    {
+    ) {
         $this->credentialId = $credentialId;
         $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;
         $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;

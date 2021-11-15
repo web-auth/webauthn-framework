@@ -87,8 +87,7 @@ final class AssertionResponseControllerFactory
         CacheItemPoolInterface $cacheItemPool,
         PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialRequestOptionsFactory = $publicKeyCredentialRequestOptionsFactory;
@@ -104,8 +103,7 @@ final class AssertionResponseControllerFactory
     public function createAssertionRequestController(
         string $profile,
         string $sessionParameterName
-    ): AssertionRequestController
-    {
+    ): AssertionRequestController {
         return new AssertionRequestController(
             $this->serializer,
             $this->validator,

@@ -71,8 +71,7 @@ final class AttestationResponseControllerFactory
         PublicKeyCredentialLoader $publicKeyCredentialLoader,
         AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
@@ -88,8 +87,7 @@ final class AttestationResponseControllerFactory
         OptionsStorage $optionStorage,
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler $failureHandler
-    ): AttestationRequestController
-    {
+    ): AttestationRequestController {
         return new AttestationRequestController(
             $userEntityGuesser,
             $this->serializer,
@@ -107,8 +105,7 @@ final class AttestationResponseControllerFactory
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler $failureHandler
-    ): AttestationResponseController
-    {
+    ): AttestationResponseController {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,

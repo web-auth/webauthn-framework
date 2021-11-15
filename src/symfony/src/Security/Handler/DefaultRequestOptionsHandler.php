@@ -23,8 +23,7 @@ final class DefaultRequestOptionsHandler implements RequestOptionsHandler
     public function onRequestOptions(
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ?PublicKeyCredentialUserEntity $userEntity
-    ): Response
-    {
+    ): Response {
         $data = $publicKeyCredentialRequestOptions->jsonSerialize();
         $data['status'] = 'ok';
         $data['errorMessage'] = '';
