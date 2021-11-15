@@ -12,7 +12,6 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
-use FG\ASN1\Universal\Sequence;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
