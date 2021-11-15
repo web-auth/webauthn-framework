@@ -99,22 +99,17 @@ class AuthenticatorAttestationResponseValidator
                 'host' => $request->getUri()
                     ->getHost(),
             ]);
-            /** @see 7.1.1 */
             //Nothing to do
 
-            /** @see 7.1.2 */
             $C = $authenticatorAttestationResponse->getClientDataJSON();
 
-            /** @see 7.1.3 */
             Assertion::eq('webauthn.create', $C->getType(), 'The client data type is not "webauthn.create".');
 
-            /** @see 7.1.4 */
             Assertion::true(
                 hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()),
                 'Invalid challenge.'
             );
 
-            /** @see 7.1.5 */
             $rpId = $publicKeyCredentialCreationOptions->getRp()
                 ->getId() ?? $request->getUri()
                 ->getHost()
@@ -140,12 +135,10 @@ class AuthenticatorAttestationResponseValidator
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
 
-            /** @see 7.1.6 */
             if ($C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
             }
 
-            /** @see 7.1.7 */
             $clientDataJSONHash = hash(
                 'sha256',
                 $authenticatorAttestationResponse->getClientDataJSON()
@@ -153,24 +146,19 @@ class AuthenticatorAttestationResponseValidator
                 true
             );
 
-            /** @see 7.1.8 */
             $attestationObject = $authenticatorAttestationResponse->getAttestationObject();
 
-            /** @see 7.1.9 */
             $rpIdHash = hash('sha256', $facetId, true);
             Assertion::true(
                 hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()),
                 'rpId hash mismatch.'
             );
 
-            /** @see 7.1.10 */
             Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
-            /** @see 7.1.11 */
             if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
             }
 
-            /** @see 7.1.12 */
             $extensionsClientOutputs = $attestationObject->getAuthData()
                 ->getExtensions()
             ;
@@ -181,7 +169,6 @@ class AuthenticatorAttestationResponseValidator
                 );
             }
 
-            /** @see 7.1.13 */
             $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->getAttStmt()
                 ->getFmt()
@@ -191,7 +178,6 @@ class AuthenticatorAttestationResponseValidator
                 'Unsupported attestation statement format.'
             );
 
-            /** @see 7.1.14 */
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
             Assertion::true(
                 $attestationStatementSupport->isValid(
@@ -202,9 +188,6 @@ class AuthenticatorAttestationResponseValidator
                 'Invalid attestation statement.'
             );
 
-            /** @see 7.1.15 */
-            /** @see 7.1.16 */
-            /** @see 7.1.17 */
             Assertion::true(
                 $attestationObject->getAuthData()
                     ->hasAttestedCredentialData(),
@@ -220,8 +203,6 @@ class AuthenticatorAttestationResponseValidator
                 'The credential ID already exists.'
             );
 
-            /** @see 7.1.18 */
-            /** @see 7.1.19 */
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
                 $attestedCredentialData,
