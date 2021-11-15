@@ -10,8 +10,13 @@ class AuthenticationExtension implements JsonSerializable
 {
     public function __construct(
         private string $name,
-        private $value
+        private mixed $value
     ) {
+    }
+
+    public static function create(string $name, mixed $value): self
+    {
+        return new self($name, $value);
     }
 
     public function name(): string

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -26,7 +27,7 @@ final class EntityTest extends TestCase
         static::assertSame('id', $user->getId());
         static::assertSame(
             '{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}',
-            json_encode($user)
+            json_encode($user, JSON_THROW_ON_ERROR)
         );
     }
 
@@ -35,11 +36,11 @@ final class EntityTest extends TestCase
      */
     public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('name', 'id', 'icon');
+        $rp = PublicKeyCredentialRpEntity::create('name', 'id', 'icon');
 
         static::assertSame('name', $rp->getName());
         static::assertSame('icon', $rp->getIcon());
         static::assertSame('id', $rp->getId());
-        static::assertSame('{"name":"name","icon":"icon","id":"id"}', json_encode($rp));
+        static::assertSame('{"name":"name","icon":"icon","id":"id"}', json_encode($rp, JSON_THROW_ON_ERROR));
     }
 }

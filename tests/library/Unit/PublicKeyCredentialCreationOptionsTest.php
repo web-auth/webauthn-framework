@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -23,10 +22,10 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('RP');
+        $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
-        $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
+        $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
         $options = PublicKeyCredentialCreationOptions
@@ -37,32 +36,24 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         ;
 
         static::assertSame('challenge', $options->getChallenge());
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
         static::assertSame([$credential], $options->getExcludeCredentials());
         static::assertSame([$credentialParameters], $options->getPubKeyCredParams());
         static::assertSame('direct', $options->getAttestation());
         static::assertSame(1000, $options->getTimeout());
-        static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
-        static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
-        static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
         static::assertSame(
             '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}',
-            json_encode($options)
+            json_encode($options, JSON_THROW_ON_ERROR)
         );
 
         $data = PublicKeyCredentialCreationOptions::createFromString(
             '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}'
         );
         static::assertSame('challenge', $data->getChallenge());
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $data->getExtensions());
         static::assertSame('direct', $data->getAttestation());
         static::assertSame(1000, $data->getTimeout());
-        static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $data->getRp());
-        static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $data->getUser());
-        static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $data->getAuthenticatorSelection());
         static::assertSame(
             '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"direct","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000}',
-            json_encode($data)
+            json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
 
@@ -71,7 +62,7 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
      */
     public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
     {
-        $rp = new PublicKeyCredentialRpEntity('RP');
+        $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = new PublicKeyCredentialUserEntity('USER', 'id', 'FOO BAR');
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
@@ -82,7 +73,7 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
                 ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT)
         ;
 
-        $json = json_encode($options);
+        $json = json_encode($options, JSON_THROW_ON_ERROR);
         static::assertSame(
             '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ=","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}',
             $json

@@ -20,8 +20,8 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
-        "fgrosse/phpasn1": "^2.1",
-        "beberlei/assert": "^3.2"
+        "beberlei/assert": "^3.2",
+        "fgrosse/phpasn1": "^2.1"
     },
     "autoload": {
         "psr-4": {

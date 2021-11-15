@@ -9,6 +9,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class SecTokenBindingHandler implements TokenBindingHandler
 {
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void
     {
         if ($tokenBinding->getStatus() !== TokenBinding::TOKEN_BINDING_STATUS_PRESENT) {

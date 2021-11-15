@@ -11,7 +11,7 @@ final class CertificateTrustPath implements TrustPath
     /**
      * @var string[]
      */
-    private $certificates;
+    private array $certificates;
 
     /**
      * @param string[] $certificates
@@ -19,6 +19,11 @@ final class CertificateTrustPath implements TrustPath
     public function __construct(array $certificates)
     {
         $this->certificates = $certificates;
+    }
+
+    public static function create(array $certificates): self
+    {
+        return new self($certificates);
     }
 
     /**

@@ -6,6 +6,11 @@ namespace Webauthn\TrustPath;
 
 final class EmptyTrustPath implements TrustPath
 {
+    public static function create(): self
+    {
+        return new self();
+    }
+
     /**
      * @return string[]
      */

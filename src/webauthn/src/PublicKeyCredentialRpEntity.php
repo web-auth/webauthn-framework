@@ -16,6 +16,11 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
         parent::__construct($name, $icon);
     }
 
+    public static function create(string $name, ?string $id = null, ?string $icon = null): self
+    {
+        return new self($name, $id, $icon);
+    }
+
     public function getId(): ?string
     {
         return $this->id;

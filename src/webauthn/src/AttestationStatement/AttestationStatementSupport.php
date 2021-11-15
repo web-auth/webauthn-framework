@@ -10,9 +10,6 @@ interface AttestationStatementSupport
 {
     public function name(): string;
 
-    /**
-     * @param mixed[] $attestation
-     */
     public function load(array $attestation): AttestationStatement;
 
     public function isValid(

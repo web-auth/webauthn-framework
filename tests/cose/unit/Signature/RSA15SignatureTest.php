@@ -20,13 +20,13 @@ final class RSA15SignatureTest extends TestCase
     /**
      * @test
      */
-    public function rS256()
+    public function rS256(): void
     {
         /**
          * @see https://tools.ietf.org/html/rfc7520#section-3.4
          * @see https://tools.ietf.org/html/rfc7520#section-4.1.1
          */
-        $key = new RsaKey([
+        $key = RsaKey::create([
             RsaKey::TYPE => 3,
             RsaKey::ALG => Algorithms::COSE_ALGORITHM_RS256,
             -1 => Base64UrlSafe::decode(

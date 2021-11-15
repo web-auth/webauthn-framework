@@ -26,7 +26,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     /**
      * @var RgbPaletteEntry[]
      */
-    private $plte = [];
+    private array $plte = [];
 
     public function __construct(
         int $width,

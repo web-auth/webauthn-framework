@@ -14,10 +14,17 @@ class Manager
      */
     private array $algorithms = [];
 
-    public function add(Algorithm $algorithm): void
+    public static function create(): self
+    {
+        return new self();
+    }
+
+    public function add(Algorithm $algorithm): self
     {
         $identifier = $algorithm::identifier();
         $this->algorithms[$identifier] = $algorithm;
+
+        return $this;
     }
 
     public function list(): iterable

@@ -21,19 +21,23 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     private array $extensions = [];
 
-    public function add(AuthenticationExtension $extension): void
+    public static function create(): self
     {
-        $this->extensions[$extension->name()] = $extension;
+        return new self();
     }
 
-    /**
-     * @param mixed[] $json
-     */
+    public function add(AuthenticationExtension $extension): self
+    {
+        $this->extensions[$extension->name()] = $extension;
+
+        return $this;
+    }
+
     public static function createFromArray(array $json): self
     {
         $object = new self();
         foreach ($json as $k => $v) {
-            $object->add(new AuthenticationExtension($k, $v));
+            $object->add(AuthenticationExtension::create($k, $v));
         }
 
         return $object;

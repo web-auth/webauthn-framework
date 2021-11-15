@@ -27,7 +27,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @var string[]
      */
-    protected $transports;
+    protected array $transports;
 
     /**
      * @param string[] $transports
@@ -38,6 +38,11 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         array $transports = []
     ) {
         $this->transports = $transports;
+    }
+
+    public static function create(string $type, string $id, array $transports = []): self
+    {
+        return new self($type, $id, $transports);
     }
 
     public function getType(): string

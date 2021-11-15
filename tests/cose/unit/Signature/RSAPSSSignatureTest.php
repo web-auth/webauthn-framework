@@ -20,14 +20,14 @@ final class RSAPSSSignatureTest extends TestCase
     /**
      * @test
      */
-    public function pS384()
+    public function pS384(): void
     {
         /**
          * @see https://tools.ietf.org/html/rfc7520#section-3.4
          * @see https://tools.ietf.org/html/rfc7520#section-4.2.1
          * @see https://tools.ietf.org/html/rfc7520#section-4.2.3
          */
-        $key = new RsaKey([
+        $key = RsaKey::create([
             RsaKey::TYPE => 3,
             RsaKey::ALG => Algorithms::COSE_ALGORITHM_PS384,
             -1 => Base64UrlSafe::decode(

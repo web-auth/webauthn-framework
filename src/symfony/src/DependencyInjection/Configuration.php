@@ -30,7 +30,7 @@ final class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
         /** @var ArrayNodeDefinition $rootNode */

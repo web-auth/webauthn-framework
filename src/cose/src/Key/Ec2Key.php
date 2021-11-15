@@ -79,6 +79,11 @@ class Ec2Key extends Key
         Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
     }
 
+    public static function create(array $data): self
+    {
+        return new self($data);
+    }
+
     public function toPublic(): self
     {
         $data = $this->getData();

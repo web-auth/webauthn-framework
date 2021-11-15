@@ -46,12 +46,4 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
 
         return null;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findStatusReportsByAAGUID(string $aaguid): array
-    {
-        return [];
-    }
 }

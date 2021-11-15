@@ -17,7 +17,7 @@ final class PublicKeyCredentialDescriptorTest extends TestCase
      */
     public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed(): void
     {
-        $descriptor = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
+        $descriptor = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
 
         static::assertSame('type', $descriptor->getType());
         static::assertSame('id', $descriptor->getId());

@@ -13,9 +13,11 @@ class ManagerFactory
      */
     private array $algorithms = [];
 
-    public function add(string $alias, Algorithm $algorithm): void
+    public function add(string $alias, Algorithm $algorithm): self
     {
         $this->algorithms[$alias] = $algorithm;
+
+        return $this;
     }
 
     public function list(): iterable
@@ -30,7 +32,7 @@ class ManagerFactory
 
     public function create(array $aliases): Manager
     {
-        $manager = new Manager();
+        $manager = Manager::create();
         foreach ($aliases as $alias) {
             Assertion::keyExists(
                 $this->algorithms,

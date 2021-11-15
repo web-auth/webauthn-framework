@@ -29,7 +29,7 @@ final class ES256KSignatureTest extends TestCase
 
     private function getKey(): Ec2Key
     {
-        return new Ec2Key([
+        return Ec2Key::create([
             Ec2Key::TYPE => 2,
             Ec2Key::DATA_CURVE => Ec2Key::CURVE_P256K,
             Ec2Key::DATA_D => hex2bin('D1592A94BBB9B5D94CDC425FC7DA80B6A47863AE973A9D581FD9D8F29690B659'),

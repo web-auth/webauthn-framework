@@ -20,7 +20,7 @@ final class AttestationStatementSupportManagerTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The attestation statement format "bar" is not supported.');
-        $manager = new AttestationStatementSupportManager();
+        $manager = AttestationStatementSupportManager::create();
         $manager->get('bar');
     }
 }

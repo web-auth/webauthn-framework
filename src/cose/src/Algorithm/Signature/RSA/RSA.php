@@ -35,6 +35,6 @@ abstract class RSA implements Signature
 
     private function handleKey(Key $key): RsaKey
     {
-        return new RsaKey($key->getData());
+        return RsaKey::create($key->getData());
     }
 }
