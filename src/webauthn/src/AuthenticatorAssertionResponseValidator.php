@@ -80,7 +80,7 @@ class AuthenticatorAssertionResponseValidator
                     ->getHost(),
                 'userHandle' => $userHandle,
             ]);
-            /* @see 7.2.1 */
+            /** @see 7.2.1 */
             if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
                 Assertion::true(
                     $this->isCredentialIdAllowed(
@@ -102,7 +102,7 @@ class AuthenticatorAssertionResponseValidator
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
             $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
 
-            /* @see 7.2.2 User Handle*/
+            /** @see 7.2.2 User Handle*/
             if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
                 Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
                 if ($responseUserHandle !== null && $responseUserHandle !== '') {
@@ -127,10 +127,10 @@ class AuthenticatorAssertionResponseValidator
             /** @see 7.2.6 */
             $C = $authenticatorAssertionResponse->getClientDataJSON();
 
-            /* @see 7.2.7 */
+            /** @see 7.2.7 */
             Assertion::eq('webauthn.get', $C->getType(), 'The client data type is not "webauthn.get".');
 
-            /* @see 7.2.8 */
+            /** @see 7.2.8 */
             Assertion::true(
                 hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()),
                 'Invalid challenge.'
@@ -157,7 +157,7 @@ class AuthenticatorAssertionResponseValidator
             $rpIdLength = mb_strlen($facetId);
             Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
 
-            /* @see 7.2.10 */
+            /** @see 7.2.10 */
             if ($C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
             }
@@ -169,13 +169,13 @@ class AuthenticatorAssertionResponseValidator
                 'rpId hash mismatch.'
             );
 
-            /* @see 7.2.12 */
+            /** @see 7.2.12 */
             Assertion::true(
                 $authenticatorAssertionResponse->getAuthenticatorData()
                     ->isUserPresent(),
                 'User was not present'
             );
-            /* @see 7.2.13 */
+            /** @see 7.2.13 */
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 Assertion::true(
                     $authenticatorAssertionResponse->getAuthenticatorData()
@@ -228,7 +228,7 @@ class AuthenticatorAssertionResponseValidator
             $publicKeyCredentialSource->setCounter($responseCounter);
             $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
 
-            /* @see 7.2.18 */
+            /** @see 7.2.18 */
             //All good. We can continue.
             $this->logger->info('The assertion is valid');
             $this->logger->debug('Public Key Credential Source', [

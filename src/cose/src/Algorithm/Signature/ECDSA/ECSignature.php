@@ -99,7 +99,7 @@ final class ECSignature
         }
 
         while (
-            mb_substr($data, 0, self::BYTE_SIZE, '8bit') === self::ASN1_NEGATIVE_INTEGER
+            mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, '8bit') === 0
             && mb_substr($data, 2, self::BYTE_SIZE, '8bit') <= self::ASN1_BIG_INTEGER_LIMIT
         ) {
             $data = mb_substr($data, 2, null, '8bit');
@@ -130,7 +130,7 @@ final class ECSignature
     private static function retrievePositiveInteger(string $data): string
     {
         while (
-            mb_substr($data, 0, self::BYTE_SIZE, '8bit') === self::ASN1_NEGATIVE_INTEGER
+            mb_strpos($data, self::ASN1_NEGATIVE_INTEGER, '8bit') === 0
             && mb_substr($data, 2, self::BYTE_SIZE, '8bit') > self::ASN1_BIG_INTEGER_LIMIT
         ) {
             $data = mb_substr($data, 2, null, '8bit');
