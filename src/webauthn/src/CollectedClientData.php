@@ -2,23 +2,13 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn;
 
 use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -65,7 +55,7 @@ class CollectedClientData
     public static function createFormJson(string $data): self
     {
         $rawData = Base64UrlSafe::decode($data);
-        $json = json_decode($rawData, true);
+        $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($json, 'Invalid collected client data');
 
         return new self($rawData, $json);

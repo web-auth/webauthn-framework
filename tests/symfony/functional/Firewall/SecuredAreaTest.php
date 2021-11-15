@@ -2,21 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\Tests\Functional\Firewall;
 
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use function Safe\base64_decode;
-use function Safe\json_decode;
-use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -59,10 +48,10 @@ final class SecuredAreaTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
             'HTTPS' => 'on',
-        ], json_encode($body));
+        ], json_encode($body, JSON_THROW_ON_ERROR));
 
         static::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $json = json_decode($client->getResponse()->getContent(), true);
+        $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);

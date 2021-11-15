@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn;
 
 use Assert\Assertion;
@@ -24,8 +15,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
-use function Safe\parse_url;
-use function Safe\sprintf;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;

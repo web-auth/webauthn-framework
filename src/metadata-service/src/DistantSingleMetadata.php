@@ -2,23 +2,13 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
 class DistantSingleMetadata extends SingleMetadata
 {
@@ -42,7 +32,7 @@ class DistantSingleMetadata extends SingleMetadata
     {
         $payload = $this->fetch();
         $json = $this->isBase64Encoded ? Base64UrlSafe::decode($payload) : $payload;
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         return MetadataStatement::createFromArray($data);
     }

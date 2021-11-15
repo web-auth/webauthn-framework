@@ -2,21 +2,11 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\json_decode;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
@@ -31,7 +21,7 @@ final class TrustPathDataType extends Type
             return $value;
         }
 
-        return json_encode($value);
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -42,7 +32,7 @@ final class TrustPathDataType extends Type
         if ($value === null || $value instanceof TrustPath) {
             return $value;
         }
-        $json = json_decode($value, true);
+        $json = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         return TrustPathLoader::loadTrustPath($json);
     }

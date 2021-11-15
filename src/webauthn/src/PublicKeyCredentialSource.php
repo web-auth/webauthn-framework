@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn;
 
 use Assert\Assertion;
@@ -19,8 +10,6 @@ use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use function Safe\base64_decode;
-use function Safe\sprintf;
 use Throwable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;

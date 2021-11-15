@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Tests\Functional;
 
+use const JSON_THROW_ON_ERROR;
 use Ramsey\Uuid\Uuid;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -68,11 +60,11 @@ final class ServerTest extends AbstractTestCase
 
         static::assertSame(
             '{"name":"john-doe","icon":"data:\/\/png:john-doe.avatar","id":"Zm9v","displayName":"John Doe"}',
-            json_encode($options->getUser())
+            json_encode($options->getUser(), JSON_THROW_ON_ERROR)
         );
         static::assertSame(
             '{"name":"rp","icon":"data:\/\/png:nice-picture","id":"foo.example"}',
-            json_encode($options->getRp())
+            json_encode($options->getRp(), JSON_THROW_ON_ERROR)
         );
         static::assertSame('direct', $options->getAttestation());
         static::assertCount(1, $options->getExcludeCredentials());

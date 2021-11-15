@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
@@ -59,10 +50,10 @@ class WebauthnToken extends AbstractToken
     public function __serialize(): array
     {
         return [
-            json_encode($this->publicKeyCredentialUserEntity),
-            json_encode($this->publicKeyCredentialDescriptor),
+            json_encode($this->publicKeyCredentialUserEntity, JSON_THROW_ON_ERROR),
+            json_encode($this->publicKeyCredentialDescriptor, JSON_THROW_ON_ERROR),
             $this->publicKeyCredentialOptions::class,
-            json_encode($this->publicKeyCredentialOptions),
+            json_encode($this->publicKeyCredentialOptions, JSON_THROW_ON_ERROR),
             $this->isUserPresent,
             $this->isUserVerified,
             $this->reservedForFutureUse1,

@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Cose\Key;
 
 use function array_key_exists;
@@ -36,10 +27,7 @@ class Key
 
     public const BASE_IV = 5;
 
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {
@@ -52,10 +40,10 @@ class Key
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
 
         return match ($data[self::TYPE]) {
-            1 => new OkpKey($data),
-            2 => new Ec2Key($data),
-            3 => new RsaKey($data),
-            4 => new SymmetricKey($data),
+            '1' => new OkpKey($data),
+            '2' => new Ec2Key($data),
+            '3' => new RsaKey($data),
+            '4' => new SymmetricKey($data),
             default => new self($data),
         };
     }
@@ -80,7 +68,7 @@ class Key
         return array_key_exists($key, $this->data);
     }
 
-    public function get(int $key)
+    public function get(int $key): mixed
     {
         Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 

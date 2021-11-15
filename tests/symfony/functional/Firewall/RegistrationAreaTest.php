@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\Tests\Functional\Firewall;
 
 use Cose\Algorithms;
@@ -80,58 +71,6 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
-    }
-
-    /**
-     * @test
-     */
-    public function aRequestWithADisplayNameCannotBeProcessed(): void
-    {
-        $content = [
-            'username' => 'foo',
-            'displayName' => 123,
-        ];
-        $client = self::createClient([], [
-            'HTTPS' => 'on',
-        ]);
-        $client->request(Request::METHOD_POST, '/register/options', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_HOST' => 'test.com',
-        ], json_encode($content));
-        $response = $client->getResponse();
-        $data = json_decode($response->getContent(), true);
-
-        static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertSame(401, $client->getResponse()->getStatusCode());
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('displayName: This value should be of type string.', $data['errorMessage']);
-    }
-
-    /**
-     * @test
-     */
-    public function aRequestWithAnInvalidUsernameCannotBeProcessed(): void
-    {
-        $content = [
-            'username' => 123,
-            'displayName' => 'FOO',
-        ];
-        $client = self::createClient([], [
-            'HTTPS' => 'on',
-        ]);
-        $client->request(Request::METHOD_POST, '/register/options', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_HOST' => 'test.com',
-        ], json_encode($content));
-        $response = $client->getResponse();
-        $data = json_decode($response->getContent(), true);
-
-        static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertSame(401, $client->getResponse()->getStatusCode());
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**

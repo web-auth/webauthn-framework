@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
@@ -33,12 +24,11 @@ use Jose\Component\Signature\Algorithm\RS512;
 use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use const JSON_THROW_ON_ERROR;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -284,7 +274,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $response = $this->client->sendRequest($request);
         $this->checkGoogleApiResponse($response);
         $responseBody = $this->getResponseBody($response);
-        $responseBodyJson = json_decode($responseBody, true);
+        $responseBodyJson = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
         Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
         Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
         Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');

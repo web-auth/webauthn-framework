@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
@@ -24,14 +15,12 @@ use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
 use function count;
+use DateTimeImmutable;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
-use Safe\DateTimeImmutable;
-use function Safe\sprintf;
-use function Safe\unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;

@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\MetadataService;
 
-use function Safe\base64_decode;
-use function Safe\json_decode;
+use Assert\Assertion;
+use const JSON_THROW_ON_ERROR;
 
 class SingleMetadata
 {
@@ -32,8 +23,9 @@ class SingleMetadata
             $json = $this->data;
             if ($this->isBase64Encoded) {
                 $json = base64_decode($this->data, true);
+                Assertion::string($json, 'Invalid data');
             }
-            $statement = json_decode($json, true);
+            $statement = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             $this->statement = MetadataStatement::createFromArray($statement);
         }
 

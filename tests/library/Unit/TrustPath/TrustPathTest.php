@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Tests\Unit\TrustPath;
 
 use InvalidArgumentException;
@@ -97,26 +88,10 @@ final class TrustPathTest extends TestCase
      *
      * @use TrustPathLoader
      */
-    public function theLoaderCanLoadOldTrustPathType(): void
-    {
-        $loadedTrustPath = TrustPathLoader::loadTrustPath([
-            'type' => 'ecdaa_key_id',
-            'ecdaaKeyId' => 'key_id',
-        ]);
-
-        static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
-    }
-
-    /**
-     * @test
-     *
-     * @use TrustPathLoader
-     */
     public function theLoaderCanLoadNewTrustPathType(): void
     {
-        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'));
-        $data = json_decode($trustPath, true);
+        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'), JSON_THROW_ON_ERROR);
+        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
         $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
 
         static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);

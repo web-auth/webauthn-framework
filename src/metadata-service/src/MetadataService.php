@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
@@ -21,6 +12,7 @@ use function is_array;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use const JSON_THROW_ON_ERROR;
 use League\Uri\UriString;
 use LogicException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -29,8 +21,6 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Throwable;
 use Webauthn\CertificateToolbox;
 
@@ -221,7 +211,7 @@ class MetadataService
         $content = $this->fetch($uri);
         $rootCertificates = [];
         $payload = $this->getJwsPayload($content, $rootCertificates);
-        $data = json_decode($payload, true);
+        $data = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
 
         $toc = MetadataTOCPayload::createFromArray($data);
         $toc->setRootCertificates($rootCertificates);
@@ -243,7 +233,7 @@ class MetadataService
             );
         }
         $json = $isBase64UrlEncoded ? Base64UrlSafe::decode($payload) : $payload;
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         return MetadataStatement::createFromArray($data);
     }

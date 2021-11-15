@@ -2,26 +2,16 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
 /**
  * @deprecated This class is deprecated since v3.3 and will be removed in v4.0
@@ -36,7 +26,7 @@ class MetadataStatementFetcher
     ): MetadataTOCPayload {
         $content = self::fetch($uri, $client, $requestFactory, $additionalHeaders);
         $payload = self::getJwsPayload($content);
-        $data = json_decode($payload, true);
+        $data = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
 
         return MetadataTOCPayload::createFromArray($data);
     }
@@ -58,7 +48,7 @@ class MetadataStatementFetcher
             );
         }
         $json = $isBase64UrlEncoded ? Base64UrlSafe::decode($payload) : $payload;
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         return MetadataStatement::createFromArray($data);
     }

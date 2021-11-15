@@ -2,21 +2,11 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Cose\Tests\Unit\Signature;
 
 use Cose\Algorithm\Signature\ECDSA\ES256K;
 use Cose\Key\Ec2Key;
 use PHPUnit\Framework\TestCase;
-use function Safe\hex2bin;
 
 /**
  * @see https://tools.ietf.org/html/rfc7520#section-4.1

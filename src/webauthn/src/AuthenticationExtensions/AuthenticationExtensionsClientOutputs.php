@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\AuthenticationExtensions;
 
 use function array_key_exists;
@@ -21,9 +12,8 @@ use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
@@ -39,7 +29,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

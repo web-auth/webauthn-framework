@@ -2,23 +2,14 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn;
 
 use Assert\Assertion;
 use function count;
 use const E_USER_DEPRECATED;
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use function Safe\json_decode;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -195,7 +186,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 
     public static function createFromString(string $data): PublicKeyCredentialOptions
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

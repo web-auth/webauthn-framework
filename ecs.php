@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 use PhpCsFixer\Fixer\Alias\MbStrFunctionsFixer;
 use PhpCsFixer\Fixer\ArrayNotation\ArraySyntaxFixer;
 use PhpCsFixer\Fixer\ClassNotation\ProtectedToPrivateFixer;
@@ -40,16 +31,9 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symplify\EasyCodingStandard\ValueObject\Option;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $header = <<<'CODE_SAMPLE'
-The MIT License (MIT)
+$header = '';
 
-Copyright (c) 2014-2020 Spomky-Labs
-
-This software may be modified and distributed under the terms
-of the MIT license.  See the LICENSE file for details.
-CODE_SAMPLE;
-
+return static function (ContainerConfigurator $containerConfigurator) use ($header): void {
     $containerConfigurator->import(SetList::PSR_12);
     $containerConfigurator->import(SetList::PHP_CS_FIXER);
     $containerConfigurator->import(SetList::PHP_CS_FIXER_RISKY);

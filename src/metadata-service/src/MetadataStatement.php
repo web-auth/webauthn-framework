@@ -2,22 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
 class MetadataStatement implements JsonSerializable
 {
@@ -286,7 +276,7 @@ class MetadataStatement implements JsonSerializable
 
     public static function createFromString(string $statement): self
     {
-        $data = json_decode($statement, true);
+        $data = json_decode($statement, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid Metadata Statement');
 
         return self::createFromArray($data);

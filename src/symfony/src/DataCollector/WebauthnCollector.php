@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\DataCollector;
 
 use const JSON_PRETTY_PRINT;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -95,7 +86,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->publicKeyCredentialCreationOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
         ];
     }
 
@@ -106,7 +100,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
     }
@@ -118,7 +115,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->authenticatorAttestationResponseValidationFailed[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
     }
@@ -128,7 +128,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->publicKeyCredentialRequestOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
         ];
     }
 
@@ -141,7 +144,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'credential_id' => $cloner->cloneVar($event->getCredentialId()),
             'assertion_response' => $cloner->cloneVar($event->getAuthenticatorAssertionResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
     }
@@ -155,7 +161,10 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'credential_id' => $cloner->cloneVar($event->getCredentialId()),
             'assertion_response' => $cloner->cloneVar($event->getAuthenticatorAssertionResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
     }

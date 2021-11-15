@@ -11,27 +11,6 @@ parameters:
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
           path: 'src/cose/src/Algorithm/ManagerFactory.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 1
-          path: 'src/cose/src/Algorithm/Signature/ECDSA/ECDSA.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 2
-          path: 'src/cose/src/Algorithm/Signature/ECDSA/ECSignature.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 1
-          path: 'src/cose/src/Algorithm/Signature/RSA/PSSRSA.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 1
-          path: 'src/cose/src/Algorithm/Signature/RSA/RSA.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 2
-          path: 'src/cose/src/Key/Ec2Key.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 1
-          path: 'src/cose/src/Key/Key.php'
-        - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
-          count: 3
-          path: 'src/cose/src/Key/RsaKey.php'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false

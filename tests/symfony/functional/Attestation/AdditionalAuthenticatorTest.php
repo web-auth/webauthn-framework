@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\Bundle\Tests\Functional\Attestation;
 
 use function count;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -43,15 +34,15 @@ final class AdditionalAuthenticatorTest extends WebTestCase
     /**
      * @test
      */
-    public function anExistingUserCanAddAskForOptionsUsingTheDedicatedController(): void
+    public function anExistingUserCanAskForOptionsUsingTheDedicatedController(): void
     {
         $this->logIn();
         $this->client->request(Request::METHOD_POST, '/devices/add/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
-        ], json_encode([]));
+        ], json_encode([], JSON_THROW_ON_ERROR));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertSame(200, $response->getStatusCode());
         static::assertIsArray($data);
@@ -115,7 +106,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             $body
         );
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertSame(201, $response->getStatusCode());
         static::assertIsArray($data);

@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn;
 
 use function array_key_exists;
@@ -21,15 +12,13 @@ use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use const E_USER_DEPRECATED;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use function ord;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
-use function Safe\json_decode;
-use function Safe\sprintf;
-use function Safe\unpack;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -121,7 +110,7 @@ class PublicKeyCredentialLoader
             'data' => $data,
         ]);
         try {
-            $json = json_decode($data, true);
+            $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {

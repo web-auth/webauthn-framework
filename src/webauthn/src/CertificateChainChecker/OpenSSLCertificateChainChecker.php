@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace Webauthn\CertificateChainChecker;
 
 use Assert\Assertion;
@@ -21,14 +12,6 @@ use function is_int;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
-use Safe\Exceptions\FilesystemException;
-use function Safe\file_put_contents;
-use function Safe\ksort;
-use function Safe\mkdir;
-use function Safe\rename;
-use function Safe\sprintf;
-use function Safe\tempnam;
-use function Safe\unlink;
 use Symfony\Component\Process\Process;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
