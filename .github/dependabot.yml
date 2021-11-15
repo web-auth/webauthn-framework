@@ -6,10 +6,3 @@ updates:
     interval: daily
     time: "04:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: sensio/framework-extra-bundle
-    versions:
-    - 6.0.0
-  - dependency-name: infection/infection
-    versions:
-    - 0.21.0
