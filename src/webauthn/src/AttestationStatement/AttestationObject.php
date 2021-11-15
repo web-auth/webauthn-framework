@@ -19,30 +19,12 @@ use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    /**
-     * @var string
-     */
-    private $rawAttestationObject;
-
-    /**
-     * @var AttestationStatement
-     */
-    private $attStmt;
-
-    /**
-     * @var AuthenticatorData
-     */
-    private $authData;
-
-    /**
-     * @var MetadataStatement|null
-     */
-    private $metadataStatement;
+    private ?MetadataStatement $metadataStatement;
 
     public function __construct(
-        string $rawAttestationObject,
-        AttestationStatement $attStmt,
-        AuthenticatorData $authData,
+        private string $rawAttestationObject,
+        private AttestationStatement $attStmt,
+        private AuthenticatorData $authData,
         ?MetadataStatement $metadataStatement = null
     ) {
         if ($metadataStatement !== null) {
@@ -51,9 +33,6 @@ class AttestationObject
                 E_USER_DEPRECATED
             );
         }
-        $this->rawAttestationObject = $rawAttestationObject;
-        $this->attStmt = $attStmt;
-        $this->authData = $authData;
         $this->metadataStatement = $metadataStatement;
     }
 

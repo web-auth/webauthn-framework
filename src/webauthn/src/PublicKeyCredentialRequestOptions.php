@@ -30,20 +30,14 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    /**
-     * @var string|null
-     */
-    private $rpId;
+    private ?string $rpId = null;
 
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
     private $allowCredentials = [];
 
-    /**
-     * @var string|null
-     */
-    private $userVerification;
+    private ?string $userVerification = null;
 
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
@@ -171,7 +165,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
         try {
             $challenge = Base64UrlSafe::decode($json['challenge']);
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $challenge = Base64::decode($json['challenge']);
         }
 

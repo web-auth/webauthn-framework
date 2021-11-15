@@ -29,7 +29,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
     /**
      * @var AuthenticationExtension[]
      */
-    private $extensions = [];
+    private array $extensions = [];
 
     public function add(AuthenticationExtension $extension): void
     {

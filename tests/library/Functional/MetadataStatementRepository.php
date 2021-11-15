@@ -23,12 +23,12 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
     /**
      * @var SingleMetadata[]
      */
-    private $metadataStatements = [];
+    private array $metadataStatements = [];
 
     /**
      * @var MetadataService[]
      */
-    private $metadataServices = [];
+    private array $metadataServices = [];
 
     public function addSingleStatement(SingleMetadata $metadataStatement): void
     {

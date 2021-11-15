@@ -20,31 +20,13 @@ use function Safe\base64_decode;
  */
 class AuthenticatorAssertionResponse extends AuthenticatorResponse
 {
-    /**
-     * @var AuthenticatorData
-     */
-    private $authenticatorData;
-
-    /**
-     * @var string
-     */
-    private $signature;
-
-    /**
-     * @var string|null
-     */
-    private $userHandle;
-
     public function __construct(
         CollectedClientData $clientDataJSON,
-        AuthenticatorData $authenticatorData,
-        string $signature,
-        ?string $userHandle
+        private AuthenticatorData $authenticatorData,
+        private string $signature,
+        private ?string $userHandle
     ) {
         parent::__construct($clientDataJSON);
-        $this->authenticatorData = $authenticatorData;
-        $this->signature = $signature;
-        $this->userHandle = $userHandle;
     }
 
     public function getAuthenticatorData(): AuthenticatorData

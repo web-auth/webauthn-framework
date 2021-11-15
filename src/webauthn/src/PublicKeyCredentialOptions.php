@@ -20,23 +20,12 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $challenge;
+    protected ?int $timeout = null;
 
-    /**
-     * @var int|null
-     */
-    protected $timeout;
-
-    /**
-     * @var AuthenticationExtensionsClientInputs
-     */
-    protected $extensions;
+    protected AuthenticationExtensionsClientInputs $extensions;
 
     public function __construct(
-        string $challenge,
+        protected string $challenge,
         ?int $timeout = null,
         ?AuthenticationExtensionsClientInputs $extensions = null
     ) {
@@ -52,7 +41,6 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
                 E_USER_DEPRECATED
             );
         }
-        $this->challenge = $challenge;
         $this->setTimeout($timeout);
         $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
     }

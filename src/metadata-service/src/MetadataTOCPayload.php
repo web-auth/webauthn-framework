@@ -21,21 +21,6 @@ use function Safe\sprintf;
 class MetadataTOCPayload implements JsonSerializable
 {
     /**
-     * @var string|null
-     */
-    private $legalHeader;
-
-    /**
-     * @var int
-     */
-    private $no;
-
-    /**
-     * @var string
-     */
-    private $nextUpdate;
-
-    /**
      * @var MetadataTOCPayloadEntry[]
      */
     private $entries = [];
@@ -45,11 +30,11 @@ class MetadataTOCPayload implements JsonSerializable
      */
     private $rootCertificates;
 
-    public function __construct(int $no, string $nextUpdate, ?string $legalHeader = null)
-    {
-        $this->no = $no;
-        $this->nextUpdate = $nextUpdate;
-        $this->legalHeader = $legalHeader;
+    public function __construct(
+        private int $no,
+        private string $nextUpdate,
+        private ?string $legalHeader = null
+    ) {
     }
 
     public function addEntry(MetadataTOCPayloadEntry $entry): self

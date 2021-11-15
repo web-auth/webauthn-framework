@@ -35,34 +35,20 @@ class AttestationStatement implements JsonSerializable
     public const TYPE_ANONCA = 'anonca';
 
     /**
-     * @var string
-     */
-    private $fmt;
-
-    /**
      * @var mixed[]
      */
     private $attStmt;
 
     /**
-     * @var TrustPath
-     */
-    private $trustPath;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
      * @param mixed[] $attStmt
      */
-    public function __construct(string $fmt, array $attStmt, string $type, TrustPath $trustPath)
-    {
-        $this->fmt = $fmt;
+    public function __construct(
+        private string $fmt,
+        array $attStmt,
+        private string $type,
+        private TrustPath $trustPath
+    ) {
         $this->attStmt = $attStmt;
-        $this->type = $type;
-        $this->trustPath = $trustPath;
     }
 
     /**

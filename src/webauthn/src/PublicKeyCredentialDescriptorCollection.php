@@ -29,7 +29,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $publicKeyCredentialDescriptors = [];
+    private array $publicKeyCredentialDescriptors = [];
 
     public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): void
     {

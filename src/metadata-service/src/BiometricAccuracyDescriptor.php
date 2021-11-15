@@ -17,36 +17,13 @@ use Assert\Assertion;
 
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
-    /**
-     * @var float|null
-     */
-    private $FAR;
-
-    /**
-     * @var float|null
-     */
-    private $FRR;
-
-    /**
-     * @var float|null
-     */
-    private $EER;
-
-    /**
-     * @var float|null
-     */
-    private $FAAR;
-
-    /**
-     * @var int|null
-     */
-    private $maxReferenceDataSets;
+    private ?int $maxReferenceDataSets;
 
     public function __construct(
-        ?float $FAR,
-        ?float $FRR,
-        ?float $EER,
-        ?float $FAAR,
+        private ?float $FAR,
+        private ?float $FRR,
+        private ?float $EER,
+        private ?float $FAAR,
         ?int $maxReferenceDataSets,
         ?int $maxRetries = null,
         ?int $blockSlowdown = null
@@ -56,10 +33,6 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
             0,
             Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer')
         );
-        $this->FRR = $FRR;
-        $this->FAR = $FAR;
-        $this->EER = $EER;
-        $this->FAAR = $FAAR;
         $this->maxReferenceDataSets = $maxReferenceDataSets;
         parent::__construct($maxRetries, $blockSlowdown);
     }

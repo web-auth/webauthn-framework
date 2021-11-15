@@ -41,71 +41,17 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class AuthenticatorRegistrationHelper
 {
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $authenticatorAttestationResponseValidator;
-
-    /**
-     * @var SessionStorage
-     */
-    private $optionsStorage;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var string[]
-     */
-    private $securedRelyingPartyId;
-
     public function __construct(
-        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
-        SessionStorage $optionsStorage,
-        HttpMessageFactoryInterface $httpMessageFactory,
-        array $securedRelyingPartyId = []
+        private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
+        private SessionStorage $optionsStorage,
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private array $securedRelyingPartyId = []
     ) {
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
-        $this->optionsStorage = $optionsStorage;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->securedRelyingPartyId = $securedRelyingPartyId;
     }
 
     public function generateOptions(

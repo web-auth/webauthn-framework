@@ -50,24 +50,17 @@ class Key
     public static function createFromData(array $data): self
     {
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
-        switch ($data[self::TYPE]) {
-            case 1:
-                return new OkpKey($data);
-            case 2:
-                return new Ec2Key($data);
-            case 3:
-                return new RsaKey($data);
-            case 4:
-                return new SymmetricKey($data);
-            default:
-                return new self($data);
-        }
+
+        return match ($data[self::TYPE]) {
+            1 => new OkpKey($data),
+            2 => new Ec2Key($data),
+            3 => new RsaKey($data),
+            4 => new SymmetricKey($data),
+            default => new self($data),
+        };
     }
 
-    /**
-     * @return int|string
-     */
-    public function type()
+    public function type(): int|string
     {
         return $this->data[self::TYPE];
     }

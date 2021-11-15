@@ -21,11 +21,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepositoryInterface
 {
-    private $cacheItemPool;
-
-    public function __construct(CacheItemPoolInterface $cacheItemPool)
-    {
-        $this->cacheItemPool = $cacheItemPool;
+    public function __construct(
+        private CacheItemPoolInterface $cacheItemPool
+    ) {
         $this->saveUserEntity(new User('admin', 'foo', 'Foo BAR (-_-)', null, ['ROLE_ADMIN', 'ROLE_USER']));
         $this->saveUserEntity(new User(
             'XY5nn3p_6olTLjoB2Jbb',

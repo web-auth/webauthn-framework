@@ -22,7 +22,7 @@ class AttestationStatementSupportManager
     /**
      * @var AttestationStatementSupport[]
      */
-    private $attestationStatementSupports = [];
+    private array $attestationStatementSupports = [];
 
     public function add(AttestationStatementSupport $attestationStatementSupport): void
     {

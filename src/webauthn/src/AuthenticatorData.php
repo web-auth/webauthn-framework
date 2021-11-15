@@ -33,50 +33,14 @@ class AuthenticatorData
 
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var string
-     */
-    protected $authData;
-
-    /**
-     * @var string
-     */
-    protected $rpIdHash;
-
-    /**
-     * @var string
-     */
-    protected $flags;
-
-    /**
-     * @var int
-     */
-    protected $signCount;
-
-    /**
-     * @var AttestedCredentialData|null
-     */
-    protected $attestedCredentialData;
-
-    /**
-     * @var AuthenticationExtensionsClientOutputs|null
-     */
-    protected $extensions;
-
     public function __construct(
-        string $authData,
-        string $rpIdHash,
-        string $flags,
-        int $signCount,
-        ?AttestedCredentialData $attestedCredentialData,
-        ?AuthenticationExtensionsClientOutputs $extensions
+        protected string $authData,
+        protected string $rpIdHash,
+        protected string $flags,
+        protected int $signCount,
+        protected ?AttestedCredentialData $attestedCredentialData,
+        protected ?AuthenticationExtensionsClientOutputs $extensions
     ) {
-        $this->rpIdHash = $rpIdHash;
-        $this->flags = $flags;
-        $this->signCount = $signCount;
-        $this->attestedCredentialData = $attestedCredentialData;
-        $this->extensions = $extensions;
-        $this->authData = $authData;
     }
 
     public function getAuthData(): string

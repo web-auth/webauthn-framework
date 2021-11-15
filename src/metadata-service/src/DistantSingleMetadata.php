@@ -22,44 +22,20 @@ use function Safe\sprintf;
 
 class DistantSingleMetadata extends SingleMetadata
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
+    private string $uri;
 
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $uri;
-
-    /**
-     * @var bool
-     */
-    private $isBase64Encoded;
+    private bool $isBase64Encoded;
 
     public function __construct(
         string $uri,
         bool $isBase64Encoded,
-        ClientInterface $httpClient,
-        RequestFactoryInterface $requestFactory,
-        array $additionalHeaders = []
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
+        private array $additionalHeaders = []
     ) {
         parent::__construct($uri, $isBase64Encoded); //Useless
         $this->uri = $uri;
         $this->isBase64Encoded = $isBase64Encoded;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->additionalHeaders = $additionalHeaders;
     }
 
     public function getMetadataStatement(): MetadataStatement

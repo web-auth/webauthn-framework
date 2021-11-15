@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
-use function get_class;
 use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -26,69 +25,23 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken
 {
-    /**
-     * @var string
-     */
-    private $providerKey;
+    private string $providerKey;
 
-    /**
-     * @var PublicKeyCredentialUserEntity
-     */
-    private $publicKeyCredentialUserEntity;
-
-    /**
-     * @var PublicKeyCredentialDescriptor
-     */
-    private $publicKeyCredentialDescriptor;
-
-    /**
-     * @var bool
-     */
-    private $isUserPresent;
-
-    /**
-     * @var bool
-     */
-    private $isUserVerified;
-
-    /**
-     * @var int
-     */
-    private $signCount;
-
-    /**
-     * @var AuthenticationExtensionsClientOutputs|null
-     */
-    private $extensions;
-
-    /**
-     * @var int
-     */
-    private $reservedForFutureUse1;
-
-    /**
-     * @var int
-     */
-    private $reservedForFutureUse2;
-
-    /**
-     * @var PublicKeyCredentialOptions
-     */
-    private $publicKeyCredentialOptions;
+    private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
 
     /**
      * {@inheritdoc}
      */
     public function __construct(
         PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        PublicKeyCredentialOptions $publicKeyCredentialOptions,
-        PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
-        bool $isUserPresent,
-        bool $isUserVerified,
-        int $reservedForFutureUse1,
-        int $reservedForFutureUse2,
-        int $signCount,
-        ?AuthenticationExtensionsClientOutputs $extensions,
+        private PublicKeyCredentialOptions $publicKeyCredentialOptions,
+        private PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
+        private bool $isUserPresent,
+        private bool $isUserVerified,
+        private int $reservedForFutureUse1,
+        private int $reservedForFutureUse2,
+        private int $signCount,
+        private ?AuthenticationExtensionsClientOutputs $extensions,
         string $providerKey,
         array $roles = []
     ) {
@@ -98,14 +51,6 @@ class WebauthnToken extends AbstractToken
         $this->setUser($publicKeyCredentialUserEntity->getName());
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
         $this->providerKey = $providerKey;
-        $this->publicKeyCredentialDescriptor = $publicKeyCredentialDescriptor;
-        $this->isUserPresent = $isUserPresent;
-        $this->isUserVerified = $isUserVerified;
-        $this->signCount = $signCount;
-        $this->extensions = $extensions;
-        $this->reservedForFutureUse1 = $reservedForFutureUse1;
-        $this->reservedForFutureUse2 = $reservedForFutureUse2;
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
     }
 
     /**
@@ -116,7 +61,7 @@ class WebauthnToken extends AbstractToken
         return [
             json_encode($this->publicKeyCredentialUserEntity),
             json_encode($this->publicKeyCredentialDescriptor),
-            get_class($this->publicKeyCredentialOptions),
+            $this->publicKeyCredentialOptions::class,
             json_encode($this->publicKeyCredentialOptions),
             $this->isUserPresent,
             $this->isUserVerified,

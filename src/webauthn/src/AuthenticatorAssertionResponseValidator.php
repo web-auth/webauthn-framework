@@ -39,46 +39,17 @@ use Webauthn\Util\CoseSignatureFixer;
 
 class AuthenticatorAssertionResponseValidator
 {
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
+    private Decoder $decoder;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private CounterChecker $counterChecker;
 
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
-
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
-
-    /**
-     * @var Manager|null
-     */
-    private $algorithmManager;
-
-    /**
-     * @var CounterChecker
-     */
-    private $counterChecker;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        Manager $algorithmManager,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private TokenBindingHandler $tokenBindingHandler,
+        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        private ?Manager $algorithmManager,
         ?CounterChecker $counterChecker = null,
         ?LoggerInterface $logger = null
     ) {
@@ -94,11 +65,7 @@ class AuthenticatorAssertionResponseValidator
                 E_USER_DEPRECATED
             );
         }
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->tokenBindingHandler = $tokenBindingHandler;
-        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
-        $this->algorithmManager = $algorithmManager;
         $this->counterChecker = $counterChecker ?? new ThrowExceptionIfInvalid();
         $this->logger = $logger ?? new NullLogger();
     }

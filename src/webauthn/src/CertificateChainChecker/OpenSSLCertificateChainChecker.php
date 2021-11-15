@@ -33,20 +33,10 @@ use Symfony\Component\Process\Process;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory)
-    {
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
+    public function __construct(
+        private ClientInterface $client,
+        private RequestFactoryInterface $requestFactory
+    ) {
     }
 
     public function addRootCertificate(string $certificate): self
@@ -137,7 +127,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         foreach ($filenames as $filename) {
             try {
                 unlink($filename);
-            } catch (FilesystemException $e) {
+            } catch (FilesystemException) {
                 continue;
             }
         }

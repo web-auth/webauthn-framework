@@ -53,84 +53,41 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 class Server
 {
-    /**
-     * @var int
-     */
-    public $timeout = 60000;
+    public int $timeout = 60000;
 
-    /**
-     * @var int
-     */
-    public $challengeSize = 32;
+    public int $challengeSize = 32;
 
-    /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rpEntity;
+    private ManagerFactory $coseAlgorithmManagerFactory;
 
-    /**
-     * @var ManagerFactory
-     */
-    private $coseAlgorithmManagerFactory;
+    private TokenBindingHandler|IgnoreTokenBindingHandler $tokenBindingHandler;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
-
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
+    private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
 
     /**
      * @var string[]
      */
-    private $selectedAlgorithms;
+    private array $selectedAlgorithms;
 
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
+    private ?MetadataStatementRepository $metadataStatementRepository;
 
-    /**
-     * @var ClientInterface|null
-     */
-    private $httpClient;
+    private ?ClientInterface $httpClient = null;
 
-    /**
-     * @var string|null
-     */
-    private $googleApiKey;
+    private ?string $googleApiKey = null;
 
-    /**
-     * @var RequestFactoryInterface|null
-     */
-    private $requestFactory;
+    private ?RequestFactoryInterface $requestFactory = null;
 
-    /**
-     * @var CounterChecker|null
-     */
-    private $counterChecker;
+    private ?CounterChecker $counterChecker = null;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface|NullLogger $logger;
 
     /**
      * @var string[]
      */
-    private $securedRelyingPartyId = [];
+    private array $securedRelyingPartyId = [];
 
     public function __construct(
-        PublicKeyCredentialRpEntity $relyingParty,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private PublicKeyCredentialRpEntity $rpEntity,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         ?MetadataStatementRepository $metadataStatementRepository = null
     ) {
         if ($metadataStatementRepository !== null) {
@@ -139,7 +96,6 @@ class Server
                 E_USER_DEPRECATED
             );
         }
-        $this->rpEntity = $relyingParty;
         $this->logger = new NullLogger();
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
@@ -157,7 +113,6 @@ class Server
         $this->coseAlgorithmManagerFactory->add('Ed25519', new Ed25519());
 
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
         $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
         $this->metadataStatementRepository = $metadataStatementRepository;

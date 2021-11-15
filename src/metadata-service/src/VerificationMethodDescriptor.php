@@ -41,31 +41,13 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     public const USER_VERIFY_ALL = 0x00000400;
 
-    /**
-     * @var int
-     */
-    private $userVerification;
-
-    /**
-     * @var CodeAccuracyDescriptor|null
-     */
-    private $caDesc;
-
-    /**
-     * @var BiometricAccuracyDescriptor|null
-     */
-    private $baDesc;
-
-    /**
-     * @var PatternAccuracyDescriptor|null
-     */
-    private $paDesc;
+    private int $userVerification;
 
     public function __construct(
         int $userVerification,
-        ?CodeAccuracyDescriptor $caDesc = null,
-        ?BiometricAccuracyDescriptor $baDesc = null,
-        ?PatternAccuracyDescriptor $paDesc = null
+        private ?CodeAccuracyDescriptor $caDesc = null,
+        private ?BiometricAccuracyDescriptor $baDesc = null,
+        private ?PatternAccuracyDescriptor $paDesc = null
     ) {
         Assertion::greaterOrEqualThan(
             $userVerification,
@@ -73,9 +55,6 @@ class VerificationMethodDescriptor implements JsonSerializable
             Utils::logicException('The parameter "userVerification" is invalid')
         );
         $this->userVerification = $userVerification;
-        $this->caDesc = $caDesc;
-        $this->baDesc = $baDesc;
-        $this->paDesc = $paDesc;
     }
 
     public function getUserVerification(): int

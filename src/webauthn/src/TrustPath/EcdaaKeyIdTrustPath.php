@@ -17,14 +17,9 @@ use Assert\Assertion;
 
 final class EcdaaKeyIdTrustPath implements TrustPath
 {
-    /**
-     * @var string
-     */
-    private $ecdaaKeyId;
-
-    public function __construct(string $ecdaaKeyId)
-    {
-        $this->ecdaaKeyId = $ecdaaKeyId;
+    public function __construct(
+        private string $ecdaaKeyId
+    ) {
     }
 
     public function getEcdaaKeyId(): string

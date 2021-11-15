@@ -23,46 +23,19 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 class WebauthnListener
 {
-    /**
-     * @var mixed[]
-     */
-    private $options;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var HttpUtils
-     */
-    private $httpUtils;
-
-    /**
-     * @var RequestListener
-     */
-    private $requestListener;
-
-    /**
-     * @var CreationListener
-     */
-    private $creationListener;
+    private LoggerInterface $logger;
 
     /**
      * @param mixed[] $options
      */
     public function __construct(
-        HttpUtils $httpUtils,
+        private HttpUtils $httpUtils,
         ?LoggerInterface $logger,
-        RequestListener $requestListener,
-        CreationListener $creationListener,
-        array $options
+        private RequestListener $requestListener,
+        private CreationListener $creationListener,
+        private array $options
     ) {
-        $this->httpUtils = $httpUtils;
-        $this->options = $options;
         $this->logger = $logger ?? new NullLogger();
-        $this->requestListener = $requestListener;
-        $this->creationListener = $creationListener;
     }
 
     public function __invoke(RequestEvent $event): void

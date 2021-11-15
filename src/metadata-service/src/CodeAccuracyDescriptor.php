@@ -17,15 +17,9 @@ use Assert\Assertion;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
-    /**
-     * @var int
-     */
-    private $base;
+    private int $base;
 
-    /**
-     * @var int
-     */
-    private $minLength;
+    private int $minLength;
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {

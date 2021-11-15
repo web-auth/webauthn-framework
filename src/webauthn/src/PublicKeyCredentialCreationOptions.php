@@ -33,16 +33,6 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
-     * @var PublicKeyCredentialRpEntity
-     */
-    private $rp;
-
-    /**
-     * @var PublicKeyCredentialUserEntity
-     */
-    private $user;
-
-    /**
      * @var PublicKeyCredentialParameters[]
      */
     private $pubKeyCredParams = [];
@@ -52,23 +42,17 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
      */
     private $excludeCredentials = [];
 
-    /**
-     * @var AuthenticatorSelectionCriteria
-     */
-    private $authenticatorSelection;
+    private AuthenticatorSelectionCriteria $authenticatorSelection;
 
-    /**
-     * @var string
-     */
-    private $attestation;
+    private string $attestation;
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
     public function __construct(
-        PublicKeyCredentialRpEntity $rp,
-        PublicKeyCredentialUserEntity $user,
+        private PublicKeyCredentialRpEntity $rp,
+        private PublicKeyCredentialUserEntity $user,
         string $challenge,
         array $pubKeyCredParams,
         ?int $timeout = null,
@@ -96,8 +80,6 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             );
         }
         parent::__construct($challenge, $timeout, $extensions);
-        $this->rp = $rp;
-        $this->user = $user;
         $this->pubKeyCredParams = $pubKeyCredParams;
         $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
         $this->attestation = $attestation ?? self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
@@ -242,7 +224,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 
         try {
             $challenge = Base64UrlSafe::decode($json['challenge']);
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $challenge = Base64::decode($json['challenge']);
         }
 

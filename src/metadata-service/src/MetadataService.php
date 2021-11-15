@@ -36,42 +36,16 @@ use Webauthn\CertificateToolbox;
 
 class MetadataService
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
+    private array $additionalQueryStringValues;
 
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    /**
-     * @var array
-     */
-    private $additionalQueryStringValues;
-
-    /**
-     * @var array
-     */
-    private $additionalHeaders;
-
-    /**
-     * @var string
-     */
-    private $serviceUri;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        string $serviceUri,
-        ClientInterface $httpClient,
-        RequestFactoryInterface $requestFactory,
+        private string $serviceUri,
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
         array $additionalQueryStringValues = [],
-        array $additionalHeaders = [],
+        private array $additionalHeaders = [],
         ?LoggerInterface $logger = null
     ) {
         if (count($additionalQueryStringValues) !== 0) {
@@ -92,11 +66,7 @@ class MetadataService
                 E_USER_DEPRECATED
             );
         }
-        $this->serviceUri = $serviceUri;
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
         $this->additionalQueryStringValues = $additionalQueryStringValues;
-        $this->additionalHeaders = $additionalHeaders;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -125,7 +95,7 @@ class MetadataService
     {
         try {
             $toc = $this->fetchMetadataTOCPayload();
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return false;
         }
         foreach ($toc->getEntries() as $entry) {

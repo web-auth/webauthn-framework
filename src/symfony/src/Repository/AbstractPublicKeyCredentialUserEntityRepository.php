@@ -27,10 +27,7 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
      */
     private $manager;
 
-    /**
-     * @var string
-     */
-    private $class;
+    private string $class;
 
     public function __construct(ManagerRegistry $registry, string $class)
     {

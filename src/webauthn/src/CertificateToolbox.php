@@ -95,7 +95,7 @@ class CertificateToolbox
         foreach ($filenames as $filename) {
             try {
                 unlink($filename);
-            } catch (FilesystemException $e) {
+            } catch (FilesystemException) {
                 continue;
             }
         }

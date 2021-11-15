@@ -19,40 +19,19 @@ use function Safe\sprintf;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $width;
+    private int $width;
 
-    /**
-     * @var int
-     */
-    private $height;
+    private int $height;
 
-    /**
-     * @var int
-     */
-    private $bitDepth;
+    private int $bitDepth;
 
-    /**
-     * @var int
-     */
-    private $colorType;
+    private int $colorType;
 
-    /**
-     * @var int
-     */
-    private $compression;
+    private int $compression;
 
-    /**
-     * @var int
-     */
-    private $filter;
+    private int $filter;
 
-    /**
-     * @var int
-     */
-    private $interlace;
+    private int $interlace;
 
     /**
      * @var RgbPaletteEntry[]

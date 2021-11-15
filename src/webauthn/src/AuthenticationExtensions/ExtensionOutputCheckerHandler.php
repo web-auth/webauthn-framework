@@ -18,7 +18,7 @@ class ExtensionOutputCheckerHandler
     /**
      * @var ExtensionOutputChecker[]
      */
-    private $checkers = [];
+    private array $checkers = [];
 
     public function add(ExtensionOutputChecker $checker): void
     {

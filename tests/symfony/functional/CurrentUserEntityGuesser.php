@@ -21,14 +21,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class CurrentUserEntityGuesser implements UserEntityGuesser
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
+    public function __construct(
+        private Security $security
+    ) {
     }
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity

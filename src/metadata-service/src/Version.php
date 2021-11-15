@@ -21,15 +21,9 @@ use function Safe\sprintf;
 
 class Version implements JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    private $major;
+    private ?int $major;
 
-    /**
-     * @var int|null
-     */
-    private $minor;
+    private ?int $minor;
 
     public function __construct(?int $major, ?int $minor)
     {

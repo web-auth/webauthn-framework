@@ -19,20 +19,10 @@ use function Safe\json_decode;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var int
-     */
-    private $alg;
-
-    public function __construct(string $type, int $alg)
-    {
-        $this->type = $type;
-        $this->alg = $alg;
+    public function __construct(
+        private string $type,
+        private int $alg
+    ) {
     }
 
     public function getType(): string

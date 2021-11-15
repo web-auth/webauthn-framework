@@ -24,20 +24,10 @@ use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
 class WebauthnProvider implements AuthenticationProviderInterface
 {
-    /**
-     * @var UserProviderInterface
-     */
-    private $userProvider;
-
-    /**
-     * @var UserCheckerInterface
-     */
-    private $userChecker;
-
-    public function __construct(UserCheckerInterface $userChecker, UserProviderInterface $userProvider)
-    {
-        $this->userProvider = $userProvider;
-        $this->userChecker = $userChecker;
+    public function __construct(
+        private UserCheckerInterface $userChecker,
+        private UserProviderInterface $userProvider
+    ) {
     }
 
     /**

@@ -31,80 +31,26 @@ use Webauthn\TrustPath\TrustPathLoader;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
-     * @var string
-     */
-    protected $publicKeyCredentialId;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
      * @var string[]
      */
     protected $transports;
 
     /**
-     * @var string
-     */
-    protected $attestationType;
-
-    /**
-     * @var TrustPath
-     */
-    protected $trustPath;
-
-    /**
-     * @var UuidInterface
-     */
-    protected $aaguid;
-
-    /**
-     * @var string
-     */
-    protected $credentialPublicKey;
-
-    /**
-     * @var string
-     */
-    protected $userHandle;
-
-    /**
-     * @var int
-     */
-    protected $counter;
-
-    /**
-     * @var array|null
-     */
-    protected $otherUI;
-
-    /**
      * @param string[] $transports
      */
     public function __construct(
-        string $publicKeyCredentialId,
-        string $type,
+        protected string $publicKeyCredentialId,
+        protected string $type,
         array $transports,
-        string $attestationType,
-        TrustPath $trustPath,
-        UuidInterface $aaguid,
-        string $credentialPublicKey,
-        string $userHandle,
-        int $counter,
-        ?array $otherUI = null
+        protected string $attestationType,
+        protected TrustPath $trustPath,
+        protected UuidInterface $aaguid,
+        protected string $credentialPublicKey,
+        protected string $userHandle,
+        protected int $counter,
+        protected ?array $otherUI = null
     ) {
-        $this->publicKeyCredentialId = $publicKeyCredentialId;
-        $this->type = $type;
         $this->transports = $transports;
-        $this->aaguid = $aaguid;
-        $this->credentialPublicKey = $credentialPublicKey;
-        $this->userHandle = $userHandle;
-        $this->counter = $counter;
-        $this->attestationType = $attestationType;
-        $this->trustPath = $trustPath;
-        $this->otherUI = $otherUI;
     }
 
     public function getPublicKeyCredentialId(): string

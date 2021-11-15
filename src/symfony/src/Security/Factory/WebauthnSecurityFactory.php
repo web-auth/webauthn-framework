@@ -15,7 +15,6 @@ namespace Webauthn\Bundle\Security\Factory;
 
 use function Safe\sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -72,7 +71,6 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
      */
     public function addConfiguration(NodeDefinition $node): void
     {
-        /** @var ArrayNodeDefinition $node */
         $node
             ->children()
             ->scalarNode('user_provider')

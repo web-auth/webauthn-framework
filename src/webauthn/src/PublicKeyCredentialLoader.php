@@ -40,23 +40,14 @@ class PublicKeyCredentialLoader
 
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var AttestationObjectLoader
-     */
-    private $attestationObjectLoader;
+    private Decoder $decoder;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(AttestationObjectLoader $attestationObjectLoader, ?LoggerInterface $logger = null)
-    {
+    public function __construct(
+        private AttestationObjectLoader $attestationObjectLoader,
+        ?LoggerInterface $logger = null
+    ) {
         if ($logger !== null) {
             @trigger_error(
                 'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".',
@@ -64,7 +55,6 @@ class PublicKeyCredentialLoader
             );
         }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->attestationObjectLoader = $attestationObjectLoader;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -100,7 +90,7 @@ class PublicKeyCredentialLoader
             $id = Base64UrlSafe::decode($json['id']);
             try {
                 $rawId = Base64::decode($json['rawId']);
-            } catch (Throwable $t) {
+            } catch (Throwable) {
                 $rawId = Base64UrlSafe::decode($json['rawId']);
             }
             Assertion::true(hash_equals($id, $rawId));

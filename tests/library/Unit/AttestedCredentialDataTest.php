@@ -42,7 +42,7 @@ final class AttestedCredentialDataTest extends TestCase
             json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES)
         );
 
-        $json = json_decode(
+        json_decode(
             '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
             true
         );

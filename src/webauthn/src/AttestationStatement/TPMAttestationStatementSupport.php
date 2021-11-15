@@ -109,14 +109,15 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 ->getCredentialPublicKey()
         );
 
-        switch (true) {
-            case $attestationStatement->getTrustPath() instanceof CertificateTrustPath:
-                return $this->processWithCertificate($clientDataJSONHash, $attestationStatement, $authenticatorData);
-            case $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath:
-                return $this->processWithECDAA();
-            default:
-                throw new InvalidArgumentException('Unsupported attestation statement');
-        }
+        return match (true) {
+            $attestationStatement->getTrustPath() instanceof CertificateTrustPath => $this->processWithCertificate(
+                $clientDataJSONHash,
+                $attestationStatement,
+                $authenticatorData
+            ),
+            $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
+            default => throw new InvalidArgumentException('Unsupported attestation statement'),
+        };
     }
 
     private function checkUniquePublicKey(string $unique, string $cborPublicKey): void
@@ -224,26 +225,21 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
      */
     private function getParameters(string $type, StringStream $stream): array
     {
-        switch (bin2hex($type)) {
-            case '0001':
-            case '0014':
-            case '0016':
-                return [
-                    'symmetric' => $stream->read(2),
-                    'scheme' => $stream->read(2),
-                    'keyBits' => unpack('n', $stream->read(2))[1],
-                    'exponent' => $this->getExponent($stream->read(4)),
-                ];
-            case '0018':
-                return [
-                    'symmetric' => $stream->read(2),
-                    'scheme' => $stream->read(2),
-                    'curveId' => $stream->read(2),
-                    'kdf' => $stream->read(2),
-                ];
-            default:
-                throw new InvalidArgumentException('Unsupported type');
-        }
+        return match (bin2hex($type)) {
+            '0001', '0014', '0016' => [
+                'symmetric' => $stream->read(2),
+                'scheme' => $stream->read(2),
+                'keyBits' => unpack('n', $stream->read(2))[1],
+                'exponent' => $this->getExponent($stream->read(4)),
+            ],
+            '0018' => [
+                'symmetric' => $stream->read(2),
+                'scheme' => $stream->read(2),
+                'curveId' => $stream->read(2),
+                'kdf' => $stream->read(2),
+            ],
+            default => throw new InvalidArgumentException('Unsupported type'),
+        };
     }
 
     private function getExponent(string $exponent): string
@@ -253,18 +249,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function getTPMHash(string $nameAlg): string
     {
-        switch (bin2hex($nameAlg)) {
-            case '0004':
-                return 'sha1'; //: "TPM_ALG_SHA1",
-            case '000b':
-                return 'sha256'; //: "TPM_ALG_SHA256",
-            case '000c':
-                return 'sha384'; //: "TPM_ALG_SHA384",
-            case '000d':
-                return 'sha512'; //: "TPM_ALG_SHA512",
-            default:
-                throw new InvalidArgumentException('Unsupported hash algorithm');
-        }
+        return match (bin2hex($nameAlg)) {
+            '0004' => 'sha1',
+            '000b' => 'sha256',
+            '000c' => 'sha384',
+            '000d' => 'sha512',
+            default => throw new InvalidArgumentException('Unsupported hash algorithm'),
+        };
     }
 
     private function processWithCertificate(

@@ -21,36 +21,12 @@ use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
 {
-    /**
-     * @var AuthenticatorAttestationResponse
-     */
-    private $authenticatorAttestationResponse;
-
-    /**
-     * @var PublicKeyCredentialCreationOptions
-     */
-    private $publicKeyCredentialCreationOptions;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    private $request;
-
-    /**
-     * @var PublicKeyCredentialSource
-     */
-    private $publicKeyCredentialSource;
-
     public function __construct(
-        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
-        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        ServerRequestInterface $request,
-        PublicKeyCredentialSource $publicKeyCredentialSource
+        private AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        private ServerRequestInterface $request,
+        private PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
-        $this->authenticatorAttestationResponse = $authenticatorAttestationResponse;
-        $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
-        $this->request = $request;
-        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
     }
 
     public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse

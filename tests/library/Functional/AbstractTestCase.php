@@ -59,40 +59,19 @@ abstract class AbstractTestCase extends TestCase
 
     use MockedMappedResponseTrait;
 
-    /**
-     * @var PublicKeyCredentialLoader|null
-     */
-    private $publicKeyCredentialLoader;
+    private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
-    /**
-     * @var AuthenticatorAttestationResponseValidator|null
-     */
-    private $authenticatorAttestationResponseValidator;
+    private ?AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator = null;
 
-    /**
-     * @var AuthenticatorAssertionResponseValidator|null
-     */
-    private $authenticatorAssertionResponseValidator;
+    private ?AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null;
 
-    /**
-     * @var Manager|null
-     */
-    private $algorithmManager;
+    private ?Manager $algorithmManager = null;
 
-    /**
-     * @var AttestationObjectLoader|null
-     */
-    private $attestationObjectLoader;
+    private ?AttestationObjectLoader $attestationObjectLoader = null;
 
-    /**
-     * @var MetadataStatementRepositoryInterface|null
-     */
-    private $metadataStatementRepository;
+    private ?\Webauthn\Tests\Functional\MetadataStatementRepository $metadataStatementRepository = null;
 
-    /**
-     * @var CertificateChainChecker|null
-     */
-    private $certificateChainChecker;
+    private ?OpenSSLCertificateChainChecker $certificateChainChecker = null;
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {

@@ -24,14 +24,9 @@ use Webauthn\TokenBinding\TokenBinding;
 class CollectedClientData
 {
     /**
-     * @var string
-     */
-    private $rawData;
-
-    /**
      * @var mixed[]
      */
-    private $data;
+    private array $data;
 
     /**
      * @var string
@@ -56,13 +51,14 @@ class CollectedClientData
     /**
      * @param mixed[] $data
      */
-    public function __construct(string $rawData, array $data)
-    {
+    public function __construct(
+        private string $rawData,
+        array $data
+    ) {
         $this->type = $this->findData($data, 'type');
         $this->challenge = $this->findData($data, 'challenge', true, true);
         $this->origin = $this->findData($data, 'origin');
         $this->tokenBinding = $this->findData($data, 'tokenBinding', false);
-        $this->rawData = $rawData;
         $this->data = $data;
     }
 

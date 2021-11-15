@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Tests\Functional;
 
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use function Safe\sprintf;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -20,14 +21,22 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class UserProvider implements UserProviderInterface
 {
-    /**
-     * @var PublicKeyCredentialUserEntityRepository
-     */
-    private $userRepository;
+    public function __construct(
+        private PublicKeyCredentialUserEntityRepository $userRepository
+    ) {
+    }
 
-    public function __construct(PublicKeyCredentialUserEntityRepository $userRepository)
+    /**
+     * {@inheritdoc}
+     */
+    public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        $this->userRepository = $userRepository;
+        $user = $this->userRepository->findOneByUsername($identifier);
+        if (! $user instanceof User) {
+            throw new UserNotFoundException(sprintf('The user with username "%s" cannot be found', $identifier));
+        }
+
+        return $user;
     }
 
     /**
@@ -35,12 +44,7 @@ final class UserProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username): UserInterface
     {
-        $user = $this->userRepository->findOneByUsername($username);
-        if (! $user instanceof User) {
-            throw new UsernameNotFoundException(sprintf('The user with username "%s" cannot be found', $username));
-        }
-
-        return $user;
+        return $this->loadUserByIdentifier($username);
     }
 
     public function refreshUser(UserInterface $user): UserInterface

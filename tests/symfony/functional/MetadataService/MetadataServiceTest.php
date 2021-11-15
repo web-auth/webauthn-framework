@@ -22,7 +22,6 @@ use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
 use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementFetcher;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\Tests\MockedMappedResponseTrait;
@@ -62,7 +61,7 @@ final class MetadataServiceTest extends KernelTestCase
             try {
                 $ms = $service->getMetadataStatementFor($entry);
                 $this->callObjectMethods($ms);
-            } catch (Throwable $throwable) {
+            } catch (Throwable) {
                 continue;
             }
         }
@@ -87,7 +86,6 @@ final class MetadataServiceTest extends KernelTestCase
             new Psr17Factory()
         );
 
-        /** @var MetadataStatement */
         static::assertSame('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->getAAguid());
         static::assertSame('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->getDescription());
         static::assertSame([], $ms->getAlternativeDescriptions());

@@ -18,14 +18,9 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
-    /**
-     * @var PublicKeyCredentialCreationOptions
-     */
-    private $publicKeyCredentialCreationOptions;
-
-    public function __construct(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions)
-    {
-        $this->publicKeyCredentialCreationOptions = $publicKeyCredentialCreationOptions;
+    public function __construct(
+        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
+    ) {
     }
 
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions

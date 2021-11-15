@@ -31,35 +31,17 @@ use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
-    /**
-     * @var array
-     */
-    private $publicKeyCredentialCreationOptions = [];
+    private array $publicKeyCredentialCreationOptions = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAttestationResponseValidationSucceeded = [];
+    private array $authenticatorAttestationResponseValidationSucceeded = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAttestationResponseValidationFailed = [];
+    private array $authenticatorAttestationResponseValidationFailed = [];
 
-    /**
-     * @var array
-     */
-    private $publicKeyCredentialRequestOptions = [];
+    private array $publicKeyCredentialRequestOptions = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAssertionResponseValidationSucceeded = [];
+    private array $authenticatorAssertionResponseValidationSucceeded = [];
 
-    /**
-     * @var array
-     */
-    private $authenticatorAssertionResponseValidationFailed = [];
+    private array $authenticatorAssertionResponseValidationFailed = [];
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
@@ -73,10 +55,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    /**
-     * @return array|Data
-     */
-    public function getData()
+    public function getData(): array|Data
     {
         return $this->data;
     }

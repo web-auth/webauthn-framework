@@ -19,22 +19,17 @@ use function Safe\json_decode;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
-    /**
-     * @var string
-     */
-    protected $displayName;
-
-    public function __construct(string $name, string $id, string $displayName, ?string $icon = null)
-    {
+    public function __construct(
+        string $name,
+        string $id,
+        protected string $displayName,
+        ?string $icon = null
+    ) {
         parent::__construct($name, $icon);
         Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
         $this->id = $id;
-        $this->displayName = $displayName;
     }
 
     public function getId(): string

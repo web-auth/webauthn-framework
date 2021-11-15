@@ -21,7 +21,7 @@ class Manager
     /**
      * @var Algorithm[]
      */
-    private $algorithms = [];
+    private array $algorithms = [];
 
     public function add(Algorithm $algorithm): void
     {

@@ -31,10 +31,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AppleAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
     public function __construct()
     {

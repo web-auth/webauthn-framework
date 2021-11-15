@@ -28,57 +28,15 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseControllerFactory
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var PublicKeyCredentialCreationOptionsFactory
-     */
-    private $publicKeyCredentialCreationOptionsFactory;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PublicKeyCredentialLoader
-     */
-    private $publicKeyCredentialLoader;
-
-    /**
-     * @var AuthenticatorAttestationResponseValidator
-     */
-    private $attestationResponseValidator;
-
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSourceRepository;
-
     public function __construct(
-        HttpMessageFactoryInterface $httpMessageFactory,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
     ) {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->publicKeyCredentialCreationOptionsFactory = $publicKeyCredentialCreationOptionsFactory;
-        $this->publicKeyCredentialLoader = $publicKeyCredentialLoader;
-        $this->attestationResponseValidator = $attestationResponseValidator;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
     }
 
     public function createAttestationRequestController(

@@ -29,22 +29,12 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class PublicKeyCredentialCreationOptionsFactory
 {
     /**
-     * @var mixed[]
-     */
-    private $profiles;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
      * @param mixed[] $profiles
      */
-    public function __construct(array $profiles, EventDispatcherInterface $eventDispatcher)
-    {
-        $this->profiles = $profiles;
-        $this->eventDispatcher = $eventDispatcher;
+    public function __construct(
+        private array $profiles,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**

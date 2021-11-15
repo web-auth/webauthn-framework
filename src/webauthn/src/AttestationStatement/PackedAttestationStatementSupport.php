@@ -37,20 +37,12 @@ use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
-    /**
-     * @var Manager
-     */
-    private $algorithmManager;
-
-    public function __construct(Manager $algorithmManager)
-    {
+    public function __construct(
+        private Manager $algorithmManager
+    ) {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->algorithmManager = $algorithmManager;
     }
 
     public function name(): string
@@ -66,14 +58,12 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::keyExists($attestation['attStmt'], 'sig', 'The attestation statement value "sig" is missing.');
         Assertion::keyExists($attestation['attStmt'], 'alg', 'The attestation statement value "alg" is missing.');
         Assertion::string($attestation['attStmt']['sig'], 'The attestation statement value "sig" is missing.');
-        switch (true) {
-            case array_key_exists('x5c', $attestation['attStmt']):
-                return $this->loadBasicType($attestation);
-            case array_key_exists('ecdaaKeyId', $attestation['attStmt']):
-                return $this->loadEcdaaType($attestation['attStmt']);
-            default:
-                return $this->loadEmptyType($attestation);
-        }
+
+        return match (true) {
+            array_key_exists('x5c', $attestation['attStmt']) => $this->loadBasicType($attestation),
+            array_key_exists('ecdaaKeyId', $attestation['attStmt']) => $this->loadEcdaaType($attestation['attStmt']),
+            default => $this->loadEmptyType($attestation),
+        };
     }
 
     public function isValid(
@@ -82,25 +72,22 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        switch (true) {
-            case $trustPath instanceof CertificateTrustPath:
-                return $this->processWithCertificate(
-                    $clientDataJSONHash,
-                    $attestationStatement,
-                    $authenticatorData,
-                    $trustPath
-                );
-            case $trustPath instanceof EcdaaKeyIdTrustPath:
-                return $this->processWithECDAA();
-            case $trustPath instanceof EmptyTrustPath:
-                return $this->processWithSelfAttestation(
-                    $clientDataJSONHash,
-                    $attestationStatement,
-                    $authenticatorData
-                );
-            default:
-                throw new InvalidArgumentException('Unsupported attestation statement');
-        }
+
+        return match (true) {
+            $trustPath instanceof CertificateTrustPath => $this->processWithCertificate(
+                $clientDataJSONHash,
+                $attestationStatement,
+                $authenticatorData,
+                $trustPath
+            ),
+            $trustPath instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
+            $trustPath instanceof EmptyTrustPath => $this->processWithSelfAttestation(
+                $clientDataJSONHash,
+                $attestationStatement,
+                $authenticatorData
+            ),
+            default => throw new InvalidArgumentException('Unsupported attestation statement'),
+        };
     }
 
     /**

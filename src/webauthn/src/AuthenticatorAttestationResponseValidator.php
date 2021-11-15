@@ -43,46 +43,17 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 class AuthenticatorAttestationResponseValidator
 {
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
+    private LoggerInterface $logger;
 
-    /**
-     * @var PublicKeyCredentialSourceRepository
-     */
-    private $publicKeyCredentialSource;
+    private ?MetadataStatementRepository $metadataStatementRepository;
 
-    /**
-     * @var TokenBindingHandler
-     */
-    private $tokenBindingHandler;
-
-    /**
-     * @var ExtensionOutputCheckerHandler
-     */
-    private $extensionOutputCheckerHandler;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var MetadataStatementRepository|null
-     */
-    private $metadataStatementRepository;
-
-    /**
-     * @var CertificateChainChecker|null
-     */
-    private $certificateChainChecker;
+    private ?CertificateChainChecker $certificateChainChecker = null;
 
     public function __construct(
-        AttestationStatementSupportManager $attestationStatementSupportManager,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        private AttestationStatementSupportManager $attestationStatementSupportManager,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
+        private TokenBindingHandler $tokenBindingHandler,
+        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
     ) {
@@ -98,10 +69,6 @@ class AuthenticatorAttestationResponseValidator
                 E_USER_DEPRECATED
             );
         }
-        $this->attestationStatementSupportManager = $attestationStatementSupportManager;
-        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
-        $this->tokenBindingHandler = $tokenBindingHandler;
-        $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->logger = $logger ?? new NullLogger();
     }
@@ -441,18 +408,13 @@ class AuthenticatorAttestationResponseValidator
 
     private function getAttestationType(AttestationStatement $attestationStatement): int
     {
-        switch ($attestationStatement->getType()) {
-            case AttestationStatement::TYPE_BASIC:
-                return MetadataStatement::ATTESTATION_BASIC_FULL;
-            case AttestationStatement::TYPE_SELF:
-                return MetadataStatement::ATTESTATION_BASIC_SURROGATE;
-            case AttestationStatement::TYPE_ATTCA:
-                return MetadataStatement::ATTESTATION_ATTCA;
-            case AttestationStatement::TYPE_ECDAA:
-                return MetadataStatement::ATTESTATION_ECDAA;
-            default:
-                throw new InvalidArgumentException('Invalid attestation type');
-        }
+        return match ($attestationStatement->getType()) {
+            AttestationStatement::TYPE_BASIC => MetadataStatement::ATTESTATION_BASIC_FULL,
+            AttestationStatement::TYPE_SELF => MetadataStatement::ATTESTATION_BASIC_SURROGATE,
+            AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
+            AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
+            default => throw new InvalidArgumentException('Invalid attestation type'),
+        };
     }
 
     private function getFacetId(

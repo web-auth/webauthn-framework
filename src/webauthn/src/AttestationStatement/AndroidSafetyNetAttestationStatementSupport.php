@@ -45,40 +45,19 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
 {
-    /**
-     * @var string|null
-     */
-    private $apiKey;
+    private ?string $apiKey;
 
-    /**
-     * @var ClientInterface|null
-     */
-    private $client;
+    private ?ClientInterface $client;
 
-    /**
-     * @var CompactSerializer
-     */
-    private $jwsSerializer;
+    private CompactSerializer $jwsSerializer;
 
-    /**
-     * @var JWSVerifier|null
-     */
-    private $jwsVerifier;
+    private ?JWSVerifier $jwsVerifier = null;
 
-    /**
-     * @var RequestFactoryInterface|null
-     */
-    private $requestFactory;
+    private ?RequestFactoryInterface $requestFactory;
 
-    /**
-     * @var int
-     */
-    private $leeway;
+    private int $leeway;
 
-    /**
-     * @var int
-     */
-    private $maxAge;
+    private int $maxAge;
 
     public function __construct(
         ?ClientInterface $client = null,

@@ -30,7 +30,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     /**
      * @var AuthenticationExtension[]
      */
-    private $extensions = [];
+    private array $extensions = [];
 
     public function add(AuthenticationExtension $extension): void
     {

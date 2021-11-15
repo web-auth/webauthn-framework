@@ -13,28 +13,22 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Dto;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class ServerPublicKeyCredentialRequestOptionsRequest
 {
-    /**
-     * @var string|null
-     *
-     * @Assert\NotBlank(allowNull=true)
-     */
-    public $username;
+    #[NotBlank(allowNull: true)]
+    public ?string $username = null;
 
-    /**
-     * @var string|null
-     *
-     * @Assert\NotBlank(allowNull=true)
-     * @Assert\Choice({PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED, PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED})
-     */
-    public $userVerification;
+    #[NotBlank(allowNull: true)]
+    #[Choice(choices: [
+        PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+        PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+        PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+    ])]
+    public ?string $userVerification = null;
 
-    /**
-     * @var array|null
-     */
-    public $extensions;
+    public ?array $extensions = null;
 }

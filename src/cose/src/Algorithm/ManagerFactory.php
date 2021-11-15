@@ -20,7 +20,7 @@ class ManagerFactory
     /**
      * @var Algorithm[]
      */
-    private $algorithms = [];
+    private array $algorithms = [];
 
     public function add(string $alias, Algorithm $algorithm): void
     {

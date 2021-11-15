@@ -31,10 +31,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
  */
 final class AdditionalAuthenticatorTest extends WebTestCase
 {
-    /**
-     * @var KernelBrowser
-     */
-    private $client;
+    private KernelBrowser $client;
 
     protected function setUp(): void
     {

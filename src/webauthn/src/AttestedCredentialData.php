@@ -24,26 +24,11 @@ use function Safe\base64_decode;
  */
 class AttestedCredentialData implements JsonSerializable
 {
-    /**
-     * @var UuidInterface
-     */
-    private $aaguid;
-
-    /**
-     * @var string
-     */
-    private $credentialId;
-
-    /**
-     * @var string|null
-     */
-    private $credentialPublicKey;
-
-    public function __construct(UuidInterface $aaguid, string $credentialId, ?string $credentialPublicKey)
-    {
-        $this->aaguid = $aaguid;
-        $this->credentialId = $credentialId;
-        $this->credentialPublicKey = $credentialPublicKey;
+    public function __construct(
+        private UuidInterface $aaguid,
+        private string $credentialId,
+        private ?string $credentialPublicKey
+    ) {
     }
 
     public function getAaguid(): UuidInterface

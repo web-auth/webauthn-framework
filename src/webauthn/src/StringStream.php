@@ -29,15 +29,9 @@ final class StringStream implements Stream
      */
     private $data;
 
-    /**
-     * @var int
-     */
-    private $length;
+    private int $length;
 
-    /**
-     * @var int
-     */
-    private $totalRead = 0;
+    private int $totalRead = 0;
 
     public function __construct(string $data)
     {

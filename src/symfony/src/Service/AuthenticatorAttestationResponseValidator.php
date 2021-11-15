@@ -31,22 +31,16 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorAttestationResponseValidator
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
     public function __construct(
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        EventDispatcherInterface $eventDispatcher,
+        private EventDispatcherInterface $eventDispatcher,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
     ) {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $metadataStatementRepository, $logger);
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function check(

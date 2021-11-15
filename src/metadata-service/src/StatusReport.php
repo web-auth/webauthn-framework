@@ -21,56 +21,19 @@ use function Safe\sprintf;
 class StatusReport implements JsonSerializable
 {
     /**
-     * @var string
-     *
      * @see AuthenticatorStatus
      */
-    private $status;
-
-    /**
-     * @var string|null
-     */
-    private $effectiveDate;
-
-    /**
-     * @var string|null
-     */
-    private $certificate;
-
-    /**
-     * @var string|null
-     */
-    private $url;
-
-    /**
-     * @var string|null
-     */
-    private $certificationDescriptor;
-
-    /**
-     * @var string|null
-     */
-    private $certificateNumber;
-
-    /**
-     * @var string|null
-     */
-    private $certificationPolicyVersion;
-
-    /**
-     * @var string|null
-     */
-    private $certificationRequirementsVersion;
+    private string $status;
 
     public function __construct(
         string $status,
-        ?string $effectiveDate,
-        ?string $certificate,
-        ?string $url,
-        ?string $certificationDescriptor,
-        ?string $certificateNumber,
-        ?string $certificationPolicyVersion,
-        ?string $certificationRequirementsVersion
+        private ?string $effectiveDate,
+        private ?string $certificate,
+        private ?string $url,
+        private ?string $certificationDescriptor,
+        private ?string $certificateNumber,
+        private ?string $certificationPolicyVersion,
+        private ?string $certificationRequirementsVersion
     ) {
         Assertion::inArray(
             $status,
@@ -79,13 +42,6 @@ class StatusReport implements JsonSerializable
         );
 
         $this->status = $status;
-        $this->effectiveDate = $effectiveDate;
-        $this->certificate = $certificate;
-        $this->url = $url;
-        $this->certificationDescriptor = $certificationDescriptor;
-        $this->certificateNumber = $certificateNumber;
-        $this->certificationPolicyVersion = $certificationPolicyVersion;
-        $this->certificationRequirementsVersion = $certificationRequirementsVersion;
     }
 
     public function isCompromised(): bool

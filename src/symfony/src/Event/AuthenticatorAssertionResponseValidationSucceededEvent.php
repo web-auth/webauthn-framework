@@ -21,50 +21,14 @@ use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAssertionResponseValidationSucceededEvent extends Event
 {
-    /**
-     * @var string
-     */
-    private $credentialId;
-
-    /**
-     * @var AuthenticatorAssertionResponse
-     */
-    private $authenticatorAssertionResponse;
-
-    /**
-     * @var PublicKeyCredentialRequestOptions
-     */
-    private $publicKeyCredentialRequestOptions;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    private $request;
-
-    /**
-     * @var string|null
-     */
-    private $userHandle;
-
-    /**
-     * @var PublicKeyCredentialSource
-     */
-    private $publicKeyCredentialSource;
-
     public function __construct(
-        string $credentialId,
-        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
-        ?string $userHandle,
-        PublicKeyCredentialSource $publicKeyCredentialSource
+        private string $credentialId,
+        private AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        private ServerRequestInterface $request,
+        private ?string $userHandle,
+        private PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
-        $this->credentialId = $credentialId;
-        $this->authenticatorAssertionResponse = $authenticatorAssertionResponse;
-        $this->publicKeyCredentialRequestOptions = $publicKeyCredentialRequestOptions;
-        $this->request = $request;
-        $this->userHandle = $userHandle;
-        $this->publicKeyCredentialSource = $publicKeyCredentialSource;
     }
 
     public function getCredentialId(): string

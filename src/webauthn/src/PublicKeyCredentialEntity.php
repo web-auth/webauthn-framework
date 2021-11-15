@@ -17,20 +17,10 @@ use JsonSerializable;
 
 abstract class PublicKeyCredentialEntity implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $icon;
-
-    public function __construct(string $name, ?string $icon)
-    {
-        $this->name = $name;
-        $this->icon = $icon;
+    public function __construct(
+        protected string $name,
+        protected ?string $icon
+    ) {
     }
 
     public function getName(): string

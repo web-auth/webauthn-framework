@@ -40,23 +40,12 @@ class AttestationObjectLoader
 
     private const FLAG_ED = 0b10000000;
 
-    /**
-     * @var Decoder
-     */
-    private $decoder;
+    private Decoder $decoder;
 
-    /**
-     * @var AttestationStatementSupportManager
-     */
-    private $attestationStatementSupportManager;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        AttestationStatementSupportManager $attestationStatementSupportManager,
+        private AttestationStatementSupportManager $attestationStatementSupportManager,
         ?MetadataStatementRepository $metadataStatementRepository = null,
         ?LoggerInterface $logger = null
     ) {
@@ -73,7 +62,6 @@ class AttestationObjectLoader
             );
         }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->attestationStatementSupportManager = $attestationStatementSupportManager;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -90,7 +78,7 @@ class AttestationObjectLoader
             ]);
             try {
                 $decodedData = Base64UrlSafe::decode($data);
-            } catch (Throwable $t) {
+            } catch (Throwable) {
                 $decodedData = Base64::decode($data);
             }
             $stream = new StringStream($decodedData);

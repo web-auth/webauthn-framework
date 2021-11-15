@@ -17,15 +17,12 @@ use Assert\Assertion;
 
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    public function __construct(string $name, ?string $id = null, ?string $icon = null)
-    {
+    public function __construct(
+        string $name,
+        protected ?string $id = null,
+        ?string $icon = null
+    ) {
         parent::__construct($name, $icon);
-        $this->id = $id;
     }
 
     public function getId(): ?string

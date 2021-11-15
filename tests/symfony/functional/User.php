@@ -18,15 +18,14 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class User extends PublicKeyCredentialUserEntity implements UserInterface
 {
-    /**
-     * @var array
-     */
-    private $roles;
-
-    public function __construct(string $name, string $id, string $displayName, ?string $icon = null, array $roles = [])
-    {
+    public function __construct(
+        string $name,
+        string $id,
+        string $displayName,
+        ?string $icon = null,
+        private array $roles = []
+    ) {
         parent::__construct($name, $id, $displayName, $icon);
-        $this->roles = $roles;
     }
 
     public function getRoles(): array

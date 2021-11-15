@@ -17,17 +17,10 @@ use JsonSerializable;
 
 class AuthenticationExtension implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    private $value;
-
-    public function __construct(string $name, $value)
-    {
-        $this->name = $name;
-        $this->value = $value;
+    public function __construct(
+        private string $name,
+        private $value
+    ) {
     }
 
     public function name(): string

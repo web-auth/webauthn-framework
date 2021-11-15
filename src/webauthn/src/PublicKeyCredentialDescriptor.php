@@ -34,16 +34,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
     /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
      * @var string[]
      */
     protected $transports;
@@ -51,10 +41,11 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @param string[] $transports
      */
-    public function __construct(string $type, string $id, array $transports = [])
-    {
-        $this->type = $type;
-        $this->id = $id;
+    public function __construct(
+        protected string $type,
+        protected string $id,
+        array $transports = []
+    ) {
         $this->transports = $transports;
     }
 
@@ -94,7 +85,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
         try {
             $id = Base64UrlSafe::decode($json['id']);
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $id = Base64::decode($json['id']);
         }
 

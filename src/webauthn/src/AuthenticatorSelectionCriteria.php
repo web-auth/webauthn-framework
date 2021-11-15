@@ -40,25 +40,13 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    /**
-     * @var string|null
-     */
-    private $authenticatorAttachment;
+    private ?string $authenticatorAttachment;
 
-    /**
-     * @var bool
-     */
-    private $requireResidentKey;
+    private bool $requireResidentKey;
 
-    /**
-     * @var string
-     */
-    private $userVerification;
+    private string $userVerification;
 
-    /**
-     * @var string|null
-     */
-    private $residentKey;
+    private ?string $residentKey = null;
 
     public function __construct(
         ?string $authenticatorAttachment = null,
