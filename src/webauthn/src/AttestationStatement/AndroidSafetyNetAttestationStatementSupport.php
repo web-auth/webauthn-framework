@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use const E_USER_DEPRECATED;
 use InvalidArgumentException;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
@@ -35,27 +34,22 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
 {
-    private ?string $apiKey;
+    private ?string $apiKey = null;
 
-    private ?ClientInterface $client;
+    private ?ClientInterface $client = null;
 
     private CompactSerializer $jwsSerializer;
 
     private ?JWSVerifier $jwsVerifier = null;
 
-    private ?RequestFactoryInterface $requestFactory;
+    private ?RequestFactoryInterface $requestFactory = null;
 
-    private int $leeway;
+    private int $leeway = 0;
 
-    private int $maxAge;
+    private int $maxAge = 60000;
 
-    public function __construct(
-        ?ClientInterface $client = null,
-        ?string $apiKey = null,
-        ?RequestFactoryInterface $requestFactory = null,
-        ?int $leeway = null,
-        ?int $maxAge = null
-    ) {
+    public function __construct()
+    {
         if (! class_exists(RS256::class)) {
             throw new RuntimeException(
                 'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?'
@@ -66,45 +60,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
                 'The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?'
             );
         }
-        if ($client !== null) {
-            @trigger_error(
-                'The argument "client" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($apiKey !== null) {
-            @trigger_error(
-                'The argument "apiKey" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($requestFactory !== null) {
-            @trigger_error(
-                'The argument "requestFactory" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "enableApiVerification".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($maxAge !== null) {
-            @trigger_error(
-                'The argument "maxAge" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setMaxAge".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($leeway !== null) {
-            @trigger_error(
-                'The argument "leeway" is deprecated since version 3.3 and will be removed in 4.0. Please set `null` instead and use the method "setLeeway".',
-                E_USER_DEPRECATED
-            );
-        }
         $this->jwsSerializer = new CompactSerializer();
         $this->initJwsVerifier();
-
-        //To be removed in 4.0
-        $this->leeway = $leeway ?? 0;
-        $this->maxAge = $maxAge ?? 60000;
-        $this->apiKey = $apiKey;
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
     }
 
     public function enableApiVerification(

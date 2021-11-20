@@ -19,7 +19,6 @@ use Cose\Algorithm\Signature\RSA\PS512;
 use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
-use const E_USER_DEPRECATED;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Psr\Http\Client\ClientInterface;
@@ -59,7 +58,7 @@ class Server
      */
     private array $selectedAlgorithms;
 
-    private ?MetadataStatementRepository $metadataStatementRepository;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
     private ?ClientInterface $httpClient = null;
 
@@ -78,15 +77,8 @@ class Server
 
     public function __construct(
         private PublicKeyCredentialRpEntity $rpEntity,
-        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        ?MetadataStatementRepository $metadataStatementRepository = null
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
     ) {
-        if ($metadataStatementRepository !== null) {
-            @trigger_error(
-                'The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".',
-                E_USER_DEPRECATED
-            );
-        }
         $this->logger = new NullLogger();
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
@@ -106,7 +98,6 @@ class Server
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
         $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
-        $this->metadataStatementRepository = $metadataStatementRepository;
     }
 
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use const E_USER_DEPRECATED;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
@@ -31,48 +30,18 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    private ?string $authenticatorAttachment;
+    private ?string $authenticatorAttachment = null;
 
     private bool $requireResidentKey;
 
     private string $userVerification;
 
-    private ?string $residentKey = null;
+    private ?string $residentKey;
 
-    public function __construct(
-        ?string $authenticatorAttachment = null,
-        ?bool $requireResidentKey = null,
-        ?string $userVerification = null,
-        ?string $residentKey = null
-    ) {
-        if ($authenticatorAttachment !== null) {
-            @trigger_error(
-                'The argument "authenticatorAttachment" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorAttachment".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($requireResidentKey !== null) {
-            @trigger_error(
-                'The argument "requireResidentKey" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setRequireResidentKey".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($userVerification !== null) {
-            @trigger_error(
-                'The argument "userVerification" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setUserVerification".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($residentKey !== null) {
-            @trigger_error(
-                'The argument "residentKey" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setResidentKey".',
-                E_USER_DEPRECATED
-            );
-        }
-        $this->authenticatorAttachment = $authenticatorAttachment;
-        $this->requireResidentKey = $requireResidentKey ?? false;
-        $this->userVerification = $userVerification ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $this->residentKey = $residentKey ?? self::RESIDENT_KEY_REQUIREMENT_NONE;
+    public function __construct() {
+        $this->requireResidentKey = false;
+        $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+        $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
     }
 
     public static function create(): self

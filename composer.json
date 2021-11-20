@@ -50,7 +50,7 @@
         "psr/log": "^1.1",
         "ramsey/uuid": "^3.8|^4.0",
         "spomky-labs/cbor-bundle": "^2.0",
-        "spomky-labs/cbor-php": "^1.1|^2.0",
+        "spomky-labs/cbor-php": "^2.0@dev",
         "symfony/config": "^5.3",
         "symfony/dependency-injection": "^5.3",
         "symfony/framework-bundle": "^5.3",

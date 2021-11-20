@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use function count;
-use const E_USER_DEPRECATED;
 use InvalidArgumentException;
 use function is_array;
 use Jose\Component\KeyManagement\JWKFactory;
@@ -26,7 +25,9 @@ use Webauthn\CertificateToolbox;
 
 class MetadataService
 {
-    private array $additionalQueryStringValues;
+    private array $additionalQueryStringValues = [];
+
+    private array $additionalHeaders = [];
 
     private LoggerInterface $logger;
 
@@ -34,30 +35,8 @@ class MetadataService
         private string $serviceUri,
         private ClientInterface $httpClient,
         private RequestFactoryInterface $requestFactory,
-        array $additionalQueryStringValues = [],
-        private array $additionalHeaders = [],
-        ?LoggerInterface $logger = null
     ) {
-        if (count($additionalQueryStringValues) !== 0) {
-            @trigger_error(
-                'The argument "additionalQueryStringValues" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addQueryStringValues`.',
-                E_USER_DEPRECATED
-            );
-        }
-        if (count($additionalQueryStringValues) !== 0) {
-            @trigger_error(
-                'The argument "additionalHeaders" is deprecated since version 3.3 and will be removed in 4.0. Please set an empty array instead and us the method `addHeaders`.',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($logger !== null) {
-            @trigger_error(
-                'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.',
-                E_USER_DEPRECATED
-            );
-        }
-        $this->additionalQueryStringValues = $additionalQueryStringValues;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public function addQueryStringValues(array $additionalQueryStringValues): self
@@ -115,16 +94,6 @@ class MetadataService
         throw new InvalidArgumentException(sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
     }
 
-    /**
-     * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
-     */
-    public function getMetadataStatementFor(
-        MetadataTOCPayloadEntry $entry,
-        string $hashingFunction = 'sha256'
-    ): MetadataStatement {
-        return $this->fetchMetadataStatementFor($entry, $hashingFunction);
-    }
-
     public function fetchMetadataStatementFor(
         MetadataTOCPayloadEntry $entry,
         string $hashingFunction = 'sha256'
@@ -152,14 +121,6 @@ class MetadataService
             ]);
             throw $throwable;
         }
-    }
-
-    /**
-     * @deprecated This method is deprecated since v3.3 and will be removed in v4.0
-     */
-    public function getMetadataTOCPayload(): MetadataTOCPayload
-    {
-        return $this->fetchMetadataTOCPayload();
     }
 
     private function fetchMetadataTOCPayload(): MetadataTOCPayload

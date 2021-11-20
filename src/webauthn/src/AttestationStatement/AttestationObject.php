@@ -4,27 +4,18 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use const E_USER_DEPRECATED;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    private ?MetadataStatement $metadataStatement;
+    private ?MetadataStatement $metadataStatement = null;
 
     public function __construct(
         private string $rawAttestationObject,
         private AttestationStatement $attStmt,
-        private AuthenticatorData $authData,
-        ?MetadataStatement $metadataStatement = null
+        private AuthenticatorData $authData
     ) {
-        if ($metadataStatement !== null) {
-            @trigger_error(
-                'The argument "metadataStatement" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatement".',
-                E_USER_DEPRECATED
-            );
-        }
-        $this->metadataStatement = $metadataStatement;
     }
 
     public function getRawAttestationObject(): string

@@ -9,7 +9,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use const E_USER_DEPRECATED;
 use function ord;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -20,7 +19,6 @@ use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\StringStream;
 
 class AttestationObjectLoader
@@ -34,24 +32,10 @@ class AttestationObjectLoader
     private LoggerInterface $logger;
 
     public function __construct(
-        private AttestationStatementSupportManager $attestationStatementSupportManager,
-        ?MetadataStatementRepository $metadataStatementRepository = null,
-        ?LoggerInterface $logger = null
+        private AttestationStatementSupportManager $attestationStatementSupportManager
     ) {
-        if ($metadataStatementRepository !== null) {
-            @trigger_error(
-                'The argument "metadataStatementRepository" is deprecated since version 3.2 and will be removed in 4.0. Please set `null` instead.',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($logger !== null) {
-            @trigger_error(
-                'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger" instead.',
-                E_USER_DEPRECATED
-            );
-        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self

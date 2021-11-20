@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use const E_USER_DEPRECATED;
 use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -16,24 +15,9 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     protected AuthenticationExtensionsClientInputs $extensions;
 
     public function __construct(
-        protected string $challenge,
-        ?int $timeout = null,
-        ?AuthenticationExtensionsClientInputs $extensions = null
+        protected string $challenge
     ) {
-        if ($timeout !== null) {
-            @trigger_error(
-                'The argument "timeout" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setTimeout".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($extensions !== null) {
-            @trigger_error(
-                'The argument "extensions" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "addExtension" or "addExtensions".',
-                E_USER_DEPRECATED
-            );
-        }
-        $this->setTimeout($timeout);
-        $this->extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
+        $this->extensions = new AuthenticationExtensionsClientInputs();
     }
 
     public function setTimeout(?int $timeout): self

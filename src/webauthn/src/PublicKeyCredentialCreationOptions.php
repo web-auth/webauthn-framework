@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use function count;
-use const E_USER_DEPRECATED;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -31,7 +30,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private $excludeCredentials = [];
+    private array $excludeCredentials = [];
 
     private AuthenticatorSelectionCriteria $authenticatorSelection;
 
@@ -39,43 +38,17 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
-     * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
     public function __construct(
         private PublicKeyCredentialRpEntity $rp,
         private PublicKeyCredentialUserEntity $user,
         string $challenge,
-        array $pubKeyCredParams,
-        ?int $timeout = null,
-        array $excludeCredentials = [],
-        ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
-        ?string $attestation = null,
-        ?AuthenticationExtensionsClientInputs $extensions = null
+        array $pubKeyCredParams
     ) {
-        if (count($excludeCredentials) !== 0) {
-            @trigger_error(
-                'The argument "excludeCredentials" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "excludeCredentials" or "excludeCredential".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($authenticatorSelection !== null) {
-            @trigger_error(
-                'The argument "authenticatorSelection" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAuthenticatorSelection".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($attestation !== null) {
-            @trigger_error(
-                'The argument "attestation" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setAttestation".',
-                E_USER_DEPRECATED
-            );
-        }
-        parent::__construct($challenge, $timeout, $extensions);
+        parent::__construct($challenge);
         $this->pubKeyCredParams = $pubKeyCredParams;
-        $this->authenticatorSelection = $authenticatorSelection ?? new AuthenticatorSelectionCriteria();
-        $this->attestation = $attestation ?? self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
-        $this->excludeCredentials($excludeCredentials)
-        ;
+        $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
+        $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
     }
 
     /**

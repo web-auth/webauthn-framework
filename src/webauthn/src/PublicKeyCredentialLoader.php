@@ -10,7 +10,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use const E_USER_DEPRECATED;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use function ord;
@@ -34,17 +33,10 @@ class PublicKeyCredentialLoader
     private LoggerInterface $logger;
 
     public function __construct(
-        private AttestationObjectLoader $attestationObjectLoader,
-        ?LoggerInterface $logger = null
+        private AttestationObjectLoader $attestationObjectLoader
     ) {
-        if ($logger !== null) {
-            @trigger_error(
-                'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".',
-                E_USER_DEPRECATED
-            );
-        }
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public static function create(AttestationObjectLoader $attestationObjectLoader): self

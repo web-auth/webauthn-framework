@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use function count;
-use const E_USER_DEPRECATED;
 use function in_array;
 use InvalidArgumentException;
 use function is_string;
@@ -34,7 +33,7 @@ class AuthenticatorAttestationResponseValidator
 {
     private LoggerInterface $logger;
 
-    private ?MetadataStatementRepository $metadataStatementRepository;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
     private ?CertificateChainChecker $certificateChainChecker = null;
 
@@ -42,24 +41,9 @@ class AuthenticatorAttestationResponseValidator
         private AttestationStatementSupportManager $attestationStatementSupportManager,
         private PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private TokenBindingHandler $tokenBindingHandler,
-        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?MetadataStatementRepository $metadataStatementRepository = null,
-        ?LoggerInterface $logger = null
+        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
     ) {
-        if ($logger !== null) {
-            @trigger_error(
-                'The argument "logger" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setLogger".',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($metadataStatementRepository !== null) {
-            @trigger_error(
-                'The argument "metadataStatementRepository" is deprecated since version 3.3 and will be removed in 4.0. Please use the method "setMetadataStatementRepository".',
-                E_USER_DEPRECATED
-            );
-        }
-        $this->metadataStatementRepository = $metadataStatementRepository;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -235,10 +219,9 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if ($metadataStatement === null) {
-            // @phpstan-ignore-next-line
-            $this->certificateChainChecker === null ? CertificateToolbox::checkChain(
-                $authenticatorCertificates
-            ) : $this->certificateChainChecker->check($authenticatorCertificates, []);
+            if ($this->certificateChainChecker !== null) {
+                $this->certificateChainChecker->check($authenticatorCertificates, []);
+            }
 
             return;
         }
@@ -250,11 +233,9 @@ class AuthenticatorAttestationResponseValidator
         }
         $trustedCertificates = array_merge($metadataStatementCertificates, $rootStatementCertificates);
 
-        // @phpstan-ignore-next-line
-        $this->certificateChainChecker === null ? CertificateToolbox::checkChain(
-            $authenticatorCertificates,
-            $trustedCertificates
-        ) : $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
+        if ($this->certificateChainChecker !== null) {
+            $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
+        }
     }
 
     private function checkMetadataStatement(

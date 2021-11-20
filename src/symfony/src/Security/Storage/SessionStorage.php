@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Storage;
 
 use function array_key_exists;
-use const E_USER_DEPRECATED;
 use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +19,8 @@ final class SessionStorage implements OptionsStorage
      */
     private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
-    public function store(Request $request, StoredData $data, ?Response $response = null): void
+    public function store(Request $request, StoredData $data, Response $response): void
     {
-        if ($response === null) {
-            @trigger_error(
-                'Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.',
-                E_USER_DEPRECATED
-            );
-        }
         $session = $request->getSession();
         $session->set(self::SESSION_PARAMETER, [
             'options' => $data->getPublicKeyCredentialOptions(),
