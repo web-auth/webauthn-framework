@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -39,10 +39,10 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
+        static::assertEquals('failed', $data['status']);
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
+        static::assertEquals('username: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -59,10 +59,10 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
+        static::assertEquals('failed', $data['status']);
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should not be blank.');
+        static::assertEquals('displayName: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -80,7 +80,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
+        static::assertEquals('failed', $data['status']);
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
@@ -101,10 +101,10 @@ class TransportBindingProfileCreationTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'failed');
+        static::assertEquals('failed', $data['status']);
         static::assertEquals(400, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should be of type string.');
+        static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
     }
 
     /**
@@ -131,13 +131,13 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
-        static::assertEquals($data['attestation'], 'indirect');
+        static::assertEquals('indirect', $data['attestation']);
 
         static::assertArrayHasKey('authenticatorSelection', $data);
-        static::assertEquals($data['authenticatorSelection'], ['authenticatorAttachment' => 'cross-platform', 'userVerification' => 'preferred', 'requireResidentKey' => true]);
+        static::assertEquals(['authenticatorAttachment' => 'cross-platform', 'userVerification' => 'preferred', 'requireResidentKey' => true], $data['authenticatorSelection']);
     }
 
     /**
@@ -159,7 +159,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
         static::assertEquals('none', $data['attestation']);
@@ -191,7 +191,7 @@ class TransportBindingProfileCreationTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
         static::assertEquals('none', $data['attestation']);

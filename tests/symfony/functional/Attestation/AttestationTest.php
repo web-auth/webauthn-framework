@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -53,8 +53,7 @@ class AttestationTest extends KernelTestCase
         self::bootKernel();
         self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
 
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
-            ::create(
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
                 new PublicKeyCredentialRpEntity('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==', true),

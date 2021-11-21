@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -48,10 +48,10 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'username: This value should not be blank.');
+        static::assertEquals('username: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -68,10 +68,10 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'displayName: This value should not be blank.');
+        static::assertEquals('displayName: This value should not be blank.', $data['errorMessage']);
     }
 
     /**
@@ -89,7 +89,7 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals('displayName: This value should be of type string.', $data['errorMessage']);
@@ -110,7 +110,7 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertEquals('username: This value should be of type string.', $data['errorMessage']);
@@ -140,7 +140,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'ok');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
         static::assertEquals($data['attestation'], 'indirect');
@@ -168,7 +168,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'ok');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
         static::assertEquals('none', $data['attestation']);
@@ -204,7 +204,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'ok');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('attestation', $data);
         static::assertEquals('none', $data['attestation']);
@@ -229,10 +229,10 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'Invalid username');
+        static::assertEquals('Invalid username', $data['errorMessage']);
     }
 
     /**
@@ -252,10 +252,10 @@ class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertEquals($data['status'], 'error');
+        static::assertEquals('error', $data['status']);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], 'No public key credential options available for this session.');
+        static::assertEquals('No public key credential options available for this session.', $data['errorMessage']);
     }
 
     /**
@@ -264,8 +264,7 @@ class RegistrationAreaTest extends WebTestCase
     public function aValidRegistrationResultRequestIsCorrectlyManaged(): void
     {
         $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity');
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
-            ::create(
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
                 new PublicKeyCredentialRpEntity('My Application'),
                 $publicKeyCredentialUserEntity,
                 base64_decode('9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==', true),
@@ -293,7 +292,7 @@ class RegistrationAreaTest extends WebTestCase
         static::assertEquals($data['status'], 'ok');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         $pkueRepository = $client->getContainer()->get(PublicKeyCredentialUserEntityRepository::class);
         $user = $pkueRepository->findOneByUsername('test@foo.com');

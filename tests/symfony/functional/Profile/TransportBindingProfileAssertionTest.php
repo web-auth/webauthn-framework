@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -80,7 +80,7 @@ class TransportBindingProfileAssertionTest extends WebTestCase
         static::assertEquals('ok', $data['status']);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
-        static::assertEquals($data['errorMessage'], '');
+        static::assertEquals('', $data['errorMessage']);
 
         static::assertArrayHasKey('userVerification', $data);
         static::assertEquals(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, $data['userVerification']);

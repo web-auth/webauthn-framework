@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -42,14 +42,13 @@ class AndroidKeyAttestationStatementTest extends AbstractTestCase
         //Given
         $request = $this->createRequestWithHost('webauthn.org');
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
-            ::create(
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
                 new PublicKeyCredentialRpEntity('My Application'),
                 new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
                 base64_decode('Tf65bS6D5temh2BwvptqgBPb25iZDRxjwC5ans91IIJDrcrOpnWTK4LVgFjeUV4GDMe44w8SI5NsZssIXTUvDg==', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )
-                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
+            ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
         ;
 
         //When

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -215,18 +215,17 @@ class Server
         $extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
         $challenge = random_bytes($this->challengeSize);
 
-        return PublicKeyCredentialCreationOptions
-            ::create(
+        return PublicKeyCredentialCreationOptions::create(
                 $this->rpEntity,
                 $userEntity,
                 $challenge,
                 $publicKeyCredentialParametersList
             )
-                ->excludeCredentials($excludedPublicKeyDescriptors)
-                ->setAuthenticatorSelection($criteria)
-                ->setAttestation($attestationMode ?? PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
-                ->setExtensions($extensions)
-                ->setTimeout($this->timeout)
+            ->excludeCredentials($excludedPublicKeyDescriptors)
+            ->setAuthenticatorSelection($criteria)
+            ->setAttestation($attestationMode ?? PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+            ->setExtensions($extensions)
+            ->setTimeout($this->timeout)
         ;
     }
 
@@ -235,13 +234,12 @@ class Server
      */
     public function generatePublicKeyCredentialRequestOptions(?string $userVerification = null, array $allowedPublicKeyDescriptors = [], ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
     {
-        return PublicKeyCredentialRequestOptions
-            ::create(random_bytes($this->challengeSize))
-                ->setRpId($this->rpEntity->getId())
-                ->setUserVerification($userVerification ?? PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredentials($allowedPublicKeyDescriptors)
-                ->setTimeout($this->timeout)
-                ->setExtensions($extensions ?? new AuthenticationExtensionsClientInputs())
+        return PublicKeyCredentialRequestOptions::create(random_bytes($this->challengeSize))
+            ->setRpId($this->rpEntity->getId())
+            ->setUserVerification($userVerification ?? PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredentials($allowedPublicKeyDescriptors)
+            ->setTimeout($this->timeout)
+            ->setExtensions($extensions ?? new AuthenticationExtensionsClientInputs())
         ;
     }
 

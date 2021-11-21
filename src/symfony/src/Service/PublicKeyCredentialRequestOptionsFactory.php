@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -51,13 +51,12 @@ final class PublicKeyCredentialRequestOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        $options = PublicKeyCredentialRequestOptions
-            ::create(random_bytes($profile['challenge_length']))
-                ->setRpId($profile['rp_id'])
-                ->setUserVerification($userVerification ?? $profile['user_verification'])
-                ->allowCredentials($allowCredentials)
-                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout'])
+        $options = PublicKeyCredentialRequestOptions::create(random_bytes($profile['challenge_length']))
+            ->setRpId($profile['rp_id'])
+            ->setUserVerification($userVerification ?? $profile['user_verification'])
+            ->allowCredentials($allowCredentials)
+            ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
+            ->setTimeout($profile['timeout'])
         ;
         $this->eventDispatcher->dispatch(new PublicKeyCredentialRequestOptionsCreatedEvent($options));
 

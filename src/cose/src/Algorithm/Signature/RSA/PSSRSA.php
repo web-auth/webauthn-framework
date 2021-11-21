@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -16,12 +16,12 @@ namespace Cose\Algorithm\Signature\RSA;
 use function ceil;
 use function chr;
 use Cose\Algorithm\Signature\Signature;
+use Cose\BigInteger;
+use Cose\Hash;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function hash_equals;
 use InvalidArgumentException;
-use Jose\Component\Core\Util\BigInteger;
-use Jose\Component\Core\Util\Hash;
 use function mb_strlen;
 use function mb_substr;
 use function ord;
@@ -76,10 +76,8 @@ abstract class PSSRSA implements Signature
             return $c->modPow(BigInteger::createFromBinaryString($key->e()), BigInteger::createFromBinaryString($key->n()));
         }
 
-        $p = $key->primes()[0];
-        $q = $key->primes()[1];
-        $dP = $key->exponents()[0];
-        $dQ = $key->exponents()[1];
+        [$p, $q] = $key->primes();
+        [$dP, $dQ] = $key->exponents();
         $qInv = BigInteger::createFromBinaryString($key->QInv());
 
         $m1 = $c->modPow($dP, $p);

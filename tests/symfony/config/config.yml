@@ -21,6 +21,9 @@ framework:
         storage_id: 'session.storage.mock_file'
     fragments:       ~
     http_method_override: true
+    annotations: ~
+    serializer: ~
+    validation: ~
     router:
         utf8: true
         resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
@@ -174,6 +177,9 @@ services:
     nyholm.psr7.httplug_factory:
         class: Nyholm\Psr7\Factory\HttplugFactory
 
+    property_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\PropertyNormalizer
+        tags: [serializer.normalizer]
 
 doctrine:
     dbal:

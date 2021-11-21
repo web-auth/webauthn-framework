@@ -32,4 +32,4 @@ jobs:
         run: git fetch --depth=1 origin $GITHUB_BASE_REF
 
       - name: Infection
-        run: ./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0
+        run: ./vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=30 --min-covered-msi=50
