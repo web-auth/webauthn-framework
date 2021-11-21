@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -212,18 +212,17 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
             }
         }
 
-        return self
-            ::create(
+        return self::create(
                 PublicKeyCredentialRpEntity::createFromArray($json['rp']),
                 PublicKeyCredentialUserEntity::createFromArray($json['user']),
                 Base64Url::decode($json['challenge']),
                 $pubKeyCredParams
             )
-                ->excludeCredentials($excludeCredentials)
-                ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']))
-                ->setAttestation($json['attestation'])
-                ->setTimeout($json['timeout'] ?? null)
-                ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
+            ->excludeCredentials($excludeCredentials)
+            ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection']))
+            ->setAttestation($json['attestation'])
+            ->setTimeout($json['timeout'] ?? null)
+            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : new AuthenticationExtensionsClientInputs())
         ;
     }
 

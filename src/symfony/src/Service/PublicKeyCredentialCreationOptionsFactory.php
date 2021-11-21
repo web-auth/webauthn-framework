@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -55,18 +55,17 @@ final class PublicKeyCredentialCreationOptionsFactory
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
-        $options = PublicKeyCredentialCreationOptions
-            ::create(
+        $options = PublicKeyCredentialCreationOptions::create(
                 $this->createRpEntity($profile),
                 $userEntity,
                 random_bytes($profile['challenge_length']),
                 $this->createCredentialParameters($profile)
             )
-                ->excludeCredentials($excludeCredentials)
-                ->setAuthenticatorSelection($authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile))
-                ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
-                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout'])
+            ->excludeCredentials($excludeCredentials)
+            ->setAuthenticatorSelection($authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile))
+            ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
+            ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
+            ->setTimeout($profile['timeout'])
         ;
         $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
 

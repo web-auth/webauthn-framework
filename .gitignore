@@ -2,3 +2,5 @@
 report.md
 composer.lock
 vendor
+*.cache
+*.log

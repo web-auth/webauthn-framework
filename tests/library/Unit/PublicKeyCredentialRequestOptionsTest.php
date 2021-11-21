@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -39,13 +39,12 @@ class PublicKeyCredentialRequestOptionsTest extends TestCase
 
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
 
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create('challenge')
-                ->setTimeout(1000)
-                ->setRpId('rp_id')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential($credential)
-                ->setExtensions($extensions)
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create('challenge')
+            ->setTimeout(1000)
+            ->setRpId('rp_id')
+            ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredential($credential)
+            ->setExtensions($extensions)
         ;
 
         static::assertEquals('challenge', $publicKeyCredentialRequestOptions->getChallenge());

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -33,12 +33,11 @@ class AssertionTest extends AbstractTestCase
      */
     public function anAssertionCanBeVerified(): void
     {
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
-                ->setTimeout(60000)
-                ->setRpId('localhost')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
+            ->setTimeout(60000)
+            ->setRpId('localhost')
+            ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredential(new PublicKeyCredentialDescriptor(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
             ))
@@ -77,12 +76,11 @@ class AssertionTest extends AbstractTestCase
      */
     public function anAssertionWithTokenBindingCanBeVerified(): void
     {
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create(base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true))
-                ->setTimeout(60000)
-                ->setRpId('webauthn.morselli.fr')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true))
+            ->setTimeout(60000)
+            ->setRpId('webauthn.morselli.fr')
+            ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredential(new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 base64_decode('+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==', true)
             ))
@@ -121,12 +119,11 @@ class AssertionTest extends AbstractTestCase
      */
     public function anAssertionWithUserHandleCanBeVerified(): void
     {
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create(base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true))
-                ->setTimeout(60000)
-                ->setRpId('spomky-webauthn.herokuapp.com')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true))
+            ->setTimeout(60000)
+            ->setRpId('spomky-webauthn.herokuapp.com')
+            ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredential(new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 base64_decode('ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov', true)
             ))

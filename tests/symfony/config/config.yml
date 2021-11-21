@@ -177,6 +177,9 @@ services:
     nyholm.psr7.httplug_factory:
         class: Nyholm\Psr7\Factory\HttplugFactory
 
+    property_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\PropertyNormalizer
+        tags: [serializer.normalizer]
 
 doctrine:
     dbal:

@@ -10,7 +10,6 @@ parameters:
         - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
-        - '#Parameter (.*) of class Jose\\Component\\Core\\AlgorithmManager constructor expects array\<Jose\\Component\\Core\\Algorithm\>\, array\<int\, object\> given\.#'
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
           path: 'src/cose/src/Algorithm/ManagerFactory.php'

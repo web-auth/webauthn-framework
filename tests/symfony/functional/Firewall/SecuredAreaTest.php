@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -85,12 +85,11 @@ class SecuredAreaTest extends WebTestCase
      */
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
-                ->setTimeout(60000)
-                ->setRpId('localhost')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
+            ->setTimeout(60000)
+            ->setRpId('localhost')
+            ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->allowCredential(new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 Base64Url::decode('eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w')
             ))

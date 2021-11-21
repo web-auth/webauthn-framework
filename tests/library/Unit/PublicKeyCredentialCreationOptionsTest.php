@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2014-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -43,16 +43,15 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
         $credential = new PublicKeyCredentialDescriptor('type', 'id', ['transport']);
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
-        $options = PublicKeyCredentialCreationOptions
-            ::create(
+        $options = PublicKeyCredentialCreationOptions::create(
                 $rp,
                 $user,
                 'challenge',
                 [$credentialParameters]
             )
-                ->excludeCredential($credential)
-                ->setTimeout(1000)
-                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
+            ->excludeCredential($credential)
+            ->setTimeout(1000)
+            ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
         ;
 
         static::assertEquals('challenge', $options->getChallenge());
@@ -89,15 +88,14 @@ class PublicKeyCredentialCreationOptionsTest extends TestCase
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
-        $options = PublicKeyCredentialCreationOptions
-            ::create(
+        $options = PublicKeyCredentialCreationOptions::create(
                 $rp,
                 $user,
                 'challenge',
                 [$credentialParameters]
             )
-                ->setTimeout(1000)
-                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT)
+            ->setTimeout(1000)
+            ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT)
         ;
 
         $json = json_encode($options);
