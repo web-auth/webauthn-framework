@@ -45,7 +45,7 @@ class MetadataServiceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $client = self::getContainer()->get('httplug.client.mock');
+        $client = self::$container->get('httplug.client.mock');
         $this->prepareResponsesMap($client);
 
         $service = new MetadataService(
@@ -79,7 +79,7 @@ class MetadataServiceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $client = self::getContainer()->get('httplug.client.mock');
+        $client = self::$container->get('httplug.client.mock');
         $this->prepareResponsesMap($client);
 
         $ms = MetadataStatementFetcher::fetchMetadataStatement(
@@ -104,7 +104,7 @@ class MetadataServiceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $client = self::getContainer()->get('httplug.client.mock');
+        $client = self::$container->get('httplug.client.mock');
         $this->prepareResponsesMap($client);
 
         /** @var MetadataStatementRepository $repository */
