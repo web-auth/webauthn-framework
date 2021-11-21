@@ -10,30 +10,36 @@ parameters:
         - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
         - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
         - '#Instanceof between Symfony\\Component\\HttpFoundation\\Response and Symfony\\Component\\HttpFoundation\\Response will always evaluate to true\.#'
+        - message: '#Call to deprecated method loadUserByUsername\(\) of class .*#'
+          count: 1
+          path: src/symfony/src/Security/Authentication/Provider/WebauthnProvider.php
+        - message: '#Class Webauthn\\Bundle\\Security\\Authentication\\Provider\\WebauthnProvider implements deprecated interface .*#'
+          count: 1
+          path: src/symfony/src/Security/Authentication/Provider/WebauthnProvider.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
-          path: 'src/cose/src/Algorithm/ManagerFactory.php'
+          path: src/cose/src/Algorithm/ManagerFactory.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
-          path: 'src/cose/src/Algorithm/Signature/ECDSA/ECDSA.php'
+          path: src/cose/src/Algorithm/Signature/ECDSA/ECDSA.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 2
-          path: 'src/cose/src/Algorithm/Signature/ECDSA/ECSignature.php'
+          path: src/cose/src/Algorithm/Signature/ECDSA/ECSignature.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
-          path: 'src/cose/src/Algorithm/Signature/RSA/PSSRSA.php'
+          path: src/cose/src/Algorithm/Signature/RSA/PSSRSA.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
-          path: 'src/cose/src/Algorithm/Signature/RSA/RSA.php'
+          path: src/cose/src/Algorithm/Signature/RSA/RSA.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 2
-          path: 'src/cose/src/Key/Ec2Key.php'
+          path: src/cose/src/Key/Ec2Key.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 1
-          path: 'src/cose/src/Key/Key.php'
+          path: src/cose/src/Key/Key.php
         - message: '#Function .* is unsafe to use\. .* Please add .* at the beginning of the file to use the variant provided by the .* library\.#'
           count: 3
-          path: 'src/cose/src/Key/RsaKey.php'
+          path: src/cose/src/Key/RsaKey.php
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false
