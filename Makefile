@@ -36,7 +36,7 @@ st: vendor ## Run static analyse
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for Github only)
-	vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0
+	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=30 --min-covered-msi=50
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (console)

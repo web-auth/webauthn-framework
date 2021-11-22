@@ -104,7 +104,7 @@ class AttestationStatement implements JsonSerializable
         return array_key_exists($key, $this->attStmt);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         Assertion::true($this->has($key), sprintf('The attestation statement has no key "%s".', $key));
 

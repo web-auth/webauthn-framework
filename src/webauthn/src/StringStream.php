@@ -22,6 +22,7 @@ final class StringStream implements Stream
     {
         $this->length = mb_strlen($data, '8bit');
         $resource = fopen('php://memory', 'rb+');
+        Assertion::isResource($resource, 'Unable to allocate memory');
         fwrite($resource, $data);
         rewind($resource);
         $this->data = $resource;
@@ -29,10 +30,11 @@ final class StringStream implements Stream
 
     public function read(int $length): string
     {
-        if ($length === 0) {
+        if ($length <= 0) {
             return '';
         }
         $read = fread($this->data, $length);
+        Assertion::string($read, 'Unable to read data');
         $bytesRead = mb_strlen($read, '8bit');
         Assertion::length(
             $read,

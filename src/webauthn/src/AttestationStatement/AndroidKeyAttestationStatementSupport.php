@@ -17,6 +17,7 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
+use InvalidArgumentException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
@@ -103,6 +104,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         AuthenticatorData $authenticatorData
     ): void {
         $resource = openssl_pkey_get_public($certificate);
+        if ($resource === false) {
+            throw new InvalidArgumentException('Unable to get public key');
+        }
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');
 

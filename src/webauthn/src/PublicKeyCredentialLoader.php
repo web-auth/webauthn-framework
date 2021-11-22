@@ -138,14 +138,16 @@ class PublicKeyCredentialLoader
                 $rp_id_hash = $authDataStream->read(32);
                 $flags = $authDataStream->read(1);
                 $signCount = $authDataStream->read(4);
-                $signCount = unpack('N', $signCount)[1];
+                $signCount = unpack('N', $signCount);
+                Assertion::isArray($signCount, 'Unable to determine the signature counter');
 
                 $attestedCredentialData = null;
                 if (0 !== (ord($flags) & self::FLAG_AT)) {
                     $aaguid = Uuid::fromBytes($authDataStream->read(16));
                     $credentialLength = $authDataStream->read(2);
-                    $credentialLength = unpack('n', $credentialLength)[1];
-                    $credentialId = $authDataStream->read($credentialLength);
+                    $credentialLength = unpack('n', $credentialLength);
+                    Assertion::isArray($credentialLength, 'Unable to determine the credential data length');
+                    $credentialId = $authDataStream->read($credentialLength[1]);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
                     Assertion::isInstanceOf(
                         $credentialPublicKey,
@@ -170,7 +172,7 @@ class PublicKeyCredentialLoader
                     $authData,
                     $rp_id_hash,
                     $flags,
-                    $signCount,
+                    $signCount[1],
                     $attestedCredentialData,
                     $extension
                 );

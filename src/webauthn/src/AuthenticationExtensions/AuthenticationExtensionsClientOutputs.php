@@ -47,7 +47,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     {
         $object = new self();
         foreach ($json as $k => $v) {
-            $object->add(new AuthenticationExtension($k, $v));
+            $object->add(AuthenticationExtension::create($k, $v));
         }
 
         return $object;

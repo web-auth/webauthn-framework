@@ -128,6 +128,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     {
         try {
             $resource = openssl_pkey_get_public($publicKey);
+            if ($resource === false) {
+                throw new InvalidArgumentException('Unable to get public key');
+            }
             $details = openssl_pkey_get_details($resource);
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);

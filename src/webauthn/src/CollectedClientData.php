@@ -18,25 +18,16 @@ class CollectedClientData
      */
     private array $data;
 
-    /**
-     * @var string
-     */
-    private $type;
+    private string $type;
 
-    /**
-     * @var string
-     */
-    private $challenge;
+    private string $challenge;
 
-    /**
-     * @var string
-     */
-    private $origin;
+    private string $origin;
 
     /**
      * @var mixed[]|null
      */
-    private $tokenBinding;
+    private ?array $tokenBinding;
 
     /**
      * @param mixed[] $data
@@ -99,7 +90,7 @@ class CollectedClientData
         return array_key_exists($key, $this->data);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         if (! $this->has($key)) {
             throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
@@ -113,14 +104,14 @@ class CollectedClientData
      *
      * @return mixed|null
      */
-    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false)
+    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false): mixed
     {
         if (! array_key_exists($key, $json)) {
             if ($isRequired) {
                 throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
             }
 
-            return;
+            return null;
         }
 
         return $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];

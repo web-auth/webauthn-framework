@@ -78,16 +78,18 @@ class AttestationObjectLoader
             $rp_id_hash = $authDataStream->read(32);
             $flags = $authDataStream->read(1);
             $signCount = $authDataStream->read(4);
-            $signCount = unpack('N', $signCount)[1];
-            $this->logger->debug(sprintf('Signature counter: %d', $signCount));
+            $signCount = unpack('N', $signCount);
+            Assertion::isArray($signCount, 'The data does not contain a valid signature counter.');
+            $this->logger->debug(sprintf('Signature counter: %d', $signCount[1]));
 
             $attestedCredentialData = null;
             if (0 !== (ord($flags) & self::FLAG_AT)) {
                 $this->logger->info('Attested Credential Data is present');
                 $aaguid = Uuid::fromBytes($authDataStream->read(16));
                 $credentialLength = $authDataStream->read(2);
-                $credentialLength = unpack('n', $credentialLength)[1];
-                $credentialId = $authDataStream->read($credentialLength);
+                $credentialLength = unpack('n', $credentialLength);
+                Assertion::isArray($credentialLength, 'The data does not contain a valid credential public key.');
+                $credentialId = $authDataStream->read($credentialLength[1]);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
                 Assertion::isInstanceOf(
                     $credentialPublicKey,
@@ -122,7 +124,7 @@ class AttestationObjectLoader
                 $authData,
                 $rp_id_hash,
                 $flags,
-                $signCount,
+                $signCount[1],
                 $attestedCredentialData,
                 $extension
             );

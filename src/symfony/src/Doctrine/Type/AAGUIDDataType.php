@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use function is_string;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -14,9 +15,9 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if (! $value instanceof UuidInterface) {
             return $value;
         }
 
@@ -26,27 +27,21 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?UuidInterface
     {
-        if ($value === null || $value instanceof UuidInterface) {
+        if ($value instanceof UuidInterface || ! is_string($value) || mb_strlen($value, '8bit') !== 36) {
             return $value;
         }
-        switch (true) {
-            case mb_strlen($value, '8bit') === 36:
-                return Uuid::fromString($value);
-            default: // Kept for compatibility with old format
-                $decoded = base64_decode($value, true);
 
-                return Uuid::fromBytes($decoded);
-        }
+        return Uuid::fromString($value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($column);
     }
 
     /**

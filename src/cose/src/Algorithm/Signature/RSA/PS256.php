@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\RSA;
 
-use Jose\Component\Core\Util\Hash;
+use Cose\Hash;
 
 final class PS256 extends PSSRSA
 {

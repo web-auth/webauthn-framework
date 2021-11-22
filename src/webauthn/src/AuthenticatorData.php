@@ -46,22 +46,22 @@ class AuthenticatorData
 
     public function isUserPresent(): bool
     {
-        return 0 !== (ord($this->flags) & self::FLAG_UP) ? true : false;
+        return 0 !== (ord($this->flags) & self::FLAG_UP);
     }
 
     public function isUserVerified(): bool
     {
-        return 0 !== (ord($this->flags) & self::FLAG_UV) ? true : false;
+        return 0 !== (ord($this->flags) & self::FLAG_UV);
     }
 
     public function hasAttestedCredentialData(): bool
     {
-        return 0 !== (ord($this->flags) & self::FLAG_AT) ? true : false;
+        return 0 !== (ord($this->flags) & self::FLAG_AT);
     }
 
     public function hasExtensions(): bool
     {
-        return 0 !== (ord($this->flags) & self::FLAG_ED) ? true : false;
+        return 0 !== (ord($this->flags) & self::FLAG_ED);
     }
 
     public function getReservedForFutureUse1(): int

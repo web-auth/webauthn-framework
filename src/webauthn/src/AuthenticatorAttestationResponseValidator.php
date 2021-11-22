@@ -219,9 +219,7 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if ($metadataStatement === null) {
-            if ($this->certificateChainChecker !== null) {
-                $this->certificateChainChecker->check($authenticatorCertificates, []);
-            }
+            $this->certificateChainChecker?->check($authenticatorCertificates, []);
 
             return;
         }

@@ -31,7 +31,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
             WebauthnToken::class,
             'The token is not supported by this authentication provider.'
         );
-        $user = $this->userProvider->loadUserByUsername($token->getUsername());
+        $user = $this->userProvider->loadUserByIdentifier($token->getUsername());
         try {
             $this->userChecker->checkPreAuth($user);
             $this->userChecker->checkPostAuth($user);

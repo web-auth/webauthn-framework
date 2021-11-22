@@ -7,12 +7,12 @@ namespace Cose\Algorithm\Signature\RSA;
 use function ceil;
 use function chr;
 use Cose\Algorithm\Signature\Signature;
+use Cose\BigInteger;
+use Cose\Hash;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function hash_equals;
 use InvalidArgumentException;
-use Jose\Component\Core\Util\BigInteger;
-use Jose\Component\Core\Util\Hash;
 use function mb_strlen;
 use function mb_substr;
 use function ord;
@@ -72,10 +72,8 @@ abstract class PSSRSA implements Signature
             );
         }
 
-        $p = $key->primes()[0];
-        $q = $key->primes()[1];
-        $dP = $key->exponents()[0];
-        $dQ = $key->exponents()[1];
+        [$p, $q] = $key->primes();
+        [$dP, $dQ] = $key->exponents();
         $qInv = BigInteger::createFromBinaryString($key->QInv());
 
         $m1 = $c->modPow($dP, $p);

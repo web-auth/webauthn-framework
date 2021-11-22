@@ -22,7 +22,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @var string[]
      */
-    protected $transports;
+    protected array $transports;
 
     /**
      * @param string[] $transports
@@ -129,14 +129,8 @@ class PublicKeyCredentialSource implements JsonSerializable
             }
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
-        switch (true) {
-            case mb_strlen($data['aaguid'], '8bit') === 36:
-                $uuid = Uuid::fromString($data['aaguid']);
-                break;
-            default: // Kept for compatibility with old format
-                $decoded = base64_decode($data['aaguid'], true);
-                $uuid = Uuid::fromBytes($decoded);
-        }
+        Assertion::length($data['aaguid'], 36, 'Invalid AAGUID', null, '8bit');
+        $uuid = Uuid::fromString($data['aaguid']);
 
         try {
             return new self(

@@ -24,12 +24,12 @@ class AuthenticationExtension implements JsonSerializable
         return $this->name;
     }
 
-    public function value()
+    public function value(): mixed
     {
         return $this->value;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->value;
     }

@@ -108,11 +108,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         }
 
         foreach ($filenames as $filename) {
-            try {
-                unlink($filename);
-            } catch (FilesystemException) {
-                continue;
-            }
+            unlink($filename);
         }
         $this->deleteDirectory($caDirname);
 
@@ -157,10 +153,13 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     private function createTemporaryDirectory(): string
     {
         $caDir = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
+        Assertion::string($caDir, 'Unable to create a temporary folder');
         if (file_exists($caDir)) {
             unlink($caDir);
         }
-        mkdir($caDir);
+        if (! mkdir($caDir) && ! is_dir($caDir)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
+        }
         if (! is_dir($caDir)) {
             throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
         }
@@ -180,6 +179,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     private function saveToTemporaryFile(string $folder, string $certificate, string $prefix, string $suffix): string
     {
         $filename = tempnam($folder, $prefix);
+        Assertion::string($filename, 'Unable to create a temporary folder');
         rename($filename, $filename . $suffix);
         file_put_contents($filename . $suffix, $certificate, FILE_APPEND);
 

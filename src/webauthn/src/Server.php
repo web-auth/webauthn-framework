@@ -230,9 +230,13 @@ class Server
             $attestationStatementSupportManager,
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
-            $this->extensionOutputCheckerHandler,
-            $this->metadataStatementRepository
+            $this->extensionOutputCheckerHandler
         );
+        if ($this->metadataStatementRepository !== null) {
+            $authenticatorAttestationResponseValidator->setMetadataStatementRepository(
+                $this->metadataStatementRepository
+            );
+        }
         $authenticatorAttestationResponseValidator->setLogger($this->logger);
 
         return $authenticatorAttestationResponseValidator->check(
@@ -269,9 +273,12 @@ class Server
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
-            $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms),
-            $this->counterChecker
+            $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
         );
+        if ($this->counterChecker !== null) {
+            $authenticatorAssertionResponseValidator->setCounterChecker($this->counterChecker);
+        }
+
         $authenticatorAssertionResponseValidator->setLogger($this->logger);
 
         return $authenticatorAssertionResponseValidator->check(

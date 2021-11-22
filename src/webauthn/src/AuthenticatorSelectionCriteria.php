@@ -38,7 +38,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private ?string $residentKey;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->requireResidentKey = false;
         $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
         $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;

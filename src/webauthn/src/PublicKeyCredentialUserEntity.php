@@ -49,6 +49,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
         Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
         $id = base64_decode($json['id'], true);
+        Assertion::string($id, 'Invalid input. "id" is invalid.');
 
         return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }

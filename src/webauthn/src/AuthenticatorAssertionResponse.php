@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Assert\Assertion;
+
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
  */
@@ -34,6 +36,9 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
             return $this->userHandle;
         }
 
-        return base64_decode($this->userHandle, true);
+        $result = base64_decode($this->userHandle, true);
+        Assertion::string($result, 'Unable to get the user handle');
+
+        return $result;
     }
 }

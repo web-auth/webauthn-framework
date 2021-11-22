@@ -12,6 +12,7 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
+use InvalidArgumentException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
@@ -91,6 +92,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         AuthenticatorData $authenticatorData
     ): void {
         $resource = openssl_pkey_get_public($certificate);
+        if ($resource === false) {
+            throw new InvalidArgumentException('Unable to get public key');
+        }
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');
 

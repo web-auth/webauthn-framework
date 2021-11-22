@@ -54,13 +54,16 @@ class AttestedCredentialData implements JsonSerializable
                 break;
             default: // Kept for compatibility with old format
                 $decoded = base64_decode($json['aaguid'], true);
+                Assertion::string($decoded, 'Unable to get the AAGUID');
                 $uuid = Uuid::fromBytes($decoded);
         }
         $credentialId = base64_decode($json['credentialId'], true);
+        Assertion::string($credentialId, 'Unable to get the public key ID');
 
         $credentialPublicKey = null;
         if (isset($json['credentialPublicKey'])) {
             $credentialPublicKey = base64_decode($json['credentialPublicKey'], true);
+            Assertion::string($credentialPublicKey, 'Unable to get the public key');
         }
 
         return new self($uuid, $credentialId, $credentialPublicKey);

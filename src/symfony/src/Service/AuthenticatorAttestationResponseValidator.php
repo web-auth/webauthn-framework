@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -14,7 +13,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -27,11 +25,9 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private EventDispatcherInterface $eventDispatcher,
-        ?MetadataStatementRepository $metadataStatementRepository = null,
-        ?LoggerInterface $logger = null
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $metadataStatementRepository, $logger);
+        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
     }
 
     public function check(
