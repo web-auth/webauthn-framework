@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\ConformanceToolset\Controller;
+namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
 use InvalidArgumentException;
@@ -13,21 +13,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
-use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialUserEntity;
 
-final class AttestationResponseController
+final class AssertionResponseController
 {
     public function __construct(
         private HttpMessageFactoryInterface $httpMessageFactory,
         private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private PublicKeyCredentialUserEntityRepository $userEntityRepository,
-        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private string $sessionParameterName,
         private LoggerInterface $logger,
         private CacheItemPoolInterface $cacheItemPool
@@ -43,26 +40,35 @@ final class AttestationResponseController
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
-
+            Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
             $item = $this->cacheItemPool->getItem($this->sessionParameterName);
             if (! $item->isHit()) {
-                throw new InvalidArgumentException('Unable to find the public key credential creation options');
+                throw new InvalidArgumentException('Unable to find the public key credential request options');
             }
-            $publicKeyCredentialCreationOptions = $item->get();
+            $data = $item->get();
+            Assertion::isArray($data, 'Unable to find the public key credential request options');
+            Assertion::keyExists($data, 'options', 'Unable to find the public key credential request options');
+            $publicKeyCredentialRequestOptions = $data['options'];
             Assertion::isInstanceOf(
-                $publicKeyCredentialCreationOptions,
-                PublicKeyCredentialCreationOptions::class,
-                'Unable to find the public key credential creation options'
+                $publicKeyCredentialRequestOptions,
+                PublicKeyCredentialRequestOptions::class,
+                'Unable to find the public key credential request options'
             );
-            $credentialSource = $this->attestationResponseValidator->check(
+            Assertion::keyExists($data, 'userEntity', 'Unable to find the public key credential request options');
+            $userEntity = $data['userEntity'];
+            Assertion::nullOrIsInstanceOf(
+                $userEntity,
+                PublicKeyCredentialUserEntity::class,
+                'Unable to find the public key credential request options'
+            );
+            $userEntityId = $userEntity !== null ? $userEntity->getId() : null;
+            $this->assertionResponseValidator->check(
+                $publicKeyCredential->getRawId(),
                 $response,
-                $publicKeyCredentialCreationOptions,
-                $psr7Request
+                $publicKeyCredentialRequestOptions,
+                $psr7Request,
+                $userEntityId
             );
-
-            $this->userEntityRepository->saveUserEntity($publicKeyCredentialCreationOptions->getUser());
-            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
             return new JsonResponse([
                 'status' => 'ok',

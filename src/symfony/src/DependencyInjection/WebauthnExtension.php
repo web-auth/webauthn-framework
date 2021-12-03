@@ -26,12 +26,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\ConformanceToolset\Controller\AssertionRequestController;
-use Webauthn\ConformanceToolset\Controller\AssertionResponseController;
-use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
-use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
-use Webauthn\ConformanceToolset\Controller\AttestationResponseController;
-use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -71,7 +65,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
-        //FIXME: set default profiles for zero-conf
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 
@@ -81,7 +74,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('cose.php');
         $loader->load('security.php');
 
-        $this->loadTransportBindingProfile($container, $loader, $config);
         $this->loadMetadataServices($container, $config);
         if ($config['certificate_chain_checker']['enabled'] === true) {
             $this->loadCertificateChainChecker($container, $loader, $config);
@@ -107,100 +99,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
-    }
-
-    /**
-     * @param mixed[] $config
-     */
-    public function loadTransportBindingProfile(
-        ContainerBuilder $container,
-        LoaderInterface $loader,
-        array $config
-    ): void {
-        if (! class_exists(AttestationRequestController::class)) {
-            return;
-        }
-
-        $container->setAlias(
-            'webauthn.transport_binding_profile.http_message_factory',
-            $config['transport_binding_profile']['http_message_factory']
-        );
-
-        $loader->load('transport_binding_profile.php');
-
-        foreach ($config['transport_binding_profile']['creation'] as $name => $profileConfig) {
-            $attestationRequestControllerId = sprintf(
-                'webauthn.controller.transport_binding_profile.creation.request.%s',
-                $name
-            );
-            $attestationRequestController = new Definition(AttestationRequestController::class);
-            $attestationRequestController->setFactory(
-                [new Reference(AttestationResponseControllerFactory::class), 'createAttestationRequestController']
-            );
-            $attestationRequestController->setArguments([
-                $profileConfig['profile_name'],
-                $profileConfig['session_parameter_name'],
-            ]);
-            $attestationRequestController->addTag(DynamicRouteCompilerPass::TAG, [
-                'path' => $profileConfig['request_path'],
-                'host' => $profileConfig['host'],
-            ]);
-            $attestationRequestController->addTag('controller.service_arguments');
-            $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
-
-            $attestationResponseControllerId = sprintf(
-                'webauthn.controller.transport_binding_profile.creation.response.%s',
-                $name
-            );
-            $attestationResponseController = new Definition(AttestationResponseController::class);
-            $attestationResponseController->setFactory(
-                [new Reference(AttestationResponseControllerFactory::class), 'createAttestationResponseController']
-            );
-            $attestationResponseController->setArguments([$profileConfig['session_parameter_name']]);
-            $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
-                'path' => $profileConfig['response_path'],
-                'host' => $profileConfig['host'],
-            ]);
-            $attestationResponseController->addTag('controller.service_arguments');
-            $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
-        }
-
-        foreach ($config['transport_binding_profile']['request'] as $name => $profileConfig) {
-            $assertionRequestControllerId = sprintf(
-                'webauthn.controller.transport_binding_profile.request.request.%s',
-                $name
-            );
-            $assertionRequestController = new Definition(AssertionRequestController::class);
-            $assertionRequestController->setFactory(
-                [new Reference(AssertionResponseControllerFactory::class), 'createAssertionRequestController']
-            );
-            $assertionRequestController->setArguments([
-                $profileConfig['profile_name'],
-                $profileConfig['session_parameter_name'],
-            ]);
-            $assertionRequestController->addTag(DynamicRouteCompilerPass::TAG, [
-                'path' => $profileConfig['request_path'],
-                'host' => $profileConfig['host'],
-            ]);
-            $assertionRequestController->addTag('controller.service_arguments');
-            $container->setDefinition($assertionRequestControllerId, $assertionRequestController);
-
-            $assertionResponseControllerId = sprintf(
-                'webauthn.controller.transport_binding_profile.request.response.%s',
-                $name
-            );
-            $assertionResponseController = new Definition(AssertionResponseController::class);
-            $assertionResponseController->setFactory(
-                [new Reference(AssertionResponseControllerFactory::class), 'createAssertionResponseController']
-            );
-            $assertionResponseController->setArguments([$profileConfig['session_parameter_name']]);
-            $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [
-                'path' => $profileConfig['response_path'],
-                'host' => $profileConfig['host'],
-            ]);
-            $assertionResponseController->addTag('controller.service_arguments');
-            $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
-        }
     }
 
     /**

@@ -7,7 +7,7 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 use CBOR\ByteStringObject;
 use CBOR\MapItem;
 use CBOR\MapObject;
-use CBOR\SignedIntegerObject;
+use CBOR\NegativeIntegerObject;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
@@ -124,10 +124,10 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
             Uuid::fromString('00000000-0000-0000-0000-000000000000'),
             'CREDENTIAL_ID',
             (string) (new MapObject([
-                new MapItem(SignedIntegerObject::create(-2), new ByteStringObject(hex2bin(
+                new MapItem(NegativeIntegerObject::create(-2), new ByteStringObject(hex2bin(
                     'C9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721'
                 ))),
-                new MapItem(SignedIntegerObject::create(-3), new ByteStringObject(hex2bin(
+                new MapItem(NegativeIntegerObject::create(-3), new ByteStringObject(hex2bin(
                     '60FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'
                 ))),
             ]))

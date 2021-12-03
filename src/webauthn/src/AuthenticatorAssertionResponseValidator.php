@@ -6,8 +6,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Decoder;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
+use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
@@ -40,7 +39,7 @@ class AuthenticatorAssertionResponseValidator
         private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private ?Manager $algorithmManager,
     ) {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = Decoder::create();
         $this->counterChecker = new ThrowExceptionIfInvalid();
         $this->logger = new NullLogger();
     }
@@ -173,7 +172,12 @@ class AuthenticatorAssertionResponseValidator
             $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getAuthData() . $getClientDataJSONHash;
             $signature = $authenticatorAssertionResponse->getSignature();
-            $coseKey = new Key($credentialPublicKeyStream->getNormalizedData());
+            Assertion::isInstanceOf(
+                $credentialPublicKeyStream,
+                Normalizable::class,
+                'Invalid attestation object. Unexpected object.'
+            );
+            $coseKey = Key::create($credentialPublicKeyStream->normalize());
             $algorithm = $this->algorithmManager->get($coseKey->alg());
             Assertion::isInstanceOf(
                 $algorithm,

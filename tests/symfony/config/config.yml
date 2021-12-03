@@ -218,6 +218,18 @@ webauthn:
                 options_path: '/devices/add/options'
                 result_path: '/devices/add'
                 user_entity_guesser: 'Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser'
+            default:
+                options_path: '/attestation/options'
+                result_path: '/attestation/result'
+                #host: 'test.com'
+                #session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__1'
+                user_entity_guesser: 'Webauthn\Bundle\Tests\Functional\CurrentUserEntityGuesser'
+        request:
+            default:
+                options_path: '/assertion/options'
+                result_path: '/assertion/result'
+                #host: 'test.com'
+                #session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
     creation_profiles:
         default:
             rp:
@@ -251,22 +263,6 @@ webauthn:
             challenge_length: 32
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-    transport_binding_profile:
-        http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
-        creation:
-            default:
-                profile_name: 'default'
-                request_path: '/attestation/options'
-                response_path: '/attestation/result'
-                #host: 'test.com'
-                session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__1'
-        request:
-            default:
-                profile_name: 'default'
-                request_path: '/assertion/options'
-                response_path: '/assertion/result'
-                #host: 'test.com'
-                session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
     metadata_service: ## Optional
         enabled: true
         repository: 'Webauthn\Bundle\Tests\Functional\MetadataStatementRepository'
@@ -286,7 +282,6 @@ security:
             webauthn:
 #               user_provider: null
                options_storage: 'Webauthn\Bundle\Tests\Functional\CustomSessionStorage'
-#               http_message_factory: 'sensio_framework_extra.psr7.http_message_factory'
                failure_handler: 'Webauthn\Bundle\Tests\Functional\FailureHandler'
                success_handler: 'Webauthn\Bundle\Tests\Functional\SuccessHandler'
                registration:

@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
-use Webauthn\ConformanceToolset\Controller\AssertionResponseControllerFactory;
-use Webauthn\ConformanceToolset\Controller\AttestationResponseControllerFactory;
+use Webauthn\Bundle\Controller\AssertionResponseControllerFactory;
+use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()

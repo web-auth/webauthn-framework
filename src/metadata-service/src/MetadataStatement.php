@@ -109,170 +109,108 @@ class MetadataStatement implements JsonSerializable
 
     public const ATTESTATION_ATTCA = 0x3E0A;
 
-    /**
-     * @var string|null
-     */
-    private $legalHeader;
+    private ?string $legalHeader;
 
-    /**
-     * @var string|null
-     */
-    private $aaid;
+    private ?string $aaid;
 
-    /**
-     * @var string|null
-     */
-    private $aaguid;
+    private ?string $aaguid;
 
     /**
      * @var string[]
      */
-    private $attestationCertificateKeyIdentifiers = [];
+    private array $attestationCertificateKeyIdentifiers = [];
 
-    /**
-     * @var string
-     */
-    private $description;
+    private string $description;
 
     /**
      * @var string[]
      */
-    private $alternativeDescriptions = [];
+    private array $alternativeDescriptions = [];
 
-    /**
-     * @var int
-     */
-    private $authenticatorVersion;
+    private int $authenticatorVersion;
+    private string $protocolFamily;
 
-    /**
-     * @var string
-     */
-    private $protocolFamily;
+    private int $schema;
 
     /**
      * @var Version[]
      */
-    private $upv = [];
+    private array $upv = [];
 
     /**
-     * @var string|null
+     * @var string[]
      */
-    private $assertionScheme;
+    private array $authenticationAlgorithms = [];
 
     /**
-     * @var int|null
+     * @var string[]
      */
-    private $authenticationAlgorithm;
+    private array $publicKeyAlgAndEncodings = [];
 
     /**
-     * @var int[]
+     * @var string[]
      */
-    private $authenticationAlgorithms = [];
-
-    /**
-     * @var int|null
-     */
-    private $publicKeyAlgAndEncoding;
-
-    /**
-     * @var int[]
-     */
-    private $publicKeyAlgAndEncodings = [];
-
-    /**
-     * @var int[]
-     */
-    private $attestationTypes = [];
+    private array $attestationTypes = [];
 
     /**
      * @var VerificationMethodANDCombinations[]
      */
-    private $userVerificationDetails = [];
+    private array $userVerificationDetails = [];
 
     /**
-     * @var int
+     * @var string[]
      */
-    private $keyProtection;
+    private array $keyProtection;
+
+    private ?bool $isKeyRestricted;
+
+    private ?bool $isFreshUserVerificationRequired;
+
+    private string $matcherProtection;
+
+    private ?int $cryptoStrength;
 
     /**
-     * @var bool|null
+     * @var string[]
      */
-    private $isKeyRestricted;
+    private array $attachmentHint = [];
 
     /**
-     * @var bool|null
+     * @var string[]
      */
-    private $isFreshUserVerificationRequired;
+    private array $tcDisplay;
 
-    /**
-     * @var int
-     */
-    private $matcherProtection;
-
-    /**
-     * @var int|null
-     */
-    private $cryptoStrength;
-
-    /**
-     * @var string|null
-     */
-    private $operatingEnv;
-
-    /**
-     * @var int
-     */
-    private $attachmentHint = 0;
-
-    /**
-     * @var bool|null
-     */
-    private $isSecondFactorOnly;
-
-    /**
-     * @var int
-     */
-    private $tcDisplay;
-
-    /**
-     * @var string|null
-     */
-    private $tcDisplayContentType;
+    private ?string $tcDisplayContentType;
 
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
      */
-    private $tcDisplayPNGCharacteristics = [];
+    private array $tcDisplayPNGCharacteristics = [];
 
     /**
      * @var string[]
      */
-    private $attestationRootCertificates = [];
+    private array $attestationRootCertificates = [];
 
     /**
      * @var EcdaaTrustAnchor[]
      */
-    private $ecdaaTrustAnchors = [];
+    private array $ecdaaTrustAnchors = [];
 
     /**
      * @var string|null
      */
-    private $icon;
+    private ?string $icon;
 
     /**
      * @var ExtensionDescriptor[]
      */
-    private $supportedExtensions = [];
+    private array $supportedExtensions = [];
 
     /**
-     * @var array<int, StatusReport>
+     * @var AuthenticatorGetInfo[]
      */
-    private $statusReports = [];
-
-    /**
-     * @var string[]
-     */
-    private $rootCertificates = [];
+    private $authenticatorGetInfo = [];
 
     public static function createFromString(string $statement): self
     {
@@ -336,31 +274,21 @@ class MetadataStatement implements JsonSerializable
         return $this->upv;
     }
 
-    public function getAssertionScheme(): ?string
+    public function getSchema(): ?int
     {
-        return $this->assertionScheme;
-    }
-
-    public function getAuthenticationAlgorithm(): ?int
-    {
-        return $this->authenticationAlgorithm;
+        return $this->schema;
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getAuthenticationAlgorithms(): array
     {
         return $this->authenticationAlgorithms;
     }
 
-    public function getPublicKeyAlgAndEncoding(): ?int
-    {
-        return $this->publicKeyAlgAndEncoding;
-    }
-
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getPublicKeyAlgAndEncodings(): array
     {
@@ -383,7 +311,10 @@ class MetadataStatement implements JsonSerializable
         return $this->userVerificationDetails;
     }
 
-    public function getKeyProtection(): int
+    /**
+     * @return string[]
+     */
+    public function getKeyProtection(): array
     {
         return $this->keyProtection;
     }
@@ -398,7 +329,7 @@ class MetadataStatement implements JsonSerializable
         return (bool) $this->isFreshUserVerificationRequired;
     }
 
-    public function getMatcherProtection(): int
+    public function getMatcherProtection(): string
     {
         return $this->matcherProtection;
     }
@@ -408,22 +339,18 @@ class MetadataStatement implements JsonSerializable
         return $this->cryptoStrength;
     }
 
-    public function getOperatingEnv(): ?string
-    {
-        return $this->operatingEnv;
-    }
-
-    public function getAttachmentHint(): int
+    /**
+     * @return string[]
+     */
+    public function getAttachmentHint(): array
     {
         return $this->attachmentHint;
     }
 
-    public function isSecondFactorOnly(): ?bool
-    {
-        return (bool) $this->isSecondFactorOnly;
-    }
-
-    public function getTcDisplay(): int
+    /**
+     * @return string[]
+     */
+    public function getTcDisplay(): array
     {
         return $this->tcDisplay;
     }
@@ -494,10 +421,7 @@ class MetadataStatement implements JsonSerializable
                 $object->upv[] = Version::createFromArray($value);
             }
         }
-        $object->assertionScheme = $data['assertionScheme'] ?? null;
-        $object->authenticationAlgorithm = $data['authenticationAlgorithm'] ?? null;
         $object->authenticationAlgorithms = $data['authenticationAlgorithms'] ?? [];
-        $object->publicKeyAlgAndEncoding = $data['publicKeyAlgAndEncoding'] ?? null;
         $object->publicKeyAlgAndEncodings = $data['publicKeyAlgAndEncodings'] ?? [];
         $object->attestationTypes = $data['attestationTypes'] ?? [];
         if (isset($data['userVerificationDetails'])) {
@@ -513,9 +437,7 @@ class MetadataStatement implements JsonSerializable
         $object->isFreshUserVerificationRequired = $data['isFreshUserVerificationRequired'] ?? null;
         $object->matcherProtection = $data['matcherProtection'] ?? 0;
         $object->cryptoStrength = $data['cryptoStrength'] ?? null;
-        $object->operatingEnv = $data['operatingEnv'] ?? null;
         $object->attachmentHint = $data['attachmentHint'] ?? 0;
-        $object->isSecondFactorOnly = $data['isSecondFactorOnly'] ?? null;
         $object->tcDisplay = $data['tcDisplay'] ?? 0;
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
@@ -539,13 +461,11 @@ class MetadataStatement implements JsonSerializable
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
-        $object->rootCertificates = $data['rootCertificates'] ?? [];
         if (isset($data['statusReports'])) {
             $reports = $data['statusReports'];
             Assertion::isArray($reports, 'Invalid Metadata Statement');
             foreach ($reports as $report) {
                 Assertion::isArray($report, 'Invalid Metadata Statement');
-                $object->statusReports[] = StatusReport::createFromArray($report);
             }
         }
 
@@ -564,10 +484,7 @@ class MetadataStatement implements JsonSerializable
             'authenticatorVersion' => $this->authenticatorVersion,
             'protocolFamily' => $this->protocolFamily,
             'upv' => $this->upv,
-            'assertionScheme' => $this->assertionScheme,
-            'authenticationAlgorithm' => $this->authenticationAlgorithm,
             'authenticationAlgorithms' => $this->authenticationAlgorithms,
-            'publicKeyAlgAndEncoding' => $this->publicKeyAlgAndEncoding,
             'publicKeyAlgAndEncodings' => $this->publicKeyAlgAndEncodings,
             'attestationTypes' => $this->attestationTypes,
             'userVerificationDetails' => $this->userVerificationDetails,
@@ -576,9 +493,7 @@ class MetadataStatement implements JsonSerializable
             'isFreshUserVerificationRequired' => $this->isFreshUserVerificationRequired,
             'matcherProtection' => $this->matcherProtection,
             'cryptoStrength' => $this->cryptoStrength,
-            'operatingEnv' => $this->operatingEnv,
             'attachmentHint' => $this->attachmentHint,
-            'isSecondFactorOnly' => $this->isSecondFactorOnly,
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
             'tcDisplayPNGCharacteristics' => array_map(
@@ -595,46 +510,8 @@ class MetadataStatement implements JsonSerializable
             'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->supportedExtensions),
-            'rootCertificates' => $this->rootCertificates,
-            'statusReports' => $this->statusReports,
         ];
 
         return Utils::filterNullValues($data);
-    }
-
-    /**
-     * @return StatusReport[]
-     */
-    public function getStatusReports(): array
-    {
-        return $this->statusReports;
-    }
-
-    /**
-     * @param StatusReport[] $statusReports
-     */
-    public function setStatusReports(array $statusReports): self
-    {
-        $this->statusReports = $statusReports;
-
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getRootCertificates(): array
-    {
-        return $this->rootCertificates;
-    }
-
-    /**
-     * @param string[] $rootCertificates
-     */
-    public function setRootCertificates(array $rootCertificates): self
-    {
-        $this->rootCertificates = $rootCertificates;
-
-        return $this;
     }
 }

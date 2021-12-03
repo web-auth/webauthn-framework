@@ -17,4 +17,3 @@ return static function (ContainerConfigurator $container): void {
         ->class(PsrHttpFactory::class)
     ;
 };
-//sensio_framework_extra.psr7.http_message_factory

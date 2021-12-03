@@ -69,7 +69,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
             ->scalarNode('options_storage')
             ->defaultValue(SessionStorage::class)->end()
             ->scalarNode('http_message_factory')
-            ->defaultValue('sensio_framework_extra.psr7.http_message_factory')
+            ->defaultValue('webauthn.http.factory')
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(DefaultSuccessHandler::class)->end()

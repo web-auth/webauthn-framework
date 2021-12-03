@@ -6,8 +6,7 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use CBOR\Decoder;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
+use CBOR\Normalizable;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
@@ -24,7 +23,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 
     public function __construct()
     {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = Decoder::create();
     }
 
     public function name(): string
@@ -104,12 +103,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
         Assertion::notNull($publicKeyData, 'No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
-        $coseKey = $this->decoder->decode($publicDataStream)
-            ->getNormalizedData(false)
-        ;
+        $coseKey = $this->decoder->decode($publicDataStream);
+        Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');
         Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
         $publicDataStream->close();
-        $publicKey = Key::createFromData($coseKey);
+        $publicKey = Key::createFromData($coseKey->normalize());
 
         Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
 

@@ -8,8 +8,7 @@ use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
+use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
@@ -33,7 +32,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     public function __construct(
         private Manager $algorithmManager
     ) {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = Decoder::create();
     }
 
     public function name(): string
@@ -215,7 +214,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             MapObject::class,
             'The attested credential data does not contain a valid public key.'
         );
-        $publicKey = $publicKey->getNormalizedData(false);
+        Assertion::isInstanceOf($publicKey, Normalizable::class, 'Invalid attestation object. Unexpected object.');
+        $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
         Assertion::eq(
             $publicKey->alg(),

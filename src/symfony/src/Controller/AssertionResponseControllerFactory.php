@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\ConformanceToolset\Controller;
+namespace Webauthn\Bundle\Controller;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;

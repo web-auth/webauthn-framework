@@ -35,6 +35,11 @@ class Key
         $this->data = $data;
     }
 
+    public static function create(array $data): self
+    {
+        return new self($data);
+    }
+
     public static function createFromData(array $data): self
     {
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');

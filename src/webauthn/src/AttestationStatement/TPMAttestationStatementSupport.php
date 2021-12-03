@@ -7,8 +7,6 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
@@ -111,10 +109,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function checkUniquePublicKey(string $unique, string $cborPublicKey): void
     {
-        $cborDecoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $cborDecoder = Decoder::create();
         $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
         Assertion::isInstanceOf($publicKey, MapObject::class, 'Invalid public key');
-        $key = new Key($publicKey->getNormalizedData(false));
+        $key = Key::create($publicKey->normalize());
 
         switch ($key->type()) {
             case Key::TYPE_OKP:

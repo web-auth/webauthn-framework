@@ -8,8 +8,6 @@ use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use function ord;
@@ -35,7 +33,7 @@ class PublicKeyCredentialLoader
     public function __construct(
         private AttestationObjectLoader $attestationObjectLoader
     ) {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = Decoder::create();
         $this->logger = new NullLogger();
     }
 

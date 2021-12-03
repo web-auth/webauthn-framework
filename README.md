@@ -37,13 +37,9 @@ Or
 
 # Contributing
 
-Requests for new features, bug fixed and all other ideas to make this framework useful are welcome.
-If you feel comfortable writing code, you could try to fix [opened issues where help is wanted](https://github.com/web-auth/webauthn-framework/issues?q=label%3A%22help+wanted%22) or [those that are easy to fix](https://github.com/web-auth/webauthn-framework/labels/easy-pick).
-
-Do not forget to [follow these best practices](.github/CONTRIBUTING.md).
-
-**If you think you have found a security issue, DO NOT open an issue**. [You MUST submit your issue here](https://gitter.im/Spomky/).
+If you discover a security vulnerability within the project, please **don't use the bug tracker and don't publish it publicly**.
+Instead, all security issues must be sent to security [at] spomky-labs.com.
 
 # Licence
 
-This software is release under [MIT licence](LICENSE).
+This project is release under [MIT licence](LICENSE).

@@ -7,8 +7,7 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
+use CBOR\Normalizable;
 use function ord;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -34,7 +33,7 @@ class AttestationObjectLoader
     public function __construct(
         private AttestationStatementSupportManager $attestationStatementSupportManager
     ) {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+        $this->decoder = Decoder::create();
         $this->logger = new NullLogger();
     }
 
@@ -58,7 +57,8 @@ class AttestationObjectLoader
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
-            $attestationObject = $parsed->getNormalizedData();
+            Assertion::isInstanceOf($parsed, Normalizable::class, 'Invalid attestation object. Unexpected object.');
+            $attestationObject = $parsed->normalize();
             Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
             $stream->close();
             Assertion::isArray($attestationObject, 'Invalid attestation object');

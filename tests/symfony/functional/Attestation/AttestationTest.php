@@ -8,10 +8,8 @@ use Cose\Algorithms;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -250,13 +248,9 @@ final class AttestationTest extends KernelTestCase
         );
 
         static::assertSame(32, mb_strlen($options->getChallenge(), '8bit'));
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
         static::assertSame([], $options->getExcludeCredentials());
         static::assertCount(11, $options->getPubKeyCredParams());
         static::assertSame('none', $options->getAttestation());
         static::assertSame(60000, $options->getTimeout());
-        static::assertInstanceOf(PublicKeyCredentialRpEntity::class, $options->getRp());
-        static::assertInstanceOf(PublicKeyCredentialUserEntity::class, $options->getUser());
-        static::assertInstanceOf(AuthenticatorSelectionCriteria::class, $options->getAuthenticatorSelection());
     }
 }

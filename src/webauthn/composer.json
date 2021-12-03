@@ -28,7 +28,7 @@
         "psr/http-message": "^1.0",
         "psr/log": "^1.1",
         "ramsey/uuid": "^3.8|^4.0",
-        "spomky-labs/cbor-php": "^2.0",
+        "spomky-labs/cbor-php": "^3.0",
         "symfony/process": "^5.3|^6.0",
         "web-auth/cose-lib": "self.version",
         "web-auth/metadata-service": "self.version"
