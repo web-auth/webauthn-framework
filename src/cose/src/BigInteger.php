@@ -15,8 +15,9 @@ namespace Cose;
 
 use Brick\Math\BigInteger as BrickBigInteger;
 use function chr;
-use function Safe\hex2bin;
-use function Safe\unpack;
+use function hex2bin;
+use InvalidArgumentException;
+use function unpack;
 
 /**
  * @internal
@@ -38,6 +39,9 @@ class BigInteger
     public static function createFromBinaryString(string $value): self
     {
         $res = unpack('H*', $value);
+        if (false === $res) {
+            throw new InvalidArgumentException('Unable to convert the data from binary');
+        }
         $data = current($res);
 
         return new self(BrickBigInteger::fromBase($data, 16));
@@ -60,6 +64,9 @@ class BigInteger
         $temp = $this->value->toBase(16);
         $temp = 0 !== (mb_strlen($temp, '8bit') & 1) ? '0'.$temp : $temp;
         $temp = hex2bin($temp);
+        if (false === $temp) {
+            throw new InvalidArgumentException('Unable to convert the data into binary');
+        }
 
         return ltrim($temp, chr(0));
     }
