@@ -62,10 +62,12 @@ class AuthenticatorAssertionResponseValidator
      * @var Manager|null
      */
     private $algorithmManager;
+
     /**
      * @var CounterChecker
      */
     private $counterChecker;
+
     /**
      * @var LoggerInterface|null
      */
@@ -127,6 +129,9 @@ class AuthenticatorAssertionResponseValidator
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
+            if (U2FPublicKey::isU2FKey($credentialPublicKey)) {
+                $credentialPublicKey = U2FPublicKey::createCOSEKey($credentialPublicKey);
+            }
             Assertion::notNull($credentialPublicKey, 'No public key available.');
             $stream = new StringStream($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
