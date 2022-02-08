@@ -129,7 +129,8 @@ class AuthenticatorAssertionResponseValidator
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-            if (U2FPublicKey::isU2FKey($credentialPublicKey)) {
+            $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
+            if ($isU2F) {
                 $credentialPublicKey = U2FPublicKey::createCOSEKey($credentialPublicKey);
             }
             Assertion::notNull($credentialPublicKey, 'No public key available.');
@@ -170,8 +171,10 @@ class AuthenticatorAssertionResponseValidator
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
             }
 
+            $expectedRpIdHash = $isU2F ? $C->getOrigin() : $facetId;
+            // u2f response has full origin in rpIdHash
             /** @see 7.2.11 */
-            $rpIdHash = hash('sha256', $facetId, true);
+            $rpIdHash = hash('sha256', $expectedRpIdHash, true);
             Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /** @see 7.2.12 */
