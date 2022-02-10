@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function Safe\json_encode;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -30,11 +31,17 @@ class PublicKeyCredential extends Credential
      */
     protected $response;
 
-    public function __construct(string $id, string $type, string $rawId, AuthenticatorResponse $response)
+	/**
+	 * @var AuthenticationExtensionsClientOutputs $clientExtensionResults
+	 */
+	protected $clientExtensionResults;
+
+	public function __construct(string $id, string $type, string $rawId, AuthenticatorResponse $response, AuthenticationExtensionsClientOutputs $clientExtensionResults)
     {
         parent::__construct($id, $type);
         $this->rawId = $rawId;
         $this->response = $response;
+		$this->clientExtensionResults = $clientExtensionResults;
     }
 
     public function __toString()
@@ -59,4 +66,8 @@ class PublicKeyCredential extends Credential
     {
         return new PublicKeyCredentialDescriptor($this->getType(), $this->getRawId(), $transport);
     }
+
+	public function getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
+		return $this->clientExtensionResults;
+	}
 }

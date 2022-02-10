@@ -30,6 +30,8 @@ use function Safe\sprintf;
 use function Safe\unpack;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 
 class PublicKeyCredentialLoader
@@ -93,11 +95,21 @@ class PublicKeyCredentialLoader
             $rawId = Base64Url::decode($json['rawId']);
             Assertion::true(hash_equals($id, $rawId));
 
+            $clientExtensionResults = new AuthenticationExtensionsClientOutputs();
+            if (array_key_exists('clientExtensionResults', $json)) {
+                Assertion::isArray($json['clientExtensionResults'], 'The parameter "clientExtensionResults" shall be an associative array');
+                foreach ($json['clientExtensionResults'] as $key => $value) {
+                    Assertion::string($key, sprintf('The key "%s" of "clientExtensionResults" shall be a string', $key));
+                    $clientExtensionResults->add(new AuthenticationExtension($key, $value));
+                }
+            }
+
             $publicKeyCredential = new PublicKeyCredential(
                 $json['id'],
                 $json['type'],
                 $rawId,
-                $this->createResponse($json['response'])
+                $this->createResponse($json['response']),
+                $clientExtensionResults,
             );
             $this->logger->info('The data has been loaded');
             $this->logger->debug('Public Key Credential', ['publicKeyCredential' => $publicKeyCredential]);
