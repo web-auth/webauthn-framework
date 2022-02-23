@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -108,7 +108,7 @@ final class AssertionTest extends AbstractTestCase
             ),
             'foo',
             100,
-            Uuid::fromBytes(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
+            Uuid::fromBinary(base64_decode('+KAR84wKTRWABhcRH57cfQ==', true)),
             base64_decode(
                 'pQECAyYgASFYIGCFVff/+Igs33wIEwEpwqui12XMF0tof8eDzwZNBX8eIlggcmwcE9F9W5ouuxlzKJbEJIxmUlmRHvBkyDhrqhn7Npw=',
                 true

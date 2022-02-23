@@ -6,7 +6,7 @@ namespace Webauthn\Tests\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
 
 /**
@@ -24,8 +24,8 @@ final class AttestedCredentialDataTest extends TestCase
             $uuid
         ), 'credential_id', 'credential_public_key');
 
-        static::assertSame($uuid, $attestedCredentialData->getAaguid()->toString());
-        static::assertSame($uuid, $attestedCredentialData->getAaguid()->toString());
+        static::assertSame($uuid, $attestedCredentialData->getAaguid()->__toString());
+        static::assertSame($uuid, $attestedCredentialData->getAaguid()->__toString());
         static::assertSame('credential_id', $attestedCredentialData->getCredentialId());
         static::assertSame('credential_public_key', $attestedCredentialData->getCredentialPublicKey());
         static::assertSame(

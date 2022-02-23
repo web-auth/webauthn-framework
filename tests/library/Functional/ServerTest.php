@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use const JSON_THROW_ON_ERROR;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -39,7 +39,7 @@ final class ServerTest extends AbstractTestCase
         $excluded = [
             new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Uuid::uuid4()->toString(),
+                Uuid::v4()->__toString(),
                 [
                     PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
                     PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
@@ -80,7 +80,7 @@ final class ServerTest extends AbstractTestCase
         $allowed = [
             new PublicKeyCredentialDescriptor(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Uuid::uuid4()->toString(),
+                Uuid::v4()->__toString(),
                 [
                     PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
                     PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,

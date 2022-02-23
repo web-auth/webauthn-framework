@@ -8,8 +8,8 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\AbstractUid;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
@@ -33,7 +33,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         array $transports,
         protected string $attestationType,
         protected TrustPath $trustPath,
-        protected UuidInterface $aaguid,
+        protected AbstractUid $aaguid,
         protected string $credentialPublicKey,
         protected string $userHandle,
         protected int $counter,
@@ -80,7 +80,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         return $this->transports;
     }
 
-    public function getAaguid(): UuidInterface
+    public function getAaguid(): AbstractUid
     {
         return $this->aaguid;
     }
@@ -161,7 +161,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'transports' => $this->transports,
             'attestationType' => $this->attestationType,
             'trustPath' => $this->trustPath->jsonSerialize(),
-            'aaguid' => $this->aaguid->toString(),
+            'aaguid' => $this->aaguid->__toString(),
             'credentialPublicKey' => Base64UrlSafe::encodeUnpadded($this->credentialPublicKey),
             'userHandle' => Base64UrlSafe::encodeUnpadded($this->userHandle),
             'counter' => $this->counter,

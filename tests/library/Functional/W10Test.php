@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -73,7 +73,7 @@ final class W10Test extends AbstractTestCase
             static::assertSame(
                 '00000000-0000-0000-0000-000000000000',
                 $publicKeyCredentialSource->getAaguid()
-                    ->toString()
+                    ->__toString()
             );
             static::assertSame('none', $publicKeyCredentialSource->getAttestationType());
             static::assertInstanceOf(EmptyTrustPath::class, $publicKeyCredentialSource->getTrustPath());
@@ -132,7 +132,7 @@ final class W10Test extends AbstractTestCase
             base64_decode('6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=', true),
             'ee13d4f1-4863-47dd-a407-097cb49ac822',
             0,
-            Uuid::fromBytes(base64_decode('YCiwF7HUTAK0s6/Nr8lrsg==', true)),
+            Uuid::fromBinary(base64_decode('YCiwF7HUTAK0s6/Nr8lrsg==', true)),
             base64_decode(
                 'pAEDAzkBACBZAQDwn2Ee7V+9GNDn2iCU2plQnIVmZG/vOiXSHb9TQzC5806bGzLV918+1SLFhMhlX5jua2rdXt65nYw9Eln7mbmVxLBDmEm2wod6wP2HinC9HPsYwr75tMRakLMNFfH4Xx4lEsjulRmv68yl/N8XH64X8LKe2GBxjqcuJR+c3LbW4D5dWt/1pGL8fS1UbO3abA/d3IeEsP8RpEz5eVo6qBhb4r0VTo2NMeq75saBHIj4whqo6qsRqRvBmK2d9NAecBFFRIQ31NUtEQZPqXOzkbXGehDi7c3YJPBkTW9kMqcosob9Vlru+vVab+1PnFRdqaklR1UtmhrWte/wB61Hm3xdIUMBAAE=',
                 true

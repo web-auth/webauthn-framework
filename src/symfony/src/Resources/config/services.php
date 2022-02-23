@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -38,41 +38,41 @@ return static function (ContainerConfigurator $container): void {
     $container->set(BaseAuthenticatorAttestationResponseValidator::class)
         ->class(AuthenticatorAttestationResponseValidator::class)
         ->args([
-            ref(AttestationStatementSupportManager::class),
-            ref(PublicKeyCredentialSourceRepository::class),
-            ref(TokenBindingHandler::class),
-            ref(ExtensionOutputCheckerHandler::class),
-            ref(EventDispatcherInterface::class),
+            service(AttestationStatementSupportManager::class),
+            service(PublicKeyCredentialSourceRepository::class),
+            service(TokenBindingHandler::class),
+            service(ExtensionOutputCheckerHandler::class),
+            service(EventDispatcherInterface::class),
         ])
         ->public()
     ;
     $container->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
-            ref(PublicKeyCredentialSourceRepository::class),
-            ref(TokenBindingHandler::class),
-            ref(ExtensionOutputCheckerHandler::class),
-            ref('webauthn.cose.algorithm.manager'),
-            ref(EventDispatcherInterface::class),
+            service(PublicKeyCredentialSourceRepository::class),
+            service(TokenBindingHandler::class),
+            service(ExtensionOutputCheckerHandler::class),
+            service('webauthn.cose.algorithm.manager'),
+            service(EventDispatcherInterface::class),
         ])
         ->public()
     ;
     $container->set(PublicKeyCredentialLoader::class)
-        ->args([ref(AttestationObjectLoader::class)])
+        ->args([service(AttestationObjectLoader::class)])
         ->public()
     ;
     $container->set(PublicKeyCredentialCreationOptionsFactory::class)
-        ->args(['%webauthn.creation_profiles%', ref(EventDispatcherInterface::class)])
+        ->args(['%webauthn.creation_profiles%', service(EventDispatcherInterface::class)])
         ->public()
     ;
     $container->set(PublicKeyCredentialRequestOptionsFactory::class)
-        ->args(['%webauthn.request_profiles%', ref(EventDispatcherInterface::class)])
+        ->args(['%webauthn.request_profiles%', service(EventDispatcherInterface::class)])
         ->public()
     ;
 
     $container->set(ExtensionOutputCheckerHandler::class);
     $container->set(AttestationObjectLoader::class)
-        ->args([ref(AttestationStatementSupportManager::class)])
+        ->args([service(AttestationStatementSupportManager::class)])
     ;
     $container->set(AttestationStatementSupportManager::class);
     $container->set(NoneAttestationStatementSupport::class);

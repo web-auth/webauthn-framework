@@ -13,7 +13,7 @@ use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -85,7 +85,7 @@ class AttestationObjectLoader
             $attestedCredentialData = null;
             if (0 !== (ord($flags) & self::FLAG_AT)) {
                 $this->logger->info('Attested Credential Data is present');
-                $aaguid = Uuid::fromBytes($authDataStream->read(16));
+                $aaguid = Uuid::fromBinary($authDataStream->read(16));
                 $credentialLength = $authDataStream->read(2);
                 $credentialLength = unpack('n', $credentialLength);
                 Assertion::isArray($credentialLength, 'The data does not contain a valid credential public key.');

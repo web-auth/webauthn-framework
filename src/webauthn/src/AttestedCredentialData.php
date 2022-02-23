@@ -6,8 +6,8 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JsonSerializable;
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\AbstractUid;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
@@ -15,18 +15,18 @@ use Ramsey\Uuid\UuidInterface;
 class AttestedCredentialData implements JsonSerializable
 {
     public function __construct(
-        private UuidInterface $aaguid,
+        private AbstractUid $aaguid,
         private string $credentialId,
         private ?string $credentialPublicKey
     ) {
     }
 
-    public function getAaguid(): UuidInterface
+    public function getAaguid(): AbstractUid
     {
         return $this->aaguid;
     }
 
-    public function setAaguid(UuidInterface $aaguid): void
+    public function setAaguid(AbstractUid $aaguid): void
     {
         $this->aaguid = $aaguid;
     }
@@ -55,7 +55,7 @@ class AttestedCredentialData implements JsonSerializable
             default: // Kept for compatibility with old format
                 $decoded = base64_decode($json['aaguid'], true);
                 Assertion::string($decoded, 'Unable to get the AAGUID');
-                $uuid = Uuid::fromBytes($decoded);
+                $uuid = Uuid::fromBinary($decoded);
         }
         $credentialId = base64_decode($json['credentialId'], true);
         Assertion::string($credentialId, 'Unable to get the public key ID');
@@ -75,7 +75,7 @@ class AttestedCredentialData implements JsonSerializable
     public function jsonSerialize(): array
     {
         $result = [
-            'aaguid' => $this->aaguid->toString(),
+            'aaguid' => $this->aaguid->__toString(),
             'credentialId' => base64_encode($this->credentialId),
         ];
         if ($this->credentialPublicKey !== null) {

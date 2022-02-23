@@ -13,7 +13,7 @@ use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -246,7 +246,7 @@ class AuthenticatorAttestationResponseValidator
         ;
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()
-            ->toString()
+            ->__toString()
         ;
         if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             $this->logger->debug('No attestation is asked.');

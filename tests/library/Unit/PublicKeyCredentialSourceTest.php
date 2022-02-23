@@ -6,7 +6,7 @@ namespace Webauthn\Tests\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\EmptyTrustPath;
 

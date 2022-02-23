@@ -75,7 +75,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         Assertion::eq(
             $authenticatorData->getAttestedCredentialData()
                 ->getAaguid()
-                ->toString(),
+                ->__toString(),
             '00000000-0000-0000-0000-000000000000',
             'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
         );

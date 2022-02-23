@@ -122,12 +122,10 @@ class MetadataStatement implements JsonSerializable
 
     private string $description;
 
-    /**
-     * @var string[]
-     */
-    private array $alternativeDescriptions = [];
+    private AlternativeDescriptions $alternativeDescriptions;
 
     private int $authenticatorVersion;
+
     private string $protocolFamily;
 
     private int $schema;
@@ -135,40 +133,43 @@ class MetadataStatement implements JsonSerializable
     /**
      * @var Version[]
      */
-    private array $upv = [];
+    private array $upv;
 
     /**
      * @var string[]
      */
-    private array $authenticationAlgorithms = [];
+    private array $authenticationAlgorithms;
 
     /**
      * @var string[]
      */
-    private array $publicKeyAlgAndEncodings = [];
+    private array $publicKeyAlgAndEncodings;
 
     /**
      * @var string[]
      */
-    private array $attestationTypes = [];
+    private array $attestationTypes;
 
     /**
      * @var VerificationMethodANDCombinations[]
      */
-    private array $userVerificationDetails = [];
+    private array $userVerificationDetails;
 
     /**
      * @var string[]
      */
     private array $keyProtection;
 
-    private ?bool $isKeyRestricted;
+    private ?bool $isKeyRestricted = null;
 
-    private ?bool $isFreshUserVerificationRequired;
+    private ?bool $isFreshUserVerificationRequired = null;
 
-    private string $matcherProtection;
+    /**
+     * @var string[]
+     */
+    private array $matcherProtection;
 
-    private ?int $cryptoStrength;
+    private ?int $cryptoStrength = null;
 
     /**
      * @var string[]
@@ -180,7 +181,7 @@ class MetadataStatement implements JsonSerializable
      */
     private array $tcDisplay;
 
-    private ?string $tcDisplayContentType;
+    private ?string $tcDisplayContentType = null;
 
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
@@ -190,27 +191,21 @@ class MetadataStatement implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $attestationRootCertificates = [];
+    private array $attestationRootCertificates;
 
     /**
      * @var EcdaaTrustAnchor[]
      */
     private array $ecdaaTrustAnchors = [];
 
-    /**
-     * @var string|null
-     */
-    private ?string $icon;
+    private ?string $icon = null;
 
     /**
      * @var ExtensionDescriptor[]
      */
     private array $supportedExtensions = [];
 
-    /**
-     * @var AuthenticatorGetInfo[]
-     */
-    private $authenticatorGetInfo = [];
+    private AuthenticatorGetInfo $authenticatorGetInfo;
 
     public static function createFromString(string $statement): self
     {
@@ -329,7 +324,10 @@ class MetadataStatement implements JsonSerializable
         return (bool) $this->isFreshUserVerificationRequired;
     }
 
-    public function getMatcherProtection(): string
+    /**
+     * @return string[]
+     */
+    public function getMatcherProtection(): array
     {
         return $this->matcherProtection;
     }

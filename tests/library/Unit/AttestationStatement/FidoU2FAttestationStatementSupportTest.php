@@ -11,7 +11,7 @@ use CBOR\NegativeIntegerObject;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;

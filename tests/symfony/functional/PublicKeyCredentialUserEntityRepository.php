@@ -6,7 +6,7 @@ namespace Webauthn\Bundle\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Cache\CacheItemPoolInterface;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository as PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -50,7 +50,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         string $displayName,
         ?string $icon
     ): PublicKeyCredentialUserEntity {
-        return new User($username, Uuid::uuid4()->toString(), $displayName, $icon);
+        return new User($username, Uuid::v4()->__toString(), $displayName, $icon);
     }
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void

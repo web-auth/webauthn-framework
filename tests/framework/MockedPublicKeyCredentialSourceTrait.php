@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests;
 
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\AbstractUid;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -16,7 +16,7 @@ trait MockedPublicKeyCredentialSourceTrait
         string $id,
         string $userHandle,
         int $counter,
-        UuidInterface $aaguid,
+        AbstractUid $aaguid,
         $publicKey,
         array $transport = [],
         string $attestationType = 'none',

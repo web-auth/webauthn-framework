@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -23,6 +23,6 @@ return static function (ContainerConfigurator $container): void {
     $container->set(FidoU2FAttestationStatementSupport::class);
     $container->set(AndroidKeyAttestationStatementSupport::class);
     $container->set(PackedAttestationStatementSupport::class)
-        ->args([ref('webauthn.cose.algorithm.manager')])
+        ->args([service('webauthn.cose.algorithm.manager')])
     ;
 };
