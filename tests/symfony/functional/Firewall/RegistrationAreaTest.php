@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional\Firewall;
+namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use Cose\Algorithms;
 use function Safe\base64_decode;
@@ -10,13 +10,13 @@ use function Safe\json_decode;
 use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository;
-use Webauthn\Bundle\Tests\Functional\PublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Tests\Functional\User;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
+use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Tests\Bundle\Functional\User;
 
 /**
  * @internal

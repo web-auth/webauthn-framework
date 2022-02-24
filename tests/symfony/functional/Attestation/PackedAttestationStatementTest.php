@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional\Attestation;
+namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
 use Cose\Algorithms;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

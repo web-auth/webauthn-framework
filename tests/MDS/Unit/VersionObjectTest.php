@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService\Tests\Unit;
+namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;

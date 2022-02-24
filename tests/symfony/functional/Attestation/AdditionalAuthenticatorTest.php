@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional\Attestation;
+namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
 use function count;
 use const JSON_THROW_ON_ERROR;
@@ -12,10 +12,10 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
-use Webauthn\Bundle\Tests\Functional\PublicKeyCredentialSourceRepository;
-use Webauthn\Bundle\Tests\Functional\User;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
+use Webauthn\Tests\Bundle\Functional\User;
 
 /**
  * @internal

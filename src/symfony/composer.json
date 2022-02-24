@@ -22,7 +22,7 @@
         "symfony/framework-bundle": "^5.4|^6.0",
         "symfony/psr-http-message-bridge": "^2.0",
         "web-auth/webauthn-lib": "self.version",
-        "web-token/jwt-signature": "^2.2.11"
+        "web-token/jwt-signature": "^3.0"
     },
     "autoload": {
         "psr-4": {

@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\Tests\Bundle\Functional;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Throwable;
+use Webauthn\AttestationStatement\CanSupportStatusReport;
 use Webauthn\MetadataService\DistantSingleMetadata;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
@@ -14,7 +15,7 @@ use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRep
 use Webauthn\MetadataService\SingleMetadata;
 use Webauthn\MetadataService\StatusReport;
 
-final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
+final class MetadataStatementRepository implements MetadataStatementRepositoryInterface, CanSupportStatusReport
 {
     /**
      * @var SingleMetadata[]

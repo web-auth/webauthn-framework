@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService\Tests\Unit;
+namespace Webauthn\Tests\MetadataService\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\BiometricAccuracyDescriptor;
@@ -23,7 +24,7 @@ final class VerificationMethodANDCombinationsObjectTest extends TestCase
      */
     public function validObject(VerificationMethodANDCombinations $object, string $expectedJson): void
     {
-        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
     }
 
     public function validObjectData(): array
@@ -32,15 +33,15 @@ final class VerificationMethodANDCombinationsObjectTest extends TestCase
             [
                 (new VerificationMethodANDCombinations())
                     ->addVerificationMethodDescriptor(new VerificationMethodDescriptor(
-                        VerificationMethodDescriptor::USER_VERIFY_ALL | VerificationMethodDescriptor::USER_VERIFY_EYEPRINT | VerificationMethodDescriptor::USER_VERIFY_HANDPRINT,
+                        VerificationMethodDescriptor::USER_VERIFY_PATTERN_EXTERNAL,
                         new CodeAccuracyDescriptor(35, 5),
                         new BiometricAccuracyDescriptor(0.12, null, null, null, null),
                         new PatternAccuracyDescriptor(50)
                     ))
                     ->addVerificationMethodDescriptor(new VerificationMethodDescriptor(
-                        VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT | VerificationMethodDescriptor::USER_VERIFY_PRESENCE
+                        VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL
                     )),
-                '[{"userVerification":1344,"caDesc":{"base":35,"minLength":5},"baDesc":{"FAR":0.12},"paDesc":{"minComplexity":50}},{"userVerification":3}]',
+                '[{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"FAR":0.12},"paDesc":{"minComplexity":50}},{"userVerificationMethod":"fingerprint_internal"}]',
             ],
         ];
     }

@@ -41,7 +41,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * {@inheritdoc}
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }

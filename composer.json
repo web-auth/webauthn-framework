@@ -31,8 +31,8 @@
                 "tests/library/"
             ],
             "Webauthn\\Tests\\Functional\\": "tests/library/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/symfony/functional/",
-            "Webauthn\\Tests\\MetadataService\\Unit\\": "tests/MDS/unit/"
+            "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
+            "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }
     },
     "require": {
@@ -47,8 +47,7 @@
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0",
-        "psr/log": "^1.1",
-        "roave/you-are-using-it-wrong": "^1.10",
+        "psr/log": "^2.0|^3.0",
         "spomky-labs/cbor-bundle": "^3.0",
         "spomky-labs/cbor-php": "^3.0",
         "symfony/config": "^5.4|^6.0",
@@ -57,7 +56,7 @@
         "symfony/process": "^5.4|^6.0",
         "symfony/psr-http-message-bridge": "^2.0",
         "symfony/uid": "^5.4|^6.0",
-        "web-token/jwt-signature": "^2.2.11"
+        "web-token/jwt-signature": "^3.0"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",
@@ -67,7 +66,11 @@
         "web-auth/webauthn-symfony-bundle": "self.version"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
+        }
     },
     "suggest": {
         "psr/log-implementation": "Recommended to receive logs from the library",
@@ -79,11 +82,11 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.7",
-        "doctrine/dbal": "^2.9|^3.0",
+        "doctrine/dbal": "^3.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
         "ekino/phpstan-banned-code": "^1.0",
-        "infection/infection": "^0.25",
+        "infection/infection": "^0.26",
         "monolog/monolog": "^2.0",
         "nyholm/psr7": "^1.1",
         "php-http/curl-client": "^2.0",
@@ -99,6 +102,7 @@
         "rector/rector": "^0.12",
         "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^5.4|^6.0",
+        "symfony/finder": "^5.4|^6.0",
         "symfony/http-client": "^5.4|^6.0",
         "symfony/monolog-bundle": "^3.5",
         "symfony/phpunit-bridge": "^5.1",
@@ -108,10 +112,10 @@
         "symfony/validator": "^5.4|^6.0",
         "symfony/var-dumper": "^5.4|^6.0",
         "symfony/yaml": "^5.4|^6.0",
-        "symplify/easy-coding-standard": "^9.4",
-        "web-token/jwt-key-mgmt": "^2.0.9",
-        "web-token/jwt-signature-algorithm-ecdsa": "^2.2.11",
-        "web-token/jwt-signature-algorithm-eddsa": "^2.2.11",
-        "web-token/jwt-signature-algorithm-rsa": "^2.2.11"
+        "symplify/easy-coding-standard": "^10.0",
+        "web-token/jwt-key-mgmt": "^3.0",
+        "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
+        "web-token/jwt-signature-algorithm-eddsa": "^3.0",
+        "web-token/jwt-signature-algorithm-rsa": "^3.0"
     }
 }

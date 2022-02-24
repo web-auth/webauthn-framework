@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Assert\Assertion;
-use InvalidArgumentException;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
 class AuthenticatorGetInfo implements JsonSerializable
@@ -14,7 +11,7 @@ class AuthenticatorGetInfo implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $info =  [];
+    private array $info = [];
 
     public static function create(): self
     {

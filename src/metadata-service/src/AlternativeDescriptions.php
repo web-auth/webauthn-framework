@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use Assert\Assertion;
-use InvalidArgumentException;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
 class AlternativeDescriptions implements JsonSerializable
@@ -14,11 +11,19 @@ class AlternativeDescriptions implements JsonSerializable
     /**
      * @var array<string, string>
      */
-    private array $descriptions =  [];
+    private array $descriptions = [];
 
-    public static function create(): self
+    /**
+     * @param array<string, string> $descriptions
+     */
+    public static function create(array $descriptions = []): self
     {
-        return new self();
+        $object = new self();
+        foreach ($descriptions as $k => $v) {
+            $object->add($k, $v);
+        }
+
+        return $object;
     }
 
     public function add(string $locale, string $description): self
@@ -28,9 +33,6 @@ class AlternativeDescriptions implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->descriptions;

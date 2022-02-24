@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional\Profile;
+namespace Webauthn\Tests\Bundle\Functional\Profile;
 
 use const JSON_THROW_ON_ERROR;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

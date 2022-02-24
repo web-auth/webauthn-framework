@@ -18,6 +18,7 @@ use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AttestationStatement\CanSupportStatusReport;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -268,6 +269,9 @@ class AuthenticatorAttestationResponseValidator
 
             return;
         }
+
+        // If no Attestation Statement has been returned or if null AAGUID (=00000000-0000-0000-0000-000000000000)
+        // => nothing to check
         if ($attestationStatement->getType() === AttestationStatement::TYPE_NONE) {
             $this->logger->debug('No attestation returned.');
             //No attestation is returned. We shall ensure that the AAGUID is a null one.
@@ -284,6 +288,12 @@ class AuthenticatorAttestationResponseValidator
             return;
         }
 
+        if ($aaguid === '00000000-0000-0000-0000-000000000000') {
+            //No need to continue if the AAGUID is null.
+            // This could be the case e.g. with AnonCA type
+            return;
+        }
+
         //The MDS Repository is mandatory here
         Assertion::notNull(
             $this->metadataStatementRepository,
@@ -292,16 +302,11 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // We check the last status report
-        $this->checkStatusReport($metadataStatement === null ? [] : $metadataStatement->getStatusReports());
+        $statusReports = $this->metadataStatementRepository instanceof CanSupportStatusReport ? $this->metadataStatementRepository->findOneByAAGUID() : [];
+        $this->checkStatusReport($statusReports);
 
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
-
-        // If no Attestation Statement has been returned or if null AAGUID (=00000000-0000-0000-0000-000000000000)
-        // => nothing to check
-        if ($aaguid === '00000000-0000-0000-0000-000000000000' || $attestationStatement->getType() === AttestationStatement::TYPE_NONE) {
-            return;
-        }
 
         // At this point, the Metadata Statement is mandatory
         Assertion::notNull(
@@ -311,6 +316,7 @@ class AuthenticatorAttestationResponseValidator
 
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
+            dump($attestationStatement, $metadataStatement->getAttestationTypes());
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray(
                 $type,
@@ -355,7 +361,7 @@ class AuthenticatorAttestationResponseValidator
         );
     }
 
-    private function getAttestationType(AttestationStatement $attestationStatement): int
+    private function getAttestationType(AttestationStatement $attestationStatement): string
     {
         return match ($attestationStatement->getType()) {
             AttestationStatement::TYPE_BASIC => MetadataStatement::ATTESTATION_BASIC_FULL,

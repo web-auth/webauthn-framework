@@ -11,103 +11,103 @@ use JsonSerializable;
 
 class MetadataStatement implements JsonSerializable
 {
-    public const KEY_PROTECTION_SOFTWARE = 0x0001;
+    public const KEY_PROTECTION_SOFTWARE = 'software';
 
-    public const KEY_PROTECTION_HARDWARE = 0x0002;
+    public const KEY_PROTECTION_HARDWARE = 'hardware';
 
-    public const KEY_PROTECTION_TEE = 0x0004;
+    public const KEY_PROTECTION_TEE = 'tee';
 
-    public const KEY_PROTECTION_SECURE_ELEMENT = 0x0008;
+    public const KEY_PROTECTION_SECURE_ELEMENT = 'secure_element';
 
-    public const KEY_PROTECTION_REMOTE_HANDLE = 0x0010;
+    public const KEY_PROTECTION_REMOTE_HANDLE = 'remote_handle';
 
-    public const MATCHER_PROTECTION_SOFTWARE = 0x0001;
+    public const MATCHER_PROTECTION_SOFTWARE = 'software';
 
-    public const MATCHER_PROTECTION_TEE = 0x0002;
+    public const MATCHER_PROTECTION_TEE = 'tee';
 
-    public const MATCHER_PROTECTION_ON_CHIP = 0x0004;
+    public const MATCHER_PROTECTION_ON_CHIP = 'on_chip';
 
-    public const ATTACHMENT_HINT_INTERNAL = 0x0001;
+    public const ATTACHMENT_HINT_INTERNAL = 'internal';
 
-    public const ATTACHMENT_HINT_EXTERNAL = 0x0002;
+    public const ATTACHMENT_HINT_EXTERNAL = 'external';
 
-    public const ATTACHMENT_HINT_WIRED = 0x0004;
+    public const ATTACHMENT_HINT_WIRED = 'wired';
 
-    public const ATTACHMENT_HINT_WIRELESS = 0x0008;
+    public const ATTACHMENT_HINT_WIRELESS = 'wireless';
 
-    public const ATTACHMENT_HINT_NFC = 0x0010;
+    public const ATTACHMENT_HINT_NFC = 'nfc';
 
-    public const ATTACHMENT_HINT_BLUETOOTH = 0x0020;
+    public const ATTACHMENT_HINT_BLUETOOTH = 'bluetooth';
 
-    public const ATTACHMENT_HINT_NETWORK = 0x0040;
+    public const ATTACHMENT_HINT_NETWORK = 'network';
 
-    public const ATTACHMENT_HINT_READY = 0x0080;
+    public const ATTACHMENT_HINT_READY = 'ready';
 
-    public const ATTACHMENT_HINT_WIFI_DIRECT = 0x0100;
+    public const ATTACHMENT_HINT_WIFI_DIRECT = 'wifi_direct';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 0x0001;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 'any';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 0x0002;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 'privileged_software';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 0x0004;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 'tee';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 0x0008;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 'hardware';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 0x0010;
+    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 'remote';
 
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 0x0001;
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 'secp256r1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 0x0002;
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 'secp256r1_ecdsa_sha256_der';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 0x0003;
+    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 'rsassa_pss_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 0x0004;
+    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 'rsassa_pss_sha256_der';
 
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 0x0005;
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 'secp256k1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 0x0006;
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 'secp256k1_ecdsa_sha256_der';
 
-    public const ALG_SIGN_SM2_SM3_RAW = 0x0007;
+    public const ALG_SIGN_SM2_SM3_RAW = 'sm2_sm3_raw';
 
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 0x0008;
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 'rsa_emsa_pkcs1_sha256_raw';
 
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 0x0009;
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 'rsa_emsa_pkcs1_sha256_der';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 0x000A;
+    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 'rsassa_pss_sha384_raw';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 0x000B;
+    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 'rsassa_pss_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 0x000C;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 'rsassa_pkcsv15_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 0x000D;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 'rsassa_pkcsv15_sha384_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 0x000E;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 'rsassa_pkcsv15_sha512_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 0x000F;
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 'rsassa_pkcsv15_sha1_raw';
 
-    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 0x0010;
+    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 'secp384r1_ecdsa_sha384_raw';
 
-    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 0x0011;
+    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 'secp512r1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 0x0012;
+    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 'ed25519_eddsa_sha512_raw';
 
-    public const ALG_KEY_ECC_X962_RAW = 0x0100;
+    public const ALG_KEY_ECC_X962_RAW = 'ecc_x962_raw';
 
-    public const ALG_KEY_ECC_X962_DER = 0x0101;
+    public const ALG_KEY_ECC_X962_DER = 'ecc_x962_der';
 
-    public const ALG_KEY_RSA_2048_RAW = 0x0102;
+    public const ALG_KEY_RSA_2048_RAW = 'rsa_2048_raw';
 
-    public const ALG_KEY_RSA_2048_DER = 0x0103;
+    public const ALG_KEY_RSA_2048_DER = 'rsa_2048_der';
 
-    public const ALG_KEY_COSE = 0x0104;
+    public const ALG_KEY_COSE = 'cose';
 
-    public const ATTESTATION_BASIC_FULL = 0x3E07;
+    public const ATTESTATION_BASIC_FULL = 'basic_full';
 
-    public const ATTESTATION_BASIC_SURROGATE = 0x3E08;
+    public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
 
-    public const ATTESTATION_ECDAA = 0x3E09;
+    public const ATTESTATION_ECDAA = 'ecdaa';
 
-    public const ATTESTATION_ATTCA = 0x3E0A;
+    public const ATTESTATION_ATTCA = 'attca';
 
     private ?string $legalHeader;
 
@@ -291,7 +291,7 @@ class MetadataStatement implements JsonSerializable
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getAttestationTypes(): array
     {
@@ -408,7 +408,7 @@ class MetadataStatement implements JsonSerializable
         $object->aaguid = $data['aaguid'] ?? null;
         $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? [];
         $object->description = $data['description'];
-        $object->alternativeDescriptions = $data['alternativeDescriptions'] ?? [];
+        $object->alternativeDescriptions = AlternativeDescriptions::create($data['alternativeDescriptions'] ?? []);
         $object->authenticatorVersion = $data['authenticatorVersion'] ?? 0;
         $object->protocolFamily = $data['protocolFamily'];
         if (isset($data['upv'])) {
@@ -430,7 +430,7 @@ class MetadataStatement implements JsonSerializable
                 $object->userVerificationDetails[] = VerificationMethodANDCombinations::createFromArray($value);
             }
         }
-        $object->keyProtection = $data['keyProtection'] ?? 0;
+        $object->keyProtection = $data['keyProtection'] ?? [];
         $object->isKeyRestricted = $data['isKeyRestricted'] ?? null;
         $object->isFreshUserVerificationRequired = $data['isFreshUserVerificationRequired'] ?? null;
         $object->matcherProtection = $data['matcherProtection'] ?? 0;

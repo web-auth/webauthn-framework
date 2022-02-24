@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\Tests\Bundle\Functional;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use SpomkyLabs\CborBundle\SpomkyLabsCborBundle;
