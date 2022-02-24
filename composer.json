@@ -114,6 +114,6 @@
         "web-token/jwt-key-mgmt": "^2.0.9",
         "web-token/jwt-signature-algorithm-ecdsa": "^2.0.9",
         "web-token/jwt-signature-algorithm-eddsa": "^2.0.9",
-        "web-token/jwt-signature-algorithm-rsa": "^2.0.9"
+        "web-token/jwt-signature-algorithm-rsa": "^3.0.0"
     }
 }
