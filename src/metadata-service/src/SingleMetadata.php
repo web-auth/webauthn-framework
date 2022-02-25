@@ -12,8 +12,8 @@ class SingleMetadata
     private ?MetadataStatement $statement = null;
 
     public function __construct(
-        private string $data,
-        private bool $isBase64Encoded
+        protected string $data,
+        protected bool $isBase64Encoded
     ) {
     }
 

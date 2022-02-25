@@ -38,6 +38,8 @@ class AuthenticatorAttestationResponseValidator
 
     private ?CertificateChainChecker $certificateChainChecker = null;
 
+    private bool $allowMetadataStatementToBeBypassed = false;
+
     public function __construct(
         private AttestationStatementSupportManager $attestationStatementSupportManager,
         private PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
@@ -226,11 +228,11 @@ class AuthenticatorAttestationResponseValidator
         }
 
         $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
-        $rootStatementCertificates = $metadataStatement->getRootCertificates();
+        //$rootStatementCertificates = $metadataStatement->getRootCertificates();
         foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
             $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
         }
-        $trustedCertificates = array_merge($metadataStatementCertificates, $rootStatementCertificates);
+        $trustedCertificates = array_merge($metadataStatementCertificates/*, $rootStatementCertificates*/);
 
         if ($this->certificateChainChecker !== null) {
             $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
@@ -302,7 +304,9 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // We check the last status report
-        $statusReports = $this->metadataStatementRepository instanceof CanSupportStatusReport ? $this->metadataStatementRepository->findOneByAAGUID() : [];
+        $statusReports = $this->metadataStatementRepository instanceof CanSupportStatusReport ? $this->metadataStatementRepository->findStatusReportsByAAGUID(
+            $aaguid
+        ) : [];
         $this->checkStatusReport($statusReports);
 
         // We check the certificate chain (if any)
@@ -316,7 +320,6 @@ class AuthenticatorAttestationResponseValidator
 
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
-            dump($attestationStatement, $metadataStatement->getAttestationTypes());
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray(
                 $type,

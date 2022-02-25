@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Throwable;
 use Webauthn\AttestationStatement\CanSupportStatusReport;
-use Webauthn\MetadataService\DistantSingleMetadata;
 use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
@@ -32,43 +29,18 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
      */
     private array $statusReports = [];
 
-    public function __construct(
-        private ClientInterface $httpClient,
-        private RequestFactoryInterface $requestFactory
-    ) {
-    }
-
-    public function addSingleStatement(string $data, bool $isBare64Encoded = false): void
+    public function addSingleStatement(SingleMetadata ...$statements): void
     {
-        $this->metadataStatements[] = new SingleMetadata($data, $isBare64Encoded);
+        foreach ($statements as $statement) {
+            $this->metadataStatements[] = $statement;
+        }
     }
 
-    public function addDistantSingleStatement(
-        string $uri,
-        bool $isBare64Encoded = false,
-        array $additionalHeaders = []
-    ): void {
-        $this->metadataStatements[] = new DistantSingleMetadata(
-            $uri,
-            $isBare64Encoded,
-            $this->httpClient,
-            $this->requestFactory,
-            $additionalHeaders
-        );
-    }
-
-    public function addService(
-        string $url,
-        array $additionalQueryStringParameters = [],
-        array $additionalHeaders = []
-    ): void {
-        $service = new MetadataService($url, $this->httpClient, $this->requestFactory);
-        $service
-            ->addQueryStringValues($additionalQueryStringParameters)
-            ->addHeaders($additionalHeaders)
-        ;
-
-        $this->metadataServices[] = $service;
+    public function addServices(MetadataService ...$services): void
+    {
+        foreach ($services as $service) {
+            $this->metadataServices[] = $service;
+        }
     }
 
     public function addStatusReport(string $aaguid, StatusReport $statusReport): void

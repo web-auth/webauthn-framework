@@ -19,14 +19,14 @@ class MetadataTOCPayloadEntry implements JsonSerializable
     /**
      * @var string[]
      */
-    private $attestationCertificateKeyIdentifiers = [];
+    private array $attestationCertificateKeyIdentifiers = [];
 
     private ?string $hash = null;
 
     /**
      * @var StatusReport[]
      */
-    private $statusReports = [];
+    private array $statusReports = [];
 
     public function __construct(
         ?string $aaid,

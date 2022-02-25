@@ -28,7 +28,7 @@
     "userVerificationDetails": [
         [
             {
-                "userVerificationMethod": "none"
+                "userVerification": "none"
             }
         ],
         [

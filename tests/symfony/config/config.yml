@@ -71,10 +71,7 @@ services:
     Webauthn\Tests\Bundle\Functional\FailureHandler: ~
     Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
     Webauthn\Tests\Bundle\Functional\CustomSessionStorage: ~
-    Webauthn\Tests\Bundle\Functional\MetadataStatementRepository:
-        arguments:
-            - '@httplug.client.mock'
-            - '@nyholm.psr7.psr17_factory'
+    Webauthn\Tests\Bundle\Functional\MetadataStatementRepository: ~
 
     # Register nyholm/psr7 services for autowiring with PSR-17 (HTTP factories)
     Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'

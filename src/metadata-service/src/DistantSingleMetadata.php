@@ -5,36 +5,44 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
 class DistantSingleMetadata extends SingleMetadata
 {
-    private string $uri;
-
-    private bool $isBase64Encoded;
+    /**
+     * @var array<string, mixed>
+     */
+    private array $additionalHeaders;
 
     public function __construct(
-        string $uri,
+        private string $uri,
         bool $isBase64Encoded,
         private ClientInterface $httpClient,
-        private RequestFactoryInterface $requestFactory,
-        private array $additionalHeaders = []
+        private RequestFactoryInterface $requestFactory
     ) {
-        parent::__construct($uri, $isBase64Encoded); //Useless
-        $this->uri = $uri;
-        $this->isBase64Encoded = $isBase64Encoded;
+        parent::__construct('', $isBase64Encoded);
     }
 
     public function getMetadataStatement(): MetadataStatement
     {
-        $payload = $this->fetch();
-        $json = $this->isBase64Encoded ? Base64UrlSafe::decode($payload) : $payload;
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->data = $this->fetch();
 
-        return MetadataStatement::createFromArray($data);
+        return parent::getMetadataStatement();
+    }
+
+    public function addHeaders(array $additionalHeaders): self
+    {
+        $this->additionalHeaders = $additionalHeaders;
+
+        return $this;
+    }
+
+    public function addHeader(string $key, mixed $value): self
+    {
+        $this->additionalHeaders[$key] = $value;
+
+        return $this;
     }
 
     private function fetch(): string

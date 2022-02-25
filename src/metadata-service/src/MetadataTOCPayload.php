@@ -13,12 +13,12 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @var MetadataTOCPayloadEntry[]
      */
-    private $entries = [];
+    private array $entries = [];
 
     /**
      * @var string[]
      */
-    private $rootCertificates;
+    private array $rootCertificates;
 
     public function __construct(
         private int $no,

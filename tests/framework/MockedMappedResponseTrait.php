@@ -28,5 +28,5 @@ trait MockedMappedResponseTrait
         });
     }
 
-    abstract protected function getResponsesMap(): array;
+    abstract protected function getResponsesMap(): iterable;
 }

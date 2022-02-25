@@ -243,10 +243,7 @@ class MetadataStatement implements JsonSerializable
         return $this->description;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getAlternativeDescriptions(): array
+    public function getAlternativeDescriptions(): AlternativeDescriptions
     {
         return $this->alternativeDescriptions;
     }
@@ -433,10 +430,10 @@ class MetadataStatement implements JsonSerializable
         $object->keyProtection = $data['keyProtection'] ?? [];
         $object->isKeyRestricted = $data['isKeyRestricted'] ?? null;
         $object->isFreshUserVerificationRequired = $data['isFreshUserVerificationRequired'] ?? null;
-        $object->matcherProtection = $data['matcherProtection'] ?? 0;
+        $object->matcherProtection = $data['matcherProtection'] ?? [];
         $object->cryptoStrength = $data['cryptoStrength'] ?? null;
-        $object->attachmentHint = $data['attachmentHint'] ?? 0;
-        $object->tcDisplay = $data['tcDisplay'] ?? 0;
+        $object->attachmentHint = $data['attachmentHint'] ?? [];
+        $object->tcDisplay = $data['tcDisplay'] ?? [];
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];

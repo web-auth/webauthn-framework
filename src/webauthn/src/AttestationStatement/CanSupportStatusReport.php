@@ -11,5 +11,5 @@ interface CanSupportStatusReport
     /**
      * @return StatusReport[]
      */
-    public function findStatusReportsByAAGUID(): array;
+    public function findStatusReportsByAAGUID(string $aaguid): array;
 }

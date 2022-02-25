@@ -104,9 +104,9 @@ final class MetadataServiceTest extends KernelTestCase
         static::assertSame('FIDOV2', $ms->getAssertionScheme());
     }
 
-    protected function getResponsesMap(): array
+    protected function getResponsesMap(): iterable
     {
-        return [];
+        yield from [];
     }
 
     /**
