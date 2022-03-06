@@ -94,7 +94,7 @@ final class MetadataServiceTest extends KernelTestCase
         $this->prepareResponsesMap($client);
 
         /** @var MetadataStatementRepository $repository */
-        $repository = static::$container->get(MetadataStatementRepository::class);
+        $repository = self::getContainer()->get(MetadataStatementRepository::class);
         $ms = $repository->findOneByAAGUID('8876631b-d4a0-427f-5773-0ec71c9e0279');
 
         static::assertNotNull($ms);

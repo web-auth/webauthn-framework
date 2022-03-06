@@ -126,9 +126,7 @@ abstract class AbstractTestCase extends TestCase
             $urls[sprintf(
                 'https://mds3.certinfra.fidoalliance.org/execute/%s',
                 $file->getRelativePathname()
-            )] = file_get_contents(
-                $file->getRealPath()
-            );
+            )] = file_get_contents($file->getRealPath());
         }
 
         yield from $urls;

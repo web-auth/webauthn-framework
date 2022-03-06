@@ -17,10 +17,12 @@ use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPas
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerificationCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\FirewallConfigCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementRepositorySetterCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
+use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
-use Webauthn\Bundle\Security\Factory\WebauthnSecurityFactory;
 
 final class WebauthnBundle extends Bundle
 {
@@ -44,6 +46,7 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new CounterCheckerSetterCompilerPass());
         $container->addCompilerPass(new CertificateChainCheckerSetterCompilerPass());
         $container->addCompilerPass(new MetadataStatementRepositorySetterCompilerPass());
+        $container->addCompilerPass(new FirewallConfigCompilerPass());
 
         $this->registerMappings($container);
 
@@ -54,7 +57,7 @@ final class WebauthnBundle extends Bundle
                 SecurityExtension::class,
                 'The security extension is missing or invalid'
             );
-            $extension->addSecurityListenerFactory(new WebauthnSecurityFactory());
+            $extension->addAuthenticatorFactory(new WebauthnFactory(new WebauthnServicesFactory()));
         }
     }
 
@@ -64,7 +67,7 @@ final class WebauthnBundle extends Bundle
         $mappings = [
             $realPath => 'Webauthn',
         ];
-        if (class_exists('Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
+        if (class_exists(DoctrineOrmMappingsPass::class)) {
             $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []));
         }
     }

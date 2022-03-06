@@ -25,7 +25,7 @@ class Loader extends SymfonyLoader
         $defaults = [
             '_controller' => $controllerId,
         ];
-        $route = new Route($pattern, $defaults, [], [], $host, ['https'], [Request::METHOD_POST]);
+        $route = new Route($pattern, $defaults, [], [], $host, [], [Request::METHOD_POST]);
         $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 

@@ -321,6 +321,7 @@ class AuthenticatorAttestationResponseValidator
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
+            dump($type, $metadataStatement->getAttestationTypes());
             Assertion::inArray(
                 $type,
                 $metadataStatement->getAttestationTypes(),

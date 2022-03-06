@@ -8,15 +8,15 @@ use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
-use Webauthn\Bundle\Security\Voter\IsUserPresentVoter;
-use Webauthn\Bundle\Security\Voter\IsUserVerifiedVoter;
+use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
+use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class WebauthnToken extends AbstractToken
+class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
 {
-    private string $providerKey;
+    private string $firewallName;
 
     private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
 
@@ -41,7 +41,7 @@ class WebauthnToken extends AbstractToken
 
         $this->setUser($publicKeyCredentialUserEntity->getName());
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
-        $this->providerKey = $providerKey;
+        $this->firewallName = $providerKey;
     }
 
     /**
@@ -60,7 +60,7 @@ class WebauthnToken extends AbstractToken
             $this->reservedForFutureUse2,
             $this->signCount,
             $this->extensions,
-            $this->providerKey,
+            $this->firewallName,
             parent::__serialize(),
         ];
     }
@@ -81,9 +81,9 @@ class WebauthnToken extends AbstractToken
             $this->reservedForFutureUse2,
             $this->signCount,
             $extensions,
-            $this->providerKey,
+            $this->firewallName,
             $parentData
-            ] = $serialized;
+        ] = $serialized;
         Assertion::subclassOf(
             $publicKeyCredentialOptionsClass,
             PublicKeyCredentialOptions::class,
@@ -156,9 +156,9 @@ class WebauthnToken extends AbstractToken
         return $this->extensions;
     }
 
-    public function getProviderKey(): string
+    public function getFirewallName(): string
     {
-        return $this->providerKey;
+        return $this->firewallName;
     }
 
     public function getAttributes(): array

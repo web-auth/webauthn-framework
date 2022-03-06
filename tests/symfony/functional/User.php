@@ -40,4 +40,9 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
     public function eraseCredentials(): void
     {
     }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->id;
+    }
 }

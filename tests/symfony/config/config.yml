@@ -23,7 +23,7 @@ framework:
     validation:
         enabled: true
     session:
-        storage_id: 'session.storage.mock_file'
+        storage_factory_id: 'session.storage.factory.mock_file'
     fragments:       ~
     http_method_override: true
     router:
@@ -190,7 +190,6 @@ security:
 
     firewalls:
         main:
-            anonymous: ~
             webauthn:
 #               user_provider: null
                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
@@ -218,8 +217,8 @@ security:
 
     access_control:
         - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
-        - { path: ^/logout,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/logout,  roles: PUBLIC_ACCESS , requires_channel: https }
+        - { path: ^/login,  roles: PUBLIC_ACCESS , requires_channel: https }
         - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
         - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
-        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/,       roles: PUBLIC_ACCESS , requires_channel: https }

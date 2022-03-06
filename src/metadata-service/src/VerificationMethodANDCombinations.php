@@ -35,7 +35,11 @@ class VerificationMethodANDCombinations implements JsonSerializable
 
         foreach ($data as $datum) {
             Assertion::isArray($datum, Utils::logicException('Invalid data'));
-            $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
+            try {
+                $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
+            } catch (\Throwable) {
+                continue;
+            }
         }
 
         return $object;

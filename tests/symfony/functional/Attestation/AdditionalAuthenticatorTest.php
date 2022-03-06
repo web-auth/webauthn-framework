@@ -22,6 +22,8 @@ use Webauthn\Tests\Bundle\Functional\User;
  */
 final class AdditionalAuthenticatorTest extends WebTestCase
 {
+    private SessionInterface $session;
+
     private KernelBrowser $client;
 
     protected function setUp(): void
@@ -29,6 +31,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $this->client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
+        $this->createSession();
     }
 
     /**
@@ -62,9 +65,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         }
         static::assertSame('ok', $data['status']);
 
-        /** @var SessionInterface $session */
-        $session = self::getContainer()->get('session');
-        static::assertTrue($session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
+        static::assertTrue($this->session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
     }
 
     /**
@@ -83,12 +84,11 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
 
-        $session = self::getContainer()->get('session');
-        $session->set('WEBAUTHN_PUBLIC_KEY_OPTIONS', [
+        $this->session->set('WEBAUTHN_PUBLIC_KEY_OPTIONS', [
             'options' => $publicKeyCredentialCreationOptions,
             'userEntity' => $publicKeyCredentialCreationOptions->getUser(),
         ]);
-        $session->save();
+        $this->session->save();
 
         $numberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
@@ -116,9 +116,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         }
         static::assertSame('ok', $data['status']);
 
-        /** @var SessionInterface $session */
-        $session = self::getContainer()->get('session');
-        static::assertFalse($session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
+        static::assertFalse($this->session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
 
         $newNumberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
@@ -128,7 +126,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
     private function logIn(): void
     {
-        $session = self::getContainer()->get('session');
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
@@ -161,10 +158,19 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         );
         $token->setUser($user);
         $token->setAuthenticated(true);
-        $session->set('_security_' . $firewallContext, serialize($token));
-        $session->save();
+        $this->session->set('_security_' . $firewallContext, serialize($token));
+        $this->session->save();
+    }
 
-        $cookie = new Cookie($session->getName(), $session->getId());
+    private function createSession(): void
+    {
+        /** @var SessionInterface $session */
+        $this->session = self::getContainer()
+            ->get('session.factory')
+            ->createSession()
+        ;
+
+        $cookie = new Cookie($this->session->getName(), $this->session->getId());
         $this->client->getCookieJar()
             ->set($cookie)
         ;

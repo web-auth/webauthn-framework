@@ -7,7 +7,7 @@ namespace Webauthn\Bundle\Security\Storage;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class StoredData
+final class StoredData
 {
     public function __construct(
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,
