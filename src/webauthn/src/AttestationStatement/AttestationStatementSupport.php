@@ -12,5 +12,9 @@ interface AttestationStatementSupport
 
     public function load(array $attestation): AttestationStatement;
 
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool;
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool;
 }

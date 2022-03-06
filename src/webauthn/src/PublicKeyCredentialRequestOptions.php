@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use function count;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
-use function Safe\json_decode;
+use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
+
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
+
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
     private ?string $rpId = null;
@@ -27,7 +29,6 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     private ?string $userVerification = null;
 
-    #[Pure]
     public static function create(string $challenge): self
     {
         return new self($challenge);
@@ -61,7 +62,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public function setUserVerification(?string $userVerification): self
     {
-        if (null === $userVerification) {
+        if ($userVerification === null) {
             $this->rpId = null;
 
             return $this;
@@ -76,7 +77,6 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
-    #[Pure]
     public function getRpId(): ?string
     {
         return $this->rpId;
@@ -85,13 +85,11 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
-    #[Pure]
     public function getAllowCredentials(): array
     {
         return $this->allowCredentials;
     }
 
-    #[Pure]
     public function getUserVerification(): ?string
     {
         return $this->userVerification;
@@ -99,12 +97,15 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public static function createFromString(string $data): PublicKeyCredentialOptions
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
 
+    /**
+     * @param mixed[] $json
+     */
     public static function createFromArray(array $json): PublicKeyCredentialOptions
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
@@ -115,41 +116,53 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        return self::create(Base64Url::decode($json['challenge']))
+        try {
+            $challenge = Base64UrlSafe::decode($json['challenge']);
+        } catch (Throwable) {
+            $challenge = Base64::decode($json['challenge']);
+        }
+
+        return self::create($challenge)
             ->setRpId($json['rpId'] ?? null)
             ->allowCredentials($allowCredentials)
             ->setUserVerification($json['userVerification'] ?? null)
             ->setTimeout($json['timeout'] ?? null)
-            ->setExtensions(isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray($json['extensions']) : AuthenticationExtensionsClientInputs::create())
+            ->setExtensions(
+                isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
+                    $json['extensions']
+                ) : new AuthenticationExtensionsClientInputs()
+            )
         ;
     }
 
-    #[ArrayShape(['challenge' => 'string', 'timeout' => 'int|null', 'extensions' => '\\Webauthn\\AuthenticationExtensions\\AuthenticationExtension[]', 'allowCredentials' => 'array[]', 'userVerification' => 'null|string', 'rpId' => 'null|string'])]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         $json = [
-            'challenge' => Base64Url::encode($this->challenge),
+            'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
         ];
 
-        if (null !== $this->rpId) {
+        if ($this->rpId !== null) {
             $json['rpId'] = $this->rpId;
         }
 
-        if (null !== $this->userVerification) {
+        if ($this->userVerification !== null) {
             $json['userVerification'] = $this->userVerification;
         }
 
-        if (0 !== count($this->allowCredentials)) {
+        if (count($this->allowCredentials) !== 0) {
             $json['allowCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->allowCredentials);
         }
 
-        if (0 !== $this->extensions->count()) {
+        if ($this->extensions->count() !== 0) {
             $json['extensions'] = $this->extensions->jsonSerialize();
         }
 
-        if (null !== $this->timeout) {
+        if ($this->timeout !== null) {
             $json['timeout'] = $this->timeout;
         }
 

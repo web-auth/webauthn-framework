@@ -6,10 +6,8 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use LogicException;
-use function Safe\sprintf;
 
 class Version implements JsonSerializable
 {
@@ -19,7 +17,7 @@ class Version implements JsonSerializable
 
     public function __construct(?int $major, ?int $minor)
     {
-        if (null === $major && null === $minor) {
+        if ($major === null && $minor === null) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
         Assertion::greaterOrEqualThan($major, 0, Utils::logicException('Invalid argument "major"'));
@@ -29,13 +27,11 @@ class Version implements JsonSerializable
         $this->minor = $minor;
     }
 
-    #[Pure]
     public function getMajor(): ?int
     {
         return $this->major;
     }
 
-    #[Pure]
     public function getMinor(): ?int
     {
         return $this->minor;
@@ -50,13 +46,9 @@ class Version implements JsonSerializable
             }
         }
 
-        return new self(
-            $data['major'] ?? null,
-            $data['minor'] ?? null
-        );
+        return new self($data['major'] ?? null, $data['minor'] ?? null);
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

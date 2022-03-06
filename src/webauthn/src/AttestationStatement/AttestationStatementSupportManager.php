@@ -6,8 +6,6 @@ namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
 
 class AttestationStatementSupportManager
 {
@@ -16,20 +14,16 @@ class AttestationStatementSupportManager
      */
     private array $attestationStatementSupports = [];
 
-    #[Pure]
     public static function create(): self
     {
         return new self();
     }
 
-    public function add(AttestationStatementSupport $attestationStatementSupport): self
+    public function add(AttestationStatementSupport $attestationStatementSupport): void
     {
         $this->attestationStatementSupports[$attestationStatementSupport->name()] = $attestationStatementSupport;
-
-        return $this;
     }
 
-    #[Pure]
     public function has(string $name): bool
     {
         return array_key_exists($name, $this->attestationStatementSupports);

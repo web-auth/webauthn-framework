@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
-use Base64Url\Base64Url;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
-use JetBrains\PhpStorm\Pure;
+use CBOR\Normalizable;
 use function ord;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Ramsey\Uuid\Uuid;
-use function Safe\sprintf;
-use function Safe\unpack;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -26,20 +23,20 @@ use Webauthn\StringStream;
 class AttestationObjectLoader
 {
     private const FLAG_AT = 0b01000000;
+
     private const FLAG_ED = 0b10000000;
 
     private Decoder $decoder;
 
     private LoggerInterface $logger;
 
-    #[Pure]
-    public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager)
-    {
-        $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
+    public function __construct(
+        private AttestationStatementSupportManager $attestationStatementSupportManager
+    ) {
+        $this->decoder = Decoder::create();
         $this->logger = new NullLogger();
     }
 
-    #[Pure]
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self
     {
         return new self($attestationStatementSupportManager);
@@ -48,13 +45,20 @@ class AttestationObjectLoader
     public function load(string $data): AttestationObject
     {
         try {
-            $this->logger->info('Trying to load the data', ['data' => $data]);
-            $decodedData = Base64Url::decode($data);
-            $stream = StringStream::create($decodedData);
+            $this->logger->info('Trying to load the data', [
+                'data' => $data,
+            ]);
+            try {
+                $decodedData = Base64UrlSafe::decode($data);
+            } catch (Throwable) {
+                $decodedData = Base64::decode($data);
+            }
+            $stream = new StringStream($decodedData);
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
-            $attestationObject = $parsed->getNormalizedData();
+            Assertion::isInstanceOf($parsed, Normalizable::class, 'Invalid attestation object. Unexpected object.');
+            $attestationObject = $parsed->normalize();
             Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
             $stream->close();
             Assertion::isArray($attestationObject, 'Invalid attestation object');
@@ -66,27 +70,41 @@ class AttestationObjectLoader
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);
             $attestationStatement = $attestationStatementSupport->load($attestationObject);
             $this->logger->info('Attestation Statement loaded');
-            $this->logger->debug('Attestation Statement loaded', ['attestationStatement' => $attestationStatement]);
+            $this->logger->debug('Attestation Statement loaded', [
+                'attestationStatement' => $attestationStatement,
+            ]);
 
-            $authDataStream = StringStream::create($authData);
+            $authDataStream = new StringStream($authData);
             $rp_id_hash = $authDataStream->read(32);
             $flags = $authDataStream->read(1);
             $signCount = $authDataStream->read(4);
-            $signCount = unpack('N', $signCount)[1];
-            $this->logger->debug(sprintf('Signature counter: %d', $signCount));
+            $signCount = unpack('N', $signCount);
+            Assertion::isArray($signCount, 'The data does not contain a valid signature counter.');
+            $this->logger->debug(sprintf('Signature counter: %d', $signCount[1]));
 
             $attestedCredentialData = null;
             if (0 !== (ord($flags) & self::FLAG_AT)) {
                 $this->logger->info('Attested Credential Data is present');
-                $aaguid = Uuid::fromBytes($authDataStream->read(16));
+                $aaguid = Uuid::fromBinary($authDataStream->read(16));
                 $credentialLength = $authDataStream->read(2);
-                $credentialLength = unpack('n', $credentialLength)[1];
-                $credentialId = $authDataStream->read($credentialLength);
+                $credentialLength = unpack('n', $credentialLength);
+                Assertion::isArray($credentialLength, 'The data does not contain a valid credential public key.');
+                $credentialId = $authDataStream->read($credentialLength[1]);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
-                Assertion::isInstanceOf($credentialPublicKey, MapObject::class, 'The data does not contain a valid credential public key.');
-                $attestedCredentialData = AttestedCredentialData::create($aaguid, $credentialId, $credentialPublicKey->__toString());
+                Assertion::isInstanceOf(
+                    $credentialPublicKey,
+                    MapObject::class,
+                    'The data does not contain a valid credential public key.'
+                );
+                $attestedCredentialData = new AttestedCredentialData(
+                    $aaguid,
+                    $credentialId,
+                    (string) $credentialPublicKey
+                );
                 $this->logger->info('Attested Credential Data loaded');
-                $this->logger->debug('Attested Credential Data loaded', ['at' => $attestedCredentialData]);
+                $this->logger->debug('Attested Credential Data loaded', [
+                    'at' => $attestedCredentialData,
+                ]);
             }
 
             $extension = null;
@@ -95,15 +113,26 @@ class AttestationObjectLoader
                 $extension = $this->decoder->decode($authDataStream);
                 $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 $this->logger->info('Extension Data loaded');
-                $this->logger->debug('Extension Data loaded', ['ed' => $extension]);
+                $this->logger->debug('Extension Data loaded', [
+                    'ed' => $extension,
+                ]);
             }
             Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
             $authDataStream->close();
 
-            $authenticatorData = AuthenticatorData::create($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);
-            $attestationObject = AttestationObject::create($data, $attestationStatement, $authenticatorData);
+            $authenticatorData = new AuthenticatorData(
+                $authData,
+                $rp_id_hash,
+                $flags,
+                $signCount[1],
+                $attestedCredentialData,
+                $extension
+            );
+            $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData);
             $this->logger->info('Attestation Object loaded');
-            $this->logger->debug('Attestation Object', ['ed' => $attestationObject]);
+            $this->logger->debug('Attestation Object', [
+                'ed' => $attestationObject,
+            ]);
 
             return $attestationObject;
         } catch (Throwable $throwable) {

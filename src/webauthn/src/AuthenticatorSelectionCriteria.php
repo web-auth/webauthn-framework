@@ -5,27 +5,32 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
 
 class AuthenticatorSelectionCriteria implements JsonSerializable
 {
     public const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
+
     public const AUTHENTICATOR_ATTACHMENT_PLATFORM = 'platform';
+
     public const AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM = 'cross-platform';
 
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
+
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
+
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
     public const RESIDENT_KEY_REQUIREMENT_NONE = null;
+
     public const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
+
     public const RESIDENT_KEY_REQUIREMENT_PREFERRED = 'preferred';
+
     public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    private ?string $authenticatorAttachment;
+    private ?string $authenticatorAttachment = null;
 
     private bool $requireResidentKey;
 
@@ -33,16 +38,13 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private ?string $residentKey;
 
-    #[Pure]
     public function __construct()
     {
-        $this->authenticatorAttachment = null;
         $this->requireResidentKey = false;
         $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
         $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
     }
 
-    #[Pure]
     public static function create(): self
     {
         return new self();
@@ -76,25 +78,21 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
     public function getAuthenticatorAttachment(): ?string
     {
         return $this->authenticatorAttachment;
     }
 
-    #[Pure]
     public function isRequireResidentKey(): bool
     {
         return $this->requireResidentKey;
     }
 
-    #[Pure]
     public function getUserVerification(): string
     {
         return $this->userVerification;
     }
 
-    #[Pure]
     public function getResidentKey(): ?string
     {
         return $this->residentKey;
@@ -102,12 +100,15 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
 
+    /**
+     * @param mixed[] $json
+     */
     public static function createFromArray(array $json): self
     {
         return self::create()
@@ -118,18 +119,19 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         ;
     }
 
-    #[Pure]
-    #[ArrayShape(['requireResidentKey' => 'bool', 'userVerification' => 'string', 'residentKey' => 'null|string', 'authenticatorAttachment' => 'null|string'])]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         $json = [
             'requireResidentKey' => $this->requireResidentKey,
             'userVerification' => $this->userVerification,
         ];
-        if (null !== $this->authenticatorAttachment) {
+        if ($this->authenticatorAttachment !== null) {
             $json['authenticatorAttachment'] = $this->authenticatorAttachment;
         }
-        if (null !== $this->residentKey) {
+        if ($this->residentKey !== null) {
             $json['residentKey'] = $this->residentKey;
         }
 

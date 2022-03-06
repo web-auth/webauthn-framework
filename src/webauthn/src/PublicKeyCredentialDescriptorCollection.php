@@ -8,12 +8,12 @@ use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
 use function count;
+use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
-use JetBrains\PhpStorm\Pure;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
 
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
@@ -22,28 +22,23 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
      */
     private array $publicKeyCredentialDescriptors = [];
 
-    public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): self
+    public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): void
     {
         $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->getId()] = $publicKeyCredentialDescriptor;
-
-        return $this;
     }
 
-    #[Pure]
     public function has(string $id): bool
     {
         return array_key_exists($id, $this->publicKeyCredentialDescriptors);
     }
 
-    public function remove(string $id): self
+    public function remove(string $id): void
     {
-        if (!$this->has($id)) {
-            return $this;
+        if (! $this->has($id)) {
+            return;
         }
 
         unset($this->publicKeyCredentialDescriptors[$id]);
-
-        return $this;
     }
 
     /**
@@ -54,7 +49,6 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
         return new ArrayIterator($this->publicKeyCredentialDescriptors);
     }
 
-    #[Pure]
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->publicKeyCredentialDescriptors, $mode);
@@ -72,7 +66,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);

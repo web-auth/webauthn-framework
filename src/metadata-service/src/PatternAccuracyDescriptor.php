@@ -6,8 +6,6 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
@@ -15,12 +13,15 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($minComplexity, 0, Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer'));
+        Assertion::greaterOrEqualThan(
+            $minComplexity,
+            0,
+            Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer')
+        );
         $this->minComplexity = $minComplexity;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    #[Pure]
     public function getMinComplexity(): int
     {
         return $this->minComplexity;
@@ -32,18 +33,16 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         Assertion::keyExists($data, 'minComplexity', Utils::logicException('The key "minComplexity" is missing'));
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
-                Assertion::integer($data[$key], Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
+                Assertion::integer(
+                    $data[$key],
+                    Utils::logicException(sprintf('Invalid data. The value of "%s" must be a positive integer', $key))
+                );
             }
         }
 
-        return new self(
-            $data['minComplexity'],
-        $data['maxRetries'] ?? null,
-        $data['blockSlowdown'] ?? null
-        );
+        return new self($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

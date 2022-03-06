@@ -6,9 +6,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use JetBrains\PhpStorm\Pure;
-use function Safe\json_decode;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
@@ -19,11 +17,11 @@ final class TrustPathDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
-        return json_encode($value);
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -31,10 +29,10 @@ final class TrustPathDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?TrustPath
     {
-        if (null === $value || $value instanceof TrustPath) {
+        if ($value === null || $value instanceof TrustPath) {
             return $value;
         }
-        $json = json_decode($value, true);
+        $json = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         return TrustPathLoader::loadTrustPath($json);
     }
@@ -50,7 +48,6 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public function getName(): string
     {
         return 'trust_path';
@@ -59,7 +56,6 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

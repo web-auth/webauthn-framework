@@ -5,34 +5,28 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
-use function Safe\base64_decode;
-use function Safe\json_decode;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
     protected string $id;
 
-    public function __construct(string $name, string $id, protected string $displayName, ?string $icon = null)
-    {
+    public function __construct(
+        string $name,
+        string $id,
+        protected string $displayName,
+        ?string $icon = null
+    ) {
         parent::__construct($name, $icon);
         Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
         $this->id = $id;
     }
 
-    public static function create(string $name, string $id, string $displayName, ?string $icon = null): self
-    {
-        return new self($name, $id, $displayName, $icon);
-    }
-
-    #[Pure]
     public function getId(): string
     {
         return $this->id;
     }
 
-    #[Pure]
     public function getDisplayName(): string
     {
         return $this->displayName;
@@ -40,7 +34,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -55,17 +49,14 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
         Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
         $id = base64_decode($json['id'], true);
+        Assertion::string($id, 'Invalid input. "id" is invalid.');
 
-        return new self(
-            $json['name'],
-            $id,
-            $json['displayName'],
-            $json['icon'] ?? null
-        );
+        return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }
 
-    #[ArrayShape(['name' => 'string', 'icon' => 'null|string', 'displayName' => 'string', 'id' => 'string'])]
-    #[Pure]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

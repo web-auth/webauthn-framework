@@ -5,44 +5,49 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
     private ?int $maxReferenceDataSets;
 
-    public function __construct(private ?float $FAR, private ?float $FRR, private ?float $EER, private ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
-        Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
+    public function __construct(
+        private ?float $FAR,
+        private ?float $FRR,
+        private ?float $EER,
+        private ?float $FAAR,
+        ?int $maxReferenceDataSets,
+        ?int $maxRetries = null,
+        ?int $blockSlowdown = null
+    ) {
+        Assertion::greaterOrEqualThan(
+            $maxReferenceDataSets,
+            0,
+            Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer')
+        );
         $this->maxReferenceDataSets = $maxReferenceDataSets;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    #[Pure]
     public function getFAR(): ?float
     {
         return $this->FAR;
     }
 
-    #[Pure]
     public function getFRR(): ?float
     {
         return $this->FRR;
     }
 
-    #[Pure]
     public function getEER(): ?float
     {
         return $this->EER;
     }
 
-    #[Pure]
     public function getFAAR(): ?float
     {
         return $this->FAAR;
     }
 
-    #[Pure]
     public function getMaxReferenceDataSets(): ?int
     {
         return $this->maxReferenceDataSets;
@@ -61,7 +66,6 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

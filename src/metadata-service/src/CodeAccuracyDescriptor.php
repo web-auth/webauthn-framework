@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
@@ -15,20 +14,26 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($base, 0, Utils::logicException('Invalid data. The value of "base" must be a positive integer'));
-        Assertion::greaterOrEqualThan($minLength, 0, Utils::logicException('Invalid data. The value of "minLength" must be a positive integer'));
+        Assertion::greaterOrEqualThan(
+            $base,
+            0,
+            Utils::logicException('Invalid data. The value of "base" must be a positive integer')
+        );
+        Assertion::greaterOrEqualThan(
+            $minLength,
+            0,
+            Utils::logicException('Invalid data. The value of "minLength" must be a positive integer')
+        );
         $this->base = $base;
         $this->minLength = $minLength;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    #[Pure]
     public function getBase(): int
     {
         return $this->base;
     }
 
-    #[Pure]
     public function getMinLength(): int
     {
         return $this->minLength;
@@ -47,7 +52,6 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [

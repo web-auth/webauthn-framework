@@ -6,82 +6,99 @@ namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
-use function Safe\sprintf;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
 class AttestationStatement implements JsonSerializable
 {
     public const TYPE_NONE = 'none';
+
     public const TYPE_BASIC = 'basic';
+
     public const TYPE_SELF = 'self';
+
     public const TYPE_ATTCA = 'attca';
+
     public const TYPE_ECDAA = 'ecdaa';
+
     public const TYPE_ANONCA = 'anonca';
 
-    #[Pure]
-    public function __construct(private string $fmt, private array $attStmt, private string $type, private TrustPath $trustPath)
-    {
+    /**
+     * @var mixed[]
+     */
+    private $attStmt;
+
+    /**
+     * @param mixed[] $attStmt
+     */
+    public function __construct(
+        private string $fmt,
+        array $attStmt,
+        private string $type,
+        private TrustPath $trustPath
+    ) {
+        $this->attStmt = $attStmt;
     }
 
-    #[Pure]
-    public static function create(string $fmt, array $attStmt, string $type, TrustPath $trustPath): self
-    {
-        return new self($fmt, $attStmt, $type, $trustPath);
-    }
-
-    #[Pure]
+    /**
+     * @param mixed[] $attStmt
+     */
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_NONE, $trustPath);
     }
 
-    #[Pure]
+    /**
+     * @param mixed[] $attStmt
+     */
     public static function createBasic(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_BASIC, $trustPath);
     }
 
-    #[Pure]
+    /**
+     * @param mixed[] $attStmt
+     */
     public static function createSelf(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_SELF, $trustPath);
     }
 
-    #[Pure]
+    /**
+     * @param mixed[] $attStmt
+     */
     public static function createAttCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ATTCA, $trustPath);
     }
 
-    #[Pure]
+    /**
+     * @param mixed[] $attStmt
+     */
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ECDAA, $trustPath);
     }
 
-    #[Pure]
     public static function createAnonymizationCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ANONCA, $trustPath);
     }
 
-    #[Pure]
     public function getFmt(): string
     {
         return $this->fmt;
     }
 
-    #[Pure]
+    /**
+     * @return mixed[]
+     */
     public function getAttStmt(): array
     {
         return $this->attStmt;
     }
 
-    #[Pure]
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->attStmt);
@@ -104,6 +121,9 @@ class AttestationStatement implements JsonSerializable
         return $this->type;
     }
 
+    /**
+     * @param mixed[] $data
+     */
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
@@ -118,8 +138,9 @@ class AttestationStatement implements JsonSerializable
         );
     }
 
-    #[Pure]
-    #[ArrayShape(['fmt' => 'string', 'attStmt' => 'array', 'trustPath' => 'mixed', 'type' => 'string'])]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         return [

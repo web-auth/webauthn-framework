@@ -10,7 +10,6 @@ use Cose\Algorithms;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use function sodium_crypto_sign_detached;
 use function sodium_crypto_sign_verify_detached;
 
@@ -23,7 +22,7 @@ class EdDSA implements Signature
 
         $x = $key->x();
         $d = $key->d();
-        $secret = $d.$x;
+        $secret = $d . $x;
 
         return match ($key->curve()) {
             OkpKey::CURVE_ED25519 => sodium_crypto_sign_detached($data, $secret),
@@ -41,7 +40,6 @@ class EdDSA implements Signature
         };
     }
 
-    #[Pure]
     public static function identifier(): int
     {
         return Algorithms::COSE_ALGORITHM_EdDSA;

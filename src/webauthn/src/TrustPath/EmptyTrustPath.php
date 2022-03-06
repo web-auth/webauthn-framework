@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
-
 final class EmptyTrustPath implements TrustPath
 {
-    #[Pure]
     public static function create(): self
     {
         return new self();
@@ -18,8 +14,6 @@ final class EmptyTrustPath implements TrustPath
     /**
      * @return string[]
      */
-    #[Pure]
-    #[ArrayShape(['type' => 'string'])]
     public function jsonSerialize(): array
     {
         return [
@@ -30,9 +24,8 @@ final class EmptyTrustPath implements TrustPath
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public static function createFromArray(array $data): TrustPath
     {
-        return self::create();
+        return new self();
     }
 }

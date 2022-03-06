@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -16,16 +14,24 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class PublicKeyCredentialRequestOptionsFactory
 {
-    #[Pure]
-    public function __construct(private array $profiles, private EventDispatcherInterface $eventDispatcher)
-    {
+    /**
+     * @param mixed[] $profiles
+     */
+    public function __construct(
+        private array $profiles,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
-    public function create(string $key, array $allowCredentials, ?string $userVerification = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialRequestOptions
-    {
+    public function create(
+        string $key,
+        array $allowCredentials,
+        ?string $userVerification = null,
+        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+    ): PublicKeyCredentialRequestOptions {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
@@ -42,9 +48,12 @@ final class PublicKeyCredentialRequestOptionsFactory
         return $options;
     }
 
+    /**
+     * @param mixed[] $profile
+     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = AuthenticationExtensionsClientInputs::create();
+        $extensions = new AuthenticationExtensionsClientInputs();
         foreach ($profile['extensions'] as $k => $v) {
             $extensions->add(AuthenticationExtension::create($k, $v));
         }

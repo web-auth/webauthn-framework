@@ -6,13 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Stream;
-use JetBrains\PhpStorm\Pure;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fread;
-use function Safe\fwrite;
-use function Safe\rewind;
-use function Safe\sprintf;
 
 final class StringStream implements Stream
 {
@@ -29,24 +22,27 @@ final class StringStream implements Stream
     {
         $this->length = mb_strlen($data, '8bit');
         $resource = fopen('php://memory', 'rb+');
+        Assertion::isResource($resource, 'Unable to allocate memory');
         fwrite($resource, $data);
         rewind($resource);
         $this->data = $resource;
     }
 
-    public static function create(string $data): self
-    {
-        return new self($data);
-    }
-
     public function read(int $length): string
     {
-        if (0 === $length) {
+        if ($length <= 0) {
             return '';
         }
         $read = fread($this->data, $length);
+        Assertion::string($read, 'Unable to read data');
         $bytesRead = mb_strlen($read, '8bit');
-        Assertion::length($read, $length, sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead), null, '8bit');
+        Assertion::length(
+            $read,
+            $length,
+            sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead),
+            null,
+            '8bit'
+        );
         $this->totalRead += $bytesRead;
 
         return $read;
@@ -57,7 +53,6 @@ final class StringStream implements Stream
         fclose($this->data);
     }
 
-    #[Pure]
     public function isEOF(): bool
     {
         return $this->totalRead === $this->length;

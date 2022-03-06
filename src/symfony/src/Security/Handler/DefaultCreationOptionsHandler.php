@@ -11,8 +11,10 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class DefaultCreationOptionsHandler implements CreationOptionsHandler
 {
-    public function onCreationOptions(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, PublicKeyCredentialUserEntity $userEntity): Response
-    {
+    public function onCreationOptions(
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        PublicKeyCredentialUserEntity $userEntity
+    ): Response {
         $data = $publicKeyCredentialCreationOptions->jsonSerialize();
         $data['status'] = 'ok';
         $data['errorMessage'] = '';

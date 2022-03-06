@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Cose\Algorithm\Signature\EdDSA;
 
-use JetBrains\PhpStorm\Pure;
-
 final class Ed25519 extends EdDSA
 {
     public const ID = -8;
 
-    #[Pure]
     public static function identifier(): int
     {
         return self::ID;

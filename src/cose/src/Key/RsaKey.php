@@ -12,29 +12,42 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
-use function Safe\unpack;
+use InvalidArgumentException;
 
 class RsaKey extends Key
 {
     public const DATA_N = -1;
+
     public const DATA_E = -2;
+
     public const DATA_D = -3;
+
     public const DATA_P = -4;
+
     public const DATA_Q = -5;
+
     public const DATA_DP = -6;
+
     public const DATA_DQ = -7;
+
     public const DATA_QI = -8;
+
     public const DATA_OTHER = -9;
+
     public const DATA_RI = -10;
+
     public const DATA_DI = -11;
+
     public const DATA_TI = -12;
 
     public function __construct(array $data)
     {
         parent::__construct($data);
-        Assertion::eq($data[self::TYPE], self::TYPE_RSA, 'Invalid RSA key. The key type does not correspond to a RSA key');
+        Assertion::eq(
+            $data[self::TYPE],
+            self::TYPE_RSA,
+            'Invalid RSA key. The key type does not correspond to a RSA key'
+        );
         Assertion::keyExists($data, self::DATA_N, 'Invalid RSA key. The modulus is missing');
         Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
     }
@@ -124,7 +137,6 @@ class RsaKey extends Key
         return $this->get(self::DATA_TI);
     }
 
-    #[Pure]
     public function hasPrimes(): bool
     {
         return $this->has(self::DATA_P) && $this->has(self::DATA_Q);
@@ -132,13 +144,9 @@ class RsaKey extends Key
 
     public function primes(): array
     {
-        return [
-            $this->p(),
-            $this->q(),
-        ];
+        return [$this->p(), $this->q()];
     }
 
-    #[Pure]
     public function hasExponents(): bool
     {
         return $this->has(self::DATA_DP) && $this->has(self::DATA_DQ);
@@ -146,25 +154,19 @@ class RsaKey extends Key
 
     public function exponents(): array
     {
-        return [
-            $this->dP(),
-            $this->dQ(),
-        ];
+        return [$this->dP(), $this->dQ()];
     }
 
-    #[Pure]
     public function hasCoefficient(): bool
     {
         return $this->has(self::DATA_QI);
     }
 
-    #[Pure]
     public function isPublic(): bool
     {
-        return !$this->isPrivate();
+        return ! $this->isPrivate();
     }
 
-    #[Pure]
     public function isPrivate(): bool
     {
         return array_key_exists(self::DATA_D, $this->getData());
@@ -179,10 +181,7 @@ class RsaKey extends Key
         );
 
         $der = new Sequence(
-            new Sequence(
-                new ObjectIdentifier('1.2.840.113549.1.1.1'),
-                new NullObject()
-            ),
+            new Sequence(new ObjectIdentifier('1.2.840.113549.1.1.1'), new NullObject()),
             new BitString(bin2hex($bitSring->getBinary()))
         );
 
@@ -191,15 +190,20 @@ class RsaKey extends Key
 
     private function fromBase64ToInteger(string $value): string
     {
-        $hex = current(unpack('H*', $value));
+        $data = unpack('H*', $value);
+        if ($data === false) {
+            throw new InvalidArgumentException('Unable to convert to an integer');
+        }
+
+        $hex = current($data);
 
         return BigInteger::fromBase($hex, 16)->toBase(10);
     }
 
     private function pem(string $type, string $der): string
     {
-        return sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)).
-            chunk_split(base64_encode($der), 64, "\n").
+        return sprintf("-----BEGIN %s-----\n", mb_strtoupper($type)) .
+            chunk_split(base64_encode($der), 64, "\n") .
             sprintf("-----END %s-----\n", mb_strtoupper($type));
     }
 }

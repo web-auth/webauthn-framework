@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\Tests\Bundle\Functional;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,8 +10,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 final class AdminController
 {
-    public function __construct(private TokenStorageInterface $tokenStorage)
-    {
+    public function __construct(
+        private TokenStorageInterface $tokenStorage
+    ) {
     }
 
     public function admin(): Response
@@ -19,8 +20,6 @@ final class AdminController
         $token = $this->tokenStorage->getToken();
         $user = $token->getUser();
 
-        return new JsonResponse([
-            'Hello '.$user->getUserIdentifier(),
-        ]);
+        return new JsonResponse(['Hello ' . $user->getUsername()]);
     }
 }

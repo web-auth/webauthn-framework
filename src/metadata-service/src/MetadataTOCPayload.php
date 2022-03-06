@@ -6,9 +6,7 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
-use function Safe\sprintf;
 
 class MetadataTOCPayload implements JsonSerializable
 {
@@ -20,11 +18,13 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @var string[]
      */
-    private ?array $rootCertificates = null;
+    private array $rootCertificates;
 
-    #[Pure]
-    public function __construct(private int $no, private string $nextUpdate, private ?string $legalHeader = null)
-    {
+    public function __construct(
+        private int $no,
+        private string $nextUpdate,
+        private ?string $legalHeader = null
+    ) {
     }
 
     public function addEntry(MetadataTOCPayloadEntry $entry): self
@@ -34,19 +34,16 @@ class MetadataTOCPayload implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
-    #[Pure]
     public function getNo(): int
     {
         return $this->no;
     }
 
-    #[Pure]
     public function getNextUpdate(): string
     {
         return $this->nextUpdate;
@@ -55,7 +52,6 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @return MetadataTOCPayloadEntry[]
      */
-    #[Pure]
     public function getEntries(): array
     {
         return $this->entries;
@@ -65,19 +61,28 @@ class MetadataTOCPayload implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
-            Assertion::keyExists($data, $key, Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key)));
+            Assertion::keyExists(
+                $data,
+                $key,
+                Utils::logicException(sprintf('Invalid data. The parameter "%s" is missing', $key))
+            );
         }
         Assertion::integer($data['no'], Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
-        Assertion::string($data['nextUpdate'], Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
-        Assertion::isArray($data['entries'], Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
-        if (array_key_exists('legalHeader', $data)) {
-            Assertion::string($data['legalHeader'], Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
-        }
-        $object = new self(
-            $data['no'],
+        Assertion::string(
             $data['nextUpdate'],
-            $data['legalHeader'] ?? null
+            Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string')
         );
+        Assertion::isArray(
+            $data['entries'],
+            Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries')
+        );
+        if (array_key_exists('legalHeader', $data)) {
+            Assertion::string(
+                $data['legalHeader'],
+                Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string')
+            );
+        }
+        $object = new self($data['no'], $data['nextUpdate'], $data['legalHeader'] ?? null);
         foreach ($data['entries'] as $entry) {
             $object->addEntry(MetadataTOCPayloadEntry::createFromArray($entry));
         }
@@ -86,7 +91,6 @@ class MetadataTOCPayload implements JsonSerializable
         return $object;
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         $data = [
@@ -105,7 +109,6 @@ class MetadataTOCPayload implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
     public function getRootCertificates(): array
     {
         return $this->rootCertificates;

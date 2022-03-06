@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Ramsey\Uuid\Uuid;
+use const JSON_THROW_ON_ERROR;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -16,12 +17,9 @@ use Webauthn\Server;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
- * @group functional
- * @group Server
- *
  * @internal
  */
-class ServerTest extends AbstractTestCase
+final class ServerTest extends AbstractTestCase
 {
     /**
      * @test
@@ -32,27 +30,43 @@ class ServerTest extends AbstractTestCase
 
         $userEntity = new PublicKeyCredentialUserEntity('john-doe', 'foo', 'John Doe', 'data://png:john-doe.avatar');
         $conveyanceMode = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
-        $criteria = AuthenticatorSelectionCriteria::create()
-            ->setAuthenticatorAttachment(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM)
-            ->setUserVerification(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED)
-            ->setRequireResidentKey(true)
-            ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
-        ;
+        $criteria = new AuthenticatorSelectionCriteria(
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            true,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
+        );
         $excluded = [
-            PublicKeyCredentialDescriptor::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            ]),
+            new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                Uuid::v4()->__toString(),
+                [
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+                ]
+            ),
         ];
-        $extensions = AuthenticationExtensionsClientInputs::create();
+        $extensions = new AuthenticationExtensionsClientInputs();
 
-        $options = $server->generatePublicKeyCredentialCreationOptions($userEntity, $conveyanceMode, $excluded, $criteria, $extensions);
+        $options = $server->generatePublicKeyCredentialCreationOptions(
+            $userEntity,
+            $conveyanceMode,
+            $excluded,
+            $criteria,
+            $extensions
+        );
 
-        static::assertEquals('{"name":"john-doe","icon":"data:\/\/png:john-doe.avatar","id":"Zm9v","displayName":"John Doe"}', json_encode($options->getUser()));
-        static::assertEquals('{"name":"rp","icon":"data:\/\/png:nice-picture","id":"foo.example"}', json_encode($options->getRp()));
-        static::assertEquals('direct', $options->getAttestation());
+        static::assertSame(
+            '{"name":"john-doe","icon":"data:\/\/png:john-doe.avatar","id":"Zm9v","displayName":"John Doe"}',
+            json_encode($options->getUser(), JSON_THROW_ON_ERROR)
+        );
+        static::assertSame(
+            '{"name":"rp","icon":"data:\/\/png:nice-picture","id":"foo.example"}',
+            json_encode($options->getRp(), JSON_THROW_ON_ERROR)
+        );
+        static::assertSame('direct', $options->getAttestation());
         static::assertCount(1, $options->getExcludeCredentials());
     }
 
@@ -64,14 +78,18 @@ class ServerTest extends AbstractTestCase
         $server = $this->getServer();
 
         $allowed = [
-            PublicKeyCredentialDescriptor::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, Uuid::uuid4()->toString(), [
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            ]),
+            new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                Uuid::v4()->__toString(),
+                [
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+                    PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+                ]
+            ),
         ];
-        $extensions = AuthenticationExtensionsClientInputs::create();
+        $extensions = new AuthenticationExtensionsClientInputs();
 
         $options = $server->generatePublicKeyCredentialRequestOptions(
             PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
@@ -79,28 +97,37 @@ class ServerTest extends AbstractTestCase
             $extensions
         );
 
-        static::assertEquals('foo.example', $options->getRpId());
-        static::assertEquals(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED, $options->getUserVerification());
+        static::assertSame('foo.example', $options->getRpId());
+        static::assertSame(
+            PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+            $options->getUserVerification()
+        );
         static::assertCount(1, $options->getAllowCredentials());
-        static::assertNull($options->getTimeout());
+        static::assertSame(60000, $options->getTimeout());
     }
 
     private function getServer(): Server
     {
-        $rpEntity = PublicKeyCredentialRpEntity::create('rp', 'foo.example', 'data://png:nice-picture');
+        $rpEntity = new PublicKeyCredentialRpEntity('rp', 'foo.example', 'data://png:nice-picture');
         $pkRepository = $this->getPublicKeyCredentialRepository();
 
-        return Server::create($rpEntity, $pkRepository);
+        return new Server($rpEntity, $pkRepository);
     }
 
     private function getPublicKeyCredentialRepository(): MemoryPublicKeyCredentialSourceRepository
     {
         $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
-            base64_decode('eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==', true),
+            base64_decode(
+                'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
+                true
+            ),
             'foo',
             100,
             Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-            base64_decode('pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=', true)
+            base64_decode(
+                'pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=',
+                true
+            )
         );
         $repository = new MemoryPublicKeyCredentialSourceRepository();
         $repository->saveCredentialSource($publicKeyCredentialSource);

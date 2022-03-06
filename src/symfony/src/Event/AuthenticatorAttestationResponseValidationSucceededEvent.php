@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Event;
 
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -13,30 +12,29 @@ use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
 {
-    #[Pure]
-    public function __construct(private AuthenticatorAttestationResponse $authenticatorAttestationResponse, private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, private ServerRequestInterface $request, private PublicKeyCredentialSource $publicKeyCredentialSource)
-    {
+    public function __construct(
+        private AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        private ServerRequestInterface $request,
+        private PublicKeyCredentialSource $publicKeyCredentialSource
+    ) {
     }
 
-    #[Pure]
     public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse
     {
         return $this->authenticatorAttestationResponse;
     }
 
-    #[Pure]
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;
     }
 
-    #[Pure]
     public function getRequest(): ServerRequestInterface
     {
         return $this->request;
     }
 
-    #[Pure]
     public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
     {
         return $this->publicKeyCredentialSource;

@@ -10,5 +10,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 interface RequestOptionsHandler
 {
-    public function onRequestOptions(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity): Response;
+    public function onRequestOptions(
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ?PublicKeyCredentialUserEntity $userEntity
+    ): Response;
 }

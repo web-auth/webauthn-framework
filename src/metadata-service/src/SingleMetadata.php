@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use JetBrains\PhpStorm\Pure;
-use function Safe\base64_decode;
-use function Safe\json_decode;
+use Assert\Assertion;
+use const JSON_THROW_ON_ERROR;
 
 class SingleMetadata
 {
     private ?MetadataStatement $statement = null;
 
-    #[Pure]
-    public function __construct(private string $data, private bool $isBase64Encoded)
-    {
+    public function __construct(
+        protected string $data,
+        protected bool $isBase64Encoded
+    ) {
     }
 
     public function getMetadataStatement(): MetadataStatement
     {
-        if (null === $this->statement) {
+        if ($this->statement === null) {
             $json = $this->data;
             if ($this->isBase64Encoded) {
                 $json = base64_decode($this->data, true);
+                Assertion::string($json, 'Invalid data');
             }
-            $statement = json_decode($json, true);
+            $statement = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             $this->statement = MetadataStatement::createFromArray($statement);
         }
 

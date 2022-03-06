@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection;
 
 use Cose\Algorithms;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -14,15 +15,15 @@ use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
-use Webauthn\ConformanceToolset\Controller\AttestationRequestController;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
-    public function __construct(private string $alias)
-    {
+    public function __construct(
+        private string $alias
+    ) {
     }
 
     /**
@@ -31,15 +32,18 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
-        $treeBuilder->getRootNode()
+        /** @var ArrayNodeDefinition $rootNode */
+        $rootNode = $treeBuilder->getRootNode();
+
+        $rootNode
             ->addDefaultsIfNotSet()
             ->beforeNormalization()
             ->ifArray()
             ->then(static function ($v): array {
-                if (!isset($v['creation_profiles'])) {
+                if (! isset($v['creation_profiles'])) {
                     $v['creation_profiles'] = null;
                 }
-                if (!isset($v['request_profiles'])) {
+                if (! isset($v['request_profiles'])) {
                     $v['request_profiles'] = null;
                 }
 
@@ -76,16 +80,22 @@ final class Configuration implements ConfigurationInterface
             ->children()
             ->scalarNode('http_client')
             ->defaultNull()
-            ->info('PSR18 Client. If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.')
+            ->info(
+                'PSR18 Client. If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.'
+            )
             ->end()
             ->scalarNode('request_factory')
             ->defaultNull()
-            ->info('PSR17 Request Factory. If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.')
+            ->info(
+                'PSR17 Request Factory. If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.'
+            )
             ->end()
             ->integerNode('leeway')
             ->defaultValue(0)
             ->min(0)
-            ->info('Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.')
+            ->info(
+                'Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.'
+            )
             ->end()
             ->integerNode('max_age')
             ->min(0)
@@ -94,7 +104,9 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('api_key')
             ->defaultNull()
-            ->info('If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.')
+            ->info(
+                'If set, the application will verify the statements using Google API. See https://console.developers.google.com/apis/library to get it.'
+            )
             ->end()
             ->end()
             ->end()
@@ -123,6 +135,9 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('controllers')
             ->canBeEnabled()
             ->children()
+            ->scalarNode('http_message_factory')
+            ->defaultValue('webauthn.http.factory')
+            ->end()
             ->arrayNode('creation')
             ->treatFalseLike([])
             ->treatNullLike([])
@@ -131,24 +146,95 @@ final class Configuration implements ConfigurationInterface
             ->arrayPrototype()
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('options_path')->isRequired()->end()
-            ->scalarNode('result_path')->isRequired()->end()
-            ->scalarNode('host')->defaultValue(null)->end()
-            ->scalarNode('profile')->defaultValue('default')->end()
-            ->scalarNode('user_entity_guesser')->isRequired()->end()
-            ->scalarNode('options_storage')->defaultValue(SessionStorage::class)->end()
-            ->scalarNode('success_handler')->defaultValue(DefaultSuccessHandler::class)->end()
-            ->scalarNode('failure_handler')->defaultValue(DefaultFailureHandler::class)->end()
-            ->scalarNode('options_handler')->defaultValue(DefaultCreationOptionsHandler::class)->end()
+            ->scalarNode('options_path')
+            ->isRequired()
+            ->end()
+            ->scalarNode('result_path')
+            ->isRequired()
+            ->end()
+            ->scalarNode('host')
+            ->defaultValue(null)
+            ->end()
+            ->scalarNode('profile')
+            ->defaultValue('default')
+            ->end()
+            ->scalarNode('user_entity_guesser')
+            ->isRequired()
+            ->end()
+            ->scalarNode('options_storage')
+            ->defaultValue(SessionStorage::class)
+            ->end()
+            ->scalarNode('success_handler')
+            ->defaultValue(DefaultSuccessHandler::class)
+            ->end()
+            ->scalarNode('failure_handler')
+            ->defaultValue(DefaultFailureHandler::class)
+            ->end()
+            ->scalarNode('options_handler')
+            ->defaultValue(DefaultCreationOptionsHandler::class)
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('request')
+            ->treatFalseLike([])
+            ->treatNullLike([])
+            ->treatTrueLike([])
+            ->useAttributeAsKey('name')
+            ->arrayPrototype()
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('options_path')
+            ->isRequired()
+            ->end()
+            ->scalarNode('result_path')
+            ->isRequired()
+            ->end()
+            ->scalarNode('host')
+            ->defaultValue(null)
+            ->end()
+            ->scalarNode('profile')
+            ->defaultValue('default')
+            ->end()
+            ->scalarNode('options_storage')
+            ->defaultValue(SessionStorage::class)
+            ->end()
+            ->scalarNode('success_handler')
+            ->defaultValue(DefaultSuccessHandler::class)
+            ->end()
+            ->scalarNode('failure_handler')
+            ->defaultValue(DefaultFailureHandler::class)
+            ->end()
+            ->scalarNode('options_handler')
+            ->defaultValue(DefaultCreationOptionsHandler::class)
+            ->end()
             ->end()
             ->end()
             ->end()
             ->end()
             ->end()
             ->arrayNode('creation_profiles')
-            ->treatFalseLike(['default' => ['rp' => ['name' => 'Secured Application']]])
-            ->treatNullLike(['default' => ['rp' => ['name' => 'Secured Application']]])
-            ->treatTrueLike(['default' => ['rp' => ['name' => 'Secured Application']]])
+            ->treatFalseLike([
+                'default' => [
+                    'rp' => [
+                        'name' => 'Secured Application',
+                    ],
+                ],
+            ])
+            ->treatNullLike([
+                'default' => [
+                    'rp' => [
+                        'name' => 'Secured Application',
+                    ],
+                ],
+            ])
+            ->treatTrueLike([
+                'default' => [
+                    'rp' => [
+                        'name' => 'Secured Application',
+                    ],
+                ],
+            ])
             ->useAttributeAsKey('name')
             ->arrayPrototype()
             ->addDefaultsIfNotSet()
@@ -156,9 +242,15 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('rp')
             ->isRequired()
             ->children()
-            ->scalarNode('id')->defaultNull()->end()
-            ->scalarNode('name')->isRequired()->end()
-            ->scalarNode('icon')->defaultNull()->end()
+            ->scalarNode('id')
+            ->defaultNull()
+            ->end()
+            ->scalarNode('name')
+            ->isRequired()
+            ->end()
+            ->scalarNode('icon')
+            ->defaultNull()
+            ->end()
             ->end()
             ->end()
             ->integerNode('challenge_length')
@@ -183,7 +275,9 @@ final class Configuration implements ConfigurationInterface
             ->thenInvalid('Invalid value "%s"')
             ->end()
             ->end()
-            ->booleanNode('require_resident_key')->defaultFalse()->end()
+            ->booleanNode('require_resident_key')
+            ->defaultFalse()
+            ->end()
             ->scalarNode('user_verification')
             ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
             ->validate()
@@ -214,10 +308,12 @@ final class Configuration implements ConfigurationInterface
             ->treatTrueLike([])
             ->treatNullLike([])
             ->useAttributeAsKey('name')
-            ->scalarPrototype()->end()
+            ->scalarPrototype()
+            ->end()
             ->end()
             ->arrayNode('public_key_credential_parameters')
-            ->integerPrototype()->end()
+            ->integerPrototype()
+            ->end()
             ->requiresAtLeastOneElement()
             ->treatNullLike([])
             ->treatFalseLike([])
@@ -243,14 +339,22 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->arrayNode('request_profiles')
-            ->treatFalseLike(['default' => []])
-            ->treatTrueLike(['default' => []])
-            ->treatNullLike(['default' => []])
+            ->treatFalseLike([
+                'default' => [],
+            ])
+            ->treatTrueLike([
+                'default' => [],
+            ])
+            ->treatNullLike([
+                'default' => [],
+            ])
             ->useAttributeAsKey('name')
             ->arrayPrototype()
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('rp_id')->defaultNull()->end()
+            ->scalarNode('rp_id')
+            ->defaultNull()
+            ->end()
             ->integerNode('challenge_length')
             ->min(16)
             ->defaultValue(32)
@@ -259,92 +363,21 @@ final class Configuration implements ConfigurationInterface
             ->min(0)
             ->defaultValue(60000)
             ->end()
-            ->scalarNode('user_verification')->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)->end()
+            ->scalarNode('user_verification')
+            ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)->end()
             ->arrayNode('extensions')
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
             ->useAttributeAsKey('name')
-            ->scalarPrototype()->end()
+            ->scalarPrototype()
+            ->end()
             ->end()
             ->end()
             ->end()
             ->end()
             ->end()
         ;
-
-        if (class_exists(AttestationRequestController::class)) {
-            $rootNode->children()
-                ->arrayNode('transport_binding_profile')
-                ->treatFalseLike([])
-                ->treatNullLike([])
-                ->addDefaultsIfNotSet()
-                ->children()
-                ->arrayNode('creation')
-                ->treatFalseLike([])
-                ->treatNullLike([])
-                ->useAttributeAsKey('name')
-                ->arrayPrototype()
-                ->addDefaultsIfNotSet()
-                ->children()
-                ->scalarNode('profile_name')
-                ->info('The name of the profile. Should be one of the creation profiles registered at path "webauthn.creation_profiles"')
-                ->isRequired()
-                ->end()
-                ->scalarNode('request_path')
-                ->info('The path of the creation request')
-                ->isRequired()
-                ->end()
-                ->scalarNode('response_path')
-                ->info('The path of the creation response')
-                ->isRequired()
-                ->end()
-                ->scalarNode('session_parameter_name')
-                ->info('The session name parameter')
-                ->isRequired()
-                ->end()
-                ->scalarNode('host')
-                ->info('The hostname')
-                ->defaultNull()
-                ->end()
-                ->end()
-                ->end()
-                ->end()
-                ->arrayNode('request')
-                ->treatFalseLike([])
-                ->treatNullLike([])
-                ->useAttributeAsKey('name')
-                ->arrayPrototype()
-                ->addDefaultsIfNotSet()
-                ->children()
-                ->scalarNode('profile_name')
-                ->info('The name of the profile. Should be one of the creation profiles registered at path "webauthn.creation_profiles"')
-                ->isRequired()
-                ->end()
-                ->scalarNode('request_path')
-                ->info('The path of the creation request')
-                ->isRequired()
-                ->end()
-                ->scalarNode('response_path')
-                ->info('The path of the creation response')
-                ->isRequired()
-                ->end()
-                ->scalarNode('session_parameter_name')
-                ->info('The session name parameter')
-                ->isRequired()
-                ->end()
-                ->scalarNode('host')
-                ->info('The hostname')
-                ->defaultNull()
-                ->end()
-                ->end()
-                ->end()
-                ->end()
-                ->end()
-                ->end()
-                ->end()
-            ;
-        }
 
         return $treeBuilder;
     }

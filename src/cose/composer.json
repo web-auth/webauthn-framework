@@ -21,8 +21,7 @@
         "ext-openssl": "*",
         "ext-mbstring": "*",
         "beberlei/assert": "^3.2",
-        "fgrosse/phpasn1": "^2.1",
-        "thecodingmachine/safe": "^1.1"
+        "fgrosse/phpasn1": "^2.1"
     },
     "autoload": {
         "psr-4": {

@@ -18,7 +18,7 @@ final class AttestationStatementSupportCompilerPass implements CompilerPassInter
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(AttestationStatementSupportManager::class)) {
+        if (! $container->hasDefinition(AttestationStatementSupportManager::class)) {
             return;
         }
 

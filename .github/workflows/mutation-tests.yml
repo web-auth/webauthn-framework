@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: json, mbstring, openssl, gmp, curl, simplexml, intl
+          extensions: json, mbstring, openssl, sqlite3, curl, uuid
           coverage: xdebug
 
       - name: Install Composer dependencies
@@ -32,4 +32,4 @@ jobs:
         run: git fetch --depth=1 origin $GITHUB_BASE_REF
 
       - name: Infection
-        run: ./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0
+        run: make ci-mu

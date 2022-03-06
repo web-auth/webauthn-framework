@@ -6,14 +6,14 @@ namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
 use Assert\Assertion;
-use Base64Url\Base64Url;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class TokenBinding
 {
     public const TOKEN_BINDING_STATUS_PRESENT = 'present';
+
     public const TOKEN_BINDING_STATUS_SUPPORTED = 'supported';
+
     public const TOKEN_BINDING_STATUS_NOT_SUPPORTED = 'not-supported';
 
     private string $status;
@@ -22,11 +22,17 @@ class TokenBinding
 
     public function __construct(string $status, ?string $id)
     {
-        Assertion::false(self::TOKEN_BINDING_STATUS_PRESENT === $status && null === $id, 'The member "id" is required when status is "present"');
+        Assertion::false(
+            $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null,
+            'The member "id" is required when status is "present"'
+        );
         $this->status = $status;
         $this->id = $id;
     }
 
+    /**
+     * @param mixed[] $json
+     */
     public static function createFormArray(array $json): self
     {
         Assertion::keyExists($json, 'status', 'The member "status" is required');
@@ -34,20 +40,21 @@ class TokenBinding
         Assertion::inArray(
             $status,
             self::getSupportedStatus(),
-            sprintf('The member "status" is invalid. Supported values are: %s', implode(', ', self::getSupportedStatus()))
+            sprintf(
+                'The member "status" is invalid. Supported values are: %s',
+                implode(', ', self::getSupportedStatus())
+            )
         );
-        $id = array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
+        $id = array_key_exists('id', $json) ? Base64UrlSafe::decode($json['id']) : null;
 
         return new self($status, $id);
     }
 
-    #[Pure]
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    #[Pure]
     public function getId(): ?string
     {
         return $this->id;
@@ -56,7 +63,6 @@ class TokenBinding
     /**
      * @return string[]
      */
-    #[Pure]
     private static function getSupportedStatus(): array
     {
         return [

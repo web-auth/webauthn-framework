@@ -14,12 +14,6 @@
             "homepage": "https://github.com/web-auth/webauthn-framework/contributors"
         }
     ],
-    "scripts": {
-        "test:unit": "./vendor/bin/phpunit --color",
-        "test:typing": "./vendor/bin/phpstan analyse",
-        "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
-        "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=0 --min-covered-msi=0"
-    },
     "autoload": {
         "psr-4": {
             "Cose\\": "src/cose/src/",
@@ -37,8 +31,8 @@
                 "tests/library/"
             ],
             "Webauthn\\Tests\\Functional\\": "tests/library/",
-            "Webauthn\\Bundle\\Tests\\Functional\\": "tests/symfony/functional/",
-            "Webauthn\\Tests\\MetadataService\\Unit\\": "tests/MDS/unit/"
+            "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
+            "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }
     },
     "require": {
@@ -49,21 +43,20 @@
         "beberlei/assert": "^3.2",
         "fgrosse/phpasn1": "^2.1",
         "league/uri": "^6.0",
+        "paragonie/constant_time_encoding": "^2.4",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0",
-        "psr/log": "^1.1",
-        "ramsey/uuid": "^3.8|^4.0",
-        "spomky-labs/base64url": "^2.0",
-        "spomky-labs/cbor-bundle": "^2.0",
-        "spomky-labs/cbor-php": "^1.1|^2.0",
-        "symfony/config": "^5.3",
-        "symfony/dependency-injection": "^5.3",
-        "symfony/framework-bundle": "^5.3",
-        "symfony/process": "^5.3",
+        "psr/log": "^2.0|^3.0",
+        "spomky-labs/cbor-bundle": "^3.0",
+        "spomky-labs/cbor-php": "^3.0",
+        "symfony/config": "^6.0",
+        "symfony/dependency-injection": "^6.0",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/process": "^6.0",
         "symfony/psr-http-message-bridge": "^2.0",
-        "thecodingmachine/safe": "^1.1",
-        "web-token/jwt-signature": "^2.0.9"
+        "symfony/uid": "^6.0",
+        "web-token/jwt-signature": "^3.0"
     },
     "replace": {
         "web-auth/cose-lib": "self.version",
@@ -73,7 +66,11 @@
         "web-auth/webauthn-symfony-bundle": "self.version"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
+        }
     },
     "suggest": {
         "psr/log-implementation": "Recommended to receive logs from the library",
@@ -85,39 +82,40 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.7",
-        "doctrine/dbal": "^2.9|^3.0",
+        "doctrine/dbal": "^3.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "infection/infection": "^0.24",
-        "jetbrains/phpstorm-attributes": "^1.0",
+        "ekino/phpstan-banned-code": "^1.0",
+        "infection/infection": "^0.26",
         "monolog/monolog": "^2.0",
         "nyholm/psr7": "^1.1",
         "php-http/curl-client": "^2.0",
         "php-http/mock-client": "^1.3",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-beberlei-assert": "^0.12",
-        "phpstan/phpstan-deprecation-rules": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
-        "phpstan/phpstan-strict-rules": "^0.12",
-        "phpunit/phpunit": "^8.0||^9.0",
-        "rector/rector": "^0.11.52",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-beberlei-assert": "^1.0",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
+        "phpunit/phpunit": "^9.0",
+        "qossmic/deptrac-shim": "^0.18.0",
+        "rector/rector": "^0.12",
         "roave/security-advisories": "dev-latest",
-        "sensio/framework-extra-bundle": "^6.0",
-        "symfony/browser-kit": "^5.3",
-        "symfony/http-client": "^5.3",
+        "symfony/browser-kit": "^6.0",
+        "symfony/finder": "^6.0",
+        "symfony/http-client": "^6.0",
         "symfony/monolog-bundle": "^3.5",
-        "symfony/phpunit-bridge": "^5.3",
-        "symfony/security-bundle": "^5.3",
-        "symfony/serializer": "^5.3",
-        "symfony/translation": "^5.3",
-        "symfony/validator": "^5.3",
-        "symfony/var-dumper": "^5.3",
-        "symfony/yaml": "^5.3",
-        "thecodingmachine/phpstan-safe-rule": "^1.0",
-        "web-token/jwt-key-mgmt": "^2.0.9",
-        "web-token/jwt-signature-algorithm-ecdsa": "^2.0.9",
-        "web-token/jwt-signature-algorithm-eddsa": "^2.0.9",
-        "web-token/jwt-signature-algorithm-rsa": "^2.0.9"
+        "symfony/phpunit-bridge": "^5.1",
+        "symfony/security-bundle": "^6.0",
+        "symfony/serializer": "^6.0",
+        "symfony/translation": "^6.0",
+        "symfony/validator": "^6.0",
+        "symfony/var-dumper": "^6.0",
+        "symfony/yaml": "^6.0",
+        "symplify/easy-coding-standard": "^10.0",
+        "web-token/jwt-key-mgmt": "^3.0",
+        "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
+        "web-token/jwt-signature-algorithm-eddsa": "^3.0",
+        "web-token/jwt-signature-algorithm-rsa": "^3.0"
     }
 }

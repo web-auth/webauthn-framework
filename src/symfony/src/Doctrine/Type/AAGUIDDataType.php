@@ -6,55 +6,46 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use JetBrains\PhpStorm\Pure;
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
-use function Safe\base64_decode;
+use Symfony\Component\Uid\AbstractUid;
+use Symfony\Component\Uid\Uuid;
 
 final class AAGUIDDataType extends Type
 {
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if (! $value instanceof AbstractUid) {
             return $value;
         }
 
-        return $value->toString();
+        return $value->__toString();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?AbstractUid
     {
-        if (null === $value || $value instanceof UuidInterface) {
+        if ($value instanceof AbstractUid || mb_strlen($value, '8bit') !== 36) {
             return $value;
         }
-        switch (true) {
-            case 36 === mb_strlen($value, '8bit'):
-                return Uuid::fromString($value);
-            default: // Kept for compatibility with old format
-                $decoded = base64_decode($value, true);
 
-                return Uuid::fromBytes($decoded);
-        }
+        return Uuid::fromString($value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public function getName(): string
     {
         return 'aaguid';
@@ -63,7 +54,6 @@ final class AAGUIDDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

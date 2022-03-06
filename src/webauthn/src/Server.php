@@ -43,13 +43,13 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 class Server
 {
-    public ?int $timeout = null;
+    public int $timeout = 60000;
 
     public int $challengeSize = 32;
 
     private ManagerFactory $coseAlgorithmManagerFactory;
 
-    private TokenBindingHandler $tokenBindingHandler;
+    private TokenBindingHandler|IgnoreTokenBindingHandler $tokenBindingHandler;
 
     private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
 
@@ -68,15 +68,17 @@ class Server
 
     private ?CounterChecker $counterChecker = null;
 
-    private LoggerInterface $logger;
+    private LoggerInterface|NullLogger $logger;
 
     /**
      * @var string[]
      */
     private array $securedRelyingPartyId = [];
 
-    public function __construct(private PublicKeyCredentialRpEntity $rpEntity, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
-    {
+    public function __construct(
+        private PublicKeyCredentialRpEntity $rpEntity,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+    ) {
         $this->logger = new NullLogger();
 
         $this->coseAlgorithmManagerFactory = new ManagerFactory();
@@ -94,13 +96,8 @@ class Server
         $this->coseAlgorithmManagerFactory->add('Ed25519', new Ed25519());
 
         $this->selectedAlgorithms = ['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512', 'Ed25519'];
-        $this->tokenBindingHandler = IgnoreTokenBindingHandler::create();
-        $this->extensionOutputCheckerHandler = ExtensionOutputCheckerHandler::create();
-    }
-
-    public static function create(PublicKeyCredentialRpEntity $rpEntity, PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository): self
-    {
-        return new self($rpEntity, $publicKeyCredentialSourceRepository);
+        $this->tokenBindingHandler = new IgnoreTokenBindingHandler();
+        $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
     }
 
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
@@ -157,30 +154,32 @@ class Server
     /**
      * @param PublicKeyCredentialDescriptor[] $excludedPublicKeyDescriptors
      */
-    public function generatePublicKeyCredentialCreationOptions(PublicKeyCredentialUserEntity $userEntity, ?string $attestationMode = null, array $excludedPublicKeyDescriptors = [], ?AuthenticatorSelectionCriteria $criteria = null, ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialCreationOptions
-    {
+    public function generatePublicKeyCredentialCreationOptions(
+        PublicKeyCredentialUserEntity $userEntity,
+        ?string $attestationMode = null,
+        array $excludedPublicKeyDescriptors = [],
+        ?AuthenticatorSelectionCriteria $criteria = null,
+        ?AuthenticationExtensionsClientInputs $extensions = null
+    ): PublicKeyCredentialCreationOptions {
         $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
         $publicKeyCredentialParametersList = [];
         foreach ($coseAlgorithmManager->all() as $algorithm) {
-            $publicKeyCredentialParametersList[] = PublicKeyCredentialParameters::create(
+            $publicKeyCredentialParametersList[] = new PublicKeyCredentialParameters(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 $algorithm::identifier()
             );
         }
-        $criteria = $criteria ?? AuthenticatorSelectionCriteria::create();
-        $extensions = $extensions ?? AuthenticationExtensionsClientInputs::create();
+        $criteria = $criteria ?? new AuthenticatorSelectionCriteria();
+        $extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
         $challenge = random_bytes($this->challengeSize);
 
         return PublicKeyCredentialCreationOptions
-            ::create(
-                $this->rpEntity,
-                $userEntity,
-                $challenge,
-                $publicKeyCredentialParametersList
-            )
+            ::create($this->rpEntity, $userEntity, $challenge, $publicKeyCredentialParametersList)
                 ->excludeCredentials($excludedPublicKeyDescriptors)
                 ->setAuthenticatorSelection($criteria)
-                ->setAttestation($attestationMode ?? PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+                ->setAttestation(
+                    $attestationMode ?? PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
+                )
                 ->setExtensions($extensions)
                 ->setTimeout($this->timeout)
         ;
@@ -189,20 +188,28 @@ class Server
     /**
      * @param PublicKeyCredentialDescriptor[] $allowedPublicKeyDescriptors
      */
-    public function generatePublicKeyCredentialRequestOptions(?string $userVerification = null, array $allowedPublicKeyDescriptors = [], ?AuthenticationExtensionsClientInputs $extensions = null): PublicKeyCredentialRequestOptions
-    {
+    public function generatePublicKeyCredentialRequestOptions(
+        ?string $userVerification = null,
+        array $allowedPublicKeyDescriptors = [],
+        ?AuthenticationExtensionsClientInputs $extensions = null
+    ): PublicKeyCredentialRequestOptions {
         return PublicKeyCredentialRequestOptions
             ::create(random_bytes($this->challengeSize))
                 ->setRpId($this->rpEntity->getId())
-                ->setUserVerification($userVerification ?? PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+                ->setUserVerification(
+                    $userVerification ?? PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED
+                )
                 ->allowCredentials($allowedPublicKeyDescriptors)
                 ->setTimeout($this->timeout)
-                ->setExtensions($extensions ?? AuthenticationExtensionsClientInputs::create())
+                ->setExtensions($extensions ?? new AuthenticationExtensionsClientInputs())
         ;
     }
 
-    public function loadAndCheckAttestationResponse(string $data, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
-    {
+    public function loadAndCheckAttestationResponse(
+        string $data,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $serverRequest
+    ): PublicKeyCredentialSource {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
             ->setLogger($this->logger)
@@ -213,23 +220,39 @@ class Server
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
-        Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAttestationResponse::class, 'Not an authenticator attestation response');
+        Assertion::isInstanceOf(
+            $authenticatorResponse,
+            AuthenticatorAttestationResponse::class,
+            'Not an authenticator attestation response'
+        );
 
-        $authenticatorAttestationResponseValidator = AuthenticatorAttestationResponseValidator::create(
+        $authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
             $attestationStatementSupportManager,
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler
-        )
-            ->setMetadataStatementRepository($this->metadataStatementRepository)
-            ->setLogger($this->logger)
-        ;
+        );
+        if ($this->metadataStatementRepository !== null) {
+            $authenticatorAttestationResponseValidator->setMetadataStatementRepository(
+                $this->metadataStatementRepository
+            );
+        }
+        $authenticatorAttestationResponseValidator->setLogger($this->logger);
 
-        return $authenticatorAttestationResponseValidator->check($authenticatorResponse, $publicKeyCredentialCreationOptions, $serverRequest, $this->securedRelyingPartyId);
+        return $authenticatorAttestationResponseValidator->check(
+            $authenticatorResponse,
+            $publicKeyCredentialCreationOptions,
+            $serverRequest,
+            $this->securedRelyingPartyId
+        );
     }
 
-    public function loadAndCheckAssertionResponse(string $data, PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity, ServerRequestInterface $serverRequest): PublicKeyCredentialSource
-    {
+    public function loadAndCheckAssertionResponse(
+        string $data,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ?PublicKeyCredentialUserEntity $userEntity,
+        ServerRequestInterface $serverRequest
+    ): PublicKeyCredentialSource {
         $attestationStatementSupportManager = $this->getAttestationStatementSupportManager();
         $attestationObjectLoader = AttestationObjectLoader::create($attestationStatementSupportManager)
             ->setLogger($this->logger)
@@ -240,24 +263,30 @@ class Server
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
-        Assertion::isInstanceOf($authenticatorResponse, AuthenticatorAssertionResponse::class, 'Not an authenticator assertion response');
+        Assertion::isInstanceOf(
+            $authenticatorResponse,
+            AuthenticatorAssertionResponse::class,
+            'Not an authenticator assertion response'
+        );
 
-        $authenticatorAssertionResponseValidator = AuthenticatorAssertionResponseValidator::create(
+        $authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
             $this->publicKeyCredentialSourceRepository,
             $this->tokenBindingHandler,
             $this->extensionOutputCheckerHandler,
             $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms)
-        )
-            ->setCounterChecker($this->counterChecker)
-            ->setLogger($this->logger)
-        ;
+        );
+        if ($this->counterChecker !== null) {
+            $authenticatorAssertionResponseValidator->setCounterChecker($this->counterChecker);
+        }
+
+        $authenticatorAssertionResponseValidator->setLogger($this->logger);
 
         return $authenticatorAssertionResponseValidator->check(
             $publicKeyCredential->getRawId(),
             $authenticatorResponse,
             $publicKeyCredentialRequestOptions,
             $serverRequest,
-            null !== $userEntity ? $userEntity->getId() : null,
+            $userEntity !== null ? $userEntity->getId() : null,
             $this->securedRelyingPartyId
         );
     }
@@ -276,8 +305,11 @@ class Server
         return $this;
     }
 
-    public function enforceAndroidSafetyNetVerification(ClientInterface $client, string $apiKey, RequestFactoryInterface $requestFactory): self
-    {
+    public function enforceAndroidSafetyNetVerification(
+        ClientInterface $client,
+        string $apiKey,
+        RequestFactoryInterface $requestFactory
+    ): self {
         $this->httpClient = $client;
         $this->googleApiKey = $apiKey;
         $this->requestFactory = $requestFactory;
@@ -287,10 +319,12 @@ class Server
 
     private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
     {
-        $attestationStatementSupportManager = AttestationStatementSupportManager::create();
+        $attestationStatementSupportManager = new AttestationStatementSupportManager();
+        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         if (class_exists(RS256::class) && class_exists(JWKFactory::class)) {
-            $androidSafetyNetAttestationStatementSupport = AndroidSafetyNetAttestationStatementSupport::create();
-            if (null !== $this->httpClient && null !== $this->googleApiKey && null !== $this->requestFactory) {
+            $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
+            if ($this->httpClient !== null && $this->googleApiKey !== null && $this->requestFactory !== null) {
                 $androidSafetyNetAttestationStatementSupport
                     ->enableApiVerification($this->httpClient, $this->googleApiKey, $this->requestFactory)
                     ->setLeeway(2000)
@@ -299,14 +333,10 @@ class Server
             }
             $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         }
+        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
         $coseAlgorithmManager = $this->coseAlgorithmManagerFactory->create($this->selectedAlgorithms);
-        $attestationStatementSupportManager
-            ->add(NoneAttestationStatementSupport::create())
-            ->add(FidoU2FAttestationStatementSupport::create())
-            ->add(AndroidKeyAttestationStatementSupport::create())
-            ->add(TPMAttestationStatementSupport::create())
-            ->add(PackedAttestationStatementSupport::create($coseAlgorithmManager))
-        ;
+        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport($coseAlgorithmManager));
 
         return $attestationStatementSupportManager;
     }

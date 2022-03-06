@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Cose\Algorithm;
 
 use Assert\Assertion;
-use function Safe\sprintf;
 
 class ManagerFactory
 {
@@ -35,7 +34,11 @@ class ManagerFactory
     {
         $manager = Manager::create();
         foreach ($aliases as $alias) {
-            Assertion::keyExists($this->algorithms, $alias, sprintf('The algorithm with alias "%s" is not supported', $alias));
+            Assertion::keyExists(
+                $this->algorithms,
+                $alias,
+                sprintf('The algorithm with alias "%s" is not supported', $alias)
+            );
             $manager->add($this->algorithms[$alias]);
         }
 

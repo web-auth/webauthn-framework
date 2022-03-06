@@ -4,52 +4,40 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use JetBrains\PhpStorm\Pure;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    private ?MetadataStatement $metadataStatement;
+    private ?MetadataStatement $metadataStatement = null;
 
-    #[Pure]
-    public function __construct(private string $rawAttestationObject, private AttestationStatement $attStmt, private AuthenticatorData $authData)
-    {
-        $this->metadataStatement = null;
+    public function __construct(
+        private string $rawAttestationObject,
+        private AttestationStatement $attStmt,
+        private AuthenticatorData $authData
+    ) {
     }
 
-    #[Pure]
-    public static function create(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData): self
-    {
-        return new self($rawAttestationObject, $attStmt, $authData);
-    }
-
-    #[Pure]
     public function getRawAttestationObject(): string
     {
         return $this->rawAttestationObject;
     }
 
-    #[Pure]
     public function getAttStmt(): AttestationStatement
     {
         return $this->attStmt;
     }
 
-    public function setAttStmt(AttestationStatement $attStmt): self
+    public function setAttStmt(AttestationStatement $attStmt): void
     {
         $this->attStmt = $attStmt;
-
-        return $this;
     }
 
-    #[Pure]
     public function getAuthData(): AuthenticatorData
     {
         return $this->authData;
     }
 
-    #[Pure]
     public function getMetadataStatement(): ?MetadataStatement
     {
         return $this->metadataStatement;

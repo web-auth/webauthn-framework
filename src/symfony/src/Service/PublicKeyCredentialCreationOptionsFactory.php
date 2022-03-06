@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
-use function Safe\sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -20,16 +18,26 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class PublicKeyCredentialCreationOptionsFactory
 {
-    #[Pure]
-    public function __construct(private array $profiles, private EventDispatcherInterface $eventDispatcher)
-    {
+    /**
+     * @param mixed[] $profiles
+     */
+    public function __construct(
+        private array $profiles,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      */
-    public function create(string $key, PublicKeyCredentialUserEntity $userEntity, array $excludeCredentials = [], ?AuthenticatorSelectionCriteria $authenticatorSelection = null, ?string $attestationConveyance = null, ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null): PublicKeyCredentialCreationOptions
-    {
+    public function create(
+        string $key,
+        PublicKeyCredentialUserEntity $userEntity,
+        array $excludeCredentials = [],
+        ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
+        ?string $attestationConveyance = null,
+        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+    ): PublicKeyCredentialCreationOptions {
         Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
         $profile = $this->profiles[$key];
 
@@ -41,7 +49,9 @@ final class PublicKeyCredentialCreationOptionsFactory
                 $this->createCredentialParameters($profile)
             )
                 ->excludeCredentials($excludeCredentials)
-                ->setAuthenticatorSelection($authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile))
+                ->setAuthenticatorSelection(
+                    $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile)
+                )
                 ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
                 ->setTimeout($profile['timeout'])
@@ -51,9 +61,12 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $options;
     }
 
+    /**
+     * @param mixed[] $profile
+     */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = AuthenticationExtensionsClientInputs::create();
+        $extensions = new AuthenticationExtensionsClientInputs();
         foreach ($profile['extensions'] as $k => $v) {
             $extensions->add(AuthenticationExtension::create($k, $v));
         }
@@ -61,6 +74,9 @@ final class PublicKeyCredentialCreationOptionsFactory
         return $extensions;
     }
 
+    /**
+     * @param mixed[] $profile
+     */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
         return AuthenticatorSelectionCriteria::create()
@@ -71,13 +87,17 @@ final class PublicKeyCredentialCreationOptionsFactory
         ;
     }
 
-    #[Pure]
+    /**
+     * @param mixed[] $profile
+     */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
-        return PublicKeyCredentialRpEntity::create($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
+        return new PublicKeyCredentialRpEntity($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
     }
 
     /**
+     * @param mixed[] $profile
+     *
      * @return PublicKeyCredentialParameters[]
      */
     private function createCredentialParameters(array $profile): array

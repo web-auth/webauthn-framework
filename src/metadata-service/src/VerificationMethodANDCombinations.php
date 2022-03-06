@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class VerificationMethodANDCombinations implements JsonSerializable
@@ -25,7 +24,6 @@ class VerificationMethodANDCombinations implements JsonSerializable
     /**
      * @return VerificationMethodDescriptor[]
      */
-    #[Pure]
     public function getVerificationMethods(): array
     {
         return $this->verificationMethods;
@@ -37,13 +35,16 @@ class VerificationMethodANDCombinations implements JsonSerializable
 
         foreach ($data as $datum) {
             Assertion::isArray($datum, Utils::logicException('Invalid data'));
-            $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
+            try {
+                $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
+            } catch (\Throwable) {
+                continue;
+            }
         }
 
         return $object;
     }
 
-    #[Pure]
     public function jsonSerialize(): array
     {
         return array_map(static function (VerificationMethodDescriptor $object): array {

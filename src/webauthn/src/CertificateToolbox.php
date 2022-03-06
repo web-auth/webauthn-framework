@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function in_array;
-use JetBrains\PhpStorm\Pure;
+use const PHP_EOL;
 
 class CertificateToolbox
 {
-    #[Pure]
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
-        $pemCert = '-----BEGIN '.$type.'-----'.PHP_EOL;
+        $pemCert = '-----BEGIN ' . $type . '-----' . PHP_EOL;
         $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END '.$type.'-----'.PHP_EOL;
+        $pemCert .= '-----END ' . $type . '-----' . PHP_EOL;
 
         return $pemCert;
     }
 
-    #[Pure]
     public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
     {
         $derCertificate = self::unusedBytesFix($certificate);
@@ -32,7 +30,6 @@ class CertificateToolbox
      *
      * @return string[]
      */
-    #[Pure]
     public static function convertAllDERToPEM(array $certificates, string $type = 'CERTIFICATE'): array
     {
         $certs = [];
@@ -43,7 +40,6 @@ class CertificateToolbox
         return $certs;
     }
 
-    #[Pure]
     private static function unusedBytesFix(string $certificate): string
     {
         $certificateHash = hash('sha256', $certificate);
@@ -57,7 +53,6 @@ class CertificateToolbox
     /**
      * @return string[]
      */
-    #[Pure]
     private static function getCertificateHashes(): array
     {
         return [

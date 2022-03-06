@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
-use function Safe\sprintf;
 
 class RgbPaletteEntry implements JsonSerializable
 {
@@ -28,19 +25,16 @@ class RgbPaletteEntry implements JsonSerializable
         $this->b = $b;
     }
 
-    #[Pure]
     public function getR(): int
     {
         return $this->r;
     }
 
-    #[Pure]
     public function getG(): int
     {
         return $this->g;
     }
 
-    #[Pure]
     public function getB(): int
     {
         return $this->b;
@@ -53,15 +47,9 @@ class RgbPaletteEntry implements JsonSerializable
             Assertion::integer($data[$key], sprintf('The key "%s" is invalid', $key));
         }
 
-        return new self(
-            $data['r'],
-            $data['g'],
-            $data['b']
-        );
+        return new self($data['r'], $data['g'], $data['b']);
     }
 
-    #[Pure]
-    #[ArrayShape(['r' => 'int', 'g' => 'int', 'b' => 'int'])]
     public function jsonSerialize(): array
     {
         return [

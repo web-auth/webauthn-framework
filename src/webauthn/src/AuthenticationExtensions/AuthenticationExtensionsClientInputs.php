@@ -8,12 +8,11 @@ use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
 use function count;
+use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
-use function Safe\sprintf;
 
 class AuthenticationExtensionsClientInputs implements JsonSerializable, Countable, IteratorAggregate
 {
@@ -22,7 +21,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     private array $extensions = [];
 
-    #[Pure]
     public static function create(): self
     {
         return new self();
@@ -45,7 +43,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return $object;
     }
 
-    #[Pure]
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->extensions);
@@ -61,7 +58,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
     /**
      * @return AuthenticationExtension[]
      */
-    #[Pure]
     public function jsonSerialize(): array
     {
         return array_map(static function (AuthenticationExtension $object) {
@@ -77,7 +73,6 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return new ArrayIterator($this->extensions);
     }
 
-    #[Pure]
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->extensions, $mode);
