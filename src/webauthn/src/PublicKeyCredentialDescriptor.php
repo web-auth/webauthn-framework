@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
@@ -25,24 +24,24 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
      * @var string[]
      */
 
-    #[Pure]
+    
     public function __construct(protected string $type, protected string $id, protected array $transports = [])
     {
     }
 
-    #[Pure]
+    
     public static function create(string $type, string $id, array $transports = []): self
     {
         return new self($type, $id, $transports);
     }
 
-    #[Pure]
+    
     public function getType(): string
     {
         return $this->type;
     }
 
-    #[Pure]
+    
     public function getId(): string
     {
         return $this->id;
@@ -51,7 +50,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function getTransports(): array
     {
         return $this->transports;
@@ -80,7 +79,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     #[ArrayShape(['type' => 'string', 'id' => 'string', 'transports' => 'array'])]
     public function jsonSerialize(): array
     {

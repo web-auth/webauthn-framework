@@ -7,7 +7,6 @@ namespace Webauthn\TokenBinding;
 use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class TokenBinding
@@ -41,13 +40,13 @@ class TokenBinding
         return new self($status, $id);
     }
 
-    #[Pure]
+    
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    #[Pure]
+    
     public function getId(): ?string
     {
         return $this->id;
@@ -56,7 +55,7 @@ class TokenBinding
     /**
      * @return string[]
      */
-    #[Pure]
+    
     private static function getSupportedStatus(): array
     {
         return [

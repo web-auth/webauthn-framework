@@ -20,7 +20,6 @@ use function in_array;
 use InvalidArgumentException;
 use function is_array;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\sprintf;
@@ -33,13 +32,13 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();
     }
 
-    #[Pure]
+    
     public function name(): string
     {
         return 'tpm';

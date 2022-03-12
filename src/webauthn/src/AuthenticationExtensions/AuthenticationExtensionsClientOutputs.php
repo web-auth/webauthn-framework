@@ -11,7 +11,6 @@ use function count;
 use Countable;
 use Iterator;
 use IteratorAggregate;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 use function Safe\sprintf;
@@ -23,7 +22,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     private array $extensions = [];
 
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();
@@ -87,7 +86,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
         return new ArrayIterator($this->extensions);
     }
 
-    #[Pure]
+    
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->extensions, $mode);

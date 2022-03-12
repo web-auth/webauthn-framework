@@ -10,7 +10,6 @@ use Cose\Algorithms;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use function sodium_crypto_sign_detached;
 use function sodium_crypto_sign_verify_detached;
 
@@ -41,7 +40,7 @@ class EdDSA implements Signature
         };
     }
 
-    #[Pure]
+    
     public static function identifier(): int
     {
         return Algorithms::COSE_ALGORITHM_EdDSA;

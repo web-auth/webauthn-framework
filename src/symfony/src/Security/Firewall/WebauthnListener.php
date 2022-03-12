@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Firewall;
 
 use function is_string;
-use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -17,7 +16,7 @@ class WebauthnListener
 {
     private LoggerInterface $logger;
 
-    #[Pure]
+    
     public function __construct(private HttpUtils $httpUtils, ?LoggerInterface $logger, private RequestListener $requestListener, private CreationListener $creationListener, private array $options)
     {
         $this->logger = $logger ?? new NullLogger();

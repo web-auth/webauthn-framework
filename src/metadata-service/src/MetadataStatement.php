@@ -6,11 +6,13 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 use function Safe\sprintf;
 
+/**
+ * @see https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html
+ */
 class MetadataStatement implements JsonSerializable
 {
     public const KEY_PROTECTION_SOFTWARE = 0x0001;
@@ -88,7 +90,7 @@ class MetadataStatement implements JsonSerializable
 
     private int $authenticatorVersion = 0;
 
-    private string $protocolFamily = '';
+    private ?string $protocolFamily = null;
 
     /**
      * @var Version[]
@@ -181,19 +183,19 @@ class MetadataStatement implements JsonSerializable
         return self::createFromArray($data);
     }
 
-    #[Pure]
+
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
-    #[Pure]
+    
     public function getAaid(): ?string
     {
         return $this->aaid;
     }
 
-    #[Pure]
+    
     public function getAaguid(): ?string
     {
         return $this->aaguid;
@@ -202,13 +204,13 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
     }
 
-    #[Pure]
+    
     public function getDescription(): string
     {
         return $this->description;
@@ -217,19 +219,19 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function getAlternativeDescriptions(): array
     {
         return $this->alternativeDescriptions;
     }
 
-    #[Pure]
+    
     public function getAuthenticatorVersion(): int
     {
         return $this->authenticatorVersion;
     }
 
-    #[Pure]
+    
     public function getProtocolFamily(): string
     {
         return $this->protocolFamily;
@@ -238,19 +240,19 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return Version[]
      */
-    #[Pure]
+    
     public function getUpv(): array
     {
         return $this->upv;
     }
 
-    #[Pure]
+    
     public function getAssertionScheme(): ?string
     {
         return $this->assertionScheme;
     }
 
-    #[Pure]
+    
     public function getAuthenticationAlgorithm(): ?int
     {
         return $this->authenticationAlgorithm;
@@ -259,13 +261,13 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return int[]
      */
-    #[Pure]
+    
     public function getAuthenticationAlgorithms(): array
     {
         return $this->authenticationAlgorithms;
     }
 
-    #[Pure]
+    
     public function getPublicKeyAlgAndEncoding(): ?int
     {
         return $this->publicKeyAlgAndEncoding;
@@ -274,7 +276,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return int[]
      */
-    #[Pure]
+    
     public function getPublicKeyAlgAndEncodings(): array
     {
         return $this->publicKeyAlgAndEncodings;
@@ -283,7 +285,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return int[]
      */
-    #[Pure]
+    
     public function getAttestationTypes(): array
     {
         return $this->attestationTypes;
@@ -292,67 +294,67 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return VerificationMethodANDCombinations[]
      */
-    #[Pure]
+    
     public function getUserVerificationDetails(): array
     {
         return $this->userVerificationDetails;
     }
 
-    #[Pure]
+    
     public function getKeyProtection(): int
     {
         return $this->keyProtection;
     }
 
-    #[Pure]
+    
     public function isKeyRestricted(): ?bool
     {
         return (bool) $this->isKeyRestricted;
     }
 
-    #[Pure]
+    
     public function isFreshUserVerificationRequired(): ?bool
     {
         return (bool) $this->isFreshUserVerificationRequired;
     }
 
-    #[Pure]
+    
     public function getMatcherProtection(): int
     {
         return $this->matcherProtection;
     }
 
-    #[Pure]
+    
     public function getCryptoStrength(): ?int
     {
         return $this->cryptoStrength;
     }
 
-    #[Pure]
+    
     public function getOperatingEnv(): ?string
     {
         return $this->operatingEnv;
     }
 
-    #[Pure]
+    
     public function getAttachmentHint(): int
     {
         return $this->attachmentHint;
     }
 
-    #[Pure]
+    
     public function isSecondFactorOnly(): ?bool
     {
         return (bool) $this->isSecondFactorOnly;
     }
 
-    #[Pure]
+    
     public function getTcDisplay(): int
     {
         return $this->tcDisplay;
     }
 
-    #[Pure]
+    
     public function getTcDisplayContentType(): ?string
     {
         return $this->tcDisplayContentType;
@@ -361,7 +363,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return DisplayPNGCharacteristicsDescriptor[]
      */
-    #[Pure]
+    
     public function getTcDisplayPNGCharacteristics(): array
     {
         return $this->tcDisplayPNGCharacteristics;
@@ -370,7 +372,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function getAttestationRootCertificates(): array
     {
         return $this->attestationRootCertificates;
@@ -379,13 +381,13 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return EcdaaTrustAnchor[]
      */
-    #[Pure]
+    
     public function getEcdaaTrustAnchors(): array
     {
         return $this->ecdaaTrustAnchors;
     }
 
-    #[Pure]
+    
     public function getIcon(): ?string
     {
         return $this->icon;
@@ -394,7 +396,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return ExtensionDescriptor[]
      */
-    #[Pure]
+    
     public function getSupportedExtensions(): array
     {
         return $this->supportedExtensions;
@@ -404,9 +406,7 @@ class MetadataStatement implements JsonSerializable
     {
         $object = new self();
         foreach (['description', 'protocolFamily'] as $key) {
-            if (!isset($data[$key])) {
-                throw new InvalidArgumentException(sprintf('The parameter "%s" is missing', $key));
-            }
+            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
         $object->legalHeader = $data['legalHeader'] ?? null;
         $object->aaid = $data['aaid'] ?? null;
@@ -480,7 +480,7 @@ class MetadataStatement implements JsonSerializable
         return $object;
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [
@@ -539,9 +539,11 @@ class MetadataStatement implements JsonSerializable
     /**
      * @param StatusReport[] $statusReports
      */
-    public function setStatusReports(array $statusReports): self
+    public function addStatusReports(StatusReport ...$statusReports): self
     {
-        $this->statusReports = $statusReports;
+        foreach ($statusReports as $report){
+            $this->statusReports[] = $report;
+        }
 
         return $this;
     }
@@ -557,9 +559,11 @@ class MetadataStatement implements JsonSerializable
     /**
      * @param string[] $rootCertificates
      */
-    public function setRootCertificates(array $rootCertificates): self
+    public function addRootCertificates(string ...$rootCertificates): self
     {
-        $this->rootCertificates = $rootCertificates;
+        foreach ($rootCertificates as $rootCertificate){
+            $this->rootCertificates[] = $rootCertificate;
+        }
 
         return $this;
     }

@@ -6,16 +6,15 @@ namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 
 final class CertificateTrustPath implements TrustPath
 {
-    #[Pure]
+
     public function __construct(private array $certificates)
     {
     }
 
-    #[Pure]
+
     public static function create(array $certificates): self
     {
         return new self($certificates);
@@ -39,7 +38,7 @@ final class CertificateTrustPath implements TrustPath
         return CertificateTrustPath::create($data['x5c']);
     }
 
-    #[Pure]
+
     #[ArrayShape(['type' => 'string', 'x5c' => 'array'])]
     public function jsonSerialize(): array
     {

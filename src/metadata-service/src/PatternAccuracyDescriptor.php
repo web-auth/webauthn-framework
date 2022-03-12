@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
@@ -20,7 +19,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    #[Pure]
+    
     public function getMinComplexity(): int
     {
         return $this->minComplexity;
@@ -43,7 +42,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [

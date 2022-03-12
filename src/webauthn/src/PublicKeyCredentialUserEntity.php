@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 
@@ -26,13 +25,13 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return new self($name, $id, $displayName, $icon);
     }
 
-    #[Pure]
+    
     public function getId(): string
     {
         return $this->id;
     }
 
-    #[Pure]
+    
     public function getDisplayName(): string
     {
         return $this->displayName;
@@ -65,7 +64,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     }
 
     #[ArrayShape(['name' => 'string', 'icon' => 'null|string', 'displayName' => 'string', 'id' => 'string'])]
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();

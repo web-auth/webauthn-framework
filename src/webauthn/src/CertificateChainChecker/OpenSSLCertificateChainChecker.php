@@ -8,7 +8,6 @@ use Assert\Assertion;
 use function count;
 use InvalidArgumentException;
 use function is_int;
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
@@ -24,7 +23,7 @@ use Symfony\Component\Process\Process;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
-    #[Pure]
+
     public function __construct(private ClientInterface $client, private RequestFactoryInterface $requestFactory)
     {
     }

@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\TrustPath\TrustPath;
@@ -50,7 +49,7 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getName(): string
     {
         return 'trust_path';
@@ -59,7 +58,7 @@ final class TrustPathDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

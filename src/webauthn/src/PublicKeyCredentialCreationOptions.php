@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -32,7 +31,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
      * @var PublicKeyCredentialParameters[]
      */
 
-    #[Pure]
+    
     public function __construct(private PublicKeyCredentialRpEntity $rp, private PublicKeyCredentialUserEntity $user, string $challenge, private array $pubKeyCredParams)
     {
         parent::__construct($challenge);
@@ -43,7 +42,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
-    #[Pure]
+    
     public static function create(PublicKeyCredentialRpEntity $rp, PublicKeyCredentialUserEntity $user, string $challenge, array $pubKeyCredParams): self
     {
         return new self($rp, $user, $challenge, $pubKeyCredParams);
@@ -107,13 +106,13 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
-    #[Pure]
+    
     public function getRp(): PublicKeyCredentialRpEntity
     {
         return $this->rp;
     }
 
-    #[Pure]
+    
     public function getUser(): PublicKeyCredentialUserEntity
     {
         return $this->user;
@@ -122,7 +121,7 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialParameters[]
      */
-    #[Pure]
+    
     public function getPubKeyCredParams(): array
     {
         return $this->pubKeyCredParams;
@@ -131,19 +130,19 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
-    #[Pure]
+    
     public function getExcludeCredentials(): array
     {
         return $this->excludeCredentials;
     }
 
-    #[Pure]
+    
     public function getAuthenticatorSelection(): AuthenticatorSelectionCriteria
     {
         return $this->authenticatorSelection;
     }
 
-    #[Pure]
+    
     public function getAttestation(): string
     {
         return $this->attestation;

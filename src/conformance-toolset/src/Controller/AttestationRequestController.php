@@ -7,7 +7,6 @@ namespace Webauthn\ConformanceToolset\Controller;
 use Assert\Assertion;
 use function count;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -30,7 +29,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationRequestController
 {
-    #[Pure]
+    
     public function __construct(private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialUserEntityRepository $userEntityRepository, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private string $profile, private string $sessionParameterName, private LoggerInterface $logger, private CacheItemPoolInterface $cacheItemPool)
     {
     }

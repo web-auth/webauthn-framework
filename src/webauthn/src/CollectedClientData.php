@@ -8,7 +8,6 @@ use function array_key_exists;
 use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use function Safe\sprintf;
 use Webauthn\TokenBinding\TokenBinding;
@@ -43,19 +42,19 @@ class CollectedClientData
         return new self($rawData, $json);
     }
 
-    #[Pure]
+    
     public function getType(): string
     {
         return $this->type;
     }
 
-    #[Pure]
+    
     public function getChallenge(): string
     {
         return $this->challenge;
     }
 
-    #[Pure]
+    
     public function getOrigin(): string
     {
         return $this->origin;
@@ -66,7 +65,7 @@ class CollectedClientData
         return null === $this->tokenBinding ? null : TokenBinding::createFormArray($this->tokenBinding);
     }
 
-    #[Pure]
+    
     public function getRawData(): string
     {
         return $this->rawData;
@@ -75,13 +74,13 @@ class CollectedClientData
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function all(): array
     {
         return array_keys($this->data);
     }
 
-    #[Pure]
+    
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);

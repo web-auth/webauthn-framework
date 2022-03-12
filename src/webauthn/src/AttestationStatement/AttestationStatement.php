@@ -7,7 +7,6 @@ namespace Webauthn\AttestationStatement;
 use function array_key_exists;
 use Assert\Assertion;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 use Webauthn\TrustPath\TrustPath;
@@ -22,66 +21,66 @@ class AttestationStatement implements JsonSerializable
     public const TYPE_ECDAA = 'ecdaa';
     public const TYPE_ANONCA = 'anonca';
 
-    #[Pure]
+
     public function __construct(private string $fmt, private array $attStmt, private string $type, private TrustPath $trustPath)
     {
     }
 
-    #[Pure]
+
     public static function create(string $fmt, array $attStmt, string $type, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, $type, $trustPath);
     }
 
-    #[Pure]
+
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_NONE, $trustPath);
     }
 
-    #[Pure]
+
     public static function createBasic(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_BASIC, $trustPath);
     }
 
-    #[Pure]
+
     public static function createSelf(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_SELF, $trustPath);
     }
 
-    #[Pure]
+
     public static function createAttCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ATTCA, $trustPath);
     }
 
-    #[Pure]
+
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ECDAA, $trustPath);
     }
 
-    #[Pure]
+
     public static function createAnonymizationCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ANONCA, $trustPath);
     }
 
-    #[Pure]
+
     public function getFmt(): string
     {
         return $this->fmt;
     }
 
-    #[Pure]
+
     public function getAttStmt(): array
     {
         return $this->attStmt;
     }
 
-    #[Pure]
+
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->attStmt);
@@ -118,7 +117,7 @@ class AttestationStatement implements JsonSerializable
         );
     }
 
-    #[Pure]
+
     #[ArrayShape(['fmt' => 'string', 'attStmt' => 'array', 'trustPath' => 'mixed', 'type' => 'string'])]
     public function jsonSerialize(): array
     {

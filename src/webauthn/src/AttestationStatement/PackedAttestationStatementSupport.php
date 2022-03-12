@@ -17,7 +17,6 @@ use Cose\Key\Key;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
@@ -31,19 +30,19 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 {
     private Decoder $decoder;
 
-    #[Pure]
+    
     public function __construct(private Manager $algorithmManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
-    #[Pure]
+    
     public static function create(Manager $algorithmManager): self
     {
         return new self($algorithmManager);
     }
 
-    #[Pure]
+    
     public function name(): string
     {
         return 'packed';
@@ -92,7 +91,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return AttestationStatement::createEcdaa($attestation['fmt'], $attestation['attStmt'], EcdaaKeyIdTrustPath::create($attestation['ecdaaKeyId']));
     }
 
-    #[Pure]
+    
     private function loadEmptyType(array $attestation): AttestationStatement
     {
         return AttestationStatement::createSelf($attestation['fmt'], $attestation['attStmt'], EmptyTrustPath::create());

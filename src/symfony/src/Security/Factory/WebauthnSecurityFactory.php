@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Factory;
 
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -46,7 +45,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getPosition(): string
     {
         return 'form';
@@ -55,7 +54,7 @@ class WebauthnSecurityFactory implements SecurityFactoryInterface
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getKey(): string
     {
         return 'webauthn';

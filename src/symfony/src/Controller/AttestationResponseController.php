@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationResponseController
 {
-    #[Pure]
+    
     public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private OptionsStorage $optionStorage, private SuccessHandler $successHandler, private FailureHandler $failureHandler)
     {
     }

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Webauthn\TokenBinding;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 {
-    #[Pure]
+
     public static function create(): self
     {
         return new self();

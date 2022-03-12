@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -20,7 +19,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class PublicKeyCredentialCreationOptionsFactory
 {
-    #[Pure]
+
     public function __construct(private array $profiles, private EventDispatcherInterface $eventDispatcher)
     {
     }
@@ -71,7 +70,7 @@ final class PublicKeyCredentialCreationOptionsFactory
         ;
     }
 
-    #[Pure]
+
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
         return PublicKeyCredentialRpEntity::create($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);

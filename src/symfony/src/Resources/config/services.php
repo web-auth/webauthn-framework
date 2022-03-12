@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
- use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use Webauthn\Bundle\Command\ImportMetadataStatementsCommand;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 /*
@@ -35,6 +36,7 @@ use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\SecTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()->defaults()
@@ -108,4 +110,11 @@ return static function (ContainerConfigurator $container): void {
     $container->set(DummyControllerFactory::class);
     $container->set(DummyPublicKeyCredentialSourceRepository::class);
     $container->set(DummyPublicKeyCredentialUserEntityRepository::class);
+
+    $container
+        ->set(ImportMetadataStatementsCommand::class)
+        ->args([
+            tagged_iterator('webauthn.metadata_service')
+        ])
+    ;
 };

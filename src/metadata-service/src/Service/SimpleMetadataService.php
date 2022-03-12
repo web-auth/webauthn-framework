@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Service;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use function count;
 use InvalidArgumentException;
-use function is_array;
-use JetBrains\PhpStorm\Pure;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -19,12 +16,17 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function Safe\json_decode;
-use function Safe\sprintf;
 use Throwable;
 use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\MetadataTOCPayload;
+use Webauthn\MetadataService\MetadataTOCPayloadEntry;
+use function count;
+use function is_array;
+use function Safe\json_decode;
+use function Safe\sprintf;
 
-class MetadataService
+class SimpleMetadataService implements MetadataService
 {
     private array $additionalQueryStringValues;
 
@@ -32,7 +34,6 @@ class MetadataService
 
     private LoggerInterface $logger;
 
-    #[Pure]
     public function __construct(private string $serviceUri, private ClientInterface $httpClient, private RequestFactoryInterface $requestFactory)
     {
         $this->additionalQueryStringValues = [];
@@ -61,6 +62,11 @@ class MetadataService
         return $this;
     }
 
+    public function list(): iterable
+    {
+        throw new \InvalidArgumentException('Not supported');
+    }
+
     public function has(string $aaguid): bool
     {
         try {
@@ -78,14 +84,14 @@ class MetadataService
     }
 
     public function get(string $aaguid): MetadataStatement
-    {
+    {-
         $toc = $this->fetchMetadataTOCPayload();
         foreach ($toc->getEntries() as $entry) {
             if ($entry->getAaguid() === $aaguid && null !== $entry->getUrl()) {
                 $mds = $this->fetchMetadataStatementFor($entry);
                 $mds
-                    ->setStatusReports($entry->getStatusReports())
-                    ->setRootCertificates($toc->getRootCertificates())
+                    ->addStatusReports(...$entry->getStatusReports())
+                    ->addRootCertificates(...$toc->getRootCertificates())
                 ;
 
                 return $mds;

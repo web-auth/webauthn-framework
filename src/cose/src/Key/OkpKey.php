@@ -6,7 +6,6 @@ namespace Cose\Key;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 
 class OkpKey extends Key
 {
@@ -45,7 +44,7 @@ class OkpKey extends Key
         return $this->get(self::DATA_X);
     }
 
-    #[Pure]
+    
     public function isPrivate(): bool
     {
         return array_key_exists(self::DATA_D, $this->getData());

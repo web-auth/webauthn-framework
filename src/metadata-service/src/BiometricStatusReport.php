@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 class BiometricStatusReport implements JsonSerializable
@@ -23,49 +22,49 @@ class BiometricStatusReport implements JsonSerializable
 
     private ?string $certificationRequirementsVersion = null;
 
-    #[Pure]
+    
     public function getCertLevel(): int
     {
         return $this->certLevel;
     }
 
-    #[Pure]
+    
     public function getModality(): int
     {
         return $this->modality;
     }
 
-    #[Pure]
+    
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
-    #[Pure]
+    
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
-    #[Pure]
+    
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
-    #[Pure]
+    
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
-    #[Pure]
+    
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
     }
 
-    #[Pure]
+    
     public static function createFromArray(array $data): self
     {
         $object = new self();
@@ -80,7 +79,7 @@ class BiometricStatusReport implements JsonSerializable
         return $object;
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [

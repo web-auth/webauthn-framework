@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\json_decode;
 
@@ -33,7 +32,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private ?string $residentKey;
 
-    #[Pure]
+    
     public function __construct()
     {
         $this->authenticatorAttachment = null;
@@ -42,7 +41,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
     }
 
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();
@@ -76,25 +75,25 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
+    
     public function getAuthenticatorAttachment(): ?string
     {
         return $this->authenticatorAttachment;
     }
 
-    #[Pure]
+    
     public function isRequireResidentKey(): bool
     {
         return $this->requireResidentKey;
     }
 
-    #[Pure]
+    
     public function getUserVerification(): string
     {
         return $this->userVerification;
     }
 
-    #[Pure]
+    
     public function getResidentKey(): ?string
     {
         return $this->residentKey;
@@ -118,7 +117,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         ;
     }
 
-    #[Pure]
+    
     #[ArrayShape(['requireResidentKey' => 'bool', 'userVerification' => 'string', 'residentKey' => 'null|string', 'authenticatorAttachment' => 'null|string'])]
     public function jsonSerialize(): array
     {

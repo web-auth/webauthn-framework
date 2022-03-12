@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
@@ -31,91 +30,91 @@ class VerificationMethodDescriptor implements JsonSerializable
         $this->userVerification = $userVerification;
     }
 
-    #[Pure]
+    
     public function getUserVerification(): int
     {
         return $this->userVerification;
     }
 
-    #[Pure]
+    
     public function userPresence(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_PRESENCE);
     }
 
-    #[Pure]
+    
     public function fingerprint(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_FINGERPRINT);
     }
 
-    #[Pure]
+    
     public function passcode(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_PASSCODE);
     }
 
-    #[Pure]
+    
     public function voicePrint(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_VOICEPRINT);
     }
 
-    #[Pure]
+    
     public function facePrint(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_FACEPRINT);
     }
 
-    #[Pure]
+    
     public function location(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_LOCATION);
     }
 
-    #[Pure]
+    
     public function eyePrint(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_EYEPRINT);
     }
 
-    #[Pure]
+    
     public function pattern(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_PATTERN);
     }
 
-    #[Pure]
+    
     public function handprint(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_HANDPRINT);
     }
 
-    #[Pure]
+    
     public function none(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_NONE);
     }
 
-    #[Pure]
+    
     public function all(): bool
     {
         return 0 !== ($this->userVerification & self::USER_VERIFY_ALL);
     }
 
-    #[Pure]
+    
     public function getCaDesc(): ?CodeAccuracyDescriptor
     {
         return $this->caDesc;
     }
 
-    #[Pure]
+    
     public function getBaDesc(): ?BiometricAccuracyDescriptor
     {
         return $this->baDesc;
     }
 
-    #[Pure]
+    
     public function getPaDesc(): ?PatternAccuracyDescriptor
     {
         return $this->paDesc;
@@ -140,7 +139,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [

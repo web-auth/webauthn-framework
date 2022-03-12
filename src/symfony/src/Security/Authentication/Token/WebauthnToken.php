@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_encode;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -86,79 +85,79 @@ class WebauthnToken extends AbstractToken
         parent::__unserialize($parentData);
     }
 
-    #[Pure]
+    
     public function getUserIdentifier(): string
     {
         return $this->publicKeyCredentialUserEntity->getId();
     }
 
-    #[Pure]
+    
     public function getCredentials(): PublicKeyCredentialDescriptor
     {
         return $this->getPublicKeyCredentialDescriptor();
     }
 
-    #[Pure]
+    
     public function getPublicKeyCredentialUserEntity(): PublicKeyCredentialUserEntity
     {
         return $this->publicKeyCredentialUserEntity;
     }
 
-    #[Pure]
+    
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
         return $this->publicKeyCredentialDescriptor;
     }
 
-    #[Pure]
+    
     public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions
     {
         return $this->publicKeyCredentialOptions;
     }
 
-    #[Pure]
+    
     public function isUserPresent(): bool
     {
         return $this->isUserPresent;
     }
 
-    #[Pure]
+    
     public function isUserVerified(): bool
     {
         return $this->isUserVerified;
     }
 
-    #[Pure]
+    
     public function getReservedForFutureUse1(): int
     {
         return $this->reservedForFutureUse1;
     }
 
-    #[Pure]
+    
     public function getReservedForFutureUse2(): int
     {
         return $this->reservedForFutureUse2;
     }
 
-    #[Pure]
+    
     public function getSignCount(): int
     {
         return $this->signCount;
     }
 
-    #[Pure]
+    
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {
         return $this->extensions;
     }
 
-    #[Pure]
+    
     public function getProviderKey(): string
     {
         return $this->providerKey;
     }
 
-    #[Pure]
+    
     public function getAttributes(): array
     {
         $attributes = parent::getAttributes();

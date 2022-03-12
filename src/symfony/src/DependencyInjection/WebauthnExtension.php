@@ -8,7 +8,6 @@ use function array_key_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -42,7 +41,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
-    #[Pure]
+    
     public function __construct(private string $alias)
     {
     }
@@ -50,7 +49,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getAlias(): string
     {
         return $this->alias;
@@ -106,7 +105,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    #[Pure]
+    
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
@@ -22,13 +21,13 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    #[Pure]
+
     public function getBase(): int
     {
         return $this->base;
     }
 
-    #[Pure]
+
     public function getMinLength(): int
     {
         return $this->minLength;
@@ -47,7 +46,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
-    #[Pure]
+
     public function jsonSerialize(): array
     {
         $data = [

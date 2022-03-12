@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
-use JetBrains\PhpStorm\Pure;
 
 class ExtensionOutputCheckerHandler
 {
@@ -13,7 +12,7 @@ class ExtensionOutputCheckerHandler
      */
     private array $checkers = [];
 
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();

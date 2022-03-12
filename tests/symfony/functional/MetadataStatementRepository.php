@@ -8,9 +8,9 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Throwable;
 use Webauthn\MetadataService\DistantSingleMetadata;
-use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
+use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\SingleMetadata;
 use Webauthn\MetadataService\StatusReport;
 

@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -23,7 +22,7 @@ use Webauthn\TrustPath\TrustPathLoader;
  */
 class PublicKeyCredentialSource implements JsonSerializable
 {
-    #[Pure]
+    
     public function __construct(
         protected string $publicKeyCredentialId,
         protected string $type,
@@ -38,19 +37,19 @@ class PublicKeyCredentialSource implements JsonSerializable
     ) {
     }
 
-    #[Pure]
+    
     public static function create(string $publicKeyCredentialId, string $type, array $transports, string $attestationType, TrustPath $trustPath, UuidInterface $aaguid, string $credentialPublicKey, string $userHandle, int $counter, ?array $otherUI = null): self
     {
         return new self($publicKeyCredentialId, $type, $transports, $attestationType, $trustPath, $aaguid, $credentialPublicKey, $userHandle, $counter, $otherUI);
     }
 
-    #[Pure]
+    
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;
     }
 
-    #[Pure]
+    
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
         return PublicKeyCredentialDescriptor::create(
@@ -60,19 +59,19 @@ class PublicKeyCredentialSource implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     public function getAttestationType(): string
     {
         return $this->attestationType;
     }
 
-    #[Pure]
+    
     public function getTrustPath(): TrustPath
     {
         return $this->trustPath;
     }
 
-    #[Pure]
+    
     public function getAttestedCredentialData(): AttestedCredentialData
     {
         return AttestedCredentialData::create(
@@ -82,7 +81,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     public function getType(): string
     {
         return $this->type;
@@ -91,31 +90,31 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @return string[]
      */
-    #[Pure]
+    
     public function getTransports(): array
     {
         return $this->transports;
     }
 
-    #[Pure]
+    
     public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
     }
 
-    #[Pure]
+    
     public function getCredentialPublicKey(): string
     {
         return $this->credentialPublicKey;
     }
 
-    #[Pure]
+    
     public function getUserHandle(): string
     {
         return $this->userHandle;
     }
 
-    #[Pure]
+    
     public function getCounter(): int
     {
         return $this->counter;
@@ -128,7 +127,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
+    
     public function getOtherUI(): ?array
     {
         return $this->otherUI;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Webauthn\MetadataService\MetadataService;
 use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
+use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\SingleMetadata;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface

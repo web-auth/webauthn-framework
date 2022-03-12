@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -17,18 +16,18 @@ use function Safe\base64_decode;
  */
 class AttestedCredentialData implements JsonSerializable
 {
-    #[Pure]
+    
     public function __construct(private UuidInterface $aaguid, private string $credentialId, private ?string $credentialPublicKey)
     {
     }
 
-    #[Pure]
+    
     public static function create(UuidInterface $aaguid, string $credentialId, ?string $credentialPublicKey): self
     {
         return new self($aaguid, $credentialId, $credentialPublicKey);
     }
 
-    #[Pure]
+    
     public function getAaguid(): UuidInterface
     {
         return $this->aaguid;
@@ -41,13 +40,13 @@ class AttestedCredentialData implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
+    
     public function getCredentialId(): string
     {
         return $this->credentialId;
     }
 
-    #[Pure]
+    
     public function getCredentialPublicKey(): ?string
     {
         return $this->credentialPublicKey;
@@ -79,7 +78,7 @@ class AttestedCredentialData implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     #[ArrayShape(['aaguid' => 'string', 'credentialId' => 'string', 'credentialPublicKey' => 'string'])]
     public function jsonSerialize(): array
     {

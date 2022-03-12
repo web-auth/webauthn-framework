@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 abstract class AbstractDescriptor implements JsonSerializable
@@ -23,13 +22,13 @@ abstract class AbstractDescriptor implements JsonSerializable
         $this->blockSlowdown = $blockSlowdown;
     }
 
-    #[Pure]
+    
     public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
-    #[Pure]
+    
     public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;

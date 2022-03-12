@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use function in_array;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
@@ -24,7 +23,7 @@ class StatusReport implements JsonSerializable
         $this->status = $status;
     }
 
-    #[Pure]
+    
     public function isCompromised(): bool
     {
         return in_array($this->status, [
@@ -35,49 +34,49 @@ class StatusReport implements JsonSerializable
         ], true);
     }
 
-    #[Pure]
+    
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    #[Pure]
+    
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
-    #[Pure]
+    
     public function getCertificate(): ?string
     {
         return $this->certificate;
     }
 
-    #[Pure]
+    
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    #[Pure]
+    
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
-    #[Pure]
+    
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
-    #[Pure]
+    
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
-    #[Pure]
+    
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
@@ -105,7 +104,7 @@ class StatusReport implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [

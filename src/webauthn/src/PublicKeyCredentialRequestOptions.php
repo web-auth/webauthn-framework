@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Base64Url\Base64Url;
 use function count;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
@@ -27,7 +26,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     private ?string $userVerification = null;
 
-    #[Pure]
+
     public static function create(string $challenge): self
     {
         return new self($challenge);
@@ -76,7 +75,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
-    #[Pure]
+
     public function getRpId(): ?string
     {
         return $this->rpId;
@@ -85,13 +84,13 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      */
-    #[Pure]
+
     public function getAllowCredentials(): array
     {
         return $this->allowCredentials;
     }
 
-    #[Pure]
+
     public function getUserVerification(): ?string
     {
         return $this->userVerification;

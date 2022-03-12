@@ -17,7 +17,6 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use JetBrains\PhpStorm\Pure;
 use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
@@ -30,19 +29,19 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 {
     private Decoder $decoder;
 
-    #[Pure]
+    
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();
     }
 
-    #[Pure]
+    
     public function name(): string
     {
         return 'android-key';

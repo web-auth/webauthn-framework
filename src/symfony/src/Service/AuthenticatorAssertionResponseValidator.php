@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Cose\Algorithm\Manager;
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
@@ -21,7 +20,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAssertionResponseValidator
 {
-    #[Pure]
+    
     public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, Manager $algorithmManager, private EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);

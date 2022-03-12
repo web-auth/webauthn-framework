@@ -7,7 +7,6 @@ namespace Webauthn\Bundle\Controller;
 use Assert\Assertion;
 use function count;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +30,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationRequestController
 {
-    #[Pure]
+
     public function __construct(private UserEntityGuesser $userEntityGuesser, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private string $profile, private OptionsStorage $optionsStorage, private CreationOptionsHandler $creationOptionsHandler, private FailureHandler $failureHandler)
     {
     }

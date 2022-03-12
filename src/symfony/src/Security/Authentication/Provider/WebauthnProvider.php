@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Provider;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -16,7 +15,7 @@ use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
 class WebauthnProvider implements AuthenticationProviderInterface
 {
-    #[Pure]
+    
     public function __construct(private UserCheckerInterface $userChecker, private UserProviderInterface $userProvider)
     {
     }
@@ -58,7 +57,7 @@ class WebauthnProvider implements AuthenticationProviderInterface
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function supports(TokenInterface $token): bool
     {
         return $token instanceof WebauthnToken;

@@ -6,7 +6,6 @@ namespace Cose\Key;
 
 use function array_key_exists;
 use Assert\Assertion;
-use JetBrains\PhpStorm\Pure;
 use function Safe\sprintf;
 
 class Key
@@ -47,7 +46,7 @@ class Key
         };
     }
 
-    #[Pure]
+    
     public function type(): int | string
     {
         return $this->data[self::TYPE];
@@ -58,13 +57,13 @@ class Key
         return (int) $this->get(self::ALG);
     }
 
-    #[Pure]
+    
     public function getData(): array
     {
         return $this->data;
     }
 
-    #[Pure]
+    
     public function has(int $key): bool
     {
         return array_key_exists($key, $this->data);

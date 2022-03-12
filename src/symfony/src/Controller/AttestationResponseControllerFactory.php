@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,12 +19,12 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class AttestationResponseControllerFactory
 {
-    #[Pure]
+
     public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository)
     {
     }
 
-    #[Pure]
+
     public function createAttestationRequestController(UserEntityGuesser $userEntityGuesser, string $profile, OptionsStorage $optionStorage, CreationOptionsHandler $creationOptionsHandler, FailureHandler $failureHandler): AttestationRequestController
     {
         return new AttestationRequestController(
@@ -41,7 +40,7 @@ final class AttestationResponseControllerFactory
         );
     }
 
-    #[Pure]
+
     public function createAttestationResponseController(OptionsStorage $optionStorage, SuccessHandler $successHandler, FailureHandler $failureHandler): AttestationResponseController
     {
         return new AttestationResponseController(

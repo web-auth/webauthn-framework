@@ -9,7 +9,6 @@ use function count;
 use function in_array;
 use InvalidArgumentException;
 use function is_string;
-use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -40,13 +39,13 @@ class AuthenticatorAttestationResponseValidator
 
     private ?CertificateChainChecker $certificateChainChecker = null;
 
-    #[Pure]
+
     public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager, private PublicKeyCredentialSourceRepository $publicKeyCredentialSource, private TokenBindingHandler $tokenBindingHandler, private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler)
     {
         $this->logger = new NullLogger();
     }
 
-    #[Pure]
+
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler): self
     {
         return new self($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);

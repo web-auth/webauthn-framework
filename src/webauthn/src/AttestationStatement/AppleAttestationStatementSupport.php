@@ -13,7 +13,6 @@ use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
 use FG\ASN1\Universal\Sequence;
-use JetBrains\PhpStorm\Pure;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Webauthn\AuthenticatorData;
@@ -25,19 +24,19 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 {
     private Decoder $decoder;
 
-    #[Pure]
+
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
-    #[Pure]
+
     public static function create(): self
     {
         return new self();
     }
 
-    #[Pure]
+
     public function name(): string
     {
         return 'apple';

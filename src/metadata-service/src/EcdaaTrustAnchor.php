@@ -6,48 +6,47 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use Base64Url\Base64Url;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use function Safe\sprintf;
 
 class EcdaaTrustAnchor implements JsonSerializable
 {
-    #[Pure]
+    
     public function __construct(private string $X, private string $Y, private string $c, private string $sx, private string $sy, private string $G1Curve)
     {
     }
 
-    #[Pure]
+    
     public function getX(): string
     {
         return $this->X;
     }
 
-    #[Pure]
+    
     public function getY(): string
     {
         return $this->Y;
     }
 
-    #[Pure]
+    
     public function getC(): string
     {
         return $this->c;
     }
 
-    #[Pure]
+    
     public function getSx(): string
     {
         return $this->sx;
     }
 
-    #[Pure]
+    
     public function getSy(): string
     {
         return $this->sy;
     }
 
-    #[Pure]
+    
     public function getG1Curve(): string
     {
         return $this->G1Curve;
@@ -70,7 +69,7 @@ class EcdaaTrustAnchor implements JsonSerializable
         );
     }
 
-    #[Pure]
+    
     public function jsonSerialize(): array
     {
         $data = [

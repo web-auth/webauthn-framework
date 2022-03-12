@@ -6,7 +6,6 @@ namespace Webauthn\Bundle;
 
 use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use JetBrains\PhpStorm\Pure;
 use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,7 +28,7 @@ final class WebauthnBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getContainerExtension(): ExtensionInterface
     {
         return new WebauthnExtension('webauthn');

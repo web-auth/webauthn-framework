@@ -11,7 +11,6 @@ use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use function Safe\openssl_pkey_get_public;
 use function Safe\sprintf;
 use Throwable;
@@ -24,19 +23,19 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 {
     private Decoder $decoder;
 
-    #[Pure]
+    
     public function __construct()
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
     }
 
-    #[Pure]
+    
     public static function create(): self
     {
         return new self();
     }
 
-    #[Pure]
+    
     public function name(): string
     {
         return 'fido-u2f';

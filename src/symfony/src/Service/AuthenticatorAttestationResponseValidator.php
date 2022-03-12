@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
@@ -21,7 +20,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorAttestationResponseValidator
 {
-    #[Pure]
+
     public function __construct(AttestationStatementSupportManager $attestationStatementSupportManager, PublicKeyCredentialSourceRepository $publicKeyCredentialSource, TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, private EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);

@@ -10,7 +10,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
-use JetBrains\PhpStorm\Pure;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -32,14 +31,14 @@ class AttestationObjectLoader
 
     private LoggerInterface $logger;
 
-    #[Pure]
+
     public function __construct(private AttestationStatementSupportManager $attestationStatementSupportManager)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->logger = new NullLogger();
     }
 
-    #[Pure]
+
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self
     {
         return new self($attestationStatementSupportManager);

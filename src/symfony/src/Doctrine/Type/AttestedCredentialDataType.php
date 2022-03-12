@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use JetBrains\PhpStorm\Pure;
 use function Safe\json_decode;
 use function Safe\json_encode;
 use Webauthn\AttestedCredentialData;
@@ -49,7 +48,7 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function getName(): string
     {
         return 'attested_credential_data';
@@ -58,7 +57,7 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    #[Pure]
+    
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

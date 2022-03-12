@@ -12,7 +12,6 @@ use CBOR\MapObject;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -33,14 +32,14 @@ class PublicKeyCredentialLoader
 
     private LoggerInterface $logger;
 
-    #[Pure]
+
     public function __construct(private AttestationObjectLoader $attestationObjectLoader)
     {
         $this->decoder = new Decoder(new TagObjectManager(), new OtherObjectManager());
         $this->logger = new NullLogger();
     }
 
-    #[Pure]
+
     public static function create(AttestationObjectLoader $attestationObjectLoader): self
     {
         return new self($attestationObjectLoader);

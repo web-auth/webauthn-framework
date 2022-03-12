@@ -6,7 +6,6 @@ namespace Webauthn\AttestationStatement;
 
 use Assert\Assertion;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
@@ -90,7 +89,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return $this;
     }
 
-    #[Pure]
+    
     public function name(): string
     {
         return 'android-safetynet';
