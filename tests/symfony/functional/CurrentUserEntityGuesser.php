@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Tests\Functional;
+namespace Webauthn\Tests\Bundle\Functional;
 
 use Assert\Assertion;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,8 +12,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class CurrentUserEntityGuesser implements UserEntityGuesser
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security
+    ) {
     }
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity

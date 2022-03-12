@@ -10,5 +10,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 interface CreationOptionsHandler
 {
-    public function onCreationOptions(PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, PublicKeyCredentialUserEntity $userEntity): Response;
+    public function onCreationOptions(
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        PublicKeyCredentialUserEntity $userEntity
+    ): Response;
 }

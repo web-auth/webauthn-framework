@@ -4,48 +4,43 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class EntityTest extends TestCase
+final class EntityTest extends TestCase
 {
     /**
      * @test
-     *
-     * @covers \Webauthn\PublicKeyCredentialEntity
-     * @covers \Webauthn\PublicKeyCredentialUserEntity
      */
     public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
     {
         $user = new PublicKeyCredentialUserEntity('name', 'id', 'display_name', 'icon');
 
-        static::assertEquals('name', $user->getName());
-        static::assertEquals('display_name', $user->getDisplayName());
-        static::assertEquals('icon', $user->getIcon());
-        static::assertEquals('id', $user->getId());
-        static::assertEquals('{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}', json_encode($user));
+        static::assertSame('name', $user->getName());
+        static::assertSame('display_name', $user->getDisplayName());
+        static::assertSame('icon', $user->getIcon());
+        static::assertSame('id', $user->getId());
+        static::assertSame(
+            '{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}',
+            json_encode($user, JSON_THROW_ON_ERROR)
+        );
     }
 
     /**
      * @test
-     *
-     * @covers \Webauthn\PublicKeyCredentialEntity
-     * @covers \Webauthn\PublicKeyCredentialRpEntity
      */
     public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
         $rp = PublicKeyCredentialRpEntity::create('name', 'id', 'icon');
 
-        static::assertEquals('name', $rp->getName());
-        static::assertEquals('icon', $rp->getIcon());
-        static::assertEquals('id', $rp->getId());
-        static::assertEquals('{"name":"name","icon":"icon","id":"id"}', json_encode($rp));
+        static::assertSame('name', $rp->getName());
+        static::assertSame('icon', $rp->getIcon());
+        static::assertSame('id', $rp->getId());
+        static::assertSame('{"name":"name","icon":"icon","id":"id"}', json_encode($rp, JSON_THROW_ON_ERROR));
     }
 }

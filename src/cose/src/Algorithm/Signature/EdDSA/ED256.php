@@ -10,7 +10,6 @@ final class ED256 extends EdDSA
 {
     public const ID = -260;
 
-    
     public static function identifier(): int
     {
         return self::ID;

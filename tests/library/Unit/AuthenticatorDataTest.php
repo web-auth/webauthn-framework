@@ -5,38 +5,40 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticatorData;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestedCredentialData
- *
  * @internal
  */
-class AuthenticatorDataTest extends TestCase
+final class AuthenticatorDataTest extends TestCase
 {
     /**
      * @test
      */
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
-        $attestedCredentialData = AttestedCredentialData::create(Uuid::uuid4(), '', null);
-        $extensions = AuthenticationExtensionsClientOutputs::create();
+        $attestedCredentialData = new AttestedCredentialData(Uuid::v4(), '', null);
+        $extensions = new AuthenticationExtensionsClientOutputs();
 
-        $authenticatorData = AuthenticatorData::create('auth_data', 'rp_id_hash', 'A', 100, $attestedCredentialData, $extensions);
+        $authenticatorData = new AuthenticatorData(
+            'auth_data',
+            'rp_id_hash',
+            'A',
+            100,
+            $attestedCredentialData,
+            $extensions
+        );
 
-        static::assertEquals('auth_data', $authenticatorData->getAuthData());
-        static::assertEquals('rp_id_hash', $authenticatorData->getRpIdHash());
+        static::assertSame('auth_data', $authenticatorData->getAuthData());
+        static::assertSame('rp_id_hash', $authenticatorData->getRpIdHash());
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertFalse($authenticatorData->isUserVerified());
-        static::assertEquals(100, $authenticatorData->getSignCount());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse1());
-        static::assertEquals(0, $authenticatorData->getReservedForFutureUse2());
+        static::assertSame(100, $authenticatorData->getSignCount());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());

@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 {
-
     public static function create(): self
     {
         return new self();
@@ -17,6 +16,9 @@ final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 
     public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void
     {
-        Assertion::true(TokenBinding::TOKEN_BINDING_STATUS_PRESENT !== $tokenBinding->getStatus(), 'Token binding not supported.');
+        Assertion::true(
+            $tokenBinding->getStatus() !== TokenBinding::TOKEN_BINDING_STATUS_PRESENT,
+            'Token binding not supported.'
+        );
     }
 }

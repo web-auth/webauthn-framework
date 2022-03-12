@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use JsonSerializable;
-use function Safe\sprintf;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
@@ -29,8 +28,15 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
      */
     private array $plte = [];
 
-    public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
-    {
+    public function __construct(
+        int $width,
+        int $height,
+        int $bitDepth,
+        int $colorType,
+        int $compression,
+        int $filter,
+        int $interlace
+    ) {
         Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
         Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
         Assertion::range($bitDepth, 0, 254, Utils::logicException('Invalid bit depth'));
@@ -55,43 +61,36 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $this;
     }
 
-    
     public function getWidth(): int
     {
         return $this->width;
     }
 
-    
     public function getHeight(): int
     {
         return $this->height;
     }
 
-    
     public function getBitDepth(): int
     {
         return $this->bitDepth;
     }
 
-    
     public function getColorType(): int
     {
         return $this->colorType;
     }
 
-    
     public function getCompression(): int
     {
         return $this->compression;
     }
 
-    
     public function getFilter(): int
     {
         return $this->filter;
     }
 
-    
     public function getInterlace(): int
     {
         return $this->interlace;
@@ -100,7 +99,6 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     /**
      * @return RgbPaletteEntry[]
      */
-    
     public function getPlte(): array
     {
         return $this->plte;
@@ -109,7 +107,16 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        foreach (['width', 'compression', 'height', 'bitDepth', 'colorType', 'compression', 'filter', 'interlace'] as $key) {
+        foreach ([
+            'width',
+            'compression',
+            'height',
+            'bitDepth',
+            'colorType',
+            'compression',
+            'filter',
+            'interlace',
+        ] as $key) {
             Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
         }
         $object = new self(
@@ -132,7 +139,6 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $object;
     }
 
-    
     public function jsonSerialize(): array
     {
         $data = [

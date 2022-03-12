@@ -8,14 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticatorSelectionCriteria;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AuthenticatorSelectionCriteria
- *
  * @internal
  */
-class AuthenticatorSelectionCriteriaTest extends TestCase
+final class AuthenticatorSelectionCriteriaTest extends TestCase
 {
     /**
      * @test
@@ -28,18 +23,26 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
             ->setUserVerification('user_verification')
         ;
 
-        static::assertEquals('user_verification', $authenticatorSelectionCriteria->getUserVerification());
-        static::assertEquals('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
+        static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
+        static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertNull($authenticatorSelectionCriteria->getResidentKey());
-        static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', json_encode($authenticatorSelectionCriteria));
+        static::assertSame(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            json_encode($authenticatorSelectionCriteria)
+        );
 
-        $data = AuthenticatorSelectionCriteria::createFromString('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}');
-        static::assertEquals('user_verification', $data->getUserVerification());
-        static::assertEquals('authenticator_attachment', $data->getAuthenticatorAttachment());
+        $data = AuthenticatorSelectionCriteria::createFromString(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}'
+        );
+        static::assertSame('user_verification', $data->getUserVerification());
+        static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());
         static::assertNull($data->getResidentKey());
-        static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}', json_encode($data));
+        static::assertSame(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            json_encode($data)
+        );
     }
 
     /**
@@ -54,17 +57,25 @@ class AuthenticatorSelectionCriteriaTest extends TestCase
             ->setResidentKey('resident_key')
         ;
 
-        static::assertEquals('user_verification', $authenticatorSelectionCriteria->getUserVerification());
-        static::assertEquals('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
+        static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
+        static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
-        static::assertEquals('resident_key', $authenticatorSelectionCriteria->getResidentKey());
-        static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}', json_encode($authenticatorSelectionCriteria));
+        static::assertSame('resident_key', $authenticatorSelectionCriteria->getResidentKey());
+        static::assertSame(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}',
+            json_encode($authenticatorSelectionCriteria)
+        );
 
-        $data = AuthenticatorSelectionCriteria::createFromString('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}');
-        static::assertEquals('user_verification', $data->getUserVerification());
-        static::assertEquals('authenticator_attachment', $data->getAuthenticatorAttachment());
+        $data = AuthenticatorSelectionCriteria::createFromString(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}'
+        );
+        static::assertSame('user_verification', $data->getUserVerification());
+        static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());
-        static::assertEquals('resident_key', $data->getResidentKey());
-        static::assertEquals('{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}', json_encode($data));
+        static::assertSame('resident_key', $data->getResidentKey());
+        static::assertSame(
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}',
+            json_encode($data)
+        );
     }
 }

@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
-use function Safe\openssl_sign;
 
 abstract class ECDSA implements Signature
 {
@@ -26,7 +25,7 @@ abstract class ECDSA implements Signature
         $publicKey = $key->toPublic();
         $signature = ECSignature::toAsn1($signature, $this->getSignaturePartLength());
 
-        return 1 === openssl_verify($data, $signature, $publicKey->asPEM(), $this->getHashAlgorithm());
+        return openssl_verify($data, $signature, $publicKey->asPEM(), $this->getHashAlgorithm()) === 1;
     }
 
     abstract protected function getCurve(): int;

@@ -12,29 +12,28 @@ use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
 {
-
-    public function __construct(private AuthenticatorAttestationResponse $authenticatorAttestationResponse, private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions, private ServerRequestInterface $request, private PublicKeyCredentialSource $publicKeyCredentialSource)
-    {
+    public function __construct(
+        private AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        private ServerRequestInterface $request,
+        private PublicKeyCredentialSource $publicKeyCredentialSource
+    ) {
     }
-
 
     public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse
     {
         return $this->authenticatorAttestationResponse;
     }
 
-
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;
     }
 
-
     public function getRequest(): ServerRequestInterface
     {
         return $this->request;
     }
-
 
     public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
     {

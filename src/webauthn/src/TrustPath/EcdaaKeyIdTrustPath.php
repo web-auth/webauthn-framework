@@ -5,21 +5,13 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
 
 final class EcdaaKeyIdTrustPath implements TrustPath
 {
-
-    public function __construct(private string $ecdaaKeyId)
-    {
+    public function __construct(
+        private string $ecdaaKeyId
+    ) {
     }
-
-
-    public static function create(string $ecdaaKeyId): self
-    {
-        return new self($ecdaaKeyId);
-    }
-
 
     public function getEcdaaKeyId(): string
     {
@@ -29,8 +21,6 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     /**
      * @return string[]
      */
-
-    #[ArrayShape(['type' => 'string', 'ecdaaKeyId' => 'string'])]
     public function jsonSerialize(): array
     {
         return [
@@ -46,6 +36,6 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     {
         Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
 
-        return EcdaaKeyIdTrustPath::create($data['ecdaaKeyId']);
+        return new self($data['ecdaaKeyId']);
     }
 }

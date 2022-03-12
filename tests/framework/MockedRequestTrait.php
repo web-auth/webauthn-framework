@@ -13,7 +13,7 @@ trait MockedRequestTrait
 {
     protected function createRequestWithHost(string $host): ServerRequestInterface
     {
-        $uri = new Uri('https://'.$host);
+        $uri = new Uri('https://' . $host);
 
         return new ServerRequest('POST', $uri);
     }

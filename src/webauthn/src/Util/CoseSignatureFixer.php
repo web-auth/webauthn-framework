@@ -26,19 +26,22 @@ abstract class CoseSignatureFixer
         switch ($algorithm::identifier()) {
             case ES256K::ID:
             case ES256::ID:
-                if (64 === mb_strlen($signature, '8bit')) {
+                if (mb_strlen($signature, '8bit') === 64) {
                     return $signature;
                 }
 
-                return ECSignature::fromAsn1($signature, 64); //TODO: fix this hardcoded value by adding a dedicated method for the algorithms
+                return ECSignature::fromAsn1(
+                    $signature,
+                    64
+                ); //TODO: fix this hardcoded value by adding a dedicated method for the algorithms
             case ES384::ID:
-                if (96 === mb_strlen($signature, '8bit')) {
+                if (mb_strlen($signature, '8bit') === 96) {
                     return $signature;
                 }
 
                 return ECSignature::fromAsn1($signature, 96);
             case ES512::ID:
-                if (132 === mb_strlen($signature, '8bit')) {
+                if (mb_strlen($signature, '8bit') === 132) {
                     return $signature;
                 }
 

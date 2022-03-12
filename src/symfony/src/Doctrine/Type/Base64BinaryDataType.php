@@ -6,16 +6,16 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\base64_decode;
+use function is_string;
 
 final class Base64BinaryDataType extends Type
 {
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if (! is_string($value)) {
             return $value;
         }
 
@@ -25,27 +25,31 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
-        return base64_decode($value, true);
+        $result = base64_decode($value, true);
+        if ($result === false) {
+            return $value;
+        }
+
+        return $result;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritdoc}
      */
-    
     public function getName(): string
     {
         return 'base64';
@@ -54,7 +58,6 @@ final class Base64BinaryDataType extends Type
     /**
      * {@inheritdoc}
      */
-    
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

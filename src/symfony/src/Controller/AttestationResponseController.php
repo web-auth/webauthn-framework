@@ -21,9 +21,15 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationResponseController
 {
-    
-    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $attestationResponseValidator, private PublicKeyCredentialSourceRepository $credentialSourceRepository, private OptionsStorage $optionStorage, private SuccessHandler $successHandler, private FailureHandler $failureHandler)
-    {
+    public function __construct(
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private OptionsStorage $optionStorage,
+        private SuccessHandler $successHandler,
+        private FailureHandler $failureHandler
+    ) {
     }
 
     public function __invoke(Request $request): Response
@@ -40,10 +46,22 @@ final class AttestationResponseController
             $storedData = $this->optionStorage->get($request);
 
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
-            Assertion::isInstanceOf($publicKeyCredentialCreationOptions, PublicKeyCredentialCreationOptions::class, 'Unable to find the public key credential creation options');
+            Assertion::isInstanceOf(
+                $publicKeyCredentialCreationOptions,
+                PublicKeyCredentialCreationOptions::class,
+                'Unable to find the public key credential creation options'
+            );
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
-            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Unable to find the public key credential user entity');
-            $credentialSource = $this->attestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $psr7Request);
+            Assertion::isInstanceOf(
+                $userEntity,
+                PublicKeyCredentialUserEntity::class,
+                'Unable to find the public key credential user entity'
+            );
+            $credentialSource = $this->attestationResponseValidator->check(
+                $response,
+                $publicKeyCredentialCreationOptions,
+                $psr7Request
+            );
 
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 

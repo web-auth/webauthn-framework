@@ -16,12 +16,13 @@
         }
     ],
     "require": {
-        "spomky-labs/cbor-bundle": "^2.0",
-        "symfony/config": "^5.3",
-        "symfony/dependency-injection": "^5.3",
-        "symfony/framework-bundle": "^5.3",
+        "spomky-labs/cbor-bundle": "^3.0",
+        "symfony/config": "^6.0",
+        "symfony/dependency-injection": "^6.0",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/psr-http-message-bridge": "^2.0",
         "web-auth/webauthn-lib": "self.version",
-        "web-token/jwt-signature": "^2.0.9"
+        "web-token/jwt-signature": "^3.0"
     },
     "autoload": {
         "psr-4": {

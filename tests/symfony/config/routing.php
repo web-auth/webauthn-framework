@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Webauthn\Bundle\Tests\Functional\AdminController;
-use Webauthn\Bundle\Tests\Functional\HomeController;
-use Webauthn\Bundle\Tests\Functional\SecurityController;
+use Webauthn\Tests\Bundle\Functional\AdminController;
+use Webauthn\Tests\Bundle\Functional\HomeController;
+use Webauthn\Tests\Bundle\Functional\SecurityController;
 
 return static function (RoutingConfigurator $routes): void {
     // Webauthn Dynamic routes

@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
 
 final class CertificateTrustPath implements TrustPath
 {
+    /**
+     * @var string[]
+     */
+    private array $certificates;
 
-    public function __construct(private array $certificates)
+    /**
+     * @param string[] $certificates
+     */
+    public function __construct(array $certificates)
     {
+        $this->certificates = $certificates;
     }
-
 
     public static function create(array $certificates): self
     {
@@ -35,11 +41,12 @@ final class CertificateTrustPath implements TrustPath
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
 
-        return CertificateTrustPath::create($data['x5c']);
+        return new self($data['x5c']);
     }
 
-
-    #[ArrayShape(['type' => 'string', 'x5c' => 'array'])]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         return [

@@ -8,7 +8,8 @@ use Webauthn\CertificateChainChecker\CertificateChainChecker;
 use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()

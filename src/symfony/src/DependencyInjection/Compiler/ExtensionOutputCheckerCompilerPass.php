@@ -18,7 +18,7 @@ final class ExtensionOutputCheckerCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(ExtensionOutputCheckerHandler::class)) {
+        if (! $container->hasDefinition(ExtensionOutputCheckerHandler::class)) {
             return;
         }
 

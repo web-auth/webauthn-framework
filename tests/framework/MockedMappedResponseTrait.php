@@ -17,7 +17,7 @@ trait MockedMappedResponseTrait
         $requestMatcher = new RequestMatcher();
         $map = $this->getResponsesMap();
         $client->on($requestMatcher, function (RequestInterface $request) use ($map) {
-            if (!isset($map[$request->getUri()->__toString()])) {
+            if (! isset($map[$request->getUri()->__toString()])) {
                 return new Response(404);
             }
 
@@ -28,5 +28,5 @@ trait MockedMappedResponseTrait
         });
     }
 
-    abstract protected function getResponsesMap(): array;
+    abstract protected function getResponsesMap(): iterable;
 }

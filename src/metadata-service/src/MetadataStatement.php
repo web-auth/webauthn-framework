@@ -6,140 +6,180 @@ namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
-/**
- * @see https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html
- */
 class MetadataStatement implements JsonSerializable
 {
-    public const KEY_PROTECTION_SOFTWARE = 0x0001;
-    public const KEY_PROTECTION_HARDWARE = 0x0002;
-    public const KEY_PROTECTION_TEE = 0x0004;
-    public const KEY_PROTECTION_SECURE_ELEMENT = 0x0008;
-    public const KEY_PROTECTION_REMOTE_HANDLE = 0x0010;
+    public const KEY_PROTECTION_SOFTWARE = 'software';
 
-    public const MATCHER_PROTECTION_SOFTWARE = 0x0001;
-    public const MATCHER_PROTECTION_TEE = 0x0002;
-    public const MATCHER_PROTECTION_ON_CHIP = 0x0004;
+    public const KEY_PROTECTION_HARDWARE = 'hardware';
 
-    public const ATTACHMENT_HINT_INTERNAL = 0x0001;
-    public const ATTACHMENT_HINT_EXTERNAL = 0x0002;
-    public const ATTACHMENT_HINT_WIRED = 0x0004;
-    public const ATTACHMENT_HINT_WIRELESS = 0x0008;
-    public const ATTACHMENT_HINT_NFC = 0x0010;
-    public const ATTACHMENT_HINT_BLUETOOTH = 0x0020;
-    public const ATTACHMENT_HINT_NETWORK = 0x0040;
-    public const ATTACHMENT_HINT_READY = 0x0080;
-    public const ATTACHMENT_HINT_WIFI_DIRECT = 0x0100;
+    public const KEY_PROTECTION_TEE = 'tee';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 0x0001;
-    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 0x0002;
-    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 0x0004;
-    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 0x0008;
-    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 0x0010;
+    public const KEY_PROTECTION_SECURE_ELEMENT = 'secure_element';
 
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 0x0001;
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 0x0002;
-    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 0x0003;
-    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 0x0004;
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 0x0005;
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 0x0006;
-    public const ALG_SIGN_SM2_SM3_RAW = 0x0007;
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 0x0008;
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 0x0009;
-    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 0x000A;
-    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 0x000B;
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 0x000C;
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 0x000D;
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 0x000E;
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 0x000F;
-    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 0x0010;
-    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 0x0011;
-    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 0x0012;
+    public const KEY_PROTECTION_REMOTE_HANDLE = 'remote_handle';
 
-    public const ALG_KEY_ECC_X962_RAW = 0x0100;
-    public const ALG_KEY_ECC_X962_DER = 0x0101;
-    public const ALG_KEY_RSA_2048_RAW = 0x0102;
-    public const ALG_KEY_RSA_2048_DER = 0x0103;
-    public const ALG_KEY_COSE = 0x0104;
+    public const MATCHER_PROTECTION_SOFTWARE = 'software';
 
-    public const ATTESTATION_BASIC_FULL = 0x3E07;
-    public const ATTESTATION_BASIC_SURROGATE = 0x3E08;
-    public const ATTESTATION_ECDAA = 0x3E09;
-    public const ATTESTATION_ATTCA = 0x3E0A;
+    public const MATCHER_PROTECTION_TEE = 'tee';
 
-    private ?string $legalHeader = null;
+    public const MATCHER_PROTECTION_ON_CHIP = 'on_chip';
 
-    private ?string $aaid = null;
+    public const ATTACHMENT_HINT_INTERNAL = 'internal';
 
-    private ?string $aaguid = null;
+    public const ATTACHMENT_HINT_EXTERNAL = 'external';
+
+    public const ATTACHMENT_HINT_WIRED = 'wired';
+
+    public const ATTACHMENT_HINT_WIRELESS = 'wireless';
+
+    public const ATTACHMENT_HINT_NFC = 'nfc';
+
+    public const ATTACHMENT_HINT_BLUETOOTH = 'bluetooth';
+
+    public const ATTACHMENT_HINT_NETWORK = 'network';
+
+    public const ATTACHMENT_HINT_READY = 'ready';
+
+    public const ATTACHMENT_HINT_WIFI_DIRECT = 'wifi_direct';
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 'any';
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 'privileged_software';
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 'tee';
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 'hardware';
+
+    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 'remote';
+
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 'secp256r1_ecdsa_sha256_raw';
+
+    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 'secp256r1_ecdsa_sha256_der';
+
+    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 'rsassa_pss_sha256_raw';
+
+    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 'rsassa_pss_sha256_der';
+
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 'secp256k1_ecdsa_sha256_raw';
+
+    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 'secp256k1_ecdsa_sha256_der';
+
+    public const ALG_SIGN_SM2_SM3_RAW = 'sm2_sm3_raw';
+
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 'rsa_emsa_pkcs1_sha256_raw';
+
+    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 'rsa_emsa_pkcs1_sha256_der';
+
+    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 'rsassa_pss_sha384_raw';
+
+    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 'rsassa_pss_sha256_raw';
+
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 'rsassa_pkcsv15_sha256_raw';
+
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 'rsassa_pkcsv15_sha384_raw';
+
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 'rsassa_pkcsv15_sha512_raw';
+
+    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 'rsassa_pkcsv15_sha1_raw';
+
+    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 'secp384r1_ecdsa_sha384_raw';
+
+    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 'secp512r1_ecdsa_sha256_raw';
+
+    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 'ed25519_eddsa_sha512_raw';
+
+    public const ALG_KEY_ECC_X962_RAW = 'ecc_x962_raw';
+
+    public const ALG_KEY_ECC_X962_DER = 'ecc_x962_der';
+
+    public const ALG_KEY_RSA_2048_RAW = 'rsa_2048_raw';
+
+    public const ALG_KEY_RSA_2048_DER = 'rsa_2048_der';
+
+    public const ALG_KEY_COSE = 'cose';
+
+    public const ATTESTATION_BASIC_FULL = 'basic_full';
+
+    public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
+
+    public const ATTESTATION_ECDAA = 'ecdaa';
+
+    public const ATTESTATION_ATTCA = 'attca';
+
+    private ?string $legalHeader;
+
+    private ?string $aaid;
+
+    private ?string $aaguid;
+
     /**
      * @var string[]
      */
     private array $attestationCertificateKeyIdentifiers = [];
 
-    private string $description = '';
+    private string $description;
 
-    /**
-     * @var string[]
-     */
-    private array $alternativeDescriptions = [];
+    private AlternativeDescriptions $alternativeDescriptions;
 
-    private int $authenticatorVersion = 0;
+    private int $authenticatorVersion;
 
-    private ?string $protocolFamily = null;
+    private string $protocolFamily;
+
+    private int $schema;
 
     /**
      * @var Version[]
      */
-    private array $upv = [];
-
-    private ?string $assertionScheme = null;
-
-    private ?int $authenticationAlgorithm = null;
+    private array $upv;
 
     /**
-     * @var int[]
+     * @var string[]
      */
-    private array $authenticationAlgorithms = [];
-
-    private ?int $publicKeyAlgAndEncoding = null;
+    private array $authenticationAlgorithms;
 
     /**
-     * @var int[]
+     * @var string[]
      */
-    private array $publicKeyAlgAndEncodings = [];
+    private array $publicKeyAlgAndEncodings;
 
     /**
-     * @var int[]
+     * @var string[]
      */
-    private array $attestationTypes = [];
+    private array $attestationTypes;
 
     /**
      * @var VerificationMethodANDCombinations[]
      */
-    private array $userVerificationDetails = [];
+    private array $userVerificationDetails;
 
-    private int $keyProtection = 0;
+    /**
+     * @var string[]
+     */
+    private array $keyProtection;
 
     private ?bool $isKeyRestricted = null;
 
     private ?bool $isFreshUserVerificationRequired = null;
 
-    private int $matcherProtection = 0;
+    /**
+     * @var string[]
+     */
+    private array $matcherProtection;
 
     private ?int $cryptoStrength = null;
 
-    private ?string $operatingEnv = null;
+    /**
+     * @var string[]
+     */
+    private array $attachmentHint = [];
 
-    private int $attachmentHint = 0;
-
-    private ?bool $isSecondFactorOnly = null;
-
-    private int $tcDisplay = 0;
+    /**
+     * @var string[]
+     */
+    private array $tcDisplay;
 
     private ?string $tcDisplayContentType = null;
 
@@ -151,7 +191,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $attestationRootCertificates = [];
+    private array $attestationRootCertificates;
 
     /**
      * @var EcdaaTrustAnchor[]
@@ -165,37 +205,26 @@ class MetadataStatement implements JsonSerializable
      */
     private array $supportedExtensions = [];
 
-    /**
-     * @var array<int, StatusReport>
-     */
-    private array $statusReports = [];
-
-    /**
-     * @var string[]
-     */
-    private array $rootCertificates = [];
+    private AuthenticatorGetInfo $authenticatorGetInfo;
 
     public static function createFromString(string $statement): self
     {
-        $data = json_decode($statement, true);
+        $data = json_decode($statement, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid Metadata Statement');
 
         return self::createFromArray($data);
     }
-
 
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
-    
     public function getAaid(): ?string
     {
         return $this->aaid;
     }
 
-    
     public function getAaguid(): ?string
     {
         return $this->aaguid;
@@ -204,34 +233,26 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return string[]
      */
-    
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
     }
 
-    
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return string[]
-     */
-    
-    public function getAlternativeDescriptions(): array
+    public function getAlternativeDescriptions(): AlternativeDescriptions
     {
         return $this->alternativeDescriptions;
     }
 
-    
     public function getAuthenticatorVersion(): int
     {
         return $this->authenticatorVersion;
     }
 
-    
     public function getProtocolFamily(): string
     {
         return $this->protocolFamily;
@@ -240,52 +261,35 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return Version[]
      */
-    
     public function getUpv(): array
     {
         return $this->upv;
     }
 
-    
-    public function getAssertionScheme(): ?string
+    public function getSchema(): ?int
     {
-        return $this->assertionScheme;
-    }
-
-    
-    public function getAuthenticationAlgorithm(): ?int
-    {
-        return $this->authenticationAlgorithm;
+        return $this->schema;
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
-    
     public function getAuthenticationAlgorithms(): array
     {
         return $this->authenticationAlgorithms;
     }
 
-    
-    public function getPublicKeyAlgAndEncoding(): ?int
-    {
-        return $this->publicKeyAlgAndEncoding;
-    }
-
     /**
-     * @return int[]
+     * @return string[]
      */
-    
     public function getPublicKeyAlgAndEncodings(): array
     {
         return $this->publicKeyAlgAndEncodings;
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
-    
     public function getAttestationTypes(): array
     {
         return $this->attestationTypes;
@@ -294,67 +298,58 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return VerificationMethodANDCombinations[]
      */
-    
     public function getUserVerificationDetails(): array
     {
         return $this->userVerificationDetails;
     }
 
-    
-    public function getKeyProtection(): int
+    /**
+     * @return string[]
+     */
+    public function getKeyProtection(): array
     {
         return $this->keyProtection;
     }
 
-    
     public function isKeyRestricted(): ?bool
     {
         return (bool) $this->isKeyRestricted;
     }
 
-    
     public function isFreshUserVerificationRequired(): ?bool
     {
         return (bool) $this->isFreshUserVerificationRequired;
     }
 
-    
-    public function getMatcherProtection(): int
+    /**
+     * @return string[]
+     */
+    public function getMatcherProtection(): array
     {
         return $this->matcherProtection;
     }
 
-    
     public function getCryptoStrength(): ?int
     {
         return $this->cryptoStrength;
     }
 
-    
-    public function getOperatingEnv(): ?string
-    {
-        return $this->operatingEnv;
-    }
-
-    
-    public function getAttachmentHint(): int
+    /**
+     * @return string[]
+     */
+    public function getAttachmentHint(): array
     {
         return $this->attachmentHint;
     }
 
-    
-    public function isSecondFactorOnly(): ?bool
-    {
-        return (bool) $this->isSecondFactorOnly;
-    }
-
-    
-    public function getTcDisplay(): int
+    /**
+     * @return string[]
+     */
+    public function getTcDisplay(): array
     {
         return $this->tcDisplay;
     }
 
-    
     public function getTcDisplayContentType(): ?string
     {
         return $this->tcDisplayContentType;
@@ -363,7 +358,6 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return DisplayPNGCharacteristicsDescriptor[]
      */
-    
     public function getTcDisplayPNGCharacteristics(): array
     {
         return $this->tcDisplayPNGCharacteristics;
@@ -372,7 +366,6 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return string[]
      */
-    
     public function getAttestationRootCertificates(): array
     {
         return $this->attestationRootCertificates;
@@ -381,13 +374,11 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return EcdaaTrustAnchor[]
      */
-    
     public function getEcdaaTrustAnchors(): array
     {
         return $this->ecdaaTrustAnchors;
     }
 
-    
     public function getIcon(): ?string
     {
         return $this->icon;
@@ -396,7 +387,6 @@ class MetadataStatement implements JsonSerializable
     /**
      * @return ExtensionDescriptor[]
      */
-    
     public function getSupportedExtensions(): array
     {
         return $this->supportedExtensions;
@@ -406,14 +396,16 @@ class MetadataStatement implements JsonSerializable
     {
         $object = new self();
         foreach (['description', 'protocolFamily'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            if (! isset($data[$key])) {
+                throw new InvalidArgumentException(sprintf('The parameter "%s" is missing', $key));
+            }
         }
         $object->legalHeader = $data['legalHeader'] ?? null;
         $object->aaid = $data['aaid'] ?? null;
         $object->aaguid = $data['aaguid'] ?? null;
         $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? [];
         $object->description = $data['description'];
-        $object->alternativeDescriptions = $data['alternativeDescriptions'] ?? [];
+        $object->alternativeDescriptions = AlternativeDescriptions::create($data['alternativeDescriptions'] ?? []);
         $object->authenticatorVersion = $data['authenticatorVersion'] ?? 0;
         $object->protocolFamily = $data['protocolFamily'];
         if (isset($data['upv'])) {
@@ -424,10 +416,7 @@ class MetadataStatement implements JsonSerializable
                 $object->upv[] = Version::createFromArray($value);
             }
         }
-        $object->assertionScheme = $data['assertionScheme'] ?? null;
-        $object->authenticationAlgorithm = $data['authenticationAlgorithm'] ?? null;
         $object->authenticationAlgorithms = $data['authenticationAlgorithms'] ?? [];
-        $object->publicKeyAlgAndEncoding = $data['publicKeyAlgAndEncoding'] ?? null;
         $object->publicKeyAlgAndEncodings = $data['publicKeyAlgAndEncodings'] ?? [];
         $object->attestationTypes = $data['attestationTypes'] ?? [];
         if (isset($data['userVerificationDetails'])) {
@@ -438,22 +427,22 @@ class MetadataStatement implements JsonSerializable
                 $object->userVerificationDetails[] = VerificationMethodANDCombinations::createFromArray($value);
             }
         }
-        $object->keyProtection = $data['keyProtection'] ?? 0;
+        $object->keyProtection = $data['keyProtection'] ?? [];
         $object->isKeyRestricted = $data['isKeyRestricted'] ?? null;
         $object->isFreshUserVerificationRequired = $data['isFreshUserVerificationRequired'] ?? null;
-        $object->matcherProtection = $data['matcherProtection'] ?? 0;
+        $object->matcherProtection = $data['matcherProtection'] ?? [];
         $object->cryptoStrength = $data['cryptoStrength'] ?? null;
-        $object->operatingEnv = $data['operatingEnv'] ?? null;
-        $object->attachmentHint = $data['attachmentHint'] ?? 0;
-        $object->isSecondFactorOnly = $data['isSecondFactorOnly'] ?? null;
-        $object->tcDisplay = $data['tcDisplay'] ?? 0;
+        $object->attachmentHint = $data['attachmentHint'] ?? [];
+        $object->tcDisplay = $data['tcDisplay'] ?? [];
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
             Assertion::isArray($tcDisplayPNGCharacteristics, 'Invalid Metadata Statement');
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
                 Assertion::isArray($tcDisplayPNGCharacteristic, 'Invalid Metadata Statement');
-                $object->tcDisplayPNGCharacteristics[] = DisplayPNGCharacteristicsDescriptor::createFromArray($tcDisplayPNGCharacteristic);
+                $object->tcDisplayPNGCharacteristics[] = DisplayPNGCharacteristicsDescriptor::createFromArray(
+                    $tcDisplayPNGCharacteristic
+                );
             }
         }
         $object->attestationRootCertificates = $data['attestationRootCertificates'] ?? [];
@@ -467,20 +456,17 @@ class MetadataStatement implements JsonSerializable
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
-        $object->rootCertificates = $data['rootCertificates'] ?? [];
         if (isset($data['statusReports'])) {
             $reports = $data['statusReports'];
             Assertion::isArray($reports, 'Invalid Metadata Statement');
             foreach ($reports as $report) {
                 Assertion::isArray($report, 'Invalid Metadata Statement');
-                $object->statusReports[] = StatusReport::createFromArray($report);
             }
         }
 
         return $object;
     }
 
-    
     public function jsonSerialize(): array
     {
         $data = [
@@ -493,10 +479,7 @@ class MetadataStatement implements JsonSerializable
             'authenticatorVersion' => $this->authenticatorVersion,
             'protocolFamily' => $this->protocolFamily,
             'upv' => $this->upv,
-            'assertionScheme' => $this->assertionScheme,
-            'authenticationAlgorithm' => $this->authenticationAlgorithm,
             'authenticationAlgorithms' => $this->authenticationAlgorithms,
-            'publicKeyAlgAndEncoding' => $this->publicKeyAlgAndEncoding,
             'publicKeyAlgAndEncodings' => $this->publicKeyAlgAndEncodings,
             'attestationTypes' => $this->attestationTypes,
             'userVerificationDetails' => $this->userVerificationDetails,
@@ -505,14 +488,15 @@ class MetadataStatement implements JsonSerializable
             'isFreshUserVerificationRequired' => $this->isFreshUserVerificationRequired,
             'matcherProtection' => $this->matcherProtection,
             'cryptoStrength' => $this->cryptoStrength,
-            'operatingEnv' => $this->operatingEnv,
             'attachmentHint' => $this->attachmentHint,
-            'isSecondFactorOnly' => $this->isSecondFactorOnly,
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
-            'tcDisplayPNGCharacteristics' => array_map(static function (DisplayPNGCharacteristicsDescriptor $object): array {
-                return $object->jsonSerialize();
-            }, $this->tcDisplayPNGCharacteristics),
+            'tcDisplayPNGCharacteristics' => array_map(
+                static function (DisplayPNGCharacteristicsDescriptor $object): array {
+                    return $object->jsonSerialize();
+                },
+                $this->tcDisplayPNGCharacteristics
+            ),
             'attestationRootCertificates' => $this->attestationRootCertificates,
             'ecdaaTrustAnchors' => array_map(static function (EcdaaTrustAnchor $object): array {
                 return $object->jsonSerialize();
@@ -521,50 +505,8 @@ class MetadataStatement implements JsonSerializable
             'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
                 return $object->jsonSerialize();
             }, $this->supportedExtensions),
-            'rootCertificates' => $this->rootCertificates,
-            'statusReports' => $this->statusReports,
         ];
 
         return Utils::filterNullValues($data);
-    }
-
-    /**
-     * @return StatusReport[]
-     */
-    public function getStatusReports(): array
-    {
-        return $this->statusReports;
-    }
-
-    /**
-     * @param StatusReport[] $statusReports
-     */
-    public function addStatusReports(StatusReport ...$statusReports): self
-    {
-        foreach ($statusReports as $report){
-            $this->statusReports[] = $report;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getRootCertificates(): array
-    {
-        return $this->rootCertificates;
-    }
-
-    /**
-     * @param string[] $rootCertificates
-     */
-    public function addRootCertificates(string ...$rootCertificates): self
-    {
-        foreach ($rootCertificates as $rootCertificate){
-            $this->rootCertificates[] = $rootCertificate;
-        }
-
-        return $this;
     }
 }

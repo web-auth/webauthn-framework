@@ -8,7 +8,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()
@@ -16,11 +17,7 @@ return static function (ContainerConfigurator $container): void {
 
     if (class_exists(JWKFactory::class) && class_exists(RS256::class)) {
         $serviceConfigurator = $container->set(AndroidSafetyNetAttestationStatementSupport::class);
-        $serviceConfigurator->call('setMaxAge', [
-            '%webauthn.android_safetynet.max_age%',
-        ]);
-        $serviceConfigurator->call('setLeeway', [
-            '%webauthn.android_safetynet.leeway%',
-        ]);
+        $serviceConfigurator->call('setMaxAge', ['%webauthn.android_safetynet.max_age%']);
+        $serviceConfigurator->call('setLeeway', ['%webauthn.android_safetynet.leeway%']);
     }
 };

@@ -14,7 +14,6 @@ class Manager
      */
     private array $algorithms = [];
 
-    
     public static function create(): self
     {
         return new self();
@@ -41,7 +40,6 @@ class Manager
         yield from $this->algorithms;
     }
 
-    
     public function has(int $identifier): bool
     {
         return array_key_exists($identifier, $this->algorithms);

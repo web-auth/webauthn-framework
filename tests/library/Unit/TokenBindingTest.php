@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use Base64Url\Base64Url;
 use InvalidArgumentException;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
 use Webauthn\TokenBinding\TokenBinding;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\TokenBinding\TokenBinding
- *
  * @internal
  */
-class TokenBindingTest extends TestCase
+final class TokenBindingTest extends TestCase
 {
     /**
      * @test
@@ -26,25 +21,29 @@ class TokenBindingTest extends TestCase
     {
         $tokenBinding = new TokenBinding('status', 'id');
 
-        static::assertEquals('status', $tokenBinding->getStatus());
-        static::assertEquals('id', $tokenBinding->getId());
+        static::assertSame('status', $tokenBinding->getStatus());
+        static::assertSame('id', $tokenBinding->getId());
     }
 
     /**
      * @test
      * @dataProvider dataCreationFromArray
      */
-    public function aTokenBindingCanBeCreatedFromArrayObject(array $data, ?array $exception, ?string $expectedStatus, ?string $expectedId): void
-    {
-        if (null !== $exception) {
+    public function aTokenBindingCanBeCreatedFromArrayObject(
+        array $data,
+        ?array $exception,
+        ?string $expectedStatus,
+        ?string $expectedId
+    ): void {
+        if ($exception !== null) {
             static::expectException($exception['class']);
             static::expectExceptionMessage($exception['message']);
         }
 
         $tokenBinding = TokenBinding::createFormArray($data);
 
-        static::assertEquals($expectedStatus, $tokenBinding->getStatus());
-        static::assertEquals($expectedId, $tokenBinding->getId());
+        static::assertSame($expectedStatus, $tokenBinding->getStatus());
+        static::assertSame($expectedId, $tokenBinding->getId());
     }
 
     public function dataCreationFromArray(): array
@@ -78,8 +77,7 @@ class TokenBindingTest extends TestCase
                 'expectedId' => null,
             ],
             [
-                'data' => [
-                ],
+                'data' => [],
                 'exception' => [
                     'class' => InvalidArgumentException::class,
                     'message' => 'The member "status" is required',
@@ -101,7 +99,7 @@ class TokenBindingTest extends TestCase
             [
                 'data' => [
                     'status' => TokenBinding::TOKEN_BINDING_STATUS_PRESENT,
-                    'id' => Base64Url::encode('id'),
+                    'id' => Base64UrlSafe::encodeUnpadded('id'),
                 ],
                 'exception' => null,
                 'expectedStatus' => TokenBinding::TOKEN_BINDING_STATUS_PRESENT,

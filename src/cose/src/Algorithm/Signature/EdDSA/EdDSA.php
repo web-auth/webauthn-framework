@@ -22,7 +22,7 @@ class EdDSA implements Signature
 
         $x = $key->x();
         $d = $key->d();
-        $secret = $d.$x;
+        $secret = $d . $x;
 
         return match ($key->curve()) {
             OkpKey::CURVE_ED25519 => sodium_crypto_sign_detached($data, $secret),
@@ -40,7 +40,6 @@ class EdDSA implements Signature
         };
     }
 
-    
     public static function identifier(): int
     {
         return Algorithms::COSE_ALGORITHM_EdDSA;

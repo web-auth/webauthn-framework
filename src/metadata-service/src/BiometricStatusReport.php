@@ -22,49 +22,41 @@ class BiometricStatusReport implements JsonSerializable
 
     private ?string $certificationRequirementsVersion = null;
 
-    
     public function getCertLevel(): int
     {
         return $this->certLevel;
     }
 
-    
     public function getModality(): int
     {
         return $this->modality;
     }
 
-    
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
-    
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
-    
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
-    
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
-    
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
     }
 
-    
     public static function createFromArray(array $data): self
     {
         $object = new self();
@@ -79,7 +71,6 @@ class BiometricStatusReport implements JsonSerializable
         return $object;
     }
 
-    
     public function jsonSerialize(): array
     {
         $data = [
@@ -92,6 +83,6 @@ class BiometricStatusReport implements JsonSerializable
             'certificationRequirementsVersion' => $this->certificationRequirementsVersion,
         ];
 
-        return array_filter($data, static function ($var): bool {return null !== $var; });
+        return array_filter($data, static function ($var): bool {return $var !== null; });
     }
 }

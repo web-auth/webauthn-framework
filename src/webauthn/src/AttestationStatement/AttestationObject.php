@@ -9,46 +9,35 @@ use Webauthn\MetadataService\MetadataStatement;
 
 class AttestationObject
 {
-    private ?MetadataStatement $metadataStatement;
+    private ?MetadataStatement $metadataStatement = null;
 
-    
-    public function __construct(private string $rawAttestationObject, private AttestationStatement $attStmt, private AuthenticatorData $authData)
-    {
-        $this->metadataStatement = null;
+    public function __construct(
+        private string $rawAttestationObject,
+        private AttestationStatement $attStmt,
+        private AuthenticatorData $authData
+    ) {
     }
 
-    
-    public static function create(string $rawAttestationObject, AttestationStatement $attStmt, AuthenticatorData $authData): self
-    {
-        return new self($rawAttestationObject, $attStmt, $authData);
-    }
-
-    
     public function getRawAttestationObject(): string
     {
         return $this->rawAttestationObject;
     }
 
-    
     public function getAttStmt(): AttestationStatement
     {
         return $this->attStmt;
     }
 
-    public function setAttStmt(AttestationStatement $attStmt): self
+    public function setAttStmt(AttestationStatement $attStmt): void
     {
         $this->attStmt = $attStmt;
-
-        return $this;
     }
 
-    
     public function getAuthData(): AuthenticatorData
     {
         return $this->authData;
     }
 
-    
     public function getMetadataStatement(): ?MetadataStatement
     {
         return $this->metadataStatement;

@@ -6,7 +6,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Webauthn\PublicKeyCredentialDescriptorCollection;
 
 final class PublicKeyCredentialDescriptorCollectionType extends Type
@@ -16,11 +16,11 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
-        return json_encode($value);
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -28,7 +28,7 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?PublicKeyCredentialDescriptorCollection
     {
-        if (null === $value || $value instanceof PublicKeyCredentialDescriptorCollection) {
+        if ($value === null || $value instanceof PublicKeyCredentialDescriptorCollection) {
             return $value;
         }
 
@@ -46,7 +46,6 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    
     public function getName(): string
     {
         return 'public_key_credential_descriptor_collection';
@@ -55,7 +54,6 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

@@ -6,8 +6,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function Safe\json_decode;
-use function Safe\json_encode;
+use const JSON_THROW_ON_ERROR;
 use Webauthn\AttestedCredentialData;
 
 final class AttestedCredentialDataType extends Type
@@ -17,11 +16,11 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return $value;
         }
 
-        return json_encode($value);
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -29,10 +28,10 @@ final class AttestedCredentialDataType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?AttestedCredentialData
     {
-        if (null === $value || $value instanceof AttestedCredentialData) {
+        if ($value === null || $value instanceof AttestedCredentialData) {
             return $value;
         }
-        $json = json_decode($value, true);
+        $json = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         return AttestedCredentialData::createFromArray($json);
     }
@@ -40,15 +39,14 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
-        return $platform->getJsonTypeDeclarationSQL($column);
+        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
      * {@inheritdoc}
      */
-    
     public function getName(): string
     {
         return 'attested_credential_data';
@@ -57,7 +55,6 @@ final class AttestedCredentialDataType extends Type
     /**
      * {@inheritdoc}
      */
-    
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

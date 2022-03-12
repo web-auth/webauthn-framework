@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\TrustPath;
 
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
 /**
- * @group unit
- * @group Fido2
- *
  * @internal
  */
-class TrustPathTest extends TestCase
+final class TrustPathTest extends TestCase
 {
     /**
      * @test
@@ -27,7 +25,7 @@ class TrustPathTest extends TestCase
     {
         $tp = CertificateTrustPath::create(['cert#1']);
 
-        static::assertEquals(['cert#1'], $tp->getCertificates());
+        static::assertSame(['cert#1'], $tp->getCertificates());
     }
 
     /**
@@ -39,7 +37,7 @@ class TrustPathTest extends TestCase
     {
         $tp = new EcdaaKeyIdTrustPath('id');
 
-        static::assertEquals('id', $tp->getEcdaaKeyId());
+        static::assertSame('id', $tp->getEcdaaKeyId());
     }
 
     /**
@@ -78,7 +76,9 @@ class TrustPathTest extends TestCase
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported');
+        $this->expectExceptionMessage(
+            'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
+        );
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);
@@ -89,29 +89,13 @@ class TrustPathTest extends TestCase
      *
      * @use TrustPathLoader
      */
-    public function theLoaderCanLoadOldTrustPathType(): void
-    {
-        $loadedTrustPath = TrustPathLoader::loadTrustPath([
-            'type' => 'ecdaa_key_id',
-            'ecdaaKeyId' => 'key_id',
-        ]);
-
-        static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertEquals('key_id', $loadedTrustPath->getEcdaaKeyId());
-    }
-
-    /**
-     * @test
-     *
-     * @use TrustPathLoader
-     */
     public function theLoaderCanLoadNewTrustPathType(): void
     {
-        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'));
-        $data = json_decode($trustPath, true);
+        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'), JSON_THROW_ON_ERROR);
+        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
         $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
 
         static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertEquals('key_id', $loadedTrustPath->getEcdaaKeyId());
+        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
     }
 }

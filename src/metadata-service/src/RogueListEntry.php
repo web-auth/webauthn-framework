@@ -5,23 +5,21 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 
 class RogueListEntry implements JsonSerializable
 {
-    
-    public function __construct(private string $sk, private string $date)
-    {
+    public function __construct(
+        private string $sk,
+        private string $date
+    ) {
     }
 
-    
     public function getSk(): string
     {
         return $this->sk;
     }
 
-    
     public function getDate(): ?string
     {
         return $this->date;
@@ -34,14 +32,9 @@ class RogueListEntry implements JsonSerializable
         Assertion::keyExists($data, 'date', 'The key "date" is missing');
         Assertion::string($data['date'], 'The key "date" is invalid');
 
-        return new self(
-            $data['sk'],
-            $data['date']
-        );
+        return new self($data['sk'], $data['date']);
     }
 
-    
-    #[ArrayShape(['sk' => 'string', 'date' => 'string'])]
     public function jsonSerialize(): array
     {
         return [

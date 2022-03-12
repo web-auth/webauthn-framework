@@ -11,19 +11,13 @@ use Webauthn\AttestationStatement\AttestationObject;
  */
 class AuthenticatorAttestationResponse extends AuthenticatorResponse
 {
-    
-    public function __construct(CollectedClientData $clientDataJSON, private AttestationObject $attestationObject)
-    {
+    public function __construct(
+        CollectedClientData $clientDataJSON,
+        private AttestationObject $attestationObject
+    ) {
         parent::__construct($clientDataJSON);
     }
 
-    
-    public static function create(CollectedClientData $clientDataJSON, AttestationObject $attestationObject): self
-    {
-        return new self($clientDataJSON, $attestationObject);
-    }
-
-    
     public function getAttestationObject(): AttestationObject
     {
         return $this->attestationObject;

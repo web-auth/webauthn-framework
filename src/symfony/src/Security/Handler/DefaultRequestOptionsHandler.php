@@ -11,8 +11,10 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class DefaultRequestOptionsHandler implements RequestOptionsHandler
 {
-    public function onRequestOptions(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions, ?PublicKeyCredentialUserEntity $userEntity): Response
-    {
+    public function onRequestOptions(
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ?PublicKeyCredentialUserEntity $userEntity
+    ): Response {
         $data = $publicKeyCredentialRequestOptions->jsonSerialize();
         $data['status'] = 'ok';
         $data['errorMessage'] = '';

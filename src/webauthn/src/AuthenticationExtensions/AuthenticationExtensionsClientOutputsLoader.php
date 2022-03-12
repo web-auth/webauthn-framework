@@ -13,7 +13,7 @@ abstract class AuthenticationExtensionsClientOutputsLoader
     public static function load(CBORObject $object): AuthenticationExtensionsClientOutputs
     {
         Assertion::isInstanceOf($object, MapObject::class, 'Invalid extension object');
-        $data = $object->getNormalizedData();
+        $data = $object->normalize();
         $extensions = AuthenticationExtensionsClientOutputs::create();
         foreach ($data as $key => $value) {
             Assertion::string($key, 'Invalid extension key');

@@ -9,14 +9,9 @@ use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 
 /**
- * @group unit
- * @group Fido2
- *
- * @covers \Webauthn\AttestationStatement\AppleAttestationStatementSupport
- *
  * @internal
  */
-class AppleAttestationStatementSupportTest extends TestCase
+final class AppleAttestationStatementSupportTest extends TestCase
 {
     /**
      * @test
@@ -40,10 +35,12 @@ class AppleAttestationStatementSupportTest extends TestCase
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with at least one certificate.');
+        $this->expectExceptionMessage(
+            'The attestation statement value "x5c" must be a list with at least one certificate.'
+        );
         $support = new AppleAttestationStatementSupport();
 
-        static::assertEquals('apple', $support->name());
+        static::assertSame('apple', $support->name());
         static::assertFalse($support->load([
             'fmt' => 'apple',
             'attStmt' => [

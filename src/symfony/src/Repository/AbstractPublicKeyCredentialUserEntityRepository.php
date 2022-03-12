@@ -8,7 +8,6 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use function Safe\sprintf;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 abstract class AbstractPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository, ServiceEntityRepositoryInterface
@@ -70,12 +69,10 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
         $this->manager->flush();
     }
 
-
     protected function getClass(): string
     {
         return $this->class;
     }
-
 
     protected function getEntityManager(): EntityManagerInterface
     {

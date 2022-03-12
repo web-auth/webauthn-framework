@@ -5,30 +5,22 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use JetBrains\PhpStorm\ArrayShape;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
-    
-    public function __construct(private string $type, private int $alg)
-    {
+    public function __construct(
+        private string $type,
+        private int $alg
+    ) {
     }
 
-    
-    public static function create(string $type, int $alg): self
-    {
-        return new self($type, $alg);
-    }
-
-    
     public function getType(): string
     {
         return $this->type;
     }
 
-    
     public function getAlg(): int
     {
         return $this->alg;
@@ -36,7 +28,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -52,14 +44,12 @@ class PublicKeyCredentialParameters implements JsonSerializable
         Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
         Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
 
-        return new self(
-            $json['type'],
-            $json['alg']
-        );
+        return new self($json['type'], $json['alg']);
     }
 
-    
-    #[ArrayShape(['type' => 'string', 'alg' => 'int'])]
+    /**
+     * @return mixed[]
+     */
     public function jsonSerialize(): array
     {
         return [

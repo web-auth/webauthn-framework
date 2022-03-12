@@ -10,7 +10,6 @@ final class ED512 extends EdDSA
 {
     public const ID = -261;
 
-
     public static function identifier(): int
     {
         return self::ID;

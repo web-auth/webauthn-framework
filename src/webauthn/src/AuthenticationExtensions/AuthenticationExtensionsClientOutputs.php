@@ -8,12 +8,12 @@ use function array_key_exists;
 use ArrayIterator;
 use Assert\Assertion;
 use function count;
+use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use function Safe\json_decode;
-use function Safe\sprintf;
 
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
@@ -22,22 +22,19 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     private array $extensions = [];
 
-    
     public static function create(): self
     {
         return new self();
     }
 
-    public function add(AuthenticationExtension $extension): self
+    public function add(AuthenticationExtension $extension): void
     {
         $this->extensions[$extension->name()] = $extension;
-
-        return $this;
     }
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true);
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -86,7 +83,6 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
         return new ArrayIterator($this->extensions);
     }
 
-    
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->extensions, $mode);

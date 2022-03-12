@@ -17,7 +17,9 @@ final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias(CounterChecker::class) || !$container->hasDefinition(AuthenticatorAssertionResponseValidator::class)) {
+        if (! $container->hasAlias(CounterChecker::class) || ! $container->hasDefinition(
+            AuthenticatorAssertionResponseValidator::class
+        )) {
             return;
         }
 

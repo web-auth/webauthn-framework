@@ -11,28 +11,26 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 final class NoneAttestationStatementSupport implements AttestationStatementSupport
 {
-    
-    public static function create(): self
-    {
-        return new self();
-    }
-
-    
     public function name(): string
     {
         return 'none';
     }
 
+    /**
+     * @param mixed[] $attestation
+     */
     public function load(array $attestation): AttestationStatement
     {
         Assertion::noContent($attestation['attStmt'], 'Invalid attestation object');
 
-        return AttestationStatement::createNone($attestation['fmt'], $attestation['attStmt'], EmptyTrustPath::create());
+        return AttestationStatement::createNone($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());
     }
 
-    
-    public function isValid(string $clientDataJSONHash, AttestationStatement $attestationStatement, AuthenticatorData $authenticatorData): bool
-    {
-        return 0 === count($attestationStatement->getAttStmt());
+    public function isValid(
+        string $clientDataJSONHash,
+        AttestationStatement $attestationStatement,
+        AuthenticatorData $authenticatorData
+    ): bool {
+        return count($attestationStatement->getAttStmt()) === 0;
     }
 }

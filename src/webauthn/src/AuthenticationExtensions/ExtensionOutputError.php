@@ -9,13 +9,15 @@ use Throwable;
 
 class ExtensionOutputError extends Exception
 {
-    
-    public function __construct(private AuthenticationExtension $authenticationExtension, string $message = '', int $code = 0, Throwable $previous = null)
-    {
+    public function __construct(
+        private AuthenticationExtension $authenticationExtension,
+        string $message = '',
+        int $code = 0,
+        Throwable $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
     }
 
-    
     public function getAuthenticationExtension(): AuthenticationExtension
     {
         return $this->authenticationExtension;

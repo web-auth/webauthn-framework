@@ -9,12 +9,11 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
-    
-    public function __construct(private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions)
-    {
+    public function __construct(
+        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
+    ) {
     }
 
-    
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;

@@ -9,12 +9,11 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class PublicKeyCredentialRequestOptionsCreatedEvent extends Event
 {
-    
-    public function __construct(private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions)
-    {
+    public function __construct(
+        private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions
+    ) {
     }
 
-    
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
     {
         return $this->publicKeyCredentialRequestOptions;

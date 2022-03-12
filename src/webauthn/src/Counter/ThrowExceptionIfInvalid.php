@@ -14,23 +14,9 @@ final class ThrowExceptionIfInvalid implements CounterChecker
 {
     private LoggerInterface $logger;
 
-
-    public function __construct()
+    public function __construct(?LoggerInterface $logger = null)
     {
-        $this->logger = new NullLogger();
-    }
-
-
-    public static function create(): self
-    {
-        return new self();
-    }
-
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-
-        return $this;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function check(PublicKeyCredentialSource $publicKeyCredentialSource, int $currentCounter): void

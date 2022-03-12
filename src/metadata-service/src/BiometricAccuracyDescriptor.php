@@ -10,38 +10,44 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
     private ?int $maxReferenceDataSets;
 
-    public function __construct(private ?float $FAR, private ?float $FRR, private ?float $EER, private ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
-        Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
+    public function __construct(
+        private ?float $FAR,
+        private ?float $FRR,
+        private ?float $EER,
+        private ?float $FAAR,
+        ?int $maxReferenceDataSets,
+        ?int $maxRetries = null,
+        ?int $blockSlowdown = null
+    ) {
+        Assertion::greaterOrEqualThan(
+            $maxReferenceDataSets,
+            0,
+            Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer')
+        );
         $this->maxReferenceDataSets = $maxReferenceDataSets;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
-    
     public function getFAR(): ?float
     {
         return $this->FAR;
     }
 
-    
     public function getFRR(): ?float
     {
         return $this->FRR;
     }
 
-    
     public function getEER(): ?float
     {
         return $this->EER;
     }
 
-    
     public function getFAAR(): ?float
     {
         return $this->FAAR;
     }
 
-    
     public function getMaxReferenceDataSets(): ?int
     {
         return $this->maxReferenceDataSets;
@@ -60,7 +66,6 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
-    
     public function jsonSerialize(): array
     {
         $data = [

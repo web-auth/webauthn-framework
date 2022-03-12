@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
-use JetBrains\PhpStorm\ArrayShape;
-use function Safe\json_encode;
+use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,14 +46,12 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    
-    public function getData(): Data | array
+    public function getData(): array|Data
     {
         return $this->data;
     }
 
-    
-    public function getName(): string
+    public function getName()
     {
         return 'webauthn_collector';
     }
@@ -63,95 +61,111 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->data = [];
     }
 
-    
-    #[ArrayShape([PublicKeyCredentialCreationOptionsCreatedEvent::class => 'string[]', PublicKeyCredentialRequestOptionsCreatedEvent::class => 'string[]', AuthenticatorAttestationResponseValidationSucceededEvent::class => 'string[]', AuthenticatorAttestationResponseValidationFailedEvent::class => 'string[]', AuthenticatorAssertionResponseValidationSucceededEvent::class => 'string[]', AuthenticatorAssertionResponseValidationFailedEvent::class => 'string[]'])]
     public static function getSubscribedEvents(): array
     {
         return [
             PublicKeyCredentialCreationOptionsCreatedEvent::class => ['addPublicKeyCredentialCreationOptions'],
             PublicKeyCredentialRequestOptionsCreatedEvent::class => ['addPublicKeyCredentialRequestOptions'],
-            AuthenticatorAttestationResponseValidationSucceededEvent::class => ['addAuthenticatorAttestationResponseValidationSucceeded'],
-            AuthenticatorAttestationResponseValidationFailedEvent::class => ['addAuthenticatorAttestationResponseValidationFailed'],
-            AuthenticatorAssertionResponseValidationSucceededEvent::class => ['addAuthenticatorAssertionResponseValidationSucceeded'],
-            AuthenticatorAssertionResponseValidationFailedEvent::class => ['addAuthenticatorAssertionResponseValidationFailed'],
+            AuthenticatorAttestationResponseValidationSucceededEvent::class => [
+                'addAuthenticatorAttestationResponseValidationSucceeded',
+            ],
+            AuthenticatorAttestationResponseValidationFailedEvent::class => [
+                'addAuthenticatorAttestationResponseValidationFailed',
+            ],
+            AuthenticatorAssertionResponseValidationSucceededEvent::class => [
+                'addAuthenticatorAssertionResponseValidationSucceeded',
+            ],
+            AuthenticatorAssertionResponseValidationFailedEvent::class => [
+                'addAuthenticatorAssertionResponseValidationFailed',
+            ],
         ];
     }
 
-    public function addPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsCreatedEvent $event): self
+    public function addPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsCreatedEvent $event): void
     {
         $cloner = new VarCloner();
         $this->publicKeyCredentialCreationOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
         ];
-
-        return $this;
     }
 
-    public function addAuthenticatorAttestationResponseValidationSucceeded(AuthenticatorAttestationResponseValidationSucceededEvent $event): self
-    {
+    public function addAuthenticatorAttestationResponseValidationSucceeded(
+        AuthenticatorAttestationResponseValidationSucceededEvent $event
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
-
-        return $this;
     }
 
-    public function addAuthenticatorAttestationResponseValidationFailed(AuthenticatorAttestationResponseValidationFailedEvent $event): self
-    {
+    public function addAuthenticatorAttestationResponseValidationFailed(
+        AuthenticatorAttestationResponseValidationFailedEvent $event
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAttestationResponseValidationFailed[] = [
             'attestation_response' => $cloner->cloneVar($event->getAuthenticatorAttestationResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialCreationOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialCreationOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialCreationOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
-
-        return $this;
     }
 
-    public function addPublicKeyCredentialRequestOptions(PublicKeyCredentialRequestOptionsCreatedEvent $event): self
+    public function addPublicKeyCredentialRequestOptions(PublicKeyCredentialRequestOptionsCreatedEvent $event): void
     {
         $cloner = new VarCloner();
         $this->publicKeyCredentialRequestOptions[] = [
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
         ];
-
-        return $this;
     }
 
-    public function addAuthenticatorAssertionResponseValidationSucceeded(AuthenticatorAssertionResponseValidationSucceededEvent $event): self
-    {
+    public function addAuthenticatorAssertionResponseValidationSucceeded(
+        AuthenticatorAssertionResponseValidationSucceededEvent $event
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationSucceeded[] = [
             'user_handle' => $cloner->cloneVar($event->getUserHandle()),
             'credential_id' => $cloner->cloneVar($event->getCredentialId()),
             'assertion_response' => $cloner->cloneVar($event->getAuthenticatorAssertionResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'credential_source' => $cloner->cloneVar($event->getPublicKeyCredentialSource()),
         ];
-
-        return $this;
     }
 
-    public function addAuthenticatorAssertionResponseValidationFailed(AuthenticatorAssertionResponseValidationFailedEvent $event): self
-    {
+    public function addAuthenticatorAssertionResponseValidationFailed(
+        AuthenticatorAssertionResponseValidationFailedEvent $event
+    ): void {
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [
             'user_handle' => $cloner->cloneVar($event->getUserHandle()),
             'credential_id' => $cloner->cloneVar($event->getCredentialId()),
             'assertion_response' => $cloner->cloneVar($event->getAuthenticatorAssertionResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
-            'options_json' => json_encode($event->getPublicKeyCredentialRequestOptions(), JSON_PRETTY_PRINT),
+            'options_json' => json_encode(
+                $event->getPublicKeyCredentialRequestOptions(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+            ),
             'exception' => $cloner->cloneVar($event->getThrowable()),
         ];
-
-        return $this;
     }
 }
