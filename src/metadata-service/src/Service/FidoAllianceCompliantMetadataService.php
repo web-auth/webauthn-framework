@@ -41,8 +41,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         ClientInterface $httpClient,
         string $uri,
         array $additionalHeaderParameters = []
-    ): self
-    {
+    ): self {
         return new self($requestFactory, $httpClient, $uri, $additionalHeaderParameters);
     }
 

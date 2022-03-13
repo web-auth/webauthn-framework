@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
@@ -33,15 +34,17 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private int $reservedForFutureUse2,
         private int $signCount,
         private ?AuthenticationExtensionsClientOutputs $extensions,
-        string $providerKey,
+        string $firewallName,
         array $roles = []
     ) {
         parent::__construct($roles);
-        Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
+        Assertion::notEmpty($firewallName, '$firewallName must not be empty.');
 
-        $this->setUser($publicKeyCredentialUserEntity->getName());
+        if ($publicKeyCredentialUserEntity instanceof UserInterface) {
+            $this->setUser($publicKeyCredentialUserEntity);
+        }
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
-        $this->firewallName = $providerKey;
+        $this->firewallName = $firewallName;
     }
 
     /**

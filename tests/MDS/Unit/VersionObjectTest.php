@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +23,7 @@ final class VersionObjectTest extends TestCase
     {
         static::assertSame($major, $object->getMajor());
         static::assertSame($minor, $object->getMinor());
-        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
     }
 
     public function validObjectData(): array

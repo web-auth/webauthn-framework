@@ -481,13 +481,6 @@ class MetadataStatement implements JsonSerializable
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
-        if (isset($data['statusReports'])) {
-            $reports = $data['statusReports'];
-            Assertion::isArray($reports, 'Invalid Metadata Statement');
-            foreach ($reports as $report) {
-                Assertion::isArray($report, 'Invalid Metadata Statement');
-            }
-        }
 
         return $object;
     }

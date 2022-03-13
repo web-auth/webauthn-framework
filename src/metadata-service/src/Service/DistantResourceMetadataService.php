@@ -31,8 +31,7 @@ final class DistantResourceMetadataService implements MetadataService
         string $uri,
         bool $isBase64Encoded = false,
         array $additionalHeaderParameters = []
-    ): self
-    {
+    ): self {
         return new self($requestFactory, $httpClient, $uri, $isBase64Encoded, $additionalHeaderParameters);
     }
 

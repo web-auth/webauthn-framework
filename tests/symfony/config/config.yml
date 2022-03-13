@@ -68,10 +68,14 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
+    Webauthn\MetadataService\Service\ChainedMetadataServices: ~
+
     Webauthn\Tests\Bundle\Functional\FailureHandler: ~
     Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
     Webauthn\Tests\Bundle\Functional\CustomSessionStorage: ~
-    Webauthn\Tests\Bundle\Functional\MetadataStatementRepository: ~
+    Webauthn\Tests\Bundle\Functional\MetadataStatementRepository:
+        arguments:
+            - '@Webauthn\MetadataService\Service\ChainedMetadataServices'
 
     # Register nyholm/psr7 services for autowiring with PSR-17 (HTTP factories)
     Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'

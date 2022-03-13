@@ -157,7 +157,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             $user->getRoles()
         );
         $token->setUser($user);
-        $token->setAuthenticated(true);
         $this->session->set('_security_' . $firewallContext, serialize($token));
         $this->session->save();
     }
