@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use Assert\Assertion;
 use JsonSerializable;
@@ -17,9 +17,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        Assertion::range($r, 0, 255, Utils::logicException('The key "r" is invalid'));
-        Assertion::range($g, 0, 255, Utils::logicException('The key "g" is invalid'));
-        Assertion::range($b, 0, 255, Utils::logicException('The key "b" is invalid'));
+        Assertion::range($r, 0, 255, 'The key "r" is invalid');
+        Assertion::range($g, 0, 255, 'The key "g" is invalid');
+        Assertion::range($b, 0, 255, 'The key "b" is invalid');
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;

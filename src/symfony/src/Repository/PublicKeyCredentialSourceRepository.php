@@ -14,10 +14,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, ServiceEntityRepositoryInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    private EntityManagerInterface $manager;
 
     private string $class;
 

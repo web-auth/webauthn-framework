@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use JsonSerializable;
 
@@ -24,6 +24,14 @@ class AlternativeDescriptions implements JsonSerializable
         }
 
         return $object;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function all(): array
+    {
+        return $this->descriptions;
     }
 
     public function add(string $locale, string $description): self

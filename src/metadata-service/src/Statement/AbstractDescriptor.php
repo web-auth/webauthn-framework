@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use Assert\Assertion;
 use JsonSerializable;
@@ -18,12 +18,12 @@ abstract class AbstractDescriptor implements JsonSerializable
         Assertion::greaterOrEqualThan(
             $maxRetries,
             0,
-            Utils::logicException('Invalid data. The value of "maxRetries" must be a positive integer')
+            'Invalid data. The value of "maxRetries" must be a positive integer'
         );
         Assertion::greaterOrEqualThan(
             $blockSlowdown,
             0,
-            Utils::logicException('Invalid data. The value of "blockSlowdown" must be a positive integer')
+            'Invalid data. The value of "blockSlowdown" must be a positive integer'
         );
 
         $this->maxRetries = $maxRetries;

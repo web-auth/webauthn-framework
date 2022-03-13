@@ -232,8 +232,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
      */
     public function createListeners(ContainerBuilder $container, string $firewallName, array $config): array
     {
-        $accessListenerId = self::KERNEL_ACCESS_LISTENER_ID_PREFIX . $firewallName;
-
         return [];
     }
 

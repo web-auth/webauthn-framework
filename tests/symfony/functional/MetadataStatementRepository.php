@@ -7,10 +7,10 @@ namespace Webauthn\Tests\Bundle\Functional;
 use Throwable;
 use Webauthn\AttestationStatement\CanSupportStatusReport;
 use Webauthn\MetadataService\MetadataService;
-use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\SingleMetadata;
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\Statement\StatusReport;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface, CanSupportStatusReport
 {

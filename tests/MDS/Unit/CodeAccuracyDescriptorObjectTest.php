@@ -7,7 +7,7 @@ namespace Webauthn\Tests\MetadataService\Unit;
 use const JSON_UNESCAPED_SLASHES;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use Webauthn\MetadataService\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
 
 /**
  * @internal

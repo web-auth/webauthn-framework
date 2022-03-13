@@ -16,7 +16,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -41,7 +40,6 @@ class RequestResultListener
         private PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         private TokenStorageInterface $tokenStorage,
-        private SessionAuthenticationStrategyInterface $sessionStrategy,
         private ?EventDispatcherInterface $dispatcher = null
     ) {
     }
@@ -57,7 +55,7 @@ class RequestResultListener
         }
 
         try {
-            $token = $this->processWithAssertion($request);
+            $this->processWithAssertion($request);
             //$authenticatedToken = $this->authenticationManager->authenticate($token);
             //$this->sessionStrategy->onAuthentication($request, $authenticatedToken);
             $response = $this->onAssertionSuccess($request/*, $authenticatedToken*/);

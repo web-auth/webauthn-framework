@@ -164,7 +164,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
     private function createSession(): void
     {
-        /** @var SessionInterface $session */
         $this->session = self::getContainer()
             ->get('session.factory')
             ->createSession()

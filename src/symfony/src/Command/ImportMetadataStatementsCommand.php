@@ -22,8 +22,10 @@ class ImportMetadataStatementsCommand extends Command
      */
     private array $metadataServices;
 
-    public function __construct(private MetadataStatementRepository $metadataStatementRepository, MetadataService ...$metadataServices)
-    {
+    public function __construct(
+        private MetadataStatementRepository $metadataStatementRepository,
+        MetadataService ...$metadataServices
+    ) {
         parent::__construct();
         $this->metadataServices = $metadataServices;
     }
@@ -36,7 +38,9 @@ class ImportMetadataStatementsCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('This command will imports Metadata Statements from the Metadata Statement Services you declared.')
+            ->setHelp(
+                'This command will imports Metadata Statements from the Metadata Statement Services you declared.'
+            )
         ;
     }
 
@@ -45,11 +49,15 @@ class ImportMetadataStatementsCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Importing Metadata Statements');
         $io->progressStart();
-        Assertion::isInstanceOf($this->metadataStatementRepository, CanSupportImport::class, 'The repository cannot import MDS');
+        Assertion::isInstanceOf(
+            $this->metadataStatementRepository,
+            CanSupportImport::class,
+            'The repository cannot import MDS'
+        );
         foreach ($this->metadataServices as $metadataService) {
             $aaguids = $metadataService->list();
             foreach ($aaguids as $aaguid) {
-                $mds =  $metadataService->get($aaguid);
+                $mds = $metadataService->get($aaguid);
                 $this->metadataStatementRepository->import($mds);
                 $io->progressAdvance();
             }

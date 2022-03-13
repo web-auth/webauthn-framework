@@ -7,11 +7,11 @@ namespace Webauthn\Tests\MetadataService\Unit;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
-use Webauthn\MetadataService\BiometricAccuracyDescriptor;
-use Webauthn\MetadataService\CodeAccuracyDescriptor;
-use Webauthn\MetadataService\PatternAccuracyDescriptor;
-use Webauthn\MetadataService\VerificationMethodANDCombinations;
-use Webauthn\MetadataService\VerificationMethodDescriptor;
+use Webauthn\MetadataService\Statement\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\VerificationMethodANDCombinations;
+use Webauthn\MetadataService\Statement\VerificationMethodDescriptor;
 
 /**
  * @internal
@@ -41,7 +41,7 @@ final class VerificationMethodANDCombinationsObjectTest extends TestCase
                     ->addVerificationMethodDescriptor(new VerificationMethodDescriptor(
                         VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL
                     )),
-                '[{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"FAR":0.12},"paDesc":{"minComplexity":50}},{"userVerificationMethod":"fingerprint_internal"}]',
+                '[{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"selfAttestedFRR":0.12},"paDesc":{"minComplexity":50}},{"userVerificationMethod":"fingerprint_internal"}]',
             ],
         ];
     }

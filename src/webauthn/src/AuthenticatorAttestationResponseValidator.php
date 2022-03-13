@@ -23,9 +23,9 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
-use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository;
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\Statement\StatusReport;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -37,8 +37,6 @@ class AuthenticatorAttestationResponseValidator
     private ?MetadataStatementRepository $metadataStatementRepository = null;
 
     private ?CertificateChainChecker $certificateChainChecker = null;
-
-    private bool $allowMetadataStatementToBeBypassed = false;
 
     public function __construct(
         private AttestationStatementSupportManager $attestationStatementSupportManager,
@@ -321,7 +319,6 @@ class AuthenticatorAttestationResponseValidator
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
-            dump($type, $metadataStatement->getAttestationTypes());
             Assertion::inArray(
                 $type,
                 $metadataStatement->getAttestationTypes(),

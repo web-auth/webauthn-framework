@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use function array_key_exists;
 use Assert\Assertion;
-use Webauthn\MetadataService\MetadataStatement;
 use function Safe\sprintf;
+use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class InMemoryMetadataService implements MetadataService
 {
@@ -17,16 +18,25 @@ final class InMemoryMetadataService implements MetadataService
 
     public function __construct(MetadataStatement ...$statements)
     {
-        foreach($statements as $statement) {
-            $this->addStatement($statement);
+        foreach ($statements as $statement) {
+            $this->addStatements($statement);
         }
     }
 
-    public function addStatement(MetadataStatement $statement): self
+    public static function create(MetadataStatement ...$statements): self
     {
-        $aaguid = $statement->getAaguid();
-        Assertion::notNull($aaguid, 'The attestation statement has not AAGUID');
-        $this->statements[$aaguid] = $statement;
+        return new self(...$statements);
+    }
+
+    public function addStatements(MetadataStatement ...$statements): self
+    {
+        foreach ($statements as $statement) {
+            $aaguid = $statement->getAaguid();
+            if ($aaguid === null) {
+                continue;
+            }
+            $this->statements[$aaguid] = $statement;
+        }
 
         return $this;
     }
@@ -43,7 +53,11 @@ final class InMemoryMetadataService implements MetadataService
 
     public function get(string $aaguid): MetadataStatement
     {
-        Assertion::keyExists($this->statements, $aaguid, sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
+        Assertion::keyExists(
+            $this->statements,
+            $aaguid,
+            sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid)
+        );
 
         return $this->statements[$aaguid];
     }

@@ -14,16 +14,12 @@ use function Safe\unpack;
  */
 final class BigInteger
 {
-    /**
-     * Holds the BigInteger's value.
-     *
-     * @var BrickBigInteger
-     */
-    private $value;
-
-    private function __construct(BrickBigInteger $value)
-    {
-        $this->value = $value;
+    private function __construct(
+        /**
+         * Holds the BigInteger's value.
+         */
+        private BrickBigInteger $value
+    ) {
     }
 
     public static function createFromBinaryString(string $value): self
@@ -57,10 +53,6 @@ final class BigInteger
 
     /**
      * Adds two BigIntegers.
-     *
-     * @param BigInteger $y
-     *
-     * @return BigInteger
      */
     public function add(self $y): self
     {
@@ -71,10 +63,6 @@ final class BigInteger
 
     /**
      * Subtracts two BigIntegers.
-     *
-     * @param BigInteger $y
-     *
-     * @return BigInteger
      */
     public function subtract(self $y): self
     {
@@ -85,10 +73,6 @@ final class BigInteger
 
     /**
      * Multiplies two BigIntegers.
-     *
-     * @param BigInteger $x
-     *
-     * @return BigInteger
      */
     public function multiply(self $x): self
     {
@@ -99,11 +83,6 @@ final class BigInteger
 
     /**
      * Performs modular exponentiation.
-     *
-     * @param BigInteger $e
-     * @param BigInteger $n
-     *
-     * @return BigInteger
      */
     public function modPow(self $e, self $n): self
     {
@@ -114,10 +93,6 @@ final class BigInteger
 
     /**
      * Performs modular exponentiation.
-     *
-     * @param BigInteger $d
-     *
-     * @return BigInteger
      */
     public function mod(self $d): self
     {
@@ -128,8 +103,6 @@ final class BigInteger
 
     /**
      * Compares two numbers.
-     *
-     * @param BigInteger $y
      */
     public function compare(self $y): int
     {

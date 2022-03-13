@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use Assert\Assertion;
 use JsonSerializable;
+use Webauthn\MetadataService\Utils;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
@@ -37,13 +38,13 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $filter,
         int $interlace
     ) {
-        Assertion::greaterOrEqualThan($width, 0, Utils::logicException('Invalid width'));
-        Assertion::greaterOrEqualThan($height, 0, Utils::logicException('Invalid height'));
-        Assertion::range($bitDepth, 0, 254, Utils::logicException('Invalid bit depth'));
-        Assertion::range($colorType, 0, 254, Utils::logicException('Invalid color type'));
-        Assertion::range($compression, 0, 254, Utils::logicException('Invalid compression'));
-        Assertion::range($filter, 0, 254, Utils::logicException('Invalid filter'));
-        Assertion::range($interlace, 0, 254, Utils::logicException('Invalid interlace'));
+        Assertion::greaterOrEqualThan($width, 0, 'Invalid width');
+        Assertion::greaterOrEqualThan($height, 0, 'Invalid height');
+        Assertion::range($bitDepth, 0, 254, 'Invalid bit depth');
+        Assertion::range($colorType, 0, 254, 'Invalid color type');
+        Assertion::range($compression, 0, 254, 'Invalid compression');
+        Assertion::range($filter, 0, 254, 'Invalid filter');
+        Assertion::range($interlace, 0, 254, 'Invalid interlace');
 
         $this->width = $width;
         $this->height = $height;
@@ -54,9 +55,11 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         $this->interlace = $interlace;
     }
 
-    public function addPalette(RgbPaletteEntry $rgbPaletteEntry): self
+    public function addPalettes(RgbPaletteEntry ...$rgbPaletteEntries): self
     {
-        $this->plte[] = $rgbPaletteEntry;
+        foreach ($rgbPaletteEntries as $rgbPaletteEntry) {
+            $this->plte[] = $rgbPaletteEntry;
+        }
 
         return $this;
     }
@@ -99,7 +102,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     /**
      * @return RgbPaletteEntry[]
      */
-    public function getPlte(): array
+    public function getPaletteEntries(): array
     {
         return $this->plte;
     }
@@ -130,9 +133,9 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            Assertion::isArray($plte, Utils::logicException('Invalid "plte" parameter'));
+            Assertion::isArray($plte, 'Invalid "plte" parameter');
             foreach ($plte as $item) {
-                $object->addPalette(RgbPaletteEntry::createFromArray($item));
+                $object->addPalettes(RgbPaletteEntry::createFromArray($item));
             }
         }
 

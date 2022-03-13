@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
 use Assert\Assertion;
-use InvalidArgumentException;
 use JsonSerializable;
+use Webauthn\MetadataService\Utils;
 
 class VerificationMethodDescriptor implements JsonSerializable
 {
@@ -37,28 +36,6 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     public const USER_VERIFY_ALL = 'all';
 
-    private const OLD_USER_VERIFY_PRESENCE = 0x00000001;
-
-    private const OLD_USER_VERIFY_FINGERPRINT = 0x00000002;
-
-    private const OLD_USER_VERIFY_PASSCODE = 0x00000004;
-
-    private const OLD_USER_VERIFY_VOICEPRINT = 0x00000008;
-
-    private const OLD_USER_VERIFY_FACEPRINT = 0x00000010;
-
-    private const OLD_USER_VERIFY_LOCATION = 0x00000020;
-
-    private const OLD_USER_VERIFY_EYEPRINT = 0x00000040;
-
-    private const OLD_USER_VERIFY_PATTERN = 0x00000080;
-
-    private const OLD_USER_VERIFY_HANDPRINT = 0x00000100;
-
-    private const OLD_USER_VERIFY_NONE = 0x00000200;
-
-    private const OLD_USER_VERIFY_ALL = 0x00000400;
-
     private string $userVerificationMethod;
 
     public function __construct(
@@ -70,7 +47,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         Assertion::greaterOrEqualThan(
             $userVerificationMethod,
             0,
-            Utils::logicException('The parameter "userVerificationMethod" is invalid')
+            'The parameter "userVerificationMethod" is invalid'
         );
         $this->userVerificationMethod = $userVerificationMethod;
     }
@@ -163,14 +140,15 @@ class VerificationMethodDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::true(
-            array_key_exists('userVerificationMethod', $data) || array_key_exists('userVerification', $data),
-            'The parameters "userVerificationMethod" and "userVerification" or are missing'
-        );
+        if (isset($data['userVerification']) && ! isset($data['userVerificationMethod'])) {
+            $data['userVerificationMethod'] = $data['userVerification'];
+            unset($data['userVerification']);
+        }
+        Assertion::keyExists($data, 'userVerificationMethod', 'The parameters "userVerificationMethod" is missing');
 
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
-                Assertion::isArray($data[$key], Utils::logicException(sprintf('Invalid parameter "%s"', $key)));
+                Assertion::isArray($data[$key], sprintf('Invalid parameter "%s"', $key));
             }
         }
 
@@ -178,24 +156,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         $baDesc = isset($data['baDesc']) ? BiometricAccuracyDescriptor::createFromArray($data['baDesc']) : null;
         $paDesc = isset($data['paDesc']) ? PatternAccuracyDescriptor::createFromArray($data['paDesc']) : null;
 
-        if (array_key_exists('userVerificationMethod', $data)) {
-            Assertion::string(
-                $data['userVerificationMethod'],
-                Utils::logicException('The parameter "userVerificationMethod" is invalid')
-            );
-
-            return new self($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
-        }
-        if (array_key_exists('userVerification', $data)) {
-            Assertion::integer(
-                $data['userVerification'],
-                Utils::logicException('The parameter "userVerification" is invalid')
-            );
-
-            return new self(self::getVerificationMethod($data['userVerification']), $caDesc, $baDesc, $paDesc);
-        }
-
-        throw new InvalidArgumentException('Either "userVerificationMethod" or "userVerification" shall be present');
+        return new self($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
     }
 
     public function jsonSerialize(): array
@@ -208,22 +169,5 @@ class VerificationMethodDescriptor implements JsonSerializable
         ];
 
         return Utils::filterNullValues($data);
-    }
-
-    private static function getVerificationMethod(int $method): string
-    {
-        return match ($method) {
-            self::OLD_USER_VERIFY_PRESENCE => self::USER_VERIFY_PRESENCE_INTERNAL,
-            self::OLD_USER_VERIFY_FINGERPRINT => self::USER_VERIFY_FINGERPRINT_INTERNAL,
-            self::OLD_USER_VERIFY_PASSCODE => self::USER_VERIFY_PASSCODE_INTERNAL,
-            self::OLD_USER_VERIFY_VOICEPRINT => self::USER_VERIFY_VOICEPRINT_INTERNAL,
-            self::OLD_USER_VERIFY_FACEPRINT => self::USER_VERIFY_FACEPRINT_INTERNAL,
-            self::OLD_USER_VERIFY_LOCATION => self::USER_VERIFY_LOCATION_INTERNAL,
-            self::OLD_USER_VERIFY_EYEPRINT => self::USER_VERIFY_EYEPRINT_INTERNAL,
-            self::OLD_USER_VERIFY_PATTERN => self::USER_VERIFY_PATTERN_INTERNAL,
-            self::OLD_USER_VERIFY_HANDPRINT => self::USER_VERIFY_HANDPRINT_INTERNAL,
-            self::OLD_USER_VERIFY_ALL => self::USER_VERIFY_ALL,
-            default => self::USER_VERIFY_NONE,
-        };
     }
 }

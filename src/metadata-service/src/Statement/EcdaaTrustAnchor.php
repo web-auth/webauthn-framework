@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use Assert\Assertion;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\MetadataService\Utils;
 
 class EcdaaTrustAnchor implements JsonSerializable
 {

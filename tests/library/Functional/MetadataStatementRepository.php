@@ -4,46 +4,23 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Webauthn\MetadataService\MetadataStatement;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\MetadataService;
-use Webauthn\MetadataService\SingleMetadata;
+use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
-    /**
-     * @var SingleMetadata[]
-     */
-    private array $metadataStatements = [];
-
-    /**
-     * @var MetadataService[]
-     */
-    private array $metadataServices = [];
-
-    public function addSingleStatement(SingleMetadata $metadataStatement): void
-    {
-        $this->metadataStatements[] = $metadataStatement;
-    }
-
-    public function addService(MetadataService $metadataService): void
-    {
-        $this->metadataServices[] = $metadataService;
+    public function __construct(
+        private MetadataService $service
+    ) {
     }
 
     public function findOneByAAGUID(string $aaguid): ?MetadataStatement
     {
-        foreach ($this->metadataStatements as $metadataStatement) {
-            if ($metadataStatement->getMetadataStatement()->getAaguid() === $aaguid) {
-                return $metadataStatement->getMetadataStatement();
-            }
-        }
-        foreach ($this->metadataServices as $metadataService) {
-            if ($metadataService->has($aaguid)) {
-                return $metadataService->get($aaguid);
-            }
+        if (! $this->service->has($aaguid)) {
+            return null;
         }
 
-        return null;
+        return $this->service->get($aaguid);
     }
 }

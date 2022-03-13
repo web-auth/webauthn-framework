@@ -2,26 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Service;
 
+use function array_key_exists;
 use Assert\Assertion;
 use function count;
 use JsonSerializable;
 use LogicException;
-use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\MetadataService\Statement\BiometricStatusReport;
+use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\Statement\StatusReport;
+use Webauthn\MetadataService\Utils;
 
-class MetadataTOCPayloadEntry implements JsonSerializable
+class MetadataBLOBPayloadEntry implements JsonSerializable
 {
-    private ?string $aaid;
-
-    private ?string $aaguid;
-
     /**
      * @var string[]
      */
     private array $attestationCertificateKeyIdentifiers = [];
 
-    private ?string $hash = null;
+    /**
+     * @var BiometricStatusReport[]
+     */
+    private array $biometricStatusReports = [];
 
     /**
      * @var StatusReport[]
@@ -29,11 +32,10 @@ class MetadataTOCPayloadEntry implements JsonSerializable
     private array $statusReports = [];
 
     public function __construct(
-        ?string $aaid,
-        ?string $aaguid,
+        private ?string $aaid,
+        private ?string $aaguid,
         array $attestationCertificateKeyIdentifiers,
-        ?string $hash,
-        private ?string $url,
+        private ?MetadataStatement $metadataStatement,
         private string $timeOfLastStatusChange,
         private ?string $rogueListURL,
         private ?string $rogueListHash
@@ -49,22 +51,21 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
             Assertion::string(
                 $attestationCertificateKeyIdentifier,
-                Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings')
+                'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             Assertion::notEmpty(
                 $attestationCertificateKeyIdentifier,
-                Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings')
+                'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             Assertion::regex(
                 $attestationCertificateKeyIdentifier,
                 '/^[0-9a-f]+$/',
-                Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings')
+                'Invalid attestation certificate identifier. Shall be a list of strings'
             );
         }
         $this->aaid = $aaid;
         $this->aaguid = $aaguid;
         $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
-        $this->hash = Base64UrlSafe::decode($hash);
     }
 
     public function getAaid(): ?string
@@ -82,19 +83,33 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         return $this->attestationCertificateKeyIdentifiers;
     }
 
-    public function getHash(): ?string
+    public function getMetadataStatement(): ?MetadataStatement
     {
-        return $this->hash;
+        return $this->metadataStatement;
     }
 
-    public function getUrl(): ?string
+    public function addBiometricStatusReports(BiometricStatusReport ...$biometricStatusReports): self
     {
-        return $this->url;
+        foreach ($biometricStatusReports as $biometricStatusReport) {
+            $this->biometricStatusReports[] = $biometricStatusReport;
+        }
+
+        return $this;
     }
 
-    public function addStatusReports(StatusReport $statusReport): self
+    /**
+     * @return StatusReport[]
+     */
+    public function getBiometricStatusReports(): array
     {
-        $this->statusReports[] = $statusReport;
+        return $this->biometricStatusReports;
+    }
+
+    public function addStatusReports(StatusReport ...$statusReports): self
+    {
+        foreach ($statusReports as $statusReport) {
+            $this->statusReports[] = $statusReport;
+        }
 
         return $this;
     }
@@ -128,31 +143,33 @@ class MetadataTOCPayloadEntry implements JsonSerializable
         Assertion::keyExists(
             $data,
             'timeOfLastStatusChange',
-            Utils::logicException('Invalid data. The parameter "timeOfLastStatusChange" is missing')
+            'Invalid data. The parameter "timeOfLastStatusChange" is missing'
         );
-        Assertion::keyExists(
-            $data,
-            'statusReports',
-            Utils::logicException('Invalid data. The parameter "statusReports" is missing')
-        );
+        Assertion::keyExists($data, 'statusReports', 'Invalid data. The parameter "statusReports" is missing');
         Assertion::isArray(
             $data['statusReports'],
-            Utils::logicException(
-                'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
-            )
+            'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
         );
         $object = new self(
             $data['aaid'] ?? null,
             $data['aaguid'] ?? null,
             $data['attestationCertificateKeyIdentifiers'] ?? [],
-            $data['hash'] ?? null,
-            $data['url'] ?? null,
+            isset($data['metadataStatement']) ? MetadataStatement::createFromArray($data['metadataStatement']) : null,
             $data['timeOfLastStatusChange'],
             $data['rogueListURL'] ?? null,
             $data['rogueListHash'] ?? null
         );
         foreach ($data['statusReports'] as $statusReport) {
             $object->addStatusReports(StatusReport::createFromArray($statusReport));
+        }
+        if (array_key_exists('biometricStatusReport', $data)) {
+            Assertion::isArray(
+                $data['biometricStatusReport'],
+                'Invalid data. The parameter "biometricStatusReport" shall be an array of BiometricStatusReport objects'
+            );
+            foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
+                $object->addBiometricStatusReports(BiometricStatusReport::createFromArray($biometricStatusReport));
+            }
         }
 
         return $object;
@@ -164,8 +181,6 @@ class MetadataTOCPayloadEntry implements JsonSerializable
             'aaid' => $this->aaid,
             'aaguid' => $this->aaguid,
             'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
-            'hash' => Base64UrlSafe::encodeUnpadded($this->hash),
-            'url' => $this->url,
             'statusReports' => array_map(static function (StatusReport $object): array {
                 return $object->jsonSerialize();
             }, $this->statusReports),

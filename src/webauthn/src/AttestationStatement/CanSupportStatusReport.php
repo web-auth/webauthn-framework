@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Webauthn\MetadataService\StatusReport;
+use Webauthn\MetadataService\Statement\StatusReport;
 
 interface CanSupportStatusReport
 {

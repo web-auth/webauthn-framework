@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use InvalidArgumentException;
-use Webauthn\MetadataService\MetadataStatement;
 use function Safe\sprintf;
+use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class ChainedMetadataServices implements MetadataService
 {
@@ -17,9 +17,14 @@ final class ChainedMetadataServices implements MetadataService
 
     public function __construct(MetadataService ...$services)
     {
-        foreach($services as $service) {
+        foreach ($services as $service) {
             $this->addService($service);
         }
+    }
+
+    public static function create(MetadataService ...$services): self
+    {
+        return new self(...$services);
     }
 
     public function addService(MetadataService $service): self

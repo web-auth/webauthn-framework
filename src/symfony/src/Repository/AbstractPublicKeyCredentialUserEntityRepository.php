@@ -12,10 +12,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 abstract class AbstractPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository, ServiceEntityRepositoryInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    private EntityManagerInterface $manager;
 
     private string $class;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use Webauthn\AuthenticatorData;
-use Webauthn\MetadataService\MetadataStatement;
+use Webauthn\MetadataService\Statement\MetadataStatement;
 
 class AttestationObject
 {

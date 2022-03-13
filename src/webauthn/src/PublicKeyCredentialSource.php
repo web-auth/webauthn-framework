@@ -20,17 +20,12 @@ use Webauthn\TrustPath\TrustPathLoader;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
-     * @var string[]
-     */
-    protected array $transports;
-
-    /**
      * @param string[] $transports
      */
     public function __construct(
         protected string $publicKeyCredentialId,
         protected string $type,
-        array $transports,
+        protected array $transports,
         protected string $attestationType,
         protected TrustPath $trustPath,
         protected AbstractUid $aaguid,
@@ -39,7 +34,6 @@ class PublicKeyCredentialSource implements JsonSerializable
         protected int $counter,
         protected ?array $otherUI = null
     ) {
-        $this->transports = $transports;
     }
 
     public function getPublicKeyCredentialId(): string

@@ -7,10 +7,10 @@ namespace Webauthn\Tests\MetadataService\Unit;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\TestCase;
-use Webauthn\MetadataService\BiometricAccuracyDescriptor;
-use Webauthn\MetadataService\CodeAccuracyDescriptor;
-use Webauthn\MetadataService\PatternAccuracyDescriptor;
-use Webauthn\MetadataService\VerificationMethodDescriptor;
+use Webauthn\MetadataService\Statement\BiometricAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
+use Webauthn\MetadataService\Statement\VerificationMethodDescriptor;
 
 /**
  * @internal
@@ -45,7 +45,7 @@ final class VerificationMethodDescriptorObjectTest extends TestCase
                     new BiometricAccuracyDescriptor(0.12, null, null, null, null),
                     new PatternAccuracyDescriptor(50)
                 ),
-                '{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"FAR":0.12},"paDesc":{"minComplexity":50}}',
+                '{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"selfAttestedFRR":0.12},"paDesc":{"minComplexity":50}}',
             ],
         ];
     }

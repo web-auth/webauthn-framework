@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\MetadataService;
+namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
+use Webauthn\MetadataService\Utils;
 
 class ExtensionDescriptor implements JsonSerializable
 {
@@ -16,14 +17,10 @@ class ExtensionDescriptor implements JsonSerializable
         private string $id,
         ?int $tag,
         private ?string $data,
-        private bool $fail_if_unknown
+        private bool $failIfUnknown
     ) {
         if ($tag !== null) {
-            Assertion::greaterOrEqualThan(
-                $tag,
-                0,
-                Utils::logicException('Invalid data. The parameter "tag" shall be a positive integer')
-            );
+            Assertion::greaterOrEqualThan($tag, 0, 'Invalid data. The parameter "tag" shall be a positive integer');
         }
         $this->tag = $tag;
     }
@@ -45,34 +42,24 @@ class ExtensionDescriptor implements JsonSerializable
 
     public function isFailIfUnknown(): bool
     {
-        return $this->fail_if_unknown;
+        return $this->failIfUnknown;
     }
 
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'id', Utils::logicException('Invalid data. The parameter "id" is missing'));
-        Assertion::string($data['id'], Utils::logicException('Invalid data. The parameter "id" shall be a string'));
-        Assertion::keyExists(
-            $data,
-            'fail_if_unknown',
-            Utils::logicException('Invalid data. The parameter "fail_if_unknown" is missing')
-        );
+        Assertion::keyExists($data, 'id', 'Invalid data. The parameter "id" is missing');
+        Assertion::string($data['id'], 'Invalid data. The parameter "id" shall be a string');
+        Assertion::keyExists($data, 'fail_if_unknown', 'Invalid data. The parameter "fail_if_unknown" is missing');
         Assertion::boolean(
             $data['fail_if_unknown'],
-            Utils::logicException('Invalid data. The parameter "fail_if_unknown" shall be a boolean')
+            'Invalid data. The parameter "fail_if_unknown" shall be a boolean'
         );
         if (array_key_exists('tag', $data)) {
-            Assertion::integer(
-                $data['tag'],
-                Utils::logicException('Invalid data. The parameter "tag" shall be a positive integer')
-            );
+            Assertion::integer($data['tag'], 'Invalid data. The parameter "tag" shall be a positive integer');
         }
         if (array_key_exists('data', $data)) {
-            Assertion::string(
-                $data['data'],
-                Utils::logicException('Invalid data. The parameter "data" shall be a string')
-            );
+            Assertion::string($data['data'], 'Invalid data. The parameter "data" shall be a string');
         }
 
         return new self($data['id'], $data['tag'] ?? null, $data['data'] ?? null, $data['fail_if_unknown']);
@@ -84,7 +71,7 @@ class ExtensionDescriptor implements JsonSerializable
             'id' => $this->id,
             'tag' => $this->tag,
             'data' => $this->data,
-            'fail_if_unknown' => $this->fail_if_unknown,
+            'fail_if_unknown' => $this->failIfUnknown,
         ];
 
         return Utils::filterNullValues($result);

@@ -98,7 +98,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         return match (true) {
             $attestationStatement->getTrustPath() instanceof CertificateTrustPath => $this->processWithCertificate(
-                $clientDataJSONHash,
                 $attestationStatement,
                 $authenticatorData
             ),
@@ -246,7 +245,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     }
 
     private function processWithCertificate(
-        string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {

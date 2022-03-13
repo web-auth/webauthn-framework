@@ -15,18 +15,18 @@ final class MemoryPublicKeyCredentialSourceRepository implements PublicKeyCreden
      */
     private ?array $sources = null;
 
-    public function findOneByCredentialId(string $id): ?PublicKeyCredentialSource
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
-        return $this->sources[$id] ?? null;
+        return $this->sources[$publicKeyCredentialId] ?? null;
     }
 
-    public function findAllForUserEntity(PublicKeyCredentialUserEntity $userEntity): array
+    public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
         return [];
     }
 
-    public function saveCredentialSource(PublicKeyCredentialSource $source): void
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->sources[$source->getPublicKeyCredentialId()] = $source;
+        $this->sources[$publicKeyCredentialSource->getPublicKeyCredentialId()] = $publicKeyCredentialSource;
     }
 }

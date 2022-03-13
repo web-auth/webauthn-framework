@@ -23,11 +23,6 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
     public const ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE = 'enterprise';
 
     /**
-     * @var PublicKeyCredentialParameters[]
-     */
-    private $pubKeyCredParams = [];
-
-    /**
      * @var PublicKeyCredentialDescriptor[]
      */
     private array $excludeCredentials = [];
@@ -43,10 +38,9 @@ class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
         private PublicKeyCredentialRpEntity $rp,
         private PublicKeyCredentialUserEntity $user,
         string $challenge,
-        array $pubKeyCredParams
+        private array $pubKeyCredParams
     ) {
         parent::__construct($challenge);
-        $this->pubKeyCredParams = $pubKeyCredParams;
         $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
         $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
     }

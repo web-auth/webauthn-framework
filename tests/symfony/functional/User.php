@@ -24,14 +24,6 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
         return array_unique($this->roles + ['ROLE_USER']);
     }
 
-    public function getPassword(): void
-    {
-    }
-
-    public function getSalt(): void
-    {
-    }
-
     public function getUsername(): string
     {
         return $this->getName();

@@ -9,16 +9,11 @@ use Assert\Assertion;
 final class CertificateTrustPath implements TrustPath
 {
     /**
-     * @var string[]
-     */
-    private array $certificates;
-
-    /**
      * @param string[] $certificates
      */
-    public function __construct(array $certificates)
-    {
-        $this->certificates = $certificates;
+    public function __construct(
+        private array $certificates
+    ) {
     }
 
     public static function create(array $certificates): self

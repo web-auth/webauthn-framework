@@ -15,6 +15,7 @@ use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Finder\Finder;
@@ -33,8 +34,9 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
 use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
-use Webauthn\MetadataService\Service\MetadataService;
-use Webauthn\MetadataService\SingleMetadata;
+use Webauthn\MetadataService\Service\ChainedMetadataServices;
+use Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService;
+use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\MockedMappedResponseTrait;
@@ -193,25 +195,28 @@ abstract class AbstractTestCase extends TestCase
             $this->prepareResponsesMap($client);
         }
         if ($this->metadataStatementRepository === null) {
-            $this->metadataStatementRepository = new MetadataStatementRepository();
-            foreach ($this->getSingleStatements() as $statement) {
-                $this->metadataStatementRepository->addSingleStatement(new SingleMetadata($statement, false));
+            $metadataService = new ChainedMetadataServices();
+            foreach ($this->getSingleStatements() as $filename) {
+                $metadataService->addService(LocalResourceMetadataService::create($filename));
             }
+            foreach ($this->getDistantStatements() as $filename) {
+                $response = new Response(200, [], file_get_contents($filename));
+                $client = new Client();
+                $client->addResponse($response);
 
-            $finder = new Finder();
-            $finder->files()
-                ->in(__DIR__ . '/../../metadataServices')
-            ;
-
-            foreach ($finder->files() as $file) {
-                $this->metadataStatementRepository->addService(
-                    new MetadataService(
-                        sprintf('https://mds3.certinfra.fidoalliance.org/execute/%s', $file->getRelativePathname()),
-                        $client,
-                        new Psr17Factory()
-                    )
+                $metadataService->addService(
+                    FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
                 );
             }
+
+            $response = new Response(200, [], file_get_contents(__DIR__ . '/../../blob.jwt'));
+            $client = new Client();
+            $client->addResponse($response);
+            $metadataService->addService(
+                FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
+            );
+
+            $this->metadataStatementRepository = new MetadataStatementRepository($metadataService);
         }
 
         return $this->metadataStatementRepository;
@@ -225,7 +230,19 @@ abstract class AbstractTestCase extends TestCase
         ;
 
         foreach ($finder->files()->name('*.json') as $file) {
-            yield file_get_contents($file->getRealPath());
+            yield $file->getRealPath();
+        }
+    }
+
+    private function getDistantStatements(): iterable
+    {
+        $finder = new Finder();
+        $finder->files()
+            ->in(__DIR__ . '/../../metadataServices')
+        ;
+
+        foreach ($finder->files() as $file) {
+            yield $file->getRealPath();
         }
     }
 
