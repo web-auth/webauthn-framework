@@ -6,14 +6,11 @@ namespace Webauthn\Bundle\Security\Authentication\Exception;
 
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
-/**
- * @final
- */
-class InvalidTwoFactorCodeException extends BadCredentialsException
+final class WebauthnAuthenticationEvent extends BadCredentialsException
 {
-    public const MESSAGE = 'Invalid two-factor authentication code.';
+    public const MESSAGE = 'Invalid Webauthn credentials.';
 
-    private const MESSAGE_KEY = 'code_invalid';
+    private const MESSAGE_KEY = 'invalid';
 
     public function getMessageKey(): string
     {

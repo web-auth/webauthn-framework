@@ -6,31 +6,32 @@ namespace Webauthn\Bundle\Security\Storage;
 
 use function array_key_exists;
 use function is_array;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class SessionStorage implements OptionsStorage
 {
-    /**
-     * @var string
-     */
     private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
-    public function store(Request $request, StoredData $data, Response $response): void
+    public function __construct(
+        private RequestStack $requestStack
+    ) {
+    }
+
+    public function store(Item $item): void
     {
-        $session = $request->getSession();
+        $session = $this->requestStack->getSession();
         $session->set(self::SESSION_PARAMETER, [
-            'options' => $data->getPublicKeyCredentialOptions(),
-            'userEntity' => $data->getPublicKeyCredentialUserEntity(),
+            'options' => $item->getPublicKeyCredentialOptions(),
+            'userEntity' => $item->getPublicKeyCredentialUserEntity(),
         ]);
     }
 
-    public function get(Request $request): StoredData
+    public function get(): Item
     {
-        $session = $request->getSession();
+        $session = $this->requestStack->getSession();
         $sessionValue = $session->remove(self::SESSION_PARAMETER);
         if (! is_array($sessionValue) || ! array_key_exists('options', $sessionValue) || ! array_key_exists(
             'userEntity',
@@ -49,6 +50,6 @@ final class SessionStorage implements OptionsStorage
             throw new BadRequestHttpException('No user entity available for this session.');
         }
 
-        return new StoredData($publicKeyCredentialRequestOptions, $userEntity);
+        return Item::create($publicKeyCredentialRequestOptions, $userEntity);
     }
 }

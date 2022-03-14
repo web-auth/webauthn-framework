@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authorization;
 
-use function defined;
 use function mb_strlen;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -47,7 +46,7 @@ final class WebauthnAccessDecider
 
         // Compatibility for Symfony < 7.0
         // This block of code ensures requests to the logout route can pass.
-        // The bundle's TwoFactorAccessListener prioritized after the LogoutListener. Though the Firewall class is still
+        // The bundle's WebauthnAccessListener prioritized after the LogoutListener. Though the Firewall class is still
         // sorting the LogoutListener in programmatically. When a lazy firewall is used, the LogoutListener is executed
         // last, because all other listeners are encapsulated into LazyFirewallContext, which is invoked first.
         $logoutPath = $this->removeQueryParameters(
@@ -60,23 +59,17 @@ final class WebauthnAccessDecider
     private function isPubliclyAccessAttribute(?array $attributes): bool
     {
         if ($attributes === null) {
-            // No access control at all is treated "non-public" by 2fa
+            // No access control at all is treated "non-public"
             return false;
         }
 
-        if ([AuthenticatedVoter::PUBLIC_ACCESS] === $attributes) {
-            return true;
-        }
-
-        // Compatibility for Symfony < 6.0
-        return defined(AuthenticatedVoter::class . '::IS_AUTHENTICATED_ANONYMOUSLY')
-            && [AuthenticatedVoter::IS_AUTHENTICATED_ANONYMOUSLY] === $attributes;
+        return [AuthenticatedVoter::PUBLIC_ACCESS] === $attributes;
     }
 
     private function makeRelativeToBaseUrl(string $logoutPath, Request $request): string
     {
         $baseUrl = $request->getBaseUrl();
-        if (mb_strlen($baseUrl) === 0) {
+        if ($baseUrl === '') {
             return $logoutPath;
         }
 

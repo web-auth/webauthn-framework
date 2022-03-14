@@ -13,9 +13,14 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Webauthn\Bundle\Controller\AssertionControllerFactory;
+use Webauthn\Bundle\Controller\AssertionRequestController;
+use Webauthn\Bundle\Controller\AttestationControllerFactory;
+use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\DummyController;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
+use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
@@ -205,15 +210,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $firewallConfigId
         );
 
-        $this->createRequestControllersAndRoutes($container, $firewallName, $config);
-
-        //Request Listener
-        $this->createRequestOptionsListener($container, $firewallName, $config, $firewallConfigId);
-        $this->createRequestResultListener($container, $firewallName, $config, $firewallConfigId);
-
-        //Creation Listener
-        //$creationOptionsListenerId = $this->createCreationOptionsListener($container, $firewallName, $config, $firewallConfigId);
-        //$creationResultListenerId = $this->createCreationResultListener($container, $firewallName, $config, $firewallConfigId);
+        $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
+        $this->createAttestationControllersAndRoutes($container, $firewallName, $config);
 
         return $this->createAuthenticatorService(
             $container,
@@ -221,7 +219,10 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $userProviderId,
             $successHandlerId,
             $failureHandlerId,
-            $firewallConfigId
+            $firewallConfigId,
+            $config['http_message_factory'],
+            $config['options_storage'],
+            $config['secured_rp_ids']
         );
     }
 
@@ -235,53 +236,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         return [];
     }
 
-    /**
-     * @param mixed[] $config
-     */
-    private function createRequestOptionsListener(
-        ContainerBuilder $container,
-        string $firewallName,
-        array $config,
-        string $firewallConfigId
-    ): string {
-        $requestListenerId = self::REQUEST_OPTIONS_LISTENER_ID_PREFIX . $firewallName;
-        $container
-            ->setDefinition($requestListenerId, new ChildDefinition(self::REQUEST_OPTIONS_LISTENER_DEFINITION_ID))
-            ->replaceArgument(0, new Reference($firewallConfigId))
-            ->replaceArgument(1, new Reference($config['failure_handler']))
-            ->replaceArgument(2, new Reference($config['authentication']['options_handler']))
-            ->replaceArgument(4, new Reference($config['options_storage']))
-        ;
-
-        return $requestListenerId;
-    }
-
-    /**
-     * @param mixed[] $config
-     */
-    private function createRequestResultListener(
-        ContainerBuilder $container,
-        string $firewallName,
-        array $config,
-        string $firewallConfigId
-    ): string {
-        $requestResultListenerId = self::REQUEST_RESULT_LISTENER_ID_PREFIX . $firewallName;
-        $container
-            ->setDefinition(
-                $requestResultListenerId,
-                new ChildDefinition(self::REQUEST_RESULT_LISTENER_DEFINITION_ID)
-            )
-            ->replaceArgument(0, new Reference($config['http_message_factory']))
-            ->replaceArgument(1, new Reference($firewallConfigId))
-            ->replaceArgument(2, new Reference($config['success_handler']))
-            ->replaceArgument(3, new Reference($config['failure_handler']))
-            ->replaceArgument(4, new Reference($config['options_storage']))
-            ->replaceArgument(5, $config['secured_rp_ids'])
-        ;
-
-        return $requestResultListenerId;
-    }
-
     private function createAuthenticatorService(
         ContainerBuilder $container,
         string $firewallName,
@@ -289,6 +243,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $successHandlerId,
         string $failureHandlerId,
         string $firewallConfigId,
+        string $httpMessageFactoryId,
+        string $optionsStorageId,
+        array $securedRpIds
     ): string {
         $authenticatorId = self::AUTHENTICATOR_ID_PREFIX . $firewallName;
         $container
@@ -297,6 +254,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->replaceArgument(1, new Reference($userProviderId))
             ->replaceArgument(2, new Reference($successHandlerId))
             ->replaceArgument(3, new Reference($failureHandlerId))
+            ->replaceArgument(4, new Reference($httpMessageFactoryId))
+            ->replaceArgument(5, new Reference($optionsStorageId))
+            ->replaceArgument(6, $securedRpIds)
         ;
 
         return $authenticatorId;
@@ -305,7 +265,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     /**
      * @param mixed[] $config
      */
-    private function createRequestControllersAndRoutes(
+    private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
         string $firewallName,
         array $config
@@ -314,39 +274,122 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             return;
         }
 
-        $this->createControllerAndRoute(
+        $this->createAssertionRequestControllerAndRoute(
             $container,
-            'request',
-            'options',
             $firewallName,
             $config['authentication']['routes']['options_path'],
-            $config['authentication']['routes']['host']
+            $config['authentication']['routes']['host'],
+            $config['authentication']['profile'],
+            $config['options_storage'],
+            $config['authentication']['options_handler'],
         );
-        $this->createControllerAndRoute(
+        $this->createResponseControllerAndRoute(
             $container,
-            'request',
-            'result',
             $firewallName,
+            'request',
             $config['authentication']['routes']['result_path'],
             $config['authentication']['routes']['host']
         );
     }
 
+    /**
+     * @param mixed[] $config
+     */
+    private function createAttestationControllersAndRoutes(
+        ContainerBuilder $container,
+        string $firewallName,
+        array $config
+    ): void {
+        if ($config['registration']['enabled'] === false) {
+            return;
+        }
+
+        $this->createAttestationRequestControllerAndRoute(
+            $container,
+            $firewallName,
+            $config['registration']['routes']['options_path'],
+            $config['registration']['routes']['host'],
+            $config['registration']['profile'],
+            $config['options_storage'],
+            $config['registration']['options_handler'],
+        );
+        $this->createResponseControllerAndRoute(
+            $container,
+            'creation',
+            $firewallName,
+            $config['registration']['routes']['result_path'],
+            $config['registration']['routes']['host']
+        );
+    }
+
+    private function createAssertionRequestControllerAndRoute(
+        ContainerBuilder $container,
+        string $firewallName,
+        string $path,
+        ?string $host,
+        string $profile,
+        string $optionsStorageId,
+        string $optionsHandlerId,
+    ): void {
+        $controller = (new Definition(AssertionRequestController::class))
+            ->setFactory([new Reference(AssertionControllerFactory::class), 'createAssertionRequestController'])
+            ->setArguments([$profile, new Reference($optionsStorageId), new Reference($optionsHandlerId)])
+        ;
+        $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $path, $host);
+    }
+
+    private function createAttestationRequestControllerAndRoute(
+        ContainerBuilder $container,
+        string $firewallName,
+        string $path,
+        ?string $host,
+        string $profile,
+        string $optionsStorageId,
+        string $optionsHandlerId,
+    ): void {
+        $controller = (new Definition(AttestationRequestController::class))
+            ->setFactory([new Reference(AttestationControllerFactory::class), 'createAttestationRequestController'])
+            ->setArguments([
+                new Reference(RequestBodyUserEntityGuesser::class),
+                $profile,
+                new Reference($optionsStorageId),
+                new Reference($optionsHandlerId),
+            ])
+        ;
+        $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $path, $host);
+    }
+
+    private function createResponseControllerAndRoute(
+        ContainerBuilder $container,
+        string $firewallName,
+        string $action,
+        string $path,
+        ?string $host
+    ): void {
+        $controller = (new Definition(DummyController::class))
+            ->setFactory([new Reference(DummyControllerFactory::class), 'create'])
+
+        ;
+        $this->createControllerAndRoute($container, $controller, $action, 'result', $firewallName, $path, $host);
+    }
+
     private function createControllerAndRoute(
         ContainerBuilder $container,
+        Definition $controller,
         string $name,
         string $operation,
         string $firewallName,
         string $path,
         ?string $host
     ): void {
-        $controller = new Definition(DummyController::class);
-        $controller->setFactory([new Reference(DummyControllerFactory::class), 'create']);
-        $controller->addTag(DynamicRouteCompilerPass::TAG, [
-            'path' => $path,
-            'host' => $host,
-        ]);
-        $controller->addTag('controller.service_arguments');
+        $controller
+            ->addTag('controller.service_arguments')
+            ->addTag(DynamicRouteCompilerPass::TAG, [
+                'path' => $path,
+                'host' => $host,
+            ])
+            ->setPublic(true)
+        ;
 
         $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $name, $operation, $firewallName);
 

@@ -77,7 +77,7 @@ final class WebauthnFirewallConfig
 
     public function getAuthenticationResultPath(): string
     {
-        return $this->options['authentication']['routes']['options_path'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_PATH;
+        return $this->options['authentication']['routes']['result_path'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_PATH;
     }
 
     public function isRegistrationEnabled(): bool
@@ -107,7 +107,7 @@ final class WebauthnFirewallConfig
 
     public function getRegistrationResultPath(): string
     {
-        return $this->options['registration']['routes']['options_path'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_PATH;
+        return $this->options['registration']['routes']['result_path'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_PATH;
     }
 
     /**

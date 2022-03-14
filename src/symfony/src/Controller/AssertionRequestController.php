@@ -6,8 +6,6 @@ namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
 use function count;
-use function is_array;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +18,9 @@ use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
+use Webauthn\Bundle\Security\Storage\Item;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
@@ -35,9 +36,9 @@ final class AssertionRequestController
         private PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private string $profile,
-        private string $sessionParameterName,
+        private OptionsStorage $optionsStorage,
+        private RequestOptionsHandler $optionsHandler,
         private LoggerInterface $logger,
-        private CacheItemPoolInterface $cacheItemPool
     ) {
     }
 
@@ -48,11 +49,12 @@ final class AssertionRequestController
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-            $extensions = $creationOptionsRequest->extensions;
-            if (is_array($extensions)) {
-                $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
-            }
-            $userEntity = $this->getUserEntity($creationOptionsRequest);
+            $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
+                $creationOptionsRequest->extensions
+            ) : null;
+            $userEntity = $creationOptionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
+                $creationOptionsRequest->username
+            );
             $allowedCredentials = $userEntity === null ? [] : $this->getCredentials($userEntity);
             $publicKeyCredentialRequestOptions = $this->publicKeyCredentialRequestOptionsFactory->create(
                 $this->profile,
@@ -60,26 +62,16 @@ final class AssertionRequestController
                 $creationOptionsRequest->userVerification,
                 $extensions
             );
-            $data = array_merge(
-                [
-                    'status' => 'ok',
-                    'errorMessage' => '',
-                ],
-                $publicKeyCredentialRequestOptions->jsonSerialize()
-            );
-            $item = $this->cacheItemPool->getItem($this->sessionParameterName);
-            $item->set([
-                'options' => $publicKeyCredentialRequestOptions,
-                'userEntity' => $userEntity,
-            ]);
-            $this->cacheItemPool->save($item);
 
-            return new JsonResponse($data);
+            $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
+            $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity),);
+
+            return $response;
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
             return new JsonResponse([
-                'status' => 'failed',
+                'status' => 'error',
                 'errorMessage' => $throwable->getMessage(),
             ], 400);
         }
@@ -95,19 +87,6 @@ final class AssertionRequestController
         return array_map(static function (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor {
             return $credential->getPublicKeyCredentialDescriptor();
         }, $credentialSources);
-    }
-
-    private function getUserEntity(
-        ServerPublicKeyCredentialRequestOptionsRequest $creationOptionsRequest
-    ): ?PublicKeyCredentialUserEntity {
-        $username = $creationOptionsRequest->username;
-        if ($username === null) {
-            return null;
-        }
-        $userEntity = $this->userEntityRepository->findOneByUsername($username);
-        Assertion::notNull($userEntity, 'User not found');
-
-        return $userEntity;
     }
 
     private function getServerPublicKeyCredentialRequestOptionsRequest(

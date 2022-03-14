@@ -10,13 +10,14 @@ use function Safe\json_decode;
 use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Webauthn\Bundle\Security\Storage\Item;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Tests\Bundle\Functional\User;
@@ -26,16 +27,17 @@ use Webauthn\Tests\Bundle\Functional\User;
  */
 final class RegistrationAreaTest extends WebTestCase
 {
-    private SessionInterface $session;
-
     private KernelBrowser $client;
+
+    private OptionsStorage $storage;
 
     protected function setUp(): void
     {
         $this->client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
-        $this->createSession();
+
+        $this->storage = static::getContainer()->get(CustomSessionStorage::class);
     }
 
     /**
@@ -55,7 +57,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('username: This value should not be blank.', $data['errorMessage']);
     }
@@ -77,7 +79,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
     }
@@ -204,8 +206,9 @@ final class RegistrationAreaTest extends WebTestCase
 
     /**
      * @test
+     * Note that this use case should fail on the attestation response step
      */
-    public function aRegistrationOptionsRequestCannotBeAcceptedForExistingUsers(): void
+    public function aRegistrationOptionsRequestCanBeAcceptedForExistingUsers(): void
     {
         $content = [
             'username' => 'admin',
@@ -219,10 +222,8 @@ final class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('Invalid username', $data['errorMessage']);
+        static::assertSame('ok', $data['status']);
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -232,13 +233,10 @@ final class RegistrationAreaTest extends WebTestCase
     {
         $content = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
 
-        $this->session->remove('FOO_BAR_SESSION_PARAMETER');
-        $this->session->save();
-
         $this->client->request(Request::METHOD_POST, '/register', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
-        ], json_encode($content));
+        ], $content);
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true);
 
@@ -275,11 +273,8 @@ final class RegistrationAreaTest extends WebTestCase
             ->get(PublicKeyCredentialSourceRepository::class)
         ;
         $pkcsRepository->clearCredentials();
-        $this->session->set('FOO_BAR_SESSION_PARAMETER', [
-            'options' => $publicKeyCredentialCreationOptions,
-            'userEntity' => $publicKeyCredentialUserEntity,
-        ]);
-        $this->session->save();
+
+        $this->storage->store(Item::create($publicKeyCredentialCreationOptions, $publicKeyCredentialUserEntity));
 
         $this->client->request(Request::METHOD_POST, '/register', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -302,18 +297,5 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertTrue($this->session->has('_security_main'));
         static::assertTrue($this->client->getResponse()->headers->has('set-cookie'));
-    }
-
-    private function createSession(): void
-    {
-        $this->session = self::getContainer()
-            ->get('session.factory')
-            ->createSession()
-            ;
-
-        $cookie = new Cookie($this->session->getName(), $this->session->getId());
-        $this->client->getCookieJar()
-            ->set($cookie)
-        ;
     }
 }

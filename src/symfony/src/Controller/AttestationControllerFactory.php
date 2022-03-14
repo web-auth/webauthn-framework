@@ -17,7 +17,7 @@ use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
-final class AttestationResponseControllerFactory
+final class AttestationControllerFactory
 {
     public function __construct(
         private HttpMessageFactoryInterface $httpMessageFactory,
@@ -34,8 +34,7 @@ final class AttestationResponseControllerFactory
         UserEntityGuesser $userEntityGuesser,
         string $profile,
         OptionsStorage $optionStorage,
-        CreationOptionsHandler $creationOptionsHandler,
-        FailureHandler $failureHandler
+        CreationOptionsHandler $creationOptionsHandler
     ): AttestationRequestController {
         return new AttestationRequestController(
             $userEntityGuesser,
@@ -45,8 +44,7 @@ final class AttestationResponseControllerFactory
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $optionStorage,
-            $creationOptionsHandler,
-            $failureHandler
+            $creationOptionsHandler
         );
     }
 

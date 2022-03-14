@@ -16,7 +16,7 @@ final class DefaultFailureHandler implements FailureHandler, AuthenticationFailu
     public function onFailure(Request $request, Throwable $exception = null): Response
     {
         $data = [
-            'status' => 'failed',
+            'status' => 'error',
             'errorMessage' => $exception === null ? 'Authentication failed' : $exception->getMessage(),
         ];
 

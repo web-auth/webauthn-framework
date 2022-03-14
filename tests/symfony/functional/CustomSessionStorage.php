@@ -4,61 +4,23 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use function array_key_exists;
 use Assert\Assertion;
-use const E_USER_DEPRECATED;
-use function is_array;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
-use Webauthn\Bundle\Security\Storage\StoredData;
-use Webauthn\PublicKeyCredentialOptions;
 
 final class CustomSessionStorage implements OptionsStorage
 {
-    /**
-     * @var string
-     */
-    private const SESSION_PARAMETER = 'FOO_BAR_SESSION_PARAMETER';
+    private null|Item $item = null;
 
-    public function store(Request $request, StoredData $data, ?Response $response = null): void
+    public function store(Item $item): void
     {
-        if ($response === null) {
-            @trigger_error(
-                'Passing null as 3rd argument is deprecated since version 3.3 and will be mandatory in 4.0.',
-                E_USER_DEPRECATED
-            );
-        }
-        $session = $request->getSession();
-        Assertion::notNull($session, 'This authentication method requires a session.');
-
-        $session->set(self::SESSION_PARAMETER, [
-            'options' => $data->getPublicKeyCredentialOptions(),
-            'userEntity' => $data->getPublicKeyCredentialUserEntity(),
-        ]);
+        $this->item = $item;
     }
 
-    public function get(Request $request): StoredData
+    public function get(): Item
     {
-        $session = $request->getSession();
-        Assertion::notNull($session, 'This authentication method requires a session.');
+        Assertion::notNull($this->item, 'No public key credential options available for this session.');
 
-        $sessionValue = $session->remove(self::SESSION_PARAMETER);
-        if (! is_array($sessionValue) || ! array_key_exists('options', $sessionValue) || ! array_key_exists(
-            'userEntity',
-            $sessionValue
-        )) {
-            throw new BadRequestHttpException('No public key credential options available for this session.');
-        }
-
-        $publicKeyCredentialRequestOptions = $sessionValue['options'];
-        $userEntity = $sessionValue['userEntity'];
-
-        if (! $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
-            throw new BadRequestHttpException('No public key credential options available for this session.');
-        }
-
-        return new StoredData($publicKeyCredentialRequestOptions, $userEntity);
+        return $this->item;
     }
 }

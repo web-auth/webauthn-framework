@@ -20,9 +20,9 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
+use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\AttestationResponseController;
-use Webauthn\Bundle\Controller\AttestationResponseControllerFactory;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
@@ -75,6 +75,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
         $loader->load('http_message_factory.php');
         $loader->load('cose.php');
+        $loader->load('security.php');
         $loader->load('security.php');
 
         $this->loadMetadataServices($container, $config);
@@ -151,7 +152,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
             $attestationRequestController = new Definition(AttestationRequestController::class);
             $attestationRequestController->setFactory(
-                [new Reference(AttestationResponseControllerFactory::class), 'createAttestationRequestController']
+                [new Reference(AttestationControllerFactory::class), 'createAttestationRequestController']
             );
             $attestationRequestController->setArguments([
                 new Reference($creationConfig['user_entity_guesser']),
@@ -170,7 +171,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
             $attestationResponseController = new Definition(AttestationResponseController::class);
             $attestationResponseController->setFactory(
-                [new Reference(AttestationResponseControllerFactory::class), 'createAttestationResponseController']
+                [new Reference(AttestationControllerFactory::class), 'createAttestationResponseController']
             );
             $attestationResponseController->setArguments([
                 new Reference($creationConfig['options_storage']),

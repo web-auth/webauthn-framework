@@ -46,6 +46,7 @@ class RequestResultListener
 
     public function __invoke(RequestEvent $event): void
     {
+        return;
         $request = $event->getRequest();
         if (! $this->firewallConfig->isAuthenticationEnabled()) {
             return;

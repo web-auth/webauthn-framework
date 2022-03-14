@@ -15,7 +15,7 @@ final class DefaultFailureHandler implements FailureHandler
     public function onFailure(Request $request, Throwable $exception = null): Response
     {
         $data = [
-            'status' => 'failed',
+            'status' => 'error',
             'errorMessage' => $exception === null ? 'An unexpected error occurred' : $exception->getMessage(),
         ];
 

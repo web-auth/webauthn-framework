@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
-use function assert;
+use Assert\Assertion;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
@@ -20,10 +19,18 @@ use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\InteractiveAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Webauthn\Bundle\Security\Authentication\Token\WebauthnTokenInterface;
+use Throwable;
+use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
+use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
@@ -34,8 +41,12 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private UserProviderInterface $userProvider,
         private AuthenticationSuccessHandlerInterface $successHandler,
         private AuthenticationFailureHandlerInterface $failureHandler,
-        private TokenStorageInterface $tokenStorage,
-        private EventDispatcherInterface $eventDispatcher,
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private OptionsStorage $optionsStorage,
+        private array $securedRelyingPartyIds,
+        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
+        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         ?LoggerInterface $logger = null
     ) {
         $this->logger = $logger ?? new NullLogger();
@@ -46,11 +57,16 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         if ($request->getMethod() !== Request::METHOD_POST) {
             return false;
         }
-        if ($this->firewallConfig->isAuthenticationEnabled()) {
-            return $this->firewallConfig->isAuthenticationResultPathRequest($request);
+
+        if ($this->firewallConfig->isAuthenticationEnabled() && $this->firewallConfig->isAuthenticationResultPathRequest(
+            $request
+        )) {
+            return true;
         }
-        if ($this->firewallConfig->isRegistrationEnabled()) {
-            return $this->firewallConfig->isRegistrationResultPathRequest($request);
+        if ($this->firewallConfig->isRegistrationEnabled() && $this->firewallConfig->isRegistrationResultPathRequest(
+            $request
+        )) {
+            return true;
         }
 
         return false;
@@ -58,52 +74,67 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 
     public function authenticate(Request $request): Passport
     {
-        $currentToken = $this->tokenStorage->getToken();
-        if (! ($currentToken instanceof WebauthnTokenInterface)) {
-            throw new AccessDeniedException('User is not in a Webauthn authentication process.');
+        if ($this->firewallConfig->isAuthenticationResultPathRequest($request)) {
+            return $this->processWithAssertion($request);
         }
 
-        $credentials = new WebauthnCredentials($currentToken);
-        $userBadge = new UserBadge($currentToken->getUserIdentifier(), [$this->userProvider, 'loadUserByIdentifier']);
-
-        return new Passport($userBadge, $credentials, []);
+        return $this->processWithAttestation($request);
     }
 
     public function createToken(Passport $passport, string $firewallName): TokenInterface
     {
+        /** @var WebauthnCredentials $credentialsBadge */
         $credentialsBadge = $passport->getBadge(WebauthnCredentials::class);
-        assert($credentialsBadge instanceof WebauthnCredentials);
+        Assertion::isInstanceOf($credentialsBadge, WebauthnCredentials::class, 'Invalid credentials');
 
-        return $credentialsBadge->getWebauthnToken();
+        /** @var UserBadge $userBadge */
+        $userBadge = $passport->getBadge(UserBadge::class);
+        Assertion::isInstanceOf($userBadge, UserBadge::class, 'Invalid user');
+
+        /** @var AuthenticatorAttestationResponse|AuthenticatorAssertionResponse $response */
+        $response = $credentialsBadge->getAuthenticatorResponse();
+        if ($response instanceof AuthenticatorAssertionResponse) {
+            $authData = $response->getAuthenticatorData();
+        } else {
+            $authData = $response->getAttestationObject()
+                ->getAuthData()
+            ;
+        }
+
+        $token = new  WebauthnToken(
+            $credentialsBadge->getPublicKeyCredentialUserEntity(),
+            $credentialsBadge->getPublicKeyCredentialOptions(),
+            $credentialsBadge->getPublicKeyCredentialSource()
+                ->getPublicKeyCredentialDescriptor(),
+            $authData->isUserPresent(),
+            $authData->isUserVerified(),
+            $authData->getReservedForFutureUse1(),
+            $authData->getReservedForFutureUse2(),
+            $authData->getSignCount(),
+            $authData->getExtensions(),
+            $credentialsBadge->getFirewallName(),
+            $userBadge->getUser()
+                ->getRoles()
+        );
+        $token->setUser($userBadge->getUser());
+
+        return $token;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $this->logger->info('User has been authenticated successfully with Webauthn.', [
-            'username' => UsernameHelper::getTokenUsername($token),
+            'identifier' => $token->getUserIdentifier(),
         ]);
-        $this->dispatchWebauthnAuthenticationEvent(WebauthnAuthenticationEvents::SUCCESS, $request, $token);
-
-        // When it's still a WebauthnTokenInterface, keep showing the auth form
-        if ($token instanceof WebauthnTokenInterface) {
-            $this->dispatchWebauthnAuthenticationEvent(WebauthnAuthenticationEvents::REQUIRE, $request, $token);
-
-            return $this->authenticationRequiredHandler->onAuthenticationRequired($request, $token);
-        }
-
-        $this->dispatchWebauthnAuthenticationEvent(WebauthnAuthenticationEvents::COMPLETE, $request, $token);
 
         return $this->successHandler->onAuthenticationSuccess($request, $token);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $currentToken = $this->tokenStorage->getToken();
-        assert($currentToken instanceof WebauthnTokenInterface);
         $this->logger->info('Webauthn authentication request failed.', [
             'exception' => $exception,
         ]);
-        $this->dispatchWebauthnAuthenticationEvent(WebauthnAuthenticationEvents::FAILURE, $request, $currentToken);
 
         return $this->failureHandler->onAuthenticationFailure($request, $exception);
     }
@@ -113,12 +144,94 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         return true;
     }
 
-    private function dispatchWebauthnAuthenticationEvent(
-        string $eventType,
-        Request $request,
-        TokenInterface $token
-    ): void {
-        $event = new WebauthnAuthenticationEvent($request, $token);
-        $this->eventDispatcher->dispatch($event, $eventType);
+    private function processWithAssertion(Request $request): Passport
+    {
+        try {
+            $content = $request->getContent();
+            Assertion::string($content, 'Invalid data');
+            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            $response = $publicKeyCredential->getResponse();
+            Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
+
+            $data = $this->optionsStorage->get();
+            $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
+            Assertion::isInstanceOf(
+                $publicKeyCredentialRequestOptions,
+                PublicKeyCredentialRequestOptions::class,
+                'Invalid data'
+            );
+
+            $userEntity = $data->getPublicKeyCredentialUserEntity();
+            $psr7Request = $this->httpMessageFactory->createRequest($request);
+            $source = $this->assertionResponseValidator->check(
+                $publicKeyCredential->getRawId(),
+                $response,
+                $publicKeyCredentialRequestOptions,
+                $psr7Request,
+                $userEntity?->getId(),
+                $this->securedRelyingPartyIds
+            );
+
+            $credentials = new WebauthnCredentials(
+                $response,
+                $publicKeyCredentialRequestOptions,
+                $userEntity,
+                $source,
+                $this->firewallConfig->getFirewallName()
+            );
+            $userBadge = new UserBadge($source->getUserHandle(), [$this->userProvider, 'loadUserByIdentifier']);
+
+            return new Passport($userBadge, $credentials, []);
+        } catch (Throwable $e) {
+            throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    private function processWithAttestation(Request $request): Passport
+    {
+        try {
+            $content = $request->getContent();
+            Assertion::string($content, 'Invalid data');
+            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            $response = $publicKeyCredential->getResponse();
+            Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
+
+            $data = $this->optionsStorage->get();
+            $publicKeyCredentialCreationOptions = $data->getPublicKeyCredentialOptions();
+            Assertion::isInstanceOf(
+                $publicKeyCredentialCreationOptions,
+                PublicKeyCredentialCreationOptions::class,
+                'Invalid data'
+            );
+
+            $userEntity = $data->getPublicKeyCredentialUserEntity();
+            Assertion::notNull($userEntity, 'Invalid data');
+            $psr7Request = $this->httpMessageFactory->createRequest($request);
+            $credentialSource = $this->attestationResponseValidator->check(
+                $response,
+                $publicKeyCredentialCreationOptions,
+                $psr7Request,
+                $this->securedRelyingPartyIds
+            );
+
+            $this->credentialUserEntityRepository->saveUserEntity($userEntity);
+            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
+
+            $credentials = new WebauthnCredentials(
+                $response,
+                $publicKeyCredentialCreationOptions,
+                $userEntity,
+                $credentialSource,
+                $this->firewallConfig->getFirewallName()
+            );
+            $userBadge = new UserBadge($credentialSource->getUserHandle(), [
+                $this->userProvider,
+                'loadUserByIdentifier',
+            ]);
+
+            return new Passport($userBadge, $credentials, []);
+        } catch (Throwable $e) {
+            throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

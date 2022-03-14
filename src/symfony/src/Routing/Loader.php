@@ -21,7 +21,7 @@ class Loader extends SymfonyLoader
 
     public function add(string $pattern, ?string $host, string $name): void
     {
-        $controllerId = sprintf('%s:__invoke', $name);
+        $controllerId = sprintf('%s', $name);
         $defaults = [
             '_controller' => $controllerId,
         ];
@@ -29,18 +29,12 @@ class Loader extends SymfonyLoader
         $this->routes->add(sprintf('webauthn_%s', $name), $route);
     }
 
-    /**
-     * @param string|null $type
-     */
-    public function load($resource, $type = null): RouteCollection
+    public function load(mixed $resource, string $type = null): RouteCollection
     {
         return $this->routes;
     }
 
-    /**
-     * @param string|null $type
-     */
-    public function supports($resource, $type = null): bool
+    public function supports(mixed $resource, string $type = null): bool
     {
         return $type === 'webauthn';
     }

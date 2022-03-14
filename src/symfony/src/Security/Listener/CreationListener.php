@@ -35,8 +35,8 @@ use Webauthn\Bundle\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
+use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
-use Webauthn\Bundle\Security\Storage\StoredData;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
@@ -108,11 +108,7 @@ class CreationListener
                 $extensions
             );
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
-            $this->optionsStorage->store(
-                $request,
-                new StoredData($publicKeyCredentialCreationOptions, $userEntity),
-                $response
-            );
+            $this->optionsStorage->store(Item::create($publicKeyCredentialCreationOptions, $userEntity),);
         } catch (Exception $e) {
             $this->logger->error('Unable to process the creation option request');
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
@@ -186,7 +182,7 @@ class CreationListener
 
     private function processWithAssertion(Request $request): WebauthnToken
     {
-        $storedData = $this->optionsStorage->get($request);
+        $storedData = $this->optionsStorage->get();
         $assertion = $request->getContent();
         Assertion::string($assertion, 'Invalid assertion');
         $assertion = trim($assertion);

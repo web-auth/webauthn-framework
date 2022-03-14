@@ -15,11 +15,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-//use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+//use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
+use Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser;
+use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
@@ -30,7 +32,6 @@ use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
 //use Webauthn\Bundle\Security\Firewall\CreationListener;
 //use Webauthn\Bundle\Security\Firewall\RequestListener;
 //use Webauthn\Bundle\Security\Firewall\WebauthnListener;
-use Webauthn\Bundle\Security\Listener\RequestOptionsListener;
 use Webauthn\Bundle\Security\Listener\RequestResultListener;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
@@ -78,27 +79,6 @@ return static function (ContainerConfigurator $container): void {
             'channel' => 'security',
         ])
     ;*/
-
-    $container->services()
-        ->set(WebauthnFactory::REQUEST_OPTIONS_LISTENER_DEFINITION_ID, RequestOptionsListener::class)
-        ->abstract()
-        ->args([
-            abstract_arg('Firewall config'),
-            abstract_arg('Authentication failure handler'),
-            abstract_arg('Options handler'),
-            abstract_arg('Options Storage'),
-            service(SerializerInterface::class),
-            service(ValidatorInterface::class),
-            service(PublicKeyCredentialRequestOptionsFactory::class),
-            service(PublicKeyCredentialSourceRepository::class),
-            service(PublicKeyCredentialUserEntityRepository::class),
-            service(TokenStorageInterface::class),
-            service(LoggerInterface::class)->nullOnInvalid(),
-        ])
-        ->tag('monolog.logger', [
-            'channel' => 'security',
-        ])
-    ;
 
     $container->services()
         ->set(WebauthnFactory::REQUEST_RESULT_LISTENER_DEFINITION_ID, RequestResultListener::class)
@@ -209,8 +189,12 @@ return static function (ContainerConfigurator $container): void {
             abstract_arg('User provider'),
             abstract_arg('Success handler'),
             abstract_arg('Failure handler'),
-            service(TokenStorageInterface::class),
-            service(EventDispatcherInterface::class),
+            abstract_arg('Http Message Factory'),
+            abstract_arg('Options Storage'),
+            abstract_arg('Secured Relying Party IDs'),
+            service(PublicKeyCredentialLoader::class),
+            service(AuthenticatorAssertionResponseValidator::class),
+            service(AuthenticatorAttestationResponseValidator::class),
             service('webauthn.logger')
                 ->nullOnInvalid(),
         ])
@@ -231,5 +215,18 @@ return static function (ContainerConfigurator $container): void {
         ->abstract()
         ->public()
         ->args([abstract_arg('Firewall configs')])
+    ;
+
+    $container->services()
+        ->set(CurrentUserEntityGuesser::class)
+        ->args([service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepository::class)])
+    ;
+    $container->services()
+        ->set(RequestBodyUserEntityGuesser::class)
+        ->args([
+            service(SerializerInterface::class),
+            service(ValidatorInterface::class),
+            service(PublicKeyCredentialUserEntityRepository::class),
+        ])
     ;
 };

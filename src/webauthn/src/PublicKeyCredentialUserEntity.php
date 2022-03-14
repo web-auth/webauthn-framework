@@ -22,6 +22,11 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         $this->id = $id;
     }
 
+    public static function create(string $name, string $id, string $displayName, ?string $icon = null): self
+    {
+        return new self($name, $id, $displayName, $icon);
+    }
+
     public function getId(): string
     {
         return $this->id;

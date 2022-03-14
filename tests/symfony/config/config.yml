@@ -72,7 +72,10 @@ services:
 
     Webauthn\Tests\Bundle\Functional\FailureHandler: ~
     Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
-    Webauthn\Tests\Bundle\Functional\CustomSessionStorage: ~
+    Webauthn\Tests\Bundle\Functional\CustomSessionStorage:
+        arguments:
+            - '@request_stack'
+
     Webauthn\Tests\Bundle\Functional\MetadataStatementRepository:
         arguments:
             - '@Webauthn\MetadataService\Service\ChainedMetadataServices'

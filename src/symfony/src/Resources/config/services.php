@@ -11,6 +11,8 @@ use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Controller\AssertionControllerFactory;
+use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
@@ -87,7 +89,10 @@ return static function (ContainerConfigurator $container): void {
         ->tag('routing.loader')
     ;
 
-    $container->set(DummyControllerFactory::class);
     $container->set(DummyPublicKeyCredentialSourceRepository::class);
     $container->set(DummyPublicKeyCredentialUserEntityRepository::class);
+
+    $container->set(AttestationControllerFactory::class);
+    $container->set(AssertionControllerFactory::class);
+    $container->set(DummyControllerFactory::class);
 };
