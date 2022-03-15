@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -24,6 +25,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -31,6 +33,7 @@ use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
@@ -44,6 +47,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private HttpMessageFactoryInterface $httpMessageFactory,
         private OptionsStorage $optionsStorage,
         private array $securedRelyingPartyIds,
+        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
         private PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
@@ -147,6 +152,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAssertion(Request $request): Passport
     {
         try {
+            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
@@ -190,22 +196,23 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAttestation(Request $request): Passport
     {
         try {
+            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
 
-            $data = $this->optionsStorage->get();
-            $publicKeyCredentialCreationOptions = $data->getPublicKeyCredentialOptions();
+            $storedData = $this->optionStorage->get();
+            $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             Assertion::isInstanceOf(
                 $publicKeyCredentialCreationOptions,
                 PublicKeyCredentialCreationOptions::class,
-                'Invalid data'
+                'Unable to find the public key credential creation options'
             );
+            $userEntity = $storedData->getPublicKeyCredentialUserEntity();
+            Assertion::notNull($userEntity, 'Unable to find the public key credential user entity');
 
-            $userEntity = $data->getPublicKeyCredentialUserEntity();
-            Assertion::notNull($userEntity, 'Invalid data');
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             $credentialSource = $this->attestationResponseValidator->check(
                 $response,
@@ -213,7 +220,14 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $psr7Request,
                 $this->securedRelyingPartyIds
             );
-
+            if ($this->credentialUserEntityRepository->findOneByUsername($userEntity->getName()) !== null) {
+                throw new InvalidArgumentException('The username already exists');
+            }
+            if ($this->credentialSourceRepository->findOneByCredentialId(
+                $credentialSource->getPublicKeyCredentialId()
+            ) !== null) {
+                throw new InvalidArgumentException('The credentials already exists');
+            }
             $this->credentialUserEntityRepository->saveUserEntity($userEntity);
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 

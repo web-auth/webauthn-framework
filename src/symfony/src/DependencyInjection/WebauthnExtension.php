@@ -150,22 +150,23 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         foreach ($config['controllers']['creation'] as $name => $creationConfig) {
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
-            $attestationRequestController = new Definition(AttestationRequestController::class);
-            $attestationRequestController->setFactory(
-                [new Reference(AttestationControllerFactory::class), 'createAttestationRequestController']
-            );
-            $attestationRequestController->setArguments([
-                new Reference($creationConfig['user_entity_guesser']),
-                $creationConfig['profile'],
-                new Reference($creationConfig['options_storage']),
-                new Reference($creationConfig['options_handler']),
-                new Reference($creationConfig['failure_handler']),
-            ]);
-            $attestationRequestController->addTag(DynamicRouteCompilerPass::TAG, [
-                'path' => $creationConfig['options_path'],
-                'host' => $creationConfig['host'],
-            ]);
-            $attestationRequestController->addTag('controller.service_arguments');
+            $attestationRequestController = (new Definition(AttestationRequestController::class))
+                ->setFactory(
+                    [new Reference(AttestationControllerFactory::class), 'createAttestationRequestController']
+                )
+                ->setArguments([
+                    new Reference($creationConfig['user_entity_guesser']),
+                    $creationConfig['profile'],
+                    new Reference($creationConfig['options_storage']),
+                    new Reference($creationConfig['options_handler']),
+                    new Reference($creationConfig['failure_handler']),
+                ])
+                ->addTag(DynamicRouteCompilerPass::TAG, [
+                    'path' => $creationConfig['options_path'],
+                    'host' => $creationConfig['host'],
+                ])
+                ->addTag('controller.service_arguments')
+            ;
             $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
 
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
@@ -177,6 +178,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($creationConfig['options_storage']),
                 new Reference($creationConfig['success_handler']),
                 new Reference($creationConfig['failure_handler']),
+                $creationConfig['secured_rp_ids'],
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
                 'path' => $creationConfig['result_path'],

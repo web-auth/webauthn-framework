@@ -32,6 +32,16 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder($this->alias);
         $rootNode = $treeBuilder->getRootNode();
+        $defaultCreationProfiles = [
+            'default' => [
+                'rp' => [
+                    'name' => 'Secured Application',
+                ],
+            ],
+        ];
+        $defaultRequestProfiles = [
+            'default' => [],
+        ];
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -161,6 +171,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('options_storage')
             ->defaultValue(SessionStorage::class)
+            ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(DefaultSuccessHandler::class)
@@ -171,68 +182,58 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('options_handler')
             ->defaultValue(DefaultCreationOptionsHandler::class)
             ->end()
-            ->end()
-            ->end()
-            ->end()
-            ->arrayNode('request')
+            ->arrayNode('secured_rp_ids')
             ->treatFalseLike([])
-            ->treatNullLike([])
             ->treatTrueLike([])
+            ->treatNullLike([])
             ->useAttributeAsKey('name')
-            ->arrayPrototype()
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->scalarNode('options_path')
-            ->isRequired()
-            ->end()
-            ->scalarNode('result_path')
-            ->isRequired()
-            ->end()
-            ->scalarNode('host')
-            ->defaultValue(null)
-            ->end()
-            ->scalarNode('profile')
-            ->defaultValue('default')
-            ->end()
-            ->scalarNode('options_storage')
-            ->defaultValue(SessionStorage::class)
-            ->end()
-            ->scalarNode('success_handler')
-            ->defaultValue(DefaultSuccessHandler::class)
-            ->end()
-            ->scalarNode('failure_handler')
-            ->defaultValue(DefaultFailureHandler::class)
-            ->end()
-            ->scalarNode('options_handler')
-            ->defaultValue(DefaultCreationOptionsHandler::class)
+            ->scalarPrototype()
             ->end()
             ->end()
             ->end()
             ->end()
+            ->end()
+            /*->arrayNode('request')
+                ->treatFalseLike([])
+                ->treatNullLike([])
+                ->treatTrueLike([])
+                ->useAttributeAsKey('name')
+                ->arrayPrototype()
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('options_path')
+                            ->isRequired()
+                        ->end()
+                        ->scalarNode('result_path')
+                            ->isRequired()
+                        ->end()
+                        ->scalarNode('host')
+                            ->defaultValue(null)
+                        ->end()
+                        ->scalarNode('profile')
+                            ->defaultValue('default')
+                        ->end()
+                        ->scalarNode('options_storage')
+                            ->defaultValue(SessionStorage::class)
+                        ->end()
+                        ->scalarNode('success_handler')
+                            ->defaultValue(DefaultSuccessHandler::class)
+                        ->end()
+                        ->scalarNode('failure_handler')
+                            ->defaultValue(DefaultFailureHandler::class)
+                        ->end()
+                        ->scalarNode('options_handler')
+                            ->defaultValue(DefaultCreationOptionsHandler::class)
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()*/
             ->end()
             ->end()
             ->arrayNode('creation_profiles')
-            ->treatFalseLike([
-                'default' => [
-                    'rp' => [
-                        'name' => 'Secured Application',
-                    ],
-                ],
-            ])
-            ->treatNullLike([
-                'default' => [
-                    'rp' => [
-                        'name' => 'Secured Application',
-                    ],
-                ],
-            ])
-            ->treatTrueLike([
-                'default' => [
-                    'rp' => [
-                        'name' => 'Secured Application',
-                    ],
-                ],
-            ])
+            ->treatFalseLike($defaultCreationProfiles)
+            ->treatNullLike($defaultCreationProfiles)
+            ->treatTrueLike($defaultCreationProfiles)
             ->useAttributeAsKey('name')
             ->arrayPrototype()
             ->addDefaultsIfNotSet()
@@ -337,15 +338,9 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->arrayNode('request_profiles')
-            ->treatFalseLike([
-                'default' => [],
-            ])
-            ->treatTrueLike([
-                'default' => [],
-            ])
-            ->treatNullLike([
-                'default' => [],
-            ])
+            ->treatFalseLike($defaultRequestProfiles)
+            ->treatTrueLike($defaultRequestProfiles)
+            ->treatNullLike($defaultRequestProfiles)
             ->useAttributeAsKey('name')
             ->arrayPrototype()
             ->addDefaultsIfNotSet()

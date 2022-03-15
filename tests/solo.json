@@ -21,7 +21,7 @@
     "userVerificationDetails": [
         [
             {
-                "userVerificationMethod": "4"
+                "userVerificationMethod": "presence_internal"
             }
         ]
     ],

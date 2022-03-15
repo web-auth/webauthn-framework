@@ -55,29 +55,11 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const DEFAULT_CREATION_OPTIONS_HANDLER_SERVICE = DefaultCreationOptionsHandler::class;
 
-    public const KERNEL_ACCESS_LISTENER_ID_PREFIX = 'security.authentication.access_listener.webauthn.';
-
-    public const KERNEL_ACCESS_LISTENER_DEFINITION_ID = 'webauthn.security.access_listener';
-
     public const FIREWALL_CONFIG_ID_PREFIX = 'security.firewall_config.webauthn.';
 
     public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
-    public const FIREWALL_CONTEXT_DEFINITION_ID = 'webauthn.firewall_context';
-
-    public const REQUEST_OPTIONS_LISTENER_ID_PREFIX = 'security.authentication.request_options_listener.webauthn.';
-
-    public const REQUEST_OPTIONS_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_options_listener';
-
-    public const REQUEST_RESULT_LISTENER_ID_PREFIX = 'security.authentication.request_result_listener.webauthn.';
-
     public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
-
-    public const CREATION_OPTIONS_LISTENER_ID_PREFIX = 'security.authentication.creation_options_listener.webauthn.';
-
-    public const CREATION_OPTIONS_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_options_listener';
-
-    public const CREATION_RESULT_LISTENER_ID_PREFIX = 'security.authentication.creation_result_listener.webauthn.';
 
     public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
 

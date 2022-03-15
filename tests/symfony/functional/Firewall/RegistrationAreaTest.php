@@ -295,7 +295,7 @@ final class RegistrationAreaTest extends WebTestCase
         $user = $pkueRepository->findOneByUsername('test@foo.com');
         static::assertInstanceOf(User::class, $user);
 
-        static::assertTrue($this->session->has('_security_main'));
+        static::assertTrue($this->client->getRequest()->getSession()->has('_security_main'));
         static::assertTrue($this->client->getResponse()->headers->has('set-cookie'));
     }
 }

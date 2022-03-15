@@ -4,16 +4,24 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
+use Cose\Algorithms;
 use function count;
+use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
+use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
+use Webauthn\Bundle\Security\Storage\Item;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialParameters;
+use Webauthn\PublicKeyCredentialRpEntity;
+use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\User;
 
@@ -22,16 +30,17 @@ use Webauthn\Tests\Bundle\Functional\User;
  */
 final class AdditionalAuthenticatorTest extends WebTestCase
 {
-    private SessionInterface $session;
-
     private KernelBrowser $client;
+
+    private OptionsStorage $storage;
 
     protected function setUp(): void
     {
         $this->client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
-        $this->createSession();
+
+        $this->storage = static::getContainer()->get(CustomSessionStorage::class);
     }
 
     /**
@@ -47,7 +56,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        static::assertSame(200, $response->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertIsArray($data);
         $expectedKeys = [
             'status',
@@ -64,8 +73,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             static::assertArrayHasKey($expectedKey, $data);
         }
         static::assertSame('ok', $data['status']);
-
-        static::assertTrue($this->session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
     }
 
     /**
@@ -79,21 +86,32 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             ->get(PublicKeyCredentialSourceRepository::class)
         ;
         $this->logIn();
-        $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
 
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
+        $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
+            64
+        ), 'Test PublicKeyCredentialUserEntity');
+        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
+            ::create(
+                new PublicKeyCredentialRpEntity('My Application'),
+                $publicKeyCredentialUserEntity,
+                base64_decode(
+                    '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
+                    true
+                ),
+                [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+            )
+        ;
 
-        $this->session->set('WEBAUTHN_PUBLIC_KEY_OPTIONS', [
-            'options' => $publicKeyCredentialCreationOptions,
-            'userEntity' => $publicKeyCredentialCreationOptions->getUser(),
-        ]);
-        $this->session->save();
+        $this->storage->store(Item::create(
+            $publicKeyCredentialCreationOptions,
+            $publicKeyCredentialCreationOptions->getUser()
+        ));
 
         $numberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
         );
-        $body = '{"id":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","rawId":"WT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YM","response":{"attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZydjc2lnWECRl1RciDxSF7hkhJbqVJeryUIFrX7r6QQMQq8bIP4wYRA6f96iOO4wiOo34l65kZ5v1erxSmIaH56VySUSMusEaGF1dGhEYXRhWIGWBOqCgk6YpK2hS0Ri0Nc6jsRpEw2pGxkwdFkin3SjWUEAAAAykd_q15WeRHWtJpsNSCvgiQAgWT7a99M1zA3XUBBvEwXqPzP0C3zNoS_SpmMpv2sG2YOkAQEDJyAGIVgg4smTlXUJnAP_RqNWNv2Eqkh8I7ZDS0IuSgotbPygd9k","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkVoTlZ0M1Q4VjEyRkp2U0FjNTBuaEtuWi1NRWMta2Y4NHhlcERjR3lOMWciLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0"},"type":"public-key"}';
+        $body = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
         $this->client->request(
             Request::METHOD_POST,
             '/devices/add',
@@ -101,7 +119,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_HOST' => 'test.com',
+                'HTTP_HOST' => 'localhost',
             ],
             $body
         );
@@ -115,8 +133,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             static::assertArrayHasKey($expectedKey, $data);
         }
         static::assertSame('ok', $data['status']);
-
-        static::assertFalse($this->session->has('WEBAUTHN_PUBLIC_KEY_OPTIONS'));
 
         $newNumberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
@@ -157,20 +173,31 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             $user->getRoles()
         );
         $token->setUser($user);
-        $this->session->set('_security_' . $firewallContext, serialize($token));
-        $this->session->save();
-    }
 
-    private function createSession(): void
-    {
-        $this->session = self::getContainer()
-            ->get('session.factory')
+        $container = static::getContainer();
+        $container->get('security.untracked_token_storage')
+            ->setToken($token)
+        ;
+
+        if (! $container->has('session.factory')) {
+            throw new InvalidArgumentException('No session factory');
+        }
+
+        $session = $container->get('session.factory')
             ->createSession()
         ;
+        $session->set('_security_' . $firewallContext, serialize($token));
+        $session->save();
 
-        $cookie = new Cookie($this->session->getName(), $this->session->getId());
-        $this->client->getCookieJar()
-            ->set($cookie)
-        ;
+        $domains = array_unique(array_map(static function (Cookie $cookie) use ($session) {
+            return $cookie->getName() === $session->getName() ? $cookie->getDomain() : '';
+        }, $this->client->getCookieJar()
+            ->all())) ?: [''];
+        foreach ($domains as $domain) {
+            $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
+            $this->client->getCookieJar()
+                ->set($cookie)
+            ;
+        }
     }
 }

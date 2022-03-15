@@ -197,14 +197,14 @@ abstract class AbstractTestCase extends TestCase
         if ($this->metadataStatementRepository === null) {
             $metadataService = new ChainedMetadataServices();
             foreach ($this->getSingleStatements() as $filename) {
-                $metadataService->addService(LocalResourceMetadataService::create($filename));
+                $metadataService->addServices(LocalResourceMetadataService::create($filename));
             }
             foreach ($this->getDistantStatements() as $filename) {
                 $response = new Response(200, [], file_get_contents($filename));
                 $client = new Client();
                 $client->addResponse($response);
 
-                $metadataService->addService(
+                $metadataService->addServices(
                     FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
                 );
             }
@@ -212,7 +212,7 @@ abstract class AbstractTestCase extends TestCase
             $response = new Response(200, [], file_get_contents(__DIR__ . '/../../blob.jwt'));
             $client = new Client();
             $client->addResponse($response);
-            $metadataService->addService(
+            $metadataService->addServices(
                 FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
             );
 

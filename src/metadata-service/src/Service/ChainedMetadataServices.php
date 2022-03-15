@@ -27,9 +27,11 @@ final class ChainedMetadataServices implements MetadataService
         return new self(...$services);
     }
 
-    public function addService(MetadataService $service): self
+    public function addServices(MetadataService ...$services): self
     {
-        $this->services[] = $service;
+        foreach ($services as $service) {
+            $this->services[] = $service;
+        }
 
         return $this;
     }

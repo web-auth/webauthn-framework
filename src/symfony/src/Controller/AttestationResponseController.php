@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +22,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationResponseController
 {
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function __construct(
         private HttpMessageFactoryInterface $httpMessageFactory,
         private PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -28,14 +32,14 @@ final class AttestationResponseController
         private PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private OptionsStorage $optionStorage,
         private SuccessHandler $successHandler,
-        private FailureHandler $failureHandler
+        private FailureHandler $failureHandler,
+        private array $securedRelyingPartyIds,
     ) {
     }
 
     public function __invoke(Request $request): Response
     {
         try {
-            $psr7Request = $this->httpMessageFactory->createRequest($request);
             Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
@@ -57,12 +61,19 @@ final class AttestationResponseController
                 PublicKeyCredentialUserEntity::class,
                 'Unable to find the public key credential user entity'
             );
+            $psr7Request = $this->httpMessageFactory->createRequest($request);
             $credentialSource = $this->attestationResponseValidator->check(
                 $response,
                 $publicKeyCredentialCreationOptions,
-                $psr7Request
+                $psr7Request,
+                $this->securedRelyingPartyIds
             );
 
+            if ($this->credentialSourceRepository->findOneByCredentialId(
+                $credentialSource->getPublicKeyCredentialId()
+            ) !== null) {
+                throw new InvalidArgumentException('The credentials already exists');
+            }
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 
             return $this->successHandler->onSuccess($request);

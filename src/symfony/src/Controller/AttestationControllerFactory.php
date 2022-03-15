@@ -51,7 +51,8 @@ final class AttestationControllerFactory
     public function createAttestationResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
-        FailureHandler $failureHandler
+        FailureHandler $failureHandler,
+        $securedRelyingPartyIds
     ): AttestationResponseController {
         return new AttestationResponseController(
             $this->httpMessageFactory,
@@ -60,7 +61,8 @@ final class AttestationControllerFactory
             $this->publicKeyCredentialSourceRepository,
             $optionStorage,
             $successHandler,
-            $failureHandler
+            $failureHandler,
+            $securedRelyingPartyIds
         );
     }
 }

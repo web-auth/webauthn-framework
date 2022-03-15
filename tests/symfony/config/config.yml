@@ -68,7 +68,11 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
+### MDS ###
     Webauthn\MetadataService\Service\ChainedMetadataServices: ~
+### MDS ###
+
+
 
     Webauthn\Tests\Bundle\Functional\FailureHandler: ~
     Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
@@ -132,23 +136,30 @@ webauthn:
         max_age: 99999999999
     controllers:
         enabled: true
+        #http_message_factory:
         creation:
             test:
                 options_path: '/devices/add/options'
                 result_path: '/devices/add'
-                user_entity_guesser: 'Webauthn\Tests\Bundle\Functional\CurrentUserEntityGuesser'
-            default:
-                options_path: '/attestation/options'
-                result_path: '/attestation/result'
-                #host: 'test.com'
-                #session_parameter_name: '__WEBAUTHN_ATTESTATION_REQUEST__1'
-                user_entity_guesser: 'Webauthn\Tests\Bundle\Functional\CurrentUserEntityGuesser'
-        request:
-            default:
-                options_path: '/assertion/options'
-                result_path: '/assertion/result'
-                #host: 'test.com'
-                #session_parameter_name: '__WEBAUTHN_ASSERTION_REQUEST__1'
+                #host: null
+                #profile: 'default'
+                user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
+                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+                #success_handler:
+                #failure_handler:
+                #option_handler:
+                secured_rp_ids:
+                    - 'localhost'
+#        request:
+#            test:
+#                options_path: '/devices/add/options'
+#                result_path: '/devices/add'
+#                #host: null
+#                #profile: 'default'
+#                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+#                #success_handler:
+#                #failure_handler:
+#                #option_handler:
     creation_profiles:
         default:
             rp:

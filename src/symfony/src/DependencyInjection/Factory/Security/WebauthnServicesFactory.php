@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Webauthn\Bundle\DependencyInjection\Compiler\FirewallConfigCompilerPass;
 
 /**
  * @internal Helper class for WebauthnFactory only
@@ -28,9 +27,6 @@ class WebauthnServicesFactory
             ->setDefinition($firewallConfigId, new ChildDefinition(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID))
             ->replaceArgument(0, $config)
             ->replaceArgument(1, $firewallName)
-            ->addTag(FirewallConfigCompilerPass::SERVICE_TAG, [
-                FirewallConfigCompilerPass::ATTRIBUTE_NAME => $firewallName,
-            ])
         ;
 
         return $firewallConfigId;
