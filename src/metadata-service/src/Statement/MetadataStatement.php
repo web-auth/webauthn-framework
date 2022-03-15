@@ -120,40 +120,7 @@ class MetadataStatement implements JsonSerializable
      */
     private array $attestationCertificateKeyIdentifiers = [];
 
-    private string $description;
-
     private AlternativeDescriptions $alternativeDescriptions;
-
-    private int $authenticatorVersion;
-
-    private string $protocolFamily;
-
-    private int $schema;
-
-    /**
-     * @var Version[]
-     */
-    private array $upv;
-
-    /**
-     * @var string[]
-     */
-    private array $authenticationAlgorithms;
-
-    /**
-     * @var string[]
-     */
-    private array $publicKeyAlgAndEncodings;
-
-    /**
-     * @var string[]
-     */
-    private array $attestationTypes;
-
-    /**
-     * @var VerificationMethodANDCombinations[]
-     */
-    private array $userVerificationDetails;
 
     /**
      * @var string[]
@@ -164,11 +131,6 @@ class MetadataStatement implements JsonSerializable
 
     private ?bool $isFreshUserVerificationRequired = null;
 
-    /**
-     * @var string[]
-     */
-    private array $matcherProtection;
-
     private ?int $cryptoStrength = null;
 
     /**
@@ -176,22 +138,12 @@ class MetadataStatement implements JsonSerializable
      */
     private array $attachmentHint = [];
 
-    /**
-     * @var string[]
-     */
-    private array $tcDisplay;
-
     private ?string $tcDisplayContentType = null;
 
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
      */
     private array $tcDisplayPNGCharacteristics = [];
-
-    /**
-     * @var string[]
-     */
-    private array $attestationRootCertificates;
 
     /**
      * @var EcdaaTrustAnchor[]
@@ -218,32 +170,20 @@ class MetadataStatement implements JsonSerializable
      * @param string[]                            $attestationRootCertificates
      */
     public function __construct(
-        string $description,
-        int $authenticatorVersion,
-        string $protocolFamily,
-        int $schema,
-        array $upv,
-        array $authenticationAlgorithms,
-        array $publicKeyAlgAndEncodings,
-        array $attestationTypes,
-        array $userVerificationDetails,
-        array $matcherProtection,
-        array $tcDisplay,
-        array $attestationRootCertificates,
+        private string $description,
+        private int $authenticatorVersion,
+        private string $protocolFamily,
+        private int $schema,
+        private array $upv,
+        private array $authenticationAlgorithms,
+        private array $publicKeyAlgAndEncodings,
+        private array $attestationTypes,
+        private array $userVerificationDetails,
+        private array $matcherProtection,
+        private array $tcDisplay,
+        private array $attestationRootCertificates,
     ) {
-        $this->description = $description;
         $this->alternativeDescriptions = new AlternativeDescriptions();
-        $this->authenticatorVersion = $authenticatorVersion;
-        $this->protocolFamily = $protocolFamily;
-        $this->schema = $schema;
-        $this->upv = $upv;
-        $this->authenticationAlgorithms = $authenticationAlgorithms;
-        $this->publicKeyAlgAndEncodings = $publicKeyAlgAndEncodings;
-        $this->attestationTypes = $attestationTypes;
-        $this->userVerificationDetails = $userVerificationDetails;
-        $this->matcherProtection = $matcherProtection;
-        $this->tcDisplay = $tcDisplay;
-        $this->attestationRootCertificates = $attestationRootCertificates;
         $this->authenticatorGetInfo = new AuthenticatorGetInfo();
     }
 

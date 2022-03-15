@@ -16,6 +16,7 @@ use const JSON_THROW_ON_ERROR;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Safe\sprintf;
+use Throwable;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
@@ -90,7 +91,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
                     $this->statements[$entry->getAaguid()] = $entry->getMetadataStatement();
                 }
             }
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
 
         $this->loaded = true;

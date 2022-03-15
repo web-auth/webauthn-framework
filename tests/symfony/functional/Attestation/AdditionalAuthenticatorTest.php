@@ -87,7 +87,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         ;
         $this->logIn();
 
-        /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
             64
         ), 'Test PublicKeyCredentialUserEntity');
