@@ -19,7 +19,7 @@ class MetadataBLOBPayload implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $rootCertificates;
+    private array $rootCertificates = [];
 
     public function __construct(
         private int $no,

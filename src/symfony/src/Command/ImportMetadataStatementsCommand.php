@@ -13,7 +13,7 @@ use Webauthn\MetadataService\CanSupportImport;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Service\MetadataService;
 
-class ImportMetadataStatementsCommand extends Command
+final class ImportMetadataStatementsCommand extends Command
 {
     protected static $defaultName = 'metadata:statements:import-from-services';
 
@@ -48,6 +48,14 @@ class ImportMetadataStatementsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->title('Importing Metadata Statements');
+        if (! $this->metadataStatementRepository instanceof CanSupportImport) {
+            //THis should never append as in this case the command is disabled.
+            $io->error(
+                'The metadata statement repository shall implement the interface "Webauthn\MetadataService\CanSupportImport".'
+            );
+
+            return self::FAILURE;
+        }
         $io->progressStart();
         Assertion::isInstanceOf(
             $this->metadataStatementRepository,

@@ -98,7 +98,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     }
 
     /**
-     * @return StatusReport[]
+     * @return BiometricStatusReport[]
      */
     public function getBiometricStatusReports(): array
     {

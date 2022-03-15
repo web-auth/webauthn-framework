@@ -203,7 +203,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
 
-            $storedData = $this->optionStorage->get();
+            $storedData = $this->optionsStorage->get();
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             Assertion::isInstanceOf(
                 $publicKeyCredentialCreationOptions,

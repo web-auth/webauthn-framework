@@ -18,7 +18,7 @@ final class ChainedMetadataServices implements MetadataService
     public function __construct(MetadataService ...$services)
     {
         foreach ($services as $service) {
-            $this->addService($service);
+            $this->addServices($service);
         }
     }
 

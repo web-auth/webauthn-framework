@@ -47,18 +47,16 @@ class AttestedCredentialData implements JsonSerializable
     public static function createFromArray(array $json): self
     {
         Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
+        $aaguid = $json['aaguid'];
+        Assertion::string($aaguid, 'Invalid input. "aaguid" shall be a string of 36 characters');
+        Assertion::length($aaguid, 36, 'Invalid input. "aaguid" shall be a string of 36 characters');
+        $uuid = Uuid::fromString($json['aaguid']);
+
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
-        switch (true) {
-            case mb_strlen($json['aaguid'], '8bit') === 36:
-                $uuid = Uuid::fromString($json['aaguid']);
-                break;
-            default: // Kept for compatibility with old format
-                $decoded = base64_decode($json['aaguid'], true);
-                Assertion::string($decoded, 'Unable to get the AAGUID');
-                $uuid = Uuid::fromBinary($decoded);
-        }
-        $credentialId = base64_decode($json['credentialId'], true);
-        Assertion::string($credentialId, 'Unable to get the public key ID');
+        $credentialId = $json['credentialId'];
+        Assertion::string($aaguid, 'Invalid input. "credentialId" shall be a string');
+        $credentialId = base64_decode($credentialId, true);
+        Assertion::string($credentialId, 'Invalid input. Unable to get the public key ID');
 
         $credentialPublicKey = null;
         if (isset($json['credentialPublicKey'])) {

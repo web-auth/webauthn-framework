@@ -109,11 +109,11 @@ class MetadataStatement implements JsonSerializable
 
     public const ATTESTATION_ATTCA = 'attca';
 
-    private ?string $legalHeader;
+    private ?string $legalHeader = null;
 
-    private ?string $aaid;
+    private ?string $aaid = null;
 
-    private ?string $aaguid;
+    private ?string $aaguid = null;
 
     /**
      * @var string[]
@@ -158,7 +158,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $keyProtection;
+    private array $keyProtection = [];
 
     private ?bool $isKeyRestricted = null;
 
@@ -206,6 +206,46 @@ class MetadataStatement implements JsonSerializable
     private array $supportedExtensions = [];
 
     private AuthenticatorGetInfo $authenticatorGetInfo;
+
+    /**
+     * @param Version[]                           $upv
+     * @param string[]                            $authenticationAlgorithms
+     * @param string[]                            $publicKeyAlgAndEncodings
+     * @param string[]                            $attestationTypes
+     * @param VerificationMethodANDCombinations[] $userVerificationDetails
+     * @param string[]                            $matcherProtection
+     * @param string[]                            $tcDisplay
+     * @param string[]                            $attestationRootCertificates
+     */
+    public function __construct(
+        string $description,
+        int $authenticatorVersion,
+        string $protocolFamily,
+        int $schema,
+        array $upv,
+        array $authenticationAlgorithms,
+        array $publicKeyAlgAndEncodings,
+        array $attestationTypes,
+        array $userVerificationDetails,
+        array $matcherProtection,
+        array $tcDisplay,
+        array $attestationRootCertificates,
+    ) {
+        $this->description = $description;
+        $this->alternativeDescriptions = new AlternativeDescriptions();
+        $this->authenticatorVersion = $authenticatorVersion;
+        $this->protocolFamily = $protocolFamily;
+        $this->schema = $schema;
+        $this->upv = $upv;
+        $this->authenticationAlgorithms = $authenticationAlgorithms;
+        $this->publicKeyAlgAndEncodings = $publicKeyAlgAndEncodings;
+        $this->attestationTypes = $attestationTypes;
+        $this->userVerificationDetails = $userVerificationDetails;
+        $this->matcherProtection = $matcherProtection;
+        $this->tcDisplay = $tcDisplay;
+        $this->attestationRootCertificates = $attestationRootCertificates;
+        $this->authenticatorGetInfo = new AuthenticatorGetInfo();
+    }
 
     public static function createFromString(string $statement): self
     {
@@ -413,39 +453,38 @@ class MetadataStatement implements JsonSerializable
             'tcDisplay',
             'attestationRootCertificates',
         ];
-        $object = new self();
         foreach ($requiredKeys as $key) {
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
-
-        $object->description = $data['description'];
-        $object->authenticatorVersion = $data['authenticatorVersion'];
-        $object->protocolFamily = $data['protocolFamily'];
-        $object->schema = $data['schema'];
-        $upv = $data['upv'];
-        Assertion::isArray($upv, 'Invalid Metadata Statement');
-        foreach ($upv as $value) {
-            Assertion::isArray($value, 'Invalid Metadata Statement');
-            $object->upv[] = Version::createFromArray($value);
-        }
         Assertion::allString($data['authenticationAlgorithms'], 'Invalid Metadata Statement');
-        $object->authenticationAlgorithms = $data['authenticationAlgorithms'];
         Assertion::allString($data['publicKeyAlgAndEncodings'], 'Invalid Metadata Statement');
-        $object->publicKeyAlgAndEncodings = $data['publicKeyAlgAndEncodings'];
         Assertion::allString($data['attestationTypes'], 'Invalid Metadata Statement');
-        $object->attestationTypes = $data['attestationTypes'];
-        $userVerificationDetails = $data['userVerificationDetails'];
-        Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');
-        foreach ($userVerificationDetails as $value) {
-            Assertion::isArray($value, 'Invalid Metadata Statement');
-            $object->userVerificationDetails[] = VerificationMethodANDCombinations::createFromArray($value);
-        }
         Assertion::allString($data['matcherProtection'], 'Invalid Metadata Statement');
-        $object->matcherProtection = $data['matcherProtection'];
         Assertion::allString($data['tcDisplay'], 'Invalid Metadata Statement');
-        $object->tcDisplay = $data['tcDisplay'];
         Assertion::allString($data['attestationRootCertificates'], 'Invalid Metadata Statement');
-        $object->attestationRootCertificates = $data['attestationRootCertificates'];
+
+        $object = new self(
+            $data['description'],
+            $data['authenticatorVersion'],
+            $data['protocolFamily'],
+            $data['schema'],
+            array_map(static function ($upv): Version {
+                Assertion::isArray($upv, 'Invalid Metadata Statement');
+
+                return Version::createFromArray($upv);
+            }, $data['upv']),
+            $data['authenticationAlgorithms'],
+            $data['publicKeyAlgAndEncodings'],
+            $data['attestationTypes'],
+            array_map(static function ($userVerificationDetails): VerificationMethodANDCombinations {
+                Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');
+
+                return VerificationMethodANDCombinations::createFromArray($userVerificationDetails);
+            }, $data['userVerificationDetails']),
+            $data['matcherProtection'],
+            $data['tcDisplay'],
+            $data['attestationRootCertificates']
+        );
 
         $object->legalHeader = $data['legalHeader'] ?? null;
         $object->aaid = $data['aaid'] ?? null;

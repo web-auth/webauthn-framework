@@ -52,74 +52,74 @@ class VerificationMethodDescriptor implements JsonSerializable
         $this->userVerificationMethod = $userVerificationMethod;
     }
 
-    public function getUserVerification(): string
+    public function getUserVerificationMethod(): string
     {
-        return $this->userVerification;
+        return $this->userVerificationMethod;
     }
 
     public function userPresence(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_PRESENCE_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_PRESENCE_INTERNAL;
     }
 
     public function fingerprint(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_FINGERPRINT_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_FINGERPRINT_INTERNAL;
     }
 
     public function passcodeInternal(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_PASSCODE_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_PASSCODE_INTERNAL;
     }
 
     public function voicePrint(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_VOICEPRINT_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_VOICEPRINT_INTERNAL;
     }
 
     public function facePrint(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_FACEPRINT_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_FACEPRINT_INTERNAL;
     }
 
     public function location(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_LOCATION_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_LOCATION_INTERNAL;
     }
 
     public function eyePrint(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_EYEPRINT_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_EYEPRINT_INTERNAL;
     }
 
     public function patternInternal(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_PATTERN_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_PATTERN_INTERNAL;
     }
 
     public function handprint(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_HANDPRINT_INTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_HANDPRINT_INTERNAL;
     }
 
     public function passcodeExternal(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_PASSCODE_EXTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_PASSCODE_EXTERNAL;
     }
 
     public function patternExternal(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_PATTERN_EXTERNAL;
+        return $this->userVerificationMethod === self::USER_VERIFY_PATTERN_EXTERNAL;
     }
 
     public function none(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_NONE;
+        return $this->userVerificationMethod === self::USER_VERIFY_NONE;
     }
 
     public function all(): bool
     {
-        return $this->userVerification === self::USER_VERIFY_ALL;
+        return $this->userVerificationMethod === self::USER_VERIFY_ALL;
     }
 
     public function getCaDesc(): ?CodeAccuracyDescriptor
