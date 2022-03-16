@@ -13,8 +13,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     private int $minLength;
 
-    public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
+    public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null) {
         Assertion::greaterOrEqualThan($base, 0, 'Invalid data. The value of "base" must be a positive integer');
         Assertion::greaterOrEqualThan(
             $minLength,

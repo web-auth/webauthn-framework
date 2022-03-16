@@ -18,8 +18,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     private string $class;
 
-    public function __construct(ManagerRegistry $registry, string $class)
-    {
+    public function __construct(ManagerRegistry $registry, string $class) {
         Assertion::subclassOf($class, PublicKeyCredentialSource::class, sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class

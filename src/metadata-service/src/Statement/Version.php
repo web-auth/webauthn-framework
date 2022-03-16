@@ -16,8 +16,7 @@ class Version implements JsonSerializable
 
     private ?int $minor;
 
-    public function __construct(?int $major, ?int $minor)
-    {
+    public function __construct(?int $major, ?int $minor) {
         if ($major === null && $minor === null) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
