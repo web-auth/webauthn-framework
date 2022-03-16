@@ -65,6 +65,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if ($config['logger'] !== null) {
             $container->setAlias('webauthn.logger', $config['logger']);
         }
+
+        $container->setAlias('webauthn.http.factory', $config['http_message_factory']);
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
@@ -142,11 +144,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         $loader->load('controller.php');
-
-        $container->setAlias(
-            'webauthn.controller.http_message_factory',
-            $config['controllers']['http_message_factory']
-        );
 
         foreach ($config['controllers']['creation'] as $name => $creationConfig) {
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);

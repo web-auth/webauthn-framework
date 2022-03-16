@@ -37,8 +37,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const DEFAULT_SESSION_STORAGE_SERVICE = SessionStorage::class;
 
-    public const DEFAULT_HTTP_MESSAGE_FACTORY_SERVICE = 'webauthn.http.factory';
-
     public const DEFAULT_SUCCESS_HANDLER_SERVICE = DefaultSuccessHandler::class;
 
     public const DEFAULT_FAILURE_HANDLER_SERVICE = DefaultFailureHandler::class;
@@ -95,9 +93,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->end()
             ->scalarNode('options_storage')
             ->defaultValue(self::DEFAULT_SESSION_STORAGE_SERVICE)
-            ->end()
-            ->scalarNode('http_message_factory')
-            ->defaultValue(self::DEFAULT_HTTP_MESSAGE_FACTORY_SERVICE)
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(self::DEFAULT_SUCCESS_HANDLER_SERVICE)
@@ -202,7 +197,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $successHandlerId,
             $failureHandlerId,
             $firewallConfigId,
-            $config['http_message_factory'],
             $config['options_storage'],
             $config['secured_rp_ids']
         );
@@ -225,7 +219,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $successHandlerId,
         string $failureHandlerId,
         string $firewallConfigId,
-        string $httpMessageFactoryId,
         string $optionsStorageId,
         array $securedRpIds
     ): string {
@@ -236,9 +229,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->replaceArgument(1, new Reference($userProviderId))
             ->replaceArgument(2, new Reference($successHandlerId))
             ->replaceArgument(3, new Reference($failureHandlerId))
-            ->replaceArgument(4, new Reference($httpMessageFactoryId))
-            ->replaceArgument(5, new Reference($optionsStorageId))
-            ->replaceArgument(6, $securedRpIds)
+            ->replaceArgument(4, new Reference($optionsStorageId))
+            ->replaceArgument(5, $securedRpIds)
         ;
 
         return $authenticatorId;

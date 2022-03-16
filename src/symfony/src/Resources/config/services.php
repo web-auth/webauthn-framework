@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -127,18 +126,19 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(AttestationControllerFactory::class)
         ->args([
-            service(HttpMessageFactoryInterface::class),
+            service('webauthn.http.factory'),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
-            service(\Webauthn\AuthenticatorAttestationResponseValidator::class),
+            service(BaseAuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepository::class),
         ])
     ;
     $container
         ->set(AssertionControllerFactory::class)
         ->args([
+            service('webauthn.http.factory'),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialRequestOptionsFactory::class),

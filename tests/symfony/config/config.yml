@@ -129,6 +129,7 @@ doctrine:
                 alias: App
 
 webauthn:
+    #http_message_factory:
     logger: 'Webauthn\Tests\Bundle\Functional\Logger'
     credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
     user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
@@ -136,7 +137,6 @@ webauthn:
         max_age: 99999999999
     controllers:
         enabled: true
-        #http_message_factory:
         creation:
             test:
                 options_path: '/devices/add/options'

@@ -19,6 +19,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 final class AssertionControllerFactory
 {
     public function __construct(
+        private HttpMessageFactoryInterface $httpMessageFactory,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
@@ -50,10 +51,9 @@ final class AssertionControllerFactory
 
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,
-        HttpMessageFactoryInterface $httpMessageFactory,
     ): AssertionResponseController {
         return new AssertionResponseController(
-            $httpMessageFactory,
+            $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->logger,

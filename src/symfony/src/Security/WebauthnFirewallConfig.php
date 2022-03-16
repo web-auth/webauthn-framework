@@ -35,11 +35,6 @@ final class WebauthnFirewallConfig
         return $this->options['options_storage'] ?? WebauthnFactory::DEFAULT_SESSION_STORAGE_SERVICE;
     }
 
-    public function getHttpMessageFactory(): string
-    {
-        return $this->options['http_message_factory'] ?? WebauthnFactory::DEFAULT_HTTP_MESSAGE_FACTORY_SERVICE;
-    }
-
     public function getSuccessHandler(): string
     {
         return $this->options['success_handler'] ?? WebauthnFactory::DEFAULT_SUCCESS_HANDLER_SERVICE;

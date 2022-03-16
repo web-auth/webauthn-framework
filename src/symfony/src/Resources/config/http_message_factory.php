@@ -18,7 +18,7 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container
-        ->set('webauthn.http.factory')
+        ->set('webauthn.http.factory.default')
         ->class(PsrHttpFactory::class)
         ->args([
             service(ServerRequestFactoryInterface::class),
