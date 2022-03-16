@@ -115,15 +115,6 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container
-        ->set(DummyPublicKeyCredentialSourceRepository::class)
-        ->args([service('webauthn.logger')->nullOnInvalid()])
-    ;
-    $container
-        ->set(DummyPublicKeyCredentialUserEntityRepository::class)
-        ->args([service('webauthn.logger')->nullOnInvalid()])
-    ;
-
-    $container
         ->set(AttestationControllerFactory::class)
         ->args([
             service('webauthn.http.factory'),
@@ -150,6 +141,16 @@ return static function (ContainerConfigurator $container): void {
         ])
 
     ;
+
+    $container
+        ->set(DummyPublicKeyCredentialSourceRepository::class)
+        ->args([service('webauthn.logger')->nullOnInvalid()])
+    ;
+    $container
+        ->set(DummyPublicKeyCredentialUserEntityRepository::class)
+        ->args([service('webauthn.logger')->nullOnInvalid()])
+    ;
+
     $container
         ->set(DummyControllerFactory::class)
     ;

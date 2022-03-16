@@ -53,6 +53,7 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(SessionStorage::class)
+        ->args([service('request_stack')])
     ;
 
     $container
