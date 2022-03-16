@@ -113,7 +113,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Invalid user entity');
 
         $token = new  WebauthnToken(
-            $credentialsBadge->getPublicKeyCredentialUserEntity(),
+            $userEntity,
             $credentialsBadge->getPublicKeyCredentialOptions(),
             $credentialsBadge->getPublicKeyCredentialSource()
                 ->getPublicKeyCredentialDescriptor(),
