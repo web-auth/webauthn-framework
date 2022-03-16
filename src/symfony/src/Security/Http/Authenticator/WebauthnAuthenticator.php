@@ -93,6 +93,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         $credentialsBadge = $passport->getBadge(WebauthnCredentials::class);
         Assertion::isInstanceOf($credentialsBadge, WebauthnCredentials::class, 'Invalid credentials');
 
+        /** @var UserBadge $userBadge */
+        $userBadge = $passport->getBadge(UserBadge::class);
+        Assertion::isInstanceOf($userBadge, UserBadge::class, 'Invalid user');
+
         /** @var AuthenticatorAttestationResponse|AuthenticatorAssertionResponse $response */
         $response = $credentialsBadge->getAuthenticatorResponse();
         if ($response instanceof AuthenticatorAssertionResponse) {
@@ -103,7 +107,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             ;
         }
         $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle(
-            $credentialsBadge->getPublicKeyCredentialSource()->getUserHandle()
+            $credentialsBadge->getPublicKeyCredentialSource()
+                ->getUserHandle()
         );
         Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Invalid user entity');
 
@@ -119,12 +124,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $authData->getSignCount(),
             $authData->getExtensions(),
             $credentialsBadge->getFirewallName(),
-            []
+            $userBadge->getUser()
+                ->getRoles()
         );
-
-        /** @var UserBadge $userBadge */
-        $userBadge = $passport->getBadge(UserBadge::class);
-        Assertion::isInstanceOf($userBadge, UserBadge::class, 'Invalid user');
         $token->setUser($userBadge->getUser());
 
         return $token;
