@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -16,6 +20,7 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
@@ -34,10 +39,10 @@ return static function (ContainerConfigurator $container): void {
         ->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire()
     ;
 
-    $container->set(BaseAuthenticatorAttestationResponseValidator::class)
+    $container
+        ->set(BaseAuthenticatorAttestationResponseValidator::class)
         ->class(AuthenticatorAttestationResponseValidator::class)
         ->args([
             service(AttestationStatementSupportManager::class),
@@ -48,7 +53,8 @@ return static function (ContainerConfigurator $container): void {
         ])
         ->public()
     ;
-    $container->set(BaseAuthenticatorAssertionResponseValidator::class)
+    $container
+        ->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
             service(PublicKeyCredentialSourceRepository::class),
@@ -59,40 +65,92 @@ return static function (ContainerConfigurator $container): void {
         ])
         ->public()
     ;
-    $container->set(PublicKeyCredentialLoader::class)
+    $container
+        ->set(PublicKeyCredentialLoader::class)
         ->args([service(AttestationObjectLoader::class)])
         ->public()
     ;
-    $container->set(PublicKeyCredentialCreationOptionsFactory::class)
+    $container
+        ->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args(['%webauthn.creation_profiles%', service(EventDispatcherInterface::class)])
         ->public()
     ;
-    $container->set(PublicKeyCredentialRequestOptionsFactory::class)
+    $container
+        ->set(PublicKeyCredentialRequestOptionsFactory::class)
         ->args(['%webauthn.request_profiles%', service(EventDispatcherInterface::class)])
         ->public()
     ;
 
-    $container->set(ExtensionOutputCheckerHandler::class);
-    $container->set(AttestationObjectLoader::class)
+    $container
+        ->set(ExtensionOutputCheckerHandler::class)
+    ;
+    $container
+        ->set(AttestationObjectLoader::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;
-    $container->set(AttestationStatementSupportManager::class);
-    $container->set(NoneAttestationStatementSupport::class);
+    $container
+        ->set(AttestationStatementSupportManager::class)
+    ;
+    $container
+        ->set(NoneAttestationStatementSupport::class)
+    ;
 
-    $container->set(IgnoreTokenBindingHandler::class);
-    $container->set(TokenBindingNotSupportedHandler::class);
-    $container->set(SecTokenBindingHandler::class);
+    $container
+        ->set(IgnoreTokenBindingHandler::class)
+    ;
+    $container
+        ->set(TokenBindingNotSupportedHandler::class)
+    ;
+    $container
+        ->set(SecTokenBindingHandler::class)
+    ;
 
-    $container->set(ThrowExceptionIfInvalid::class);
+    $container
+        ->set(ThrowExceptionIfInvalid::class)
+        ->args([service('webauthn.logger')->nullOnInvalid()])
+    ;
 
-    $container->set(Loader::class)
+    $container
+        ->set(Loader::class)
         ->tag('routing.loader')
     ;
 
-    $container->set(DummyPublicKeyCredentialSourceRepository::class);
-    $container->set(DummyPublicKeyCredentialUserEntityRepository::class);
+    $container
+        ->set(DummyPublicKeyCredentialSourceRepository::class)
+        ->args([service('webauthn.logger')->nullOnInvalid()])
+    ;
+    $container
+        ->set(DummyPublicKeyCredentialUserEntityRepository::class)
+        ->args([service('webauthn.logger')->nullOnInvalid()])
+    ;
 
-    $container->set(AttestationControllerFactory::class);
-    $container->set(AssertionControllerFactory::class);
-    $container->set(DummyControllerFactory::class);
+    $container
+        ->set(AttestationControllerFactory::class)
+        ->args([
+            service(HttpMessageFactoryInterface::class),
+            service(SerializerInterface::class),
+            service(ValidatorInterface::class),
+            service(PublicKeyCredentialCreationOptionsFactory::class),
+            service(PublicKeyCredentialLoader::class),
+            service(\Webauthn\AuthenticatorAttestationResponseValidator::class),
+            service(PublicKeyCredentialSourceRepository::class),
+        ])
+    ;
+    $container
+        ->set(AssertionControllerFactory::class)
+        ->args([
+            service(SerializerInterface::class),
+            service(ValidatorInterface::class),
+            service(PublicKeyCredentialRequestOptionsFactory::class),
+            service(PublicKeyCredentialLoader::class),
+            service(BaseAuthenticatorAssertionResponseValidator::class),
+            service(LoggerInterface::class),
+            service(PublicKeyCredentialUserEntityRepository::class),
+            service(PublicKeyCredentialSourceRepository::class),
+        ])
+
+    ;
+    $container
+        ->set(DummyControllerFactory::class)
+    ;
 };

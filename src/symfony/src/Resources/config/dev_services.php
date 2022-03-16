@@ -11,7 +11,6 @@ return static function (ContainerConfigurator $container): void {
         ->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire()
     ;
 
     $container->set(WebauthnCollector::class)

@@ -27,44 +27,43 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 return static function (ContainerConfigurator $container): void {
-    $container->services()
+    $container = $container->services()
+        ->defaults()
+        ->private()
+        ->autoconfigure()
+    ;
+
+    $container
         ->set(IsUserPresentVoter::class)
-        ->private()
         ->tag('security.voter')
     ;
 
-    $container->services()
+    $container
         ->set(IsUserVerifiedVoter::class)
-        ->private()
         ->tag('security.voter')
     ;
 
-    $container->services()
+    $container
         ->set(DefaultSuccessHandler::class)
-        ->private()
     ;
 
-    $container->services()
+    $container
         ->set(DefaultFailureHandler::class)
-        ->private()
     ;
 
-    $container->services()
+    $container
         ->set(SessionStorage::class)
-        ->private()
     ;
 
-    $container->services()
+    $container
         ->set(DefaultCreationOptionsHandler::class)
-        ->private()
     ;
 
-    $container->services()
+    $container
         ->set(DefaultRequestOptionsHandler::class)
-        ->private()
     ;
 
-    $container->services()
+    $container
         ->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)
         ->abstract()
         ->args([
@@ -85,7 +84,7 @@ return static function (ContainerConfigurator $container): void {
         ])
     ;
 
-    $container->services()
+    $container
         ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)
         ->abstract()
         ->args([
@@ -95,11 +94,11 @@ return static function (ContainerConfigurator $container): void {
         ])
     ;
 
-    $container->services()
+    $container
         ->set(CurrentUserEntityGuesser::class)
         ->args([service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepository::class)])
     ;
-    $container->services()
+    $container
         ->set(RequestBodyUserEntityGuesser::class)
         ->args([
             service(SerializerInterface::class),

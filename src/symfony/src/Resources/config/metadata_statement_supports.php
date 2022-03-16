@@ -18,18 +18,27 @@ return static function (ContainerConfigurator $container): void {
         ->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire()
     ;
 
-    $container->set(AppleAttestationStatementSupport::class);
-    $container->set(TPMAttestationStatementSupport::class);
-    $container->set(FidoU2FAttestationStatementSupport::class);
-    $container->set(AndroidKeyAttestationStatementSupport::class);
-    $container->set(PackedAttestationStatementSupport::class)
+    $container
+        ->set(AppleAttestationStatementSupport::class)
+    ;
+    $container
+        ->set(TPMAttestationStatementSupport::class)
+    ;
+    $container
+        ->set(FidoU2FAttestationStatementSupport::class)
+    ;
+    $container
+        ->set(AndroidKeyAttestationStatementSupport::class)
+    ;
+    $container
+        ->set(PackedAttestationStatementSupport::class)
         ->args([service('webauthn.cose.algorithm.manager')])
     ;
 
-    $container->set(ImportMetadataStatementsCommand::class)
+    $container
+        ->set(ImportMetadataStatementsCommand::class)
         ->args([service(MetadataStatementRepository::class), tagged_iterator('webauthn.mds_service')])
     ;
 };

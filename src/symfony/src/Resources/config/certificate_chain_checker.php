@@ -12,10 +12,10 @@ return static function (ContainerConfigurator $container): void {
         ->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire()
     ;
 
-    $container->set(CertificateChainChecker::class)
+    $container
+        ->set(CertificateChainChecker::class)
         ->class(OpenSSLCertificateChainChecker::class)
         ->args([
             service('webauthn.certificate_chain_checker.http_client'),

@@ -12,12 +12,13 @@ return static function (ContainerConfigurator $container): void {
         ->defaults()
         ->private()
         ->autoconfigure()
-        ->autowire()
     ;
 
     if (class_exists(JWKFactory::class) && class_exists(RS256::class)) {
-        $serviceConfigurator = $container->set(AndroidSafetyNetAttestationStatementSupport::class);
-        $serviceConfigurator->call('setMaxAge', ['%webauthn.android_safetynet.max_age%']);
-        $serviceConfigurator->call('setLeeway', ['%webauthn.android_safetynet.leeway%']);
+        $container
+            ->set(AndroidSafetyNetAttestationStatementSupport::class)
+            ->call('setMaxAge', ['%webauthn.android_safetynet.max_age%'])
+            ->call('setLeeway', ['%webauthn.android_safetynet.leeway%'])
+        ;
     }
 };
