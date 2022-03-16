@@ -18,7 +18,7 @@ class WebauthnCredentials implements CredentialsInterface
     public function __construct(
         private AuthenticatorResponse $authenticatorResponse,
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,
-        private null|PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
+        private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private PublicKeyCredentialSource $publicKeyCredentialSource,
         private string $firewallName,
     ) {

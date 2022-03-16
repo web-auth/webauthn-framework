@@ -106,14 +106,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 ->getAuthData()
             ;
         }
-        $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle(
-            $credentialsBadge->getPublicKeyCredentialSource()
-                ->getUserHandle()
-        );
-        Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Invalid user entity');
 
         $token = new  WebauthnToken(
-            $userEntity,
+            $credentialsBadge->getPublicKeyCredentialUserEntity(),
             $credentialsBadge->getPublicKeyCredentialOptions(),
             $credentialsBadge->getPublicKeyCredentialSource()
                 ->getPublicKeyCredentialDescriptor(),
@@ -183,6 +178,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $userEntity?->getId(),
                 $this->securedRelyingPartyIds
             );
+
+            $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle($source->getUserHandle());
+            Assertion::isInstanceOf($userEntity, PublicKeyCredentialUserEntity::class, 'Invalid user entity');
 
             $credentials = new WebauthnCredentials(
                 $response,
