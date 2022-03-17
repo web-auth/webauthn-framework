@@ -53,7 +53,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface $logger = null,
     ) {
         $this->logger = $logger ?? new NullLogger();
     }
@@ -130,6 +130,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $this->logger->info('User has been authenticated successfully with Webauthn.', [
+            'request' => $request,
+            'firewallName' => $firewallName,
             'identifier' => $token->getUserIdentifier(),
         ]);
 
@@ -139,6 +141,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $this->logger->info('Webauthn authentication request failed.', [
+            'request' => $request,
             'exception' => $exception,
         ]);
 

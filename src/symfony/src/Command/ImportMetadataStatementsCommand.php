@@ -22,9 +22,12 @@ final class ImportMetadataStatementsCommand extends Command
      */
     private array $metadataServices;
 
+    /**
+     * @param MetadataService[] $metadataServices
+     */
     public function __construct(
         private MetadataStatementRepository $metadataStatementRepository,
-        MetadataService ...$metadataServices
+        array $metadataServices = []
     ) {
         parent::__construct();
         $this->metadataServices = $metadataServices;
