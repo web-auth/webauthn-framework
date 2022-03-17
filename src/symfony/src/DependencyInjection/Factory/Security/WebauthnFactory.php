@@ -289,8 +289,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         );
         $this->createResponseControllerAndRoute(
             $container,
-            'creation',
             $firewallName,
+            'creation',
             $config['registration']['routes']['result_path'],
             $config['registration']['routes']['host']
         );
@@ -365,7 +365,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->setPublic(true)
         ;
 
-        $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $name, $operation, $firewallName);
+        $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $operation, $firewallName, $name);
 
         $container->setDefinition($controllerId, $controller);
     }
