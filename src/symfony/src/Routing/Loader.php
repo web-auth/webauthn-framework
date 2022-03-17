@@ -26,7 +26,7 @@ class Loader extends SymfonyLoader
             '_controller' => $controllerId,
         ];
         $route = new Route($pattern, $defaults, [], [], $host, [], [Request::METHOD_POST]);
-        $this->routes->add(sprintf('webauthn_%s', $name), $route);
+        $this->routes->add($name, $route);
     }
 
     public function load(mixed $resource, string $type = null): RouteCollection
