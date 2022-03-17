@@ -365,7 +365,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->setPublic(true)
         ;
 
-        $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $operation, $firewallName, $name);
+        $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $firewallName, $name, $operation);
 
         $container->setDefinition($controllerId, $controller);
     }
