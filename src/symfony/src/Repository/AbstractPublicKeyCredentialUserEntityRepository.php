@@ -16,7 +16,8 @@ abstract class AbstractPublicKeyCredentialUserEntityRepository implements Public
 
     private string $class;
 
-    public function __construct(ManagerRegistry $registry, string $class) {
+    public function __construct(ManagerRegistry $registry, string $class)
+    {
         Assertion::subclassOf($class, PublicKeyCredentialUserEntity::class, sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialUserEntity", got "%s" instead.',
             $class

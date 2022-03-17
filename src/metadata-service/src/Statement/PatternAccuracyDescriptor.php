@@ -12,7 +12,8 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
 {
     private int $minComplexity;
 
-    public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null) {
+    public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
+    {
         Assertion::greaterOrEqualThan(
             $minComplexity,
             0,

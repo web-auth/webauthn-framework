@@ -13,7 +13,8 @@ abstract class AbstractDescriptor implements JsonSerializable
 
     private ?int $blockSlowdown;
 
-    public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null) {
+    public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
+    {
         Assertion::greaterOrEqualThan(
             $maxRetries,
             0,
