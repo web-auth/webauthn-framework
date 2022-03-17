@@ -27,7 +27,7 @@ final class ImportMetadataStatementsCommand extends Command
      */
     public function __construct(
         private MetadataStatementRepository $metadataStatementRepository,
-        iterable $metadataServices = []
+        iterable $metadataServices
     ) {
         parent::__construct();
         $this->metadataServices = $metadataServices;
