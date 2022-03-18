@@ -39,27 +39,35 @@ class CollectedClientData
         $this->type = $this->findData(
             $data,
             'type',
-            static function ($d): void { Assertion::string($d, 'Invalid parameter "type". Shall be a string.'); }
+            static function ($d): void {
+                Assertion::string($d, 'Invalid parameter "type". Shall be a string.');
+                Assertion::notEmpty($d, 'Invalid parameter "type". Shall not be empty.');
+            }
         );
         $this->challenge = $this->findData(
             $data,
             'challenge',
-            static function ($d): void { Assertion::string($d, 'Invalid parameter "challenge". Shall be a string.'); },
+            static function ($d): void {
+                Assertion::string($d, 'Invalid parameter "challenge". Shall be a string.');
+                Assertion::notEmpty($d, 'Invalid parameter "challenge". Shall not be empty.');
+            },
             true,
             true
         );
         $this->origin = $this->findData(
             $data,
             'origin',
-            static function ($d): void { Assertion::string($d, 'Invalid parameter "origin". Shall be a string.'); }
+            static function ($d): void {
+                Assertion::string($d, 'Invalid parameter "origin". Shall be a string.');
+                Assertion::notEmpty($d, 'Invalid parameter "origin". Shall not be empty.');
+            }
         );
         $this->tokenBinding = $this->findData(
             $data,
             'tokenBinding',
-            static function ($d): void { Assertion::isArray(
-                $d,
-                'Invalid parameter "tokenBinding". Shall be an object.'
-            ); },
+            static function ($d): void {
+                Assertion::isArray($d, 'Invalid parameter "tokenBinding". Shall be an object.');
+            },
             false
         );
         $this->data = $data;
@@ -132,8 +140,7 @@ class CollectedClientData
         callable $check,
         bool $isRequired = true,
         bool $isB64 = false
-    ): mixed
-    {
+    ): mixed {
         if (! array_key_exists($key, $json)) {
             if ($isRequired) {
                 throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
