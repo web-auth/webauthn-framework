@@ -150,6 +150,7 @@ class CollectedClientData
             return null;
         }
 
+        $check($json[$key]);
         try {
             $data = $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
         } catch (Throwable $e) {
@@ -158,7 +159,6 @@ class CollectedClientData
                 $key
             ), 0, $e);
         }
-        $check($data);
 
         return $data;
     }
