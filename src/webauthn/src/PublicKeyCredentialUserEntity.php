@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
@@ -65,7 +66,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
-        $json['id'] = base64_encode($this->id);
+        $json['id'] = Base64UrlSafe::encode($this->id);
         $json['displayName'] = $this->displayName;
 
         return $json;
