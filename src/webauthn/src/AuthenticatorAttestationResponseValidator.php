@@ -18,14 +18,13 @@ use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
-use Webauthn\AttestationStatement\CanSupportStatusReport;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use Webauthn\MetadataService\Statement\StatusReport;
+use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -35,6 +34,8 @@ class AuthenticatorAttestationResponseValidator
     private LoggerInterface $logger;
 
     private ?MetadataStatementRepository $metadataStatementRepository = null;
+
+    private ?StatusReportRepository $statusReportRepository = null;
 
     private ?CertificateChainChecker $certificateChainChecker = null;
 
@@ -64,6 +65,13 @@ class AuthenticatorAttestationResponseValidator
     public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
     {
         $this->metadataStatementRepository = $metadataStatementRepository;
+
+        return $this;
+    }
+
+    public function setStatusReportRepository(StatusReportRepository $statusReportRepository): self
+    {
+        $this->statusReportRepository = $statusReportRepository;
 
         return $this;
     }
@@ -302,10 +310,7 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // We check the last status report
-        $statusReports = $this->metadataStatementRepository instanceof CanSupportStatusReport ? $this->metadataStatementRepository->findStatusReportsByAAGUID(
-            $aaguid
-        ) : [];
-        $this->checkStatusReport($statusReports);
+        $this->checkStatusReport($aaguid);
 
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
@@ -327,11 +332,11 @@ class AuthenticatorAttestationResponseValidator
         }
     }
 
-    /**
-     * @param StatusReport[] $statusReports
-     */
-    private function checkStatusReport(array $statusReports): void
+    private function checkStatusReport(string $aaguid): void
     {
+        $statusReports = $this->statusReportRepository === null ? [] : $this->statusReportRepository->findStatusReportsByAAGUID(
+            $aaguid
+        );
         if (count($statusReports) !== 0) {
             $lastStatusReport = end($statusReports);
             if ($lastStatusReport->isCompromised()) {

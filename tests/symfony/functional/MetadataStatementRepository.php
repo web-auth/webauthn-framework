@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use Webauthn\AttestationStatement\CanSupportStatusReport;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
-final class MetadataStatementRepository implements MetadataStatementRepositoryInterface, CanSupportStatusReport
+final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
     public function __construct(
         private MetadataService $service
@@ -23,13 +22,5 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         }
 
         return $this->service->get($aaguid);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findStatusReportsByAAGUID(string $aaguid): array
-    {
-        return [];
     }
 }
