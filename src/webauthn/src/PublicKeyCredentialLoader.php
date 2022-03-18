@@ -118,6 +118,7 @@ class PublicKeyCredentialLoader
     {
         Assertion::keyExists($response, 'clientDataJSON', 'Invalid data. The parameter "clientDataJSON" is missing');
         Assertion::string($response['clientDataJSON'], 'Invalid data. The parameter "clientDataJSON" is invalid');
+        Assertion::nullOrString($response['userHandle'] ?? null, 'Invalid data. The parameter "userHandle" is invalid');
         switch (true) {
             case array_key_exists('attestationObject', $response):
                 Assertion::string(
@@ -175,10 +176,16 @@ class PublicKeyCredentialLoader
                     $extension
                 );
 
+                try {
+                    $signature = Base64UrlSafe::decode($response['signature'], true);
+                } catch (Throwable $e) {
+                    throw new InvalidArgumentException('The signature shall be Base64 Url Safe encoded', 0, $e);
+                }
+
                 return new AuthenticatorAssertionResponse(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
-                    Base64UrlSafe::decode($response['signature']),
+                    $signature,
                     $response['userHandle'] ?? null
                 );
             default:
