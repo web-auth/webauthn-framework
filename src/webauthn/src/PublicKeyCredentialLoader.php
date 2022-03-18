@@ -130,7 +130,7 @@ class PublicKeyCredentialLoader
                     $response['clientDataJSON']
                 ), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
-                $authData = Base64::decode($response['authenticatorData']);
+                $authData = Base64UrlSafe::decode($response['authenticatorData']);
 
                 $authDataStream = new StringStream($authData);
                 $rp_id_hash = $authDataStream->read(32);
@@ -178,7 +178,7 @@ class PublicKeyCredentialLoader
                 return new AuthenticatorAssertionResponse(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
-                    Base64::decode($response['signature']),
+                    Base64UrlSafe::decode($response['signature']),
                     $response['userHandle'] ?? null
                 );
             default:
