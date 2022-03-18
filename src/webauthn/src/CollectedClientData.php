@@ -36,10 +36,32 @@ class CollectedClientData
         private string $rawData,
         array $data
     ) {
-        $this->type = $this->findData($data, 'type');
-        $this->challenge = $this->findData($data, 'challenge', true, true);
-        $this->origin = $this->findData($data, 'origin');
-        $this->tokenBinding = $this->findData($data, 'tokenBinding', false);
+        $this->type = $this->findData(
+            $data,
+            'type',
+            static function ($d): void { Assertion::string($d, 'Invalid parameter "type". Shall be a string.'); }
+        );
+        $this->challenge = $this->findData(
+            $data,
+            'challenge',
+            static function ($d): void { Assertion::string($d, 'Invalid parameter "challenge". Shall be a string.'); },
+            true,
+            true
+        );
+        $this->origin = $this->findData(
+            $data,
+            'origin',
+            static function ($d): void { Assertion::string($d, 'Invalid parameter "origin". Shall be a string.'); }
+        );
+        $this->tokenBinding = $this->findData(
+            $data,
+            'tokenBinding',
+            static function ($d): void { Assertion::isArray(
+                $d,
+                'Invalid parameter "tokenBinding". Shall be an object.'
+            ); },
+            false
+        );
         $this->data = $data;
     }
 
@@ -104,7 +126,13 @@ class CollectedClientData
      *
      * @return mixed|null
      */
-    private function findData(array $json, string $key, bool $isRequired = true, bool $isB64 = false): mixed
+    private function findData(
+        array $json,
+        string $key,
+        callable $check,
+        bool $isRequired = true,
+        bool $isB64 = false
+    ): mixed
     {
         if (! array_key_exists($key, $json)) {
             if ($isRequired) {
@@ -114,6 +142,9 @@ class CollectedClientData
             return null;
         }
 
-        return $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
+        $data = $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
+        $check($data);
+
+        return $data;
     }
 }
