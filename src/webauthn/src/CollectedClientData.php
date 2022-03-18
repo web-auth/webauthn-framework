@@ -9,6 +9,7 @@ use Assert\Assertion;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Throwable;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -149,7 +150,14 @@ class CollectedClientData
             return null;
         }
 
-        $data = $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
+        try {
+            $data = $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
+        } catch (Throwable $e) {
+            throw new InvalidArgumentException(sprintf(
+                'The parameter "%s" shall be Base64 Url Safe encoded',
+                $key
+            ), 0, $e);
+        }
         $check($data);
 
         return $data;
