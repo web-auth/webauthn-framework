@@ -71,7 +71,7 @@
             {%  if not collector.getData().authenticatorAttestationResponseValidationFailed is empty %}
                 {% for id, data in collector.getData().authenticatorAttestationResponseValidationFailed %}
                     <tr>
-                        <td>{ profiler_dump(data.attestation_response) }}</td>
+                        <td>{{ profiler_dump(data.attestation_response) }}</td>
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
