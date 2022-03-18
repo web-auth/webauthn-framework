@@ -19,6 +19,7 @@ use function Safe\sprintf;
 use Throwable;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\Statement\StatusReport;
 
 final class FidoAllianceCompliantMetadataService implements MetadataService
 {
@@ -28,6 +29,11 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
      * @var MetadataStatement[]
      */
     private array $statements = [];
+
+    /**
+     * @var array<string, array<int, StatusReport>>
+     */
+    private array $statusReports = [];
 
     public function __construct(
         private RequestFactoryInterface $requestFactory,
@@ -73,6 +79,16 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         return $this->statements[$aaguid];
     }
 
+    /**
+     * @return array<int, StatusReport>
+     */
+    public function getStatusReports(string $aaguid): iterable
+    {
+        $this->loadData();
+
+        return $this->statusReports[$aaguid] ?? [];
+    }
+
     private function loadData(): void
     {
         if ($this->loaded) {
@@ -89,6 +105,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
                 $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
                 if ($entry->getAaguid() !== null && $entry->getMetadataStatement() !== null) {
                     $this->statements[$entry->getAaguid()] = $entry->getMetadataStatement();
+                    $this->statusReports[$entry->getAaguid()] = $entry->addStatusReports();
                 }
             }
         } catch (Throwable) {
