@@ -8,9 +8,7 @@ use Assert\Assertion;
 use function count;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
-use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Throwable;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
@@ -73,11 +71,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
 
-        try {
-            $id = Base64UrlSafe::decode($json['id']);
-        } catch (Throwable) {
-            $id = Base64::decode($json['id']);
-        }
+        $id = Base64UrlSafe::decode($json['id']);
 
         return new self($json['type'], $id, $json['transports'] ?? []);
     }
