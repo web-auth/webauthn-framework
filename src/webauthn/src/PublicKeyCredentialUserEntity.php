@@ -66,7 +66,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
-        $json['id'] = Base64UrlSafe::encode($this->id);
+        $json['id'] = Base64UrlSafe::encodeUnpadded($this->id);
         $json['displayName'] = $this->displayName;
 
         return $json;
