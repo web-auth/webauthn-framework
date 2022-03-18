@@ -139,12 +139,12 @@ class AuthenticatorAssertionResponseValidator
                 'rpId hash mismatch.'
             );
 
-            Assertion::true(
-                $authenticatorAssertionResponse->getAuthenticatorData()
-                    ->isUserPresent(),
-                'User was not present'
-            );
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+                Assertion::true(
+                    $authenticatorAssertionResponse->getAuthenticatorData()
+                        ->isUserPresent(),
+                    'User was not present'
+                );
                 Assertion::true(
                     $authenticatorAssertionResponse->getAuthenticatorData()
                         ->isUserVerified(),
