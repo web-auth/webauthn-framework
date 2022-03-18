@@ -322,7 +322,7 @@ class AuthenticatorAttestationResponseValidator
         );
 
         // Check Attestation Type is allowed
-        if (count($metadataStatement->getAttestationTypes()) !== 0) {
+        /*if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray(
                 $type,
@@ -333,7 +333,7 @@ class AuthenticatorAttestationResponseValidator
                     implode(', ', $metadataStatement->getAttestationTypes())
                 )
             );
-        }
+        }*/
     }
 
     private function checkStatusReport(string $aaguid): void
