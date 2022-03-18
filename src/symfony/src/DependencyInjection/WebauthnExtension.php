@@ -31,6 +31,7 @@ use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
@@ -87,6 +88,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         if ($config['metadata_service']['enabled'] === true) {
             $this->loadMetadataStatementSupports($container, $loader, $config);
+        }
+
+        if ($config['status_report']['enabled'] === true) {
+            $container->setAlias(StatusReportRepository::class, $config['status_report']['repository']);
         }
 
         if ($config['controllers']['enabled'] === true) {

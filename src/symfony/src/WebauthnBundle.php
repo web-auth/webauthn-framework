@@ -19,6 +19,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerifica
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementRepositorySetterCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\StatusReportRepositorySetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
@@ -45,6 +46,7 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new CounterCheckerSetterCompilerPass());
         $container->addCompilerPass(new CertificateChainCheckerSetterCompilerPass());
         $container->addCompilerPass(new MetadataStatementRepositorySetterCompilerPass());
+        $container->addCompilerPass(new StatusReportRepositorySetterCompilerPass());
 
         $this->registerMappings($container);
 
