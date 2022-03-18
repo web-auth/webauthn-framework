@@ -15,7 +15,7 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use const JSON_THROW_ON_ERROR;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use function Safe\sprintf;
+use function sprintf;
 use Throwable;
 use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;

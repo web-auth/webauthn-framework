@@ -6,7 +6,7 @@ namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
 use Assert\Assertion;
-use function Safe\sprintf;
+use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class InMemoryMetadataService implements MetadataService

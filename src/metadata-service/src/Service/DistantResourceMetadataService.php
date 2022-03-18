@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use function Safe\sprintf;
+use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class DistantResourceMetadataService implements MetadataService

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
+use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class ChainedMetadataServices implements MetadataService
