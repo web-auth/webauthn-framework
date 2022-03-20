@@ -61,9 +61,11 @@ abstract class AbstractTestCase extends TestCase
 
     private ?AttestationObjectLoader $attestationObjectLoader = null;
 
-    private ?\Webauthn\Tests\Functional\MetadataStatementRepository $metadataStatementRepository = null;
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
 
     private ?OpenSSLCertificateChainChecker $certificateChainChecker = null;
+
+    private ?StatusReportRepository $statusReportRepository = null;
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
@@ -85,11 +87,10 @@ abstract class AbstractTestCase extends TestCase
                 new IgnoreTokenBindingHandler(),
                 new ExtensionOutputCheckerHandler()
             );
-            $this->authenticatorAttestationResponseValidator->setCertificateChainChecker(
-                $this->getCertificateChainChecker()
-            );
-            $this->authenticatorAttestationResponseValidator->setMetadataStatementRepository(
-                $this->getMetadataStatementRepository($client)
+            $this->authenticatorAttestationResponseValidator->enableMetadataStatementSupport(
+                $this->getMetadataStatementRepository($client),
+                $this->getStatusReportRepository(),
+                $this->getCertificateChainChecker(),
             );
         }
 
@@ -257,5 +258,14 @@ abstract class AbstractTestCase extends TestCase
         }
 
         return $this->certificateChainChecker;
+    }
+
+    private function getStatusReportRepository(): StatusReportRepository
+    {
+        if ($this->statusReportRepository === null) {
+            $this->statusReportRepository = new StatusReportRepository();
+        }
+
+        return $this->statusReportRepository;
     }
 }

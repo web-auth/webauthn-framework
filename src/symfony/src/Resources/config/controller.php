@@ -24,7 +24,7 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(AttestationControllerFactory::class)
         ->args([
-            service('webauthn.http.factory'),
+            service('webauthn.http_message_factory'),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),

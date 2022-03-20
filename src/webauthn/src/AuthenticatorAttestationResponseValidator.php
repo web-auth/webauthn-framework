@@ -55,22 +55,18 @@ class AuthenticatorAttestationResponseValidator
         return $this;
     }
 
-    public function setCertificateChainChecker(CertificateChainChecker $certificateChainChecker): self
+    public function setCertificateChainChecker(): self
     {
-        $this->certificateChainChecker = $certificateChainChecker;
-
         return $this;
     }
 
-    public function setMetadataStatementRepository(MetadataStatementRepository $metadataStatementRepository): self
-    {
+    public function enableMetadataStatementSupport(
+        MetadataStatementRepository $metadataStatementRepository,
+        StatusReportRepository $statusReportRepository,
+        CertificateChainChecker $certificateChainChecker,
+    ): self {
         $this->metadataStatementRepository = $metadataStatementRepository;
-
-        return $this;
-    }
-
-    public function setStatusReportRepository(StatusReportRepository $statusReportRepository): self
-    {
+        $this->certificateChainChecker = $certificateChainChecker;
         $this->statusReportRepository = $statusReportRepository;
 
         return $this;

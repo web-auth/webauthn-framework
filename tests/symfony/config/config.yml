@@ -129,7 +129,9 @@ doctrine:
                 alias: App
 
 webauthn:
-    #http_message_factory:
+    #http_client: ~
+    #request_factory: ~
+    #http_message_factory: ~
     logger: 'Webauthn\Tests\Bundle\Functional\Logger'
     credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
     user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
@@ -193,13 +195,11 @@ webauthn:
             challenge_length: 32
             timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-    metadata_service: ## Optional
+    metadata: ## Optional
         enabled: true
-        repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
-    certificate_chain_checker:
-        enabled: true
-        http_client: '@nyholm.psr7.psr17_factory'
-        request_factory: '@nyholm.psr7.psr18_factory'
+        mds_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
+        status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
+        #certificate_chain_checker: OpenSSLCertificateChainChecker::class
 
 security:
     providers:

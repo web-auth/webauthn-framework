@@ -29,6 +29,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\CertificateChainChecker\CertificateChainChecker;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
@@ -63,44 +64,31 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         );
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
+        $container->setAlias('webauthn.http_message_factory', $config['http_message_factory']);
+        $container->setAlias('webauthn.request_factory', $config['request_factory']);
+        $container->setAlias('webauthn.http_client', $config['http_client']);
+
         if ($config['logger'] !== null) {
             $container->setAlias('webauthn.logger', $config['logger']);
         }
 
-        $container->setAlias('webauthn.http.factory', $config['http_message_factory']);
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
+        $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
+
         $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
+
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
+        $this->loadAndroidSafetyNet($container, $loader, $config['android_safetynet']);
+        $this->loadMetadataServices($container, $loader, $config['metadata']);
+        $this->loadControllersSupport($container, $loader, $config['controllers']);
+
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 
-        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
         $loader->load('services.php');
-        $loader->load('http_message_factory.php');
         $loader->load('cose.php');
         $loader->load('security.php');
-        $loader->load('security.php');
-
-        $this->loadMetadataServices($container, $config);
-        if ($config['certificate_chain_checker']['enabled'] === true) {
-            $this->loadCertificateChainChecker($container, $loader, $config);
-        }
-
-        if ($config['metadata_service']['enabled'] === true) {
-            $this->loadMetadataStatementSupports($container, $loader, $config);
-        }
-
-        if ($config['status_report']['enabled'] === true) {
-            $container->setAlias(StatusReportRepository::class, $config['status_report']['repository']);
-        }
-
-        if ($config['controllers']['enabled'] === true) {
-            $this->loadControllerSupport($container, $loader, $config);
-        }
-
-        if ($config['user_repository'] !== null) {
-            $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
-        }
 
         if ($container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
@@ -146,11 +134,14 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadControllerSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    private function loadControllersSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
+        if ($config['enabled'] === true) {
+        }
+
         $loader->load('controller.php');
 
-        foreach ($config['controllers']['creation'] as $name => $creationConfig) {
+        foreach ($config['creation'] as $name => $creationConfig) {
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
             $attestationRequestController = (new Definition(AttestationRequestController::class))
                 ->setFactory(
@@ -194,60 +185,32 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadCertificateChainChecker(
+    private function loadAndroidSafetyNet(
         ContainerBuilder $container,
         LoaderInterface $loader,
         array $config
     ): void {
-        $loader->load('certificate_chain_checker.php');
-        if ($config['certificate_chain_checker']['http_client'] !== null) {
-            $container->setAlias(
-                'webauthn.certificate_chain_checker.http_client',
-                $config['certificate_chain_checker']['http_client']
-            );
-        }
-        if ($config['certificate_chain_checker']['request_factory'] !== null) {
-            $container->setAlias(
-                'webauthn.certificate_chain_checker.request_factory',
-                $config['certificate_chain_checker']['request_factory']
-            );
-        }
-    }
-
-    /**
-     * @param mixed[] $config
-     */
-    private function loadMetadataStatementSupports(
-        ContainerBuilder $container,
-        LoaderInterface $loader,
-        array $config
-    ): void {
-        $loader->load('metadata_statement_supports.php');
-
         //Android SafetyNet
-        if ($config['android_safetynet']['http_client'] !== null) {
-            $container->setAlias('webauthn.android_safetynet.http_client', $config['android_safetynet']['http_client']);
-        }
-        if ($config['android_safetynet']['request_factory'] !== null) {
-            $container->setAlias(
-                'webauthn.android_safetynet.request_factory',
-                $config['android_safetynet']['request_factory']
-            );
-        }
-        $container->setParameter('webauthn.android_safetynet.api_key', $config['android_safetynet']['api_key']);
-        $container->setParameter('webauthn.android_safetynet.leeway', $config['android_safetynet']['leeway']);
-        $container->setParameter('webauthn.android_safetynet.max_age', $config['android_safetynet']['max_age']);
+        $container->setParameter('webauthn.android_safetynet.leeway', $config['leeway']);
+        $container->setParameter('webauthn.android_safetynet.max_age', $config['max_age']);
+        $container->setParameter('webauthn.android_safetynet.api_key', $config['api_key']);
         $loader->load('android_safetynet.php');
     }
 
     /**
      * @param mixed[] $config
      */
-    private function loadMetadataServices(ContainerBuilder $container, array $config): void
-    {
-        if ($config['metadata_service']['enabled'] === false) {
+    private function loadMetadataServices(
+        ContainerBuilder $container,
+        LoaderInterface $loader,
+        array $config
+    ): void {
+        if ($config['enabled'] === false) {
             return;
         }
-        $container->setAlias(MetadataStatementRepository::class, $config['metadata_service']['repository']);
+        $container->setAlias(MetadataStatementRepository::class, $config['mds_repository']);
+        $container->setAlias(StatusReportRepository::class, $config['status_report_repository']);
+        $container->setAlias(CertificateChainChecker::class, $config['certificate_chain_checker']);
+        $loader->load('metadata_statement_supports.php');
     }
 }

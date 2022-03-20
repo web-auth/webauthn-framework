@@ -16,10 +16,12 @@
         }
     ],
     "require": {
+        "nyholm/psr7": "^1.1",
         "spomky-labs/cbor-bundle": "^3.0",
         "symfony/config": "^6.0",
         "symfony/dependency-injection": "^6.0",
         "symfony/framework-bundle": "^6.0",
+        "symfony/http-client": "^6.0",
         "symfony/psr-http-message-bridge": "^2.0",
         "web-auth/webauthn-lib": "self.version",
         "web-token/jwt-signature": "^3.0"

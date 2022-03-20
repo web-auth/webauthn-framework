@@ -7,8 +7,9 @@ namespace Webauthn\Tests\Bundle\Functional;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\StatusReportRepository as StatusReportRepositoryInterface;
 
-final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
+final class MetadataStatementRepository implements MetadataStatementRepositoryInterface, StatusReportRepositoryInterface
 {
     public function __construct(
         private MetadataService $service
@@ -22,5 +23,10 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         }
 
         return $this->service->get($aaguid);
+    }
+
+    public function findStatusReportsByAAGUID(string $aaguid): iterable
+    {
+        return [];
     }
 }

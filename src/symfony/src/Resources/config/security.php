@@ -74,7 +74,7 @@ return static function (ContainerConfigurator $container): void {
             abstract_arg('Failure handler'),
             abstract_arg('Options Storage'),
             abstract_arg('Secured Relying Party IDs'),
-            service('webauthn.http.factory'),
+            service('webauthn.http_message_factory'),
             service(PublicKeyCredentialSourceRepository::class),
             service(PublicKeyCredentialUserEntityRepository::class),
             service(PublicKeyCredentialLoader::class),

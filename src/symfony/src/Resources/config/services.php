@@ -2,7 +2,14 @@
 
 declare(strict_types=1);
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -117,7 +124,7 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(AttestationControllerFactory::class)
         ->args([
-            service('webauthn.http.factory'),
+            service('webauthn.http_message_factory'),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),
@@ -129,7 +136,7 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(AssertionControllerFactory::class)
         ->args([
-            service('webauthn.http.factory'),
+            service('webauthn.http_message_factory'),
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialRequestOptionsFactory::class),
@@ -153,5 +160,24 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(DummyControllerFactory::class)
+    ;
+
+    $container
+        ->set('webauthn.http_message_factory.default')
+        ->class(PsrHttpFactory::class)
+        ->args([
+            service(ServerRequestFactoryInterface::class),
+            service(StreamFactoryInterface::class),
+            service(UploadedFileFactoryInterface::class),
+            service(ResponseFactoryInterface::class),
+        ])
+    ;
+
+    $container
+        ->alias('webauthn.http_client.default', ClientInterface::class)
+    ;
+
+    $container
+        ->alias('webauthn.request_factory.default', RequestFactoryInterface::class)
     ;
 };

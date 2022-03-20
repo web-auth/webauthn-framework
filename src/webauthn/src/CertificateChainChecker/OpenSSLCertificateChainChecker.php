@@ -22,11 +22,6 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     ) {
     }
 
-    public function addRootCertificate(string $certificate): self
-    {
-        return $this;
-    }
-
     /**
      * @param string[] $authenticatorCertificates
      * @param string[] $trustedCertificates
