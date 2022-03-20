@@ -162,7 +162,7 @@ class MetadataStatement implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $rootCertificates;
+    private array $rootCertificates = [];
 
     /**
      * @param Version[]                           $upv
