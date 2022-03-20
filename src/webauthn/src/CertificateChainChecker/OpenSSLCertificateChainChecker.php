@@ -6,14 +6,17 @@ namespace Webauthn\CertificateChainChecker;
 
 use Assert\Assertion;
 use function count;
+use FG\ASN1\ASNObject;
+use FG\ASN1\Universal\Integer;
+use FG\ASN1\Universal\Sequence;
 use const FILE_APPEND;
-use InvalidArgumentException;
+use function in_array;
 use function is_int;
 use const PHP_EOL;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use Symfony\Component\Process\Process;
-use Webauthn\CertificateToolbox;
+use RuntimeException;
+use const X509_PURPOSE_ANY;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
@@ -34,80 +37,85 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 
             return;
         }
-        //$this->checkCertificatesValidity($authenticatorCertificates, false);
+        $this->checkCertificatesValidity($authenticatorCertificates, false);
 
+        $trustedCertificatesFilenames = [];
+        foreach ($trustedCertificates as $trustedCertificate) {
+            $trustedCertificatesFilenames[] = $this->saveToTemporaryFile(
+                $trustedCertificate,
+                'webauthn-trusted-',
+                '.pem'
+            );
+        }
+
+        $leafCertificate = array_shift($authenticatorCertificates);
+        $untrustedCertificatesFilename = null;
+        if (count($authenticatorCertificates) !== 0) {
+            $untrustedCertificatesFilename = $this->saveToTemporaryFile(
+                implode(PHP_EOL, $authenticatorCertificates),
+                'webauthn-untrusted-',
+                '.pem'
+            );
+        }
+
+        $result = openssl_x509_checkpurpose(
+            $leafCertificate,
+            X509_PURPOSE_ANY,
+            $trustedCertificatesFilenames,
+            $untrustedCertificatesFilename
+        );
+        if ($result === false) {
+            throw new RuntimeException('Unable to verify the certificate chain');
+        }
         $crls = [];
-        $processArguments = ['-no-CAfile', '-no-CApath', '-no-CAstore'];
-
-        //$caDirname = $this->createTemporaryDirectory();
-
-        //Trusted Certificates (from the MDS)
         foreach ($trustedCertificates as $certificate) {
-            $trustedCertificateFilename = $this->saveToTemporaryFile($certificate, 'webauthn-trusted-', '.pem');
-            $processArguments[] = '-trusted';
-            $processArguments[] = $trustedCertificateFilename;
-            $filenames[] = $trustedCertificateFilename;
             $crl = $this->getCrls($certificate);
             if ($crl !== '') {
-                $crls[] = CertificateToolbox::convertDERToPEM($crl, 'X509 CRL');
+                $crls[] = $crl;
             }
         }
         foreach ($authenticatorCertificates as $certificate) {
             $crl = $this->getCrls($certificate);
             if ($crl !== '') {
-                $crls[] = CertificateToolbox::convertDERToPEM($crl, 'X509 CRL');
+                $crls[] = $crl;
+            }
+        }
+        $revokedCertificates = [];
+        foreach ($crls as $crl) {
+            /** @var Sequence $asn */
+            $asn = ASNObject::fromBinary($crl);
+            Assertion::isInstanceOf($asn, Sequence::class);
+            /** @var Sequence $asn */
+            $asn = $asn->getFirstChild();
+            Assertion::isInstanceOf($asn, Sequence::class);
+            Assertion::minCount($asn->getChildren(), 5);
+            /** @var Sequence $list */
+            $list = $asn->getChildren()[5];
+            Assertion::isInstanceOf($list, Sequence::class);
+            Assertion::allIsInstanceOf($list->getChildren(), Sequence::class);
+            $revokedCertificates = array_merge($revokedCertificates, array_map(static function (Sequence $r): string {
+                /** @var int $sn */
+                $sn = $r->getFirstChild();
+                Assertion::isInstanceOf($sn, Integer::class);
+
+                return $sn->getContent();
+            }, $list->getChildren()));
+        }
+        $certificatesIds = $this->getCertificatesIds(...$trustedCertificates, ...$authenticatorCertificates);
+        foreach ($certificatesIds as $certificatesId) {
+            if (in_array($certificatesId, $revokedCertificates, true)) {
+                throw new RuntimeException(sprintf(
+                    'The certificate with the serial number "%s" is revoked',
+                    $certificatesId
+                ));
             }
         }
 
-        /*if (count($crls) !== 0) {
-            array_unshift($processArguments, '-crl_check');
-            array_unshift($processArguments, '-crl_check_all');
-            array_unshift($processArguments, '-crl_download');
-            array_unshift($processArguments, '-extended_crl');
-            $crlsData = implode(PHP_EOL, $crls);
-            $crlsFilename = $this->saveToTemporaryFile($crlsData, 'webauthn-crls-', '.pem');
-            $processArguments[] = '-CRLfile';
-            $processArguments[] = $crlsFilename;
-            $filenames[] = $crlsFilename;
-        }*/
-
-        $leafCertificate = array_shift($authenticatorCertificates);
-
-        //Untrusted Certificates (from the authenticator)
-        if (count($authenticatorCertificates) !== 0) {
-            $untrustedFilename = $this->saveToTemporaryFile(
-                implode(PHP_EOL, $authenticatorCertificates),
-                'webauthn-untrusted-',
-                '.pem'
-            );
-            $processArguments[] = '-untrusted';
-            $processArguments[] = $untrustedFilename;
-            $filenames[] = $untrustedFilename;
-        }
-
-        //Leaf Certificate
-        $leafFilename = $this->saveToTemporaryFile($leafCertificate, 'webauthn-leaf-', '.pem');
-        $filenames[] = $leafFilename;
-        $processArguments[] = $leafFilename;
-
-        //Process Options
-        array_unshift($processArguments, 'openssl', 'verify');
-
-        $process = new Process($processArguments);
-        $process->run();
-        while ($process->isRunning()) {
-            //Just wait
-        }
-
-        //dump($process->getCommandLine(), $filenames);
-        foreach ($filenames as $filename) {
+        foreach ($trustedCertificatesFilenames as $filename) {
             unlink($filename);
         }
-
-        if (! $process->isSuccessful()) {
-            throw new InvalidArgumentException(
-                'Invalid certificate or certificate chain. The error is: ' . $process->getErrorOutput()
-            );
+        if ($untrustedCertificatesFilename !== null) {
+            unlink($untrustedCertificatesFilename);
         }
     }
 
@@ -177,5 +185,14 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         return $response->getBody()
             ->getContents()
         ;
+    }
+
+    private function getCertificatesIds(string ...$certificates): iterable
+    {
+        return array_map(static function ($cert): string {
+            $details = openssl_x509_parse($cert);
+
+            return $details['serialNumber'];
+        }, $certificates);
     }
 }
