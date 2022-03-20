@@ -60,6 +60,10 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         }
 
         /*if (count($crls) !== 0) {
+            array_unshift($processArguments, '-crl_check');
+            array_unshift($processArguments, '-crl_check_all');
+            array_unshift($processArguments, '-crl_download');
+            array_unshift($processArguments, '-extended_crl');
             $crlsData = implode(PHP_EOL, $crls);
             $crlsFilename = $this->saveToTemporaryFile($crlsData, 'webauthn-crls-', '.pem');
             $processArguments[] = '-CRLfile';
@@ -87,10 +91,6 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         $processArguments[] = $leafFilename;
 
         //Process Options
-        array_unshift($processArguments, '-crl_check');
-        array_unshift($processArguments, '-crl_check_all');
-        array_unshift($processArguments, '-crl_download');
-        array_unshift($processArguments, '-extended_crl');
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
