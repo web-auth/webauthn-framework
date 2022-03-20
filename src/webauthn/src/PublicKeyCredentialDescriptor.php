@@ -9,6 +9,7 @@ use function count;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Util\Base64;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
@@ -71,7 +72,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
 
-        $id = Base64UrlSafe::decode($json['id']);
+        $id = Base64::decodeUrlSafe($json['id']);
 
         return new self($json['type'], $id, $json['transports'] ?? []);
     }

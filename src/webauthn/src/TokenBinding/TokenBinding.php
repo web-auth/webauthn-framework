@@ -6,7 +6,7 @@ namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
 use Assert\Assertion;
-use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Util\Base64;
 
 class TokenBinding
 {
@@ -45,7 +45,7 @@ class TokenBinding
                 implode(', ', self::getSupportedStatus())
             )
         );
-        $id = array_key_exists('id', $json) ? Base64UrlSafe::decode($json['id']) : null;
+        $id = array_key_exists('id', $json) ? Base64::decodeUrlSafe($json['id']) : null;
 
         return new self($status, $id);
     }

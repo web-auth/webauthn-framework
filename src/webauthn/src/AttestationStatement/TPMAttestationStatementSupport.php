@@ -17,13 +17,13 @@ use DateTimeImmutable;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
+use Webauthn\Util\Base64;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
@@ -230,7 +230,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function getExponent(string $exponent): string
     {
-        return bin2hex($exponent) === '00000000' ? Base64UrlSafe::decode('AQAB') : $exponent;
+        return bin2hex($exponent) === '00000000' ? Base64::decodeUrlSafe('AQAB') : $exponent;
     }
 
     private function getTPMHash(string $nameAlg): string

@@ -7,10 +7,9 @@ namespace Webauthn;
 use Assert\Assertion;
 use function count;
 use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Util\Base64;
 
 class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
@@ -116,11 +115,7 @@ class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             $allowCredentials[] = PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        try {
-            $challenge = Base64UrlSafe::decode($json['challenge']);
-        } catch (Throwable) {
-            $challenge = Base64::decode($json['challenge']);
-        }
+        $challenge = Base64::decode($json['challenge']);
 
         return self::create($challenge)
             ->setRpId($json['rpId'] ?? null)

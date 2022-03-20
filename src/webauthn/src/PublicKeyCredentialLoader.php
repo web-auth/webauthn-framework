@@ -11,14 +11,13 @@ use CBOR\MapObject;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use function ord;
-use ParagonIE\ConstantTime\Base64;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
+use Webauthn\Util\Base64;
 
 class PublicKeyCredentialLoader
 {
@@ -66,12 +65,8 @@ class PublicKeyCredentialLoader
             Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
             Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
 
-            $id = Base64UrlSafe::decode($json['id']);
-            try {
-                $rawId = Base64::decode($json['rawId']);
-            } catch (Throwable) {
-                $rawId = Base64UrlSafe::decode($json['rawId']);
-            }
+            $id = Base64::decodeUrlSafe($json['id']);
+            $rawId = Base64::decode($json['rawId']);
             Assertion::true(hash_equals($id, $rawId));
 
             $publicKeyCredential = new PublicKeyCredential(
@@ -131,7 +126,7 @@ class PublicKeyCredentialLoader
                     $response['clientDataJSON']
                 ), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
-                $authData = Base64UrlSafe::decode($response['authenticatorData']);
+                $authData = Base64::decode($response['authenticatorData'], true);
 
                 $authDataStream = new StringStream($authData);
                 $rp_id_hash = $authDataStream->read(32);
@@ -177,7 +172,7 @@ class PublicKeyCredentialLoader
                 );
 
                 try {
-                    $signature = Base64UrlSafe::decode($response['signature'], true);
+                    $signature = Base64::decode($response['signature']);
                 } catch (Throwable $e) {
                     throw new InvalidArgumentException('The signature shall be Base64 Url Safe encoded', 0, $e);
                 }

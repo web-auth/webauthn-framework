@@ -9,8 +9,6 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\Normalizable;
 use function ord;
-use ParagonIE\ConstantTime\Base64;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Uid\Uuid;
@@ -19,6 +17,7 @@ use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
 use Webauthn\StringStream;
+use Webauthn\Util\Base64;
 
 class AttestationObjectLoader
 {
@@ -48,11 +47,7 @@ class AttestationObjectLoader
             $this->logger->info('Trying to load the data', [
                 'data' => $data,
             ]);
-            try {
-                $decodedData = Base64UrlSafe::decode($data);
-            } catch (Throwable) {
-                $decodedData = Base64::decode($data);
-            }
+            $decodedData = Base64::decode($data);
             $stream = new StringStream($decodedData);
             $parsed = $this->decoder->decode($stream);
 

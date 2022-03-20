@@ -68,7 +68,7 @@ final class DistantResourceMetadataService implements MetadataService
 
         $content = $this->fetch();
         if ($this->isBase64Encoded) {
-            $content = Base64::decode($content);
+            $content = Base64::decode($content, true);
         }
         $this->statement = MetadataStatement::createFromString($content);
     }

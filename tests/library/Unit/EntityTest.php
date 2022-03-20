@@ -26,7 +26,7 @@ final class EntityTest extends TestCase
         static::assertSame('icon', $user->getIcon());
         static::assertSame('id', $user->getId());
         static::assertSame(
-            '{"name":"name","icon":"icon","id":"aWQ=","displayName":"display_name"}',
+            '{"name":"name","icon":"icon","id":"aWQ","displayName":"display_name"}',
             json_encode($user, JSON_THROW_ON_ERROR)
         );
     }

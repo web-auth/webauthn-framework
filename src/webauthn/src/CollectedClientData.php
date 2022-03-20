@@ -8,9 +8,9 @@ use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use Throwable;
 use Webauthn\TokenBinding\TokenBinding;
+use Webauthn\Util\Base64;
 
 class CollectedClientData
 {
@@ -76,7 +76,7 @@ class CollectedClientData
 
     public static function createFormJson(string $data): self
     {
-        $rawData = Base64UrlSafe::decode($data);
+        $rawData = Base64::decodeUrlSafe($data);
         $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($json, 'Invalid collected client data');
 
@@ -152,7 +152,7 @@ class CollectedClientData
 
         $check($json[$key]);
         try {
-            $data = $isB64 ? Base64UrlSafe::decode($json[$key]) : $json[$key];
+            $data = $isB64 ? Base64::decodeUrlSafe($json[$key]) : $json[$key];
         } catch (Throwable $e) {
             throw new InvalidArgumentException(sprintf(
                 'The parameter "%s" shall be Base64 Url Safe encoded',

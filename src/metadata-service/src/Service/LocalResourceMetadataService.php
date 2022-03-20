@@ -57,7 +57,7 @@ final class LocalResourceMetadataService implements MetadataService
 
         $content = file_get_contents($this->filename);
         if ($this->isBase64Encoded) {
-            $content = Base64::decode($content);
+            $content = Base64::decode($content, true);
         }
         $this->statement = MetadataStatement::createFromString($content);
     }

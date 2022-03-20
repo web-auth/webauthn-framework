@@ -13,6 +13,7 @@ use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
+use Webauthn\Util\Base64;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -128,14 +129,14 @@ class PublicKeyCredentialSource implements JsonSerializable
 
         try {
             return new self(
-                Base64UrlSafe::decode($data['publicKeyCredentialId']),
+                Base64::decodeUrlSafe($data['publicKeyCredentialId']),
                 $data['type'],
                 $data['transports'],
                 $data['attestationType'],
                 TrustPathLoader::loadTrustPath($data['trustPath']),
                 $uuid,
-                Base64UrlSafe::decode($data['credentialPublicKey']),
-                Base64UrlSafe::decode($data['userHandle']),
+                Base64::decodeUrlSafe($data['credentialPublicKey']),
+                Base64::decodeUrlSafe($data['userHandle']),
                 $data['counter'],
                 $data['otherUI'] ?? null
             );
