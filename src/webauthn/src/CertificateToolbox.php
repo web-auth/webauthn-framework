@@ -23,6 +23,9 @@ class CertificateToolbox
 
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
+        if (str_contains($certificate, '-----BEGIN ' . $type . '-----')) {
+            return $certificate;
+        }
         $pemCert = '-----BEGIN ' . $type . '-----' . PHP_EOL;
         $pemCert .= chunk_split($certificate, 64, PHP_EOL);
         $pemCert .= '-----END ' . $type . '-----' . PHP_EOL;
