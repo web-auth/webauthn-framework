@@ -84,19 +84,19 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         foreach ($crls as $crl) {
             /** @var Sequence $asn */
             $asn = ASNObject::fromBinary($crl);
-            Assertion::isInstanceOf($asn, Sequence::class);
+            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(1)');
             /** @var Sequence $asn */
             $asn = $asn->getFirstChild();
-            Assertion::isInstanceOf($asn, Sequence::class);
+            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(2)');
             Assertion::minCount($asn->getChildren(), 5);
             /** @var Sequence $list */
             $list = $asn->getChildren()[5];
-            Assertion::isInstanceOf($list, Sequence::class);
-            Assertion::allIsInstanceOf($list->getChildren(), Sequence::class);
+            Assertion::isInstanceOf($list, Sequence::class, 'Invalid CRL(3)');
+            Assertion::allIsInstanceOf($list->getChildren(), Sequence::class, 'Invalid CRL(3)');
             $revokedCertificates = array_merge($revokedCertificates, array_map(static function (Sequence $r): string {
                 /** @var int $sn */
                 $sn = $r->getFirstChild();
-                Assertion::isInstanceOf($sn, Integer::class);
+                Assertion::isInstanceOf($sn, Integer::class, 'Invalid CRL(4)');
 
                 return $sn->getContent();
             }, $list->getChildren()));
