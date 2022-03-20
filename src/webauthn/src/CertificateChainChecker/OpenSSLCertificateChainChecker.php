@@ -17,6 +17,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
 use Throwable;
+use Webauthn\CertificateToolbox;
 use const X509_PURPOSE_ANY;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
@@ -83,6 +84,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         }
         $revokedCertificates = [];
         foreach ($crls as $crl) {
+            $crl = CertificateToolbox::convertPEMToDER($crl);
             /** @var Sequence $asn */
             $asn = ASNObject::fromBinary($crl);
             Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(1)');

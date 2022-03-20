@@ -10,59 +10,71 @@ use const PHP_EOL;
 class CertificateToolbox
 {
     /**
-     * @param string[] $certificates
+     * @param string[] $data
      *
      * @return string[]
      */
-    public static function fixPEMStructures(array $certificates, string $type = 'CERTIFICATE'): array
+    public static function fixPEMStructures(array $data, string $type = 'CERTIFICATE'): array
     {
-        return array_map(static function ($certificate) use ($type): string {
-            return self::fixPEMStructure($certificate, $type);
-        }, $certificates);
+        return array_map(static function ($d) use ($type): string {
+            return self::fixPEMStructure($d, $type);
+        }, $data);
     }
 
-    public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
+    public static function fixPEMStructure(string $data, string $type = 'CERTIFICATE'): string
     {
-        if (str_contains($certificate, '-----BEGIN ' . $type . '-----')) {
-            return $certificate;
+        if (str_contains($data, '-----BEGIN')) {
+            return $data;
         }
-        $pemCert = '-----BEGIN ' . $type . '-----' . PHP_EOL;
-        $pemCert .= chunk_split($certificate, 64, PHP_EOL);
-        $pemCert .= '-----END ' . $type . '-----' . PHP_EOL;
+        $pem = '-----BEGIN ' . $type . '-----' . PHP_EOL;
+        $pem .= chunk_split($data, 64, PHP_EOL);
+        $pem .= '-----END ' . $type . '-----' . PHP_EOL;
 
-        return $pemCert;
+        return $pem;
     }
 
-    public static function convertDERToPEM(string $certificate, string $type = 'CERTIFICATE'): string
+    public static function convertPEMToDER(string $data): string
     {
-        $derCertificate = self::unusedBytesFix($certificate);
+        if (! str_contains($data, '-----BEGIN')) {
+            return $data;
+        }
+        $data = preg_replace('/[\-]{5}.*[\-]{5}[\r\n]*/', '', $data);
+        $data = preg_replace("/[\r\n]*/", '', $data);
 
-        return self::fixPEMStructure(base64_encode($derCertificate), $type);
+        return base64_decode(trim($data), true);
+    }
+
+    public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string
+    {
+        if (str_contains($data, '-----BEGIN')) {
+            return $data;
+        }
+        $der = self::unusedBytesFix($data);
+
+        return self::fixPEMStructure(base64_encode($der), $type);
     }
 
     /**
-     * @param string[] $certificates
+     * @param string[] $data
      *
      * @return string[]
      */
-    public static function convertAllDERToPEM(array $certificates, string $type = 'CERTIFICATE'): array
+    public static function convertAllDERToPEM(array $data, string $type = 'CERTIFICATE'): array
     {
-        $certs = [];
-        foreach ($certificates as $publicKey) {
-            $certs[] = self::convertDERToPEM($publicKey, $type);
-        }
-
-        return $certs;
+        return array_map(static function ($d) use ($type): string {
+            return self::convertDERToPEM($d, $type);
+        }, $data);
+        $result = [];
     }
 
-    private static function unusedBytesFix(string $certificate): string
+    private static function unusedBytesFix(string $data): string
     {
-        $certificateHash = hash('sha256', $certificate);
-        if (in_array($certificateHash, self::getCertificateHashes(), true)) {
-            $certificate[mb_strlen($certificate, '8bit') - 257] = "\0";
+        $hash = hash('sha256', $data);
+        if (in_array($hash, self::getCertificateHashes(), true)) {
+            $data[mb_strlen($data, '8bit') - 257] = "\0";
         }
 
-        return $certificate;
+        return $data;
     }
 
     /**
