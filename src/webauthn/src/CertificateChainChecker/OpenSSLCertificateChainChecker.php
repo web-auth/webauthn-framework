@@ -16,6 +16,7 @@ use const PHP_EOL;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
+use Throwable;
 use const X509_PURPOSE_ANY;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
@@ -176,15 +177,18 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         $endpoint = trim(mb_substr($endpoint, $pos + 4));
 
         $request = $this->requestFactory->createRequest('GET', $endpoint);
-        $response = $this->client->sendRequest($request);
+        try {
+            $response = $this->client->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                return '';
+            }
 
-        if ($response->getStatusCode() !== 200) {
+            return $response->getBody()
+                ->getContents()
+                ;
+        } catch (Throwable) {
             return '';
         }
-
-        return $response->getBody()
-            ->getContents()
-        ;
     }
 
     private function getCertificatesIds(string ...$certificates): iterable
