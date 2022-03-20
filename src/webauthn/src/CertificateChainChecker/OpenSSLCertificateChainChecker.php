@@ -41,17 +41,24 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 
         //$caDirname = $this->createTemporaryDirectory();
 
+        //Trusted Certificates (from the MDS)
         foreach ($trustedCertificates as $certificate) {
+            $trustedCertificateFilename = $this->saveToTemporaryFile($certificate, 'webauthn-trusted-', '.pem');
+            $processArguments[] = '-trusted';
+            $processArguments[] = $trustedCertificateFilename;
+            $filenames[] = $trustedCertificateFilename;
             $crl = $this->getCrls($certificate);
             if ($crl !== '') {
                 $crls[] = CertificateToolbox::convertDERToPEM($crl, 'X509 CRL');
             }
         }
-        $trustedCertificateData = implode(PHP_EOL, array_merge($trustedCertificates, $crls));
-        $trustedCertificateFilename = $this->saveToTemporaryFile($trustedCertificateData, 'webauthn-trusted-', '.pem');
-        $processArguments[] = '-CAfile';
-        $processArguments[] = $trustedCertificateFilename;
-        $filenames[] = $trustedCertificateFilename;
+        foreach ($authenticatorCertificates as $certificate) {
+            $crl = $this->getCrls($certificate);
+            if ($crl !== '') {
+                $crls[] = CertificateToolbox::convertDERToPEM($crl, 'X509 CRL');
+            }
+        }
+
         if (count($crls) !== 0) {
             $crlsData = implode(PHP_EOL, $crls);
             $crlsFilename = $this->saveToTemporaryFile($crlsData, 'webauthn-crls-', '.pem');
@@ -61,9 +68,8 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         }
 
         $leafCertificate = array_shift($authenticatorCertificates);
-        $leafFilename = $this->saveToTemporaryFile($leafCertificate, 'webauthn-leaf-', '.pem');
-        $filenames[] = $leafFilename;
 
+        //Untrusted Certificates (from the authenticator)
         if (count($authenticatorCertificates) !== 0) {
             $untrustedFilename = $this->saveToTemporaryFile(
                 implode(PHP_EOL, $authenticatorCertificates),
@@ -75,6 +81,9 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
             $filenames[] = $untrustedFilename;
         }
 
+        //Leaf Certificate
+        $leafFilename = $this->saveToTemporaryFile($leafCertificate, 'webauthn-leaf-', '.pem');
+        $filenames[] = $leafFilename;
         $processArguments[] = $leafFilename;
         array_unshift($processArguments, '-crl_check');
         array_unshift($processArguments, '-crl_check_all');
@@ -88,6 +97,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
             //Just wait
         }
 
+        //dump($process->getCommandLine(), $filenames);
         foreach ($filenames as $filename) {
             unlink($filename);
         }
