@@ -160,6 +160,11 @@ class MetadataStatement implements JsonSerializable
     private AuthenticatorGetInfo $authenticatorGetInfo;
 
     /**
+     * @var string[]
+     */
+    private array $rootCertificates;
+
+    /**
      * @param Version[]                           $upv
      * @param string[]                            $authenticationAlgorithms
      * @param string[]                            $publicKeyAlgAndEncodings
@@ -506,5 +511,21 @@ class MetadataStatement implements JsonSerializable
         ];
 
         return Utils::filterNullValues($data);
+    }
+
+    /**
+     * @param string[] $rootCertificates
+     */
+    public function setRootCertificates(array $rootCertificates): void
+    {
+        $this->rootCertificates = $rootCertificates;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRootCertificates(): array
+    {
+        return $this->rootCertificates;
     }
 }

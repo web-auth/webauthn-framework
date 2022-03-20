@@ -17,7 +17,6 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
 use Throwable;
-use Webauthn\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 
@@ -103,12 +102,15 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
 
             foreach ($data['entries'] as $datum) {
                 $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
-                if ($entry->getAaguid() !== null && $entry->getMetadataStatement() !== null) {
-                    $this->statements[$entry->getAaguid()] = $entry->getMetadataStatement();
+
+                $mds = $entry->getMetadataStatement();
+                if ($mds !== null && $entry->getAaguid() !== null) {
+                    $mds->setRootCertificates($rootCertificates);
+                    $this->statements[$entry->getAaguid()] = $mds;
                     $this->statusReports[$entry->getAaguid()] = $entry->getStatusReports();
                 }
             }
-        } catch (Throwable) {
+        } catch (Throwable $e) {
         }
 
         $this->loaded = true;
@@ -154,9 +156,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         Assertion::keyExists($header, 'x5c', 'The "x5c" parameter is missing.');
         Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);
-        $rootCertificates = array_map(static function (string $x509): string {
-            return CertificateToolbox::fixPEMStructure($x509);
-        }, $header['x5c']);
+        $rootCertificates = $header['x5c'];
 
         $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
         $isValid = $verifier->verifyWithKey($jws, $key, 0);

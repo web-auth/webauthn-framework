@@ -112,11 +112,17 @@ abstract class AbstractTestCase extends TestCase
         return $this->authenticatorAssertionResponseValidator;
     }
 
-    protected function getResponsesMap(): iterable
+    protected function getResponsesMap(): array
     {
         $urls = [
             'https://mds3.certinfra.fidoalliance.org/pki/MDS3ROOT.crt' => file_get_contents(
                 __DIR__ . '/../../certificates/MDS3ROOT.crt'
+            ),
+            'https://mds3.certinfra.fidoalliance.org/crl/MDSCA-1.crl' => file_get_contents(
+                __DIR__ . '/../../certificates/MDSCA-1.crl'
+            ),
+            'https://mds3.certinfra.fidoalliance.org/crl/MDSROOT.crl' => file_get_contents(
+                __DIR__ . '/../../certificates/MDSROOT.crl'
             ),
         ];
 
@@ -132,7 +138,7 @@ abstract class AbstractTestCase extends TestCase
             )] = file_get_contents($file->getRealPath());
         }
 
-        yield from $urls;
+        return $urls;
     }
 
     private function getAttestationStatementSupportManager(?ClientInterface $client): AttestationStatementSupportManager
@@ -206,7 +212,11 @@ abstract class AbstractTestCase extends TestCase
                 $client->addResponse($response);
 
                 $metadataService->addServices(
-                    FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
+                    FidoAllianceCompliantMetadataService::create(
+                        new Psr17Factory(),
+                        $client,
+                        'https://foo.bar/data'
+                    )
                 );
             }
 

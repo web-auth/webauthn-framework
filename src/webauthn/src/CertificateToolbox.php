@@ -9,6 +9,18 @@ use const PHP_EOL;
 
 class CertificateToolbox
 {
+    /**
+     * @param string[] $certificates
+     *
+     * @return string[]
+     */
+    public static function fixPEMStructures(array $certificates, string $type = 'CERTIFICATE'): array
+    {
+        return array_map(static function ($certificate) use ($type): string {
+            return self::fixPEMStructure($certificate, $type);
+        }, $certificates);
+    }
+
     public static function fixPEMStructure(string $certificate, string $type = 'CERTIFICATE'): string
     {
         $pemCert = '-----BEGIN ' . $type . '-----' . PHP_EOL;

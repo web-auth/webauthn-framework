@@ -229,16 +229,13 @@ class AuthenticatorAttestationResponseValidator
             return;
         }
 
-        $metadataStatementCertificates = $metadataStatement->getAttestationRootCertificates();
-        //$rootStatementCertificates = $metadataStatement->getRootCertificates();
-        foreach ($metadataStatementCertificates as $key => $metadataStatementCertificate) {
-            $metadataStatementCertificates[$key] = CertificateToolbox::fixPEMStructure($metadataStatementCertificate);
-        }
-        $trustedCertificates = array_merge($metadataStatementCertificates/*, $rootStatementCertificates*/);
+        $trustedCertificates = array_merge(
+            $metadataStatement->getAttestationRootCertificates(),
+            $metadataStatement->getRootCertificates()
+        );
+        $trustedCertificates = CertificateToolbox::fixPEMStructures($trustedCertificates);
 
-        if ($this->certificateChainChecker !== null) {
-            $this->certificateChainChecker->check($authenticatorCertificates, $trustedCertificates);
-        }
+        $this->certificateChainChecker?->check($authenticatorCertificates, $trustedCertificates);
     }
 
     private function checkMetadataStatement(

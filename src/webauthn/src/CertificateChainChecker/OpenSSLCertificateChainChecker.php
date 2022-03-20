@@ -9,10 +9,11 @@ use function count;
 use const FILE_APPEND;
 use InvalidArgumentException;
 use function is_int;
+use const PHP_EOL;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use RuntimeException;
 use Symfony\Component\Process\Process;
+use Webauthn\CertificateToolbox;
 
 final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 {
@@ -33,67 +34,52 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
 
             return;
         }
-        $this->checkCertificatesValidity($authenticatorCertificates, false);
+        //$this->checkCertificatesValidity($authenticatorCertificates, false);
 
-        $hasCrls = false;
-        $processArguments = ['-no-CAfile', '-no-CApath'];
+        $crls = [];
+        $processArguments = ['-no-CAfile', '-no-CApath', '-no-CAstore'];
 
-        $caDirname = $this->createTemporaryDirectory();
-        $processArguments[] = '--CApath';
-        $processArguments[] = $caDirname;
+        //$caDirname = $this->createTemporaryDirectory();
 
         foreach ($trustedCertificates as $certificate) {
-            $this->saveToTemporaryFile($caDirname, $certificate, 'webauthn-trusted-', '.pem');
             $crl = $this->getCrls($certificate);
             if ($crl !== '') {
-                $hasCrls = true;
-                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-trusted-crl-', '.crl');
+                $crls[] = CertificateToolbox::convertDERToPEM($crl, 'X509 CRL');
             }
         }
-
-        $rehashProcess = new Process(['openssl', 'rehash', $caDirname]);
-        $rehashProcess->run();
-        while ($rehashProcess->isRunning()) {
-            //Just wait
+        $trustedCertificateData = implode(PHP_EOL, array_merge($trustedCertificates, $crls));
+        $trustedCertificateFilename = $this->saveToTemporaryFile($trustedCertificateData, 'webauthn-trusted-', '.pem');
+        $processArguments[] = '-CAfile';
+        $processArguments[] = $trustedCertificateFilename;
+        $filenames[] = $trustedCertificateFilename;
+        if (count($crls) !== 0) {
+            $crlsData = implode(PHP_EOL, $crls);
+            $crlsFilename = $this->saveToTemporaryFile($crlsData, 'webauthn-crls-', '.pem');
+            $processArguments[] = '-CRLfile';
+            $processArguments[] = $crlsFilename;
+            $filenames[] = $crlsFilename;
         }
-        if (! $rehashProcess->isSuccessful()) {
-            throw new InvalidArgumentException('Invalid certificate or certificate chain');
-        }
 
-        $filenames = [];
         $leafCertificate = array_shift($authenticatorCertificates);
-        $leafFilename = $this->saveToTemporaryFile(sys_get_temp_dir(), $leafCertificate, 'webauthn-leaf-', '.pem');
-        $crl = $this->getCrls($leafCertificate);
-        if ($crl !== '') {
-            $hasCrls = true;
-            $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-leaf-crl-', '.pem');
-        }
+        $leafFilename = $this->saveToTemporaryFile($leafCertificate, 'webauthn-leaf-', '.pem');
         $filenames[] = $leafFilename;
 
-        foreach ($authenticatorCertificates as $certificate) {
+        if (count($authenticatorCertificates) !== 0) {
             $untrustedFilename = $this->saveToTemporaryFile(
-                sys_get_temp_dir(),
-                $certificate,
+                implode(PHP_EOL, $authenticatorCertificates),
                 'webauthn-untrusted-',
                 '.pem'
             );
-            $crl = $this->getCrls($certificate);
-            if ($crl !== '') {
-                $hasCrls = true;
-                $this->saveToTemporaryFile($caDirname, $crl, 'webauthn-untrusted-crl-', '.pem');
-            }
             $processArguments[] = '-untrusted';
             $processArguments[] = $untrustedFilename;
             $filenames[] = $untrustedFilename;
         }
 
         $processArguments[] = $leafFilename;
-        if ($hasCrls) {
-            array_unshift($processArguments, '-crl_check');
-            array_unshift($processArguments, '-crl_check_all');
-            //array_unshift($processArguments, '-crl_download');
-            array_unshift($processArguments, '-extended_crl');
-        }
+        array_unshift($processArguments, '-crl_check');
+        array_unshift($processArguments, '-crl_check_all');
+        //array_unshift($processArguments, '-crl_download');
+        array_unshift($processArguments, '-extended_crl');
         array_unshift($processArguments, 'openssl', 'verify');
 
         $process = new Process($processArguments);
@@ -105,10 +91,11 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         foreach ($filenames as $filename) {
             unlink($filename);
         }
-        $this->deleteDirectory($caDirname);
 
         if (! $process->isSuccessful()) {
-            throw new InvalidArgumentException('Invalid certificate or certificate chain');
+            throw new InvalidArgumentException(
+                'Invalid certificate or certificate chain. The error is: ' . $process->getErrorOutput()
+            );
         }
     }
 
@@ -119,7 +106,7 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
     {
         foreach ($certificates as $certificate) {
             $parsed = openssl_x509_parse($certificate);
-            Assertion::isArray($parsed, 'Unable to read the certificate');
+            Assertion::isArray($parsed, 'Unable to read the certificate. Submitted data was: ' . $certificate);
             if ($allowRootCertificate === false) {
                 $this->checkRootCertificate($parsed);
             }
@@ -145,35 +132,9 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
     }
 
-    private function createTemporaryDirectory(): string
+    private function saveToTemporaryFile(string $certificate, string $prefix, string $suffix): string
     {
-        $caDir = tempnam(sys_get_temp_dir(), 'webauthn-ca-');
-        Assertion::string($caDir, 'Unable to create a temporary folder');
-        if (file_exists($caDir)) {
-            unlink($caDir);
-        }
-        if (! mkdir($caDir) && ! is_dir($caDir)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
-        }
-        if (! is_dir($caDir)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $caDir));
-        }
-
-        return $caDir;
-    }
-
-    private function deleteDirectory(string $dirname): void
-    {
-        $rehashProcess = new Process(['rm', '-rf', $dirname]);
-        $rehashProcess->run();
-        while ($rehashProcess->isRunning()) {
-            //Just wait
-        }
-    }
-
-    private function saveToTemporaryFile(string $folder, string $certificate, string $prefix, string $suffix): string
-    {
-        $filename = tempnam($folder, $prefix);
+        $filename = tempnam(sys_get_temp_dir(), $prefix);
         Assertion::string($filename, 'Unable to create a temporary folder');
         rename($filename, $filename . $suffix);
         file_put_contents($filename . $suffix, $certificate, FILE_APPEND);
@@ -192,8 +153,8 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         if (! is_int($pos)) {
             return '';
         }
-
         $endpoint = trim(mb_substr($endpoint, $pos + 4));
+
         $request = $this->requestFactory->createRequest('GET', $endpoint);
         $response = $this->client->sendRequest($request);
 

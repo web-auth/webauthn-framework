@@ -74,7 +74,6 @@ class MetadataBLOBPayload implements JsonSerializable
         foreach ($data['entries'] as $entry) {
             $object->addEntry(MetadataBLOBPayloadEntry::createFromArray($entry));
         }
-        $object->rootCertificates = $data['rootCertificates'] ?? [];
 
         return $object;
     }
@@ -88,7 +87,6 @@ class MetadataBLOBPayload implements JsonSerializable
             'entries' => array_map(static function (MetadataBLOBPayloadEntry $object): array {
                 return $object->jsonSerialize();
             }, $this->entries),
-            //'rootCertificates' => $this->rootCertificates,
         ];
 
         return Utils::filterNullValues($data);
