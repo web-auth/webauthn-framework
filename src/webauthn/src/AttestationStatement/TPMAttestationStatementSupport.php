@@ -312,8 +312,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::false(
             in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
                 $authenticatorData->getAttestedCredentialData()
-                    ->getAaguid()
-                    ->getBytes(),
+                    ?->getAaguid()
+                    ->toBinary() ?? '',
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ),
             'The value of the "aaguid" does not match with the certificate'

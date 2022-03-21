@@ -8,7 +8,6 @@ use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
@@ -134,7 +133,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
         //Check subject field
         Assertion::false(
-            ! isset($parsed['name']) || mb_strpos($parsed['name'], '/OU=Authenticator Attestation') === false,
+            ! isset($parsed['name']) || ! str_contains($parsed['name'], '/OU=Authenticator Attestation'),
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
@@ -157,7 +156,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         Assertion::false(
             in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
                 $attestedCredentialData->getAaguid()
-                    ->getBytes(),
+                    ->toBinary(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ),
             'The value of the "aaguid" does not match with the certificate'
@@ -214,7 +213,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             MapObject::class,
             'The attested credential data does not contain a valid public key.'
         );
-        Assertion::isInstanceOf($publicKey, Normalizable::class, 'Invalid attestation object. Unexpected object.');
         $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
         Assertion::eq(

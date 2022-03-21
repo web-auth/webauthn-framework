@@ -14,7 +14,7 @@ use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
-use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
+use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
@@ -137,7 +137,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('certificate_chain_checker')
             ->cannotBeEmpty()
-            ->defaultValue(OpenSSLCertificateChainChecker::class)
+            ->defaultValue(PhpCertificateChainChecker::class)
             ->info('A Certificate Chain checker.')
             ->end()
             ->end()

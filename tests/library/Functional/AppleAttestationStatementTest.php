@@ -11,7 +11,7 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
+use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -29,7 +29,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
      */
     public function anAppleAttestationCanBeVerified(): void
     {
-        ClockMock::register(OpenSSLCertificateChainChecker::class);
+        ClockMock::register(PhpCertificateChainChecker::class);
         ClockMock::withClockMock(1600000000.0);
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions

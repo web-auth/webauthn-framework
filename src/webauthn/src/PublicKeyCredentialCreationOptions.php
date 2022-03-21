@@ -11,7 +11,7 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Util\Base64;
 
-class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
+final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {
     public const ATTESTATION_CONVEYANCE_PREFERENCE_NONE = 'none';
 

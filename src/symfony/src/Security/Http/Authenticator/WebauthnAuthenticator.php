@@ -89,11 +89,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 
     public function createToken(Passport $passport, string $firewallName): TokenInterface
     {
-        /** @var WebauthnCredentials $credentialsBadge */
         $credentialsBadge = $passport->getBadge(WebauthnCredentials::class);
         Assertion::isInstanceOf($credentialsBadge, WebauthnCredentials::class, 'Invalid credentials');
 
-        /** @var UserBadge $userBadge */
         $userBadge = $passport->getBadge(UserBadge::class);
         Assertion::isInstanceOf($userBadge, UserBadge::class, 'Invalid user');
 

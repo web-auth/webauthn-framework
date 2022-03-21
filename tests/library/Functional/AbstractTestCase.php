@@ -32,7 +32,7 @@ use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CertificateChainChecker\CertificateChainChecker;
-use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
+use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\ChainedMetadataServices;
 use Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService;
@@ -63,7 +63,7 @@ abstract class AbstractTestCase extends TestCase
 
     private ?MetadataStatementRepository $metadataStatementRepository = null;
 
-    private ?OpenSSLCertificateChainChecker $certificateChainChecker = null;
+    private ?PhpCertificateChainChecker $certificateChainChecker = null;
 
     private ?StatusReportRepository $statusReportRepository = null;
 
@@ -264,7 +264,7 @@ abstract class AbstractTestCase extends TestCase
             $this->prepareResponsesMap($psr18Client);
 
             $psr17Factory = new Psr17Factory();
-            $this->certificateChainChecker = new OpenSSLCertificateChainChecker($psr18Client, $psr17Factory);
+            $this->certificateChainChecker = new PhpCertificateChainChecker($psr18Client, $psr17Factory);
         }
 
         return $this->certificateChainChecker;

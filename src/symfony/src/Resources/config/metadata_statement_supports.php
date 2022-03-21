@@ -9,7 +9,7 @@ use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
-use Webauthn\CertificateChainChecker\OpenSSLCertificateChainChecker;
+use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
@@ -36,7 +36,7 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container
-        ->set(OpenSSLCertificateChainChecker::class)
+        ->set(PhpCertificateChainChecker::class)
         ->args([service('webauthn.http_client'), service('webauthn.request_factory')])
     ;
 };

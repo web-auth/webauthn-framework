@@ -64,7 +64,6 @@ class CertificateToolbox
         return array_map(static function ($d) use ($type): string {
             return self::convertDERToPEM($d, $type);
         }, $data);
-        $result = [];
     }
 
     private static function unusedBytesFix(string $data): string

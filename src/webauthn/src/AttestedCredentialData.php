@@ -54,7 +54,7 @@ class AttestedCredentialData implements JsonSerializable
 
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
         $credentialId = $json['credentialId'];
-        Assertion::string($aaguid, 'Invalid input. "credentialId" shall be a string');
+        Assertion::string($credentialId, 'Invalid input. "credentialId" shall be a string');
         $credentialId = base64_decode($credentialId, true);
         Assertion::string($credentialId, 'Invalid input. Unable to get the public key ID');
 

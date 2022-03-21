@@ -11,7 +11,7 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Util\Base64;
 
-class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
+final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
 

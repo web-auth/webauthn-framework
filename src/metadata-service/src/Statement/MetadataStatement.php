@@ -436,7 +436,7 @@ class MetadataStatement implements JsonSerializable
         $object->aaguid = $data['aaguid'] ?? null;
         $object->attestationCertificateKeyIdentifiers = $data['attestationCertificateKeyIdentifiers'] ?? [];
         $object->alternativeDescriptions = AlternativeDescriptions::create($data['alternativeDescriptions'] ?? []);
-        $object->authenticatorGetInfo = $data['attestationTypes'] ? AuthenticatorGetInfo::create(
+        $object->authenticatorGetInfo = isset($data['attestationTypes']) ? AuthenticatorGetInfo::create(
             $data['attestationTypes']
         ) : null;
         $object->keyProtection = $data['keyProtection'] ?? [];

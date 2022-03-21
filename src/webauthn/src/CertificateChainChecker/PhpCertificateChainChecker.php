@@ -20,7 +20,7 @@ use Throwable;
 use Webauthn\CertificateToolbox;
 use const X509_PURPOSE_ANY;
 
-final class OpenSSLCertificateChainChecker implements CertificateChainChecker
+final class PhpCertificateChainChecker implements CertificateChainChecker
 {
     public function __construct(
         private ClientInterface $client,
@@ -85,19 +85,15 @@ final class OpenSSLCertificateChainChecker implements CertificateChainChecker
         $revokedCertificates = [];
         foreach ($crls as $crl) {
             $crl = CertificateToolbox::convertPEMToDER($crl);
-            /** @var Sequence $asn */
             $asn = ASNObject::fromBinary($crl);
             Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(1)');
-            /** @var Sequence $asn */
             $asn = $asn->getFirstChild();
             Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(2)');
             Assertion::minCount($asn->getChildren(), 5);
-            /** @var Sequence $list */
             $list = $asn->getChildren()[5];
             Assertion::isInstanceOf($list, Sequence::class, 'Invalid CRL(3)');
             Assertion::allIsInstanceOf($list->getChildren(), Sequence::class, 'Invalid CRL(3)');
             $revokedCertificates = array_merge($revokedCertificates, array_map(static function (Sequence $r): string {
-                /** @var int $sn */
                 $sn = $r->getFirstChild();
                 Assertion::isInstanceOf($sn, Integer::class, 'Invalid CRL(4)');
 

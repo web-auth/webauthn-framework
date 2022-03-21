@@ -7,7 +7,6 @@ namespace Webauthn\AttestationStatement;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use CBOR\Normalizable;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
 use const OPENSSL_ALGO_SHA256;
@@ -114,7 +113,6 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             'The attested credential data does not contain a valid public key.'
         );
 
-        Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attestation object. Unexpected object.');
         $coseKey = $coseKey->normalize();
         $ec2Key = new Ec2Key($coseKey + [
             Ec2Key::TYPE => 2,

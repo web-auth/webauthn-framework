@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
 use ParagonIE\ConstantTime\Base64;
 
 /**
@@ -37,9 +36,6 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
             return $this->userHandle;
         }
 
-        $result = Base64::decode($this->userHandle, true);
-        Assertion::string($result, 'Unable to get the user handle');
-
-        return $result;
+        return Base64::decode($this->userHandle, true);
     }
 }
