@@ -189,6 +189,9 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
         }
     }
 
+    /**
+     * @return string[]
+     */
     private function getCertificatesIds(string ...$certificates): iterable
     {
         return array_map(static function ($cert): string {

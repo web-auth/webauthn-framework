@@ -94,7 +94,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this->userVerification;
     }
 
-    public static function createFromString(string $data): PublicKeyCredentialOptions
+    public static function createFromString(string $data): static
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($data, 'Invalid data');
@@ -105,7 +105,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param mixed[] $json
      */
-    public static function createFromArray(array $json): PublicKeyCredentialOptions
+    public static function createFromArray(array $json): static
     {
         Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
 

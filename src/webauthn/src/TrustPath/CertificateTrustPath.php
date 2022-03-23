@@ -16,6 +16,9 @@ final class CertificateTrustPath implements TrustPath
     ) {
     }
 
+    /**
+     * @param string[] $certificates
+     */
     public static function create(array $certificates): self
     {
         return new self($certificates);
@@ -32,7 +35,7 @@ final class CertificateTrustPath implements TrustPath
     /**
      * {@inheritdoc}
      */
-    public static function createFromArray(array $data): TrustPath
+    public static function createFromArray(array $data): static
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
 

@@ -72,6 +72,8 @@ class AuthenticatorAttestationResponseValidator
     }
 
     /**
+     * @param string[] $securedRelyingPartyId
+     *
      * @see https://www.w3.org/TR/webauthn/#registering-a-new-credential
      */
     public function check(

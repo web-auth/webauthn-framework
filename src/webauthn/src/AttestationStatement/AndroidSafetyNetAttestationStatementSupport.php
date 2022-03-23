@@ -96,7 +96,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     /**
-     * @param mixed[] $attestation
+     * @param array<string, mixed> $attestation
      */
     public function load(array $attestation): AttestationStatement
     {

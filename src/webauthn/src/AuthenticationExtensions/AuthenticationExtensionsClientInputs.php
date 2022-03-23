@@ -14,6 +14,9 @@ use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 
+/**
+ * @implements IteratorAggregate<AuthenticationExtension>
+ */
 class AuthenticationExtensionsClientInputs implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
@@ -26,13 +29,18 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         return new self();
     }
 
-    public function add(AuthenticationExtension $extension): self
+    public function add(AuthenticationExtension ...$extensions): self
     {
-        $this->extensions[$extension->name()] = $extension;
+        foreach ($extensions as $extension) {
+            $this->extensions[$extension->name()] = $extension;
+        }
 
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $json
+     */
     public static function createFromArray(array $json): self
     {
         $object = new self();

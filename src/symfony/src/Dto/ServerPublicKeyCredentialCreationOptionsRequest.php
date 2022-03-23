@@ -19,6 +19,9 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     #[NotBlank]
     public string $displayName = '';
 
+    /**
+     * @var array<mixed>|null
+     */
     public ?array $authenticatorSelection = null;
 
     #[Type(type: 'string')]
@@ -29,5 +32,8 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     ])]
     public string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     public ?array $extensions = null;
 }

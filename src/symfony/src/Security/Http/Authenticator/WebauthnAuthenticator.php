@@ -40,6 +40,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 {
     private LoggerInterface $logger;
 
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function __construct(
         private WebauthnFirewallConfig $firewallConfig,
         private UserProviderInterface $userProvider,

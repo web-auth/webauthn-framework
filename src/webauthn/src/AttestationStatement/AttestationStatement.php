@@ -25,7 +25,7 @@ class AttestationStatement implements JsonSerializable
     public const TYPE_ANONCA = 'anonca';
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public function __construct(
         private string $fmt,
@@ -36,7 +36,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public static function createNone(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -44,7 +44,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public static function createBasic(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -52,7 +52,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public static function createSelf(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -60,7 +60,7 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public static function createAttCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
@@ -68,13 +68,16 @@ class AttestationStatement implements JsonSerializable
     }
 
     /**
-     * @param mixed[] $attStmt
+     * @param array<string, mixed> $attStmt
      */
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ECDAA, $trustPath);
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function createAnonymizationCA(string $fmt, array $attStmt, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, self::TYPE_ANONCA, $trustPath);

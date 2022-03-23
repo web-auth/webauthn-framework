@@ -40,7 +40,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     /**
-     * @param mixed[] $attestation
+     * @param array<string, mixed> $attestation
      */
     public function load(array $attestation): AttestationStatement
     {
@@ -103,6 +103,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
     }
 
+    /**
+     * @param array<string, mixed> $attestation
+     */
     private function loadEcdaaType(array $attestation): AttestationStatement
     {
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];

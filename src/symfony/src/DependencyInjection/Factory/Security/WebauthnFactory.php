@@ -212,6 +212,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         return [];
     }
 
+    /**
+     * @param string[] $securedRpIds
+     */
     private function createAuthenticatorService(
         ContainerBuilder $container,
         string $firewallName,

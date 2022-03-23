@@ -15,6 +15,9 @@ use IteratorAggregate;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
+/**
+ * @implements  \IteratorAggregate<PublicKeyCredentialDescriptor>
+ */
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
@@ -22,9 +25,11 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
      */
     private array $publicKeyCredentialDescriptors = [];
 
-    public function add(PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor): void
+    public function add(PublicKeyCredentialDescriptor ...$publicKeyCredentialDescriptors): void
     {
-        $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->getId()] = $publicKeyCredentialDescriptor;
+        foreach ($publicKeyCredentialDescriptors as $publicKeyCredentialDescriptor) {
+            $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->getId()] = $publicKeyCredentialDescriptor;
+        }
     }
 
     public function has(string $id): bool
@@ -55,7 +60,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     }
 
     /**
-     * @return array[]
+     * @return array<string, mixed>[]
      */
     public function jsonSerialize(): array
     {

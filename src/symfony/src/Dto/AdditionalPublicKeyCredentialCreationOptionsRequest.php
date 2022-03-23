@@ -10,6 +10,9 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 final class AdditionalPublicKeyCredentialCreationOptionsRequest
 {
+    /**
+     * @var array<mixed>|null
+     */
     public ?array $authenticatorSelection = null;
 
     #[Type(type: 'string')]
@@ -20,5 +23,8 @@ final class AdditionalPublicKeyCredentialCreationOptionsRequest
     ])]
     public string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     public ?array $extensions = null;
 }

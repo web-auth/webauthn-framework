@@ -48,7 +48,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<mixed>
      */
     public function __serialize(): array
     {
@@ -69,7 +69,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<mixed> $serialized
      */
     public function __unserialize(array $serialized): void
     {
@@ -164,6 +164,9 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         return $this->firewallName;
     }
 
+    /**
+     * @return string[]
+     */
     public function getAttributes(): array
     {
         $attributes = parent::getAttributes();

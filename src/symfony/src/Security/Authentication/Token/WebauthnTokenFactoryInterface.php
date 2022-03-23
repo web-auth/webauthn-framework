@@ -11,6 +11,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 interface WebauthnTokenFactoryInterface
 {
+    /**
+     * @param string[] $roles
+     */
     public function create(
         PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         PublicKeyCredentialOptions $publicKeyCredentialOptions,

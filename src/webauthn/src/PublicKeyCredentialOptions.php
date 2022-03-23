@@ -20,14 +20,14 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         $this->extensions = new AuthenticationExtensionsClientInputs();
     }
 
-    public function setTimeout(?int $timeout): self
+    public function setTimeout(?int $timeout): static
     {
         $this->timeout = $timeout;
 
         return $this;
     }
 
-    public function addExtension(AuthenticationExtension $extension): self
+    public function addExtension(AuthenticationExtension $extension): static
     {
         $this->extensions->add($extension);
 
@@ -37,7 +37,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     /**
      * @param AuthenticationExtension[] $extensions
      */
-    public function addExtensions(array $extensions): self
+    public function addExtensions(array $extensions): static
     {
         foreach ($extensions as $extension) {
             $this->addExtension($extension);
@@ -46,7 +46,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this;
     }
 
-    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): self
+    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
     {
         $this->extensions = $extensions;
 
@@ -68,10 +68,10 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this->extensions;
     }
 
-    abstract public static function createFromString(string $data): self;
+    abstract public static function createFromString(string $data): static;
 
     /**
      * @param mixed[] $json
      */
-    abstract public static function createFromArray(array $json): self;
+    abstract public static function createFromArray(array $json): static;
 }

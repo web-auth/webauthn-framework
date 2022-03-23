@@ -45,6 +45,8 @@ class AuthenticatorAssertionResponseValidator
     }
 
     /**
+     * @param string[] $securedRelyingPartyId
+     *
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(

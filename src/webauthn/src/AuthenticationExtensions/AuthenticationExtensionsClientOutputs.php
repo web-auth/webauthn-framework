@@ -15,6 +15,9 @@ use IteratorAggregate;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
+/**
+ * @implements IteratorAggregate<AuthenticationExtension>
+ */
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
@@ -27,9 +30,11 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
         return new self();
     }
 
-    public function add(AuthenticationExtension $extension): void
+    public function add(AuthenticationExtension ...$extensions): void
     {
-        $this->extensions[$extension->name()] = $extension;
+        foreach ($extensions as $extension) {
+            $this->extensions[$extension->name()] = $extension;
+        }
     }
 
     public static function createFromString(string $data): self
@@ -41,7 +46,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     }
 
     /**
-     * @param mixed[] $json
+     * @param array<string, mixed> $json
      */
     public static function createFromArray(array $json): self
     {

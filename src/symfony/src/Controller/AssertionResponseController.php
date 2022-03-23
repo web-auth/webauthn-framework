@@ -15,6 +15,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialLoader;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class AssertionResponseController
 {
@@ -38,6 +39,11 @@ final class AssertionResponseController
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
             $data = $this->optionsStorage->get();
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
+            Assertion::isInstanceOf(
+                $publicKeyCredentialRequestOptions,
+                PublicKeyCredentialRequestOptions::class,
+                'Invalid response'
+            );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             $this->assertionResponseValidator->check(

@@ -32,7 +32,7 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     /**
      * {@inheritdoc}
      */
-    public static function createFromArray(array $data): TrustPath
+    public static function createFromArray(array $data): static
     {
         Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
 

@@ -33,6 +33,9 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     ) {
     }
 
+    /**
+     * @param string[] $transports
+     */
     public static function create(string $type, string $id, array $transports = []): self
     {
         return new self($type, $id, $transports);

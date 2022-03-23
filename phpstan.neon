@@ -1,14 +1,36 @@
 parameters:
-    level: 5
+    level: 6
     paths:
         - src
     ignoreErrors:
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::(.*)\(\)\.#'
-        - '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-#        - '#Method .* should return Webauthn\\PublicKeyCredential(Creation|Request)Options but returns Webauthn\\PublicKeyCredentialOptions\.#'
-#        - '#Parameter .* of class .*5 expects Webauthn\\PublicKeyCredential(Creation|Request)Options\, Webauthn\\PublicKeyCredentialOptions given\.#'
-#        - '#Call to deprecated function Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ref\(\)(.*)#'
+        -
+            message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+            count: 2
+        -
+            message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
+            path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+            count: 2
+        -
+            message: '#Method Webauthn\\Bundle\\Security\\Authorization\\Voter\\IsUserPresentVoter::vote\(\) has parameter \$attributes with no value type specified in iterable type array\.#'
+            path: src/symfony/src/Security/Authorization/Voter/IsUserPresentVoter.php
+            count: 1
+        -
+            message: '#Method Webauthn\\Bundle\\Security\\Authorization\\Voter\\IsUserVerifiedVoter::vote\(\) has parameter \$attributes with no value type specified in iterable type array\.#'
+            path: src/symfony/src/Security/Authorization/Voter/IsUserVerifiedVoter.php
+            count: 1
+        -
+            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+            path: src/symfony/src/DependencyInjection/Configuration.php
+            count: 1
+        -
+            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::(.*)\(\)\.#'
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+            count: 1
+        -
+            message: '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
+            path:  src/cose/src/Key/RsaKey.php
+            count: 2
 #    checkMissingIterableValueType: true
 #    checkGenericClassInNonGenericObjectType: true
 #    treatPhpDocTypesAsCertain: true

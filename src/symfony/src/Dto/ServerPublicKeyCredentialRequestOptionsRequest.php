@@ -24,5 +24,8 @@ final class ServerPublicKeyCredentialRequestOptionsRequest
     ])]
     public ?string $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     public ?array $extensions = null;
 }

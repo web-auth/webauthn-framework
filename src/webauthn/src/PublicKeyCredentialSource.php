@@ -21,7 +21,8 @@ use Webauthn\Util\Base64;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
-     * @param string[] $transports
+     * @param string[]                  $transports
+     * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
         protected string $publicKeyCredentialId,
@@ -100,11 +101,17 @@ class PublicKeyCredentialSource implements JsonSerializable
         $this->counter = $counter;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getOtherUI(): ?array
     {
         return $this->otherUI;
     }
 
+    /**
+     * @param array<string, mixed>|null $otherUI
+     */
     public function setOtherUI(?array $otherUI): self
     {
         $this->otherUI = $otherUI;
