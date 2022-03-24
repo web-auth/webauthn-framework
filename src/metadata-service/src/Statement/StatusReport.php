@@ -81,6 +81,9 @@ class StatusReport implements JsonSerializable
         return $this->certificationRequirementsVersion;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -111,6 +114,9 @@ class StatusReport implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

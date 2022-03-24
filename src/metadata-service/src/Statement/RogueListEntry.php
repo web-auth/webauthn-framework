@@ -25,6 +25,9 @@ class RogueListEntry implements JsonSerializable
         return $this->date;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         Assertion::keyExists($data, 'sk', 'The key "sk" is missing');
@@ -35,6 +38,9 @@ class RogueListEntry implements JsonSerializable
         return new self($data['sk'], $data['date']);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

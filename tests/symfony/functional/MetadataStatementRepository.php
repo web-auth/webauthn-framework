@@ -25,7 +25,7 @@ final class MetadataStatementRepository implements MetadataStatementRepositoryIn
         return $this->service->get($aaguid);
     }
 
-    public function findStatusReportsByAAGUID(string $aaguid): iterable
+    public function findStatusReportsByAAGUID(string $aaguid): array
     {
         return [];
     }

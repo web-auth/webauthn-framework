@@ -13,6 +13,7 @@ use const JSON_THROW_ON_ERROR;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function Safe\unpack;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -133,14 +134,12 @@ class PublicKeyCredentialLoader
                 $flags = $authDataStream->read(1);
                 $signCount = $authDataStream->read(4);
                 $signCount = unpack('N', $signCount);
-                Assertion::isArray($signCount, 'Unable to determine the signature counter');
 
                 $attestedCredentialData = null;
                 if (0 !== (ord($flags) & self::FLAG_AT)) {
                     $aaguid = Uuid::fromBinary($authDataStream->read(16));
                     $credentialLength = $authDataStream->read(2);
                     $credentialLength = unpack('n', $credentialLength);
-                    Assertion::isArray($credentialLength, 'Unable to determine the credential data length');
                     $credentialId = $authDataStream->read($credentialLength[1]);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
                     Assertion::isInstanceOf(

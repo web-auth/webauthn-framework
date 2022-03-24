@@ -28,6 +28,9 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         return $this->minComplexity;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -44,6 +47,9 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         return new self($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
     }
 
+    /**
+     * @return array<string, int|null>
+     */
     public function jsonSerialize(): array
     {
         $data = [

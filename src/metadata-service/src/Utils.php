@@ -9,6 +9,11 @@ namespace Webauthn\MetadataService;
  */
 abstract class Utils
 {
+    /**
+     * @param array<mixed> $data
+     *
+     * @return array<mixed>
+     */
     public static function filterNullValues(array $data): array
     {
         return array_filter($data, static function ($var): bool {return $var !== null; });

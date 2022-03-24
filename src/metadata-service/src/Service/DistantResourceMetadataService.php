@@ -16,6 +16,9 @@ final class DistantResourceMetadataService implements MetadataService
 {
     private ?MetadataStatement $statement = null;
 
+    /**
+     * @param array<string, mixed> $additionalHeaderParameters
+     */
     public function __construct(
         private RequestFactoryInterface $requestFactory,
         private ClientInterface $httpClient,
@@ -25,6 +28,9 @@ final class DistantResourceMetadataService implements MetadataService
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $additionalHeaderParameters
+     */
     public static function create(
         RequestFactoryInterface $requestFactory,
         ClientInterface $httpClient,

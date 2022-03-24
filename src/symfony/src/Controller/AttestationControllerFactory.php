@@ -48,11 +48,14 @@ final class AttestationControllerFactory
         );
     }
 
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function createAttestationResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler $failureHandler,
-        $securedRelyingPartyIds
+        array $securedRelyingPartyIds
     ): AttestationResponseController {
         return new AttestationResponseController(
             $this->httpMessageFactory,

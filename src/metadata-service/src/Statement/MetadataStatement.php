@@ -382,6 +382,9 @@ class MetadataStatement implements JsonSerializable
         return $this->supportedExtensions;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $requiredKeys = [
@@ -469,6 +472,9 @@ class MetadataStatement implements JsonSerializable
         return $object;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

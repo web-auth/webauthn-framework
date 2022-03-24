@@ -29,6 +29,9 @@ class VerificationMethodANDCombinations implements JsonSerializable
         return $this->verificationMethods;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $object = new self();
@@ -41,6 +44,9 @@ class VerificationMethodANDCombinations implements JsonSerializable
         return $object;
     }
 
+    /**
+     * @return array<array<mixed>>
+     */
     public function jsonSerialize(): array
     {
         return array_map(static function (VerificationMethodDescriptor $object): array {

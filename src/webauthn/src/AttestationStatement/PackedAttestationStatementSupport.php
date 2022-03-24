@@ -16,6 +16,7 @@ use function in_array;
 use InvalidArgumentException;
 use function is_array;
 use RuntimeException;
+use function Safe\openssl_verify;
 use Webauthn\AuthenticatorData;
 use Webauthn\CertificateToolbox;
 use Webauthn\StringStream;

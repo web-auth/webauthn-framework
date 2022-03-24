@@ -18,6 +18,7 @@ use function mb_substr;
 use function ord;
 use function random_bytes;
 use RuntimeException;
+use function Safe\pack;
 use function str_pad;
 use const STR_PAD_LEFT;
 use function str_repeat;
@@ -72,9 +73,13 @@ abstract class PSSRSA implements Signature
             );
         }
 
-        [$p, $q] = $key->primes();
-        [$dP, $dQ] = $key->exponents();
+        [$pS, $qS] = $key->primes();
+        [$dPS, $dQS] = $key->exponents();
         $qInv = BigInteger::createFromBinaryString($key->QInv());
+        $p = BigInteger::createFromBinaryString($pS);
+        $q = BigInteger::createFromBinaryString($qS);
+        $dP = BigInteger::createFromBinaryString($dPS);
+        $dQ = BigInteger::createFromBinaryString($dQS);
 
         $m1 = $c->modPow($dP, $p);
         $m2 = $c->modPow($dQ, $q);
@@ -164,7 +169,7 @@ abstract class PSSRSA implements Signature
         $db = $maskedDB ^ $dbMask;
         $db[0] = ~chr(0xFF << ($emBits & 7)) & $db[0];
         $temp = $emLen - $hash->getLength() - $sLen - 2;
-        if (mb_substr($db, 0, $temp, '8bit') !== str_repeat(chr(0), $temp)) {
+        if (mb_strpos($db, str_repeat(chr(0), $temp), 0, '8bit') !== 0) {
             throw new InvalidArgumentException();
         }
         if (ord($db[$temp]) !== 1) {

@@ -38,6 +38,9 @@ class Version implements JsonSerializable
         return $this->minor;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -50,6 +53,9 @@ class Version implements JsonSerializable
         return new self($data['major'] ?? null, $data['minor'] ?? null);
     }
 
+    /**
+     * @return array<string, int|null>
+     */
     public function jsonSerialize(): array
     {
         $data = [

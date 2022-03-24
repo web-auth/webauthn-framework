@@ -31,6 +31,9 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
      */
     private array $statusReports = [];
 
+    /**
+     * @param string[] $attestationCertificateKeyIdentifiers
+     */
     public function __construct(
         private ?string $aaid,
         private ?string $aaguid,
@@ -76,6 +79,9 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         return $this->aaguid;
     }
 
+    /**
+     * @return string[]
+     */
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
@@ -135,6 +141,9 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         return $this->rogueListHash;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -173,6 +182,9 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         return $object;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

@@ -7,6 +7,7 @@ namespace Webauthn\TrustPath;
 use Assert\Assertion;
 use function in_array;
 use InvalidArgumentException;
+use function Safe\class_implements;
 
 abstract class TrustPathLoader
 {
@@ -22,7 +23,6 @@ abstract class TrustPathLoader
         }
 
         $implements = class_implements($type);
-        Assertion::isArray($implements, sprintf('The trust path type "%s" is not supported', $data['type']));
         if (in_array(TrustPath::class, $implements, true)) {
             return $type::createFromArray($data);
         }

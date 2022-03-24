@@ -107,6 +107,9 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $this->plte;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -142,6 +145,9 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $object;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

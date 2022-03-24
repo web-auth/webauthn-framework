@@ -11,5 +11,5 @@ interface StatusReportRepository
     /**
      * @return StatusReport[]
      */
-    public function findStatusReportsByAAGUID(string $aaguid): iterable;
+    public function findStatusReportsByAAGUID(string $aaguid): array;
 }

@@ -10,8 +10,8 @@ use Cose\Algorithms;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use InvalidArgumentException;
+use function Safe\sodium_crypto_sign_verify_detached;
 use function sodium_crypto_sign_detached;
-use function sodium_crypto_sign_verify_detached;
 
 class EdDSA implements Signature
 {
@@ -33,11 +33,16 @@ class EdDSA implements Signature
     public function verify(string $data, Key $key, string $signature): bool
     {
         $key = $this->handleKey($key);
+        if ($key->curve() !== OkpKey::CURVE_ED25519) {
+            throw new InvalidArgumentException('Unsupported curve');
+        }
+        try {
+            sodium_crypto_sign_verify_detached($signature, $data, $key->x());
+        } catch (\Throwable) {
+            return false;
+        }
 
-        return match ($key->curve()) {
-            OkpKey::CURVE_ED25519 => sodium_crypto_sign_verify_detached($signature, $data, $key->x()),
-            default => throw new InvalidArgumentException('Unsupported curve'),
-        };
+        return true;
     }
 
     public static function identifier(): int

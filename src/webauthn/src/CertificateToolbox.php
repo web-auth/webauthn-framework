@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function in_array;
+use ParagonIE\ConstantTime\Base64;
 use const PHP_EOL;
+use function Safe\preg_replace;
 
 class CertificateToolbox
 {
@@ -41,7 +43,7 @@ class CertificateToolbox
         $data = preg_replace('/[\-]{5}.*[\-]{5}[\r\n]*/', '', $data);
         $data = preg_replace("/[\r\n]*/", '', $data);
 
-        return base64_decode(trim($data), true);
+        return Base64::decode(trim($data), true);
     }
 
     public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string

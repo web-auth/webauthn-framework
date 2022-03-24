@@ -33,6 +33,9 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         return $this->maxTemplates;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         return new self(
@@ -44,6 +47,9 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

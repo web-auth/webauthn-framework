@@ -10,7 +10,7 @@ use Assert\Assertion;
 class Manager
 {
     /**
-     * @var Algorithm[]
+     * @var array<int, Algorithm>
      */
     private array $algorithms = [];
 
@@ -19,14 +19,19 @@ class Manager
         return new self();
     }
 
-    public function add(Algorithm $algorithm): self
+    public function add(Algorithm ...$algorithms): self
     {
-        $identifier = $algorithm::identifier();
-        $this->algorithms[$identifier] = $algorithm;
+        foreach ($algorithms as $algorithm) {
+            $identifier = $algorithm::identifier();
+            $this->algorithms[$identifier] = $algorithm;
+        }
 
         return $this;
     }
 
+    /**
+     * @return int[]
+     */
     public function list(): iterable
     {
         yield from array_keys($this->algorithms);

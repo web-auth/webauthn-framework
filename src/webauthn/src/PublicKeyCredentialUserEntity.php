@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
@@ -54,8 +55,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
         Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
         Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
-        $id = base64_decode($json['id'], true);
-        Assertion::string($id, 'Invalid input. "id" is invalid.');
+        $id = Base64::decode($json['id'], true);
 
         return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }

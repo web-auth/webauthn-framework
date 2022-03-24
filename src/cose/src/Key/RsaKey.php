@@ -12,7 +12,7 @@ use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
-use InvalidArgumentException;
+use function Safe\unpack;
 
 class RsaKey extends Key
 {
@@ -40,6 +40,9 @@ class RsaKey extends Key
 
     public const DATA_TI = -12;
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public function __construct(array $data)
     {
         parent::__construct($data);
@@ -52,6 +55,9 @@ class RsaKey extends Key
         Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
     }
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self($data);
@@ -109,6 +115,9 @@ class RsaKey extends Key
         return $this->get(self::DATA_QI);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function other(): array
     {
         Assertion::true($this->isPrivate(), 'The key is not private.');
@@ -142,6 +151,9 @@ class RsaKey extends Key
         return $this->has(self::DATA_P) && $this->has(self::DATA_Q);
     }
 
+    /**
+     * @return string[]
+     */
     public function primes(): array
     {
         return [$this->p(), $this->q()];
@@ -152,6 +164,9 @@ class RsaKey extends Key
         return $this->has(self::DATA_DP) && $this->has(self::DATA_DQ);
     }
 
+    /**
+     * @return string[]
+     */
     public function exponents(): array
     {
         return [$this->dP(), $this->dQ()];
@@ -191,10 +206,6 @@ class RsaKey extends Key
     private function fromBase64ToInteger(string $value): string
     {
         $data = unpack('H*', $value);
-        if ($data === false) {
-            throw new InvalidArgumentException('Unable to convert to an integer');
-        }
-
         $hex = current($data);
 
         return BigInteger::fromBase($hex, 16)->toBase(10);

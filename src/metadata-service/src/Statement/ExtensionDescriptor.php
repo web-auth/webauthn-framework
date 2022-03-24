@@ -45,6 +45,9 @@ class ExtensionDescriptor implements JsonSerializable
         return $this->failIfUnknown;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -65,6 +68,9 @@ class ExtensionDescriptor implements JsonSerializable
         return new self($data['id'], $data['tag'] ?? null, $data['data'] ?? null, $data['fail_if_unknown']);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $result = [

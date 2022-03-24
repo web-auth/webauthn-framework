@@ -40,6 +40,9 @@ class RgbPaletteEntry implements JsonSerializable
         return $this->b;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         foreach (['r', 'g', 'b'] as $key) {
@@ -50,6 +53,9 @@ class RgbPaletteEntry implements JsonSerializable
         return new self($data['r'], $data['g'], $data['b']);
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function jsonSerialize(): array
     {
         return [

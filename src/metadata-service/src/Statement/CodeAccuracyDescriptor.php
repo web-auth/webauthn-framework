@@ -36,6 +36,9 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         return $this->minLength;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         Assertion::keyExists($data, 'base', 'The parameter "base" is missing');
@@ -49,6 +52,9 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

@@ -22,16 +22,34 @@ use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
+    /**
+     * @var array<mixed>
+     */
     private array $publicKeyCredentialCreationOptions = [];
 
+    /**
+     * @var array<mixed>
+     */
     private array $authenticatorAttestationResponseValidationSucceeded = [];
 
+    /**
+     * @var array<mixed>
+     */
     private array $authenticatorAttestationResponseValidationFailed = [];
 
+    /**
+     * @var array<mixed>
+     */
     private array $publicKeyCredentialRequestOptions = [];
 
+    /**
+     * @var array<mixed>
+     */
     private array $authenticatorAssertionResponseValidationSucceeded = [];
 
+    /**
+     * @var array<mixed>
+     */
     private array $authenticatorAssertionResponseValidationFailed = [];
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
@@ -46,12 +64,15 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
+    /**
+     * @return array<mixed>|Data
+     */
     public function getData(): array|Data
     {
         return $this->data;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'webauthn_collector';
     }
@@ -61,6 +82,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->data = [];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getSubscribedEvents(): array
     {
         return [

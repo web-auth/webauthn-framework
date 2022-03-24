@@ -6,6 +6,11 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Stream;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\rewind;
 
 final class StringStream implements Stream
 {
@@ -22,7 +27,6 @@ final class StringStream implements Stream
     {
         $this->length = mb_strlen($data, '8bit');
         $resource = fopen('php://memory', 'rb+');
-        Assertion::isResource($resource, 'Unable to allocate memory');
         fwrite($resource, $data);
         rewind($resource);
         $this->data = $resource;
@@ -34,7 +38,6 @@ final class StringStream implements Stream
             return '';
         }
         $read = fread($this->data, $length);
-        Assertion::string($read, 'Unable to read data');
         $bytesRead = mb_strlen($read, '8bit');
         Assertion::length(
             $read,

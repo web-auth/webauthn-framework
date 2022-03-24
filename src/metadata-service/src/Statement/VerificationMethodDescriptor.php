@@ -137,6 +137,9 @@ class VerificationMethodDescriptor implements JsonSerializable
         return $this->paDesc;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -159,6 +162,9 @@ class VerificationMethodDescriptor implements JsonSerializable
         return new self($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [

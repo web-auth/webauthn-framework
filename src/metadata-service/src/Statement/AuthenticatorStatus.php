@@ -40,6 +40,9 @@ abstract class AuthenticatorStatus
 
     public const FIDO_CERTIFIED_L5 = 'FIDO_CERTIFIED_L5';
 
+    /**
+     * @return string[]
+     */
     public static function list(): array
     {
         return [

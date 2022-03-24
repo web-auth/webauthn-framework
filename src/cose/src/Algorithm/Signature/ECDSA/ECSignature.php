@@ -10,6 +10,7 @@ use function hexdec;
 use InvalidArgumentException;
 use function mb_strlen;
 use function mb_substr;
+use function Safe\hex2bin;
 use function str_pad;
 use const STR_PAD_LEFT;
 
@@ -49,17 +50,12 @@ final class ECSignature
         $totalLength = $lengthR + $lengthS + self::BYTE_SIZE + self::BYTE_SIZE;
         $lengthPrefix = $totalLength > self::ASN1_MAX_SINGLE_BYTE ? self::ASN1_LENGTH_2BYTES : '';
 
-        $bin = hex2bin(
+        return hex2bin(
             self::ASN1_SEQUENCE
             . $lengthPrefix . dechex($totalLength)
             . self::ASN1_INTEGER . dechex($lengthR) . $pointR
             . self::ASN1_INTEGER . dechex($lengthS) . $pointS
         );
-        if ($bin === false) {
-            throw new InvalidArgumentException('Unable to convert into ASN.1');
-        }
-
-        return $bin;
     }
 
     public static function fromAsn1(string $signature, int $length): string
@@ -79,12 +75,7 @@ final class ECSignature
         $pointR = self::retrievePositiveInteger(self::readAsn1Integer($message, $position));
         $pointS = self::retrievePositiveInteger(self::readAsn1Integer($message, $position));
 
-        $bin = hex2bin(str_pad($pointR, $length, '0', STR_PAD_LEFT) . str_pad($pointS, $length, '0', STR_PAD_LEFT));
-        if ($bin === false) {
-            throw new InvalidArgumentException('Unable to convert from ASN.1');
-        }
-
-        return $bin;
+        return hex2bin(str_pad($pointR, $length, '0', STR_PAD_LEFT) . str_pad($pointS, $length, '0', STR_PAD_LEFT));
     }
 
     private static function octetLength(string $data): int

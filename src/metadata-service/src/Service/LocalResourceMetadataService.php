@@ -6,6 +6,7 @@ namespace Webauthn\MetadataService\Service;
 
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
+use function Safe\file_get_contents;
 use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 

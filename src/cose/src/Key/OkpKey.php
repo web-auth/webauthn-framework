@@ -30,6 +30,9 @@ class OkpKey extends Key
         self::CURVE_ED448,
     ];
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public function __construct(array $data)
     {
         parent::__construct($data);
@@ -43,6 +46,9 @@ class OkpKey extends Key
         Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
     }
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self($data);

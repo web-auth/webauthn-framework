@@ -16,6 +16,10 @@ use const PHP_EOL;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
+use function Safe\file_put_contents;
+use function Safe\rename;
+use function Safe\tempnam;
+use function Safe\unlink;
 use Throwable;
 use Webauthn\CertificateToolbox;
 use const X509_PURPOSE_ANY;
@@ -154,7 +158,6 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
     private function saveToTemporaryFile(string $certificate, string $prefix, string $suffix): string
     {
         $filename = tempnam(sys_get_temp_dir(), $prefix);
-        Assertion::string($filename, 'Unable to create a temporary folder');
         rename($filename, $filename . $suffix);
         file_put_contents($filename . $suffix, $certificate, FILE_APPEND);
 
@@ -194,8 +197,9 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
      */
     private function getCertificatesIds(string ...$certificates): iterable
     {
-        return array_map(static function ($cert): string {
+        return array_map(static function (string $cert): string {
             $details = openssl_x509_parse($cert);
+            Assertion::isArray($details, 'Unable to parse the X509 certificate');
 
             return $details['serialNumber'];
         }, $certificates);

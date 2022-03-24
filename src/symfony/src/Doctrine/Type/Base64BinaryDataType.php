@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Doctrine\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use function is_string;
+use ParagonIE\ConstantTime\Base64;
 
 final class Base64BinaryDataType extends Type
 {
@@ -19,7 +20,7 @@ final class Base64BinaryDataType extends Type
             return $value;
         }
 
-        return base64_encode($value);
+        return Base64::encode($value);
     }
 
     /**
@@ -31,12 +32,7 @@ final class Base64BinaryDataType extends Type
             return $value;
         }
 
-        $result = base64_decode($value, true);
-        if ($result === false) {
-            return $value;
-        }
-
-        return $result;
+        return Base64::decode($value, true);
     }
 
     /**

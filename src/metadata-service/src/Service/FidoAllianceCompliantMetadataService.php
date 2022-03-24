@@ -34,6 +34,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
      */
     private array $statusReports = [];
 
+    /**
+     * @param array<string, mixed> $additionalHeaderParameters
+     */
     public function __construct(
         private RequestFactoryInterface $requestFactory,
         private ClientInterface $httpClient,
@@ -42,6 +45,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $additionalHeaderParameters
+     */
     public static function create(
         RequestFactoryInterface $requestFactory,
         ClientInterface $httpClient,
@@ -51,6 +57,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         return new self($requestFactory, $httpClient, $uri, $additionalHeaderParameters);
     }
 
+    /**
+     * @return string[]
+     */
     public function list(): iterable
     {
         $this->loadData();
@@ -79,7 +88,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     }
 
     /**
-     * @return array<int, StatusReport>
+     * @return StatusReport[]
      */
     public function getStatusReports(string $aaguid): iterable
     {
@@ -139,6 +148,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         return $content;
     }
 
+    /**
+     * @param string[] $rootCertificates
+     */
     private function getJwsPayload(string $token, array &$rootCertificates): string
     {
         $jws = (new CompactSerializer())->unserialize($token);

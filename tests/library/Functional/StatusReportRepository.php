@@ -8,7 +8,7 @@ use Webauthn\MetadataService\StatusReportRepository as StatusReportRepositoryInt
 
 final class StatusReportRepository implements StatusReportRepositoryInterface
 {
-    public function findStatusReportsByAAGUID(string $aaguid): iterable
+    public function findStatusReportsByAAGUID(string $aaguid): array
     {
         return [];
     }

@@ -6,8 +6,8 @@ namespace Cose;
 
 use Brick\Math\BigInteger as BrickBigInteger;
 use function chr;
-use function hex2bin;
-use function unpack;
+use function Safe\hex2bin;
+use function Safe\unpack;
 
 /**
  * @internal

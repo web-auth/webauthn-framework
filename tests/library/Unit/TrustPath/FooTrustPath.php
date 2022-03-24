@@ -11,12 +11,15 @@ final class FooTrustPath implements TrustPath
     /**
      * {@inheritdoc}
      */
-    public static function createFromArray(array $data): TrustPath
+    public static function createFromArray(array $data): static
     {
         return new self();
     }
 
-    public function jsonSerialize()
+    /**
+     * @return array<string, string>
+     */
+    public function jsonSerialize(): array
     {
         return [
             'type' => self::class,

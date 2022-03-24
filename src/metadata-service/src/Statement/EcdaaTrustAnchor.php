@@ -51,6 +51,9 @@ class EcdaaTrustAnchor implements JsonSerializable
         return $this->G1Curve;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
@@ -68,6 +71,9 @@ class EcdaaTrustAnchor implements JsonSerializable
         );
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function jsonSerialize(): array
     {
         $data = [

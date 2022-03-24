@@ -27,19 +27,31 @@ class Key
 
     public const BASE_IV = 5;
 
+    /**
+     * @var array<int, mixed>
+     */
     private array $data;
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public function __construct(array $data)
     {
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
         $this->data = $data;
     }
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self($data);
     }
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public static function createFromData(array $data): self
     {
         Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
@@ -63,6 +75,9 @@ class Key
         return (int) $this->get(self::ALG);
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function getData(): array
     {
         return $this->data;

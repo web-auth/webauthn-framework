@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use JsonSerializable;
+use ParagonIE\ConstantTime\Base64;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 
@@ -55,13 +56,11 @@ class AttestedCredentialData implements JsonSerializable
         Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
         $credentialId = $json['credentialId'];
         Assertion::string($credentialId, 'Invalid input. "credentialId" shall be a string');
-        $credentialId = base64_decode($credentialId, true);
-        Assertion::string($credentialId, 'Invalid input. Unable to get the public key ID');
+        $credentialId = Base64::decode($credentialId, true);
 
         $credentialPublicKey = null;
         if (isset($json['credentialPublicKey'])) {
-            $credentialPublicKey = base64_decode($json['credentialPublicKey'], true);
-            Assertion::string($credentialPublicKey, 'Unable to get the public key');
+            $credentialPublicKey = Base64::decode($json['credentialPublicKey'], true);
         }
 
         return new self($uuid, $credentialId, $credentialPublicKey);

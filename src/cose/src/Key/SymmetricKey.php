@@ -10,6 +10,9 @@ class SymmetricKey extends Key
 {
     public const DATA_K = -1;
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public function __construct(array $data)
     {
         parent::__construct($data);
@@ -21,6 +24,9 @@ class SymmetricKey extends Key
         Assertion::keyExists($data, self::DATA_K, 'Invalid symmetric key. The parameter "k" is missing');
     }
 
+    /**
+     * @param array<int, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self($data);

@@ -9,6 +9,9 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use InvalidArgumentException;
+use function Safe\openssl_sign;
+use function Safe\openssl_verify;
+use Throwable;
 
 abstract class RSA implements Signature
 {
@@ -17,8 +20,10 @@ abstract class RSA implements Signature
         $key = $this->handleKey($key);
         Assertion::true($key->isPrivate(), 'The key is not private');
 
-        if (openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm()) === false) {
-            throw new InvalidArgumentException('Unable to sign the data');
+        try {
+            openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm());
+        } catch (Throwable $e) {
+            throw new InvalidArgumentException('Unable to sign the data', 0, $e);
         }
 
         return $signature;

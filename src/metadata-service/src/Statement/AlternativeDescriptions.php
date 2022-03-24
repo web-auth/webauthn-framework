@@ -41,6 +41,9 @@ class AlternativeDescriptions implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function jsonSerialize(): array
     {
         return $this->descriptions;

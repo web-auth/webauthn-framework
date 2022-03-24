@@ -11,6 +11,7 @@ use CBOR\Normalizable;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function Safe\unpack;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestedCredentialData;
@@ -74,7 +75,6 @@ class AttestationObjectLoader
             $flags = $authDataStream->read(1);
             $signCount = $authDataStream->read(4);
             $signCount = unpack('N', $signCount);
-            Assertion::isArray($signCount, 'The data does not contain a valid signature counter.');
             $this->logger->debug(sprintf('Signature counter: %d', $signCount[1]));
 
             $attestedCredentialData = null;
@@ -83,7 +83,6 @@ class AttestationObjectLoader
                 $aaguid = Uuid::fromBinary($authDataStream->read(16));
                 $credentialLength = $authDataStream->read(2);
                 $credentialLength = unpack('n', $credentialLength);
-                Assertion::isArray($credentialLength, 'The data does not contain a valid credential public key.');
                 $credentialId = $authDataStream->read($credentialLength[1]);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
                 Assertion::isInstanceOf(
