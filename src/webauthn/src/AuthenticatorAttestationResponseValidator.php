@@ -7,6 +7,7 @@ namespace Webauthn;
 use Assert\Assertion;
 use function count;
 use function in_array;
+use InvalidArgumentException;
 use function is_string;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -317,7 +318,7 @@ class AuthenticatorAttestationResponseValidator
         );
 
         // Check Attestation Type is allowed
-        /*if (count($metadataStatement->getAttestationTypes()) !== 0) {
+        if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
             Assertion::inArray(
                 $type,
@@ -328,7 +329,18 @@ class AuthenticatorAttestationResponseValidator
                     implode(', ', $metadataStatement->getAttestationTypes())
                 )
             );
-        }*/
+        }
+    }
+
+    private function getAttestationType(AttestationStatement $attestationStatement): string
+    {
+        return match ($attestationStatement->getType()) {
+            AttestationStatement::TYPE_BASIC => MetadataStatement::ATTESTATION_BASIC_FULL,
+            AttestationStatement::TYPE_SELF => MetadataStatement::ATTESTATION_BASIC_SURROGATE,
+            AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
+            AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
+            default => throw new InvalidArgumentException('Invalid attestation type'),
+        };
     }
 
     private function checkStatusReport(string $aaguid): void

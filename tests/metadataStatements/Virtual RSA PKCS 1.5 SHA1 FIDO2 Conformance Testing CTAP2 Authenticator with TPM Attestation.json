@@ -20,7 +20,7 @@
         "cose"
     ],
     "attestationTypes": [
-        "basic_full"
+        "AttCA"
     ],
     "schema": 3,
     "userVerificationDetails": [
