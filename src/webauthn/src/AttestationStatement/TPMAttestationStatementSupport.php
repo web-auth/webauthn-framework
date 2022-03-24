@@ -92,11 +92,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $attToBeSignedHash,
             'Invalid attestation hash'
         );
-        $this->checkUniquePublicKey(
-            $attestationStatement->get('parsedPubArea')['unique'],
-            $authenticatorData->getAttestedCredentialData()
-                ->getCredentialPublicKey()
-        );
+        $credentialPublicKey = $authenticatorData->getAttestedCredentialData()?->getCredentialPublicKey();
+        Assertion::notNull($credentialPublicKey, 'Not credential public key available in the attested credential data');
+        $this->checkUniquePublicKey($attestationStatement->get('parsedPubArea')['unique'], $credentialPublicKey);
 
         return match (true) {
             $attestationStatement->getTrustPath() instanceof CertificateTrustPath => $this->processWithCertificate(

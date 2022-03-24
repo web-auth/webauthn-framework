@@ -11,7 +11,7 @@ class SymmetricKey extends Key
     public const DATA_K = -1;
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public function __construct(array $data)
     {
@@ -25,7 +25,7 @@ class SymmetricKey extends Key
     }
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public static function create(array $data): self
     {

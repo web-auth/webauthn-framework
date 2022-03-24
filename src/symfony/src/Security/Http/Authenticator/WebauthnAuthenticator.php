@@ -107,9 +107,11 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 ->getAuthData()
             ;
         }
+        $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
+        Assertion::notNull($userEntity, 'The user entity is missing');
 
         $token = new  WebauthnToken(
-            $credentialsBadge->getPublicKeyCredentialUserEntity(),
+            $userEntity,
             $credentialsBadge->getPublicKeyCredentialOptions(),
             $credentialsBadge->getPublicKeyCredentialSource()
                 ->getPublicKeyCredentialDescriptor(),

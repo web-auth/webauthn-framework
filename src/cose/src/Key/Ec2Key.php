@@ -52,7 +52,7 @@ class Ec2Key extends Key
     ];
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public function __construct(array $data)
     {
@@ -83,7 +83,7 @@ class Ec2Key extends Key
     }
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public static function create(array $data): self
     {

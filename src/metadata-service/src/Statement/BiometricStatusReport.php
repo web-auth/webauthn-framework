@@ -22,12 +22,12 @@ class BiometricStatusReport implements JsonSerializable
 
     private ?string $certificationRequirementsVersion = null;
 
-    public function getCertLevel(): int
+    public function getCertLevel(): int|null
     {
         return $this->certLevel;
     }
 
-    public function getModality(): int
+    public function getModality(): int|null
     {
         return $this->modality;
     }

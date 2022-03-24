@@ -157,7 +157,7 @@ class MetadataStatement implements JsonSerializable
      */
     private array $supportedExtensions = [];
 
-    private AuthenticatorGetInfo $authenticatorGetInfo;
+    private null|AuthenticatorGetInfo $authenticatorGetInfo = null;
 
     /**
      * @var string[]
@@ -225,7 +225,7 @@ class MetadataStatement implements JsonSerializable
         return $this->isFreshUserVerificationRequired;
     }
 
-    public function getAuthenticatorGetInfo(): AuthenticatorGetInfo
+    public function getAuthenticatorGetInfo(): AuthenticatorGetInfo|null
     {
         return $this->authenticatorGetInfo;
     }
@@ -404,12 +404,24 @@ class MetadataStatement implements JsonSerializable
         foreach ($requiredKeys as $key) {
             Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
         }
-        Assertion::allString($data['authenticationAlgorithms'], 'Invalid Metadata Statement');
-        Assertion::allString($data['publicKeyAlgAndEncodings'], 'Invalid Metadata Statement');
-        Assertion::allString($data['attestationTypes'], 'Invalid Metadata Statement');
-        Assertion::allString($data['matcherProtection'], 'Invalid Metadata Statement');
-        Assertion::allString($data['tcDisplay'], 'Invalid Metadata Statement');
-        Assertion::allString($data['attestationRootCertificates'], 'Invalid Metadata Statement');
+        $subObjects = [
+            'authenticationAlgorithms',
+            'publicKeyAlgAndEncodings',
+            'attestationTypes',
+            'matcherProtection',
+            'tcDisplay',
+            'attestationRootCertificates',
+        ];
+        foreach ($subObjects as $subObject) {
+            Assertion::isArray(
+                $data[$subObject],
+                sprintf('Invalid Metadata Statement. The parameter "%s" shall be a list of strings.', $subObject)
+            );
+            Assertion::allString(
+                $data[$subObject],
+                sprintf('Invalid Metadata Statement. The parameter "%s" shall be a list of strings.', $subObject)
+            );
+        }
 
         $object = new self(
             $data['description'],

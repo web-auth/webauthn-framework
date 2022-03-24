@@ -41,7 +41,7 @@ class RsaKey extends Key
     public const DATA_TI = -12;
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public function __construct(array $data)
     {
@@ -56,7 +56,7 @@ class RsaKey extends Key
     }
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public static function create(array $data): self
     {

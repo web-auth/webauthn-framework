@@ -131,12 +131,12 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         return $this->timeOfLastStatusChange;
     }
 
-    public function getRogueListURL(): string
+    public function getRogueListURL(): string|null
     {
         return $this->rogueListURL;
     }
 
-    public function getRogueListHash(): string
+    public function getRogueListHash(): string|null
     {
         return $this->rogueListHash;
     }

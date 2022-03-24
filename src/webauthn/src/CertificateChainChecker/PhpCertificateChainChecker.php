@@ -55,6 +55,7 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
         }
 
         $leafCertificate = array_shift($authenticatorCertificates);
+        Assertion::notNull($leafCertificate, 'No leaf certificate from the authenticator certificate list.');
         $untrustedCertificatesFilename = null;
         if (count($authenticatorCertificates) !== 0) {
             $untrustedCertificatesFilename = $this->saveToTemporaryFile(

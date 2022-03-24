@@ -350,6 +350,9 @@ class AuthenticatorAttestationResponseValidator
         AttestationObject $attestationObject,
         string $userHandle
     ): PublicKeyCredentialSource {
+        $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
+        Assertion::notNull($credentialPublicKey, 'Not credential public key available in the attested credential data');
+
         return new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
@@ -359,7 +362,7 @@ class AuthenticatorAttestationResponseValidator
             $attestationObject->getAttStmt()
                 ->getTrustPath(),
             $attestedCredentialData->getAaguid(),
-            $attestedCredentialData->getCredentialPublicKey(),
+            $credentialPublicKey,
             $userHandle,
             $attestationObject->getAuthData()
                 ->getSignCount()

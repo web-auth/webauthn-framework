@@ -75,7 +75,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
     ): bool {
         Assertion::eq(
             $authenticatorData->getAttestedCredentialData()
-                ->getAaguid()
+                ?->getAaguid()
                 ->__toString(),
             '00000000-0000-0000-0000-000000000000',
             'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
@@ -86,11 +86,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
         $dataToVerify .= $authenticatorData->getAttestedCredentialData()
-            ->getCredentialId()
+            ?->getCredentialId()
         ;
         $dataToVerify .= $this->extractPublicKey(
             $authenticatorData->getAttestedCredentialData()
-                ->getCredentialPublicKey()
+                ?->getCredentialPublicKey()
         );
 
         return openssl_verify(

@@ -44,13 +44,17 @@ final class DistantResourceMetadataService implements MetadataService
     public function list(): iterable
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
+        $aaguid = $this->statement->getAaguid();
+        Assertion::notNull($aaguid, 'Unable to load the metadata statement');
 
-        yield from [$this->statement->getAaguid()];
+        yield from [$aaguid];
     }
 
     public function has(string $aaguid): bool
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
 
         return $aaguid === $this->statement->getAaguid();
     }
@@ -58,6 +62,7 @@ final class DistantResourceMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
 
         if ($aaguid === $this->statement->getAaguid()) {
             return $this->statement;

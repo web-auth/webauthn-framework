@@ -1,12 +1,17 @@
 parameters:
-    level: 7
+    level: 8
     paths:
         - src
     ignoreErrors:
+        - '#Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 2
+        -
+            message: '#Parameter \#1 \$length of function random_bytes expects int<1, max>, int given\.#'
+            path: src/cose/src/Algorithm/Signature/RSA/PSSRSA.php
+            count: 1
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
@@ -24,9 +29,13 @@ parameters:
             path: src/symfony/src/DependencyInjection/Configuration.php
             count: 1
         -
-            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::(.*)\(\)\.#'
+            message: '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
+#        -
+#            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::(.*)\(\)\.#'
+#            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+#            count: 1
         -
             message: '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
             path:  src/cose/src/Key/RsaKey.php

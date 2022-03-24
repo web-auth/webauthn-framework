@@ -173,7 +173,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
         $isValid = $verifier->verifyWithKey($jws, $key, 0);
         Assertion::true($isValid, 'Invalid response from the metadata service. The token signature is invalid.');
+        $payload = $jws->getPayload();
+        Assertion::notNull($payload, 'Invalid response from the metadata service. The payload is missing.');
 
-        return $jws->getPayload();
+        return $payload;
     }
 }

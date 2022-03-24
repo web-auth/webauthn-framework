@@ -31,7 +31,7 @@ class OkpKey extends Key
     ];
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public function __construct(array $data)
     {
@@ -47,7 +47,7 @@ class OkpKey extends Key
     }
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public static function create(array $data): self
     {

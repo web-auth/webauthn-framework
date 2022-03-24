@@ -28,12 +28,12 @@ class Key
     public const BASE_IV = 5;
 
     /**
-     * @var array<int, mixed>
+     * @var array<int|string, mixed>
      */
     private array $data;
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public function __construct(array $data)
     {
@@ -42,7 +42,7 @@ class Key
     }
 
     /**
-     * @param array<int, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     public static function create(array $data): self
     {
@@ -76,19 +76,19 @@ class Key
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int|string, mixed>
      */
     public function getData(): array
     {
         return $this->data;
     }
 
-    public function has(int $key): bool
+    public function has(int|string $key): bool
     {
         return array_key_exists($key, $this->data);
     }
 
-    public function get(int $key): mixed
+    public function get(int|string $key): mixed
     {
         Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 

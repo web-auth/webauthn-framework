@@ -208,7 +208,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void
     {
         $jwk = JWKFactory::createFromCertificate($trustPath->getCertificates()[0]);
-        $isValid = $this->jwsVerifier->verifyWithKey($jws, $jwk, 0);
+        $isValid = $this->jwsVerifier?->verifyWithKey($jws, $jwk, 0);
         Assertion::true($isValid, 'Invalid response signature');
     }
 

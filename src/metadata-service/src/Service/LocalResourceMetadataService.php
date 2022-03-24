@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use Assert\Assertion;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
 use function Safe\file_get_contents;
@@ -28,13 +29,17 @@ final class LocalResourceMetadataService implements MetadataService
     public function list(): iterable
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
+        $aaguid = $this->statement->getAaguid();
+        Assertion::notNull($aaguid, 'Unable to load the metadata statement');
 
-        yield from [$this->statement->getAaguid()];
+        yield from [$aaguid];
     }
 
     public function has(string $aaguid): bool
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
 
         return $aaguid === $this->statement->getAaguid();
     }
@@ -42,6 +47,7 @@ final class LocalResourceMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
+        Assertion::notNull($this->statement, 'Unable to load the metadata statement');
 
         if ($aaguid === $this->statement->getAaguid()) {
             return $this->statement;

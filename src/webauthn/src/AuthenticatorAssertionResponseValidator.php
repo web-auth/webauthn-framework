@@ -181,7 +181,7 @@ class AuthenticatorAssertionResponseValidator
                 'Invalid attestation object. Unexpected object.'
             );
             $coseKey = Key::create($credentialPublicKeyStream->normalize());
-            $algorithm = $this->algorithmManager->get($coseKey->alg());
+            $algorithm = $this->algorithmManager?->get($coseKey->alg());
             Assertion::isInstanceOf(
                 $algorithm,
                 Signature::class,
