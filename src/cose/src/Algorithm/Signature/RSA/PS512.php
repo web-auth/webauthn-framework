@@ -10,6 +10,11 @@ final class PS512 extends PSSRSA
 {
     public const ID = -39;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

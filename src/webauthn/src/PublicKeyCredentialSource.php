@@ -38,6 +38,36 @@ class PublicKeyCredentialSource implements JsonSerializable
     ) {
     }
 
+    /**
+     * @param string[]                  $transports
+     * @param array<string, mixed>|null $otherUI
+     */
+    public static function create(
+        string $publicKeyCredentialId,
+        string $type,
+        array $transports,
+        string $attestationType,
+        TrustPath $trustPath,
+        AbstractUid $aaguid,
+        string $credentialPublicKey,
+        string $userHandle,
+        int $counter,
+        ?array $otherUI = null
+    ): self {
+        return new self(
+            $publicKeyCredentialId,
+            $type,
+            $transports,
+            $attestationType,
+            $trustPath,
+            $aaguid,
+            $credentialPublicKey,
+            $userHandle,
+            $counter,
+            $otherUI
+        );
+    }
+
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;

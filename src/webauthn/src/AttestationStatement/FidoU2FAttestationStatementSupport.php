@@ -27,6 +27,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         $this->decoder = Decoder::create();
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function name(): string
     {
         return 'fido-u2f';

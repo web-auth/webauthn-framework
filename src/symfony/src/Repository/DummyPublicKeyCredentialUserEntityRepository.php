@@ -42,11 +42,8 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         );
     }
 
-    public function createUserEntity(
-        string $username,
-        string $displayName,
-        ?string $icon
-    ): PublicKeyCredentialUserEntity {
+    public function generateNextUserEntityId(): string
+    {
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );

@@ -99,12 +99,12 @@ abstract class PSSRSA implements Signature
 
     private function convertIntegerToOctetString(BigInteger $x, int $xLen): string
     {
-        $x = $x->toBytes();
-        if (mb_strlen($x, '8bit') > $xLen) {
+        $xB = $x->toBytes();
+        if (mb_strlen($xB, '8bit') > $xLen) {
             throw new RuntimeException('Unable to convert the integer');
         }
 
-        return str_pad($x, $xLen, chr(0), STR_PAD_LEFT);
+        return str_pad($xB, $xLen, chr(0), STR_PAD_LEFT);
     }
 
     /**

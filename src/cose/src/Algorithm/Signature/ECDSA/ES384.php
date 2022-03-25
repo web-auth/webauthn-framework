@@ -11,6 +11,11 @@ final class ES384 extends ECDSA
 {
     public const ID = -35;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

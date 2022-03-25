@@ -16,6 +16,11 @@ class PublicKeyCredentialParameters implements JsonSerializable
     ) {
     }
 
+    public static function create(string $type, int $alg): self
+    {
+        return new self($type, $alg);
+    }
+
     public function getType(): string
     {
         return $this->type;

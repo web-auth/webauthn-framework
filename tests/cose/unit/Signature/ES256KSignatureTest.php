@@ -18,7 +18,7 @@ final class ES256KSignatureTest extends TestCase
     /**
      * @test
      */
-    public function es256KSignAndVerify()
+    public function es256KSignAndVerify(): void
     {
         $key = $this->getKey();
         $algorithm = new ES256K();

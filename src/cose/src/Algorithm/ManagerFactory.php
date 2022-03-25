@@ -6,12 +6,17 @@ namespace Cose\Algorithm;
 
 use Assert\Assertion;
 
-class ManagerFactory
+final class ManagerFactory
 {
     /**
      * @var array<string, Algorithm>
      */
     private array $algorithms = [];
+
+    public static function create(): self
+    {
+        return new self();
+    }
 
     public function add(string $alias, Algorithm $algorithm): self
     {
@@ -36,10 +41,7 @@ class ManagerFactory
         yield from $this->algorithms;
     }
 
-    /**
-     * @param string[] $aliases
-     */
-    public function create(array $aliases): Manager
+    public function generate(string ...$aliases): Manager
     {
         $manager = Manager::create();
         foreach ($aliases as $alias) {

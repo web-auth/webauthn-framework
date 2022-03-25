@@ -43,10 +43,10 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 
         $existingUserEntity = $this->userEntityRepository->findOneByUsername($dto->username);
 
-        return $existingUserEntity ?? $this->userEntityRepository->createUserEntity(
+        return $existingUserEntity ?? PublicKeyCredentialUserEntity::create(
             $dto->username,
-            $dto->displayName,
-            null
+            $this->userEntityRepository->generateNextUserEntityId(),
+            $dto->displayName
         );
     }
 }

@@ -8,6 +8,11 @@ final class HS256 extends Hmac
 {
     public const ID = 5;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

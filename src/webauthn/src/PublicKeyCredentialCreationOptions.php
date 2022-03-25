@@ -63,10 +63,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
-    /**
-     * @param PublicKeyCredentialParameters[] $pubKeyCredParams
-     */
-    public function addPubKeyCredParams(array $pubKeyCredParams): self
+    public function addPubKeyCredParams(PublicKeyCredentialParameters ...$pubKeyCredParams): self
     {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
             $this->addPubKeyCredParam($pubKeyCredParam);
@@ -82,10 +79,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
-    /**
-     * @param PublicKeyCredentialDescriptor[] $excludeCredentials
-     */
-    public function excludeCredentials(array $excludeCredentials): self
+    public function excludeCredentials(PublicKeyCredentialDescriptor ...$excludeCredentials): self
     {
         foreach ($excludeCredentials as $excludeCredential) {
             $this->excludeCredential($excludeCredential);
@@ -188,7 +182,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
                 $challenge,
                 $pubKeyCredParams
             )
-                ->excludeCredentials($excludeCredentials)
+                ->excludeCredentials(...$excludeCredentials)
                 ->setAuthenticatorSelection(
                     AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection'])
                 )

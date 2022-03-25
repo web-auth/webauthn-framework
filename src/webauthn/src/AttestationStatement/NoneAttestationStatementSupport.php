@@ -11,6 +11,11 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 final class NoneAttestationStatementSupport implements AttestationStatementSupport
 {
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function name(): string
     {
         return 'none';

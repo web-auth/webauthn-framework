@@ -49,6 +49,20 @@ class AuthenticatorAttestationResponseValidator
         $this->logger = new NullLogger();
     }
 
+    public static function create(
+        AttestationStatementSupportManager $attestationStatementSupportManager,
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
+        TokenBindingHandler $tokenBindingHandler,
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+    ): self {
+        return new self(
+            $attestationStatementSupportManager,
+            $publicKeyCredentialSource,
+            $tokenBindingHandler,
+            $extensionOutputCheckerHandler
+        );
+    }
+
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;

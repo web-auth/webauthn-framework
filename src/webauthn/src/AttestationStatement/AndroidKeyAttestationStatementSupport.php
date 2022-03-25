@@ -33,6 +33,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $this->decoder = Decoder::create();
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function name(): string
     {
         return 'android-key';

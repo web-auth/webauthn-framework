@@ -11,6 +11,11 @@ class ExtensionOutputCheckerHandler
      */
     private array $checkers = [];
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function add(ExtensionOutputChecker $checker): void
     {
         $this->checkers[] = $checker;

@@ -34,12 +34,10 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         $this->manager = $manager;
     }
 
-    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource, bool $flush = true): void
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $this->manager->persist($publicKeyCredentialSource);
-        if ($flush) {
-            $this->manager->flush();
-        }
+        $this->manager->flush();
     }
 
     /**

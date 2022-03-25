@@ -7,7 +7,7 @@ namespace Cose\Algorithm;
 use function array_key_exists;
 use Assert\Assertion;
 
-class Manager
+final class Manager
 {
     /**
      * @var array<int, Algorithm>

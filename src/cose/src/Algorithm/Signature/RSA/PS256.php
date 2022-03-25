@@ -10,6 +10,11 @@ final class PS256 extends PSSRSA
 {
     public const ID = -37;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

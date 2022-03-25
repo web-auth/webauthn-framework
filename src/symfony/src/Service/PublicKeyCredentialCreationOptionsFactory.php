@@ -48,7 +48,7 @@ final class PublicKeyCredentialCreationOptionsFactory
                 random_bytes($profile['challenge_length']),
                 $this->createCredentialParameters($profile)
             )
-                ->excludeCredentials($excludeCredentials)
+                ->excludeCredentials(...$excludeCredentials)
                 ->setAuthenticatorSelection(
                     $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile)
                 )

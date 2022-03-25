@@ -45,6 +45,20 @@ class AuthenticatorAssertionResponseValidator
         $this->logger = new NullLogger();
     }
 
+    public static function create(
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        TokenBindingHandler $tokenBindingHandler,
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        ?Manager $algorithmManager,
+    ): self {
+        return new self(
+            $publicKeyCredentialSourceRepository,
+            $tokenBindingHandler,
+            $extensionOutputCheckerHandler,
+            $algorithmManager
+        );
+    }
+
     /**
      * @param string[] $securedRelyingPartyId
      *
@@ -98,6 +112,10 @@ class AuthenticatorAssertionResponseValidator
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
             Assertion::notNull($credentialPublicKey, 'No public key available.');
+            $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
+            if ($isU2F === true) {
+                $credentialPublicKey = U2FPublicKey::convertToCoseKey($credentialPublicKey);
+            }
             $stream = new StringStream($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
             Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
@@ -136,7 +154,7 @@ class AuthenticatorAssertionResponseValidator
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
             }
 
-            $rpIdHash = hash('sha256', $facetId, true);
+            $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);
             Assertion::true(
                 hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()),
                 'rpId hash mismatch.'

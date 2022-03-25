@@ -47,10 +47,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
-    /**
-     * @param PublicKeyCredentialDescriptor[] $allowCredentials
-     */
-    public function allowCredentials(array $allowCredentials): self
+    public function allowCredentials(PublicKeyCredentialDescriptor ...$allowCredentials): self
     {
         foreach ($allowCredentials as $allowCredential) {
             $this->allowCredential($allowCredential);
@@ -119,7 +116,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
         return self::create($challenge)
             ->setRpId($json['rpId'] ?? null)
-            ->allowCredentials($allowCredentials)
+            ->allowCredentials(...$allowCredentials)
             ->setUserVerification($json['userVerification'] ?? null)
             ->setTimeout($json['timeout'] ?? null)
             ->setExtensions(

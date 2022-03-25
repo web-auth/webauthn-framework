@@ -45,12 +45,9 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         return $item->get();
     }
 
-    public function createUserEntity(
-        string $username,
-        string $displayName,
-        ?string $icon
-    ): PublicKeyCredentialUserEntity {
-        return new User($username, Uuid::v4()->__toString(), $displayName, $icon);
+    public function generateNextUserEntityId(): string
+    {
+        return Uuid::v4()->__toString();
     }
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void

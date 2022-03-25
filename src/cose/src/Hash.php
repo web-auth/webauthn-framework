@@ -10,17 +10,8 @@ namespace Cose;
 final class Hash
 {
     private function __construct(
-        /**
-         * Hash Parameter.
-         */
         private string $hash,
-        /**
-         * Hash Length.
-         */
         private int $length,
-        /**
-         * DER encoding T.
-         */
         private string $t
     ) {
     }

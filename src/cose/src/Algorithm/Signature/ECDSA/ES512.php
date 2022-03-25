@@ -11,6 +11,11 @@ final class ES512 extends ECDSA
 {
     public const ID = -36;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

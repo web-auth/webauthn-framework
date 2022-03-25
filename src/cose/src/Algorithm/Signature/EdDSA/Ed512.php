@@ -6,9 +6,14 @@ namespace Cose\Algorithm\Signature\EdDSA;
 
 use Cose\Key\Key;
 
-final class ED512 extends EdDSA
+final class Ed512 extends EdDSA
 {
     public const ID = -261;
+
+    public static function create(): self
+    {
+        return new self();
+    }
 
     public static function identifier(): int
     {

@@ -8,6 +8,11 @@ final class HS256Truncated64 extends Hmac
 {
     public const ID = 4;
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public static function identifier(): int
     {
         return self::ID;

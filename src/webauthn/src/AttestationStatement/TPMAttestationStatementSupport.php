@@ -29,6 +29,11 @@ use Webauthn\Util\Base64;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function name(): string
     {
         return 'tpm';

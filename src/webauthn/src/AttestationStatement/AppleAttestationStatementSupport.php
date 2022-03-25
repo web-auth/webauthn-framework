@@ -26,6 +26,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $this->decoder = Decoder::create();
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function name(): string
     {
         return 'apple';

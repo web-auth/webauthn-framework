@@ -39,7 +39,7 @@ final class PublicKeyCredentialRequestOptionsFactory
             ::create(random_bytes($profile['challenge_length']))
                 ->setRpId($profile['rp_id'])
                 ->setUserVerification($userVerification ?? $profile['user_verification'])
-                ->allowCredentials($allowCredentials)
+                ->allowCredentials(...$allowCredentials)
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
                 ->setTimeout($profile['timeout'])
         ;

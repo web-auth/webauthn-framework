@@ -35,6 +35,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $this->decoder = Decoder::create();
     }
 
+    public static function create(Manager $algorithmManager): self
+    {
+        return new self($algorithmManager);
+    }
+
     public function name(): string
     {
         return 'packed';
