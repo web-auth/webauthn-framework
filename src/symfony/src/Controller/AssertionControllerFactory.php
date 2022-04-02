@@ -10,7 +10,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
+use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
@@ -35,6 +37,7 @@ final class AssertionControllerFactory
         string $profile,
         OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
+        FailureHandler $failureHandler,
     ): AssertionRequestController {
         return new AssertionRequestController(
             $this->serializer,
@@ -45,19 +48,24 @@ final class AssertionControllerFactory
             $profile,
             $optionStorage,
             $optionsHandler,
+            $failureHandler,
             $this->logger
         );
     }
 
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
+        FailureHandler $failureHandler,
     ): AssertionResponseController {
         return new AssertionResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->logger,
-            $optionStorage
+            $optionStorage,
+            $successHandler,
+            $failureHandler,
         );
     }
 }

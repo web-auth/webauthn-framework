@@ -93,7 +93,7 @@ final class AssertionTest extends WebTestCase
         $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
         $options = $factory->create('default', $allowedCredentials);
 
-        static::assertSame(30000, $options->getTimeout());
+        static::assertNull($options->getTimeout());
         static::assertSame('localhost', $options->getRpId());
         static::assertSame($allowedCredentials, $options->getAllowCredentials());
         static::assertSame('preferred', $options->getUserVerification());

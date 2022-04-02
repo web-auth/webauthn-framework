@@ -8,7 +8,6 @@ use Assert\Assertion;
 use function count;
 use function is_array;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -19,6 +18,7 @@ use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\AdditionalPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
+use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -39,6 +39,7 @@ final class AttestationRequestController
         private string $profile,
         private OptionsStorage $optionsStorage,
         private CreationOptionsHandler $creationOptionsHandler,
+        private FailureHandler $failureHandler,
     ) {
     }
 
@@ -63,10 +64,7 @@ final class AttestationRequestController
 
             return $response;
         } catch (Throwable $throwable) {
-            return new JsonResponse([
-                'status' => 'error',
-                'errorMessage' => $throwable->getMessage(),
-            ], 400);
+            return $this->failureHandler->onFailure($request, $throwable);
         }
     }
 

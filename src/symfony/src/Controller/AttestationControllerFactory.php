@@ -34,7 +34,8 @@ final class AttestationControllerFactory
         UserEntityGuesser $userEntityGuesser,
         string $profile,
         OptionsStorage $optionStorage,
-        CreationOptionsHandler $creationOptionsHandler
+        CreationOptionsHandler $creationOptionsHandler,
+        FailureHandler $failureHandler,
     ): AttestationRequestController {
         return new AttestationRequestController(
             $userEntityGuesser,
@@ -44,7 +45,8 @@ final class AttestationControllerFactory
             $this->publicKeyCredentialCreationOptionsFactory,
             $profile,
             $optionStorage,
-            $creationOptionsHandler
+            $creationOptionsHandler,
+            $failureHandler
         );
     }
 

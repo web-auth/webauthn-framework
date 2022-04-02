@@ -67,7 +67,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             'attestation',
             'user',
             'authenticatorSelection',
-            'timeout',
         ];
         foreach ($expectedKeys as $expectedKey) {
             static::assertArrayHasKey($expectedKey, $data);

@@ -7,12 +7,13 @@ namespace Webauthn\Bundle\Controller;
 use Assert\Assertion;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Security\Handler\FailureHandler;
+use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -25,6 +26,8 @@ final class AssertionResponseController
         private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private LoggerInterface $logger,
         private OptionsStorage $optionsStorage,
+        private SuccessHandler $successHandler,
+        private FailureHandler $failureHandler,
     ) {
     }
 
@@ -54,17 +57,11 @@ final class AssertionResponseController
                 $userEntity?->getId()
             );
 
-            return new JsonResponse([
-                'status' => 'ok',
-                'errorMessage' => '',
-            ]);
+            return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
-            return new JsonResponse([
-                'status' => 'error',
-                'errorMessage' => $throwable->getMessage(),
-            ], 400);
+            return $this->failureHandler->onFailure($request, $throwable);
         }
     }
 }

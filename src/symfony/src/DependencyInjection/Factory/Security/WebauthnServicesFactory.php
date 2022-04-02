@@ -39,7 +39,6 @@ class WebauthnServicesFactory
         ContainerBuilder $container,
         string $firewallName,
         array $config,
-        string $firewallConfigId
     ): string {
         $successHandlerId = WebauthnFactory::SUCCESS_HANDLER_ID_PREFIX . $firewallName;
         $container
@@ -56,7 +55,6 @@ class WebauthnServicesFactory
         ContainerBuilder $container,
         string $firewallName,
         array $config,
-        string $firewallConfigId
     ): string {
         $failureHandlerId = WebauthnFactory::FAILURE_HANDLER_ID_PREFIX . $firewallName;
         $container

@@ -8,7 +8,6 @@ use Assert\Assertion;
 use function count;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -18,6 +17,7 @@ use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -38,6 +38,7 @@ final class AssertionRequestController
         private string $profile,
         private OptionsStorage $optionsStorage,
         private RequestOptionsHandler $optionsHandler,
+        private FailureHandler $failureHandler,
         private LoggerInterface $logger,
     ) {
     }
@@ -70,10 +71,7 @@ final class AssertionRequestController
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
 
-            return new JsonResponse([
-                'status' => 'error',
-                'errorMessage' => $throwable->getMessage(),
-            ], 400);
+            return $this->failureHandler->onFailure($request, $throwable);
         }
     }
 

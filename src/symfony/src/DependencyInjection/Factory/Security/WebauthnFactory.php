@@ -174,18 +174,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $userProviderId
     ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
-        $successHandlerId = $this->servicesFactory->createSuccessHandler(
-            $container,
-            $firewallName,
-            $config,
-            $firewallConfigId
-        );
-        $failureHandlerId = $this->servicesFactory->createFailureHandler(
-            $container,
-            $firewallName,
-            $config,
-            $firewallConfigId
-        );
+        $successHandlerId = $this->servicesFactory->createSuccessHandler($container, $firewallName, $config,);
+        $failureHandlerId = $this->servicesFactory->createFailureHandler($container, $firewallName, $config,);
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
         $this->createAttestationControllersAndRoutes($container, $firewallName, $config);
@@ -259,6 +249,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $config['authentication']['profile'],
             $config['options_storage'],
             $config['authentication']['options_handler'],
+            $config['failure_handler'],
         );
         $this->createResponseControllerAndRoute(
             $container,
@@ -289,6 +280,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $config['registration']['profile'],
             $config['options_storage'],
             $config['registration']['options_handler'],
+            $config['failure_handler'],
         );
         $this->createResponseControllerAndRoute(
             $container,
@@ -307,10 +299,16 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $profile,
         string $optionsStorageId,
         string $optionsHandlerId,
+        string $failureHandlerId,
     ): void {
         $controller = (new Definition(AssertionRequestController::class))
             ->setFactory([new Reference(AssertionControllerFactory::class), 'createAssertionRequestController'])
-            ->setArguments([$profile, new Reference($optionsStorageId), new Reference($optionsHandlerId)])
+            ->setArguments([
+                $profile,
+                new Reference($optionsStorageId),
+                new Reference($optionsHandlerId),
+                new Reference($failureHandlerId),
+            ])
         ;
         $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $path, $host);
     }
@@ -323,6 +321,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $profile,
         string $optionsStorageId,
         string $optionsHandlerId,
+        string $failureHandlerId,
     ): void {
         $controller = (new Definition(AttestationRequestController::class))
             ->setFactory([new Reference(AttestationControllerFactory::class), 'createAttestationRequestController'])
@@ -331,6 +330,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 $profile,
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
+                new Reference($failureHandlerId),
             ])
         ;
         $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $path, $host);

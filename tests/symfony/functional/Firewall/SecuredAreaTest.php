@@ -66,7 +66,7 @@ final class SecuredAreaTest extends WebTestCase
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
         static::assertArrayHasKey('allowCredentials', $json);
-        static::assertArrayHasKey('timeout', $json);
+        static::assertArrayNotHasKey('timeout', $json);
     }
 
     /**

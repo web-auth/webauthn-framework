@@ -11,7 +11,7 @@ use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -20,6 +20,9 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
+use Webauthn\Bundle\Controller\AssertionControllerFactory;
+use Webauthn\Bundle\Controller\AssertionRequestController;
+use Webauthn\Bundle\Controller\AssertionResponseController;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\AttestationResponseController;
@@ -134,14 +137,23 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadControllersSupport(ContainerBuilder $container, LoaderInterface $loader, array $config): void
+    private function loadControllersSupport(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
-        if ($config['enabled'] === true) {
+        if ($config['enabled'] === false) {
+            return;
         }
 
         $loader->load('controller.php');
+        $this->loadCreationControllersSupport($container, $config['creation'] ?? []);
+        $this->loadRequestControllersSupport($container, $config['request'] ?? []);
+    }
 
-        foreach ($config['creation'] as $name => $creationConfig) {
+    /**
+     * @param mixed[] $config
+     */
+    private function loadCreationControllersSupport(ContainerBuilder $container, array $config): void
+    {
+        foreach ($config as $name => $creationConfig) {
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
             $attestationRequestController = (new Definition(AttestationRequestController::class))
                 ->setFactory(
@@ -185,11 +197,51 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadAndroidSafetyNet(
-        ContainerBuilder $container,
-        LoaderInterface $loader,
-        array $config
-    ): void {
+    private function loadRequestControllersSupport(ContainerBuilder $container, array $config): void
+    {
+        foreach ($config as $name => $requestConfig) {
+            $assertionRequestControllerId = sprintf('webauthn.controller.request.request.%s', $name);
+            $assertionRequestController = (new Definition(AssertionRequestController::class))
+                ->setFactory([new Reference(AssertionControllerFactory::class), 'createAssertionRequestController'])
+                ->setArguments([
+                    $requestConfig['profile'],
+                    new Reference($requestConfig['options_storage']),
+                    new Reference($requestConfig['options_handler']),
+                    new Reference($requestConfig['failure_handler']),
+                ])
+                ->addTag(DynamicRouteCompilerPass::TAG, [
+                    'path' => $requestConfig['options_path'],
+                    'host' => $requestConfig['host'],
+                ])
+                ->addTag('controller.service_arguments')
+            ;
+            $container->setDefinition($assertionRequestControllerId, $assertionRequestController);
+
+            $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);
+            $assertionResponseController = new Definition(AssertionResponseController::class);
+            $assertionResponseController->setFactory(
+                [new Reference(AssertionControllerFactory::class), 'createAssertionResponseController']
+            );
+            $assertionResponseController->setArguments([
+                new Reference($requestConfig['options_storage']),
+                new Reference($requestConfig['success_handler']),
+                new Reference($requestConfig['failure_handler']),
+                $requestConfig['secured_rp_ids'],
+            ]);
+            $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [
+                'path' => $requestConfig['result_path'],
+                'host' => $requestConfig['host'],
+            ]);
+            $assertionResponseController->addTag('controller.service_arguments');
+            $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
+        }
+    }
+
+    /**
+     * @param mixed[] $config
+     */
+    private function loadAndroidSafetyNet(ContainerBuilder $container, FileLoader $loader, array $config): void
+    {
         //Android SafetyNet
         $container->setParameter('webauthn.android_safetynet.leeway', $config['leeway']);
         $container->setParameter('webauthn.android_safetynet.max_age', $config['max_age']);
@@ -200,11 +252,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadMetadataServices(
-        ContainerBuilder $container,
-        LoaderInterface $loader,
-        array $config
-    ): void {
+    private function loadMetadataServices(ContainerBuilder $container, FileLoader $loader, array $config): void
+    {
         if ($config['enabled'] === false) {
             return;
         }

@@ -48,9 +48,6 @@ services:
     Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository:
         autowire: true
 
-    Webauthn\Tests\Bundle\Functional\CurrentUserEntityGuesser:
-        autowire: true
-
     Webauthn\Tests\Bundle\Functional\Logger:
         arguments: ['@logger']
         tags:
@@ -169,7 +166,6 @@ webauthn:
                 id: 'localhost'
                 icon: null
             challenge_length: 32
-            timeout: 60000
             authenticator_selection_criteria:
                 attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
                 require_resident_key: false
@@ -193,7 +189,6 @@ webauthn:
         default:
             rp_id: 'localhost'
             challenge_length: 32
-            timeout: 30000
             user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
     metadata: ## Optional
         enabled: true
