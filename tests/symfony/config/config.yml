@@ -157,16 +157,16 @@ webauthn:
                 #option_handler:
                 secured_rp_ids:
                     - 'localhost'
-#        request:
-#            test:
-#                options_path: '/devices/add/options'
-#                result_path: '/devices/add'
-#                #host: null
-#                #profile: 'default'
-#                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-#                #success_handler:
-#                #failure_handler:
-#                #option_handler:
+        request:
+            test:
+                options_path: '/devices/test/options'
+                result_path: '/devices/test'
+                #host: null
+                #profile: 'default'
+                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+                #success_handler:
+                #failure_handler:
+                #option_handler:
     creation_profiles:
         default:
             rp:
