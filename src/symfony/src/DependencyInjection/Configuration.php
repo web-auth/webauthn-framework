@@ -32,6 +32,19 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
+        /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
+        $defaultCreationProfiles = [
+            'default' => [
+                'rp' => [
+                    'name' => 'Secured Application',
+                ],
+            ],
+        ];
+        /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
+        $defaultRequestProfiles = [
+            'default' => [],
+        ];
+
         $treeBuilder = new TreeBuilder($this->alias);
         $treeBuilder->getRootNode()
             ->addDefaultsIfNotSet()
