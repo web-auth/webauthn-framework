@@ -158,7 +158,7 @@ final class AttestationTest extends KernelTestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Invalid attestation statement. The attestation type is not allowed for this authenticator'
+            'Invalid attestation statement. The attestation type "basic_full" is not allowed for this authenticator'
         );
 
         self::bootKernel();

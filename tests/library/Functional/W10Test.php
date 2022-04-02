@@ -120,7 +120,7 @@ final class W10Test extends AbstractTestCase
     public function anAssertionCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString(
-            '{"challenge":"w+BeaUTZZnYMzvUB5GWUpiT1WYOnr9iCGUt5irUiUko=","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18="}],"timeout":60000}'
+            '{"challenge":"w+BeaUTZZnYMzvUB5GWUpiT1WYOnr9iCGUt5irUiUko=","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x-18"}],"timeout":60000}'
         );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(

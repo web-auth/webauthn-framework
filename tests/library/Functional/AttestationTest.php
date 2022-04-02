@@ -35,7 +35,7 @@ final class AttestationTest extends AbstractTestCase
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
 
         $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
-
+        static::markTestSkipped('Should be changed in favor of the new MDS');
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
             ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $request)
         ;

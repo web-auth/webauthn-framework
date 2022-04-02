@@ -66,7 +66,15 @@ services:
         tags: ['controller.service_arguments']
 
 ### MDS ###
-    Webauthn\MetadataService\Service\ChainedMetadataServices: ~
+    Webauthn\Tests\Bundle\Functional\SingleFileService:
+        tags:
+            - 'webauthn.mds_service'
+        arguments:
+            - '%kernel.project_dir%/tests/metadataStatements'
+
+    Webauthn\MetadataService\Service\ChainedMetadataServices:
+        arguments:
+            - '@Webauthn\Tests\Bundle\Functional\SingleFileService'
 ### MDS ###
 
 

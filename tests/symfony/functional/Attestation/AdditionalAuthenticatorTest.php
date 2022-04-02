@@ -124,7 +124,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        static::assertSame(201, $response->getStatusCode());
+        static::assertResponseStatusCodeSame(201);
         static::assertIsArray($data);
         $expectedKeys = ['status', 'errorMessage'];
         foreach ($expectedKeys as $expectedKey) {

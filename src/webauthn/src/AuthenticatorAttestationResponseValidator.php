@@ -338,9 +338,8 @@ class AuthenticatorAttestationResponseValidator
                 $type,
                 $metadataStatement->getAttestationTypes(),
                 sprintf(
-                    'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator. %s',
-                    $type,
-                    implode(', ', $metadataStatement->getAttestationTypes())
+                    'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator.',
+                    $type
                 )
             );
         }

@@ -57,7 +57,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
-        static::assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertResponseStatusCodeSame(401);
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('username: This value should not be blank.', $data['errorMessage']);
     }
@@ -79,7 +79,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
-        static::assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertResponseStatusCodeSame(401);
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
     }
