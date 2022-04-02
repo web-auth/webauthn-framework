@@ -16,7 +16,7 @@ use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
 /**
- * @implements  \IteratorAggregate<PublicKeyCredentialDescriptor>
+ * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
  */
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {

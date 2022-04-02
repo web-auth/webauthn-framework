@@ -12,6 +12,7 @@ use Cose\Key\OkpKey;
 use InvalidArgumentException;
 use function Safe\sodium_crypto_sign_verify_detached;
 use function sodium_crypto_sign_detached;
+use Throwable;
 
 class EdDSA implements Signature
 {
@@ -38,7 +39,7 @@ class EdDSA implements Signature
         }
         try {
             sodium_crypto_sign_verify_detached($signature, $data, $key->x());
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return false;
         }
 

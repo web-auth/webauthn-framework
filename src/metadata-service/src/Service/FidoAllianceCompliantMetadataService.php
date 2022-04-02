@@ -119,7 +119,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
                     $this->statusReports[$entry->getAaguid()] = $entry->getStatusReports();
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
 
         $this->loaded = true;

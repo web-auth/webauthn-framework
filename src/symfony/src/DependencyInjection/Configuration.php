@@ -33,19 +33,7 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
-        $rootNode = $treeBuilder->getRootNode();
-        $defaultCreationProfiles = [
-            'default' => [
-                'rp' => [
-                    'name' => 'Secured Application',
-                ],
-            ],
-        ];
-        $defaultRequestProfiles = [
-            'default' => [],
-        ];
-
-        $rootNode
+        $treeBuilder->getRootNode()
             ->addDefaultsIfNotSet()
             ->beforeNormalization()
             ->ifArray()
