@@ -39,6 +39,7 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "beberlei/assert": "^3.2",
+        "brick/math": "^0.9",
         "fgrosse/phpasn1": "^2.1",
         "league/uri": "^6.0",
         "nyholm/psr7": "^1.1",
