@@ -4,8 +4,7 @@ Webauthn Framework
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Coding%20Standards/badge.svg)
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Static%20Analyze/badge.svg)
 
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Unit%20Tests/badge.svg)
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Functional%20Tests/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Unit%20and%20Functional%20Tests/badge.svg)
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Lowest%20versions%20tests/badge.svg)
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Mutation%20Testing/badge.svg)
