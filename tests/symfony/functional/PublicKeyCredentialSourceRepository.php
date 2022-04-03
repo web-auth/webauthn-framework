@@ -85,4 +85,9 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
         $item->set($pks);
         $this->cacheItemPool->save($item);
     }
+
+    public function removeCredentialWithId(string $id): void
+    {
+        $this->cacheItemPool->deleteItem('pks-' . $id);
+    }
 }

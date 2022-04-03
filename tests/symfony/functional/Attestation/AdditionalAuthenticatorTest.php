@@ -105,6 +105,9 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             $publicKeyCredentialCreationOptions,
             $publicKeyCredentialCreationOptions->getUser()
         ));
+        $publicKeyCredentialSourceRepository->removeCredentialWithId(
+            'mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK'
+        );
 
         $numberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
