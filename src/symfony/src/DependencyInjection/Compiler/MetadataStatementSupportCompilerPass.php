@@ -20,8 +20,8 @@ final class MetadataStatementSupportCompilerPass implements CompilerPassInterfac
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasAlias(MetadataStatementRepository::class)
-            && $container->hasAlias(CertificateChainChecker::class)
-            && $container->hasAlias(StatusReportRepository::class)
+            || ! $container->hasAlias(CertificateChainChecker::class)
+            || ! $container->hasAlias(StatusReportRepository::class)
         ) {
             return;
         }
