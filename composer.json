@@ -29,6 +29,7 @@
                 "tests/framework",
                 "tests/library/"
             ],
+            "Webauthn\\Tests\\Bundle\\Unit\\": "tests/symfony/unit/",
             "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
             "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }
@@ -89,6 +90,7 @@
         "doctrine/orm": "^2.6",
         "ekino/phpstan-banned-code": "^1.0",
         "infection/infection": "dev-master",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.3",
         "monolog/monolog": "^2.0",
         "php-http/curl-client": "^2.0",
         "php-http/mock-client": "^1.3",
