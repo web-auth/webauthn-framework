@@ -7,7 +7,6 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
@@ -17,15 +16,11 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
 {
-    private string $firewallName;
-
-    private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
-
     /**
      * {@inheritdoc}
      */
     public function __construct(
-        PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
+        private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,
         private PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
         private bool $isUserPresent,
@@ -34,17 +29,10 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private int $reservedForFutureUse2,
         private int $signCount,
         private ?AuthenticationExtensionsClientOutputs $extensions,
-        string $firewallName,
+        private string $firewallName,
         array $roles = []
     ) {
         parent::__construct($roles);
-        Assertion::notEmpty($firewallName, '$firewallName must not be empty.');
-
-        if ($publicKeyCredentialUserEntity instanceof UserInterface) {
-            $this->setUser($publicKeyCredentialUserEntity);
-        }
-        $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
-        $this->firewallName = $firewallName;
     }
 
     /**
