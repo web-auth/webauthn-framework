@@ -9,10 +9,6 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 2
         -
-            message: '#Parameter \#1 \$length of function random_bytes expects int<1, max>, int given\.#'
-            path: src/cose/src/Algorithm/Signature/RSA/PSSRSA.php
-            count: 1
-        -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
             count: 2
@@ -32,14 +28,6 @@ parameters:
             message: '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
-#        -
-#            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::(.*)\(\)\.#'
-#            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-#            count: 1
-        -
-            message: '#Parameter (.*) of class FG\\ASN1\\Universal\\Integer constructor expects int, string given\.#'
-            path:  src/cose/src/Key/RsaKey.php
-            count: 2
 #    checkMissingIterableValueType: true
 #    checkGenericClassInNonGenericObjectType: true
 #    checkUninitializedProperties: true
