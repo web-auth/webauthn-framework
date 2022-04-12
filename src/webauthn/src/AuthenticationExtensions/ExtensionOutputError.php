@@ -10,7 +10,7 @@ use Throwable;
 class ExtensionOutputError extends Exception
 {
     public function __construct(
-        private AuthenticationExtension $authenticationExtension,
+        private readonly AuthenticationExtension $authenticationExtension,
         string $message = '',
         int $code = 0,
         Throwable $previous = null

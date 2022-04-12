@@ -16,8 +16,8 @@ final class LocalResourceMetadataService implements MetadataService
     private ?MetadataStatement $statement = null;
 
     public function __construct(
-        private string $filename,
-        private bool $isBase64Encoded = false,
+        private readonly string $filename,
+        private readonly bool $isBase64Encoded = false,
     ) {
     }
 

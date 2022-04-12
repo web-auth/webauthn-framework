@@ -25,7 +25,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
     }

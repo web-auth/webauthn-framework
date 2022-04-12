@@ -17,9 +17,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator,
-        private PublicKeyCredentialUserEntityRepository $userEntityRepository
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository
     ) {
     }
 

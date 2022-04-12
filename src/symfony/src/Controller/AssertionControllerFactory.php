@@ -21,15 +21,15 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 final class AssertionControllerFactory
 {
     public function __construct(
-        private HttpMessageFactoryInterface $httpMessageFactory,
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator,
-        private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
-        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAssertionResponseValidator $attestationResponseValidator,
-        private LoggerInterface $logger,
-        private PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
-        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAssertionResponseValidator $attestationResponseValidator,
+        private readonly LoggerInterface $logger,
+        private readonly PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
     ) {
     }
 

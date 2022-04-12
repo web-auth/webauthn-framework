@@ -16,11 +16,11 @@ use Webauthn\PublicKeyCredentialUserEntity;
 class WebauthnCredentials implements CredentialsInterface
 {
     public function __construct(
-        private AuthenticatorResponse $authenticatorResponse,
-        private PublicKeyCredentialOptions $publicKeyCredentialOptions,
-        private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        private PublicKeyCredentialSource $publicKeyCredentialSource,
-        private string $firewallName,
+        private readonly AuthenticatorResponse $authenticatorResponse,
+        private readonly PublicKeyCredentialOptions $publicKeyCredentialOptions,
+        private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
+        private readonly PublicKeyCredentialSource $publicKeyCredentialSource,
+        private readonly string $firewallName,
     ) {
     }
 

@@ -21,13 +21,13 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class AssertionResponseController
 {
     public function __construct(
-        private HttpMessageFactoryInterface $httpMessageFactory,
-        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private LoggerInterface $logger,
-        private OptionsStorage $optionsStorage,
-        private SuccessHandler $successHandler,
-        private FailureHandler $failureHandler,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
+        private readonly LoggerInterface $logger,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly SuccessHandler $successHandler,
+        private readonly FailureHandler $failureHandler,
     ) {
     }
 

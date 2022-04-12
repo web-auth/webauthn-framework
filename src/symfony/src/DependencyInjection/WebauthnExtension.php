@@ -42,7 +42,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
     public function __construct(
-        private string $alias
+        private readonly string $alias
     ) {
     }
 

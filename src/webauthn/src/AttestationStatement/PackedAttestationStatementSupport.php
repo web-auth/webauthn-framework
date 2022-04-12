@@ -27,10 +27,10 @@ use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport
 {
-    private Decoder $decoder;
+    private readonly Decoder $decoder;
 
     public function __construct(
-        private Manager $algorithmManager
+        private readonly Manager $algorithmManager
     ) {
         $this->decoder = Decoder::create();
     }
@@ -142,7 +142,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
         //Check subject field
         Assertion::false(
-            ! isset($parsed['name']) || ! str_contains($parsed['name'], '/OU=Authenticator Attestation'),
+            ! isset($parsed['name']) || ! str_contains((string) $parsed['name'], '/OU=Authenticator Attestation'),
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
@@ -199,7 +199,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return $result === 1;
     }
 
-    private function processWithECDAA(): bool
+    private function processWithECDAA(): never
     {
         throw new RuntimeException('ECDAA not supported');
     }

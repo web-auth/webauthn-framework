@@ -13,9 +13,9 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
 {
     public function __construct(
         CollectedClientData $clientDataJSON,
-        private AuthenticatorData $authenticatorData,
-        private string $signature,
-        private ?string $userHandle
+        private readonly AuthenticatorData $authenticatorData,
+        private readonly string $signature,
+        private readonly ?string $userHandle
     ) {
         parent::__construct($clientDataJSON);
     }

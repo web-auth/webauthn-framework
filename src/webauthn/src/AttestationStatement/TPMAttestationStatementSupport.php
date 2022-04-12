@@ -325,7 +325,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
     }
 
-    private function processWithECDAA(): bool
+    private function processWithECDAA(): never
     {
         throw new RuntimeException('ECDAA not supported');
     }

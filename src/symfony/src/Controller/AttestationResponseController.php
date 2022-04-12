@@ -26,14 +26,14 @@ final class AttestationResponseController
      * @param string[] $securedRelyingPartyIds
      */
     public function __construct(
-        private HttpMessageFactoryInterface $httpMessageFactory,
-        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
-        private OptionsStorage $optionStorage,
-        private SuccessHandler $successHandler,
-        private FailureHandler $failureHandler,
-        private array $securedRelyingPartyIds,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly OptionsStorage $optionStorage,
+        private readonly SuccessHandler $successHandler,
+        private readonly FailureHandler $failureHandler,
+        private readonly array $securedRelyingPartyIds,
     ) {
     }
 

@@ -31,15 +31,15 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class AttestationRequestController
 {
     public function __construct(
-        private UserEntityGuesser $userEntityGuesser,
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator,
-        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
-        private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        private string $profile,
-        private OptionsStorage $optionsStorage,
-        private CreationOptionsHandler $creationOptionsHandler,
-        private FailureHandler $failureHandler,
+        private readonly UserEntityGuesser $userEntityGuesser,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        private readonly string $profile,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly CreationOptionsHandler $creationOptionsHandler,
+        private readonly FailureHandler $failureHandler,
     ) {
     }
 

@@ -38,7 +38,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private ?ClientInterface $client = null;
 
-    private CompactSerializer $jwsSerializer;
+    private readonly CompactSerializer $jwsSerializer;
 
     private ?JWSVerifier $jwsVerifier = null;
 

@@ -12,9 +12,9 @@ use Webauthn\MetadataService\Utils;
 
 class Version implements JsonSerializable
 {
-    private ?int $major;
+    private readonly ?int $major;
 
-    private ?int $minor;
+    private readonly ?int $minor;
 
     public function __construct(?int $major, ?int $minor)
     {

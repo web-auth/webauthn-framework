@@ -23,7 +23,7 @@ use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 final class Configuration implements ConfigurationInterface
 {
     public function __construct(
-        private string $alias
+        private readonly string $alias
     ) {
     }
 

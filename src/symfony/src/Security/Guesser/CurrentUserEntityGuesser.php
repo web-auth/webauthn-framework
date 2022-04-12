@@ -13,8 +13,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class CurrentUserEntityGuesser implements UserEntityGuesser
 {
     public function __construct(
-        private TokenStorageInterface $tokenStorage,
-        private PublicKeyCredentialUserEntityRepository $userEntityRepository
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository
     ) {
     }
 

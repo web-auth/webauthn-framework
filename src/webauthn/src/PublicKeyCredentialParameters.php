@@ -11,8 +11,8 @@ use JsonSerializable;
 class PublicKeyCredentialParameters implements JsonSerializable
 {
     public function __construct(
-        private string $type,
-        private int $alg
+        private readonly string $type,
+        private readonly int $alg
     ) {
     }
 

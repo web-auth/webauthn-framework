@@ -22,9 +22,9 @@ class MetadataBLOBPayload implements JsonSerializable
     private array $rootCertificates = [];
 
     public function __construct(
-        private int $no,
-        private string $nextUpdate,
-        private ?string $legalHeader = null
+        private readonly int $no,
+        private readonly string $nextUpdate,
+        private readonly ?string $legalHeader = null
     ) {
     }
 

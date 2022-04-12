@@ -12,12 +12,12 @@ use Webauthn\MetadataService\Utils;
 class EcdaaTrustAnchor implements JsonSerializable
 {
     public function __construct(
-        private string $X,
-        private string $Y,
-        private string $c,
-        private string $sx,
-        private string $sy,
-        private string $G1Curve
+        private readonly string $X,
+        private readonly string $Y,
+        private readonly string $c,
+        private readonly string $sx,
+        private readonly string $sy,
+        private readonly string $G1Curve
     ) {
     }
 

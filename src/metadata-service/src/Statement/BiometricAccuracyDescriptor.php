@@ -9,9 +9,9 @@ use Webauthn\MetadataService\Utils;
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
     public function __construct(
-        private ?float $selfAttestedFRR,
-        private ?float $selfAttestedFAR,
-        private ?float $maxTemplates,
+        private readonly ?float $selfAttestedFRR,
+        private readonly ?float $selfAttestedFAR,
+        private readonly ?float $maxTemplates,
         ?int $maxRetries = null,
         ?int $blockSlowdown = null
     ) {

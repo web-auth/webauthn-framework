@@ -9,9 +9,9 @@ use Webauthn\MetadataService\Utils;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
-    private int $base;
+    private readonly int $base;
 
-    private int $minLength;
+    private readonly int $minLength;
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
