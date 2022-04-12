@@ -30,3 +30,6 @@ jobs:
 
       - name: PHPStan
         run: make st
+
+      - name: "deptrac"
+        run: sh .github/workflows/test-flag-fail-on-uncovered.sh
