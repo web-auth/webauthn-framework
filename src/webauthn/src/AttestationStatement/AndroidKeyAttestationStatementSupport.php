@@ -26,7 +26,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport
 {
-    private Decoder $decoder;
+    private readonly Decoder $decoder;
 
     public function __construct()
     {

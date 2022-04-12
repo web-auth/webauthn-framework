@@ -35,13 +35,13 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
      * @param string[] $attestationCertificateKeyIdentifiers
      */
     public function __construct(
-        private ?string $aaid,
-        private ?string $aaguid,
+        private readonly ?string $aaid,
+        private readonly ?string $aaguid,
         array $attestationCertificateKeyIdentifiers,
-        private ?MetadataStatement $metadataStatement,
-        private string $timeOfLastStatusChange,
-        private ?string $rogueListURL,
-        private ?string $rogueListHash
+        private readonly ?MetadataStatement $metadataStatement,
+        private readonly string $timeOfLastStatusChange,
+        private readonly ?string $rogueListURL,
+        private readonly ?string $rogueListHash
     ) {
         if ($aaid !== null && $aaguid !== null) {
             throw new LogicException('Authenticators cannot support both AAID and AAGUID');

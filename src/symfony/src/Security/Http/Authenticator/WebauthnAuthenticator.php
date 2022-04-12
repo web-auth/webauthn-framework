@@ -38,27 +38,24 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
-    private LoggerInterface $logger;
-
     /**
      * @param string[] $securedRelyingPartyIds
      */
     public function __construct(
-        private WebauthnFirewallConfig $firewallConfig,
-        private UserProviderInterface $userProvider,
-        private AuthenticationSuccessHandlerInterface $successHandler,
-        private AuthenticationFailureHandlerInterface $failureHandler,
-        private OptionsStorage $optionsStorage,
-        private array $securedRelyingPartyIds,
-        private HttpMessageFactoryInterface $httpMessageFactory,
-        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
-        private PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
-        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        ?LoggerInterface $logger = null,
+        private readonly WebauthnFirewallConfig $firewallConfig,
+        private readonly UserProviderInterface $userProvider,
+        private readonly AuthenticationSuccessHandlerInterface $successHandler,
+        private readonly AuthenticationFailureHandlerInterface $failureHandler,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly array $securedRelyingPartyIds,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private readonly LoggerInterface $logger = new NullLogger()
     ) {
-        $this->logger = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request): ?bool

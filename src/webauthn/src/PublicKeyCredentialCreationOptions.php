@@ -34,8 +34,8 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
     public function __construct(
-        private PublicKeyCredentialRpEntity $rp,
-        private PublicKeyCredentialUserEntity $user,
+        private readonly PublicKeyCredentialRpEntity $rp,
+        private readonly PublicKeyCredentialUserEntity $user,
         string $challenge,
         private array $pubKeyCredParams
     ) {

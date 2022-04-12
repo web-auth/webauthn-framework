@@ -11,7 +11,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class Loader extends SymfonyLoader
 {
-    private RouteCollection $routes;
+    private readonly RouteCollection $routes;
 
     public function __construct()
     {

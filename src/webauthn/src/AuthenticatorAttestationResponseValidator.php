@@ -41,10 +41,10 @@ class AuthenticatorAttestationResponseValidator
     private ?CertificateChainChecker $certificateChainChecker = null;
 
     public function __construct(
-        private AttestationStatementSupportManager $attestationStatementSupportManager,
-        private PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        private TokenBindingHandler $tokenBindingHandler,
-        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+        private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
+        private readonly TokenBindingHandler $tokenBindingHandler,
+        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
     ) {
         $this->logger = new NullLogger();
     }

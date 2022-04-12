@@ -10,39 +10,39 @@ use Webauthn\MetadataService\Utils;
 
 class VerificationMethodDescriptor implements JsonSerializable
 {
-    public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';
+    final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';
 
-    public const USER_VERIFY_FINGERPRINT_INTERNAL = 'fingerprint_internal';
+    final public const USER_VERIFY_FINGERPRINT_INTERNAL = 'fingerprint_internal';
 
-    public const USER_VERIFY_PASSCODE_INTERNAL = 'passcode_internal';
+    final public const USER_VERIFY_PASSCODE_INTERNAL = 'passcode_internal';
 
-    public const USER_VERIFY_VOICEPRINT_INTERNAL = 'voiceprint_internal';
+    final public const USER_VERIFY_VOICEPRINT_INTERNAL = 'voiceprint_internal';
 
-    public const USER_VERIFY_FACEPRINT_INTERNAL = 'faceprint_internal';
+    final public const USER_VERIFY_FACEPRINT_INTERNAL = 'faceprint_internal';
 
-    public const USER_VERIFY_LOCATION_INTERNAL = 'location_internal';
+    final public const USER_VERIFY_LOCATION_INTERNAL = 'location_internal';
 
-    public const USER_VERIFY_EYEPRINT_INTERNAL = 'eyeprint_internal';
+    final public const USER_VERIFY_EYEPRINT_INTERNAL = 'eyeprint_internal';
 
-    public const USER_VERIFY_PATTERN_INTERNAL = 'pattern_internal';
+    final public const USER_VERIFY_PATTERN_INTERNAL = 'pattern_internal';
 
-    public const USER_VERIFY_HANDPRINT_INTERNAL = 'handprint_internal';
+    final public const USER_VERIFY_HANDPRINT_INTERNAL = 'handprint_internal';
 
-    public const USER_VERIFY_PASSCODE_EXTERNAL = 'passcode_external';
+    final public const USER_VERIFY_PASSCODE_EXTERNAL = 'passcode_external';
 
-    public const USER_VERIFY_PATTERN_EXTERNAL = 'pattern_external';
+    final public const USER_VERIFY_PATTERN_EXTERNAL = 'pattern_external';
 
-    public const USER_VERIFY_NONE = 'none';
+    final public const USER_VERIFY_NONE = 'none';
 
-    public const USER_VERIFY_ALL = 'all';
+    final public const USER_VERIFY_ALL = 'all';
 
-    private string $userVerificationMethod;
+    private readonly string $userVerificationMethod;
 
     public function __construct(
         string $userVerificationMethod,
-        private ?CodeAccuracyDescriptor $caDesc = null,
-        private ?BiometricAccuracyDescriptor $baDesc = null,
-        private ?PatternAccuracyDescriptor $paDesc = null
+        private readonly ?CodeAccuracyDescriptor $caDesc = null,
+        private readonly ?BiometricAccuracyDescriptor $baDesc = null,
+        private readonly ?PatternAccuracyDescriptor $paDesc = null
     ) {
         Assertion::greaterOrEqualThan(
             $userVerificationMethod,

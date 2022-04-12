@@ -13,15 +13,15 @@ use Webauthn\Util\Base64;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
-    public const CREDENTIAL_TYPE_PUBLIC_KEY = 'public-key';
+    final public const CREDENTIAL_TYPE_PUBLIC_KEY = 'public-key';
 
-    public const AUTHENTICATOR_TRANSPORT_USB = 'usb';
+    final public const AUTHENTICATOR_TRANSPORT_USB = 'usb';
 
-    public const AUTHENTICATOR_TRANSPORT_NFC = 'nfc';
+    final public const AUTHENTICATOR_TRANSPORT_NFC = 'nfc';
 
-    public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
+    final public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
 
-    public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
+    final public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
     /**
      * @param string[] $transports

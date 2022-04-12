@@ -16,7 +16,7 @@ final class SessionStorage implements OptionsStorage
     private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
     public function __construct(
-        private RequestStack $requestStack
+        private readonly RequestStack $requestStack
     ) {
     }
 

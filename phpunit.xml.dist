@@ -27,10 +27,6 @@
       <directory>tests/MDS</directory>
     </testsuite>
 
-    <testsuite name="cose">
-      <directory>tests/cose</directory>
-    </testsuite>
-
     <testsuite name="framework">
       <directory>tests/framework</directory>
     </testsuite>

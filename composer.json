@@ -16,7 +16,6 @@
     ],
     "autoload": {
         "psr-4": {
-            "Cose\\": "src/cose/src/",
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
             "Webauthn\\MetadataService\\": "src/metadata-service/src/"
@@ -24,7 +23,6 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cose\\Tests\\Unit\\": "tests/cose/unit/",
             "Webauthn\\Tests\\": [
                 "tests/framework",
                 "tests/library/"
@@ -40,7 +38,6 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "beberlei/assert": "^3.2",
-        "brick/math": "^0.9",
         "fgrosse/phpasn1": "^2.1",
         "league/uri": "^6.0",
         "nyholm/psr7": "^1.1",
@@ -59,12 +56,11 @@
         "symfony/psr-http-message-bridge": "^2.0",
         "symfony/uid": "^6.0",
         "thecodingmachine/safe": "^2.0",
+        "web-auth/cose-lib": "^4.0",
         "web-token/jwt-signature": "^3.0"
     },
     "replace": {
-        "web-auth/cose-lib": "self.version",
         "web-auth/webauthn-lib": "self.version",
-        "web-auth/conformance-toolset": "self.version",
         "web-auth/metadata-service": "self.version",
         "web-auth/webauthn-symfony-bundle": "self.version"
     },

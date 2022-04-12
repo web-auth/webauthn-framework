@@ -19,7 +19,7 @@ final class StringStream implements Stream
      */
     private $data;
 
-    private int $length;
+    private readonly int $length;
 
     private int $totalRead = 0;
 

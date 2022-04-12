@@ -13,12 +13,12 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 class AuthenticatorAssertionResponseValidationFailedEvent extends Event
 {
     public function __construct(
-        private string $credentialId,
-        private AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        private ServerRequestInterface $request,
-        private ?string $userHandle,
-        private Throwable $throwable
+        private readonly string $credentialId,
+        private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        private readonly ServerRequestInterface $request,
+        private readonly ?string $userHandle,
+        private readonly Throwable $throwable
     ) {
     }
 

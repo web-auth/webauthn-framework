@@ -10,8 +10,8 @@ use JsonSerializable;
 class RogueListEntry implements JsonSerializable
 {
     public function __construct(
-        private string $sk,
-        private string $date
+        private readonly string $sk,
+        private readonly string $date
     ) {
     }
 

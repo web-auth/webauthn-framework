@@ -1,0 +1,22 @@
+parameters:
+  paths:
+    - './src'
+  layers:
+    - name: 'Webauthn'
+      collectors:
+        - type: 'directory'
+          regex: 'src/webauthn/.*'
+    - name: 'Symfony'
+      collectors:
+        - type: 'directory'
+          regex: 'src/symfony/.*'
+    - name: 'MetadataService'
+      collectors:
+        - type: 'directory'
+          regex: 'src/metadata-service/.*'
+  ruleset:
+    MetadataService: ~
+    Webauthn:
+      - 'MetadataService'
+    Symfony:
+      - 'Webauthn'

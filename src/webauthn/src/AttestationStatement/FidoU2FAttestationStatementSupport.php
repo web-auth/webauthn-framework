@@ -20,7 +20,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport
 {
-    private Decoder $decoder;
+    private readonly Decoder $decoder;
 
     public function __construct()
     {

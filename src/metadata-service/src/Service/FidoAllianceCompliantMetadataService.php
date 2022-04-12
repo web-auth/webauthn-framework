@@ -38,10 +38,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
      * @param array<string, mixed> $additionalHeaderParameters
      */
     public function __construct(
-        private RequestFactoryInterface $requestFactory,
-        private ClientInterface $httpClient,
-        private string $uri,
-        private array $additionalHeaderParameters = [],
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly ClientInterface $httpClient,
+        private readonly string $uri,
+        private readonly array $additionalHeaderParameters = [],
     ) {
     }
 

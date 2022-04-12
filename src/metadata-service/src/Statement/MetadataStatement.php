@@ -11,103 +11,103 @@ use Webauthn\MetadataService\Utils;
 
 class MetadataStatement implements JsonSerializable
 {
-    public const KEY_PROTECTION_SOFTWARE = 'software';
+    final public const KEY_PROTECTION_SOFTWARE = 'software';
 
-    public const KEY_PROTECTION_HARDWARE = 'hardware';
+    final public const KEY_PROTECTION_HARDWARE = 'hardware';
 
-    public const KEY_PROTECTION_TEE = 'tee';
+    final public const KEY_PROTECTION_TEE = 'tee';
 
-    public const KEY_PROTECTION_SECURE_ELEMENT = 'secure_element';
+    final public const KEY_PROTECTION_SECURE_ELEMENT = 'secure_element';
 
-    public const KEY_PROTECTION_REMOTE_HANDLE = 'remote_handle';
+    final public const KEY_PROTECTION_REMOTE_HANDLE = 'remote_handle';
 
-    public const MATCHER_PROTECTION_SOFTWARE = 'software';
+    final public const MATCHER_PROTECTION_SOFTWARE = 'software';
 
-    public const MATCHER_PROTECTION_TEE = 'tee';
+    final public const MATCHER_PROTECTION_TEE = 'tee';
 
-    public const MATCHER_PROTECTION_ON_CHIP = 'on_chip';
+    final public const MATCHER_PROTECTION_ON_CHIP = 'on_chip';
 
-    public const ATTACHMENT_HINT_INTERNAL = 'internal';
+    final public const ATTACHMENT_HINT_INTERNAL = 'internal';
 
-    public const ATTACHMENT_HINT_EXTERNAL = 'external';
+    final public const ATTACHMENT_HINT_EXTERNAL = 'external';
 
-    public const ATTACHMENT_HINT_WIRED = 'wired';
+    final public const ATTACHMENT_HINT_WIRED = 'wired';
 
-    public const ATTACHMENT_HINT_WIRELESS = 'wireless';
+    final public const ATTACHMENT_HINT_WIRELESS = 'wireless';
 
-    public const ATTACHMENT_HINT_NFC = 'nfc';
+    final public const ATTACHMENT_HINT_NFC = 'nfc';
 
-    public const ATTACHMENT_HINT_BLUETOOTH = 'bluetooth';
+    final public const ATTACHMENT_HINT_BLUETOOTH = 'bluetooth';
 
-    public const ATTACHMENT_HINT_NETWORK = 'network';
+    final public const ATTACHMENT_HINT_NETWORK = 'network';
 
-    public const ATTACHMENT_HINT_READY = 'ready';
+    final public const ATTACHMENT_HINT_READY = 'ready';
 
-    public const ATTACHMENT_HINT_WIFI_DIRECT = 'wifi_direct';
+    final public const ATTACHMENT_HINT_WIFI_DIRECT = 'wifi_direct';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 'any';
+    final public const TRANSACTION_CONFIRMATION_DISPLAY_ANY = 'any';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 'privileged_software';
+    final public const TRANSACTION_CONFIRMATION_DISPLAY_PRIVILEGED_SOFTWARE = 'privileged_software';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 'tee';
+    final public const TRANSACTION_CONFIRMATION_DISPLAY_TEE = 'tee';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 'hardware';
+    final public const TRANSACTION_CONFIRMATION_DISPLAY_HARDWARE = 'hardware';
 
-    public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 'remote';
+    final public const TRANSACTION_CONFIRMATION_DISPLAY_REMOTE = 'remote';
 
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 'secp256r1_ecdsa_sha256_raw';
+    final public const ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW = 'secp256r1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 'secp256r1_ecdsa_sha256_der';
+    final public const ALG_SIGN_SECP256R1_ECDSA_SHA256_DER = 'secp256r1_ecdsa_sha256_der';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 'rsassa_pss_sha256_raw';
+    final public const ALG_SIGN_RSASSA_PSS_SHA256_RAW = 'rsassa_pss_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 'rsassa_pss_sha256_der';
+    final public const ALG_SIGN_RSASSA_PSS_SHA256_DER = 'rsassa_pss_sha256_der';
 
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 'secp256k1_ecdsa_sha256_raw';
+    final public const ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW = 'secp256k1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 'secp256k1_ecdsa_sha256_der';
+    final public const ALG_SIGN_SECP256K1_ECDSA_SHA256_DER = 'secp256k1_ecdsa_sha256_der';
 
-    public const ALG_SIGN_SM2_SM3_RAW = 'sm2_sm3_raw';
+    final public const ALG_SIGN_SM2_SM3_RAW = 'sm2_sm3_raw';
 
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 'rsa_emsa_pkcs1_sha256_raw';
+    final public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW = 'rsa_emsa_pkcs1_sha256_raw';
 
-    public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 'rsa_emsa_pkcs1_sha256_der';
+    final public const ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER = 'rsa_emsa_pkcs1_sha256_der';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 'rsassa_pss_sha384_raw';
+    final public const ALG_SIGN_RSASSA_PSS_SHA384_RAW = 'rsassa_pss_sha384_raw';
 
-    public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 'rsassa_pss_sha256_raw';
+    final public const ALG_SIGN_RSASSA_PSS_SHA512_RAW = 'rsassa_pss_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 'rsassa_pkcsv15_sha256_raw';
+    final public const ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW = 'rsassa_pkcsv15_sha256_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 'rsassa_pkcsv15_sha384_raw';
+    final public const ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW = 'rsassa_pkcsv15_sha384_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 'rsassa_pkcsv15_sha512_raw';
+    final public const ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW = 'rsassa_pkcsv15_sha512_raw';
 
-    public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 'rsassa_pkcsv15_sha1_raw';
+    final public const ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW = 'rsassa_pkcsv15_sha1_raw';
 
-    public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 'secp384r1_ecdsa_sha384_raw';
+    final public const ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW = 'secp384r1_ecdsa_sha384_raw';
 
-    public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 'secp512r1_ecdsa_sha256_raw';
+    final public const ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW = 'secp512r1_ecdsa_sha256_raw';
 
-    public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 'ed25519_eddsa_sha512_raw';
+    final public const ALG_SIGN_ED25519_EDDSA_SHA256_RAW = 'ed25519_eddsa_sha512_raw';
 
-    public const ALG_KEY_ECC_X962_RAW = 'ecc_x962_raw';
+    final public const ALG_KEY_ECC_X962_RAW = 'ecc_x962_raw';
 
-    public const ALG_KEY_ECC_X962_DER = 'ecc_x962_der';
+    final public const ALG_KEY_ECC_X962_DER = 'ecc_x962_der';
 
-    public const ALG_KEY_RSA_2048_RAW = 'rsa_2048_raw';
+    final public const ALG_KEY_RSA_2048_RAW = 'rsa_2048_raw';
 
-    public const ALG_KEY_RSA_2048_DER = 'rsa_2048_der';
+    final public const ALG_KEY_RSA_2048_DER = 'rsa_2048_der';
 
-    public const ALG_KEY_COSE = 'cose';
+    final public const ALG_KEY_COSE = 'cose';
 
-    public const ATTESTATION_BASIC_FULL = 'basic_full';
+    final public const ATTESTATION_BASIC_FULL = 'basic_full';
 
-    public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
+    final public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
 
-    public const ATTESTATION_ECDAA = 'ecdaa';
+    final public const ATTESTATION_ECDAA = 'ecdaa';
 
-    public const ATTESTATION_ATTCA = 'attca';
+    final public const ATTESTATION_ATTCA = 'attca';
 
     private ?string $legalHeader = null;
 
@@ -175,18 +175,18 @@ class MetadataStatement implements JsonSerializable
      * @param string[]                            $attestationRootCertificates
      */
     public function __construct(
-        private string $description,
-        private int $authenticatorVersion,
-        private string $protocolFamily,
-        private int $schema,
-        private array $upv,
-        private array $authenticationAlgorithms,
-        private array $publicKeyAlgAndEncodings,
-        private array $attestationTypes,
-        private array $userVerificationDetails,
-        private array $matcherProtection,
-        private array $tcDisplay,
-        private array $attestationRootCertificates,
+        private readonly string $description,
+        private readonly int $authenticatorVersion,
+        private readonly string $protocolFamily,
+        private readonly int $schema,
+        private readonly array $upv,
+        private readonly array $authenticationAlgorithms,
+        private readonly array $publicKeyAlgAndEncodings,
+        private readonly array $attestationTypes,
+        private readonly array $userVerificationDetails,
+        private readonly array $matcherProtection,
+        private readonly array $tcDisplay,
+        private readonly array $attestationRootCertificates,
     ) {
         $this->alternativeDescriptions = new AlternativeDescriptions();
         $this->authenticatorGetInfo = new AuthenticatorGetInfo();

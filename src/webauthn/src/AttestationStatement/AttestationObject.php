@@ -12,9 +12,9 @@ class AttestationObject
     private ?MetadataStatement $metadataStatement = null;
 
     public function __construct(
-        private string $rawAttestationObject,
+        private readonly string $rawAttestationObject,
         private AttestationStatement $attStmt,
-        private AuthenticatorData $authData
+        private readonly AuthenticatorData $authData
     ) {
     }
 

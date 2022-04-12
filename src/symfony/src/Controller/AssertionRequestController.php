@@ -30,16 +30,16 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class AssertionRequestController
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator,
-        private PublicKeyCredentialUserEntityRepository $userEntityRepository,
-        private PublicKeyCredentialSourceRepository $credentialSourceRepository,
-        private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
-        private string $profile,
-        private OptionsStorage $optionsStorage,
-        private RequestOptionsHandler $optionsHandler,
-        private FailureHandler $failureHandler,
-        private LoggerInterface $logger,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
+        private readonly string $profile,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly RequestOptionsHandler $optionsHandler,
+        private readonly FailureHandler $failureHandler,
+        private readonly LoggerInterface $logger,
     ) {
     }
 

@@ -10,15 +10,15 @@ use Webauthn\Util\Base64;
 
 class TokenBinding
 {
-    public const TOKEN_BINDING_STATUS_PRESENT = 'present';
+    final public const TOKEN_BINDING_STATUS_PRESENT = 'present';
 
-    public const TOKEN_BINDING_STATUS_SUPPORTED = 'supported';
+    final public const TOKEN_BINDING_STATUS_SUPPORTED = 'supported';
 
-    public const TOKEN_BINDING_STATUS_NOT_SUPPORTED = 'not-supported';
+    final public const TOKEN_BINDING_STATUS_NOT_SUPPORTED = 'not-supported';
 
-    private string $status;
+    private readonly string $status;
 
-    private ?string $id;
+    private readonly ?string $id;
 
     public function __construct(string $status, ?string $id)
     {

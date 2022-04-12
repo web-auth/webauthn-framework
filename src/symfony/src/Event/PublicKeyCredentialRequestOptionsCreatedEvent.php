@@ -10,7 +10,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 class PublicKeyCredentialRequestOptionsCreatedEvent extends Event
 {
     public function __construct(
-        private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions
+        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions
     ) {
     }
 

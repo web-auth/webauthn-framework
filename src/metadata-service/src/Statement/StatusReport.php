@@ -14,17 +14,17 @@ class StatusReport implements JsonSerializable
     /**
      * @see AuthenticatorStatus
      */
-    private string $status;
+    private readonly string $status;
 
     public function __construct(
         string $status,
-        private ?string $effectiveDate,
-        private ?string $certificate,
-        private ?string $url,
-        private ?string $certificationDescriptor,
-        private ?string $certificateNumber,
-        private ?string $certificationPolicyVersion,
-        private ?string $certificationRequirementsVersion
+        private readonly ?string $effectiveDate,
+        private readonly ?string $certificate,
+        private readonly ?string $url,
+        private readonly ?string $certificationDescriptor,
+        private readonly ?string $certificateNumber,
+        private readonly ?string $certificationPolicyVersion,
+        private readonly ?string $certificationRequirementsVersion
     ) {
         Assertion::inArray($status, AuthenticatorStatus::list(), 'The value of the key "status" is not acceptable');
 

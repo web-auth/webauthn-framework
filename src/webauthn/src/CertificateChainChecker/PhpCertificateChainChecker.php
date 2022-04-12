@@ -27,8 +27,8 @@ use const X509_PURPOSE_ANY;
 final class PhpCertificateChainChecker implements CertificateChainChecker
 {
     public function __construct(
-        private ClientInterface $client,
-        private RequestFactoryInterface $requestFactory
+        private readonly ClientInterface $client,
+        private readonly RequestFactoryInterface $requestFactory
     ) {
     }
 

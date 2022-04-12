@@ -22,8 +22,8 @@ final class PublicKeyCredentialCreationOptionsFactory
      * @param mixed[] $profiles
      */
     public function __construct(
-        private array $profiles,
-        private EventDispatcherInterface $eventDispatcher
+        private readonly array $profiles,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
     }
 

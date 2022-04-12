@@ -17,8 +17,8 @@ class AttestedCredentialData implements JsonSerializable
 {
     public function __construct(
         private AbstractUid $aaguid,
-        private string $credentialId,
-        private ?string $credentialPublicKey
+        private readonly string $credentialId,
+        private readonly ?string $credentialPublicKey
     ) {
     }
 

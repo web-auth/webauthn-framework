@@ -1,6 +1,4 @@
 splits:
-    - prefix: "src/cose"
-      target: "https://${GH_TOKEN}@github.com/web-auth/cose-lib.git"
     - prefix: "src/webauthn"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
     - prefix: "src/symfony"

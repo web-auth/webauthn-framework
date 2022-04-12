@@ -20,13 +20,13 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 final class AttestationControllerFactory
 {
     public function __construct(
-        private HttpMessageFactoryInterface $httpMessageFactory,
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator,
-        private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
     ) {
     }
 

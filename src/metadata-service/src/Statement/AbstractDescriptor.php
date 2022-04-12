@@ -9,9 +9,9 @@ use JsonSerializable;
 
 abstract class AbstractDescriptor implements JsonSerializable
 {
-    private ?int $maxRetries;
+    private readonly ?int $maxRetries;
 
-    private ?int $blockSlowdown;
+    private readonly ?int $blockSlowdown;
 
     public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
     {

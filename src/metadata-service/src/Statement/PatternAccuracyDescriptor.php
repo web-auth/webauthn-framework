@@ -10,7 +10,7 @@ use Webauthn\MetadataService\Utils;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
-    private int $minComplexity;
+    private readonly int $minComplexity;
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {

@@ -10,7 +10,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
     public function __construct(
-        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
+        private readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
     ) {
     }
 

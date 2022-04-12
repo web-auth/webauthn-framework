@@ -10,7 +10,7 @@ namespace Webauthn;
 abstract class AuthenticatorResponse
 {
     public function __construct(
-        private CollectedClientData $clientDataJSON
+        private readonly CollectedClientData $clientDataJSON
     ) {
     }
 
