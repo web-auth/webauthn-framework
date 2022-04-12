@@ -10,25 +10,25 @@ use JsonSerializable;
 
 class AuthenticatorSelectionCriteria implements JsonSerializable
 {
-    public final const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
+    final public const AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE = null;
 
-    public final const AUTHENTICATOR_ATTACHMENT_PLATFORM = 'platform';
+    final public const AUTHENTICATOR_ATTACHMENT_PLATFORM = 'platform';
 
-    public final const AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM = 'cross-platform';
+    final public const AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM = 'cross-platform';
 
-    public final const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
+    final public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
 
-    public final const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
+    final public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
 
-    public final const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
+    final public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    public final const RESIDENT_KEY_REQUIREMENT_NONE = null;
+    final public const RESIDENT_KEY_REQUIREMENT_NONE = null;
 
-    public final const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
+    final public const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
 
-    public final const RESIDENT_KEY_REQUIREMENT_PREFERRED = 'preferred';
+    final public const RESIDENT_KEY_REQUIREMENT_PREFERRED = 'preferred';
 
-    public final const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
+    final public const RESIDENT_KEY_REQUIREMENT_DISCOURAGED = 'discouraged';
 
     private ?string $authenticatorAttachment = null;
 

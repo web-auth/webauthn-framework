@@ -6,39 +6,39 @@ namespace Webauthn\MetadataService\Statement;
 
 abstract class AuthenticatorStatus
 {
-    public final const NOT_FIDO_CERTIFIED = 'NOT_FIDO_CERTIFIED';
+    final public const NOT_FIDO_CERTIFIED = 'NOT_FIDO_CERTIFIED';
 
-    public final const FIDO_CERTIFIED = 'FIDO_CERTIFIED';
+    final public const FIDO_CERTIFIED = 'FIDO_CERTIFIED';
 
-    public final const USER_VERIFICATION_BYPASS = 'USER_VERIFICATION_BYPASS';
+    final public const USER_VERIFICATION_BYPASS = 'USER_VERIFICATION_BYPASS';
 
-    public final const ATTESTATION_KEY_COMPROMISE = 'ATTESTATION_KEY_COMPROMISE';
+    final public const ATTESTATION_KEY_COMPROMISE = 'ATTESTATION_KEY_COMPROMISE';
 
-    public final const USER_KEY_REMOTE_COMPROMISE = 'USER_KEY_REMOTE_COMPROMISE';
+    final public const USER_KEY_REMOTE_COMPROMISE = 'USER_KEY_REMOTE_COMPROMISE';
 
-    public final const USER_KEY_PHYSICAL_COMPROMISE = 'USER_KEY_PHYSICAL_COMPROMISE';
+    final public const USER_KEY_PHYSICAL_COMPROMISE = 'USER_KEY_PHYSICAL_COMPROMISE';
 
-    public final const UPDATE_AVAILABLE = 'UPDATE_AVAILABLE';
+    final public const UPDATE_AVAILABLE = 'UPDATE_AVAILABLE';
 
-    public final const REVOKED = 'REVOKED';
+    final public const REVOKED = 'REVOKED';
 
-    public final const SELF_ASSERTION_SUBMITTED = 'SELF_ASSERTION_SUBMITTED';
+    final public const SELF_ASSERTION_SUBMITTED = 'SELF_ASSERTION_SUBMITTED';
 
-    public final const FIDO_CERTIFIED_L1 = 'FIDO_CERTIFIED_L1';
+    final public const FIDO_CERTIFIED_L1 = 'FIDO_CERTIFIED_L1';
 
-    public final const FIDO_CERTIFIED_L1plus = 'FIDO_CERTIFIED_L1plus';
+    final public const FIDO_CERTIFIED_L1plus = 'FIDO_CERTIFIED_L1plus';
 
-    public final const FIDO_CERTIFIED_L2 = 'FIDO_CERTIFIED_L2';
+    final public const FIDO_CERTIFIED_L2 = 'FIDO_CERTIFIED_L2';
 
-    public final const FIDO_CERTIFIED_L2plus = 'FIDO_CERTIFIED_L2plus';
+    final public const FIDO_CERTIFIED_L2plus = 'FIDO_CERTIFIED_L2plus';
 
-    public final const FIDO_CERTIFIED_L3 = 'FIDO_CERTIFIED_L3';
+    final public const FIDO_CERTIFIED_L3 = 'FIDO_CERTIFIED_L3';
 
-    public final const FIDO_CERTIFIED_L3plus = 'FIDO_CERTIFIED_L3plus';
+    final public const FIDO_CERTIFIED_L3plus = 'FIDO_CERTIFIED_L3plus';
 
-    public final const FIDO_CERTIFIED_L4 = 'FIDO_CERTIFIED_L4';
+    final public const FIDO_CERTIFIED_L4 = 'FIDO_CERTIFIED_L4';
 
-    public final const FIDO_CERTIFIED_L5 = 'FIDO_CERTIFIED_L5';
+    final public const FIDO_CERTIFIED_L5 = 'FIDO_CERTIFIED_L5';
 
     /**
      * @return string[]

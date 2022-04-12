@@ -41,8 +41,21 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     /**
      * @param string[] $securedRelyingPartyIds
      */
-    public function __construct(private readonly WebauthnFirewallConfig $firewallConfig, private readonly UserProviderInterface $userProvider, private readonly AuthenticationSuccessHandlerInterface $successHandler, private readonly AuthenticationFailureHandlerInterface $failureHandler, private readonly OptionsStorage $optionsStorage, private readonly array $securedRelyingPartyIds, private readonly HttpMessageFactoryInterface $httpMessageFactory, private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository, private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository, private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader, private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator, private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator, private readonly LoggerInterface $logger = new NullLogger())
-    {
+    public function __construct(
+        private readonly WebauthnFirewallConfig $firewallConfig,
+        private readonly UserProviderInterface $userProvider,
+        private readonly AuthenticationSuccessHandlerInterface $successHandler,
+        private readonly AuthenticationFailureHandlerInterface $failureHandler,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly array $securedRelyingPartyIds,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private readonly LoggerInterface $logger = new NullLogger()
+    ) {
     }
 
     public function supports(Request $request): ?bool

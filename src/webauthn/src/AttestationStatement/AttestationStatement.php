@@ -12,17 +12,17 @@ use Webauthn\TrustPath\TrustPathLoader;
 
 class AttestationStatement implements JsonSerializable
 {
-    public final const TYPE_NONE = 'none';
+    final public const TYPE_NONE = 'none';
 
-    public final const TYPE_BASIC = 'basic';
+    final public const TYPE_BASIC = 'basic';
 
-    public final const TYPE_SELF = 'self';
+    final public const TYPE_SELF = 'self';
 
-    public final const TYPE_ATTCA = 'attca';
+    final public const TYPE_ATTCA = 'attca';
 
-    public final const TYPE_ECDAA = 'ecdaa';
+    final public const TYPE_ECDAA = 'ecdaa';
 
-    public final const TYPE_ANONCA = 'anonca';
+    final public const TYPE_ANONCA = 'anonca';
 
     /**
      * @param array<string, mixed> $attStmt
