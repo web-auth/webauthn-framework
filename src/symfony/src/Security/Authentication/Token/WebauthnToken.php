@@ -23,13 +23,13 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,
         private PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
-        private bool $isUserPresent,
-        private bool $isUserVerified,
-        private int $reservedForFutureUse1,
-        private int $reservedForFutureUse2,
-        private int $signCount,
+        private readonly bool $isUserPresent,
+        private readonly bool $isUserVerified,
+        private readonly int $reservedForFutureUse1,
+        private readonly int $reservedForFutureUse2,
+        private readonly int $signCount,
         private ?AuthenticationExtensionsClientOutputs $extensions,
-        private string $firewallName,
+        private readonly string $firewallName,
         array $roles = []
     ) {
         parent::__construct($roles);

@@ -20,11 +20,11 @@ final class DistantResourceMetadataService implements MetadataService
      * @param array<string, mixed> $additionalHeaderParameters
      */
     public function __construct(
-        private RequestFactoryInterface $requestFactory,
-        private ClientInterface $httpClient,
-        private string $uri,
-        private bool $isBase64Encoded = false,
-        private array $additionalHeaderParameters = [],
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly ClientInterface $httpClient,
+        private readonly string $uri,
+        private readonly bool $isBase64Encoded = false,
+        private readonly array $additionalHeaderParameters = [],
     ) {
     }
 

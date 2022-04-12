@@ -10,19 +10,19 @@ use Webauthn\MetadataService\Utils;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
-    private int $width;
+    private readonly int $width;
 
-    private int $height;
+    private readonly int $height;
 
-    private int $bitDepth;
+    private readonly int $bitDepth;
 
-    private int $colorType;
+    private readonly int $colorType;
 
-    private int $compression;
+    private readonly int $compression;
 
-    private int $filter;
+    private readonly int $filter;
 
-    private int $interlace;
+    private readonly int $interlace;
 
     /**
      * @var RgbPaletteEntry[]

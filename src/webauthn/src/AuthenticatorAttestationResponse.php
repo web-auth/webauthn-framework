@@ -13,7 +13,7 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
 {
     public function __construct(
         CollectedClientData $clientDataJSON,
-        private AttestationObject $attestationObject
+        private readonly AttestationObject $attestationObject
     ) {
         parent::__construct($clientDataJSON);
     }

@@ -11,13 +11,13 @@ use Webauthn\MetadataService\Utils;
 
 class ExtensionDescriptor implements JsonSerializable
 {
-    private ?int $tag;
+    private readonly ?int $tag;
 
     public function __construct(
-        private string $id,
+        private readonly string $id,
         ?int $tag,
-        private ?string $data,
-        private bool $failIfUnknown
+        private readonly ?string $data,
+        private readonly bool $failIfUnknown
     ) {
         if ($tag !== null) {
             Assertion::greaterOrEqualThan($tag, 0, 'Invalid data. The parameter "tag" shall be a positive integer');

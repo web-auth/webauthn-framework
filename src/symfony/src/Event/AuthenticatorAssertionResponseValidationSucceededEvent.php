@@ -13,12 +13,12 @@ use Webauthn\PublicKeyCredentialSource;
 class AuthenticatorAssertionResponseValidationSucceededEvent extends Event
 {
     public function __construct(
-        private string $credentialId,
-        private AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        private PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        private ServerRequestInterface $request,
-        private ?string $userHandle,
-        private PublicKeyCredentialSource $publicKeyCredentialSource
+        private readonly string $credentialId,
+        private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        private readonly ServerRequestInterface $request,
+        private readonly ?string $userHandle,
+        private readonly PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
     }
 

@@ -26,12 +26,12 @@ class PublicKeyCredentialLoader
 
     private const FLAG_ED = 0b10000000;
 
-    private Decoder $decoder;
+    private readonly Decoder $decoder;
 
     private LoggerInterface $logger;
 
     public function __construct(
-        private AttestationObjectLoader $attestationObjectLoader
+        private readonly AttestationObjectLoader $attestationObjectLoader
     ) {
         $this->decoder = Decoder::create();
         $this->logger = new NullLogger();

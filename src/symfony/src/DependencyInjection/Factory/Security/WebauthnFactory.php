@@ -68,7 +68,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     private const PRIORITY = 0;
 
     public function __construct(
-        private WebauthnServicesFactory $servicesFactory
+        private readonly WebauthnServicesFactory $servicesFactory
     ) {
     }
 

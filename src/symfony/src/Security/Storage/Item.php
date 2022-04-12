@@ -10,8 +10,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class Item
 {
     public function __construct(
-        private PublicKeyCredentialOptions $publicKeyCredentialOptions,
-        private ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity
+        private readonly PublicKeyCredentialOptions $publicKeyCredentialOptions,
+        private readonly ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity
     ) {
     }
 

@@ -9,11 +9,11 @@ use JsonSerializable;
 
 class RgbPaletteEntry implements JsonSerializable
 {
-    private int $r;
+    private readonly int $r;
 
-    private int $g;
+    private readonly int $g;
 
-    private int $b;
+    private readonly int $b;
 
     public function __construct(int $r, int $g, int $b)
     {

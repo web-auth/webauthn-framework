@@ -9,7 +9,7 @@ use Assert\Assertion;
 final class EcdaaKeyIdTrustPath implements TrustPath
 {
     public function __construct(
-        private string $ecdaaKeyId
+        private readonly string $ecdaaKeyId
     ) {
     }
 

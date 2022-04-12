@@ -9,8 +9,8 @@ use JsonSerializable;
 class AuthenticationExtension implements JsonSerializable
 {
     public function __construct(
-        private string $name,
-        private mixed $value
+        private readonly string $name,
+        private readonly mixed $value
     ) {
     }
 

@@ -25,7 +25,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         Manager $algorithmManager,
-        private EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);
     }

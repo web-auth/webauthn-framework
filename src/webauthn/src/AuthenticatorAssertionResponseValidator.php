@@ -28,17 +28,17 @@ use Webauthn\Util\CoseSignatureFixer;
 
 class AuthenticatorAssertionResponseValidator
 {
-    private Decoder $decoder;
+    private readonly Decoder $decoder;
 
     private CounterChecker $counterChecker;
 
     private LoggerInterface $logger;
 
     public function __construct(
-        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        private TokenBindingHandler $tokenBindingHandler,
-        private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private ?Manager $algorithmManager,
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private readonly TokenBindingHandler $tokenBindingHandler,
+        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        private readonly ?Manager $algorithmManager,
     ) {
         $this->decoder = Decoder::create();
         $this->counterChecker = new ThrowExceptionIfInvalid();

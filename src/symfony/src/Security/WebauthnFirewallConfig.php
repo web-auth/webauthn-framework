@@ -14,9 +14,9 @@ final class WebauthnFirewallConfig
      * @param array<string,mixed> $options
      */
     public function __construct(
-        private array $options,
-        private string $firewallName,
-        private HttpUtils $httpUtils,
+        private readonly array $options,
+        private readonly string $firewallName,
+        private readonly HttpUtils $httpUtils,
     ) {
     }
 

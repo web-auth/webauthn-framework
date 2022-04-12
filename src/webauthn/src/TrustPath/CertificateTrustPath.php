@@ -12,7 +12,7 @@ final class CertificateTrustPath implements TrustPath
      * @param string[] $certificates
      */
     public function __construct(
-        private array $certificates
+        private readonly array $certificates
     ) {
     }
 

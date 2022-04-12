@@ -17,24 +17,24 @@ class CollectedClientData
     /**
      * @var mixed[]
      */
-    private array $data;
+    private readonly array $data;
 
-    private string $type;
+    private readonly string $type;
 
-    private string $challenge;
+    private readonly string $challenge;
 
-    private string $origin;
+    private readonly string $origin;
 
     /**
      * @var mixed[]|null
      */
-    private ?array $tokenBinding;
+    private readonly ?array $tokenBinding;
 
     /**
      * @param mixed[] $data
      */
     public function __construct(
-        private string $rawData,
+        private readonly string $rawData,
         array $data
     ) {
         $this->type = $this->findData(

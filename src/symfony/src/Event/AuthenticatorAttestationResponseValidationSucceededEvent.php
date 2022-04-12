@@ -13,10 +13,10 @@ use Webauthn\PublicKeyCredentialSource;
 class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
 {
     public function __construct(
-        private AuthenticatorAttestationResponse $authenticatorAttestationResponse,
-        private PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        private ServerRequestInterface $request,
-        private PublicKeyCredentialSource $publicKeyCredentialSource
+        private readonly AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        private readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        private readonly ServerRequestInterface $request,
+        private readonly PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
     }
 
