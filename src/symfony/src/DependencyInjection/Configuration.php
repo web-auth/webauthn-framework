@@ -299,7 +299,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->scalarNode('resident_key')
-            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE)
+            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
             ->validate()
             ->ifNotInArray([
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE,
