@@ -21,6 +21,8 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
     final public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
 
+    final public const AUTHENTICATOR_TRANSPORT_CABLE = 'cable';
+
     final public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
     /**
