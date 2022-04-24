@@ -38,6 +38,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
+    private LoggerInterface $logger;
+
     /**
      * @param string[] $securedRelyingPartyIds
      */
@@ -54,8 +56,21 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private readonly LoggerInterface $logger = new NullLogger()
+        ?LoggerInterface $logger = null
     ) {
+        if ($logger !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.0.4',
+                'Setting a logger service in the constructor is deprecated and will be removed in v5.0.0, use the method "setLogger" instead.'
+            );
+        }
+        $this->logger = $logger ?? new NullLogger();
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     public function supports(Request $request): ?bool

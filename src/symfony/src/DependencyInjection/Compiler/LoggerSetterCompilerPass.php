@@ -10,6 +10,10 @@ use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
+use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialLoader;
 
 final class LoggerSetterCompilerPass implements CompilerPassInterface
@@ -27,6 +31,10 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
         $this->setLoggerToServiceDefinition($container, AuthenticatorAttestationResponseValidator::class);
         $this->setLoggerToServiceDefinition($container, PublicKeyCredentialLoader::class);
         $this->setLoggerToServiceDefinition($container, AttestationObjectLoader::class);
+        $this->setLoggerToServiceDefinition($container, ThrowExceptionIfInvalid::class);
+        $this->setLoggerToServiceDefinition($container, DummyPublicKeyCredentialUserEntityRepository::class);
+        $this->setLoggerToServiceDefinition($container, DummyPublicKeyCredentialSourceRepository::class);
+        $this->setLoggerToServiceDefinition($container, WebauthnAuthenticator::class);
     }
 
     private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
