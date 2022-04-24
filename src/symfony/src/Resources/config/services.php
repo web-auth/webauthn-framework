@@ -113,7 +113,7 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(ThrowExceptionIfInvalid::class)
-        ->args([service('webauthn.logger')->nullOnInvalid()])
+        ->args([service('webauthn.logger')->ignoreOnInvalid()])
     ;
 
     $container
@@ -151,11 +151,11 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(DummyPublicKeyCredentialSourceRepository::class)
-        ->args([service('webauthn.logger')->nullOnInvalid()])
+        ->args([service('webauthn.logger')->ignoreOnInvalid()])
     ;
     $container
         ->set(DummyPublicKeyCredentialUserEntityRepository::class)
-        ->args([service('webauthn.logger')->nullOnInvalid()])
+        ->args([service('webauthn.logger')->ignoreOnInvalid()])
     ;
 
     $container
