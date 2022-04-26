@@ -32,6 +32,8 @@ parameters:
 #    checkGenericClassInNonGenericObjectType: true
 #    checkUninitializedProperties: true
     treatPhpDocTypesAsCertain: false
+    scanFiles:
+        - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
 includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
     - vendor/phpstan/phpstan-beberlei-assert/extension.neon
