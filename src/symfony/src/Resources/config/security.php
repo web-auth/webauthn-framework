@@ -81,7 +81,7 @@ return static function (ContainerConfigurator $container): void {
             service(AuthenticatorAssertionResponseValidator::class),
             service(AuthenticatorAttestationResponseValidator::class),
             service('webauthn.logger')
-                ->nullOnInvalid(),
+                ->ignoreOnInvalid(),
         ])
     ;
 

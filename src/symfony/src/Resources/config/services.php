@@ -113,6 +113,7 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(ThrowExceptionIfInvalid::class)
+        ->autowire(false)
     ;
 
     $container
@@ -150,9 +151,11 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(DummyPublicKeyCredentialSourceRepository::class)
+        ->autowire(false)
     ;
     $container
         ->set(DummyPublicKeyCredentialUserEntityRepository::class)
+        ->autowire(false)
     ;
 
     $container
