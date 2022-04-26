@@ -44,10 +44,10 @@ js: node_modules ## Execute tests
 rector: vendor ## Check all files using Rector
 	vendor/bin/rector process --ansi --dry-run --xdebug
 
-node_modules: package.json yarn.lock
+node_modules: package.json
 	yarn install --force
 
-vendor: composer.json composer.lock
+vendor: composer.json
 	composer validate
 	composer install
 
