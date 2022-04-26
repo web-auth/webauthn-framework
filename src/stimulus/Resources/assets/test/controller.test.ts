@@ -44,7 +44,7 @@ describe('WebauthnController', () => {
         clearDOM();
     });
 
-    it('pre-connect', async () => {
+    it('connect', async () => {
         expect(getByTestId(container, 'webauthn')).not.toHaveClass('connected');
 
         startStimulus();
