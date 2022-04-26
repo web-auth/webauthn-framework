@@ -1,5 +1,4 @@
-FIDO2/Webauthn Support for PHP
-==============================
+# FIDO2/Webauthn Support for PHP
 
 **FIDO2/Webauthn Support for PHP** is a **PHP library** that will help you to support compatible security tokens and devices.
 
@@ -16,7 +15,7 @@ You should go to [the main repository](https://github.com/web-auth/webauthn-fram
 
 # Documentation
 
-The official documentation is available at https://github.com/web-auth/webauthn-framework 
+The official documentation is available at https://github.com/web-auth/webauthn-framework
 
 # Support
 

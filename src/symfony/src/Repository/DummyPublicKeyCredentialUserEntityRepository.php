@@ -15,9 +15,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository
 {
-    private LoggerInterface $logger;
-
-    public function __construct(?LoggerInterface $logger = null)
+    public function __construct(private LoggerInterface $logger = new NullLogger())
     {
         if ($logger !== null) {
             trigger_deprecation(
@@ -26,7 +24,6 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
                 'Setting a logger service in the constructor is deprecated and will be removed in v5.0.0, use the method "setLogger" instead.'
             );
         }
-        $this->logger = $logger ?? new NullLogger();
     }
 
     public function setLogger(LoggerInterface $logger): void

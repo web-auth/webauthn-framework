@@ -1,5 +1,4 @@
-FIDO2/Webauthn Bundle for Symfony
-=================================
+# FIDO2/Webauthn Bundle for Symfony
 
 **FIDO2/Webauthn Bundle for Symfony** is a **Symfony Bundle** that will help you to manage attestation or assertion requests and responses computed by security devices.
 
@@ -16,12 +15,12 @@ You should go to [the main repository](https://github.com/web-auth/webauthn-fram
 
 # Documentation
 
-The official documentation is available at https://github.com/web-auth/webauthn-framework 
+The official documentation is available at https://github.com/web-auth/webauthn-framework
 
 # Missing Features
 
-* Token Binding support (see [#2](https://github.com/web-auth/webauthn-framework/issues/2))
-* [Extension support](https://www.w3.org/TR/webauthn/#extensions) is implemented but not fully tested
+-   Token Binding support (see [#2](https://github.com/web-auth/webauthn-framework/issues/2))
+-   [Extension support](https://www.w3.org/TR/webauthn/#extensions) is implemented but not fully tested
 
 # Support
 

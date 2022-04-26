@@ -3,7 +3,11 @@
     "type": "library",
     "license": "MIT",
     "description": "FIDO2/Webauthn Support For PHP",
-    "keywords": ["FIDO", "FIDO2", "webauthn"],
+    "keywords": [
+        "FIDO",
+        "FIDO2",
+        "webauthn"
+    ],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {

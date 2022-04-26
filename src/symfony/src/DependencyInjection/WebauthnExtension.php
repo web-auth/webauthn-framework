@@ -98,7 +98,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+    public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
     {
         return new Configuration($this->alias);
     }

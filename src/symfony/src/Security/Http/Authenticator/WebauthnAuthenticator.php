@@ -38,8 +38,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
-    private LoggerInterface $logger;
-
     /**
      * @param string[] $securedRelyingPartyIds
      */
@@ -56,7 +54,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        ?LoggerInterface $logger = null
+        private LoggerInterface $logger = new NullLogger()
     ) {
         if ($logger !== null) {
             trigger_deprecation(
@@ -65,7 +63,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Setting a logger service in the constructor is deprecated and will be removed in v5.0.0, use the method "setLogger" instead.'
             );
         }
-        $this->logger = $logger ?? new NullLogger();
     }
 
     public function setLogger(LoggerInterface $logger): void
