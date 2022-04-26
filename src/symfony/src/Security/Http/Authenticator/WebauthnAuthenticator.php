@@ -56,13 +56,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         private LoggerInterface $logger = new NullLogger()
     ) {
-        if ($logger !== null) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.0.4',
-                'Setting a logger service in the constructor is deprecated and will be removed in v5.0.0, use the method "setLogger" instead.'
-            );
-        }
     }
 
     public function setLogger(LoggerInterface $logger): void
