@@ -8,6 +8,7 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use function Safe\realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -39,47 +40,35 @@ final class WebauthnBundle extends Bundle
         parent::build($container);
         $container->addCompilerPass(
             new AttestationStatementSupportCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
         $container->addCompilerPass(
             new ExtensionOutputCheckerCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
-        $container->addCompilerPass(
-            new CoseAlgorithmCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
-        $container->addCompilerPass(
-            new DynamicRouteCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
+        $container->addCompilerPass(new CoseAlgorithmCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new DynamicRouteCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
         $container->addCompilerPass(
             new EnforcedSafetyNetApiKeyVerificationCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
-        $container->addCompilerPass(
-            new LoggerSetterCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
+        $container->addCompilerPass(new LoggerSetterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
         $container->addCompilerPass(
             new CounterCheckerSetterCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
         $container->addCompilerPass(
             new CertificateChainCheckerSetterCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
         $container->addCompilerPass(
             new MetadataStatementSupportCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
 
@@ -105,7 +94,7 @@ final class WebauthnBundle extends Bundle
         if (class_exists(DoctrineOrmMappingsPass::class)) {
             $container->addCompilerPass(
                 DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []),
-                \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+                PassConfig::TYPE_BEFORE_OPTIMIZATION,
                 0
             );
         }

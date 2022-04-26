@@ -28,6 +28,10 @@ parameters:
             message: '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
+        -
+            message: '#Method Webauthn\\Bundle\\Routing\\Loader::load\(\) has parameter \$resource with no type specified\.#'
+            path: src/symfony/src/Routing/Loader.php
+            count: 1
 #    checkMissingIterableValueType: true
 #    checkGenericClassInNonGenericObjectType: true
 #    checkUninitializedProperties: true
