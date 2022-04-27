@@ -73,10 +73,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.http_message_factory', $config['http_message_factory']);
         $container->setAlias('webauthn.request_factory', $config['request_factory']);
         $container->setAlias('webauthn.http_client', $config['http_client']);
-
-        if ($config['logger'] !== null) {
-            $container->setAlias('webauthn.logger', $config['logger']);
-        }
+        $container->setAlias('webauthn.logger', $config['logger']);
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);

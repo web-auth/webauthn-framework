@@ -38,6 +38,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
 {
+    private LoggerInterface $logger;
+
     /**
      * @param string[] $securedRelyingPartyIds
      */
@@ -53,9 +55,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private LoggerInterface $logger = new NullLogger()
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
     ) {
+        $this->logger = new NullLogger();
     }
 
     public function setLogger(LoggerInterface $logger): void

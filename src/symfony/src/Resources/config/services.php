@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -142,11 +142,9 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialRequestOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(BaseAuthenticatorAssertionResponseValidator::class),
-            service(LoggerInterface::class),
             service(PublicKeyCredentialUserEntityRepository::class),
             service(PublicKeyCredentialSourceRepository::class),
         ])
-
     ;
 
     $container
@@ -171,6 +169,11 @@ return static function (ContainerConfigurator $container): void {
             service(UploadedFileFactoryInterface::class),
             service(ResponseFactoryInterface::class),
         ])
+    ;
+
+    $container
+        ->set('webauthn.logger.default')
+        ->class(NullLogger::class)
     ;
 
     $container
