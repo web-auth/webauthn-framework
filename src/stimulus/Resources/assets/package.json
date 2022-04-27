@@ -1,0 +1,26 @@
+{
+    "name": "@web-auth/ux-webauthn",
+    "description": "Webauthn integration for Symfony",
+    "license": "MIT",
+    "version": "1.0.0",
+    "symfony": {
+        "controllers": {
+            "webauthn": {
+                "main": "dist/controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            }
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "@simplewebauthn/browser": "^5.0.0",
+        "@simplewebauthn/typescript-types": "^5.0.0"
+    },
+    "devDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "@simplewebauthn/browser": "^5.0.0",
+        "@simplewebauthn/typescript-types": "^5.0.0"
+    }
+}

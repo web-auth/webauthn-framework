@@ -1,5 +1,4 @@
-Metadata Service (MDS) support for FIDO2/Webauthn PHP library
-=============================================================
+# Metadata Service (MDS) support for FIDO2/Webauthn PHP library
 
 This library adds several tools to contact the FIDO Alliance or any other compliant Metadata Services.
 
@@ -16,7 +15,7 @@ You should go to [the main repository](https://github.com/web-auth/webauthn-fram
 
 # Documentation
 
-The official documentation is available at https://github.com/web-auth/webauthn-framework 
+The official documentation is available at https://github.com/web-auth/webauthn-framework
 
 # Support
 

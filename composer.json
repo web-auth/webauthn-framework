@@ -9,7 +9,8 @@
         {
             "name": "Florent Morselli",
             "homepage": "https://github.com/Spomky"
-        },{
+        },
+        {
             "name": "All contributors",
             "homepage": "https://github.com/web-auth/webauthn-framework/contributors"
         }
@@ -27,7 +28,6 @@
                 "tests/framework",
                 "tests/library/"
             ],
-            "Webauthn\\Tests\\Bundle\\Unit\\": "tests/symfony/unit/",
             "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
             "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }
@@ -50,7 +50,6 @@
         "spomky-labs/cbor-php": "^3.0",
         "symfony/config": "^6.0",
         "symfony/dependency-injection": "^6.0",
-        "symfony/deprecation-contracts": "^3.0",
         "symfony/framework-bundle": "^6.0",
         "symfony/http-client": "^6.0",
         "symfony/process": "^6.0",
@@ -63,7 +62,8 @@
     "replace": {
         "web-auth/webauthn-lib": "self.version",
         "web-auth/metadata-service": "self.version",
-        "web-auth/webauthn-symfony-bundle": "self.version"
+        "web-auth/webauthn-symfony-bundle": "self.version",
+        "web-auth/webauthn-stimulus": "self.version"
     },
     "config": {
         "sort-packages": true,

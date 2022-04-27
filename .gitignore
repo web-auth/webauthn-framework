@@ -1,6 +1,9 @@
 .phpunit.result.cache
 report.md
-composer.lock
-vendor
 *.cache
 *.log
+node_modules
+yarn.lock
+yarn-error.log
+/composer.lock
+/vendor

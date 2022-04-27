@@ -29,7 +29,7 @@ class Loader extends SymfonyLoader
         $this->routes->add($name, $route);
     }
 
-    public function load(mixed $resource, string $type = null): RouteCollection
+    public function load($resource, string $type = null)
     {
         return $this->routes;
     }

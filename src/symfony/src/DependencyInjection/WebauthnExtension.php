@@ -57,7 +57,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
+        $config = $processor->processConfiguration(
+            $this->getConfiguration($configs, $container) ?? new Configuration($this->alias),
+            $configs
+        );
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
             AttestationStatementSupportCompilerPass::TAG
@@ -98,7 +101,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+    public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
     {
         return new Configuration($this->alias);
     }
