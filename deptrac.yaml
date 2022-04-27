@@ -6,6 +6,10 @@ parameters:
       collectors:
         - type: 'directory'
           regex: 'src/webauthn/.*'
+    - name: 'UX'
+      collectors:
+        - type: 'directory'
+          regex: 'src/stimulus/.*'
     - name: 'Symfony'
       collectors:
         - type: 'directory'
@@ -16,7 +20,9 @@ parameters:
           regex: 'src/metadata-service/.*'
   ruleset:
     MetadataService: ~
+    UX: ~
     Webauthn:
       - 'MetadataService'
     Symfony:
       - 'Webauthn'
+      - 'MetadataService'

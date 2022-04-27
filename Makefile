@@ -4,6 +4,7 @@ mu: vendor ## Mutation tests
 
 tests: vendor ## Run all tests
 	vendor/bin/phpunit  --color
+	yarn test
 
 cc: vendor ## Show test coverage rates (HTML)
 	vendor/bin/phpunit --coverage-html ./build
@@ -26,19 +27,19 @@ st: vendor ## Run static analyse
 
 ################################################
 
-ci-mu: vendor ## Mutation tests (for Github only)
+ci-mu: vendor ## Mutation tests (for CI/CD only)
 	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=23 --min-covered-msi=45
 
-ci-cc: vendor ## Show test coverage rates (console)
+ci-cc: vendor ## Show test coverage rates (for CI/CD only)
 	vendor/bin/phpunit --coverage-text
 
-ci-cs: vendor ## Check all files using defined ECS rules
+ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
 	vendor/bin/ecs check
 
 ################################################
 
 
-js: node_modules ## Execute tests
+js: node_modules ## Execute JS tests
 	yarn test
 
 rector: vendor ## Check all files using Rector
