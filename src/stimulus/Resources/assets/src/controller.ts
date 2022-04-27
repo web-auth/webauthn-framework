@@ -29,21 +29,25 @@ export default class extends Controller {
     async signin(event: Event) {
         event.preventDefault();
         const data = this._getData();
+        const optionsHeaders = {
+            'Content-Type': 'application/json',
+        };
+        this._dispatchEvent('webauthn:request:options', { data, headers: optionsHeaders });
         const resp = await fetch(this.requestOptionsUrlValue || '/request/options', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: optionsHeaders,
             body: JSON.stringify(data),
         });
 
         const asseResp = await startAuthentication(await resp.json());
 
+        const responseHeaders = {
+            'Content-Type': 'application/json',
+        };
+        this._dispatchEvent('webauthn:request:response', { response: asseResp, headers: responseHeaders });
         const verificationResp = await fetch(this.requestResultUrlValue || '/request', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: responseHeaders,
             body: JSON.stringify(asseResp),
         });
 
@@ -62,20 +66,24 @@ export default class extends Controller {
     async signup(event: Event) {
         event.preventDefault();
         const data = this._getData();
+        const optionsHeaders = {
+            'Content-Type': 'application/json',
+        };
+        this._dispatchEvent('webauthn:creation:options', { data, headers: optionsHeaders });
         const resp = await fetch(this.creationOptionsUrlValue || '/creation/options', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: optionsHeaders,
             body: JSON.stringify(data),
         });
 
         const attResp = await startRegistration(await resp.json());
+        const responseHeaders = {
+            'Content-Type': 'application/json',
+        };
+        this._dispatchEvent('webauthn:creation:response', { response: attResp, headers: responseHeaders });
         const verificationResp = await fetch(this.creationResultUrlValue || '/creation', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: responseHeaders,
             body: JSON.stringify(attResp),
         });
 
