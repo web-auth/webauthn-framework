@@ -30,16 +30,31 @@ Usage
 
 *To be written*
 
-The main usage of Symfony UX Webauthn is to use its Stimulus controller to initialize Webauthn:
+The main usage of Symfony UX Webauthn is to use its Stimulus controller to perform Webauthn ceremonies:
+
+## Registration
 
 .. code-block:: twig
 
-    <form {{ stimulus_controller('web-auth/webauthn') }}>
-        <button type="submit" {{ stimulus_action('webauthn', 'signin') }}>
-            Sign in
-        </button>
-        <button type="submit" {{ stimulus_action('webauthn', 'signup') }}>
+    <form {{ stimulus_controller('@web-auth/webauthn-stimulus/webauthn') }}>
+        <input name="username" required type="text" placeholder="Username">
+        <label for="username">Username</label>
+        <input name="displayName" required type="text" placeholder="Display Name">
+        <label for="displayName">Display Name</label>
+        <button type="submit" {{ stimulus_action('@web-auth/webauthn-stimulus/webauthn', 'signup') }}>
             Sign up
+        </button>
+    </form>
+
+## Login
+
+.. code-block:: twig
+
+    <form {{ stimulus_controller('@web-auth/webauthn-stimulus/webauthn') }}>
+        <input name="username" required type="text" placeholder="Username">
+        <label for="username">Username</label>
+        <button type="submit" {{ stimulus_action('@web-auth/webauthn-stimulus/webauthn', 'signin') }}>
+            Sign in
         </button>
     </form>
 
