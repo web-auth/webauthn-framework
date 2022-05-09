@@ -4,6 +4,7 @@ parameters:
         - src
     ignoreErrors:
         - '#Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
+        - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php

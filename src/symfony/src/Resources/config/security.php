@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Psr\Cache\CacheItemPoolInterface;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -21,6 +22,7 @@ use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
+use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialLoader;
@@ -54,6 +56,11 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(SessionStorage::class)
         ->args([service('request_stack')])
+    ;
+
+    $container
+        ->set(CacheStorage::class)
+        ->args([service(CacheItemPoolInterface::class)])
     ;
 
     $container
