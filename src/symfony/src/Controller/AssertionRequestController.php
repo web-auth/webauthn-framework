@@ -65,7 +65,7 @@ final class AssertionRequestController
             );
 
             $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
-            $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity),);
+            $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity));
 
             return $response;
         } catch (Throwable $throwable) {

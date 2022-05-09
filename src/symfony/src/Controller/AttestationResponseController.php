@@ -47,7 +47,7 @@ final class AttestationResponseController
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
 
-            $storedData = $this->optionStorage->get();
+            $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
 
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             Assertion::isInstanceOf(
