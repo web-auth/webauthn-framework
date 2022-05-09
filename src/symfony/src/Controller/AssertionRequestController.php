@@ -82,9 +82,10 @@ final class AssertionRequestController
     {
         $credentialSources = $this->credentialSourceRepository->findAllForUserEntity($userEntity);
 
-        return array_map(static function (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor {
-            return $credential->getPublicKeyCredentialDescriptor();
-        }, $credentialSources);
+        return array_map(
+            static fn (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
+            $credentialSources
+        );
     }
 
     private function getServerPublicKeyCredentialRequestOptionsRequest(

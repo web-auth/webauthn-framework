@@ -48,7 +48,7 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'displayName' => 'FOO',
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
@@ -70,7 +70,7 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
@@ -99,7 +99,7 @@ final class RegistrationAreaTest extends WebTestCase
             ],
             'attestation' => 'indirect',
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
@@ -135,7 +135,7 @@ final class RegistrationAreaTest extends WebTestCase
                 'requireResidentKey' => true,
             ],
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'foo.com',
         ], json_encode($content));
@@ -176,7 +176,7 @@ final class RegistrationAreaTest extends WebTestCase
                 'def' => '123',
             ],
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
@@ -214,7 +214,7 @@ final class RegistrationAreaTest extends WebTestCase
             'username' => 'admin',
             'displayName' => 'Admin',
         ];
-        $this->client->request(Request::METHOD_POST, '/register/options', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
@@ -233,7 +233,7 @@ final class RegistrationAreaTest extends WebTestCase
     {
         $content = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
 
-        $this->client->request(Request::METHOD_POST, '/register', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], $content);
@@ -276,7 +276,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         $this->storage->store(Item::create($publicKeyCredentialCreationOptions, $publicKeyCredentialUserEntity));
 
-        $this->client->request(Request::METHOD_POST, '/register', [], [], [
+        $this->client->request(Request::METHOD_POST, '/api/register', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'localhost',
         ], $content);

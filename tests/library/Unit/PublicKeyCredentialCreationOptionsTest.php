@@ -75,7 +75,7 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
 
         $json = json_encode($options, JSON_THROW_ON_ERROR);
         static::assertSame(
-            '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":1000}',
+            '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"excludeCredentials":[],"timeout":1000}',
             $json
         );
         $data = PublicKeyCredentialCreationOptions::createFromString($json);

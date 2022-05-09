@@ -78,7 +78,7 @@ final class Configuration implements ConfigurationInterface
             ->info('A PSR-18 HTTP client.')
             ->end()
             ->scalarNode('logger')
-            ->defaultNull()
+            ->defaultValue('webauthn.logger.default')
             ->info('A PSR-3 logger to receive logs during the processes')
             ->end()
             ->scalarNode('credential_repository')
@@ -299,7 +299,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->scalarNode('resident_key')
-            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE)
+            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
             ->validate()
             ->ifNotInArray([
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE,

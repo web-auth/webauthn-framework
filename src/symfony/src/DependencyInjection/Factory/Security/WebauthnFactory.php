@@ -224,6 +224,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->replaceArgument(3, new Reference($failureHandlerId))
             ->replaceArgument(4, new Reference($optionsStorageId))
             ->replaceArgument(5, $securedRpIds)
+            ->addMethodCall('setLogger', [new Reference('webauthn.logger')])
         ;
 
         return $authenticatorId;

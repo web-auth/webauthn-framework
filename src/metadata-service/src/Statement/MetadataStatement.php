@@ -512,20 +512,20 @@ class MetadataStatement implements JsonSerializable
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
             'tcDisplayPNGCharacteristics' => array_map(
-                static function (DisplayPNGCharacteristicsDescriptor $object): array {
-                    return $object->jsonSerialize();
-                },
+                static fn (DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
                 $this->tcDisplayPNGCharacteristics
             ),
             'attestationRootCertificates' => $this->attestationRootCertificates,
-            'ecdaaTrustAnchors' => array_map(static function (EcdaaTrustAnchor $object): array {
-                return $object->jsonSerialize();
-            }, $this->ecdaaTrustAnchors),
+            'ecdaaTrustAnchors' => array_map(
+                static fn (EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
+                $this->ecdaaTrustAnchors
+            ),
             'icon' => $this->icon,
             'authenticatorGetInfo' => $this->authenticatorGetInfo,
-            'supportedExtensions' => array_map(static function (ExtensionDescriptor $object): array {
-                return $object->jsonSerialize();
-            }, $this->supportedExtensions),
+            'supportedExtensions' => array_map(
+                static fn (ExtensionDescriptor $object): array => $object->jsonSerialize(),
+                $this->supportedExtensions
+            ),
         ];
 
         return Utils::filterNullValues($data);

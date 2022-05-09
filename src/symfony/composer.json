@@ -3,7 +3,11 @@
     "type": "symfony-bundle",
     "license": "MIT",
     "description": "FIDO2/Webauthn Security Bundle For Symfony",
-    "keywords": ["FIDO", "FIDO2", "webauthn"],
+    "keywords": [
+        "FIDO",
+        "FIDO2",
+        "webauthn"
+    ],
     "homepage": "https://github.com/web-auth",
     "authors": [
         {

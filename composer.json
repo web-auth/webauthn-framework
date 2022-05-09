@@ -9,7 +9,8 @@
         {
             "name": "Florent Morselli",
             "homepage": "https://github.com/Spomky"
-        },{
+        },
+        {
             "name": "All contributors",
             "homepage": "https://github.com/web-auth/webauthn-framework/contributors"
         }
@@ -27,7 +28,6 @@
                 "tests/framework",
                 "tests/library/"
             ],
-            "Webauthn\\Tests\\Bundle\\Unit\\": "tests/symfony/unit/",
             "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
             "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }

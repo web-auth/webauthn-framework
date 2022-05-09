@@ -7,7 +7,7 @@ mu: vendor ## Mutation tests
 tests: vendor ## Run all tests
 	vendor/bin/phpunit  --color
 
-.PHONY: code-coverage-html
+.PHONY: cc
 cc: vendor ## Show test coverage rates (HTML)
 	vendor/bin/phpunit --coverage-html ./build
 
@@ -35,25 +35,27 @@ st: vendor ## Run static analyse
 ################################################
 
 .PHONY: ci-mu
-ci-mu: vendor ## Mutation tests (for Github only)
+ci-mu: vendor ## Mutation tests (for CI/CD only)
 	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=23 --min-covered-msi=45
 
 .PHONY: ci-cc
-ci-cc: vendor ## Show test coverage rates (console)
+ci-cc: vendor ## Show test coverage rates (for CI/CD only)
+	vendor/bin/phpunit --coverage-text
 
 .PHONY: ci-cs
-ci-cs: vendor ## Check all files using defined ECS rules
+ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
 	vendor/bin/ecs check
 
 ################################################
 
 
-vendor: composer.json composer.lock
-	composer validate
-	composer install
 .PHONY: rector
 rector: vendor ## Check all files using Rector
 	vendor/bin/rector process --ansi --dry-run --xdebug
+
+vendor: composer.json
+	composer validate
+	composer install
 
 .DEFAULT_GOAL := help
 help:

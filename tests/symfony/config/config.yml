@@ -219,18 +219,18 @@ security:
                registration:
                    enabled: true
 #                   profile: default
-#                   routes:
+                   routes:
 #                       host: null
-#                       options_path: '/register/options'
-#                       result_path: '/register'
+                       options_path: '/api/register/options'
+                       result_path: '/api/register'
 #                   options_handler: DefaultCreationOptionsHandler::class
-#               authentication:
-#                   enabled: true
+               authentication:
+                   enabled: true
 #                   profile: default
-#                   routes:
+                   routes:
 #                       host: null
-#                       options_path: '/login/options'
-#                       result_path: '/login'
+                       options_path: '/api/login/options'
+                       result_path: '/api/login'
 #                   options_handler: DefaultRequestOptionsHandler::class
             logout:
                 path: /logout
@@ -239,7 +239,8 @@ security:
     access_control:
         - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
         - { path: ^/logout,  roles: PUBLIC_ACCESS , requires_channel: https }
-        - { path: ^/login,  roles: PUBLIC_ACCESS , requires_channel: https }
+        - { path: ^/api/login,  roles: PUBLIC_ACCESS , requires_channel: https }
+        - { path: ^/api/register,  roles: PUBLIC_ACCESS , requires_channel: https }
         - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
         - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
         - { path: ^/,       roles: PUBLIC_ACCESS , requires_channel: https }

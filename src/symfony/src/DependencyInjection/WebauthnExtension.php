@@ -57,7 +57,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
+        $config = $processor->processConfiguration(
+            $this->getConfiguration($configs, $container) ?? new Configuration($this->alias),
+            $configs
+        );
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
             AttestationStatementSupportCompilerPass::TAG
@@ -70,10 +73,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.http_message_factory', $config['http_message_factory']);
         $container->setAlias('webauthn.request_factory', $config['request_factory']);
         $container->setAlias('webauthn.http_client', $config['http_client']);
-
-        if ($config['logger'] !== null) {
-            $container->setAlias('webauthn.logger', $config['logger']);
-        }
+        $container->setAlias('webauthn.logger', $config['logger']);
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
@@ -98,7 +98,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+    public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
     {
         return new Configuration($this->alias);
     }

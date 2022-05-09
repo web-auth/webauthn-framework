@@ -16,6 +16,6 @@ abstract class Utils
      */
     public static function filterNullValues(array $data): array
     {
-        return array_filter($data, static function ($var): bool {return $var !== null; });
+        return array_filter($data, static fn ($var): bool => $var !== null);
     }
 }

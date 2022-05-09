@@ -75,9 +75,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     public function jsonSerialize(): array
     {
-        return array_map(static function (AuthenticationExtension $object) {
-            return $object->jsonSerialize();
-        }, $this->extensions);
+        return array_map(static fn (AuthenticationExtension $object) => $object->jsonSerialize(), $this->extensions);
     }
 
     /**

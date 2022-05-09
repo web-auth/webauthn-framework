@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
-use function count;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -203,20 +202,19 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     {
         $json = [
             'rp' => $this->rp->jsonSerialize(),
-            'pubKeyCredParams' => array_map(static function (PublicKeyCredentialParameters $object): array {
-                return $object->jsonSerialize();
-            }, $this->pubKeyCredParams),
+            'pubKeyCredParams' => array_map(
+                static fn (PublicKeyCredentialParameters $object): array => $object->jsonSerialize(),
+                $this->pubKeyCredParams
+            ),
             'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
             'attestation' => $this->attestation,
             'user' => $this->user->jsonSerialize(),
             'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),
+            'excludeCredentials' => array_map(
+                static fn (PublicKeyCredentialDescriptor $object): array => $object->jsonSerialize(),
+                $this->excludeCredentials
+            ),
         ];
-
-        if (count($this->excludeCredentials) !== 0) {
-            $json['excludeCredentials'] = array_map(static function (PublicKeyCredentialDescriptor $object): array {
-                return $object->jsonSerialize();
-            }, $this->excludeCredentials);
-        }
 
         if ($this->extensions->count() !== 0) {
             $json['extensions'] = $this->extensions;

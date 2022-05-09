@@ -3,7 +3,7 @@
 ## Supported Versions
 
 | Version | Supported          |
-| ------- |--------------------|
+| ------- | ------------------ |
 | 4.0.x   | :white_check_mark: |
 | 3.3.x   | :white_check_mark: |
 | < 3.3.x | :x:                |
