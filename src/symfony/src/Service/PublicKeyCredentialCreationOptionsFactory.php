@@ -102,12 +102,10 @@ final class PublicKeyCredentialCreationOptionsFactory
      */
     private function createCredentialParameters(array $profile): array
     {
-        $callback = static function ($alg): PublicKeyCredentialParameters {
-            return new PublicKeyCredentialParameters(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                $alg
-            );
-        };
+        $callback = static fn ($alg): PublicKeyCredentialParameters => new PublicKeyCredentialParameters(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            $alg
+        );
 
         return array_map($callback, $profile['public_key_credential_parameters']);
     }

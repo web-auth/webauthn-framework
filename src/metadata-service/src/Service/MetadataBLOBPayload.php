@@ -90,9 +90,10 @@ class MetadataBLOBPayload implements JsonSerializable
             'legalHeader' => $this->legalHeader,
             'nextUpdate' => $this->nextUpdate,
             'no' => $this->no,
-            'entries' => array_map(static function (MetadataBLOBPayloadEntry $object): array {
-                return $object->jsonSerialize();
-            }, $this->entries),
+            'entries' => array_map(
+                static fn (MetadataBLOBPayloadEntry $object): array => $object->jsonSerialize(),
+                $this->entries
+            ),
         ];
 
         return Utils::filterNullValues($data);

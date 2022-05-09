@@ -1,8 +1,6 @@
 splits:
     - prefix: "src/webauthn"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
-    - prefix: "src/stimulus"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-stimulus.git"
     - prefix: "src/symfony"
       target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
     - prefix: "src/metadata-service"

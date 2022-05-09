@@ -18,9 +18,7 @@ class CertificateToolbox
      */
     public static function fixPEMStructures(array $data, string $type = 'CERTIFICATE'): array
     {
-        return array_map(static function ($d) use ($type): string {
-            return self::fixPEMStructure($d, $type);
-        }, $data);
+        return array_map(static fn ($d): string => self::fixPEMStructure($d, $type), $data);
     }
 
     public static function fixPEMStructure(string $data, string $type = 'CERTIFICATE'): string
@@ -30,9 +28,8 @@ class CertificateToolbox
         }
         $pem = '-----BEGIN ' . $type . '-----' . PHP_EOL;
         $pem .= chunk_split($data, 64, PHP_EOL);
-        $pem .= '-----END ' . $type . '-----' . PHP_EOL;
 
-        return $pem;
+        return $pem . ('-----END ' . $type . '-----' . PHP_EOL);
     }
 
     public static function convertPEMToDER(string $data): string
@@ -61,11 +58,14 @@ class CertificateToolbox
      *
      * @return string[]
      */
-    public static function convertAllDERToPEM(array $data, string $type = 'CERTIFICATE'): array
+    public static function convertAllDERToPEM(iterable $data, string $type = 'CERTIFICATE'): array
     {
-        return array_map(static function ($d) use ($type): string {
-            return self::convertDERToPEM($d, $type);
-        }, $data);
+        $certificates = [];
+        foreach ($data as $d) {
+            $certificates[] = self::convertDERToPEM($d, $type);
+        }
+
+        return $certificates;
     }
 
     private static function unusedBytesFix(string $data): string

@@ -30,6 +30,3 @@ jobs:
 
       - name: Run tests (PHP)
         run: make ci-cc
-
-      - name: Run tests (JS)
-        run: make js

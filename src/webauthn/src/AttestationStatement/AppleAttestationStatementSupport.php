@@ -50,12 +50,8 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
             );
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray(
-            $certificates,
-            'The attestation statement value "x5c" must be a list with at least one certificate.'
-        );
         Assertion::greaterThan(
-            count($certificates),
+            is_countable($certificates) ? count($certificates) : 0,
             0,
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
