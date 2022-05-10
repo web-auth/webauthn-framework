@@ -87,9 +87,20 @@ final class AttestationRequestController
     ): PublicKeyCredentialCreationOptions {
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-        $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
-        if (is_array($authenticatorSelection)) {
-            $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
+        $authenticatorSelectionData = $creationOptionsRequest->authenticatorSelection;
+        if (is_array($authenticatorSelectionData)) {
+            $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
+        } else {
+            $authenticatorSelection = AuthenticatorSelectionCriteria::create()
+                ->setUserVerification(
+                    $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+                )
+                ->setResidentKey($creationOptionsRequest->residentKey)
+                ->setRequireResidentKey(
+                    $creationOptionsRequest->residentKey === AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
+                )
+                ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment)
+            ;
         }
         $extensions = $creationOptionsRequest->extensions;
         if (is_array($extensions)) {

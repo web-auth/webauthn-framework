@@ -33,6 +33,10 @@ parameters:
             message: '#Method Webauthn\\Bundle\\Routing\\Loader::load\(\) has parameter \$resource with no type specified\.#'
             path: src/symfony/src/Routing/Loader.php
             count: 1
+        -
+            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
+            path: src/symfony/src/Controller/AttestationRequestController.php
+            count: 1
 #    checkMissingIterableValueType: true
 #    checkGenericClassInNonGenericObjectType: true
 #    checkUninitializedProperties: true

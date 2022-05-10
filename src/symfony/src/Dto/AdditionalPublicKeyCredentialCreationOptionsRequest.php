@@ -14,6 +14,8 @@ final class AdditionalPublicKeyCredentialCreationOptionsRequest
 {
     /**
      * @var array<mixed>|null
+     *
+     * @deprecated Use $userVerification, $residentKey and $authenticatorAttachment
      */
     public ?array $authenticatorSelection = null;
 
