@@ -10,6 +10,7 @@ use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\OtherObject\TrueObject;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -30,7 +31,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
         static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
         static::assertCount(1, $extensions);
-        static::assertSame('{"loc":true}', json_encode($extensions));
+        static::assertSame('{"loc":true}', json_encode($extensions, JSON_THROW_ON_ERROR));
     }
 
     /**

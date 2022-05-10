@@ -166,7 +166,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
     /**
      * @test
      */
-    public function anExistingUserCanTestItsAuthenticators(): void
+    public function anExistingUserCanTestItsAuthenticators(): never
     {
         static::markTestSkipped('To be done');
     }
@@ -220,10 +220,13 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $session->set('_security_' . $firewallContext, serialize($token));
         $session->save();
 
-        $domains = array_unique(array_map(static function (Cookie $cookie) use ($session) {
-            return $cookie->getName() === $session->getName() ? $cookie->getDomain() : '';
-        }, $this->client->getCookieJar()
-            ->all())) ?: [''];
+        $domains = array_unique(
+            array_map(
+                static fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '',
+                $this->client->getCookieJar()
+                    ->all()
+            )
+        ) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()

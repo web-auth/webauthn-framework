@@ -26,7 +26,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
     $rectorConfig->import(PHPUnitSetList::PHPUNIT_91);
     $rectorConfig->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
-    $rectorConfig->paths([__DIR__ . '/src']);
+    $rectorConfig->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $rectorConfig->phpVersion(PhpVersion::PHP_81);
     $rectorConfig->importNames();
     $rectorConfig->importShortClasses();

@@ -171,7 +171,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertSame(1548688135, $authenticatorData->getSignCount());
+        static::assertSame(1_548_688_135, $authenticatorData->getSignCount());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
     }

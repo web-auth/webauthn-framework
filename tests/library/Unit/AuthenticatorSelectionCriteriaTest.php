@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticatorSelectionCriteria;
 
@@ -29,7 +30,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('preferred', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
             '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"preferred"}',
-            json_encode($authenticatorSelectionCriteria)
+            json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
         );
 
         $data = AuthenticatorSelectionCriteria::createFromString(
@@ -41,7 +42,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('preferred', $data->getResidentKey());
         static::assertSame(
             '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"preferred"}',
-            json_encode($data)
+            json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
 
@@ -63,7 +64,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('resident_key', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
             '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}',
-            json_encode($authenticatorSelectionCriteria)
+            json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
         );
 
         $data = AuthenticatorSelectionCriteria::createFromString(
@@ -75,7 +76,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('resident_key', $data->getResidentKey());
         static::assertSame(
             '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}',
-            json_encode($data)
+            json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
 }

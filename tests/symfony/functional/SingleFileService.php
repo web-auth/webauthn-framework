@@ -17,7 +17,7 @@ final class SingleFileService implements MetadataService
      */
     private array $statements;
 
-    public function __construct(private string $rootPath)
+    public function __construct(private readonly string $rootPath)
     {
     }
 

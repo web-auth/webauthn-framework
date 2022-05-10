@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -53,6 +54,10 @@ final class MetadataStatementSupportCompilerPassTest extends AbstractCompilerPas
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new MetadataStatementSupportCompilerPass());
+        $container->addCompilerPass(
+            new MetadataStatementSupportCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
     }
 }

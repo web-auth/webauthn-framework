@@ -25,7 +25,7 @@ final class AssertionTest extends WebTestCase
     /**
      * @test
      */
-    public function anAssertionResponseCanBeLoadedAndVerified(): void
+    public function anAssertionResponseCanBeLoadedAndVerified(): never
     {
         self::bootKernel();
         static::markTestSkipped('To be fixed');

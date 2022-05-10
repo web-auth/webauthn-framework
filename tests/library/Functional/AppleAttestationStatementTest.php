@@ -30,7 +30,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
     public function anAppleAttestationCanBeVerified(): void
     {
         ClockMock::register(PhpCertificateChainChecker::class);
-        ClockMock::withClockMock(1600000000.0);
+        ClockMock::withClockMock(1_600_000_000.0);
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(

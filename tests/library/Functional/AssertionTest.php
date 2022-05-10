@@ -189,6 +189,6 @@ final class AssertionTest extends AbstractTestCase
             )
         ;
 
-        static::assertSame(1548765641, $publicKeyCredentialSource->getCounter());
+        static::assertSame(1_548_765_641, $publicKeyCredentialSource->getCounter());
     }
 }

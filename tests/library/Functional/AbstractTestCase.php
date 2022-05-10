@@ -155,7 +155,7 @@ abstract class AbstractTestCase extends TestCase
         $androidSafetyNetAttestationStatementSupport
             ->enableApiVerification($client, 'api_key', new Psr17Factory())
             ->setLeeway(0)
-            ->setMaxAge(99999999999)
+            ->setMaxAge(99_999_999_999)
             ;
         $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());

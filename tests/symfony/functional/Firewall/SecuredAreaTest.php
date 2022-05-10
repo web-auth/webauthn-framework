@@ -129,7 +129,7 @@ final class SecuredAreaTest extends WebTestCase
 
         $this->client->request('GET', '/admin', [], [], []);
 
-        static::assertSame('["Hello admin"]', $this->client->getResponse()->getContent());
+        static::assertSame('["Hello foo"]', $this->client->getResponse()->getContent());
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 }
