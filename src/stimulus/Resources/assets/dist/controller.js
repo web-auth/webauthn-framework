@@ -2,6 +2,10 @@ import { Controller } from '@hotwired/stimulus';
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 
 class default_1 extends Controller {
+    initialize() {
+        this._dispatchEvent = this._dispatchEvent.bind(this);
+        this._getData = this._getData.bind(this);
+    }
     connect() {
         const options = {
             requestResultUrl: this.requestResultUrl || '/request',
@@ -43,7 +47,6 @@ class default_1 extends Controller {
             }
         }
         else {
-            console.log(`Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON)}</pre>`);
             this._dispatchEvent('webauthn:request:failure', verificationJSON.errorMessage);
         }
     }
@@ -77,7 +80,6 @@ class default_1 extends Controller {
             }
         }
         else {
-            console.log(`Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON)}</pre>`);
             this._dispatchEvent('webauthn:creation:failure', verificationJSON.errorMessage);
         }
     }
@@ -91,13 +93,14 @@ class default_1 extends Controller {
         }
         catch (e) {
         }
-        const object = {};
-        data.forEach((value, key) => {
-            if (value !== '') {
-                object[key] = value;
-            }
-        });
-        return object;
+        return {
+            username: data.get(this.usernameField || 'username'),
+            displayName: data.get(this.displayNameField || 'displayName'),
+            attestation: data.get(this.attestationField || 'attestation'),
+            userVerification: data.get(this.userVerificationField || 'userVerification'),
+            residentKey: data.get(this.residentKeyField || 'residentKey'),
+            authenticatorAttachment: data.get(this.authenticatorAttachmentField || 'authenticatorAttachment'),
+        };
     }
 }
 default_1.values = {
@@ -107,6 +110,12 @@ default_1.values = {
     creationResultUrl: String,
     creationOptionsUrl: String,
     creationSuccessRedirectUri: String,
+    usernameField: String,
+    displayNameField: String,
+    attestationField: String,
+    userVerificationField: String,
+    residentKeyField: String,
+    authenticatorAttachmentField: String,
 };
 
 export { default_1 as default };

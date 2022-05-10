@@ -11,7 +11,18 @@ export default class extends Controller {
         creationResultUrl: String,
         creationOptionsUrl: String,
         creationSuccessRedirectUri: String,
+        usernameField: String,
+        displayNameField: String,
+        attestationField: String,
+        userVerificationField: String,
+        residentKeyField: String,
+        authenticatorAttachmentField: String,
     };
+
+    initialize() {
+        this._dispatchEvent = this._dispatchEvent.bind(this);
+        this._getData = this._getData.bind(this);
+    }
 
     connect() {
         const options = {
@@ -58,7 +69,6 @@ export default class extends Controller {
                 window.location.replace(this.requestSuccessRedirectUriValue);
             }
         } else {
-            console.log(`Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON)}</pre>`);
             this._dispatchEvent('webauthn:request:failure', verificationJSON.errorMessage);
         }
     }
@@ -94,7 +104,6 @@ export default class extends Controller {
                 window.location.replace(this.creationSuccessRedirectUriValue);
             }
         } else {
-            console.log(`Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON)}</pre>`);
             this._dispatchEvent('webauthn:creation:failure', verificationJSON.errorMessage);
         }
     }
@@ -110,13 +119,13 @@ export default class extends Controller {
         } catch (e) {
             //Nothing to do
         }
-        const object = {};
-        data.forEach((value: FormDataEntryValue, key: string) => {
-            if (value !== '') {
-                object[key] = value;
-            }
-        });
-
-        return object;
+        return {
+            username: data.get(this.usernameField || 'username'),
+            displayName: data.get(this.displayNameField || 'displayName'),
+            attestation: data.get(this.attestationField || 'attestation'),
+            userVerification: data.get(this.userVerificationField || 'userVerification'),
+            residentKey: data.get(this.residentKeyField || 'residentKey'),
+            authenticatorAttachment: data.get(this.authenticatorAttachmentField || 'authenticatorAttachment'),
+        };
     }
 }
