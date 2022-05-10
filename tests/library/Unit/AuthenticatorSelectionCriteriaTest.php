@@ -26,9 +26,9 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
-        static::assertNull($authenticatorSelectionCriteria->getResidentKey());
+        static::assertSame('preferred', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"preferred"}',
             json_encode($authenticatorSelectionCriteria)
         );
 
@@ -38,9 +38,9 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('user_verification', $data->getUserVerification());
         static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());
-        static::assertNull($data->getResidentKey());
+        static::assertSame('preferred', $data->getResidentKey());
         static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"preferred"}',
             json_encode($data)
         );
     }

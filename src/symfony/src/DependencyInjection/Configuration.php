@@ -302,7 +302,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
             ->validate()
             ->ifNotInArray([
-                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,

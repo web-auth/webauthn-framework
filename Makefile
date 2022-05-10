@@ -6,6 +6,7 @@ mu: vendor ## Mutation tests
 .PHONY: tests
 tests: vendor ## Run all tests
 	vendor/bin/phpunit  --color
+	yarn test
 
 .PHONY: cc
 cc: vendor ## Show test coverage rates (HTML)
@@ -48,6 +49,12 @@ ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
 
 ################################################
 
+
+js: node_modules ## Execute JS tests
+	yarn test
+
+node_modules: package.json
+	yarn install --force
 
 .PHONY: rector
 rector: vendor ## Check all files using Rector

@@ -22,6 +22,11 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     final public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
+    final public const RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE = null;
+
+    /**
+     * @deprecated Please use AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE instead
+     */
     final public const RESIDENT_KEY_REQUIREMENT_NONE = null;
 
     final public const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
@@ -42,7 +47,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     {
         $this->requireResidentKey = false;
         $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
+        $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
     }
 
     public static function create(): self
@@ -115,7 +120,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
             ->setAuthenticatorAttachment($json['authenticatorAttachment'] ?? null)
             ->setRequireResidentKey($json['requireResidentKey'] ?? false)
             ->setUserVerification($json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-            ->setResidentKey($json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_NONE)
+            ->setResidentKey($json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_PREFERRED)
         ;
     }
 

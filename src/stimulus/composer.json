@@ -1,0 +1,28 @@
+{
+    "name": "web-auth/ux",
+    "type": "symfony-bundle",
+    "description": "Webauthn integration for Symfony",
+    "keywords": [
+        "symfony-ux",
+        "FIDO",
+        "FIDO2",
+        "webauthn"
+    ],
+    "homepage": "https://github.com/web-auth",
+    "authors": [
+        {
+            "name": "Florent Morselli",
+            "homepage": "https://github.com/Spomky"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/ux/contributors"
+        }
+    ],
+    "require": {},
+    "license": "MIT",
+    "conflict": {
+        "symfony/flex": "<1.13"
+    },
+    "minimum-stability": "dev"
+}

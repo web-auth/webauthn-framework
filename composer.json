@@ -62,7 +62,8 @@
     "replace": {
         "web-auth/webauthn-lib": "self.version",
         "web-auth/metadata-service": "self.version",
-        "web-auth/webauthn-symfony-bundle": "self.version"
+        "web-auth/webauthn-symfony-bundle": "self.version",
+        "web-auth/ux": "self.version"
     },
     "config": {
         "sort-packages": true,
@@ -85,7 +86,7 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
         "ekino/phpstan-banned-code": "^1.0",
-        "infection/infection": "dev-master",
+        "infection/infection": "^0.26",
         "matthiasnoback/symfony-dependency-injection-test": "^4.3",
         "monolog/monolog": "^2.0",
         "php-http/curl-client": "^2.0",

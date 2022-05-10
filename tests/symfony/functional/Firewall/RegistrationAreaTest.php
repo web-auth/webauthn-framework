@@ -120,6 +120,7 @@ final class RegistrationAreaTest extends WebTestCase
             'requireResidentKey' => true,
             'userVerification' => 'preferred',
             'authenticatorAttachment' => 'cross-platform',
+            'residentKey' => 'preferred',
         ], $data['authenticatorSelection']);
     }
 
@@ -155,6 +156,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'userVerification' => 'preferred',
+            'residentKey' => 'preferred',
         ], $data['authenticatorSelection']);
     }
 
@@ -201,6 +203,7 @@ final class RegistrationAreaTest extends WebTestCase
             'requireResidentKey' => true,
             'userVerification' => 'required',
             'authenticatorAttachment' => 'platform',
+            'residentKey' => 'preferred',
         ], $data['authenticatorSelection']);
     }
 
