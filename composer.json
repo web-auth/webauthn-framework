@@ -63,7 +63,7 @@
         "web-auth/webauthn-lib": "self.version",
         "web-auth/metadata-service": "self.version",
         "web-auth/webauthn-symfony-bundle": "self.version",
-        "web-auth/ux": "self.version"
+        "web-auth/webauthn-stimulus": "self.version"
     },
     "config": {
         "sort-packages": true,

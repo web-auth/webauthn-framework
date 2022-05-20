@@ -1,5 +1,5 @@
 {
-    "name": "@web-auth/ux",
+    "name": "@web-auth/webauthn-stimulus",
     "description": "Webauthn integration for Symfony",
     "license": "MIT",
     "version": "1.0.0",

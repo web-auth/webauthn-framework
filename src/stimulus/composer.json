@@ -1,5 +1,5 @@
 {
-    "name": "web-auth/ux",
+    "name": "web-auth/webauthn-stimulus",
     "type": "symfony-bundle",
     "description": "Webauthn integration for Symfony",
     "keywords": [
