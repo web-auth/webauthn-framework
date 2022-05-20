@@ -16,7 +16,7 @@ Then install the bundle using Composer and Symfony Flex:
 
 .. code-block:: terminal
 
-    $ composer require web-auth/ux
+    $ composer require web-auth/webauthn-stimulus
 
     # Don't forget to install the JavaScript dependencies as well and compile
     $ yarn install --force
@@ -36,12 +36,12 @@ The main usage of Symfony UX Webauthn is to use its Stimulus controller to perfo
 
 .. code-block:: twig
 
-    <form {{ stimulus_controller('@web-auth/ux/webauthn') }}>
+    <form {{ stimulus_controller('@web-auth/webauthn-stimulus/webauthn') }}>
         <input name="username" required type="text" placeholder="Username">
         <label for="username">Username</label>
         <input name="displayName" required type="text" placeholder="Display Name">
         <label for="displayName">Display Name</label>
-        <button type="submit" {{ stimulus_action('@web-auth/ux/webauthn', 'signup') }}>
+        <button type="submit" {{ stimulus_action('@web-auth/webauthn-stimulus/webauthn', 'signup') }}>
             Sign up
         </button>
     </form>
@@ -50,10 +50,10 @@ The main usage of Symfony UX Webauthn is to use its Stimulus controller to perfo
 
 .. code-block:: twig
 
-    <form {{ stimulus_controller('@web-auth/ux/webauthn') }}>
+    <form {{ stimulus_controller('@web-auth/webauthn-stimulus/webauthn') }}>
         <input name="username" required type="text" placeholder="Username">
         <label for="username">Username</label>
-        <button type="submit" {{ stimulus_action('@web-auth/ux/webauthn', 'signin') }}>
+        <button type="submit" {{ stimulus_action('@web-auth/webauthn-stimulus/webauthn', 'signin') }}>
             Sign in
         </button>
     </form>
