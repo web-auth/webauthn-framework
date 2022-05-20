@@ -31,36 +31,4 @@ class WebauthnServicesFactory
 
         return $firewallConfigId;
     }
-
-    /**
-     * @param array<string,mixed> $config
-     */
-    public function createSuccessHandler(
-        ContainerBuilder $container,
-        string $firewallName,
-        array $config,
-    ): string {
-        $successHandlerId = WebauthnFactory::SUCCESS_HANDLER_ID_PREFIX . $firewallName;
-        $container
-            ->setDefinition($successHandlerId, new ChildDefinition($config['success_handler']))
-        ;
-
-        return $successHandlerId;
-    }
-
-    /**
-     * @param array<string,mixed> $config
-     */
-    public function createFailureHandler(
-        ContainerBuilder $container,
-        string $firewallName,
-        array $config,
-    ): string {
-        $failureHandlerId = WebauthnFactory::FAILURE_HANDLER_ID_PREFIX . $firewallName;
-        $container
-            ->setDefinition($failureHandlerId, new ChildDefinition($config['failure_handler']))
-        ;
-
-        return $failureHandlerId;
-    }
 }

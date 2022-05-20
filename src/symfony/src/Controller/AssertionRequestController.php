@@ -10,6 +10,8 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -38,7 +40,7 @@ final class AssertionRequestController
         private readonly string $profile,
         private readonly OptionsStorage $optionsStorage,
         private readonly RequestOptionsHandler $optionsHandler,
-        private readonly FailureHandler $failureHandler,
+        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -70,6 +72,12 @@ final class AssertionRequestController
             return $response;
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure(
+                    $request,
+                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
+                );
+            }
 
             return $this->failureHandler->onFailure($request, $throwable);
         }

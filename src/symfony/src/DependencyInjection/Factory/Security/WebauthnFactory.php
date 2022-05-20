@@ -57,12 +57,24 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const SUCCESS_HANDLER_ID_PREFIX = 'security.authentication.success_handler.webauthn.';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const FAILURE_HANDLER_ID_PREFIX = 'security.authentication.failure_handler.webauthn.';
 
     private const PRIORITY = 0;
@@ -174,8 +186,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $userProviderId
     ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
-        $successHandlerId = $this->servicesFactory->createSuccessHandler($container, $firewallName, $config,);
-        $failureHandlerId = $this->servicesFactory->createFailureHandler($container, $firewallName, $config,);
+        // $successHandlerId = $this->servicesFactory->createSuccessHandler($container, $firewallName, $config);
+        // $failureHandlerId = $this->servicesFactory->createFailureHandler($container, $firewallName, $config);
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
         $this->createAttestationControllersAndRoutes($container, $firewallName, $config);
@@ -184,8 +196,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $container,
             $firewallName,
             $userProviderId,
-            $successHandlerId,
-            $failureHandlerId,
+            $config['success_handler'],
+            $config['failure_handler'],
             $firewallConfigId,
             $config['options_storage'],
             $config['secured_rp_ids']

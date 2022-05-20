@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Controller;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -45,7 +46,7 @@ final class AssertionControllerFactory
         string $profile,
         OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
-        FailureHandler $failureHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AssertionRequestController {
         return new AssertionRequestController(
             $this->serializer,
@@ -64,7 +65,7 @@ final class AssertionControllerFactory
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
-        FailureHandler $failureHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AssertionResponseController {
         return new AssertionResponseController(
             $this->httpMessageFactory,

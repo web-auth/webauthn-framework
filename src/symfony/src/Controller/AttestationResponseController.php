@@ -9,6 +9,8 @@ use InvalidArgumentException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -32,7 +34,7 @@ final class AttestationResponseController
         private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private readonly OptionsStorage $optionStorage,
         private readonly SuccessHandler $successHandler,
-        private readonly FailureHandler $failureHandler,
+        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private readonly array $securedRelyingPartyIds,
     ) {
     }
@@ -78,6 +80,13 @@ final class AttestationResponseController
 
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure(
+                    $request,
+                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
+                );
+            }
+
             return $this->failureHandler->onFailure($request, $throwable);
         }
     }

@@ -9,6 +9,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -27,7 +29,7 @@ final class AssertionResponseController
         private readonly LoggerInterface $logger,
         private readonly OptionsStorage $optionsStorage,
         private readonly SuccessHandler $successHandler,
-        private readonly FailureHandler $failureHandler,
+        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ) {
     }
 
@@ -60,6 +62,12 @@ final class AssertionResponseController
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure(
+                    $request,
+                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
+                );
+            }
 
             return $this->failureHandler->onFailure($request, $throwable);
         }

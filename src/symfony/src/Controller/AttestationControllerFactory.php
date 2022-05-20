@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -35,7 +36,7 @@ final class AttestationControllerFactory
         string $profile,
         OptionsStorage $optionStorage,
         CreationOptionsHandler $creationOptionsHandler,
-        FailureHandler $failureHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AttestationRequestController {
         return new AttestationRequestController(
             $userEntityGuesser,
@@ -56,7 +57,7 @@ final class AttestationControllerFactory
     public function createAttestationResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
-        FailureHandler $failureHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         array $securedRelyingPartyIds
     ): AttestationResponseController {
         return new AttestationResponseController(
