@@ -1,5 +1,5 @@
 parameters:
-    level: 8
+    level: max
     paths:
         - src
     ignoreErrors:
@@ -37,9 +37,13 @@ parameters:
             message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
             path: src/symfony/src/Controller/AttestationRequestController.php
             count: 1
-#    checkMissingIterableValueType: true
-#    checkGenericClassInNonGenericObjectType: true
-#    checkUninitializedProperties: true
+        -
+            message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+            count: 2
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    checkUninitializedProperties: true
     treatPhpDocTypesAsCertain: false
     scanFiles:
         - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php

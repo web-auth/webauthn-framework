@@ -17,7 +17,7 @@ final class DistantResourceMetadataService implements MetadataService
     private ?MetadataStatement $statement = null;
 
     /**
-     * @param array<string, mixed> $additionalHeaderParameters
+     * @param array<string, string> $additionalHeaderParameters
      */
     public function __construct(
         private readonly RequestFactoryInterface $requestFactory,
