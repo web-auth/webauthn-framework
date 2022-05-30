@@ -96,7 +96,7 @@
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
         "phpunit/phpunit": "^9.0",
-        "qossmic/deptrac-shim": "^0.19",
+        "qossmic/deptrac-shim": "^0.20",
         "rector/rector": "^0.13",
         "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^6.0",
