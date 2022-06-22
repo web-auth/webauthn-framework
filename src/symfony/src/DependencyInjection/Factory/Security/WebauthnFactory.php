@@ -186,8 +186,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $userProviderId
     ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
-        // $successHandlerId = $this->servicesFactory->createSuccessHandler($container, $firewallName, $config);
-        // $failureHandlerId = $this->servicesFactory->createFailureHandler($container, $firewallName, $config);
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
         $this->createAttestationControllersAndRoutes($container, $firewallName, $config);

@@ -198,7 +198,9 @@ class AuthenticatorAssertionResponseValidator
                 Normalizable::class,
                 'Invalid attestation object. Unexpected object.'
             );
-            $coseKey = Key::create($credentialPublicKeyStream->normalize());
+            $normalizedData = $credentialPublicKeyStream->normalize();
+            Assertion::isArray($normalizedData, 'Invalid attestation object. Unexpected object.');
+            $coseKey = Key::create($normalizedData);
             $algorithm = $this->algorithmManager?->get($coseKey->alg());
             Assertion::isInstanceOf(
                 $algorithm,

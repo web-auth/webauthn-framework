@@ -91,18 +91,20 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
         foreach ($crls as $crl) {
             $crl = CertificateToolbox::convertPEMToDER($crl);
             $asn = ASNObject::fromBinary($crl);
-            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(1)');
+            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL');
             $asn = $asn->getFirstChild();
-            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL(2)');
+            Assertion::isInstanceOf($asn, Sequence::class, 'Invalid CRL');
             Assertion::minCount($asn->getChildren(), 5);
             $list = $asn->getChildren()[5];
-            Assertion::isInstanceOf($list, Sequence::class, 'Invalid CRL(3)');
-            Assertion::allIsInstanceOf($list->getChildren(), Sequence::class, 'Invalid CRL(3)');
+            Assertion::isInstanceOf($list, Sequence::class, 'Invalid CRL');
+            Assertion::allIsInstanceOf($list->getChildren(), Sequence::class, 'Invalid CRL');
             $revokedCertificates = array_merge($revokedCertificates, array_map(static function (Sequence $r): string {
                 $sn = $r->getFirstChild();
-                Assertion::isInstanceOf($sn, Integer::class, 'Invalid CRL(4)');
+                Assertion::isInstanceOf($sn, Integer::class, 'Invalid CRL');
+                $value = $sn->getContent();
+                Assertion::string($value, 'Invalid CRL');
 
-                return $sn->getContent();
+                return $value;
             }, $list->getChildren()));
         }
         $certificatesIds = $this->getCertificatesIds(...$trustedCertificates, ...$authenticatorCertificates);
@@ -151,6 +153,8 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
         Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
         $subject = $parsed['subject'];
         $issuer = $parsed['issuer'];
+        Assertion::isArray($subject, 'The certificate subject is not valid');
+        Assertion::isArray($issuer, 'The certificate issuer is not valid');
         ksort($subject);
         ksort($issuer);
         Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
