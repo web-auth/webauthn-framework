@@ -106,7 +106,7 @@
         "symfony/validator": "^6.0",
         "symfony/var-dumper": "^6.0",
         "symfony/yaml": "^6.0",
-        "symplify/easy-coding-standard": "^10.0",
+        "symplify/easy-coding-standard": "^11.0",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
         "web-token/jwt-key-mgmt": "^3.0",
         "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
