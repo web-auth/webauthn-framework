@@ -1,4 +1,5 @@
-# Webauthn Framework
+Webauthn Framework
+==================
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Coding%20Standards/badge.svg)
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Static%20Analyze/badge.svg)
