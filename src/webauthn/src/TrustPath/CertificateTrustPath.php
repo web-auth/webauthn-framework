@@ -38,8 +38,11 @@ final class CertificateTrustPath implements TrustPath
     public static function createFromArray(array $data): static
     {
         Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
+        $x5c = $data['x5c'];
+        Assertion::isArray($x5c, 'The trust path type is invalid. The parameter "x5c" shall contain strings.');
+        Assertion::allString($x5c, 'The trust path type is invalid. The parameter "x5c" shall contain strings.');
 
-        return new self($data['x5c']);
+        return new self($x5c);
     }
 
     /**

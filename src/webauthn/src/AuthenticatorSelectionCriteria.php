@@ -37,18 +37,14 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private ?string $authenticatorAttachment = null;
 
-    private bool $requireResidentKey;
+    /**
+     * @deprecated Will be removed in 5.0. Please use residentKey instead
+     */
+    private bool $requireResidentKey = false;
 
-    private string $userVerification;
+    private string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 
-    private ?string $residentKey;
-
-    public function __construct()
-    {
-        $this->requireResidentKey = false;
-        $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
-    }
+    private ?string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
 
     public static function create(): self
     {
@@ -88,6 +84,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this->authenticatorAttachment;
     }
 
+    /**
+     * @deprecated Will be removed in 5.0. Please use getResidentKey() instead
+     */
     public function isRequireResidentKey(): bool
     {
         return $this->requireResidentKey;

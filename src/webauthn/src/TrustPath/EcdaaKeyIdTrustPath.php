@@ -35,7 +35,9 @@ final class EcdaaKeyIdTrustPath implements TrustPath
     public static function createFromArray(array $data): static
     {
         Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
+        $ecdaaKeyId = $data['ecdaaKeyId'];
+        Assertion::string($ecdaaKeyId, 'The trust path type is invalid. The parameter "ecdaaKeyId" shall be a string.');
 
-        return new self($data['ecdaaKeyId']);
+        return new self($ecdaaKeyId);
     }
 }
