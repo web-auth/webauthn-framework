@@ -39,7 +39,6 @@
         "ext-openssl": "*",
         "beberlei/assert": "^3.2",
         "fgrosse/phpasn1": "^2.1",
-        "league/uri": "^6.0",
         "nyholm/psr7": "^1.1",
         "paragonie/constant_time_encoding": "^2.4",
         "psr/http-client": "^1.0",
