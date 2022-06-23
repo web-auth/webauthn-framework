@@ -1,6 +1,6 @@
 name: Rector Checkstyle
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   tests:
