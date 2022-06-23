@@ -32,7 +32,7 @@ final class TrustPathDataType extends Type
         if ($value === null || $value instanceof TrustPath) {
             return $value;
         }
-        $json = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode((string) $value, true, 512, JSON_THROW_ON_ERROR);
 
         return TrustPathLoader::loadTrustPath($json);
     }

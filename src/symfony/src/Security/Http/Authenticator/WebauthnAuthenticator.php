@@ -114,7 +114,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
         Assertion::notNull($userEntity, 'The user entity is missing');
 
-        $token = new  WebauthnToken(
+        $token = new WebauthnToken(
             $userEntity,
             $credentialsBadge->getPublicKeyCredentialOptions(),
             $credentialsBadge->getPublicKeyCredentialSource()
@@ -199,7 +199,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $source,
                 $this->firewallConfig->getFirewallName()
             );
-            $userBadge = new UserBadge($source->getUserHandle(), [$this->userProvider, 'loadUserByIdentifier']);
+            $userBadge = new UserBadge($source->getUserHandle(), $this->userProvider->loadUserByIdentifier(...));
 
             return new Passport($userBadge, $credentials, []);
         } catch (Throwable $e) {
@@ -252,10 +252,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $credentialSource,
                 $this->firewallConfig->getFirewallName()
             );
-            $userBadge = new UserBadge($credentialSource->getUserHandle(), [
-                $this->userProvider,
-                'loadUserByIdentifier',
-            ]);
+            $userBadge = new UserBadge($credentialSource->getUserHandle(), $this->userProvider->loadUserByIdentifier(
+                ...
+            ));
 
             return new Passport($userBadge, $credentials, []);
         } catch (Throwable $e) {

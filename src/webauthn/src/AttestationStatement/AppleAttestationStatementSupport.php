@@ -130,6 +130,6 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
-        Assertion::eq('3024a1220420' . $nonce, bin2hex($extension), 'The client data hash is not valid');
+        Assertion::eq('3024a1220420' . $nonce, bin2hex((string) $extension), 'The client data hash is not valid');
     }
 }

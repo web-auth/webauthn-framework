@@ -172,11 +172,11 @@ final class PhpCertificateChainChecker implements CertificateChainChecker
             return '';
         }
         $endpoint = $parsed['extensions']['crlDistributionPoints'];
-        $pos = mb_strpos($endpoint, 'URI:');
+        $pos = mb_strpos((string) $endpoint, 'URI:');
         if (! is_int($pos)) {
             return '';
         }
-        $endpoint = trim(mb_substr($endpoint, $pos + 4));
+        $endpoint = trim(mb_substr((string) $endpoint, $pos + 4));
 
         $request = $this->requestFactory->createRequest('GET', $endpoint);
         try {

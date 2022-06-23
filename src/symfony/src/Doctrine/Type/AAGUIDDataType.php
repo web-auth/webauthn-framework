@@ -28,7 +28,7 @@ final class AAGUIDDataType extends Type
      */
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?AbstractUid
     {
-        if ($value instanceof AbstractUid || mb_strlen($value, '8bit') !== 36) {
+        if ($value instanceof AbstractUid || mb_strlen((string) $value, '8bit') !== 36) {
             return $value;
         }
 

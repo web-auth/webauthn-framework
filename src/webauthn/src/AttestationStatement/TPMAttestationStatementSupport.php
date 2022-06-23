@@ -56,11 +56,15 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
 
         $certInfo = $this->checkCertInfo($attestation['attStmt']['certInfo']);
-        Assertion::eq('8017', bin2hex($certInfo['type']), 'Invalid attestation object');
+        Assertion::eq('8017', bin2hex((string) $certInfo['type']), 'Invalid attestation object');
 
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
-        $pubAreaAttestedNameAlg = mb_substr($certInfo['attestedName'], 0, 2, '8bit');
-        $pubAreaHash = hash($this->getTPMHash($pubAreaAttestedNameAlg), $attestation['attStmt']['pubArea'], true);
+        $pubAreaAttestedNameAlg = mb_substr((string) $certInfo['attestedName'], 0, 2, '8bit');
+        $pubAreaHash = hash(
+            $this->getTPMHash($pubAreaAttestedNameAlg),
+            (string) $attestation['attStmt']['pubArea'],
+            true
+        );
         $attestedName = $pubAreaAttestedNameAlg . $pubAreaHash;
         Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
