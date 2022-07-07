@@ -6,7 +6,7 @@ Bugs or feature requests can be posted online on the GitHub issues section of th
 
 Few rules to ease code reviews and merges:
 
-- You MUST follow the [PSR-1](http://www.php-fig.org/psr/psr-1/), [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/) coding standards.
+- You MUST follow the [PSR-12](http://www.php-fig.org/psr/psr-12/) coding standards.
 - You MUST run the test suite.
 - You MUST write (or update) unit tests when bugs are fixed or features are added.
 - You SHOULD write documentation.
@@ -22,4 +22,4 @@ Run test suite
 
 * install composer: `curl -s http://getcomposer.org/installer | php`
 * install dependencies: `php composer.phar install`
-* run tests: `vendor/bin/behat`
+* run tests: `vendor/bin/phpunit`
