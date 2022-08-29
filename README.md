@@ -1,12 +1,7 @@
 Webauthn Framework
 ==================
 
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Coding%20Standards/badge.svg)
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Static%20Analyze/badge.svg)
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Rector%20Checkstyle/badge.svg)
-
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Unit%20and%20Functional%20Tests/badge.svg)
-![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Mutation%20Testing/badge.svg)
+![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Integrate/badge.svg)
 
 [![Latest Stable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/stable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![Total Downloads](https://poser.pugx.org/web-auth/webauthn-framework/downloads.png)](https://packagist.org/packages/web-auth/webauthn-framework)
