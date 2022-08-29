@@ -160,7 +160,7 @@ class AuthenticatorAttestationResponseValidator
                 'rpId hash mismatch.'
             );
 
-            if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+            if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
                 Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
             }
@@ -259,7 +259,7 @@ class AuthenticatorAttestationResponseValidator
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()
             ->__toString();
-        if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
+        if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             $this->logger->debug('No attestation is asked.');
             //No attestation is asked. We shall ensure that the data is anonymous.
             if (
