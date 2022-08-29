@@ -7,7 +7,6 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -49,7 +48,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
         $options = PublicKeyCredentialCreationOptions::create(
             PublicKeyCredentialRpEntity::create('https://webauthn.firstyear.id.au'),
             PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
-            Base64UrlSafe::decodeNoPadding('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk'),
+            base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
             [PublicKeyCredentialParameters::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, 0)]
         )
             ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
