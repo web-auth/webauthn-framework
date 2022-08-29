@@ -6,17 +6,14 @@ namespace Webauthn\Bundle\Dto;
 
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Type;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
 final class ServerPublicKeyCredentialCreationOptionsRequest
 {
-    #[Type(type: 'string')]
     #[NotBlank]
     public string $username = '';
 
-    #[Type(type: 'string')]
     #[NotBlank]
     public string $displayName = '';
 
@@ -27,15 +24,14 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
      */
     public ?array $authenticatorSelection = null;
 
-    #[Type(type: 'string')]
+    #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
     ])]
-    public string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+    public ?string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
 
-    #[Type(type: 'string')]
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
@@ -44,7 +40,6 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     ])]
     public ?string $userVerification = AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 
-    #[Type(type: 'string')]
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
@@ -54,7 +49,6 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     ])]
     public ?string $residentKey = AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED;
 
-    #[Type(type: 'string')]
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
