@@ -9,5 +9,5 @@ splits:
     target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-metadata-service.git"
 
 origins:
-  - ^v\d+\.\d+$
-  - ^v\d+\.\d+\.\d+.*$
+  - ^\d+\.\d+\.x$
+  - ^\d+\.\d+\.\d+$
