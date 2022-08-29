@@ -233,13 +233,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     private function getParameters(string $type, StringStream $stream): array
     {
         return match (bin2hex($type)) {
-            '0001', '0014', '0016' => [
+            '0001' => [
                 'symmetric' => $stream->read(2),
                 'scheme' => $stream->read(2),
                 'keyBits' => unpack('n', $stream->read(2))[1],
                 'exponent' => $this->getExponent($stream->read(4)),
             ],
-            '0018', '0023' => [
+            '0023' => [
                 'symmetric' => $stream->read(2),
                 'scheme' => $stream->read(2),
                 'curveId' => $stream->read(2),
@@ -253,9 +253,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         switch (bin2hex($type)) {
             case '0001':
-            case '0014':
-            case '0016':
-            case '0018':
                 $uniqueLength = unpack('n', $stream->read(2))[1];
                 return $stream->read($uniqueLength);
             case '0023':
