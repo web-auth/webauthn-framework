@@ -29,7 +29,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
@@ -119,8 +119,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
         $jws = $this->jwsSerializer->unserialize($attestation['attStmt']['response']);
         $jwsHeader = $jws->getSignature(0)
-            ->getProtectedHeader()
-        ;
+            ->getProtectedHeader();
         Assertion::keyExists(
             $jwsHeader,
             'x5c',
@@ -133,7 +132,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
         $attestation['attStmt']['jws'] = $jws;
 
-        return AttestationStatement::createBasic(
+        return AttestationStatement::createAnonymizationCA(
             $this->name(),
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
@@ -230,8 +229,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $request = $this->requestFactory->createRequest('POST', $uri);
         $request = $request->withHeader('content-type', 'application/json');
         $request->getBody()
-            ->write($requestBody)
-        ;
+            ->write($requestBody);
 
         $response = $this->client->sendRequest($request);
         $this->checkGoogleApiResponse($response);
@@ -246,12 +244,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     {
         $responseBody = '';
         $response->getBody()
-            ->rewind()
-        ;
+            ->rewind();
         do {
             $tmp = $response->getBody()
-                ->read(1024)
-            ;
+                ->read(1024);
             if ($tmp === '') {
                 break;
             }

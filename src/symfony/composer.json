@@ -29,6 +29,8 @@
         "symfony/http-client": "^6.0",
         "symfony/psr-http-message-bridge": "^2.0",
         "symfony/security-bundle": "^6.0",
+        "symfony/security-core": "^6.0",
+        "symfony/security-http": "^6.0",
         "symfony/serializer": "^6.0",
         "symfony/validator": "^6.0",
         "web-auth/webauthn-lib": "self.version",

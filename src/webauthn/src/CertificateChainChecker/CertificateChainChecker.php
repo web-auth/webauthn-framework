@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\CertificateChainChecker;
 
-interface CertificateChainChecker
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+
+/**
+ * @deprecated since v4.1. Please use Webauthn\MetadataService\CertificateChainChecker\CertificateChainValidator instead
+ */
+interface CertificateChainChecker extends CertificateChainValidator
 {
-    /**
-     * @param string[] $authenticatorCertificates
-     * @param string[] $trustedCertificates
-     */
-    public function check(array $authenticatorCertificates, array $trustedCertificates): void;
 }

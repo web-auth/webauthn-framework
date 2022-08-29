@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function is_string;
 use JsonSerializable;
 
 class AuthenticatorGetInfo implements JsonSerializable
@@ -15,21 +14,19 @@ class AuthenticatorGetInfo implements JsonSerializable
     private array $info = [];
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string|int, mixed> $data
      */
     public static function create(array $data = []): self
     {
         $object = new self();
         foreach ($data as $k => $v) {
-            if (is_string($k)) {
-                $object->add($k, $v);
-            }
+            $object->add($k, $v);
         }
 
         return $object;
     }
 
-    public function add(string $key, mixed $value): self
+    public function add(string|int $key, mixed $value): self
     {
         $this->info[$key] = $value;
 

@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 
 /**
  * @internal
  */
-final class CertificateChainCheckerTest extends TestCase
+final class CertificateChainValidatorTest extends TestCase
 {
     /**
      * @test
      *
      * @use \Webauthn\CertificateToolbox::checkChain
      */
-    public function anCertificateChainCheckerCanBeCreatedAndValueAccessed(): void
+    public function anCertificateChainValidatorCanBeCreatedAndValueAccessed(): void
     {
         $x5c = [
             file_get_contents(__DIR__ . '/../certificates/chain/1.der'),

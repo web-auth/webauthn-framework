@@ -123,8 +123,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
                 isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
                     $json['extensions']
                 ) : new AuthenticationExtensionsClientInputs()
-            )
-        ;
+            );
     }
 
     /**

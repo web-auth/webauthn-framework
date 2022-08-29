@@ -17,6 +17,8 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
 use Throwable;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 
@@ -42,6 +44,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         private readonly ClientInterface $httpClient,
         private readonly string $uri,
         private readonly array $additionalHeaderParameters = [],
+        private readonly ?CertificateChainValidator $certificateChainValidator = null,
+        private readonly ?string $rootCertificateUri = null,
     ) {
     }
 
@@ -52,9 +56,18 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         RequestFactoryInterface $requestFactory,
         ClientInterface $httpClient,
         string $uri,
-        array $additionalHeaderParameters = []
+        array $additionalHeaderParameters = [],
+        ?CertificateChainValidator $certificateChainValidator = null,
+        ?string $rootCertificateUri = null,
     ): self {
-        return new self($requestFactory, $httpClient, $uri, $additionalHeaderParameters);
+        return new self(
+            $requestFactory,
+            $httpClient,
+            $uri,
+            $additionalHeaderParameters,
+            $certificateChainValidator,
+            $rootCertificateUri
+        );
     }
 
     /**
@@ -103,18 +116,18 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
             return;
         }
 
-        $content = $this->fetch();
-        $rootCertificates = [];
+        $content = $this->fetch($this->uri, $this->additionalHeaderParameters);
+        $jwtCertificates = [];
         try {
-            $payload = $this->getJwsPayload($content, $rootCertificates);
+            $payload = $this->getJwsPayload($content, $jwtCertificates);
             $data = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+            $this->validateCertificates(...$jwtCertificates);
 
             foreach ($data['entries'] as $datum) {
                 $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
 
                 $mds = $entry->getMetadataStatement();
                 if ($mds !== null && $entry->getAaguid() !== null) {
-                    $mds->setRootCertificates($rootCertificates);
                     $this->statements[$entry->getAaguid()] = $mds;
                     $this->statusReports[$entry->getAaguid()] = $entry->getStatusReports();
                 }
@@ -125,10 +138,13 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         $this->loaded = true;
     }
 
-    private function fetch(): string
+    /**
+     * @param array<string, mixed> $headerParameters
+     */
+    private function fetch(string $uri, array $headerParameters): string
     {
-        $request = $this->requestFactory->createRequest('GET', $this->uri);
-        foreach ($this->additionalHeaderParameters as $k => $v) {
+        $request = $this->requestFactory->createRequest('GET', $uri);
+        foreach ($headerParameters as $k => $v) {
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
@@ -138,11 +154,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
             sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
         );
         $response->getBody()
-            ->rewind()
-        ;
+            ->rewind();
         $content = $response->getBody()
-            ->getContents()
-        ;
+            ->getContents();
         Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
         return $content;
@@ -177,5 +191,15 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         Assertion::notNull($payload, 'Invalid response from the metadata service. The payload is missing.');
 
         return $payload;
+    }
+
+    private function validateCertificates(string ...$untrustedCertificates): void
+    {
+        if ($this->certificateChainValidator === null || $this->rootCertificateUri === null) {
+            return;
+        }
+        $untrustedCertificates = CertificateToolbox::fixPEMStructures($untrustedCertificates);
+        $rootCertificate = CertificateToolbox::convertDERToPEM($this->fetch($this->rootCertificateUri, []));
+        $this->certificateChainValidator->check($untrustedCertificates, [$rootCertificate]);
     }
 }

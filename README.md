@@ -13,9 +13,11 @@ Webauthn Framework
 [![Latest Unstable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/unstable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![License](https://poser.pugx.org/web-auth/webauthn-framework/license.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 
-Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web applications, for the purpose of strongly authenticating users.
+Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web
+applications, for the purpose of strongly authenticating users.
 
-This framework contains PHP libraries and Symfony bundle to allow developers to integrate that authentication mechanism into their web applications.
+This framework contains PHP libraries and Symfony bundle to allow developers to integrate that authentication mechanism
+into their web applications.
 
 # Documentation
 
@@ -25,7 +27,8 @@ The documentation can be read on the following website: https://webauthn-doc.spo
 
 I bring solutions to your problems and answer your questions.
 
-If you really love that project and the work I have done or if you want I prioritize your issues, then you can help me out for a couple of :beers: or more!
+If you really love that project and the work I have done or if you want I prioritize your issues, then you can help me
+out for a couple of :beers: or more!
 
 [Become a sponsor](https://github.com/sponsors/Spomky)
 
@@ -35,7 +38,8 @@ Or
 
 # Contributing
 
-If you discover a security vulnerability within the project, please **don't use the bug tracker and don't publish it publicly**.
+If you discover a security vulnerability within the project, please **don't use the bug tracker and don't publish it
+publicly**.
 Instead, all security issues must be sent to security [at] spomky-labs.com.
 
 # Licence

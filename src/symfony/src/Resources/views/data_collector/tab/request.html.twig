@@ -11,13 +11,18 @@
             </tr>
             </thead>
             <tbody>
-            {%  if not collector.getData().publicKeyCredentialRequestOptions is empty %}
+            {% if not collector.getData().publicKeyCredentialRequestOptions is empty %}
                 {% for id, data in collector.getData().publicKeyCredentialRequestOptions %}
                     <tr>
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-pkcco-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-pkcco-{{ id }}" data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
                             <div id="webauthn-pkcco-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                                 <pre>{{ data.json }}</pre>
@@ -46,12 +51,12 @@
             </tr>
             </thead>
             <tbody>
-            {%  if collector.getData().authenticatorAssertionResponseValidationSucceeded is empty and collector.getData().authenticatorAssertionResponseValidationFailed is empty %}
+            {% if collector.getData().authenticatorAssertionResponseValidationSucceeded is empty and collector.getData().authenticatorAssertionResponseValidationFailed is empty %}
                 <tr>
                     <td colspan="5">No Authenticator Assertion have been validated</td>
                 </tr>
             {% endif %}
-            {%  if not collector.getData().authenticatorAssertionResponseValidationSucceeded is empty %}
+            {% if not collector.getData().authenticatorAssertionResponseValidationSucceeded is empty %}
                 {% for id, data in collector.getData().authenticatorAssertionResponseValidationSucceeded %}
                     <tr>
                         <td>{{ profiler_dump(data.user_handle) }}</td>
@@ -60,9 +65,18 @@
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-succeeded-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-succeeded-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
@@ -72,7 +86,7 @@
                     </tr>
                 {% endfor %}
             {% endif %}
-            {%  if not collector.getData().authenticatorAssertionResponseValidationFailed is empty %}
+            {% if not collector.getData().authenticatorAssertionResponseValidationFailed is empty %}
                 {% for id, data in collector.getData().authenticatorAssertionResponseValidationFailed %}
                     <tr>
                         <td>{{ profiler_dump(data.user_handle) }}</td>
@@ -81,9 +95,18 @@
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-failed-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-failed-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>

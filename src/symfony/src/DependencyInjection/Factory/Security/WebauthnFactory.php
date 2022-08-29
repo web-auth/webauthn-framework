@@ -57,12 +57,24 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const SUCCESS_HANDLER_ID_PREFIX = 'security.authentication.success_handler.webauthn.';
 
+    /**
+     * @deprecated This constant is not used anymore and will be removed in 5.0
+     */
     public const FAILURE_HANDLER_ID_PREFIX = 'security.authentication.failure_handler.webauthn.';
 
     private const PRIORITY = 0;
@@ -158,8 +170,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->end()
             ->end()
             ->end()
-            ->end()
-        ;
+            ->end();
     }
 
     /**
@@ -174,8 +185,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $userProviderId
     ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
-        $successHandlerId = $this->servicesFactory->createSuccessHandler($container, $firewallName, $config,);
-        $failureHandlerId = $this->servicesFactory->createFailureHandler($container, $firewallName, $config,);
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
         $this->createAttestationControllersAndRoutes($container, $firewallName, $config);
@@ -184,8 +193,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $container,
             $firewallName,
             $userProviderId,
-            $successHandlerId,
-            $failureHandlerId,
+            $config['success_handler'],
+            $config['failure_handler'],
             $firewallConfigId,
             $config['options_storage'],
             $config['secured_rp_ids']
@@ -224,8 +233,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->replaceArgument(3, new Reference($failureHandlerId))
             ->replaceArgument(4, new Reference($optionsStorageId))
             ->replaceArgument(5, $securedRpIds)
-            ->addMethodCall('setLogger', [new Reference('webauthn.logger')])
-        ;
+            ->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
 
         return $authenticatorId;
     }
@@ -309,8 +317,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
-            ])
-        ;
+            ]);
         $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $path, $host);
     }
 
@@ -332,8 +339,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
-            ])
-        ;
+            ]);
         $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $path, $host);
     }
 
@@ -345,9 +351,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         ?string $host
     ): void {
         $controller = (new Definition(DummyController::class))
-            ->setFactory([new Reference(DummyControllerFactory::class), 'create'])
-
-        ;
+            ->setFactory([new Reference(DummyControllerFactory::class), 'create']);
         $this->createControllerAndRoute($container, $controller, $action, 'result', $firewallName, $path, $host);
     }
 
@@ -366,8 +370,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 'path' => $path,
                 'host' => $host,
             ])
-            ->setPublic(true)
-        ;
+            ->setPublic(true);
 
         $controllerId = sprintf('webauthn.controller.security.%s.%s.%s', $firewallName, $name, $operation);
 

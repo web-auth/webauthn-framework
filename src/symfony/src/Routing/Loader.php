@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
+/**
+ * @final
+ */
 class Loader extends SymfonyLoader
 {
     private readonly RouteCollection $routes;
@@ -29,7 +32,10 @@ class Loader extends SymfonyLoader
         $this->routes->add($name, $route);
     }
 
-    public function load($resource, string $type = null)
+    /**
+     * @noRector
+     */
+    public function load(mixed $resource, string $type = null): RouteCollection
     {
         return $this->routes;
     }

@@ -20,7 +20,8 @@
         "cose"
     ],
     "attestationTypes": [
-        "basic_full"
+        "basic_full",
+        "basic_surrogate"
     ],
     "schema": 3,
     "userVerificationDetails": [

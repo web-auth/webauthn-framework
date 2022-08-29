@@ -97,6 +97,7 @@ class PublicKeyCredentialLoader
         ]);
         try {
             $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            Assertion::isArray($json, 'Invalid data');
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {
@@ -127,7 +128,7 @@ class PublicKeyCredentialLoader
                     $response['clientDataJSON']
                 ), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
-                $authData = Base64::decode($response['authenticatorData']);
+                $authData = Base64::decodeUrlSafe($response['authenticatorData']);
 
                 $authDataStream = new StringStream($authData);
                 $rp_id_hash = $authDataStream->read(32);

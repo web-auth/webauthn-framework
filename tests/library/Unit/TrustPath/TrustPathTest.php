@@ -47,8 +47,8 @@ final class TrustPathTest extends TestCase
      */
     public function theLoaderCanLoadCustomTrustPath(): void
     {
-        $trustPath = json_encode(new FooTrustPath());
-        $data = json_decode($trustPath, true);
+        $trustPath = json_encode(new FooTrustPath(), JSON_THROW_ON_ERROR);
+        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
         $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
 
         static::assertInstanceOf(FooTrustPath::class, $loadedTrustPath);

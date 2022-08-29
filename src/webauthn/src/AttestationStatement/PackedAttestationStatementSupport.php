@@ -18,7 +18,7 @@ use function is_array;
 use RuntimeException;
 use function Safe\openssl_verify;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;

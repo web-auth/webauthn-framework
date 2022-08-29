@@ -14,13 +14,14 @@
         }
     ],
     "authenticationAlgorithms": [
-        "secp521r1_ecdsa_sha256_raw"
+        "secp521r1_ecdsa_sha512_raw"
     ],
     "publicKeyAlgAndEncodings": [
         "cose"
     ],
     "attestationTypes": [
-        "basic_full"
+        "basic_full",
+        "basic_surrogate"
     ],
     "schema": 3,
     "userVerificationDetails": [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
@@ -55,6 +56,6 @@ final class DynamicRouteCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new DynamicRouteCompilerPass());
+        $container->addCompilerPass(new DynamicRouteCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
     }
 }

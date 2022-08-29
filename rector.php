@@ -12,25 +12,30 @@ use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->import(SetList::DEAD_CODE);
-    $rectorConfig->import(LevelSetList::UP_TO_PHP_81);
-    $rectorConfig->import(SymfonyLevelSetList::UP_TO_SYMFONY_60);
-    $rectorConfig->import(SymfonySetList::SYMFONY_CODE_QUALITY);
-    $rectorConfig->import(SymfonySetList::SYMFONY_52_VALIDATOR_ATTRIBUTES);
-    $rectorConfig->import(SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION);
-    $rectorConfig->import(SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES);
-    $rectorConfig->import(DoctrineSetList::DOCTRINE_CODE_QUALITY);
-    $rectorConfig->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
-    $rectorConfig->import(PHPUnitSetList::PHPUNIT_EXCEPTION);
-    $rectorConfig->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
-    $rectorConfig->import(PHPUnitSetList::PHPUNIT_91);
-    $rectorConfig->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
-    $rectorConfig->paths([__DIR__ . '/src']);
-    $rectorConfig->phpVersion(PhpVersion::PHP_81);
-    $rectorConfig->importNames();
-    $rectorConfig->importShortClasses();
+return static function (RectorConfig $config): void {
+    $config->import(SetList::DEAD_CODE);
+    $config->import(LevelSetList::UP_TO_PHP_81);
+    $config->import(SymfonyLevelSetList::UP_TO_SYMFONY_60);
+    $config->import(SymfonySetList::SYMFONY_CODE_QUALITY);
+    $config->import(SymfonySetList::SYMFONY_52_VALIDATOR_ATTRIBUTES);
+    $config->import(SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION);
+    $config->import(SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES);
+    $config->import(DoctrineSetList::DOCTRINE_CODE_QUALITY);
+    $config->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
+    $config->import(PHPUnitSetList::PHPUNIT_EXCEPTION);
+    $config->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
+    $config->import(PHPUnitSetList::PHPUNIT_91);
+    $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
+    $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
+    $config->skip([
+        'tests/symfony/config/routing.php'
+    ]);
+    $config->phpVersion(PhpVersion::PHP_81);
+    $config->parallel();
+    $config->importNames();
+    $config->importNames();
+    $config->importShortClasses();
 
-    $services = $rectorConfig->services();
+    $services = $config->services();
     $services->set(TypedPropertyRector::class);
 };

@@ -21,7 +21,7 @@ final class MetadataServiceTest extends TestCase
      */
     public function theMetadataServiceCanLoadUri(): void
     {
-        $response = new Response(200, [], file_get_contents(__DIR__ . '/../../blob.jwt'));
+        $response = new Response(200, [], trim(file_get_contents(__DIR__ . '/../../blob.jwt')));
         $client = new Client();
         $client->addResponse($response);
 
@@ -37,7 +37,7 @@ final class MetadataServiceTest extends TestCase
      */
     public function aMetadataStatementFromAnUriCanBeRetrieved(): void
     {
-        $response = new Response(200, [], file_get_contents(__DIR__ . '/../../solo.json'));
+        $response = new Response(200, [], trim(file_get_contents(__DIR__ . '/../../solo.json')));
         $client = new Client();
         $client->addResponse($response);
 

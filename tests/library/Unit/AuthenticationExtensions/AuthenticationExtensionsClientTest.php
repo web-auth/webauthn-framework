@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -23,7 +24,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
 
         static::assertSame('name', $extension->name());
         static::assertSame(['value'], $extension->value());
-        static::assertSame('["value"]', json_encode($extension));
+        static::assertSame('["value"]', json_encode($extension, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -37,7 +38,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
         $inputs->add($extension);
 
         static::assertSame(1, $inputs->count());
-        static::assertSame('{"name":["value"]}', json_encode($inputs));
+        static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
         static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 
@@ -52,7 +53,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
         $inputs->add($extension);
 
         static::assertSame(1, $inputs->count());
-        static::assertSame('{"name":["value"]}', json_encode($inputs));
+        static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
         static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 }

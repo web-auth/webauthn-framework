@@ -22,7 +22,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\CertificateChainChecker\CertificateChainChecker;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\StatusReportRepository;
@@ -38,7 +39,7 @@ class AuthenticatorAttestationResponseValidator
 
     private ?StatusReportRepository $statusReportRepository = null;
 
-    private ?CertificateChainChecker $certificateChainChecker = null;
+    private ?CertificateChainValidator $certificateChainValidator = null;
 
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
@@ -70,7 +71,7 @@ class AuthenticatorAttestationResponseValidator
         return $this;
     }
 
-    public function setCertificateChainChecker(): self
+    public function setCertificateChainValidator(): self
     {
         return $this;
     }
@@ -78,10 +79,10 @@ class AuthenticatorAttestationResponseValidator
     public function enableMetadataStatementSupport(
         MetadataStatementRepository $metadataStatementRepository,
         StatusReportRepository $statusReportRepository,
-        CertificateChainChecker $certificateChainChecker,
+        CertificateChainValidator $certificateChainValidator,
     ): self {
         $this->metadataStatementRepository = $metadataStatementRepository;
-        $this->certificateChainChecker = $certificateChainChecker;
+        $this->certificateChainValidator = $certificateChainValidator;
         $this->statusReportRepository = $statusReportRepository;
 
         return $this;
@@ -118,8 +119,7 @@ class AuthenticatorAttestationResponseValidator
 
             $rpId = $publicKeyCredentialCreationOptions->getRp()
                 ->getId() ?? $request->getUri()
-                ->getHost()
-                ;
+                ->getHost();
             $facetId = $this->getFacetId(
                 $rpId,
                 $publicKeyCredentialCreationOptions->getExtensions(),
@@ -166,8 +166,7 @@ class AuthenticatorAttestationResponseValidator
             }
 
             $extensionsClientOutputs = $attestationObject->getAuthData()
-                ->getExtensions()
-            ;
+                ->getExtensions();
             if ($extensionsClientOutputs !== null) {
                 $this->extensionOutputCheckerHandler->check(
                     $publicKeyCredentialCreationOptions->getExtensions(),
@@ -177,8 +176,7 @@ class AuthenticatorAttestationResponseValidator
 
             $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->getAttStmt()
-                ->getFmt()
-            ;
+                ->getFmt();
             Assertion::true(
                 $this->attestationStatementSupportManager->has($fmt),
                 'Unsupported attestation statement format.'
@@ -200,8 +198,7 @@ class AuthenticatorAttestationResponseValidator
                 'There is no attested credential data.'
             );
             $attestedCredentialData = $attestationObject->getAuthData()
-                ->getAttestedCredentialData()
-            ;
+                ->getAttestedCredentialData();
             Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
             $credentialId = $attestedCredentialData->getCredentialId();
             Assertion::null(
@@ -241,18 +238,15 @@ class AuthenticatorAttestationResponseValidator
         $authenticatorCertificates = $trustPath->getCertificates();
 
         if ($metadataStatement === null) {
-            $this->certificateChainChecker?->check($authenticatorCertificates, []);
+            $this->certificateChainValidator?->check($authenticatorCertificates, []);
 
             return;
         }
 
-        $trustedCertificates = array_merge(
-            $metadataStatement->getAttestationRootCertificates(),
-            $metadataStatement->getRootCertificates()
+        $trustedCertificates = CertificateToolbox::fixPEMStructures(
+            $metadataStatement->getAttestationRootCertificates()
         );
-        $trustedCertificates = CertificateToolbox::fixPEMStructures($trustedCertificates);
-
-        $this->certificateChainChecker?->check($authenticatorCertificates, $trustedCertificates);
+        $this->certificateChainValidator?->check($authenticatorCertificates, $trustedCertificates);
     }
 
     private function checkMetadataStatement(
@@ -261,12 +255,10 @@ class AuthenticatorAttestationResponseValidator
     ): void {
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()
-            ->getAttestedCredentialData()
-        ;
+            ->getAttestedCredentialData();
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()
-            ->__toString()
-        ;
+            ->__toString();
         if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             $this->logger->debug('No attestation is asked.');
             //No attestation is asked. We shall ensure that the data is anonymous.
@@ -318,7 +310,6 @@ class AuthenticatorAttestationResponseValidator
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-
         // We check the last status report
         $this->checkStatusReport($aaguid);
 
@@ -352,6 +343,7 @@ class AuthenticatorAttestationResponseValidator
             AttestationStatement::TYPE_SELF => MetadataStatement::ATTESTATION_BASIC_SURROGATE,
             AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
             AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
+            AttestationStatement::TYPE_ANONCA => MetadataStatement::ATTESTATION_ANONCA,
             default => throw new InvalidArgumentException('Invalid attestation type'),
         };
     }
@@ -405,11 +397,9 @@ class AuthenticatorAttestationResponseValidator
             return $rpId;
         }
         $appId = $authenticationExtensionsClientInputs->get('appid')
-            ->value()
-        ;
+            ->value();
         $wasUsed = $authenticationExtensionsClientOutputs->get('appid')
-            ->value()
-        ;
+            ->value();
         if (! is_string($appId) || $wasUsed !== true) {
             return $rpId;
         }

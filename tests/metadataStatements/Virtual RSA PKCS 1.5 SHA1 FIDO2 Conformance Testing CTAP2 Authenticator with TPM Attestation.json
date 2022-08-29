@@ -20,7 +20,7 @@
         "cose"
     ],
     "attestationTypes": [
-        "AttCA"
+        "attca"
     ],
     "schema": 3,
     "userVerificationDetails": [

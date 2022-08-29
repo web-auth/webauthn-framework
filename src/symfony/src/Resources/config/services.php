@@ -44,8 +44,7 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
         ->set(BaseAuthenticatorAttestationResponseValidator::class)
@@ -57,8 +56,7 @@ return static function (ContainerConfigurator $container): void {
             service(ExtensionOutputCheckerHandler::class),
             service(EventDispatcherInterface::class),
         ])
-        ->public()
-    ;
+        ->public();
     $container
         ->set(BaseAuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
@@ -69,57 +67,44 @@ return static function (ContainerConfigurator $container): void {
             service('webauthn.cose.algorithm.manager'),
             service(EventDispatcherInterface::class),
         ])
-        ->public()
-    ;
+        ->public();
     $container
         ->set(PublicKeyCredentialLoader::class)
         ->args([service(AttestationObjectLoader::class)])
-        ->public()
-    ;
+        ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args(['%webauthn.creation_profiles%', service(EventDispatcherInterface::class)])
-        ->public()
-    ;
+        ->public();
     $container
         ->set(PublicKeyCredentialRequestOptionsFactory::class)
         ->args(['%webauthn.request_profiles%', service(EventDispatcherInterface::class)])
-        ->public()
-    ;
+        ->public();
 
     $container
-        ->set(ExtensionOutputCheckerHandler::class)
-    ;
+        ->set(ExtensionOutputCheckerHandler::class);
     $container
         ->set(AttestationObjectLoader::class)
-        ->args([service(AttestationStatementSupportManager::class)])
-    ;
+        ->args([service(AttestationStatementSupportManager::class)]);
     $container
-        ->set(AttestationStatementSupportManager::class)
-    ;
+        ->set(AttestationStatementSupportManager::class);
     $container
-        ->set(NoneAttestationStatementSupport::class)
-    ;
+        ->set(NoneAttestationStatementSupport::class);
 
     $container
-        ->set(IgnoreTokenBindingHandler::class)
-    ;
+        ->set(IgnoreTokenBindingHandler::class);
     $container
-        ->set(TokenBindingNotSupportedHandler::class)
-    ;
+        ->set(TokenBindingNotSupportedHandler::class);
     $container
-        ->set(SecTokenBindingHandler::class)
-    ;
+        ->set(SecTokenBindingHandler::class);
 
     $container
         ->set(ThrowExceptionIfInvalid::class)
-        ->autowire(false)
-    ;
+        ->autowire(false);
 
     $container
         ->set(Loader::class)
-        ->tag('routing.loader')
-    ;
+        ->tag('routing.loader');
 
     $container
         ->set(AttestationControllerFactory::class)
@@ -131,8 +116,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialLoader::class),
             service(BaseAuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepository::class),
-        ])
-    ;
+        ]);
     $container
         ->set(AssertionControllerFactory::class)
         ->args([
@@ -144,21 +128,17 @@ return static function (ContainerConfigurator $container): void {
             service(BaseAuthenticatorAssertionResponseValidator::class),
             service(PublicKeyCredentialUserEntityRepository::class),
             service(PublicKeyCredentialSourceRepository::class),
-        ])
-    ;
+        ]);
 
     $container
         ->set(DummyPublicKeyCredentialSourceRepository::class)
-        ->autowire(false)
-    ;
+        ->autowire(false);
     $container
         ->set(DummyPublicKeyCredentialUserEntityRepository::class)
-        ->autowire(false)
-    ;
+        ->autowire(false);
 
     $container
-        ->set(DummyControllerFactory::class)
-    ;
+        ->set(DummyControllerFactory::class);
 
     $container
         ->set('webauthn.http_message_factory.default')
@@ -168,19 +148,15 @@ return static function (ContainerConfigurator $container): void {
             service(StreamFactoryInterface::class),
             service(UploadedFileFactoryInterface::class),
             service(ResponseFactoryInterface::class),
-        ])
-    ;
+        ]);
 
     $container
         ->set('webauthn.logger.default')
-        ->class(NullLogger::class)
-    ;
+        ->class(NullLogger::class);
 
     $container
-        ->alias('webauthn.http_client.default', ClientInterface::class)
-    ;
+        ->alias('webauthn.http_client.default', ClientInterface::class);
 
     $container
-        ->alias('webauthn.request_factory.default', RequestFactoryInterface::class)
-    ;
+        ->alias('webauthn.request_factory.default', RequestFactoryInterface::class);
 };

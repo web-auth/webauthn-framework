@@ -10,13 +10,11 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container->set(WebauthnCollector::class)
         ->tag('data_collector', [
             'id' => 'webauthn_collector',
             'template' => '@Webauthn/data_collector/template.html.twig',
-        ])
-    ;
+        ]);
 };

@@ -11,13 +11,18 @@
             </tr>
             </thead>
             <tbody>
-            {%  if not collector.getData().publicKeyCredentialCreationOptions is empty %}
+            {% if not collector.getData().publicKeyCredentialCreationOptions is empty %}
                 {% for id, data in collector.getData().publicKeyCredentialCreationOptions %}
                     <tr>
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-pkcao-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-pkcao-{{ id }}" data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
                             <div id="webauthn-pkcao-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                                 <pre>{{ data.json }}</pre>
@@ -44,21 +49,30 @@
             </tr>
             </thead>
             <tbody>
-            {%  if collector.getData().authenticatorAttestationResponseValidationSucceeded is empty and collector.getData().authenticatorAttestationResponseValidationFailed is empty %}
+            {% if collector.getData().authenticatorAttestationResponseValidationSucceeded is empty and collector.getData().authenticatorAttestationResponseValidationFailed is empty %}
                 <tr>
                     <td colspan="3">No Authenticator Attestation have been validated</td>
                 </tr>
             {% endif %}
-            {%  if not collector.getData().authenticatorAttestationResponseValidationSucceeded is empty %}
+            {% if not collector.getData().authenticatorAttestationResponseValidationSucceeded is empty %}
                 {% for id, data in collector.getData().authenticatorAttestationResponseValidationSucceeded %}
                     <tr>
                         <td>{{ profiler_dump(data.attestation_response) }}</td>
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-succeeded-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-succeeded-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
@@ -68,16 +82,25 @@
                     </tr>
                 {% endfor %}
             {% endif %}
-            {%  if not collector.getData().authenticatorAttestationResponseValidationFailed is empty %}
+            {% if not collector.getData().authenticatorAttestationResponseValidationFailed is empty %}
                 {% for id, data in collector.getData().authenticatorAttestationResponseValidationFailed %}
                     <tr>
                         <td>{{ profiler_dump(data.attestation_response) }}</td>
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off" data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}" data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-failed-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-failed-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>

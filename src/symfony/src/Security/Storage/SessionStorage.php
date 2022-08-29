@@ -20,7 +20,7 @@ final class SessionStorage implements OptionsStorage
     ) {
     }
 
-    public function store(Item $item): void
+    public function store(Item $item, string|null $tag = null): void
     {
         $session = $this->requestStack->getSession();
         $session->set(self::SESSION_PARAMETER, [
@@ -29,7 +29,7 @@ final class SessionStorage implements OptionsStorage
         ]);
     }
 
-    public function get(): Item
+    public function get(string|null $tag = null): Item
     {
         $session = $this->requestStack->getSession();
         $sessionValue = $session->remove(self::SESSION_PARAMETER);

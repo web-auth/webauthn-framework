@@ -52,8 +52,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             ->where('c.userHandle = :userHandle')
             ->setParameter(':userHandle', $publicKeyCredentialUserEntity->getId())
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
@@ -66,8 +65,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             ->setParameter(':publicKeyCredentialId', base64_encode($publicKeyCredentialId))
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-            ;
+            ->getOneOrNullResult();
     }
 
     protected function getClass(): string

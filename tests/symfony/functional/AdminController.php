@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 final class AdminController
 {
     public function __construct(
-        private TokenStorageInterface $tokenStorage
+        private readonly TokenStorageInterface $tokenStorage
     ) {
     }
 
@@ -20,6 +20,6 @@ final class AdminController
         $token = $this->tokenStorage->getToken();
         $user = $token->getUser();
 
-        return new JsonResponse(['Hello ' . $user->getUsername()]);
+        return new JsonResponse(['Hello ' . $user->getUserIdentifier()]);
     }
 }
