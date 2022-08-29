@@ -96,7 +96,7 @@ class default_1 extends Controller {
         }
         function removeEmpty(obj) {
             return Object.entries(obj)
-                .filter(([_, v]) => v !== null)
+                .filter(([_, v]) => (v !== null && v !== ''))
                 .reduce((acc, [k, v]) => (Object.assign(Object.assign({}, acc), { [k]: v === Object(v) ? removeEmpty(v) : v })), {});
         }
         return removeEmpty({
