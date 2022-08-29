@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Psr\Cache\CacheItemPoolInterface;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -21,6 +22,7 @@ use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
+use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialLoader;
@@ -30,39 +32,35 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
         ->set(IsUserPresentVoter::class)
-        ->tag('security.voter')
-    ;
+        ->tag('security.voter');
 
     $container
         ->set(IsUserVerifiedVoter::class)
-        ->tag('security.voter')
-    ;
+        ->tag('security.voter');
 
     $container
-        ->set(DefaultSuccessHandler::class)
-    ;
+        ->set(DefaultSuccessHandler::class);
 
     $container
-        ->set(DefaultFailureHandler::class)
-    ;
+        ->set(DefaultFailureHandler::class);
 
     $container
         ->set(SessionStorage::class)
-        ->args([service('request_stack')])
-    ;
+        ->args([service('request_stack')]);
 
     $container
-        ->set(DefaultCreationOptionsHandler::class)
-    ;
+        ->set(CacheStorage::class)
+        ->args([service(CacheItemPoolInterface::class)]);
 
     $container
-        ->set(DefaultRequestOptionsHandler::class)
-    ;
+        ->set(DefaultCreationOptionsHandler::class);
+
+    $container
+        ->set(DefaultRequestOptionsHandler::class);
 
     $container
         ->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)
@@ -80,8 +78,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAssertionResponseValidator::class),
             service(AuthenticatorAttestationResponseValidator::class),
-        ])
-    ;
+        ]);
 
     $container
         ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)
@@ -90,19 +87,16 @@ return static function (ContainerConfigurator $container): void {
             [], // Firewall settings
             abstract_arg('Firewall name'),
             service('security.http_utils'),
-        ])
-    ;
+        ]);
 
     $container
         ->set(CurrentUserEntityGuesser::class)
-        ->args([service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepository::class)])
-    ;
+        ->args([service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepository::class)]);
     $container
         ->set(RequestBodyUserEntityGuesser::class)
         ->args([
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialUserEntityRepository::class),
-        ])
-    ;
+        ]);
 };

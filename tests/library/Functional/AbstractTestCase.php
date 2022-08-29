@@ -13,7 +13,10 @@ use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
+use DateTimeImmutable;
+use DateTimeZone;
 use Http\Mock\Client;
+use Lcobucci\Clock\FrozenClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -31,15 +34,14 @@ use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\CertificateChainChecker\CertificateChainChecker;
-use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\ChainedMetadataServices;
 use Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
-use Webauthn\Tests\MockedMappedResponseTrait;
 use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
 use Webauthn\Tests\MockedRequestTrait;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
@@ -49,7 +51,8 @@ abstract class AbstractTestCase extends TestCase
 {
     use MockedRequestTrait;
     use MockedPublicKeyCredentialSourceTrait;
-    use MockedMappedResponseTrait;
+
+    protected ?FrozenClock $clock = null;
 
     private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
@@ -63,9 +66,16 @@ abstract class AbstractTestCase extends TestCase
 
     private ?MetadataStatementRepository $metadataStatementRepository = null;
 
-    private ?PhpCertificateChainChecker $certificateChainChecker = null;
+    private ?PhpCertificateChainValidator $certificateChainValidator = null;
 
     private ?StatusReportRepository $statusReportRepository = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->clock = new FrozenClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
+    }
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
@@ -90,7 +100,7 @@ abstract class AbstractTestCase extends TestCase
             $this->authenticatorAttestationResponseValidator->enableMetadataStatementSupport(
                 $this->getMetadataStatementRepository($client),
                 $this->getStatusReportRepository(),
-                $this->getCertificateChainChecker(),
+                $this->getCertificateChainValidator(),
             );
         }
 
@@ -118,24 +128,17 @@ abstract class AbstractTestCase extends TestCase
             'https://mds3.certinfra.fidoalliance.org/pki/MDS3ROOT.crt' => file_get_contents(
                 __DIR__ . '/../../certificates/MDS3ROOT.crt'
             ),
-            'https://mds3.certinfra.fidoalliance.org/crl/MDSCA-1.crl' => file_get_contents(
-                __DIR__ . '/../../certificates/MDSCA-1.crl'
-            ),
-            'https://mds3.certinfra.fidoalliance.org/crl/MDSROOT.crl' => file_get_contents(
-                __DIR__ . '/../../certificates/MDSROOT.crl'
-            ),
         ];
 
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../../metadataServices')
-        ;
+            ->in(__DIR__ . '/../../metadataServices');
 
         foreach ($finder->files() as $file) {
             $urls[sprintf(
                 'https://mds3.certinfra.fidoalliance.org/execute/%s',
                 $file->getRelativePathname()
-            )] = file_get_contents($file->getRealPath());
+            )] = trim(file_get_contents($file->getRealPath()));
         }
 
         return $urls;
@@ -145,7 +148,6 @@ abstract class AbstractTestCase extends TestCase
     {
         if ($client === null) {
             $client = new Client();
-            $this->prepareResponsesMap($client);
         }
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
@@ -155,14 +157,13 @@ abstract class AbstractTestCase extends TestCase
         $androidSafetyNetAttestationStatementSupport
             ->enableApiVerification($client, 'api_key', new Psr17Factory())
             ->setLeeway(0)
-            ->setMaxAge(99999999999)
-            ;
+            ->setMaxAge(99_999_999_999);
         $attestationStatementSupportManager->add($androidSafetyNetAttestationStatementSupport);
         $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
             $this->getAlgorithmManager()
         ));
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
+        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock));
 
         return $attestationStatementSupportManager;
     }
@@ -199,7 +200,6 @@ abstract class AbstractTestCase extends TestCase
     {
         if ($client === null) {
             $client = new Client();
-            $this->prepareResponsesMap($client);
         }
         if ($this->metadataStatementRepository === null) {
             $metadataService = new ChainedMetadataServices();
@@ -207,7 +207,7 @@ abstract class AbstractTestCase extends TestCase
                 $metadataService->addServices(LocalResourceMetadataService::create($filename));
             }
             foreach ($this->getDistantStatements() as $filename) {
-                $response = new Response(200, [], file_get_contents($filename));
+                $response = new Response(200, [], trim(file_get_contents($filename)));
                 $client = new Client();
                 $client->addResponse($response);
 
@@ -215,16 +215,20 @@ abstract class AbstractTestCase extends TestCase
                     FidoAllianceCompliantMetadataService::create(
                         new Psr17Factory(),
                         $client,
-                        'https://foo.bar/data'
+                        'https://fidoalliance.co.nz/blob.jwt'
                     )
                 );
             }
 
-            $response = new Response(200, [], file_get_contents(__DIR__ . '/../../blob.jwt'));
+            $response = new Response(200, [], trim(file_get_contents(__DIR__ . '/../../blob.jwt')));
             $client = new Client();
             $client->addResponse($response);
             $metadataService->addServices(
-                FidoAllianceCompliantMetadataService::create(new Psr17Factory(), $client, 'https://foo.bar/data')
+                FidoAllianceCompliantMetadataService::create(
+                    new Psr17Factory(),
+                    $client,
+                    'https://fidoalliance.co.nz/blob.jwt'
+                )
             );
 
             $this->metadataStatementRepository = new MetadataStatementRepository($metadataService);
@@ -237,8 +241,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../../metadataStatements')
-        ;
+            ->in(__DIR__ . '/../../metadataStatements');
 
         foreach ($finder->files()->name('*.json') as $file) {
             yield $file->getRealPath();
@@ -249,25 +252,27 @@ abstract class AbstractTestCase extends TestCase
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../../metadataServices')
-        ;
+            ->in(__DIR__ . '/../../metadataServices');
 
         foreach ($finder->files() as $file) {
             yield $file->getRealPath();
         }
     }
 
-    private function getCertificateChainChecker(): CertificateChainChecker
+    private function getCertificateChainValidator(): CertificateChainValidator
     {
-        if ($this->certificateChainChecker === null) {
+        if ($this->certificateChainValidator === null) {
             $psr18Client = new Client();
-            $this->prepareResponsesMap($psr18Client);
 
             $psr17Factory = new Psr17Factory();
-            $this->certificateChainChecker = new PhpCertificateChainChecker($psr18Client, $psr17Factory);
+            $this->certificateChainValidator = new PhpCertificateChainValidator(
+                $psr18Client,
+                $psr17Factory,
+                $this->clock
+            );
         }
 
-        return $this->certificateChainChecker;
+        return $this->certificateChainValidator;
     }
 
     private function getStatusReportRepository(): StatusReportRepository

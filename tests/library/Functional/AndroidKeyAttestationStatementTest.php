@@ -12,7 +12,7 @@ final class AndroidKeyAttestationStatementTest extends AbstractTestCase
     /**
      * @test
      */
-    public function anAndroidKeyAttestationCanBeVerified(): void
+    public function anAndroidKeyAttestationCanBeVerified(): never
     {
         static::markTestIncomplete(
             'This test should be finished when AAGUID "28f37d2b-92b8-41c4-b02a-860cef7cc034" will be available'

@@ -82,8 +82,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
         $publicKeyCredentialSourceRepository = self::$kernel
             ->getContainer()
-            ->get(PublicKeyCredentialSourceRepository::class)
-        ;
+            ->get(PublicKeyCredentialSourceRepository::class);
         $this->logIn();
 
         $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
@@ -98,8 +97,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
                     true
                 ),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
-            )
-        ;
+            );
 
         $this->storage->store(Item::create(
             $publicKeyCredentialCreationOptions,
@@ -112,7 +110,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $numberOfRegisteredCredentials = count(
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
         );
-        $body = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0=","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
+        $body = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
         $this->client->request(
             Request::METHOD_POST,
             '/devices/add',
@@ -166,7 +164,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
     /**
      * @test
      */
-    public function anExistingUserCanTestItsAuthenticators(): void
+    public function anExistingUserCanTestItsAuthenticators(): never
     {
         static::markTestSkipped('To be done');
     }
@@ -207,28 +205,28 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
         $container = static::getContainer();
         $container->get('security.untracked_token_storage')
-            ->setToken($token)
-        ;
+            ->setToken($token);
 
         if (! $container->has('session.factory')) {
             throw new InvalidArgumentException('No session factory');
         }
 
         $session = $container->get('session.factory')
-            ->createSession()
-        ;
+            ->createSession();
         $session->set('_security_' . $firewallContext, serialize($token));
         $session->save();
 
-        $domains = array_unique(array_map(static function (Cookie $cookie) use ($session) {
-            return $cookie->getName() === $session->getName() ? $cookie->getDomain() : '';
-        }, $this->client->getCookieJar()
-            ->all())) ?: [''];
+        $domains = array_unique(
+            array_map(
+                static fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '',
+                $this->client->getCookieJar()
+                    ->all()
+            )
+        ) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()
-                ->set($cookie)
-            ;
+                ->set($cookie);
         }
     }
 }

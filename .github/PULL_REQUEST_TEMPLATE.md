@@ -1,6 +1,6 @@
 | Q             | A
 | ------------- | ---
-| Branch?       | 
+| Branch?       |
 | Bug fix?      | yes/no, #... <!-- #-prefixed issue number(s), if any -->
 | New feature?  | yes/no
 | BC breaks?    | yes/no

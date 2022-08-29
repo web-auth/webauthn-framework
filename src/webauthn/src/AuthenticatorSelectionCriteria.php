@@ -22,6 +22,11 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     final public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
+    final public const RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE = null;
+
+    /**
+     * @deprecated Please use AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE instead
+     */
     final public const RESIDENT_KEY_REQUIREMENT_NONE = null;
 
     final public const RESIDENT_KEY_REQUIREMENT_REQUIRED = 'required';
@@ -32,18 +37,14 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private ?string $authenticatorAttachment = null;
 
-    private bool $requireResidentKey;
+    /**
+     * @deprecated Will be removed in 5.0. Please use residentKey instead
+     */
+    private bool $requireResidentKey = false;
 
-    private string $userVerification;
+    private string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 
-    private ?string $residentKey;
-
-    public function __construct()
-    {
-        $this->requireResidentKey = false;
-        $this->userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_NONE;
-    }
+    private string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
 
     public static function create(): self
     {
@@ -57,9 +58,13 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated since v4.1. Please use setResidentKey instead
+     */
     public function setRequireResidentKey(bool $requireResidentKey): self
     {
         $this->requireResidentKey = $requireResidentKey;
+        $this->residentKey = $requireResidentKey ? self::RESIDENT_KEY_REQUIREMENT_REQUIRED : self::RESIDENT_KEY_REQUIREMENT_DISCOURAGED;
 
         return $this;
     }
@@ -71,9 +76,10 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
-    public function setResidentKey(?string $residentKey): self
+    public function setResidentKey(string $residentKey): self
     {
         $this->residentKey = $residentKey;
+        $this->requireResidentKey = $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
 
         return $this;
     }
@@ -83,6 +89,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this->authenticatorAttachment;
     }
 
+    /**
+     * @deprecated Will be removed in 5.0. Please use getResidentKey() instead
+     */
     public function isRequireResidentKey(): bool
     {
         return $this->requireResidentKey;
@@ -93,7 +102,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this->userVerification;
     }
 
-    public function getResidentKey(): ?string
+    public function getResidentKey(): string
     {
         return $this->residentKey;
     }
@@ -111,12 +120,21 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
+        $authenticatorAttachment = $json['authenticatorAttachment'] ?? null;
+        $requireResidentKey = $json['requireResidentKey'] ?? false;
+        $userVerification = $json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+        $residentKey = $json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
+
+        Assertion::nullOrString($authenticatorAttachment, 'Invalid "authenticatorAttachment" value');
+        Assertion::boolean($requireResidentKey, 'Invalid "requireResidentKey" value');
+        Assertion::string($userVerification, 'Invalid "userVerification" value');
+        Assertion::string($residentKey, 'Invalid "residentKey" value');
+
         return self::create()
-            ->setAuthenticatorAttachment($json['authenticatorAttachment'] ?? null)
-            ->setRequireResidentKey($json['requireResidentKey'] ?? false)
-            ->setUserVerification($json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-            ->setResidentKey($json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_NONE)
-        ;
+            ->setAuthenticatorAttachment($authenticatorAttachment)
+            ->setRequireResidentKey($requireResidentKey)
+            ->setUserVerification($userVerification)
+            ->setResidentKey($residentKey);
     }
 
     /**
@@ -127,12 +145,10 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         $json = [
             'requireResidentKey' => $this->requireResidentKey,
             'userVerification' => $this->userVerification,
+            // 'residentKey' => $this->residentKey, // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
         ];
         if ($this->authenticatorAttachment !== null) {
             $json['authenticatorAttachment'] = $this->authenticatorAttachment;
-        }
-        if ($this->residentKey !== null) {
-            $json['residentKey'] = $this->residentKey;
         }
 
         return $json;

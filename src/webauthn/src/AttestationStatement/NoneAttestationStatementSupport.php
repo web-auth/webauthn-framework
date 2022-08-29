@@ -26,9 +26,14 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::noContent($attestation['attStmt'], 'Invalid attestation object');
+        $format = $attestation['fmt'] ?? null;
+        $attestationStatement = $attestation['attStmt'] ?? [];
 
-        return AttestationStatement::createNone($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());
+        Assertion::string($format, 'Invalid attestation object');
+        Assertion::notEmpty($format, 'Invalid attestation object');
+        Assertion::noContent($attestationStatement, 'Invalid attestation object');
+
+        return AttestationStatement::createNone($format, $attestationStatement, EmptyTrustPath::create());
     }
 
     public function isValid(

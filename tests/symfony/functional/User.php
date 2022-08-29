@@ -14,7 +14,7 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
         string $id,
         string $displayName,
         ?string $icon = null,
-        private array $roles = []
+        private readonly array $roles = []
     ) {
         parent::__construct($name, $id, $displayName, $icon);
     }

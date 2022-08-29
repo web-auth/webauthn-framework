@@ -11,7 +11,7 @@ use Webauthn\MetadataService\Statement\MetadataStatement;
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface
 {
     public function __construct(
-        private MetadataService $service
+        private readonly MetadataService $service
     ) {
     }
 

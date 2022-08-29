@@ -17,7 +17,7 @@ final class DistantResourceMetadataService implements MetadataService
     private ?MetadataStatement $statement = null;
 
     /**
-     * @param array<string, mixed> $additionalHeaderParameters
+     * @param array<string, string> $additionalHeaderParameters
      */
     public function __construct(
         private readonly RequestFactoryInterface $requestFactory,
@@ -97,11 +97,9 @@ final class DistantResourceMetadataService implements MetadataService
             sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
         );
         $response->getBody()
-            ->rewind()
-        ;
+            ->rewind();
         $content = $response->getBody()
-            ->getContents()
-        ;
+            ->getContents();
         Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
         return $content;

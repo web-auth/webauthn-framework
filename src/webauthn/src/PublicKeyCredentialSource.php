@@ -21,7 +21,7 @@ use Webauthn\Util\Base64;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
-     * @param string[]                  $transports
+     * @param string[] $transports
      * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
@@ -39,7 +39,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     }
 
     /**
-     * @param string[]                  $transports
+     * @param string[] $transports
      * @param array<string, mixed>|null $otherUI
      */
     public static function create(

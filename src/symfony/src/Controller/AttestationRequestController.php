@@ -10,6 +10,8 @@ use function is_array;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
@@ -39,7 +41,7 @@ final class AttestationRequestController
         private readonly string $profile,
         private readonly OptionsStorage $optionsStorage,
         private readonly CreationOptionsHandler $creationOptionsHandler,
-        private readonly FailureHandler $failureHandler,
+        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ) {
     }
 
@@ -64,6 +66,13 @@ final class AttestationRequestController
 
             return $response;
         } catch (Throwable $throwable) {
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure(
+                    $request,
+                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
+                );
+            }
+
             return $this->failureHandler->onFailure($request, $throwable);
         }
     }
@@ -87,9 +96,16 @@ final class AttestationRequestController
     ): PublicKeyCredentialCreationOptions {
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-        $authenticatorSelection = $creationOptionsRequest->authenticatorSelection;
-        if (is_array($authenticatorSelection)) {
-            $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelection);
+        $authenticatorSelectionData = $creationOptionsRequest->authenticatorSelection;
+        if (is_array($authenticatorSelectionData)) {
+            $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
+        } else {
+            $authenticatorSelection = AuthenticatorSelectionCriteria::create()
+                ->setUserVerification(
+                    $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+                )
+                ->setResidentKey($creationOptionsRequest->residentKey)
+                ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment);
         }
         $extensions = $creationOptionsRequest->extensions;
         if (is_array($extensions)) {

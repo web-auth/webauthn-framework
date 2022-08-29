@@ -4,6 +4,11 @@ parameters:
         - src
     ignoreErrors:
         - '#Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
+        - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
+        -
+            message: '#Class Webauthn\\CertificateChainChecker\\PhpCertificateChainChecker extends @final class Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator\.#'
+            path: src/webauthn/src/CertificateChainChecker/PhpCertificateChainChecker.php
+            count: 1
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -29,12 +34,20 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
         -
-            message: '#Method Webauthn\\Bundle\\Routing\\Loader::load\(\) has parameter \$resource with no type specified\.#'
-            path: src/symfony/src/Routing/Loader.php
+            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
+            path: src/symfony/src/Controller/AttestationRequestController.php
             count: 1
-#    checkMissingIterableValueType: true
-#    checkGenericClassInNonGenericObjectType: true
-#    checkUninitializedProperties: true
+        -
+            message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+            count: 2
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+            count: 1
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    checkUninitializedProperties: true
     treatPhpDocTypesAsCertain: false
     scanFiles:
         - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php

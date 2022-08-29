@@ -23,71 +23,55 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
         ->set('webauthn.cose.algorithm.manager')
-        ->class(Manager::class)
-    ;
+        ->class(Manager::class);
 
     $container
         ->set('webauthn.cose.algoritm.RS1')
-        ->class(RS1::class)
-    ;
+        ->class(RS1::class);
     $container
         ->set('webauthn.cose.algoritm.RS256')
-        ->class(RS256::class)
-    ;
+        ->class(RS256::class);
     $container
         ->set('webauthn.cose.algoritm.RS384')
-        ->class(RS384::class)
-    ;
+        ->class(RS384::class);
     $container
         ->set('webauthn.cose.algoritm.RS512')
-        ->class(RS512::class)
-    ;
+        ->class(RS512::class);
 
     $container
         ->set('webauthn.cose.algoritm.PS256')
-        ->class(PS256::class)
-    ;
+        ->class(PS256::class);
     $container
         ->set('webauthn.cose.algoritm.PS384')
-        ->class(PS384::class)
-    ;
+        ->class(PS384::class);
     $container
         ->set('webauthn.cose.algoritm.PS512')
-        ->class(PS512::class)
-    ;
+        ->class(PS512::class);
 
     $container
         ->set('webauthn.cose.algoritm.ES256K')
-        ->class(ES256K::class)
-    ;
+        ->class(ES256K::class);
     $container
         ->set('webauthn.cose.algoritm.ES256')
-        ->class(ES256::class)
-    ;
+        ->class(ES256::class);
     $container
         ->set('webauthn.cose.algoritm.ES384')
-        ->class(ES384::class)
-    ;
+        ->class(ES384::class);
     $container
         ->set('webauthn.cose.algoritm.ES512')
-        ->class(ES512::class)
-    ;
+        ->class(ES512::class);
 
     $container
         ->set('webauthn.cose.algoritm.ED256')
-        ->class(Ed256::class)
-    ;
+        ->class(Ed256::class);
     $container
         ->set('webauthn.cose.algoritm.ED512')
-        ->class(Ed512::class)
-    ;
+        ->class(Ed512::class);
     $container
         ->set('webauthn.cose.algoritm.Ed25519ph')
-        ->class(Ed25519::class)
-    ;
+        ->class(Ed25519::class);
 };

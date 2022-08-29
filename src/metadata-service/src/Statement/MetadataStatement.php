@@ -7,6 +7,7 @@ namespace Webauthn\MetadataService\Statement;
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Utils;
 
 class MetadataStatement implements JsonSerializable
@@ -109,6 +110,8 @@ class MetadataStatement implements JsonSerializable
 
     final public const ATTESTATION_ATTCA = 'attca';
 
+    final public const ATTESTATION_ANONCA = 'anonca';
+
     private ?string $legalHeader = null;
 
     private ?string $aaid = null;
@@ -160,19 +163,14 @@ class MetadataStatement implements JsonSerializable
     private null|AuthenticatorGetInfo $authenticatorGetInfo = null;
 
     /**
-     * @var string[]
-     */
-    private array $rootCertificates = [];
-
-    /**
-     * @param Version[]                           $upv
-     * @param string[]                            $authenticationAlgorithms
-     * @param string[]                            $publicKeyAlgAndEncodings
-     * @param string[]                            $attestationTypes
+     * @param Version[] $upv
+     * @param string[] $authenticationAlgorithms
+     * @param string[] $publicKeyAlgAndEncodings
+     * @param string[] $attestationTypes
      * @param VerificationMethodANDCombinations[] $userVerificationDetails
-     * @param string[]                            $matcherProtection
-     * @param string[]                            $tcDisplay
-     * @param string[]                            $attestationRootCertificates
+     * @param string[] $matcherProtection
+     * @param string[] $tcDisplay
+     * @param string[] $attestationRootCertificates
      */
     public function __construct(
         private readonly string $description,
@@ -443,7 +441,7 @@ class MetadataStatement implements JsonSerializable
             }, $data['userVerificationDetails']),
             $data['matcherProtection'],
             $data['tcDisplay'],
-            $data['attestationRootCertificates']
+            CertificateToolbox::fixPEMStructures($data['attestationRootCertificates'])
         );
 
         $object->legalHeader = $data['legalHeader'] ?? null;
@@ -515,7 +513,7 @@ class MetadataStatement implements JsonSerializable
                 static fn (DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
                 $this->tcDisplayPNGCharacteristics
             ),
-            'attestationRootCertificates' => $this->attestationRootCertificates,
+            'attestationRootCertificates' => CertificateToolbox::fixPEMStructures($this->attestationRootCertificates),
             'ecdaaTrustAnchors' => array_map(
                 static fn (EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
                 $this->ecdaaTrustAnchors
@@ -529,21 +527,5 @@ class MetadataStatement implements JsonSerializable
         ];
 
         return Utils::filterNullValues($data);
-    }
-
-    /**
-     * @param string[] $rootCertificates
-     */
-    public function setRootCertificates(array $rootCertificates): void
-    {
-        $this->rootCertificates = $rootCertificates;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getRootCertificates(): array
-    {
-        return $this->rootCertificates;
     }
 }

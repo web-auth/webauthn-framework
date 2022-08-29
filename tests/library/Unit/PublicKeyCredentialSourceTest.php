@@ -41,7 +41,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
             Uuid::fromString('02ffd35d-7f0c-46b5-9eae-851ee4807b25'),
             'publicKey',
             'userHandle',
-            123456789
+            123_456_789
         );
 
         static::assertSame(

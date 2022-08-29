@@ -18,8 +18,7 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
         ->set(AttestationControllerFactory::class)
@@ -31,8 +30,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepository::class),
-        ])
-    ;
+        ]);
     $container->set(DefaultFailureHandler::class);
     $container->set(DefaultSuccessHandler::class);
 };

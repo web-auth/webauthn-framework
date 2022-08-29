@@ -26,7 +26,7 @@ final class AppKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function registerBundles(): array
+    public function registerBundles(): iterable
     {
         return [
             new FrameworkBundle(),

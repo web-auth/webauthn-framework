@@ -17,7 +17,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
 {
     public function __construct(
-        private CacheItemPoolInterface $cacheItemPool
+        private readonly CacheItemPoolInterface $cacheItemPool
     ) {
         $publicKeyCredentialSource1 = new PublicKeyCredentialSource(
             base64_decode(

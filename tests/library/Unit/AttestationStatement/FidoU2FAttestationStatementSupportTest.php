@@ -16,7 +16,7 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
 
 /**

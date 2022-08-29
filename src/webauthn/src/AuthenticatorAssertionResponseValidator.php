@@ -131,8 +131,7 @@ class AuthenticatorAssertionResponseValidator
             );
 
             $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()
-                ->getHost()
-            ;
+                ->getHost();
             $facetId = $this->getFacetId(
                 $rpId,
                 $publicKeyCredentialRequestOptions->getExtensions(),
@@ -174,8 +173,7 @@ class AuthenticatorAssertionResponseValidator
             }
 
             $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()
-                ->getExtensions()
-            ;
+                ->getExtensions();
             if ($extensionsClientOutputs !== null) {
                 $this->extensionOutputCheckerHandler->check(
                     $publicKeyCredentialRequestOptions->getExtensions(),
@@ -198,7 +196,9 @@ class AuthenticatorAssertionResponseValidator
                 Normalizable::class,
                 'Invalid attestation object. Unexpected object.'
             );
-            $coseKey = Key::create($credentialPublicKeyStream->normalize());
+            $normalizedData = $credentialPublicKeyStream->normalize();
+            Assertion::isArray($normalizedData, 'Invalid attestation object. Unexpected object.');
+            $coseKey = Key::create($normalizedData);
             $algorithm = $this->algorithmManager?->get($coseKey->alg());
             Assertion::isInstanceOf(
                 $algorithm,
@@ -210,8 +210,7 @@ class AuthenticatorAssertionResponseValidator
 
             $storedCounter = $publicKeyCredentialSource->getCounter();
             $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()
-                ->getSignCount()
-            ;
+                ->getSignCount();
             if ($responseCounter !== 0 || $storedCounter !== 0) {
                 $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
             }
@@ -272,11 +271,9 @@ class AuthenticatorAssertionResponseValidator
             return $rpId;
         }
         $appId = $authenticationExtensionsClientInputs->get('appid')
-            ->value()
-        ;
+            ->value();
         $wasUsed = $authenticationExtensionsClientOutputs->get('appid')
-            ->value()
-        ;
+            ->value();
         if (! is_string($appId) || $wasUsed !== true) {
             return $rpId;
         }

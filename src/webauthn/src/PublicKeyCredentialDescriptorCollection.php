@@ -10,6 +10,7 @@ use Assert\Assertion;
 use function count;
 use const COUNT_NORMAL;
 use Countable;
+use function is_array;
 use Iterator;
 use IteratorAggregate;
 use const JSON_THROW_ON_ERROR;
@@ -85,6 +86,9 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     {
         $collection = new self();
         foreach ($json as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
             $collection->add(PublicKeyCredentialDescriptor::createFromArray($item));
         }
 

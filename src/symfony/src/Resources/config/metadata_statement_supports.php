@@ -9,34 +9,27 @@ use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
-use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
-        ->set(AppleAttestationStatementSupport::class)
-    ;
+        ->set(AppleAttestationStatementSupport::class);
     $container
-        ->set(TPMAttestationStatementSupport::class)
-    ;
+        ->set(TPMAttestationStatementSupport::class);
     $container
-        ->set(FidoU2FAttestationStatementSupport::class)
-    ;
+        ->set(FidoU2FAttestationStatementSupport::class);
     $container
-        ->set(AndroidKeyAttestationStatementSupport::class)
-    ;
+        ->set(AndroidKeyAttestationStatementSupport::class);
     $container
         ->set(PackedAttestationStatementSupport::class)
-        ->args([service('webauthn.cose.algorithm.manager')])
-    ;
+        ->args([service('webauthn.cose.algorithm.manager')]);
 
     $container
-        ->set(PhpCertificateChainChecker::class)
-        ->args([service('webauthn.http_client'), service('webauthn.request_factory')])
-    ;
+        ->set(PhpCertificateChainValidator::class)
+        ->args([service('webauthn.http_client'), service('webauthn.request_factory')]);
 };

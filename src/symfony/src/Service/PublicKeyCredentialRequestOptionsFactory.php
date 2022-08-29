@@ -41,8 +41,7 @@ final class PublicKeyCredentialRequestOptionsFactory
                 ->setUserVerification($userVerification ?? $profile['user_verification'])
                 ->allowCredentials(...$allowCredentials)
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout'])
-        ;
+                ->setTimeout($profile['timeout']);
         $this->eventDispatcher->dispatch(new PublicKeyCredentialRequestOptionsCreatedEvent($options));
 
         return $options;

@@ -13,7 +13,7 @@ abstract class Base64
 {
     public static function decodeUrlSafe(string $data): string
     {
-        Assertion::regex($data, '/([A-Z][a-z][0-9]\-_)*/', 'Invalid Base 64 Url Safe character');
+        Assertion::regex($data, '/^[A-Za-z0-9\-_]*$/', 'Invalid Base 64 Url Safe character.');
 
         return Base64UrlSafe::decode($data);
     }

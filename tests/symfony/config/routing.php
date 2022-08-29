@@ -13,18 +13,15 @@ return static function (RoutingConfigurator $routes): void {
 
     $routes->add('app_logout', '/logout')
         ->controller([SecurityController::class, 'logout'])
-        ->methods(['POST'])
-    ;
+        ->methods(['POST']);
 
     // Home
     $routes->add('app_home', '/')
         ->controller([HomeController::class, 'home'])
-        ->methods(['GET'])
-    ;
+        ->methods(['GET']);
 
     // Admin
     $routes->add('app_admin', '/admin')
         ->controller([AdminController::class, 'admin'])
-        ->methods(['GET'])
-    ;
+        ->methods(['GET']);
 };

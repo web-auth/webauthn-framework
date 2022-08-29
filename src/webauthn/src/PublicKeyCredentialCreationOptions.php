@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -163,6 +164,9 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {
+            if (! is_array($pubKeyCredParam)) {
+                continue;
+            }
             $pubKeyCredParams[] = PublicKeyCredentialParameters::createFromArray($pubKeyCredParam);
         }
         $excludeCredentials = [];
@@ -191,8 +195,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
                     isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
                         $json['extensions']
                     ) : new AuthenticationExtensionsClientInputs()
-                )
-        ;
+                );
     }
 
     /**

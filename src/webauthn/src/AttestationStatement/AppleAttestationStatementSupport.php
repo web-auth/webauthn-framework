@@ -13,7 +13,7 @@ use Cose\Key\RsaKey;
 use function count;
 use function Safe\openssl_pkey_get_public;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 

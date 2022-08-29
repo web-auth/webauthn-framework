@@ -1,11 +1,12 @@
 .PHONY: mu
 mu: vendor ## Mutation tests
-	vendor/bin/infection -s --threads=$(nproc) --min-msi=23 --min-covered-msi=45
+	vendor/bin/infection -s --threads=$(nproc) --min-msi=22 --min-covered-msi=45
 	vendor/bin/phpunit --coverage-text
 
 .PHONY: tests
 tests: vendor ## Run all tests
 	vendor/bin/phpunit  --color
+	yarn test
 
 .PHONY: cc
 cc: vendor ## Show test coverage rates (HTML)
@@ -36,7 +37,7 @@ st: vendor ## Run static analyse
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for CI/CD only)
-	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=23 --min-covered-msi=45
+	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=22 --min-covered-msi=45
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
@@ -48,6 +49,12 @@ ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
 
 ################################################
 
+
+js: node_modules ## Execute JS tests
+	yarn test
+
+node_modules: package.json
+	yarn install --force
 
 .PHONY: rector
 rector: vendor ## Check all files using Rector

@@ -108,8 +108,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $authData = $response->getAuthenticatorData();
         } else {
             $authData = $response->getAttestationObject()
-                ->getAuthData()
-            ;
+                ->getAuthData();
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
         Assertion::notNull($userEntity, 'The user entity is missing');
@@ -170,7 +169,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
 
-            $data = $this->optionsStorage->get();
+            $data = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             Assertion::isInstanceOf(
                 $publicKeyCredentialRequestOptions,
@@ -217,7 +216,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $response = $publicKeyCredential->getResponse();
             Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
 
-            $storedData = $this->optionsStorage->get();
+            $storedData = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             Assertion::isInstanceOf(
                 $publicKeyCredentialCreationOptions,

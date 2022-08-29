@@ -13,15 +13,18 @@ use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
 use function count;
+use DateTimeZone;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use Lcobucci\Clock\Clock;
+use Lcobucci\Clock\SystemClock;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\openssl_verify;
 use function Safe\unpack;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
@@ -29,9 +32,19 @@ use Webauthn\Util\Base64;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
-    public static function create(): self
+    private readonly Clock $clock;
+
+    public function __construct(?Clock $clock = null)
     {
-        return new self();
+        if ($clock === null) {
+            $clock = new SystemClock(new DateTimeZone('UTC'));
+        }
+        $this->clock = $clock;
+    }
+
+    public static function create(?Clock $clock = null): self
+    {
+        return new self($clock);
     }
 
     public function name(): string
@@ -297,12 +310,12 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
         Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
         $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
-        Assertion::true($startDate < new DateTimeImmutable(), 'Invalid certificate start date.');
+        Assertion::true($startDate < $this->clock->now(), 'Invalid certificate start date.');
 
         Assertion::keyExists($parsed, 'validTo_time_t', 'Invalid certificate end date.');
         Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
         $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
-        Assertion::true($endDate > new DateTimeImmutable(), 'Invalid certificate end date.');
+        Assertion::true($endDate > $this->clock->now(), 'Invalid certificate end date.');
 
         //Check extensions
         Assertion::false(

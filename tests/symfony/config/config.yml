@@ -1,246 +1,254 @@
 parameters:
-    env(DATABASE_URL): ''
+  env(DATABASE_URL): ''
 
 monolog:
-    handlers:
-        main:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
-            channels: ["!event", "!webauthn"]
-        webauthn:
-            type: stream
-            path: "%kernel.logs_dir%/webauthn.log"
-            level: error
-            channels: ["webauthn"]
+  handlers:
+    main:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+      level: debug
+      channels: [ "!event", "!webauthn" ]
+    webauthn:
+      type: stream
+      path: "%kernel.logs_dir%/webauthn.log"
+      level: error
+      channels: [ "webauthn" ]
 
 framework:
-    test: ~
-    secret: 'test'
-    annotations: ~
-    serializer:
-        enabled: true
-    validation:
-        enabled: true
-    session:
-        storage_factory_id: 'session.storage.factory.mock_file'
-    fragments:       ~
-    http_method_override: true
-    router:
-        utf8: true
-        resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
+  test: true
+  secret: 'test'
+  annotations: ~
+  serializer:
+    enabled: true
+  validation:
+    enabled: true
+  session:
+    storage_factory_id: 'session.storage.factory.mock_file'
+  fragments: ~
+  http_method_override: true
+  http_client:
+    mock_response_factory: 'Webauthn\Tests\Bundle\Functional\MockClientCallback'
+  router:
+    utf8: true
+    resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
 
 services:
-    _defaults:
-        public: true
+  _defaults:
+    public: true
 
-    Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
-        tags: [serializer.normalizer]
+  Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
+    tags: [ serializer.normalizer ]
 
-    httplug.client.mock:
-        class: 'Http\Mock\Client'
+  Webauthn\Tests\Bundle\Functional\MockClientCallback: ~
 
-    httplug.client.default: '@httplug.client.mock'
+  Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository:
+    autowire: true
 
-    Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository:
-        autowire: true
+  Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository:
+    autowire: true
 
-    Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository:
-        autowire: true
+  Webauthn\Tests\Bundle\Functional\Logger:
+    arguments: [ '@logger' ]
+    tags:
+      - { name: 'monolog.logger', channel: 'webauthn' }
 
-    Webauthn\Tests\Bundle\Functional\Logger:
-        arguments: ['@logger']
-        tags:
-            - { name: 'monolog.logger', channel: 'webauthn' }
+  Webauthn\Tests\Bundle\Functional\UserProvider:
+    autowire: true
+  Webauthn\Tests\Bundle\Functional\HomeController:
+    autowire: true
+    tags: [ 'controller.service_arguments' ]
+  Webauthn\Tests\Bundle\Functional\SecurityController:
+    autowire: true
+    tags: [ 'controller.service_arguments' ]
+  Webauthn\Tests\Bundle\Functional\AdminController:
+    autowire: true
+    tags: [ 'controller.service_arguments' ]
 
-    Webauthn\Tests\Bundle\Functional\UserProvider:
-        autowire: true
-    Webauthn\Tests\Bundle\Functional\HomeController:
-        autowire: true
-        tags: ['controller.service_arguments']
-    Webauthn\Tests\Bundle\Functional\SecurityController:
-        autowire: true
-        tags: ['controller.service_arguments']
-    Webauthn\Tests\Bundle\Functional\AdminController:
-        autowire: true
-        tags: ['controller.service_arguments']
+  ### MDS ###
+  mds_single_file_1:
+    class: Webauthn\Tests\Bundle\Functional\SingleFileService
+    tags:
+      - 'webauthn.mds_service'
+    arguments:
+      - '%kernel.project_dir%/tests/metadataStatements'
 
-### MDS ###
-    Webauthn\Tests\Bundle\Functional\SingleFileService:
-        tags:
-            - 'webauthn.mds_service'
-        arguments:
-            - '%kernel.project_dir%/tests/metadataStatements'
+  fido_alliance_official:
+    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
+    tags:
+      - 'webauthn.mds_service'
+    arguments:
+      - '@Psr\Http\Message\RequestFactoryInterface'
+      - '@Psr\Http\Client\ClientInterface'
+      - 'https://fidoalliance.co.nz/blob.jwt'
+      - [ ]
+      - '@Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator'
+      - 'https://localhost/FidoAllianceRootR3.crt'
 
-    Webauthn\MetadataService\Service\ChainedMetadataServices:
-        arguments:
-            - '@Webauthn\Tests\Bundle\Functional\SingleFileService'
-### MDS ###
+  Webauthn\MetadataService\Service\ChainedMetadataServices:
+    arguments:
+      - '@mds_single_file_1'
+      - '@fido_alliance_official'
+  ### MDS ###
 
+  Webauthn\Tests\Bundle\Functional\FailureHandler: ~
+  Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
+  Webauthn\Tests\Bundle\Functional\CustomSessionStorage:
+    arguments:
+      - '@request_stack'
 
+  Webauthn\Tests\Bundle\Functional\MetadataStatementRepository:
+    arguments:
+      - '@Webauthn\MetadataService\Service\ChainedMetadataServices'
 
-    Webauthn\Tests\Bundle\Functional\FailureHandler: ~
-    Webauthn\Tests\Bundle\Functional\SuccessHandler: ~
-    Webauthn\Tests\Bundle\Functional\CustomSessionStorage:
-        arguments:
-            - '@request_stack'
+  # Register nyholm/psr7 services for autowiring with PSR-17 (HTTP factories)
+  Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+  Psr\Http\Message\ResponseFactoryInterface: '@nyholm.psr7.psr17_factory'
+  Psr\Http\Message\ServerRequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+  Psr\Http\Message\StreamFactoryInterface: '@nyholm.psr7.psr17_factory'
+  Psr\Http\Message\UploadedFileFactoryInterface: '@nyholm.psr7.psr17_factory'
+  Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
 
-    Webauthn\Tests\Bundle\Functional\MetadataStatementRepository:
-        arguments:
-            - '@Webauthn\MetadataService\Service\ChainedMetadataServices'
+  # Register nyholm/psr7 services for autowiring with HTTPlug factories
+  Http\Message\MessageFactory: '@nyholm.psr7.psr17_factory'
+  Http\Message\RequestFactory: '@nyholm.psr7.psr17_factory'
+  Http\Message\ResponseFactory: '@nyholm.psr7.psr17_factory'
+  Http\Message\StreamFactory: '@nyholm.psr7.psr17_factory'
+  Http\Message\UriFactory: '@nyholm.psr7.psr17_factory'
 
-    # Register nyholm/psr7 services for autowiring with PSR-17 (HTTP factories)
-    Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'
-    Psr\Http\Message\ResponseFactoryInterface: '@nyholm.psr7.psr17_factory'
-    Psr\Http\Message\ServerRequestFactoryInterface: '@nyholm.psr7.psr17_factory'
-    Psr\Http\Message\StreamFactoryInterface: '@nyholm.psr7.psr17_factory'
-    Psr\Http\Message\UploadedFileFactoryInterface: '@nyholm.psr7.psr17_factory'
-    Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
-
-    # Register nyholm/psr7 services for autowiring with HTTPlug factories
-    Http\Message\MessageFactory: '@nyholm.psr7.httplug_factory'
-    Http\Message\RequestFactory: '@nyholm.psr7.httplug_factory'
-    Http\Message\ResponseFactory: '@nyholm.psr7.httplug_factory'
-    Http\Message\StreamFactory: '@nyholm.psr7.httplug_factory'
-    Http\Message\UriFactory: '@nyholm.psr7.httplug_factory'
-
-    nyholm.psr7.psr17_factory:
-        class: Nyholm\Psr7\Factory\Psr17Factory
-
-    nyholm.psr7.httplug_factory:
-        class: Nyholm\Psr7\Factory\HttplugFactory
+  nyholm.psr7.psr17_factory:
+    class: Nyholm\Psr7\Factory\Psr17Factory
 
 
 doctrine:
-    dbal:
-        driver: 'pdo_mysql'
-        server_version: '5.7'
-        charset: utf8mb4
-        default_table_options:
-            charset: utf8mb4
-            collate: utf8mb4_unicode_ci
+  dbal:
+    driver: 'pdo_mysql'
+    server_version: '5.7'
+    charset: utf8mb4
+    default_table_options:
+      charset: utf8mb4
+      collate: utf8mb4_unicode_ci
 
-        url: '%env(resolve:DATABASE_URL)%'
-    orm:
-        auto_generate_proxy_classes: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
-        mappings:
-            App:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/'
-                prefix: 'Webauthn\Tests\Bundle\Functional'
-                alias: App
+    url: '%env(resolve:DATABASE_URL)%'
+  orm:
+    auto_generate_proxy_classes: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    auto_mapping: true
+    mappings:
+      App:
+        is_bundle: false
+        type: annotation
+        dir: '%kernel.project_dir%/'
+        prefix: 'Webauthn\Tests\Bundle\Functional'
+        alias: App
 
 webauthn:
-    #http_client: ~
-    #request_factory: ~
-    #http_message_factory: ~
-    logger: 'Webauthn\Tests\Bundle\Functional\Logger'
-    credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
-    user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
-    android_safetynet:
-        max_age: 99999999999
-    controllers:
-        enabled: true
-        creation:
-            test:
-                options_path: '/devices/add/options'
-                result_path: '/devices/add'
-                #host: null
-                #profile: 'default'
-                user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
-                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-                #success_handler:
-                #failure_handler:
-                #option_handler:
-                secured_rp_ids:
-                    - 'localhost'
-        request:
-            test:
-                options_path: '/devices/test/options'
-                result_path: '/devices/test'
-                #host: null
-                #profile: 'default'
-                options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-                #success_handler:
-                #failure_handler:
-                #option_handler:
-    creation_profiles:
-        default:
-            rp:
-                name: 'My other application'
-                id: 'localhost'
-                icon: null
-            challenge_length: 32
-            authenticator_selection_criteria:
-                attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
-                require_resident_key: false
-                user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-                resident_key: !php/const Webauthn\AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
-            extensions: []
-#            public_key_credential_parameters:
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256K
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES384
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES512
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS384
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS512
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS256
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS384
-#                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS512
-            attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
-    request_profiles:
-        default:
-            rp_id: 'localhost'
-            challenge_length: 32
-            user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-    metadata: ## Optional
-        enabled: true
-        mds_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
-        status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
-        #certificate_chain_checker: OpenSSLCertificateChainChecker::class
+  #http_client: ~
+  #request_factory: ~
+  #http_message_factory: ~
+  logger: 'Webauthn\Tests\Bundle\Functional\Logger'
+  credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
+  user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
+  android_safetynet:
+    max_age: 99999999999
+  controllers:
+    enabled: true
+    creation:
+      test:
+        options_path: '/devices/add/options'
+        result_path: '/devices/add'
+        #host: null
+        #profile: 'default'
+        user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
+        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        #success_handler:
+        #failure_handler:
+        #option_handler:
+        secured_rp_ids:
+          - 'localhost'
+    request:
+      test:
+        options_path: '/devices/test/options'
+        result_path: '/devices/test'
+        #host: null
+        #profile: 'default'
+        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        #success_handler:
+        #failure_handler:
+        #option_handler:
+  creation_profiles:
+    default:
+      rp:
+        name: 'My other application'
+        id: 'localhost'
+        icon: null
+      challenge_length: 32
+      authenticator_selection_criteria:
+        attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
+        require_resident_key: false
+        user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+        resident_key: !php/const Webauthn\AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
+      extensions: [ ]
+      #            public_key_credential_parameters:
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256K
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES384
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES512
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS384
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS512
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS256
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS384
+      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS512
+      attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
+  request_profiles:
+    default:
+      rp_id: 'localhost'
+      challenge_length: 32
+      user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+  metadata: ## Optional
+    enabled: true
+    mds_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
+    status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
 
 security:
-    providers:
-        default:
-            id: 'Webauthn\Tests\Bundle\Functional\UserProvider'
+  enable_authenticator_manager: true
+  providers:
+    default:
+      id: 'Webauthn\Tests\Bundle\Functional\UserProvider'
 
-    firewalls:
-        main:
-            webauthn:
-#               user_provider: null
-               options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-               failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
-               success_handler: 'Webauthn\Tests\Bundle\Functional\SuccessHandler'
-               registration:
-                   enabled: true
-#                   profile: default
-                   routes:
-#                       host: null
-                       options_path: '/api/register/options'
-                       result_path: '/api/register'
-#                   options_handler: DefaultCreationOptionsHandler::class
-               authentication:
-                   enabled: true
-#                   profile: default
-                   routes:
-#                       host: null
-                       options_path: '/api/login/options'
-                       result_path: '/api/login'
-#                   options_handler: DefaultRequestOptionsHandler::class
-            logout:
-                path: /logout
-                target: /
+  firewalls:
+    main:
+      webauthn:
+        #               user_provider: null
+        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
+        success_handler: 'Webauthn\Tests\Bundle\Functional\SuccessHandler'
+        registration:
+          enabled: true
+          #                   profile: default
+          routes:
+            #                       host: null
+            options_path: '/api/register/options'
+            result_path: '/api/register'
+        #                   options_handler: DefaultCreationOptionsHandler::class
+        authentication:
+          enabled: true
+          #                   profile: default
+          routes:
+            #                       host: null
+            options_path: '/api/login/options'
+            result_path: '/api/login'
+      #                   options_handler: DefaultRequestOptionsHandler::class
+      logout:
+        path: /logout
+        target: /
 
-    access_control:
-        - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
-        - { path: ^/logout,  roles: PUBLIC_ACCESS , requires_channel: https }
-        - { path: ^/api/login,  roles: PUBLIC_ACCESS , requires_channel: https }
-        - { path: ^/api/register,  roles: PUBLIC_ACCESS , requires_channel: https }
-        - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
-        - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
-        - { path: ^/,       roles: PUBLIC_ACCESS , requires_channel: https }
+  access_control:
+    - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
+    - { path: ^/logout,  roles: PUBLIC_ACCESS , requires_channel: https }
+    - { path: ^/api/login,  roles: PUBLIC_ACCESS , requires_channel: https }
+    - { path: ^/api/register,  roles: PUBLIC_ACCESS , requires_channel: https }
+    - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
+    - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
+    - { path: ^/,       roles: PUBLIC_ACCESS , requires_channel: https }

@@ -15,8 +15,8 @@ use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
-use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
@@ -139,7 +139,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('certificate_chain_checker')
             ->cannotBeEmpty()
-            ->defaultValue(PhpCertificateChainChecker::class)
+            ->defaultValue(PhpCertificateChainValidator::class)
             ->info('A Certificate Chain checker.')
             ->end()
             ->end()
@@ -302,7 +302,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
             ->validate()
             ->ifNotInArray([
-                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NONE,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
@@ -328,7 +328,7 @@ final class Configuration implements ConfigurationInterface
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->defaultValue([
-                Algorithms::COSE_ALGORITHM_EdDSA,
+                Algorithms::COSE_ALGORITHM_EDDSA,
                 Algorithms::COSE_ALGORITHM_ES256,
                 Algorithms::COSE_ALGORITHM_ES256K,
                 Algorithms::COSE_ALGORITHM_ES384,
@@ -379,8 +379,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end()
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }

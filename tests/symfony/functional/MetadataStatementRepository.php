@@ -12,7 +12,7 @@ use Webauthn\MetadataService\StatusReportRepository as StatusReportRepositoryInt
 final class MetadataStatementRepository implements MetadataStatementRepositoryInterface, StatusReportRepositoryInterface
 {
     public function __construct(
-        private MetadataService $service
+        private readonly MetadataService $service
     ) {
     }
 

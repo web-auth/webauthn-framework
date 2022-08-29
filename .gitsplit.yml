@@ -1,12 +1,13 @@
 splits:
-    - prefix: "src/webauthn"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
-    - prefix: "src/symfony"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
-    - prefix: "src/metadata-service"
-      target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-metadata-service.git"
+  - prefix: "src/webauthn"
+    target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-lib.git"
+  - prefix: "src/stimulus"
+    target: "https://${GH_TOKEN}@github.com/web-auth/ux.git"
+  - prefix: "src/symfony"
+    target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-symfony-bundle.git"
+  - prefix: "src/metadata-service"
+    target: "https://${GH_TOKEN}@github.com/web-auth/webauthn-metadata-service.git"
 
 origins:
-    - ^master$
-    - ^v\d+\.\d+$
-    - ^v\d+\.\d+\.\d+.*$
+  - ^v\d+\.\d+$
+  - ^v\d+\.\d+\.\d+.*$

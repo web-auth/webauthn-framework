@@ -20,7 +20,7 @@ use function Safe\hex2bin;
 use function Safe\openssl_pkey_get_public;
 use function Safe\openssl_verify;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateToolbox;
+use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -68,7 +68,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic(
+        return AttestationStatement::createAnonymizationCA(
             $attestation['fmt'],
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)

@@ -29,11 +29,9 @@ final class MetadataStatementTest extends AbstractTestCase
 
         //When
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
-            ->load($response)
-        ;
+            ->load($response);
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
-            ->check($publicKeyCredential->getResponse(), $pkOptions, $request)
-        ;
+            ->check($publicKeyCredential->getResponse(), $pkOptions, $request);
     }
 
     /**

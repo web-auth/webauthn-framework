@@ -11,7 +11,7 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
-use Webauthn\CertificateChainChecker\PhpCertificateChainChecker;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -29,8 +29,8 @@ final class AppleAttestationStatementTest extends AbstractTestCase
      */
     public function anAppleAttestationCanBeVerified(): void
     {
-        ClockMock::register(PhpCertificateChainChecker::class);
-        ClockMock::withClockMock(1600000000.0);
+        ClockMock::register(PhpCertificateChainValidator::class);
+        ClockMock::withClockMock(1_600_000_000.0);
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
@@ -41,8 +41,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
                 [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
             )
-                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
-        ;
+                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
 
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load('{
@@ -53,8 +52,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiaDV4U3lJUk14MklRUHIxbVFrNkdEOThYU1FPQkhnTUhWcEpJa01WOU5rYyIsIm9yaWdpbiI6Imh0dHBzOi8vZGV2LmRvbnRuZWVkYS5wdyJ9"
             },
             "type": "public-key"
-        }')
-        ;
+        }');
 
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
 
@@ -63,8 +61,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         $request = $this->createRequestWithHost('dev.dontneeda.pw');
 
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
-            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $request)
-        ;
+            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $request);
 
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
 
@@ -85,14 +82,12 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->getResponse()
             ->getAttestationObject()
-            ->getAuthData()
-        ;
+            ->getAuthData();
 
         /** @var AttestationStatement $attestationStatement */
         $attestationStatement = $publicKeyCredential->getResponse()
             ->getAttestationObject()
-            ->getAttStmt()
-        ;
+            ->getAttStmt();
         static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->getType());
 
         static::assertSame(

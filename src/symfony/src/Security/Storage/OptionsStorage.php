@@ -8,5 +8,5 @@ interface OptionsStorage
 {
     public function store(Item $item): void;
 
-    public function get(): Item;
+    public function get(/*string|null $challenge = null*/): Item;
 }
