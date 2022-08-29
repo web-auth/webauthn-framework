@@ -66,7 +66,7 @@ final class W10Test extends AbstractTestCase
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
 
-        if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
+        if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             static::assertSame(
                 '00000000-0000-0000-0000-000000000000',
                 $publicKeyCredentialSource->getAaguid()
