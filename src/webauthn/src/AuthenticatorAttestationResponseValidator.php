@@ -177,6 +177,7 @@ class AuthenticatorAttestationResponseValidator
             $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->getAttStmt()
                 ->getFmt();
+
             Assertion::true(
                 $this->attestationStatementSupportManager->has($fmt),
                 'Unsupported attestation statement format.'
@@ -270,6 +271,7 @@ class AuthenticatorAttestationResponseValidator
 
                 return;
             }
+
             $this->logger->debug('Anonymization required. AAGUID and Attestation Statement changed.', [
                 'aaguid' => $aaguid,
                 'AttestationStatement' => $attestationStatement,

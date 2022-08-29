@@ -213,8 +213,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $parameters = $this->getParameters($type, $pubArea);
 
-        $uniqueLength = unpack('n', $pubArea->read(2))[1];
-        $unique = $pubArea->read($uniqueLength);
+        $unique = $this->getUnique($type, $pubArea);
         Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
         $pubArea->close();
 
@@ -240,7 +239,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 'keyBits' => unpack('n', $stream->read(2))[1],
                 'exponent' => $this->getExponent($stream->read(4)),
             ],
-            '0018' => [
+            '0018', '0023' => [
                 'symmetric' => $stream->read(2),
                 'scheme' => $stream->read(2),
                 'curveId' => $stream->read(2),
@@ -248,6 +247,26 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             ],
             default => throw new InvalidArgumentException('Unsupported type'),
         };
+    }
+
+    private function getUnique(string $type, StringStream $stream): string
+    {
+        switch (bin2hex($type)) {
+            case '0001':
+            case '0014':
+            case '0016':
+            case '0018':
+                $uniqueLength = unpack('n', $stream->read(2))[1];
+                return $stream->read($uniqueLength);
+            case '0023':
+                $xLen = unpack('n', $stream->read(2))[1];
+                $x = $stream->read($xLen);
+                $yLen = unpack('n', $stream->read(2))[1];
+                $y = $stream->read($yLen);
+                return "\04" . $x . $y;
+            default:
+                throw new InvalidArgumentException('Unsupported type');
+        }
     }
 
     private function getExponent(string $exponent): string
