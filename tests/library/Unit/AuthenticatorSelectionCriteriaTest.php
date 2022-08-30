@@ -39,7 +39,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         );
         static::assertSame('user_verification', $data->getUserVerification());
         static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
-        static::assertFalse($data->isRequireResidentKey());
+        static::assertTrue($data->isRequireResidentKey());
         static::assertSame('preferred', $data->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"preferred","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
@@ -74,7 +74,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         );
         static::assertSame('user_verification', $data->getUserVerification());
         static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
-        static::assertFalse($data->isRequireResidentKey());
+        static::assertTrue($data->isRequireResidentKey());
         static::assertSame('resident_key', $data->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"resident_key","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
