@@ -21,11 +21,12 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
             ->setAuthenticatorAttachment('authenticator_attachment')
             ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
-            ->setUserVerification('user_verification');
+            ->setUserVerification('user_verification')
+            ->setRequireResidentKey(true);
 
         static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
-        static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
+        static::assertFalTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertSame('required', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
@@ -55,7 +56,8 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
             ->setAuthenticatorAttachment('authenticator_attachment')
             ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
-            ->setUserVerification('user_verification');
+            ->setUserVerification('user_verification')
+            ->setRequireResidentKey(true);
 
         static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
