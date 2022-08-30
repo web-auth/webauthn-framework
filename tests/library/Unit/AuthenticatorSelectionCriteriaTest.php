@@ -43,7 +43,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('preferred', $data->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"preferred","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":false,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
@@ -78,7 +78,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('resident_key', $data->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"resident_key","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":false,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
