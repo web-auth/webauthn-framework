@@ -26,7 +26,7 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
 
         static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
-        static::assertFalTrue($authenticatorSelectionCriteria->isRequireResidentKey());
+        static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertSame('required', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
             // '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
