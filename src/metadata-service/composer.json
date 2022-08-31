@@ -22,14 +22,14 @@
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
-        "beberlei/assert": "^3.2",
+        "beberlei/assert": "^3.3",
         "lcobucci/clock": "^2.2",
-        "paragonie/constant_time_encoding": "^2.4",
+        "paragonie/constant_time_encoding": "^2.6",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
-        "psr/log": "^2.0|^3.0",
+        "psr/log": "^3.0",
         "spomky-labs/pki-framework": "^1.0",
-        "thecodingmachine/safe": "^2.0"
+        "thecodingmachine/safe": "^2.2"
     },
     "autoload": {
         "psr-4": {

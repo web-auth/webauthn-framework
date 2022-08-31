@@ -11,6 +11,7 @@ use CBOR\MapObject;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use function ord;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function Safe\unpack;
@@ -66,7 +67,7 @@ class PublicKeyCredentialLoader
             Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
             Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
 
-            $id = Base64::decodeUrlSafe($json['id']);
+            $id = Base64UrlSafe::decodeNoPadding($json['id']);
             $rawId = Base64::decode($json['rawId']);
             Assertion::true(hash_equals($id, $rawId));
 
@@ -128,7 +129,7 @@ class PublicKeyCredentialLoader
                     $response['clientDataJSON']
                 ), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
-                $authData = Base64::decodeUrlSafe($response['authenticatorData']);
+                $authData = Base64UrlSafe::decodeNoPadding($response['authenticatorData']);
 
                 $authDataStream = new StringStream($authData);
                 $rp_id_hash = $authDataStream->read(32);
