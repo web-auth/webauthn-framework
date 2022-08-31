@@ -19,6 +19,7 @@ use InvalidArgumentException;
 use function is_array;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
 use Safe\DateTimeImmutable;
 use function Safe\openssl_verify;
@@ -28,7 +29,6 @@ use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
-use Webauthn\Util\Base64;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
@@ -268,7 +268,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function getExponent(string $exponent): string
     {
-        return bin2hex($exponent) === '00000000' ? Base64::decodeUrlSafe('AQAB') : $exponent;
+        return bin2hex($exponent) === '00000000' ? Base64UrlSafe::decodeNoPadding('AQAB') : $exponent;
     }
 
     private function getTPMHash(string $nameAlg): string

@@ -8,8 +8,8 @@ use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\TokenBinding\TokenBinding;
-use Webauthn\Util\Base64;
 
 class CollectedClientData
 {
@@ -43,7 +43,7 @@ class CollectedClientData
 
         $challenge = $data['challenge'] ?? '';
         Assertion::string($challenge, 'Invalid parameter "challenge". Shall be a string.');
-        $challenge = Base64::decodeUrlSafe($challenge);
+        $challenge = Base64UrlSafe::decodeNoPadding($challenge);
         $this->challenge = $challenge;
         Assertion::notEmpty($challenge, 'Invalid parameter "challenge". Shall not be empty.');
 
@@ -61,7 +61,7 @@ class CollectedClientData
 
     public static function createFormJson(string $data): self
     {
-        $rawData = Base64::decodeUrlSafe($data);
+        $rawData = Base64UrlSafe::decodeNoPadding($data);
         $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
         Assertion::isArray($json, 'Invalid collected client data');
 
