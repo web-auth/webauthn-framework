@@ -1,7 +1,6 @@
 name: 🐛 Bug Report
 description: ⚠️ NEVER report security issues, email security AT spomky-labs.com instead
 labels: Bug
-
 body:
   - type: input
     id: affected-versions
@@ -34,7 +33,7 @@ body:
     attributes:
       label: Possible Solution
       description: |
-      Optional: only if you have suggestions on a fix/reason for the bug
+        Optional: only if you have suggestions on a fix/reason for the bug
         Don't hesitate to create a pull request with your solution, it helps get faster feedback.
   - type: textarea
     id: additional-context
