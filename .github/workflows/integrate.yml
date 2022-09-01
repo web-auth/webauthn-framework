@@ -175,8 +175,22 @@ jobs:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
 
+      - name: "Set number of runner CPU cores"
+        uses: "actions/github-script@v6"
+        id: "runner-core-count"
+        with:
+          script: |
+            const { cpus } = require("os");
+            const core = require("@actions/core");
+            core.setOutput("count", cpus().length);
+          result-encoding: "string"
+
       - name: "Execute Infection"
-        run: "make ci-mu"
+        run: |
+          echo "Runner has ${{steps.runner-core-count.outputs.count}} cores."
+          nproc() { echo "${{steps.runner-core-count.outputs.count}}"; }
+          export -f nproc
+          make ci-mu
 
   rector_checkstyle:
     name: "6️⃣ Rector Checkstyle"
