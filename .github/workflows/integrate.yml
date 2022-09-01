@@ -181,7 +181,6 @@ jobs:
         with:
           script: |
             const { cpus } = require("os");
-            const core = require("@actions/core");
             core.setOutput("count", cpus().length);
           result-encoding: "string"
 
