@@ -165,7 +165,7 @@ jobs:
         with:
           php-version: "8.1"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
-          coverage: "none"
+          coverage: "xdebug"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
