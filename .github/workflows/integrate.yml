@@ -143,7 +143,9 @@ jobs:
         run: "make ci-cs"
 
       - name: "Deptrac"
-        run: sh .github/workflows/test-flag-fail-on-uncovered.sh
+        run: |
+          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
+          test "$?" -eq 1
 
   mutation_testing:
     name: "5️⃣ Mutation Testing"
