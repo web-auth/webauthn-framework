@@ -75,7 +75,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
       - name: "Checkout code"
@@ -123,7 +123,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -162,7 +162,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -205,7 +205,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -244,7 +244,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
       - name: "Checkout code"
