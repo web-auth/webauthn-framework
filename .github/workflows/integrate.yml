@@ -184,12 +184,16 @@ jobs:
             core.setOutput("count", cpus().length);
           result-encoding: "string"
 
-      - name: "Execute Infection"
+      - name: "Create nproc script"
         run: |
           echo "Runner has ${{steps.runner-core-count.outputs.count}} cores."
-          nproc() { echo "${{steps.runner-core-count.outputs.count}}"; }
-          export -f nproc
-          make ci-mu
+          mkdir -p "$HOME/.local/bin"
+          echo -e '#!/bin/bash\necho "${{steps.runner-core-count.outputs.count}}"' >"$HOME/.local/bin/nproc"
+          chmod +x "$HOME/.local/bin/nproc"
+          echo "$HOME/.local/bin" >>"$GITHUB_PATH"
+
+      - name: "Execute Infection"
+        run: "make ci-mu"
 
   rector_checkstyle:
     name: "6️⃣ Rector Checkstyle"
