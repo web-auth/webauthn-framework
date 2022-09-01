@@ -145,7 +145,6 @@ jobs:
       - name: "Deptrac"
         run: |
           vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
-          test "$?" -eq 0
 
   mutation_testing:
     name: "5️⃣ Mutation Testing"
