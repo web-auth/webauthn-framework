@@ -37,7 +37,7 @@ st: vendor ## Run static analyse
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for CI/CD only)
-	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=22 --min-covered-msi=45
+	vendor/bin/infection --logger-github -s --threads=$(grep -c '^processor\b' /proc/cpuinfo) --min-msi=22 --min-covered-msi=45
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
