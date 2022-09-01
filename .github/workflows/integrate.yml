@@ -36,6 +36,17 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
         with:
@@ -69,6 +80,17 @@ jobs:
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
+
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -106,6 +128,17 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: "Validate Composer configuration"
         run: "composer validate --strict"
 
@@ -133,6 +166,17 @@ jobs:
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
+
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: "Check adherence to EditorConfig"
         uses: "greut/eclint-action@v0"
@@ -166,6 +210,17 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: "Fetch Git base reference"
         run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
 
@@ -195,6 +250,17 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: "Fetch Git base reference"
         run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
 
@@ -216,6 +282,17 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
+
+      - name: "Get composer cache directory"
+        id: "composer-cache"
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache composer dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: "Check exported files"
         run: |
