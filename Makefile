@@ -59,7 +59,7 @@ node_modules: package.json
 rector: vendor ## Check all files using Rector
 	XDEBUG_MODE=off vendor/bin/rector process --ansi --dry-run --xdebug
 
-validate: composer.json
+vendor: composer.json
 	composer validate
 	composer install
 
