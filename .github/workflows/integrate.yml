@@ -117,6 +117,9 @@ jobs:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
 
+      - name: "Check PSR-4 mapping"
+        run: "composer dump-autoload --optimize --strict-psr"
+
       - name: "Execute static analysis"
         run: "make st"
 

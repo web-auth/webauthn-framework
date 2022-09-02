@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Tests\Unit7;
+namespace Webauthn\Tests\Unit;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
