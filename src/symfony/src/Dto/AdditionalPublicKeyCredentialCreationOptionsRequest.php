@@ -44,6 +44,9 @@ final class AdditionalPublicKeyCredentialCreationOptionsRequest
     public ?string $residentKey = null;
 
     #[NotBlank(allowNull: true)]
+    public ?bool $requireResidentKey = null;
+
+    #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
         AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,

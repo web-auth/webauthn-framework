@@ -41,6 +41,9 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     public ?string $userVerification = null;
 
     #[NotBlank(allowNull: true)]
+    public ?bool $requireResidentKey = null;
+
+    #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,

@@ -109,6 +109,9 @@ final class AttestationRequestController
             if ($creationOptionsRequest->residentKey !== null) {
                 $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
             }
+            if ($creationOptionsRequest->requireResidentKey !== null) {
+                $authenticatorSelection->setRequireResidentKey($creationOptionsRequest->requireResidentKey);
+            }
         }
         $extensions = $creationOptionsRequest->extensions;
         if (is_array($extensions)) {
