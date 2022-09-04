@@ -87,7 +87,11 @@ export default class extends Controller {
             body: JSON.stringify(data),
         });
 
-        const attResp = await startRegistration(await resp.json());
+        const respJson = await resp.json();
+        if (respJson.excludeCredentials === undefined) {
+            respJson.excludeCredentials = [];
+        }
+        const attResp = await startRegistration(respJson);
         const responseHeaders = {
             'Content-Type': 'application/json',
         };
