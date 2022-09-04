@@ -20,9 +20,9 @@ jobs:
         run: |
           test "$(find . -type f -not -path './.git/*' -executable)" == ""
 
-  #      - name: "Find non-printable ASCII characters"
-  #        run: |
-  #          ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]"
+      - name: "Find non-printable ASCII characters"
+        run: |
+          ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]"
 
   syntax_errors:
     name: "1️⃣ Syntax errors"
@@ -32,6 +32,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
+          coverage: "none"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -64,7 +65,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
       - name: "Checkout code"
@@ -101,7 +102,8 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
+          coverage: "none"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -114,6 +116,9 @@ jobs:
         with:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
+
+      - name: "Check PSR-4 mapping"
+        run: "composer dump-autoload --optimize --strict-psr"
 
       - name: "Execute static analysis"
         run: "make st"
@@ -129,7 +134,8 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
+          coverage: "none"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -147,7 +153,8 @@ jobs:
         run: "make ci-cs"
 
       - name: "Deptrac"
-        run: sh .github/workflows/test-flag-fail-on-uncovered.sh
+        run: |
+          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
 
   mutation_testing:
     name: "5️⃣ Mutation Testing"
@@ -160,7 +167,8 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
+          coverage: "xdebug"
 
       - name: "Checkout code"
         uses: "actions/checkout@v3"
@@ -188,7 +196,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.1"
-          extensions: "json, mbstring, openssl, sqlite3, curl, uuid"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
       - name: "Checkout code"

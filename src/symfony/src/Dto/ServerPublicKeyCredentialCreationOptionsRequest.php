@@ -30,7 +30,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
     ])]
-    public ?string $attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+    public ?string $attestation = null;
 
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
@@ -38,7 +38,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
         AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
         AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
     ])]
-    public ?string $userVerification = AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+    public ?string $userVerification = null;
 
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
@@ -47,7 +47,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
     ])]
-    public ?string $residentKey = AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED;
+    public ?string $residentKey = null;
 
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
@@ -55,7 +55,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
         AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
         AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
     ])]
-    public ?string $authenticatorAttachment = AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE;
+    public ?string $authenticatorAttachment = null;
 
     /**
      * @var array<string, mixed>|null

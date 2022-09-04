@@ -115,7 +115,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         /*---------------------------*/
         $certDetails = openssl_x509_parse($certificate);
 
-        //Find Apple Extension with OID “1.2.840.113635.100.8.2” in certificate extensions
+        //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
         Assertion::isArray($certDetails, 'The certificate is not valid');
         Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
         Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');

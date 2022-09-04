@@ -160,7 +160,7 @@ class AuthenticatorAttestationResponseValidator
                 'rpId hash mismatch.'
             );
 
-            if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+            if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
                 Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
             }
@@ -260,12 +260,16 @@ class AuthenticatorAttestationResponseValidator
         Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()
             ->__toString();
-        if ($publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
+        if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             $this->logger->debug('No attestation is asked.');
             //No attestation is asked. We shall ensure that the data is anonymous.
             if (
                 $aaguid === '00000000-0000-0000-0000-000000000000'
-                && ($attestationStatement->getType() === AttestationStatement::TYPE_NONE || $attestationStatement->getType() === AttestationStatement::TYPE_SELF)) {
+                && in_array(
+                    $attestationStatement->getType(),
+                    [AttestationStatement::TYPE_NONE, AttestationStatement::TYPE_SELF],
+                    true
+                )) {
                 $this->logger->debug('The Attestation Statement is anonymous.');
                 $this->checkCertificateChain($attestationStatement, null);
 
@@ -312,17 +316,17 @@ class AuthenticatorAttestationResponseValidator
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-        // We check the last status report
-        $this->checkStatusReport($aaguid);
-
-        // We check the certificate chain (if any)
-        $this->checkCertificateChain($attestationStatement, $metadataStatement);
 
         // At this point, the Metadata Statement is mandatory
         Assertion::notNull(
             $metadataStatement,
             sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
         );
+        // We check the last status report
+        $this->checkStatusReport($aaguid);
+
+        // We check the certificate chain (if any)
+        $this->checkCertificateChain($attestationStatement, $metadataStatement);
 
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {

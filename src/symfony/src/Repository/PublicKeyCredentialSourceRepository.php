@@ -26,7 +26,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
         ));
         $manager = $registry->getManagerForClass($class);
         Assertion::isInstanceOf($manager, EntityManagerInterface::class, sprintf(
-            'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity’s metadata.',
+            'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity\'s metadata.',
             $class
         ));
 

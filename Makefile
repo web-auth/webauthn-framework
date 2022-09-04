@@ -1,7 +1,6 @@
 .PHONY: mu
 mu: vendor ## Mutation tests
-	vendor/bin/infection -s --threads=$(nproc) --min-msi=22 --min-covered-msi=45
-	vendor/bin/phpunit --coverage-text
+	vendor/bin/infection -s --threads=$$(nproc) --min-msi=30 --min-covered-msi=50
 
 .PHONY: tests
 tests: vendor ## Run all tests
@@ -30,14 +29,14 @@ tf: vendor ## Run only functional tests
 
 .PHONY: st
 st: vendor ## Run static analyse
-	vendor/bin/phpstan analyse
+	XDEBUG_MODE=off vendor/bin/phpstan analyse
 
 
 ################################################
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for CI/CD only)
-	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=22 --min-covered-msi=45
+	vendor/bin/infection --logger-github -s --threads=$$(nproc) --min-msi=30 --min-covered-msi=50
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
@@ -45,7 +44,7 @@ ci-cc: vendor ## Show test coverage rates (for CI/CD only)
 
 .PHONY: ci-cs
 ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
-	vendor/bin/ecs check
+	XDEBUG_MODE=off vendor/bin/ecs check
 
 ################################################
 
@@ -58,7 +57,7 @@ node_modules: package.json
 
 .PHONY: rector
 rector: vendor ## Check all files using Rector
-	vendor/bin/rector process --ansi --dry-run --xdebug
+	XDEBUG_MODE=off vendor/bin/rector process --ansi --dry-run --xdebug
 
 vendor: composer.json
 	composer validate
