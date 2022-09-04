@@ -41,7 +41,7 @@ final class ServerPublicKeyCredentialCreationOptionsRequest
     public ?string $userVerification = null;
 
     #[NotBlank(allowNull: true)]
-    public ?bool $requireResidentKey = null;
+    public ?string $requireResidentKey = null;
 
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
