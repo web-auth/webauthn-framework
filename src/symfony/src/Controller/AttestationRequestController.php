@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Controller;
 
 use Assert\Assertion;
 use function count;
+use const FILTER_VALIDATE_BOOLEAN;
 use function is_array;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,7 +111,9 @@ final class AttestationRequestController
                 $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
             }
             if ($creationOptionsRequest->requireResidentKey !== null) {
-                $authenticatorSelection->setRequireResidentKey($creationOptionsRequest->requireResidentKey);
+                $authenticatorSelection->setRequireResidentKey(
+                    filter_var($creationOptionsRequest->requireResidentKey, FILTER_VALIDATE_BOOLEAN)
+                );
             }
         }
         $extensions = $creationOptionsRequest->extensions;

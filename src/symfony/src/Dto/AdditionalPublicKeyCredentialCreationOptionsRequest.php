@@ -44,7 +44,7 @@ final class AdditionalPublicKeyCredentialCreationOptionsRequest
     public ?string $residentKey = null;
 
     #[NotBlank(allowNull: true)]
-    public ?bool $requireResidentKey = null;
+    public ?string $requireResidentKey = null;
 
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
