@@ -81,7 +81,7 @@ final class SecuredAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], $assertion);
 
-        static::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+        self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         static::assertSame(
             '{"status":"error","errorMessage":"No public key credential options available for this session.","errorCode":15}',
             $this->client->getResponse()
