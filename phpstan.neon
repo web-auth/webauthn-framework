@@ -45,6 +45,10 @@ parameters:
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
             count: 1
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/symfony/src/Controller/AttestationRequestController.php
+            count: 1
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true
