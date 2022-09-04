@@ -2,7 +2,11 @@
 
 name: "Integrate"
 
-on: [ push, pull_request ]
+on:
+    push:
+        branches:
+            - "*.x"
+    pull_request: null
 
 jobs:
   byte_level:
