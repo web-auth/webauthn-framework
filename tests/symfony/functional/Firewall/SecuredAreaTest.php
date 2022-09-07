@@ -120,7 +120,7 @@ final class SecuredAreaTest extends WebTestCase
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         static::assertSame(
-            '{"status":"ok","errorMessage":"","userId":"Zm9v"}',
+            '{"status":"ok","errorMessage":"","userIdentifier":"admin"}',
             $this->client->getResponse()
                 ->getContent()
         );
@@ -128,7 +128,7 @@ final class SecuredAreaTest extends WebTestCase
 
         $this->client->request('GET', '/admin', [], [], []);
 
-        static::assertSame('["Hello foo"]', $this->client->getResponse()->getContent());
+        static::assertSame('["Hello admin"]', $this->client->getResponse()->getContent());
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 }

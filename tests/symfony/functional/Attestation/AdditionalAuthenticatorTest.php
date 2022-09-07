@@ -178,7 +178,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         );
 
         $firewallName = 'main';
-        $firewallContext = 'main';
 
         $token = new WebauthnToken(
             $user,
@@ -205,7 +204,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
         $session = $container->get('session.factory')
             ->createSession();
-        $session->set('_security_' . $firewallContext, serialize($token));
+        $session->set('_security_' . $firewallName, serialize($token));
         $session->save();
 
         $domains = array_unique(

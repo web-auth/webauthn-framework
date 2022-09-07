@@ -35,6 +35,6 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->id;
+        return $this->name;
     }
 }

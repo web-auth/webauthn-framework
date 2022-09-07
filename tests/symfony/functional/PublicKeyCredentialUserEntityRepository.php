@@ -27,6 +27,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
     {
+        dump($username);
         $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($username));
         if (! $item->isHit()) {
             return null;

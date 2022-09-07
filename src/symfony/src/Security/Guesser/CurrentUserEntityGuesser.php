@@ -22,7 +22,7 @@ final class CurrentUserEntityGuesser implements UserEntityGuesser
     {
         $user = $this->tokenStorage->getToken()?->getUser();
         Assertion::notNull($user, 'Unable to find the user entity');
-        $userEntity = $this->userEntityRepository->findOneByUserHandle($user->getUserIdentifier());
+        $userEntity = $this->userEntityRepository->findOneByUsername($user->getUserIdentifier());
         Assertion::notNull($userEntity, 'Unable to find the user entity');
 
         return $userEntity;
