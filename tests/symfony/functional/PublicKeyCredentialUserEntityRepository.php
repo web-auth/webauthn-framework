@@ -14,8 +14,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 {
     public function __construct(
         private readonly CacheItemPoolInterface $cacheItemPool
-    )
-    {
+    ) {
         $this->saveUserEntity(new User('admin', 'foo', 'Foo BAR (-_-)', null, ['ROLE_ADMIN', 'ROLE_USER']));
         $this->saveUserEntity(new User(
             'XY5nn3p_6olTLjoB2Jbb',
@@ -29,7 +28,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
     {
         $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($username));
-        if (!$item->isHit()) {
+        if (! $item->isHit()) {
             return null;
         }
 
@@ -39,7 +38,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function findOneByUserHandle(string $userHandle): ?PublicKeyCredentialUserEntity
     {
         $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userHandle));
-        if (!$item->isHit()) {
+        if (! $item->isHit()) {
             return null;
         }
 
@@ -53,7 +52,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
-        if (!$userEntity instanceof User) {
+        if (! $userEntity instanceof User) {
             $userEntity = new User(
                 $userEntity->getName(),
                 $userEntity->getId(),
