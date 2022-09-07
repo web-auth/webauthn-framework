@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\Bundle\Dto\AdditionalPublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
@@ -133,13 +133,9 @@ final class AttestationRequestController
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): AdditionalPublicKeyCredentialCreationOptionsRequest {
-        $data = $this->serializer->deserialize(
-            $content,
-            AdditionalPublicKeyCredentialCreationOptionsRequest::class,
-            'json'
-        );
-        Assertion::isInstanceOf($data, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
+    ): PublicKeyCredentialCreationOptionsRequest {
+        $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
+        Assertion::isInstanceOf($data, PublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

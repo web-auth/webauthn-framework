@@ -73,8 +73,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "infection/extension-installer": true,
-            "phpstan/extension-installer": true
+            "infection/extension-installer": false,
+            "phpstan/extension-installer": false
         }
     },
     "suggest": {

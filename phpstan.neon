@@ -34,7 +34,7 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
         -
-            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
+            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\PublicKeyCredentialCreationOptionsRequest.*#'
             path: src/symfony/src/Controller/AttestationRequestController.php
             count: 1
         -
