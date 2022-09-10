@@ -106,6 +106,9 @@ class MetadataStatement implements JsonSerializable
 
     final public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
 
+    /**
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+     */
     final public const ATTESTATION_ECDAA = 'ecdaa';
 
     final public const ATTESTATION_ATTCA = 'attca';
@@ -361,6 +364,8 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return EcdaaTrustAnchor[]
+     *
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
      */
     public function getEcdaaTrustAnchors(): array
     {
