@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use Cose\Algorithms;
+use const JSON_THROW_ON_ERROR;
 use function Safe\base64_decode;
 use function Safe\json_decode;
 use function Safe\json_encode;
@@ -53,7 +54,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
@@ -75,7 +76,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
@@ -104,7 +105,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
@@ -141,7 +142,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'foo.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
@@ -183,7 +184,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
@@ -222,7 +223,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], json_encode($content));
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
@@ -241,11 +242,11 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'test.com',
         ], $content);
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('error', $data['status']);
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        self::assertResponseStatusCodeSame(401);
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('No public key credential options available for this session.', $data['errorMessage']);
     }
@@ -282,7 +283,7 @@ final class RegistrationAreaTest extends WebTestCase
             'HTTP_HOST' => 'localhost',
         ], $content);
         $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);

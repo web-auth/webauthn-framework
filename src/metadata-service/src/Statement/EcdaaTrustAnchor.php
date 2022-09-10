@@ -9,6 +9,9 @@ use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+ */
 class EcdaaTrustAnchor implements JsonSerializable
 {
     public function __construct(

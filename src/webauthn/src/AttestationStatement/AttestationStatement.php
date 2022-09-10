@@ -20,6 +20,9 @@ class AttestationStatement implements JsonSerializable
 
     final public const TYPE_ATTCA = 'attca';
 
+    /**
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+     */
     final public const TYPE_ECDAA = 'ecdaa';
 
     final public const TYPE_ANONCA = 'anonca';
@@ -69,6 +72,8 @@ class AttestationStatement implements JsonSerializable
 
     /**
      * @param array<string, mixed> $attStmt
+     *
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
      */
     public static function createEcdaa(string $fmt, array $attStmt, TrustPath $trustPath): self
     {

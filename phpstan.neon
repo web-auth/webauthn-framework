@@ -34,7 +34,7 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
         -
-            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
+            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\PublicKeyCredentialCreationOptionsRequest.*#'
             path: src/symfony/src/Controller/AttestationRequestController.php
             count: 1
         -
@@ -45,6 +45,22 @@ parameters:
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
             count: 1
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/symfony/src/Controller/AttestationRequestController.php
+            count: 1
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+            count: 1
+        -
+            message: '#.*ECDAA.*#'
+            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
+            count: 2
+        -
+            message: '#.*ECDAA.*#'
+            path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
+            count: 2
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true

@@ -72,22 +72,22 @@ services:
     arguments:
       - '%kernel.project_dir%/tests/metadataStatements'
 
-  fido_alliance_official:
-    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
-    tags:
-      - 'webauthn.mds_service'
-    arguments:
-      - '@Psr\Http\Message\RequestFactoryInterface'
-      - '@Psr\Http\Client\ClientInterface'
-      - 'https://fidoalliance.co.nz/blob.jwt'
-      - [ ]
-      - '@Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator'
-      - 'https://localhost/FidoAllianceRootR3.crt'
+    #  fido_alliance_official:
+    #    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
+    #    tags:
+    #      - 'webauthn.mds_service'
+    #    arguments:
+    #      - '@Psr\Http\Message\RequestFactoryInterface'
+    #      - '@Psr\Http\Client\ClientInterface'
+    #      - 'https://fidoalliance.co.nz/blob.jwt'
+    #      - [ ]
+    #      - '@Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator'
+    #      - 'https://localhost/FidoAllianceRootR3.crt'
 
   Webauthn\MetadataService\Service\ChainedMetadataServices:
     arguments:
       - '@mds_single_file_1'
-      - '@fido_alliance_official'
+  #      - '@fido_alliance_official'
   ### MDS ###
 
   Webauthn\Tests\Bundle\Functional\FailureHandler: ~

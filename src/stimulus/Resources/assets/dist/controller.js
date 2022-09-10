@@ -63,7 +63,11 @@ class default_1 extends Controller {
             headers: optionsHeaders,
             body: JSON.stringify(data),
         });
-        const attResp = await startRegistration(await resp.json());
+        const respJson = await resp.json();
+        if (respJson.excludeCredentials === undefined) {
+            respJson.excludeCredentials = [];
+        }
+        const attResp = await startRegistration(respJson);
         const responseHeaders = {
             'Content-Type': 'application/json',
         };
@@ -105,6 +109,7 @@ class default_1 extends Controller {
             attestation: data.get(this.attestationField || 'attestation'),
             userVerification: data.get(this.userVerificationField || 'userVerification'),
             residentKey: data.get(this.residentKeyField || 'residentKey'),
+            requireResidentKey: data.get(this.requireResidentKeyField || 'requireResidentKey'),
             authenticatorAttachment: data.get(this.authenticatorAttachmentField || 'authenticatorAttachment'),
         });
     }
@@ -121,6 +126,7 @@ default_1.values = {
     attestationField: String,
     userVerificationField: String,
     residentKeyField: String,
+    requireResidentKeyField: String,
     authenticatorAttachmentField: String,
 };
 
