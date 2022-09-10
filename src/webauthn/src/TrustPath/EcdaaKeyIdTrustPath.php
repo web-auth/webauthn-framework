@@ -13,8 +13,7 @@ final class EcdaaKeyIdTrustPath implements TrustPath
 {
     public function __construct(
         private readonly string $ecdaaKeyId
-    )
-    {
+    ) {
     }
 
     public function getEcdaaKeyId(): string

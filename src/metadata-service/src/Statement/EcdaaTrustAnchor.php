@@ -21,8 +21,7 @@ class EcdaaTrustAnchor implements JsonSerializable
         private readonly string $sx,
         private readonly string $sy,
         private readonly string $G1Curve
-    )
-    {
+    ) {
     }
 
     public function getX(): string

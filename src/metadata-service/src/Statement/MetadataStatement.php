@@ -177,19 +177,18 @@ class MetadataStatement implements JsonSerializable
      */
     public function __construct(
         private readonly string $description,
-        private readonly int    $authenticatorVersion,
+        private readonly int $authenticatorVersion,
         private readonly string $protocolFamily,
-        private readonly int    $schema,
-        private readonly array  $upv,
-        private readonly array  $authenticationAlgorithms,
-        private readonly array  $publicKeyAlgAndEncodings,
-        private readonly array  $attestationTypes,
-        private readonly array  $userVerificationDetails,
-        private readonly array  $matcherProtection,
-        private readonly array  $tcDisplay,
-        private readonly array  $attestationRootCertificates,
-    )
-    {
+        private readonly int $schema,
+        private readonly array $upv,
+        private readonly array $authenticationAlgorithms,
+        private readonly array $publicKeyAlgAndEncodings,
+        private readonly array $attestationTypes,
+        private readonly array $userVerificationDetails,
+        private readonly array $matcherProtection,
+        private readonly array $tcDisplay,
+        private readonly array $attestationRootCertificates,
+    ) {
         $this->alternativeDescriptions = new AlternativeDescriptions();
         $this->authenticatorGetInfo = new AuthenticatorGetInfo();
     }
@@ -516,18 +515,18 @@ class MetadataStatement implements JsonSerializable
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
             'tcDisplayPNGCharacteristics' => array_map(
-                static fn(DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
+                static fn (DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
                 $this->tcDisplayPNGCharacteristics
             ),
             'attestationRootCertificates' => CertificateToolbox::fixPEMStructures($this->attestationRootCertificates),
             'ecdaaTrustAnchors' => array_map(
-                static fn(EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
+                static fn (EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
                 $this->ecdaaTrustAnchors
             ),
             'icon' => $this->icon,
             'authenticatorGetInfo' => $this->authenticatorGetInfo,
             'supportedExtensions' => array_map(
-                static fn(ExtensionDescriptor $object): array => $object->jsonSerialize(),
+                static fn (ExtensionDescriptor $object): array => $object->jsonSerialize(),
                 $this->supportedExtensions
             ),
         ];

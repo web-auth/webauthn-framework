@@ -31,12 +31,11 @@ class AttestationStatement implements JsonSerializable
      * @param array<string, mixed> $attStmt
      */
     public function __construct(
-        private readonly string    $fmt,
-        private readonly array     $attStmt,
-        private readonly string    $type,
+        private readonly string $fmt,
+        private readonly array $attStmt,
+        private readonly string $type,
         private readonly TrustPath $trustPath
-    )
-    {
+    ) {
     }
 
     /**
