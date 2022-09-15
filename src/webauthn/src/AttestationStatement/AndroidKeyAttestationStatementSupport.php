@@ -16,9 +16,9 @@ use FG\ASN1\ASNObject;
 use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
-use function Safe\hex2bin;
-use function Safe\openssl_pkey_get_public;
-use function Safe\openssl_verify;
+use function hex2bin;
+use function openssl_pkey_get_public;
+use function openssl_verify;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
@@ -153,7 +153,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             OctetString::class,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        Assertion::eq($clientDataHash, hex2bin(($objects[4])->getContent()), 'The client data hash is not valid');
+        Assertion::eq(
+            $clientDataHash,
+            hex2bin((string) ($objects[4])->getContent()),
+            'The client data hash is not valid'
+        );
 
         //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
         Assertion::keyExists($objects, 6, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');

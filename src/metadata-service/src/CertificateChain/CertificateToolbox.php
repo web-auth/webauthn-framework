@@ -7,7 +7,7 @@ namespace Webauthn\MetadataService\CertificateChain;
 use function in_array;
 use ParagonIE\ConstantTime\Base64;
 use const PHP_EOL;
-use function Safe\preg_replace;
+use function preg_replace;
 
 class CertificateToolbox
 {

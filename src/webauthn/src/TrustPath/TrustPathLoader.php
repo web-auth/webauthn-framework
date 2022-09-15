@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use Assert\Assertion;
+use function class_implements;
 use function in_array;
 use InvalidArgumentException;
-use function Safe\class_implements;
 
 abstract class TrustPathLoader
 {

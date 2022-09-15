@@ -44,7 +44,6 @@
         "paragonie/constant_time_encoding": "^2.6",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
-        "psr/http-message": "^1.0",
         "psr/log": "^3.0",
         "spomky-labs/cbor-bundle": "^3.0",
         "spomky-labs/cbor-php": "^3.0",
@@ -60,8 +59,7 @@
         "symfony/serializer": "^6.1",
         "symfony/validator": "^6.1",
         "symfony/uid": "^6.1",
-        "thecodingmachine/safe": "^2.2",
-        "web-auth/cose-lib": "^4.0.6",
+        "web-auth/cose-lib": "^4.0.9",
         "web-token/jwt-signature": "^3.1"
     },
     "replace": {
@@ -112,7 +110,6 @@
         "symfony/var-dumper": "^6.1",
         "symfony/yaml": "^6.1",
         "symplify/easy-coding-standard": "^11.1",
-        "thecodingmachine/phpstan-safe-rule": "^1.2",
         "web-token/jwt-key-mgmt": "^3.1",
         "web-token/jwt-signature-algorithm-ecdsa": "^3.1",
         "web-token/jwt-signature-algorithm-eddsa": "^3.1",
