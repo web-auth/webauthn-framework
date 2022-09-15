@@ -3,7 +3,6 @@ parameters:
     paths:
         - src
     ignoreErrors:
-        - '#Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
         - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
         -
             message: '#Class Webauthn\\CertificateChainChecker\\PhpCertificateChainChecker extends @final class Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator\.#'
