@@ -61,6 +61,10 @@ parameters:
             message: '#.*ECDAA.*#'
             path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
             count: 2
+        - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
+        - '#Property .* does not accept .*\|false\.#'
+        - '#Cannot access offset \d+ on array\|false\.#'
+        - '#Method .* should return string but returns string\|false\.#'
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true
@@ -75,4 +79,3 @@ includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/ekino/phpstan-banned-code/extension.neon
-    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon

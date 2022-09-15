@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use Assert\Assertion;
+use function file_get_contents;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
-use function Safe\file_get_contents;
 use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 

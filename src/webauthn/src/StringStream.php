@@ -6,11 +6,11 @@ namespace Webauthn;
 
 use Assert\Assertion;
 use CBOR\Stream;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fread;
-use function Safe\fwrite;
-use function Safe\rewind;
+use function fclose;
+use function fopen;
+use function fread;
+use function fwrite;
+use function rewind;
 
 final class StringStream implements Stream
 {

@@ -28,8 +28,7 @@
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/log": "^3.0",
-        "spomky-labs/pki-framework": "^1.0",
-        "thecodingmachine/safe": "^2.2"
+        "spomky-labs/pki-framework": "^1.0"
     },
     "autoload": {
         "psr-4": {
