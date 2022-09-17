@@ -34,7 +34,9 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'minComplexity', 'The key "minComplexity" is missing');
+        array_key_exists('minComplexity', $data) || throw new InvalidArgumentException(
+            'The key "minComplexity" is missing'
+        );
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
                 Assertion::integer(

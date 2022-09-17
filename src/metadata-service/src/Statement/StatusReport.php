@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use function in_array;
 use JsonSerializable;
@@ -87,7 +88,7 @@ class StatusReport implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'status', 'The key "status" is missing');
+        array_key_exists('status', $data) || throw new InvalidArgumentException('The key "status" is missing');
         foreach ([
             'effectiveDate',
             'certificate',

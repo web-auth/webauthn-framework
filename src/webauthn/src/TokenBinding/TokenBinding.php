@@ -6,6 +6,7 @@ namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class TokenBinding
@@ -35,7 +36,7 @@ class TokenBinding
      */
     public static function createFormArray(array $json): self
     {
-        Assertion::keyExists($json, 'status', 'The member "status" is required');
+        array_key_exists('status', $json) || throw new InvalidArgumentException('The member "status" is required');
         $status = $json['status'];
         Assertion::inArray(
             $status,

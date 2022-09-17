@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use Assert\Assertion;
+use function array_key_exists;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -38,7 +38,10 @@ final class PublicKeyCredentialCreationOptionsFactory
         ?string $attestationConveyance = null,
         ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
     ): PublicKeyCredentialCreationOptions {
-        Assertion::keyExists($this->profiles, $key, sprintf('The profile with key "%s" does not exist.', $key));
+        array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" does not exist.',
+            $key
+        ));
         $profile = $this->profiles[$key];
 
         $options = PublicKeyCredentialCreationOptions

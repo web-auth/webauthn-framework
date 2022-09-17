@@ -129,7 +129,10 @@ class AttestationStatement implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The key "%s" is missing',
+                $key
+            ));
         }
 
         return new self(

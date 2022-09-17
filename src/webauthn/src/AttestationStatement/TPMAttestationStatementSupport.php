@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
@@ -57,14 +58,15 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
-        Assertion::keyNotExists($attestation['attStmt'], 'ecdaaKeyId', 'ECDAA not supported');
+        array_key_exists('attStmt', $attestation) || throw new InvalidArgumentException('Invalid attestation object');
+        ! array_key_exists('ecdaaKeyId', $attestation['attStmt']) || throw new InvalidArgumentException(
+            'ECDAA not supported'
+        );
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
-            Assertion::keyExists(
-                $attestation['attStmt'],
-                $key,
-                sprintf('The attestation statement value "%s" is missing.', $key)
-            );
+            array_key_exists($key, $attestation['attStmt']) || throw new InvalidArgumentException(sprintf(
+                'The attestation statement value "%s" is missing.',
+                $key
+            ));
         }
         Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
 
@@ -323,12 +325,16 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
 
         // Check period of validity
-        Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
+        array_key_exists('validFrom_time_t', $parsed) || throw new InvalidArgumentException(
+            'Invalid certificate start date.'
+        );
         Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
         $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
         Assertion::true($startDate < $this->clock->now(), 'Invalid certificate start date.');
 
-        Assertion::keyExists($parsed, 'validTo_time_t', 'Invalid certificate end date.');
+        array_key_exists('validTo_time_t', $parsed) || throw new InvalidArgumentException(
+            'Invalid certificate end date.'
+        );
         Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
         $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
         Assertion::true($endDate > $this->clock->now(), 'Invalid certificate end date.');

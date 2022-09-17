@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\Normalizable;
@@ -11,6 +12,7 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
+use InvalidArgumentException;
 use function openssl_pkey_get_public;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -41,14 +43,10 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
-        foreach (['x5c'] as $key) {
-            Assertion::keyExists(
-                $attestation['attStmt'],
-                $key,
-                sprintf('The attestation statement value "%s" is missing.', $key)
-            );
-        }
+        array_key_exists('attStmt', $attestation) || throw new InvalidArgumentException('Invalid attestation object');
+        array_key_exists('x5c', $attestation['attStmt']) || throw new InvalidArgumentException(
+            'The attestation statement value "x5c" is missing.'
+        );
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::greaterThan(
             is_countable($certificates) ? count($certificates) : 0,
@@ -117,11 +115,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 
         //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
         Assertion::isArray($certDetails, 'The certificate is not valid');
-        Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
+        array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
+            'The certificate has no extension'
+        );
         Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
-        Assertion::keyExists(
-            $certDetails['extensions'],
-            '1.2.840.113635.100.8.2',
+        array_key_exists('1.2.840.113635.100.8.2', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.2.840.113635.100.8.2" is missing'
         );
         $extension = $certDetails['extensions']['1.2.840.113635.100.8.2'];

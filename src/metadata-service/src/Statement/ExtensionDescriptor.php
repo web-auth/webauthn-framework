@@ -51,19 +51,17 @@ class ExtensionDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists($data, 'id', 'Invalid data. The parameter "id" is missing');
+        array_key_exists('id', $data) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "id" is missing'
+        );
         Assertion::string($data['id'], 'Invalid data. The parameter "id" shall be a string');
-        Assertion::keyExists($data, 'fail_if_unknown', 'Invalid data. The parameter "fail_if_unknown" is missing');
+        array_key_exists('fail_if_unknown', $data) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "fail_if_unknown" is missing'
+        );
         Assertion::boolean(
             $data['fail_if_unknown'],
             'Invalid data. The parameter "fail_if_unknown" shall be a boolean'
         );
-        if (array_key_exists('tag', $data)) {
-            Assertion::integer($data['tag'], 'Invalid data. The parameter "tag" shall be a positive integer');
-        }
-        if (array_key_exists('data', $data)) {
-            Assertion::string($data['data'], 'Invalid data. The parameter "data" shall be a string');
-        }
 
         return new self($data['id'], $data['tag'] ?? null, $data['data'] ?? null, $data['fail_if_unknown']);
     }

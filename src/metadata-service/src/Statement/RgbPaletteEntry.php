@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 
@@ -46,7 +47,10 @@ class RgbPaletteEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['r', 'g', 'b'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The key "%s" is missing',
+                $key
+            ));
             Assertion::integer($data[$key], sprintf('The key "%s" is invalid', $key));
         }
 

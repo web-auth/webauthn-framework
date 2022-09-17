@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
@@ -42,13 +43,12 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        array_key_exists('attStmt', $attestation) || throw new InvalidArgumentException('Invalid attestation object');
         foreach (['sig', 'x5c'] as $key) {
-            Assertion::keyExists(
-                $attestation['attStmt'],
-                $key,
-                sprintf('The attestation statement value "%s" is missing.', $key)
-            );
+            array_key_exists($key, $attestation['attStmt']) || throw new InvalidArgumentException(sprintf(
+                'The attestation statement value "%s" is missing.',
+                $key
+            ));
         }
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
@@ -137,10 +137,16 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
         Assertion::isArray($details, 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
+        array_key_exists('ec', $details) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
+        array_key_exists('curve_name', $details['ec']) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
         Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details['ec'], 'curve_oid', 'Invalid certificate or certificate chain');
+        array_key_exists('curve_oid', $details['ec']) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
         Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
@@ -147,7 +148,9 @@ class VerificationMethodDescriptor implements JsonSerializable
             $data['userVerificationMethod'] = $data['userVerification'];
             unset($data['userVerification']);
         }
-        Assertion::keyExists($data, 'userVerificationMethod', 'The parameters "userVerificationMethod" is missing');
+        array_key_exists('userVerificationMethod', $data) || throw new InvalidArgumentException(
+            'The parameters "userVerificationMethod" is missing'
+        );
 
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use function count;
 use function is_array;
@@ -153,12 +154,18 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public static function createFromArray(array $json): static
     {
-        Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
-        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
+        array_key_exists('rp', $json) || throw new InvalidArgumentException('Invalid input. "rp" is missing.');
+        array_key_exists('pubKeyCredParams', $json) || throw new InvalidArgumentException(
+            'Invalid input. "pubKeyCredParams" is missing.'
+        );
         Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
-        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
-        Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
-        Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
+        array_key_exists('challenge', $json) || throw new InvalidArgumentException(
+            'Invalid input. "challenge" is missing.'
+        );
+        array_key_exists('attestation', $json) || throw new InvalidArgumentException(
+            'Invalid input. "attestation" is missing.'
+        );
+        array_key_exists('user', $json) || throw new InvalidArgumentException('Invalid input. "user" is missing.');
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {

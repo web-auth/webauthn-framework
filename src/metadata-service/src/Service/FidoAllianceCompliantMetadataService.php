@@ -6,6 +6,7 @@ namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -90,12 +91,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
-
-        Assertion::keyExists(
-            $this->statements,
-            $aaguid,
-            sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid)
-        );
+        array_key_exists($aaguid, $this->statements) || throw new InvalidArgumentException(sprintf(
+            'The Metadata Statement with AAGUID "%s" is missing',
+            $aaguid
+        ));
 
         return $this->statements[$aaguid];
     }
@@ -177,9 +176,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         $payload = $jws->getPayload();
         Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
         $header = $signature->getProtectedHeader();
-        Assertion::keyExists($header, 'alg', 'The "alg" parameter is missing.');
+        array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
         //Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
-        Assertion::keyExists($header, 'x5c', 'The "x5c" parameter is missing.');
+        array_key_exists('x5c', $header) || throw new InvalidArgumentException('The "x5c" parameter is missing.');
         Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);
         $rootCertificates = $header['x5c'];

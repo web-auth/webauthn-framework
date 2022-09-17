@@ -147,12 +147,12 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists(
-            $data,
-            'timeOfLastStatusChange',
+        array_key_exists('timeOfLastStatusChange', $data) || throw new InvalidArgumentException(
             'Invalid data. The parameter "timeOfLastStatusChange" is missing'
         );
-        Assertion::keyExists($data, 'statusReports', 'Invalid data. The parameter "statusReports" is missing');
+        array_key_exists('statusReports', $data) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "statusReports" is missing'
+        );
         Assertion::isArray(
             $data['statusReports'],
             'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
@@ -170,10 +170,6 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             $object->addStatusReports(StatusReport::createFromArray($statusReport));
         }
         if (array_key_exists('biometricStatusReport', $data)) {
-            Assertion::isArray(
-                $data['biometricStatusReport'],
-                'Invalid data. The parameter "biometricStatusReport" shall be an array of BiometricStatusReport objects'
-            );
             foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
                 $object->addBiometricStatusReports(BiometricStatusReport::createFromArray($biometricStatusReport));
             }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
@@ -52,9 +53,11 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
-        Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
-        Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
+        array_key_exists('name', $json) || throw new InvalidArgumentException('Invalid input. "name" is missing.');
+        array_key_exists('id', $json) || throw new InvalidArgumentException('Invalid input. "id" is missing.');
+        array_key_exists('displayName', $json) || throw new InvalidArgumentException(
+            'Invalid input. "displayName" is missing.'
+        );
         $id = Base64::decode($json['id'], true);
 
         return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);

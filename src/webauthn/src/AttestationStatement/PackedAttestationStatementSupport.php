@@ -50,8 +50,12 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation['attStmt'], 'sig', 'The attestation statement value "sig" is missing.');
-        Assertion::keyExists($attestation['attStmt'], 'alg', 'The attestation statement value "alg" is missing.');
+        array_key_exists('sig', $attestation['attStmt']) || throw new InvalidArgumentException(
+            'The attestation statement value "sig" is missing.'
+        );
+        array_key_exists('alg', $attestation['attStmt']) || throw new InvalidArgumentException(
+            'The attestation statement value "alg" is missing.'
+        );
         Assertion::string($attestation['attStmt']['sig'], 'The attestation statement value "sig" is missing.');
 
         return match (true) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use function count;
 use const JSON_THROW_ON_ERROR;
@@ -104,7 +105,9 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
      */
     public static function createFromArray(array $json): static
     {
-        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
+        array_key_exists('challenge', $json) || throw new InvalidArgumentException(
+            'Invalid input. "challenge" is missing.'
+        );
 
         $allowCredentials = [];
         $allowCredentialList = $json['allowCredentials'] ?? [];

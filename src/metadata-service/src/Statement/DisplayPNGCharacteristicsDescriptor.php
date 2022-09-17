@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
@@ -123,7 +124,10 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
             'filter',
             'interlace',
         ] as $key) {
-            Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The key "%s" is missing',
+                $key
+            ));
         }
         $object = new self(
             $data['width'],

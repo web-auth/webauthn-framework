@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
+use Assert\InvalidArgumentException;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
@@ -50,11 +52,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     {
         Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['sig', 'x5c', 'alg'] as $key) {
-            Assertion::keyExists(
-                $attestation['attStmt'],
-                $key,
-                sprintf('The attestation statement value "%s" is missing.', $key)
-            );
+            array_key_exists($key, $attestation['attStmt']) || throw new \InvalidArgumentException(sprintf(
+                'The attestation statement value "%s" is missing.',
+                $key
+            ));
         }
         $certificates = $attestation['attStmt']['x5c'];
         Assertion::greaterThan(
@@ -76,10 +77,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     public function isValid(
-        string $clientDataJSONHash,
+        string               $clientDataJSONHash,
         AttestationStatement $attestationStatement,
-        AuthenticatorData $authenticatorData
-    ): bool {
+        AuthenticatorData    $authenticatorData
+    ): bool
+    {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
@@ -93,18 +95,19 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $alg = $attestationStatement->get('alg');
 
         return openssl_verify(
-            $signedData,
-            $attestationStatement->get('sig'),
-            $leaf,
-            Algorithms::getOpensslAlgorithmFor((int) $alg)
-        ) === 1;
+                $signedData,
+                $attestationStatement->get('sig'),
+                $leaf,
+                Algorithms::getOpensslAlgorithmFor((int)$alg)
+            ) === 1;
     }
 
     private function checkCertificateAndGetPublicKey(
-        string $certificate,
-        string $clientDataHash,
+        string            $certificate,
+        string            $clientDataHash,
         AuthenticatorData $authenticatorData
-    ): void {
+    ): void
+    {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');
@@ -130,11 +133,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         //Find Android KeyStore Extension with OID "1.3.6.1.4.1.11129.2.1.17" in certificate extensions
         Assertion::isArray($certDetails, 'The certificate is not valid');
-        Assertion::keyExists($certDetails, 'extensions', 'The certificate has no extension');
+        array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
+            'The certificate has no extension'
+        );
         Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
-        Assertion::keyExists(
-            $certDetails['extensions'],
-            '1.3.6.1.4.1.11129.2.1.17',
+        array_key_exists('1.3.6.1.4.1.11129.2.1.17', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
         );
         $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
@@ -147,7 +150,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $objects = $extensionAsAsn1->getChildren();
 
         //Check that attestationChallenge is set to the clientDataHash.
-        Assertion::keyExists($objects, 4, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        array_key_exists(4, $objects) || throw new InvalidArgumentException(
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        );
         Assertion::isInstanceOf(
             $objects[4],
             OctetString::class,
@@ -155,12 +160,14 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         Assertion::eq(
             $clientDataHash,
-            hex2bin((string) ($objects[4])->getContent()),
+            hex2bin((string)($objects[4])->getContent()),
             'The client data hash is not valid'
         );
 
         //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
-        Assertion::keyExists($objects, 6, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        array_key_exists(6, $objects) || throw new InvalidArgumentException(
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        );
         $softwareEnforcedFlags = $objects[6];
         Assertion::isInstanceOf(
             $softwareEnforcedFlags,
@@ -169,7 +176,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
 
-        Assertion::keyExists($objects, 7, 'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
+        array_key_exists(7, $objects) || throw new InvalidArgumentException(
+            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+        );
         $teeEnforcedFlags = $objects[6];
         Assertion::isInstanceOf(
             $teeEnforcedFlags,
@@ -184,7 +193,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         foreach ($sequence->getChildren() as $tag) {
             Assertion::isInstanceOf($tag, ExplicitlyTaggedObject::class, 'Invalid tag');
             /** @var ExplicitlyTaggedObject $tag */
-            Assertion::notEq(600, (int) $tag->getTag(), 'Forbidden tag 600 found');
+            Assertion::notEq(600, (int)$tag->getTag(), 'Forbidden tag 600 found');
         }
     }
 }

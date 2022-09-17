@@ -60,10 +60,15 @@ class PublicKeyCredentialLoader
         ]);
         try {
             foreach (['id', 'rawId', 'type'] as $key) {
-                Assertion::keyExists($json, $key, sprintf('The parameter "%s" is missing', $key));
+                array_key_exists($key, $json) || throw new InvalidArgumentException(sprintf(
+                    'The parameter "%s" is missing',
+                    $key
+                ));
                 Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
             }
-            Assertion::keyExists($json, 'response', 'The parameter "response" is missing');
+            array_key_exists('response', $json) || throw new InvalidArgumentException(
+                'The parameter "response" is missing'
+            );
             Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
             Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
 
@@ -114,7 +119,9 @@ class PublicKeyCredentialLoader
      */
     private function createResponse(array $response): AuthenticatorResponse
     {
-        Assertion::keyExists($response, 'clientDataJSON', 'Invalid data. The parameter "clientDataJSON" is missing');
+        array_key_exists('clientDataJSON', $response) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "clientDataJSON" is missing'
+        );
         Assertion::string($response['clientDataJSON'], 'Invalid data. The parameter "clientDataJSON" is invalid');
         Assertion::nullOrString($response['userHandle'] ?? null, 'Invalid data. The parameter "userHandle" is invalid');
         switch (true) {

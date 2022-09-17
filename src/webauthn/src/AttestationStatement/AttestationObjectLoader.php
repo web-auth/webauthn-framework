@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
@@ -58,9 +59,15 @@ class AttestationObjectLoader
             Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
             $stream->close();
             Assertion::isArray($attestationObject, 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'authData', 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'fmt', 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'attStmt', 'Invalid attestation object');
+            array_key_exists('authData', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
+            array_key_exists('fmt', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
+            array_key_exists('attStmt', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
             $authData = $attestationObject['authData'];
 
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use Webauthn\MetadataService\Utils;
 
@@ -41,8 +42,10 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
      */
     public static function createFromArray(array $data): self
     {
-        Assertion::keyExists($data, 'base', 'The parameter "base" is missing');
-        Assertion::keyExists($data, 'minLength', 'The parameter "minLength" is missing');
+        array_key_exists('base', $data) || throw new InvalidArgumentException('The parameter "base" is missing');
+        array_key_exists('minLength', $data) || throw new InvalidArgumentException(
+            'The parameter "minLength" is missing'
+        );
 
         return new self(
             $data['base'],

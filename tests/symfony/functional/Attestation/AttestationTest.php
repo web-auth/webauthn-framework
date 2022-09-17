@@ -155,8 +155,7 @@ final class AttestationTest extends KernelTestCase
      */
     public function aFullCertificateChainShouldNotBeUsedForThisSelfAttestation(): void
     {
-        $callback = self::getContainer()->get(MockClientCallback::class);
-        $callback->addResponses([]);
+        self::getContainer()->get(MockClientCallback::class);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to validate the certificate chain.');
 

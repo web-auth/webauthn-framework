@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
+use function array_key_exists;
 use Assert\Assertion;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
@@ -405,7 +406,10 @@ class MetadataStatement implements JsonSerializable
             'attestationRootCertificates',
         ];
         foreach ($requiredKeys as $key) {
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The key "%s" is missing',
+                $key
+            ));
         }
         $subObjects = [
             'authenticationAlgorithms',

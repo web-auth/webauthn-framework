@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64;
@@ -47,13 +48,15 @@ class AttestedCredentialData implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
+        array_key_exists('aaguid', $json) || throw new InvalidArgumentException('Invalid input. "aaguid" is missing.');
         $aaguid = $json['aaguid'];
         Assertion::string($aaguid, 'Invalid input. "aaguid" shall be a string of 36 characters');
         Assertion::length($aaguid, 36, 'Invalid input. "aaguid" shall be a string of 36 characters');
         $uuid = Uuid::fromString($json['aaguid']);
 
-        Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
+        array_key_exists('credentialId', $json) || throw new InvalidArgumentException(
+            'Invalid input. "credentialId" is missing.'
+        );
         $credentialId = $json['credentialId'];
         Assertion::string($credentialId, 'Invalid input. "credentialId" shall be a string');
         $credentialId = Base64::decode($credentialId, true);

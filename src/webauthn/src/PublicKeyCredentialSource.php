@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -158,7 +159,10 @@ class PublicKeyCredentialSource implements JsonSerializable
             if ($key === 'otherUI') {
                 continue;
             }
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The parameter "%s" is missing',
+                $key
+            ));
         }
         Assertion::length($data['aaguid'], 36, 'Invalid AAGUID', null, '8bit');
         $uuid = Uuid::fromString($data['aaguid']);

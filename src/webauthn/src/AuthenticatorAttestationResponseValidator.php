@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function array_key_exists;
 use Assert\Assertion;
 use function count;
 use function in_array;
@@ -130,7 +131,9 @@ class AuthenticatorAttestationResponseValidator
 
             $parsedRelyingPartyId = parse_url($C->getOrigin());
             Assertion::isArray($parsedRelyingPartyId, sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
-            Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
+            array_key_exists('scheme', $parsedRelyingPartyId) || throw new InvalidArgumentException(
+                'Invalid origin rpId.'
+            );
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
