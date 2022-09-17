@@ -21,7 +21,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
-        Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
+        mb_strlen($id, '8bit') <= 64 || throw new \InvalidArgumentException('User ID max length is 64 bytes');
         $this->id = $id;
     }
 
