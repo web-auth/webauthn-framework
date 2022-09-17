@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Guesser;
 
-use Assert\Assertion;
 use function count;
 use InvalidArgumentException;
 use function is_string;
@@ -27,7 +26,7 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
-        Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+        $request->getContentType() === 'json' || throw new InvalidArgumentException('Only JSON content type allowed');
         $content = $request->getContent();
         is_string($content) || throw new InvalidArgumentException('Invalid data');
 

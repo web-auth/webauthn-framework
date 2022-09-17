@@ -129,7 +129,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         ($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey) || throw new \InvalidArgumentException(
             'Unsupported key type'
         );
-        Assertion::eq($publicKey->asPEM(), $details['key'], 'Invalid key');
+        $publicKey->asPEM() === $details['key'] || throw new \InvalidArgumentException('Invalid key');
 
         /*---------------------------*/
         $certDetails = openssl_x509_parse($certificate);
@@ -161,9 +161,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             OctetString::class,
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        Assertion::eq(
-            $clientDataHash,
-            hex2bin((string) ($objects[4])->getContent()),
+        $clientDataHash === hex2bin((string) ($objects[4])->getContent()) || throw new \InvalidArgumentException(
             'The client data hash is not valid'
         );
 

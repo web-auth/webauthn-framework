@@ -23,8 +23,7 @@ class TokenBinding
 
     public function __construct(string $status, ?string $id)
     {
-        Assertion::false(
-            $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null,
+        $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null && throw new InvalidArgumentException(
             'The member "id" is required when status is "present"'
         );
         $this->status = $status;

@@ -19,10 +19,23 @@ final class TokenBindingTest extends TestCase
      */
     public function aTokenBindingCanBeCreatedAndValueAccessed(): void
     {
-        $tokenBinding = new TokenBinding('status', 'id');
+        $tokenBinding = new TokenBinding('present', 'id');
 
-        static::assertSame('status', $tokenBinding->getStatus());
+        static::assertSame('present', $tokenBinding->getStatus());
         static::assertSame('id', $tokenBinding->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function anIDIsRequiredWhenStatusIsPresent(): never
+    {
+        //Then
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionMessage('The member "id" is required when status is "present"');
+
+        //When
+        new TokenBinding('present', null);
     }
 
     /**

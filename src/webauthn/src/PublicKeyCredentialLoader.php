@@ -77,7 +77,10 @@ class PublicKeyCredentialLoader
             is_array($json['response']) || throw new InvalidArgumentException(
                 'The parameter "response" shall be an array'
             );
-            Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
+            $json['type'] === 'public-key' || throw new InvalidArgumentException(sprintf(
+                'Unsupported type "%s"',
+                $json['type']
+            ));
 
             $id = Base64UrlSafe::decodeNoPadding($json['id']);
             $rawId = Base64::decode($json['rawId']);

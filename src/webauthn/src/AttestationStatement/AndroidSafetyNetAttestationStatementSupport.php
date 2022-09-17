@@ -158,7 +158,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('CN', $parsedCertificate['subject']) || throw new InvalidArgumentException(
             'Invalid attestation object'
         );
-        Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
+        $parsedCertificate['subject']['CN'] === 'attest.android.com' || throw new InvalidArgumentException(
+            'Invalid attestation object'
+        );
 
         /** @var JWS $jws */
         $jws = $attestationStatement->get('jws');
@@ -184,11 +186,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('nonce', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. "nonce" is missing.'
         );
-        Assertion::eq(
-            $payload['nonce'],
-            base64_encode(hash('sha256', $authenticatorData->getAuthData() . $clientDataJSONHash, true)),
-            'Invalid attestation object. Invalid nonce'
-        );
+        $payload['nonce'] === base64_encode(
+            hash('sha256', $authenticatorData->getAuthData() . $clientDataJSONHash, true)
+        ) || throw new InvalidArgumentException('Invalid attestation object. Invalid nonce');
         array_key_exists('ctsProfileMatch', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. "ctsProfileMatch" is missing.'
         );

@@ -27,6 +27,8 @@ final class SecTokenBindingHandler implements TokenBindingHandler
         $tokenBindingIds = $request->getHeader('Sec-Token-Binding');
         Assertion::count($tokenBindingIds, 1, 'The header parameter "Sec-Token-Binding" is invalid.');
         $tokenBindingId = reset($tokenBindingIds);
-        Assertion::eq($tokenBindingId, $tokenBinding->getId(), 'The header parameter "Sec-Token-Binding" is invalid.');
+        $tokenBindingId === $tokenBinding->getId() || throw new InvalidArgumentException(
+            'The header parameter "Sec-Token-Binding" is invalid.'
+        );
     }
 }

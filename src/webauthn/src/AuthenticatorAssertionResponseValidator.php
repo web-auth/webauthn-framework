@@ -100,13 +100,17 @@ class AuthenticatorAssertionResponseValidator
             $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
 
             if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
-                Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
+                $credentialUserHandle === $userHandle || throw new InvalidArgumentException('Invalid user handle');
                 if ($responseUserHandle !== null && $responseUserHandle !== '') {
-                    Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                    $credentialUserHandle === $responseUserHandle || throw new InvalidArgumentException(
+                        'Invalid user handle'
+                    );
                 }
             } else {
                 Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
-                Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                $credentialUserHandle === $responseUserHandle || throw new InvalidArgumentException(
+                    'Invalid user handle'
+                );
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
@@ -142,12 +146,15 @@ class AuthenticatorAssertionResponseValidator
             is_array($parsedRelyingPartyId) || throw new InvalidArgumentException('Invalid origin');
             if (! in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-                Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+                $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
+            mb_substr(
+                '.' . $clientDataRpId,
+                -($rpIdLength + 1)
+            ) === '.' . $facetId || throw new InvalidArgumentException('rpId mismatch.');
 
             if ($C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);

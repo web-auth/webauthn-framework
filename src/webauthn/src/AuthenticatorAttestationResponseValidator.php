@@ -143,11 +143,14 @@ class AuthenticatorAttestationResponseValidator
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
             Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
+            mb_substr(
+                '.' . $clientDataRpId,
+                -($rpIdLength + 1)
+            ) === '.' . $facetId || throw new InvalidArgumentException('rpId mismatch.');
 
             if (! in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'];
-                Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+                $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
             }
 
             if ($C->getTokenBinding() !== null) {

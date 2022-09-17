@@ -147,23 +147,26 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         is_array($parsed) || throw new InvalidArgumentException('Invalid certificate');
 
         //Check version
-        Assertion::false(! isset($parsed['version']) || $parsed['version'] !== 2, 'Invalid certificate version');
+        isset($parsed['version']) || throw new InvalidArgumentException('Invalid certificate version');
+        $parsed['version'] === 2 || throw new InvalidArgumentException('Invalid certificate version');
 
         //Check subject field
-        Assertion::false(
-            ! isset($parsed['name']) || ! str_contains((string) $parsed['name'], '/OU=Authenticator Attestation'),
+        isset($parsed['name']) || throw new InvalidArgumentException(
+            'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
+        );
+        str_contains((string) $parsed['name'], '/OU=Authenticator Attestation') || throw new InvalidArgumentException(
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
         //Check extensions
-        Assertion::false(
-            ! isset($parsed['extensions']) || ! is_array($parsed['extensions']),
-            'Certificate extensions are missing'
-        );
+        isset($parsed['extensions']) || throw new InvalidArgumentException('Certificate extensions are missing');
+        is_array($parsed['extensions']) || throw new InvalidArgumentException('Certificate extensions are missing');
 
         //Check certificate is not a CA cert
-        Assertion::false(
-            ! isset($parsed['extensions']['basicConstraints']) || $parsed['extensions']['basicConstraints'] !== 'CA:FALSE',
+        isset($parsed['extensions']['basicConstraints']) || throw new InvalidArgumentException(
+            'The Basic Constraints extension must have the CA component set to false'
+        );
+        $parsed['extensions']['basicConstraints'] === 'CA:FALSE' || throw new InvalidArgumentException(
             'The Basic Constraints extension must have the CA component set to false'
         );
 
@@ -235,9 +238,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
         $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
-        Assertion::eq(
-            $publicKey->alg(),
-            (int) $attestationStatement->get('alg'),
+        $publicKey->alg() === (int) $attestationStatement->get('alg') || throw new InvalidArgumentException(
             'The algorithm of the attestation statement and the key are not identical.'
         );
 

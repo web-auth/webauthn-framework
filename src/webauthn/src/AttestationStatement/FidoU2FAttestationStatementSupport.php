@@ -81,13 +81,11 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        Assertion::eq(
-            $authenticatorData->getAttestedCredentialData()
-                ?->getAaguid()
-                ->__toString(),
-            '00000000-0000-0000-0000-000000000000',
-            'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
-        );
+        $authenticatorData->getAttestedCredentialData()
+            ?->getAaguid()
+            ->__toString() === '00000000-0000-0000-0000-000000000000' || throw new InvalidArgumentException(
+                'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
+            );
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";
@@ -150,10 +148,14 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         array_key_exists('curve_name', $details['ec']) || throw new InvalidArgumentException(
             'Invalid certificate or certificate chain'
         );
-        Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
+        $details['ec']['curve_name'] === 'prime256v1' || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
         array_key_exists('curve_oid', $details['ec']) || throw new InvalidArgumentException(
             'Invalid certificate or certificate chain'
         );
-        Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
+        $details['ec']['curve_oid'] === '1.2.840.10045.3.1.7' || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
     }
 }

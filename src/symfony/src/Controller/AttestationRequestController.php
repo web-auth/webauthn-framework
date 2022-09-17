@@ -51,7 +51,9 @@ final class AttestationRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+                'Only JSON content type allowed'
+            );
             $content = $request->getContent();
             is_string($content) || throw new InvalidArgumentException('Invalid data');
 

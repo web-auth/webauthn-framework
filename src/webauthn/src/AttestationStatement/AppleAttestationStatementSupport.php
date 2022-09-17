@@ -113,7 +113,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
 
         //We check the attested key corresponds to the key in the certificate
-        Assertion::eq($publicKey->asPEM(), $details['key'], 'Invalid key');
+        $publicKey->asPEM() === $details['key'] || throw new InvalidArgumentException('Invalid key');
 
         /*---------------------------*/
         $certDetails = openssl_x509_parse($certificate);
@@ -133,6 +133,8 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
-        Assertion::eq('3024a1220420' . $nonce, bin2hex((string) $extension), 'The client data hash is not valid');
+        '3024a1220420' . $nonce === bin2hex((string) $extension) || throw new InvalidArgumentException(
+            'The client data hash is not valid'
+        );
     }
 }
