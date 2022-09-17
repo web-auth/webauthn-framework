@@ -95,7 +95,6 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     public static function createFromString(string $data): static
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }

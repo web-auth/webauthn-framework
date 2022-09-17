@@ -112,7 +112,6 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }

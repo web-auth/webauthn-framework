@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -140,7 +142,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            Assertion::isArray($plte, 'Invalid "plte" parameter');
+            is_array($plte) || throw new InvalidArgumentException('Invalid "plte" parameter');
             foreach ($plte as $item) {
                 $object->addPalettes(RgbPaletteEntry::createFromArray($item));
             }

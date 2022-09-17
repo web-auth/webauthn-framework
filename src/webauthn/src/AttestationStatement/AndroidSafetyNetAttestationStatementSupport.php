@@ -7,11 +7,11 @@ namespace Webauthn\AttestationStatement;
 use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
+use function is_array;
 use function is_int;
 use function is_string;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
-use Jose\Component\Core\Util\JsonConverter;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\EdDSA;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -151,7 +151,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         is_string($firstCertificate) || throw new InvalidArgumentException('No certificate');
 
         $parsedCertificate = openssl_x509_parse($firstCertificate);
-        Assertion::isArray($parsedCertificate, 'Invalid attestation object');
+        is_array($parsedCertificate) || throw new InvalidArgumentException('Invalid attestation object');
         array_key_exists('subject', $parsedCertificate) || throw new InvalidArgumentException(
             'Invalid attestation object'
         );
@@ -180,8 +180,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         AuthenticatorData $authenticatorData
     ): void {
         $payload !== null || throw new InvalidArgumentException('Invalid attestation object');
-        $payload = JsonConverter::decode($payload);
-        Assertion::isArray($payload, 'Invalid attestation object');
+        $payload = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
         array_key_exists('nonce', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. "nonce" is missing.'
         );

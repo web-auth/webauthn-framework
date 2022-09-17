@@ -9,6 +9,7 @@ use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use LogicException;
 use function parse_url;
@@ -130,7 +131,10 @@ class AuthenticatorAttestationResponseValidator
             );
 
             $parsedRelyingPartyId = parse_url($C->getOrigin());
-            Assertion::isArray($parsedRelyingPartyId, sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
+            is_array($parsedRelyingPartyId) || throw new InvalidArgumentException(sprintf(
+                'The origin URI "%s" is not valid',
+                $C->getOrigin()
+            ));
             array_key_exists('scheme', $parsedRelyingPartyId) || throw new InvalidArgumentException(
                 'Invalid origin rpId.'
             );

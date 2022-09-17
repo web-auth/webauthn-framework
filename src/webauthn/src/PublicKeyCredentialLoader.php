@@ -9,6 +9,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 use function ord;
@@ -73,7 +74,9 @@ class PublicKeyCredentialLoader
             array_key_exists('response', $json) || throw new InvalidArgumentException(
                 'The parameter "response" is missing'
             );
-            Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
+            is_array($json['response']) || throw new InvalidArgumentException(
+                'The parameter "response" shall be an array'
+            );
             Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
 
             $id = Base64UrlSafe::decodeNoPadding($json['id']);
@@ -107,7 +110,6 @@ class PublicKeyCredentialLoader
         ]);
         try {
             $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-            Assertion::isArray($json, 'Invalid data');
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {

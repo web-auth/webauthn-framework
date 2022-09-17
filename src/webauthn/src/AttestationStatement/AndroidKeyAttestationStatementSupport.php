@@ -19,6 +19,7 @@ use FG\ASN1\ExplicitlyTaggedObject;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\Sequence;
 use function hex2bin;
+use function is_array;
 use function openssl_pkey_get_public;
 use function openssl_verify;
 use Webauthn\AuthenticatorData;
@@ -108,7 +109,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
-        Assertion::isArray($details, 'Unable to read the certificate');
+        is_array($details) || throw new \InvalidArgumentException('Unable to read the certificate');
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
@@ -130,11 +131,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Android KeyStore Extension with OID "1.3.6.1.4.1.11129.2.1.17" in certificate extensions
-        Assertion::isArray($certDetails, 'The certificate is not valid');
+        is_array($certDetails) || throw new \InvalidArgumentException('The certificate is not valid');
         array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
             'The certificate has no extension'
         );
-        Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
+        is_array($certDetails['extensions']) || throw new \InvalidArgumentException('The certificate has no extension');
         array_key_exists('1.3.6.1.4.1.11129.2.1.17', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
         );

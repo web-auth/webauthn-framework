@@ -7,6 +7,7 @@ namespace Webauthn\MetadataService\Service;
 use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
+use function is_array;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -179,7 +180,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
         //Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
         array_key_exists('x5c', $header) || throw new InvalidArgumentException('The "x5c" parameter is missing.');
-        Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
+        is_array($header['x5c']) || throw new InvalidArgumentException('The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);
         $rootCertificates = $header['x5c'];
 

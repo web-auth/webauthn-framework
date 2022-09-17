@@ -68,7 +68,6 @@ class CollectedClientData
     {
         $rawData = Base64UrlSafe::decodeNoPadding($data);
         $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($json, 'Invalid collected client data');
 
         return new self($rawData, $json);
     }

@@ -13,6 +13,7 @@ use Cose\Key\Key;
 use function count;
 use function in_array;
 use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
@@ -140,7 +141,7 @@ class AuthenticatorAssertionResponseValidator
                     ->getExtensions()
             );
             $parsedRelyingPartyId = parse_url($C->getOrigin());
-            Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
+            is_array($parsedRelyingPartyId) || throw new InvalidArgumentException('Invalid origin');
             if (! in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
                 Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
@@ -198,7 +199,9 @@ class AuthenticatorAssertionResponseValidator
                 'Invalid attestation object. Unexpected object.'
             );
             $normalizedData = $credentialPublicKeyStream->normalize();
-            Assertion::isArray($normalizedData, 'Invalid attestation object. Unexpected object.');
+            is_array($normalizedData) || throw new InvalidArgumentException(
+                'Invalid attestation object. Unexpected object.'
+            );
             $coseKey = Key::create($normalizedData);
             $algorithm = $this->algorithmManager?->get($coseKey->alg());
             Assertion::isInstanceOf(

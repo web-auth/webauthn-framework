@@ -9,6 +9,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\Normalizable;
+use function is_array;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -58,7 +59,7 @@ class AttestationObjectLoader
             $attestationObject = $parsed->normalize();
             Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
             $stream->close();
-            Assertion::isArray($attestationObject, 'Invalid attestation object');
+            is_array($attestationObject) || throw new \InvalidArgumentException('Invalid attestation object');
             array_key_exists('authData', $attestationObject) || throw new InvalidArgumentException(
                 'Invalid attestation object'
             );

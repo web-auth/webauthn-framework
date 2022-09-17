@@ -13,6 +13,7 @@ use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
 use InvalidArgumentException;
+use function is_array;
 use function openssl_pkey_get_public;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -91,7 +92,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
     ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
-        Assertion::isArray($details, 'Unable to read the certificate');
+        is_array($details) || throw new InvalidArgumentException('Unable to read the certificate');
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
@@ -114,11 +115,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
-        Assertion::isArray($certDetails, 'The certificate is not valid');
+        is_array($certDetails) || throw new InvalidArgumentException('The certificate is not valid');
         array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
             'The certificate has no extension'
         );
-        Assertion::isArray($certDetails['extensions'], 'The certificate has no extension');
+        is_array($certDetails['extensions']) || throw new InvalidArgumentException('The certificate has no extension');
         array_key_exists('1.2.840.113635.100.8.2', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.2.840.113635.100.8.2" is missing'
         );

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
+use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -43,7 +43,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
+        is_array($data) || throw new \InvalidArgumentException('Invalid data');
 
         return self::createFromArray($data);
     }

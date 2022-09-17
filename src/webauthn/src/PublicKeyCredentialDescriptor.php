@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
@@ -64,7 +63,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }

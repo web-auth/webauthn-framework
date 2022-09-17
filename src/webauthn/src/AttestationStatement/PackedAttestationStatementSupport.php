@@ -144,7 +144,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
     {
         $parsed = openssl_x509_parse($attestnCert);
-        Assertion::isArray($parsed, 'Invalid certificate');
+        is_array($parsed) || throw new InvalidArgumentException('Invalid certificate');
 
         //Check version
         Assertion::false(! isset($parsed['version']) || $parsed['version'] !== 2, 'Invalid certificate version');

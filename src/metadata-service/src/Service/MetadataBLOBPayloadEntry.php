@@ -7,6 +7,8 @@ namespace Webauthn\MetadataService\Service;
 use function array_key_exists;
 use Assert\Assertion;
 use function count;
+use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use JsonSerializable;
 use LogicException;
@@ -53,7 +55,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             );
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            is_string($attestationCertificateKeyIdentifier) || throw new \InvalidArgumentException(
+            is_string($attestationCertificateKeyIdentifier) || throw new InvalidArgumentException(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             Assertion::notEmpty(
@@ -153,8 +155,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         array_key_exists('statusReports', $data) || throw new InvalidArgumentException(
             'Invalid data. The parameter "statusReports" is missing'
         );
-        Assertion::isArray(
-            $data['statusReports'],
+        is_array($data['statusReports']) || throw new InvalidArgumentException(
             'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
         );
         $object = new self(

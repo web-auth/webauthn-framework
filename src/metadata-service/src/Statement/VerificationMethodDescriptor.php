@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -154,7 +156,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
-                Assertion::isArray($data[$key], sprintf('Invalid parameter "%s"', $key));
+                is_array($data[$key]) || throw new InvalidArgumentException(sprintf('Invalid parameter "%s"', $key));
             }
         }
 

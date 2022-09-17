@@ -10,6 +10,7 @@ use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
 use InvalidArgumentException;
+use function is_array;
 use const OPENSSL_ALGO_SHA256;
 use function openssl_pkey_get_public;
 use function openssl_verify;
@@ -51,7 +52,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             ));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
+        is_array($certificates) || throw new InvalidArgumentException(
+            'The attestation statement value "x5c" must be a list with one certificate.'
+        );
         Assertion::count(
             $certificates,
             1,
@@ -138,7 +141,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
-        Assertion::isArray($details, 'Invalid certificate or certificate chain');
+        is_array($details) || throw new InvalidArgumentException('Invalid certificate or certificate chain');
         array_key_exists('ec', $details) || throw new InvalidArgumentException(
             'Invalid certificate or certificate chain'
         );
