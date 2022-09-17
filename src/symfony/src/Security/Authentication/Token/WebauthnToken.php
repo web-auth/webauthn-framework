@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
-use Assert\Assertion;
+use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -75,11 +75,10 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             $this->firewallName,
             $parentData
         ] = $serialized;
-        Assertion::subclassOf(
+        is_subclass_of(
             $publicKeyCredentialOptionsClass,
-            PublicKeyCredentialOptions::class,
-            'Invalid PublicKeyCredentialOptions class'
-        );
+            PublicKeyCredentialOptions::class
+        ) || throw new InvalidArgumentException('Invalid PublicKeyCredentialOptions class');
         $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString(
             $publicKeyCredentialUserEntity
         );

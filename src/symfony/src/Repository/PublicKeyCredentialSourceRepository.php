@@ -8,6 +8,7 @@ use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -20,7 +21,7 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
-        Assertion::subclassOf($class, PublicKeyCredentialSource::class, sprintf(
+        is_subclass_of($class, PublicKeyCredentialSource::class) || throw new InvalidArgumentException(sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class
         ));
