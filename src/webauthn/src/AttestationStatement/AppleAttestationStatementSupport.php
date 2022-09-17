@@ -95,9 +95,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential data found');
+        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential data found');
         $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
-        Assertion::notNull($publicKeyData, 'No attested public key found');
+        $publicKeyData !== null || throw new InvalidArgumentException('No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream);
         Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');

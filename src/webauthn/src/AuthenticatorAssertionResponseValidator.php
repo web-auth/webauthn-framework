@@ -12,6 +12,7 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use function count;
 use function in_array;
+use InvalidArgumentException;
 use function is_string;
 use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
@@ -94,7 +95,7 @@ class AuthenticatorAssertionResponseValidator
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $credentialId
             );
-            Assertion::notNull($publicKeyCredentialSource, 'The credential ID is invalid.');
+            $publicKeyCredentialSource !== null || throw new InvalidArgumentException('The credential ID is invalid.');
 
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
@@ -111,7 +112,7 @@ class AuthenticatorAssertionResponseValidator
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-            Assertion::notNull($credentialPublicKey, 'No public key available.');
+            $credentialPublicKey !== null || throw new InvalidArgumentException('No public key available.');
             $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
             if ($isU2F === true) {
                 $credentialPublicKey = U2FPublicKey::convertToCoseKey($credentialPublicKey);

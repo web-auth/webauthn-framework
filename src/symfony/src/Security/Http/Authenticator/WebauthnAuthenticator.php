@@ -111,7 +111,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 ->getAuthData();
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
-        Assertion::notNull($userEntity, 'The user entity is missing');
+        $userEntity !== null || throw new InvalidArgumentException('The user entity is missing');
 
         $token = new WebauthnToken(
             $userEntity,
@@ -224,7 +224,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Unable to find the public key credential creation options'
             );
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
-            Assertion::notNull($userEntity, 'Unable to find the public key credential user entity');
+            $userEntity !== null || throw new InvalidArgumentException(
+                'Unable to find the public key credential user entity'
+            );
 
             $psr7Request = $this->httpMessageFactory->createRequest($request);
             $credentialSource = $this->attestationResponseValidator->check(

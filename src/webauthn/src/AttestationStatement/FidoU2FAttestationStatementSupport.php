@@ -107,7 +107,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     private function extractPublicKey(?string $publicKey): string
     {
-        Assertion::notNull($publicKey, 'The attested credential data does not contain a valid public key.');
+        $publicKey !== null || throw new InvalidArgumentException(
+            'The attested credential data does not contain a valid public key.'
+        );
 
         $publicKeyStream = new StringStream($publicKey);
         $coseKey = $this->decoder->decode($publicKeyStream);

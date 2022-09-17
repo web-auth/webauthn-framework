@@ -203,7 +203,9 @@ class AuthenticatorAttestationResponseValidator
             );
             $attestedCredentialData = $attestationObject->getAuthData()
                 ->getAttestedCredentialData();
-            Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
+            $attestedCredentialData !== null || throw new InvalidArgumentException(
+                'There is no attested credential data.'
+            );
             $credentialId = $attestedCredentialData->getCredentialId();
             Assertion::null(
                 $this->publicKeyCredentialSource->findOneByCredentialId($credentialId),
@@ -260,7 +262,7 @@ class AuthenticatorAttestationResponseValidator
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()
             ->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential data found');
+        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()
             ->__toString();
         if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
@@ -314,17 +316,16 @@ class AuthenticatorAttestationResponseValidator
         }
 
         //The MDS Repository is mandatory here
-        Assertion::notNull(
-            $this->metadataStatementRepository,
+        $this->metadataStatementRepository !== null || throw new InvalidArgumentException(
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // At this point, the Metadata Statement is mandatory
-        Assertion::notNull(
-            $metadataStatement,
-            sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
-        );
+        $metadataStatement !== null || throw new InvalidArgumentException(sprintf(
+            'The Metadata Statement for the AAGUID "%s" is missing',
+            $aaguid
+        ));
         // We check the last status report
         $this->checkStatusReport($aaguid);
 
@@ -377,7 +378,9 @@ class AuthenticatorAttestationResponseValidator
         string $userHandle
     ): PublicKeyCredentialSource {
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-        Assertion::notNull($credentialPublicKey, 'Not credential public key available in the attested credential data');
+        $credentialPublicKey !== null || throw new InvalidArgumentException(
+            'Not credential public key available in the attested credential data'
+        );
 
         return new PublicKeyCredentialSource(
             $credentialId,

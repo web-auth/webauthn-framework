@@ -177,7 +177,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         string $clientDataJSONHash,
         AuthenticatorData $authenticatorData
     ): void {
-        Assertion::notNull($payload, 'Invalid attestation object');
+        $payload !== null || throw new InvalidArgumentException('Invalid attestation object');
         $payload = JsonConverter::decode($payload);
         Assertion::isArray($payload, 'Invalid attestation object');
         array_key_exists('nonce', $payload) || throw new InvalidArgumentException(

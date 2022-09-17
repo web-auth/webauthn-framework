@@ -117,7 +117,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'Invalid attestation hash'
         );
         $credentialPublicKey = $authenticatorData->getAttestedCredentialData()?->getCredentialPublicKey();
-        Assertion::notNull($credentialPublicKey, 'Not credential public key available in the attested credential data');
+        $credentialPublicKey !== null || throw new InvalidArgumentException(
+            'Not credential public key available in the attested credential data'
+        );
         $this->checkUniquePublicKey($attestationStatement->get('parsedPubArea')['unique'], $credentialPublicKey);
 
         return match (true) {

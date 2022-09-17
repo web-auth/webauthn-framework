@@ -163,7 +163,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
 
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential available');
+        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential available');
 
         // id-fido-gen-ce-aaguid OID check
         Assertion::false(
@@ -214,9 +214,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AuthenticatorData $authenticatorData
     ): bool {
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential available');
+        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential available');
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-        Assertion::notNull($credentialPublicKey, 'No credential public key available');
+        $credentialPublicKey !== null || throw new InvalidArgumentException('No credential public key available');
         $publicKeyStream = new StringStream($credentialPublicKey);
         $publicKey = $this->decoder->decode($publicKeyStream);
         Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');

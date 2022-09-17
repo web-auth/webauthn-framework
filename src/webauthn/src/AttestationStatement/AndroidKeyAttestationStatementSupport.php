@@ -77,11 +77,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     public function isValid(
-        string               $clientDataJSONHash,
+        string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
-        AuthenticatorData    $authenticatorData
-    ): bool
-    {
+        AuthenticatorData $authenticatorData
+    ): bool {
         $trustPath = $attestationStatement->getTrustPath();
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
 
@@ -95,28 +94,27 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $alg = $attestationStatement->get('alg');
 
         return openssl_verify(
-                $signedData,
-                $attestationStatement->get('sig'),
-                $leaf,
-                Algorithms::getOpensslAlgorithmFor((int)$alg)
-            ) === 1;
+            $signedData,
+            $attestationStatement->get('sig'),
+            $leaf,
+            Algorithms::getOpensslAlgorithmFor((int) $alg)
+        ) === 1;
     }
 
     private function checkCertificateAndGetPublicKey(
-        string            $certificate,
-        string            $clientDataHash,
+        string $certificate,
+        string $clientDataHash,
         AuthenticatorData $authenticatorData
-    ): void
-    {
+    ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
         Assertion::isArray($details, 'Unable to read the certificate');
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        Assertion::notNull($attestedCredentialData, 'No attested credential data found');
+        $attestedCredentialData !== null || throw new \InvalidArgumentException('No attested credential data found');
         $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
-        Assertion::notNull($publicKeyData, 'No attested public key found');
+        $publicKeyData !== null || throw new \InvalidArgumentException('No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream);
         Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');
@@ -160,7 +158,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         Assertion::eq(
             $clientDataHash,
-            hex2bin((string)($objects[4])->getContent()),
+            hex2bin((string) ($objects[4])->getContent()),
             'The client data hash is not valid'
         );
 
@@ -193,7 +191,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         foreach ($sequence->getChildren() as $tag) {
             Assertion::isInstanceOf($tag, ExplicitlyTaggedObject::class, 'Invalid tag');
             /** @var ExplicitlyTaggedObject $tag */
-            Assertion::notEq(600, (int)$tag->getTag(), 'Forbidden tag 600 found');
+            Assertion::notEq(600, (int) $tag->getTag(), 'Forbidden tag 600 found');
         }
     }
 }
