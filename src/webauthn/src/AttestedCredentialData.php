@@ -6,6 +6,8 @@ namespace Webauthn;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_string;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64;
 use Symfony\Component\Uid\AbstractUid;
@@ -50,7 +52,9 @@ class AttestedCredentialData implements JsonSerializable
     {
         array_key_exists('aaguid', $json) || throw new InvalidArgumentException('Invalid input. "aaguid" is missing.');
         $aaguid = $json['aaguid'];
-        Assertion::string($aaguid, 'Invalid input. "aaguid" shall be a string of 36 characters');
+        is_string($aaguid) || throw new InvalidArgumentException(
+            'Invalid input. "aaguid" shall be a string of 36 characters'
+        );
         Assertion::length($aaguid, 36, 'Invalid input. "aaguid" shall be a string of 36 characters');
         $uuid = Uuid::fromString($json['aaguid']);
 
@@ -58,7 +62,9 @@ class AttestedCredentialData implements JsonSerializable
             'Invalid input. "credentialId" is missing.'
         );
         $credentialId = $json['credentialId'];
-        Assertion::string($credentialId, 'Invalid input. "credentialId" shall be a string');
+        is_string($credentialId) || throw new InvalidArgumentException(
+            'Invalid input. "credentialId" shall be a string'
+        );
         $credentialId = Base64::decode($credentialId, true);
 
         $credentialPublicKey = null;

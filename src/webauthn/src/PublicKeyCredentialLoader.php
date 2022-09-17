@@ -9,6 +9,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use InvalidArgumentException;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 use function ord;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -64,7 +65,10 @@ class PublicKeyCredentialLoader
                     'The parameter "%s" is missing',
                     $key
                 ));
-                Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
+                is_string($json[$key]) || throw new InvalidArgumentException(sprintf(
+                    'The parameter "%s" shall be a string',
+                    $key
+                ));
             }
             array_key_exists('response', $json) || throw new InvalidArgumentException(
                 'The parameter "response" is missing'
@@ -122,12 +126,13 @@ class PublicKeyCredentialLoader
         array_key_exists('clientDataJSON', $response) || throw new InvalidArgumentException(
             'Invalid data. The parameter "clientDataJSON" is missing'
         );
-        Assertion::string($response['clientDataJSON'], 'Invalid data. The parameter "clientDataJSON" is invalid');
+        is_string($response['clientDataJSON']) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "clientDataJSON" is invalid'
+        );
         Assertion::nullOrString($response['userHandle'] ?? null, 'Invalid data. The parameter "userHandle" is invalid');
         switch (true) {
             case array_key_exists('attestationObject', $response):
-                Assertion::string(
-                    $response['attestationObject'],
+                is_string($response['attestationObject']) || throw new InvalidArgumentException(
                     'Invalid data. The parameter "attestationObject   " is invalid'
                 );
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);

@@ -15,6 +15,7 @@ use Cose\Key\Key;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use function is_string;
 use function openssl_verify;
 use RuntimeException;
 use Webauthn\AuthenticatorData;
@@ -56,7 +57,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         array_key_exists('alg', $attestation['attStmt']) || throw new InvalidArgumentException(
             'The attestation statement value "alg" is missing.'
         );
-        Assertion::string($attestation['attStmt']['sig'], 'The attestation statement value "sig" is missing.');
+        is_string($attestation['attStmt']['sig']) || throw new InvalidArgumentException(
+            'The attestation statement value "sig" is missing.'
+        );
 
         return match (true) {
             array_key_exists('x5c', $attestation['attStmt']) => $this->loadBasicType($attestation),
@@ -119,7 +122,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function loadEcdaaType(array $attestation): AttestationStatement
     {
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
-        Assertion::string($ecdaaKeyId, 'The attestation statement value "ecdaaKeyId" is invalid.');
+        is_string($ecdaaKeyId) || throw new InvalidArgumentException(
+            'The attestation statement value "ecdaaKeyId" is invalid.'
+        );
 
         return AttestationStatement::createEcdaa(
             $attestation['fmt'],

@@ -19,6 +19,7 @@ use DateTimeZone;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
+use function is_int;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
@@ -330,14 +331,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         array_key_exists('validFrom_time_t', $parsed) || throw new InvalidArgumentException(
             'Invalid certificate start date.'
         );
-        Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
+        is_int($parsed['validFrom_time_t']) || throw new InvalidArgumentException('Invalid certificate start date.');
         $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
         Assertion::true($startDate < $this->clock->now(), 'Invalid certificate start date.');
 
         array_key_exists('validTo_time_t', $parsed) || throw new InvalidArgumentException(
             'Invalid certificate end date.'
         );
-        Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
+        is_int($parsed['validTo_time_t']) || throw new InvalidArgumentException('Invalid certificate end date.');
         $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
         Assertion::true($endDate > $this->clock->now(), 'Invalid certificate end date.');
 

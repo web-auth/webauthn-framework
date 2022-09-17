@@ -7,6 +7,7 @@ namespace Webauthn\MetadataService\Service;
 use function array_key_exists;
 use Assert\Assertion;
 use function count;
+use function is_string;
 use JsonSerializable;
 use LogicException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
@@ -52,8 +53,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             );
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            Assertion::string(
-                $attestationCertificateKeyIdentifier,
+            is_string($attestationCertificateKeyIdentifier) || throw new \InvalidArgumentException(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             Assertion::notEmpty(

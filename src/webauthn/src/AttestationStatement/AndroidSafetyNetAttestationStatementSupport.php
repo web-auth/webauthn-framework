@@ -7,6 +7,8 @@ namespace Webauthn\AttestationStatement;
 use function array_key_exists;
 use Assert\Assertion;
 use InvalidArgumentException;
+use function is_int;
+use function is_string;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Util\JsonConverter;
@@ -146,7 +148,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
         $firstCertificate = current($certificates);
-        Assertion::string($firstCertificate, 'No certificate');
+        is_string($firstCertificate) || throw new InvalidArgumentException('No certificate');
 
         $parsedCertificate = openssl_x509_parse($firstCertificate);
         Assertion::isArray($parsedCertificate, 'Invalid attestation object');
@@ -195,7 +197,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('timestampMs', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. Timestamp is missing.'
         );
-        Assertion::integer($payload['timestampMs'], 'Invalid attestation object. Timestamp shall be an integer.');
+        is_int($payload['timestampMs']) || throw new InvalidArgumentException(
+            'Invalid attestation object. Timestamp shall be an integer.'
+        );
         $currentTime = time() * 1000;
         Assertion::lessOrEqualThan(
             $payload['timestampMs'],

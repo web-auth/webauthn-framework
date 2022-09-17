@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_int;
 use JsonSerializable;
 use LogicException;
 use Webauthn\MetadataService\Utils;
@@ -46,7 +48,7 @@ class Version implements JsonSerializable
         $data = Utils::filterNullValues($data);
         foreach (['major', 'minor'] as $key) {
             if (array_key_exists($key, $data)) {
-                Assertion::integer($data[$key], sprintf('Invalid value for key "%s"', $key));
+                is_int($data[$key]) || throw new InvalidArgumentException(sprintf('Invalid value for key "%s"', $key));
             }
         }
 

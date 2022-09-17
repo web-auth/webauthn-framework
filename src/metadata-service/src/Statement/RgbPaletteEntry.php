@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_int;
 use JsonSerializable;
 
 class RgbPaletteEntry implements JsonSerializable
@@ -51,7 +53,7 @@ class RgbPaletteEntry implements JsonSerializable
                 'The key "%s" is missing',
                 $key
             ));
-            Assertion::integer($data[$key], sprintf('The key "%s" is invalid', $key));
+            is_int($data[$key]) || throw new InvalidArgumentException(sprintf('The key "%s" is invalid', $key));
         }
 
         return new self($data['r'], $data['g'], $data['b']);

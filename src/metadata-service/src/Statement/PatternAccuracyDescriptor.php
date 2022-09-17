@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_int;
 use Webauthn\MetadataService\Utils;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
@@ -39,8 +41,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
         );
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
-                Assertion::integer(
-                    $data[$key],
+                is_int($data[$key]) || throw new InvalidArgumentException(
                     sprintf('Invalid data. The value of "%s" must be a positive integer', $key)
                 );
             }

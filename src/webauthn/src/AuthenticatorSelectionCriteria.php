@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Assert\Assertion;
+use InvalidArgumentException;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 
@@ -127,8 +129,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
         Assertion::nullOrString($authenticatorAttachment, 'Invalid "authenticatorAttachment" value');
         Assertion::boolean($requireResidentKey, 'Invalid "requireResidentKey" value');
-        Assertion::string($userVerification, 'Invalid "userVerification" value');
-        Assertion::string($residentKey, 'Invalid "residentKey" value');
+        is_string($userVerification) || throw new InvalidArgumentException('Invalid "userVerification" value');
+        is_string($residentKey) || throw new InvalidArgumentException('Invalid "residentKey" value');
 
         return self::create()
             ->setAuthenticatorAttachment($authenticatorAttachment)
