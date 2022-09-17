@@ -185,7 +185,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $attestedQualifiedNameLength = unpack('n', $certInfo->read(2))[1];
         $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLength); //Ignore
-        Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
+        $certInfo->isEOF() || throw new InvalidArgumentException(
+            'Invalid certificate information. Presence of extra bytes.'
+        );
         $certInfo->close();
 
         return [
@@ -219,7 +221,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $parameters = $this->getParameters($type, $pubArea);
 
         $unique = $this->getUnique($type, $pubArea);
-        Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
+        $pubArea->isEOF() || throw new InvalidArgumentException('Invalid public area. Presence of extra bytes.');
         $pubArea->close();
 
         return [
@@ -333,14 +335,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
         is_int($parsed['validFrom_time_t']) || throw new InvalidArgumentException('Invalid certificate start date.');
         $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
-        Assertion::true($startDate < $this->clock->now(), 'Invalid certificate start date.');
+        $startDate < $this->clock->now() || throw new InvalidArgumentException('Invalid certificate start date.');
 
         array_key_exists('validTo_time_t', $parsed) || throw new InvalidArgumentException(
             'Invalid certificate end date.'
         );
         is_int($parsed['validTo_time_t']) || throw new InvalidArgumentException('Invalid certificate end date.');
         $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
-        Assertion::true($endDate > $this->clock->now(), 'Invalid certificate end date.');
+        $endDate > $this->clock->now() || throw new InvalidArgumentException('Invalid certificate end date.');
 
         //Check extensions
         Assertion::false(

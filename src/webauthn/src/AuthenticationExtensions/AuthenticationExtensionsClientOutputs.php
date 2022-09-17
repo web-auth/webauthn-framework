@@ -6,10 +6,10 @@ namespace Webauthn\AuthenticationExtensions;
 
 use function array_key_exists;
 use ArrayIterator;
-use Assert\Assertion;
 use function count;
 use const COUNT_NORMAL;
 use Countable;
+use InvalidArgumentException;
 use Iterator;
 use IteratorAggregate;
 use const JSON_THROW_ON_ERROR;
@@ -64,7 +64,10 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
 
     public function get(string $key): AuthenticationExtension
     {
-        Assertion::true($this->has($key), sprintf('The extension with key "%s" is not available', $key));
+        $this->has($key) || throw new InvalidArgumentException(sprintf(
+            'The extension with key "%s" is not available',
+            $key
+        ));
 
         return $this->extensions[$key];
     }

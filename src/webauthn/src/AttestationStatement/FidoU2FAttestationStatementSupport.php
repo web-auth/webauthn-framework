@@ -116,7 +116,9 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
         $publicKeyStream = new StringStream($publicKey);
         $coseKey = $this->decoder->decode($publicKeyStream);
-        Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        $publicKeyStream->isEOF() || throw new InvalidArgumentException(
+            'Invalid public key. Presence of extra bytes.'
+        );
         $publicKeyStream->close();
         Assertion::isInstanceOf(
             $coseKey,

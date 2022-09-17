@@ -112,12 +112,14 @@ class AuthenticatorAttestationResponseValidator
 
             $C = $authenticatorAttestationResponse->getClientDataJSON();
 
-            Assertion::eq('webauthn.create', $C->getType(), 'The client data type is not "webauthn.create".');
-
-            Assertion::true(
-                hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()),
-                'Invalid challenge.'
+            $C->getType() === 'webauthn.create' || throw new InvalidArgumentException(
+                'The client data type is not "webauthn.create".'
             );
+
+            hash_equals(
+                $publicKeyCredentialCreationOptions->getChallenge(),
+                $C->getChallenge()
+            ) || throw new InvalidArgumentException('Invalid challenge.');
 
             $rpId = $publicKeyCredentialCreationOptions->getRp()
                 ->getId() ?? $request->getUri()
@@ -162,14 +164,17 @@ class AuthenticatorAttestationResponseValidator
             $attestationObject = $authenticatorAttestationResponse->getAttestationObject();
 
             $rpIdHash = hash('sha256', $facetId, true);
-            Assertion::true(
-                hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()),
-                'rpId hash mismatch.'
-            );
+            hash_equals(
+                $rpIdHash,
+                $attestationObject->getAuthData()
+                    ->getRpIdHash()
+            ) || throw new InvalidArgumentException('rpId hash mismatch.');
 
             if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
-                Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
-                Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
+                $attestationObject->getAuthData()
+                    ->isUserPresent() || throw new InvalidArgumentException('User was not present');
+                $attestationObject->getAuthData()
+                    ->isUserVerified() || throw new InvalidArgumentException('User authentication required.');
             }
 
             $extensionsClientOutputs = $attestationObject->getAuthData()
@@ -185,26 +190,21 @@ class AuthenticatorAttestationResponseValidator
             $fmt = $attestationObject->getAttStmt()
                 ->getFmt();
 
-            Assertion::true(
-                $this->attestationStatementSupportManager->has($fmt),
+            $this->attestationStatementSupportManager->has($fmt) || throw new InvalidArgumentException(
                 'Unsupported attestation statement format.'
             );
 
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
-            Assertion::true(
-                $attestationStatementSupport->isValid(
-                    $clientDataJSONHash,
-                    $attestationObject->getAttStmt(),
-                    $attestationObject->getAuthData()
-                ),
-                'Invalid attestation statement.'
-            );
-
-            Assertion::true(
+            $attestationStatementSupport->isValid(
+                $clientDataJSONHash,
+                $attestationObject->getAttStmt(),
                 $attestationObject->getAuthData()
-                    ->hasAttestedCredentialData(),
-                'There is no attested credential data.'
-            );
+            ) || throw new InvalidArgumentException('Invalid attestation statement.');
+
+            $attestationObject->getAuthData()
+                ->hasAttestedCredentialData() || throw new InvalidArgumentException(
+                    'There is no attested credential data.'
+                );
             $attestedCredentialData = $attestationObject->getAuthData()
                 ->getAttestedCredentialData();
             $attestedCredentialData !== null || throw new InvalidArgumentException(

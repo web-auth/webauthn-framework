@@ -102,11 +102,15 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream);
         Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');
-        Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
+        $publicDataStream->isEOF() || throw new InvalidArgumentException(
+            'Invalid public key data. Presence of extra bytes.'
+        );
         $publicDataStream->close();
         $publicKey = Key::createFromData($coseKey->normalize());
 
-        Assertion::true(($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey), 'Unsupported key type');
+        ($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey) || throw new InvalidArgumentException(
+            'Unsupported key type'
+        );
 
         //We check the attested key corresponds to the key in the certificate
         Assertion::eq($publicKey->asPEM(), $details['key'], 'Invalid key');

@@ -81,7 +81,7 @@ class PublicKeyCredentialLoader
 
             $id = Base64UrlSafe::decodeNoPadding($json['id']);
             $rawId = Base64::decode($json['rawId']);
-            Assertion::true(hash_equals($id, $rawId));
+            hash_equals($id, $rawId) || throw new InvalidArgumentException('Invalid ID');
 
             $publicKeyCredential = new PublicKeyCredential(
                 $json['id'],
@@ -175,7 +175,9 @@ class PublicKeyCredentialLoader
                     $extension = $this->decoder->decode($authDataStream);
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
-                Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+                $authDataStream->isEOF() || throw new InvalidArgumentException(
+                    'Invalid authentication data. Presence of extra bytes.'
+                );
                 $authDataStream->close();
                 $authenticatorData = new AuthenticatorData(
                     $authData,

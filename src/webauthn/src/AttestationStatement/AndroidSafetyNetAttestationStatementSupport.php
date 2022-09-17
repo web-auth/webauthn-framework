@@ -192,7 +192,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('ctsProfileMatch', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. "ctsProfileMatch" is missing.'
         );
-        Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object. "ctsProfileMatch" value is false.');
+        $payload['ctsProfileMatch'] || throw new InvalidArgumentException(
+            'Invalid attestation object. "ctsProfileMatch" value is false.'
+        );
         array_key_exists('timestampMs', $payload) || throw new InvalidArgumentException(
             'Invalid attestation object. Timestamp is missing.'
         );
@@ -224,7 +226,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     {
         $jwk = JWKFactory::createFromCertificate($trustPath->getCertificates()[0]);
         $isValid = $this->jwsVerifier?->verifyWithKey($jws, $jwk, 0);
-        Assertion::true($isValid, 'Invalid response signature');
+        $isValid === true || throw new InvalidArgumentException('Invalid response signature');
     }
 
     private function validateUsingGoogleApi(AttestationStatement $attestationStatement): void
@@ -249,8 +251,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('isValidSignature', $responseBodyJson) || throw new InvalidArgumentException(
             'Invalid response.'
         );
-        Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
-        Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');
+        $responseBodyJson['isValidSignature'] === true || throw new InvalidArgumentException('Invalid response.');
     }
 
     private function getResponseBody(ResponseInterface $response): string
@@ -272,8 +273,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function checkGoogleApiResponse(ResponseInterface $response): void
     {
-        Assertion::eq(200, $response->getStatusCode(), 'Request did not succeeded');
-        Assertion::true($response->hasHeader('content-type'), 'Unrecognized response');
+        $response->getStatusCode() === 200 || throw new InvalidArgumentException('Request did not succeeded');
+        $response->hasHeader('content-type') || throw new InvalidArgumentException('Unrecognized response');
 
         foreach ($response->getHeader('content-type') as $header) {
             if (mb_strpos($header, 'application/json') === 0) {

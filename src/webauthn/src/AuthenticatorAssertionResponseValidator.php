@@ -84,13 +84,10 @@ class AuthenticatorAssertionResponseValidator
                 'userHandle' => $userHandle,
             ]);
             if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
-                Assertion::true(
-                    $this->isCredentialIdAllowed(
-                        $credentialId,
-                        $publicKeyCredentialRequestOptions->getAllowCredentials()
-                    ),
-                    'The credential ID is not allowed.'
-                );
+                $this->isCredentialIdAllowed(
+                    $credentialId,
+                    $publicKeyCredentialRequestOptions->getAllowCredentials()
+                ) || throw new InvalidArgumentException('The credential ID is not allowed.');
             }
 
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
@@ -120,17 +117,18 @@ class AuthenticatorAssertionResponseValidator
             }
             $stream = new StringStream($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
-            Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
+            $stream->isEOF() || throw new InvalidArgumentException('Invalid key. Presence of extra bytes.');
             $stream->close();
 
             $C = $authenticatorAssertionResponse->getClientDataJSON();
 
-            Assertion::eq('webauthn.get', $C->getType(), 'The client data type is not "webauthn.get".');
-
-            Assertion::true(
-                hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()),
-                'Invalid challenge.'
+            $C->getType() === 'webauthn.get' || throw new InvalidArgumentException(
+                'The client data type is not "webauthn.get".'
             );
+            hash_equals(
+                $publicKeyCredentialRequestOptions->getChallenge(),
+                $C->getChallenge()
+            ) || throw new InvalidArgumentException('Invalid challenge.');
 
             $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()
                 ->getHost();
@@ -156,22 +154,17 @@ class AuthenticatorAssertionResponseValidator
             }
 
             $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);
-            Assertion::true(
-                hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()),
-                'rpId hash mismatch.'
-            );
+            hash_equals(
+                $rpIdHash,
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->getRpIdHash()
+            ) || throw new InvalidArgumentException('rpId hash mismatch.');
 
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
-                Assertion::true(
-                    $authenticatorAssertionResponse->getAuthenticatorData()
-                        ->isUserPresent(),
-                    'User was not present'
-                );
-                Assertion::true(
-                    $authenticatorAssertionResponse->getAuthenticatorData()
-                        ->isUserVerified(),
-                    'User authentication required.'
-                );
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->isUserPresent() || throw new InvalidArgumentException('User was not present');
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->isUserVerified() || throw new InvalidArgumentException('User authentication required.');
             }
 
             $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()
@@ -210,7 +203,9 @@ class AuthenticatorAssertionResponseValidator
                 'Invalid algorithm identifier. Should refer to a signature algorithm'
             );
             $signature = CoseSignatureFixer::fix($signature, $algorithm);
-            Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
+            $algorithm->verify($dataToVerify, $coseKey, $signature) || throw new InvalidArgumentException(
+                'Invalid signature.'
+            );
 
             $storedCounter = $publicKeyCredentialSource->getCounter();
             $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()

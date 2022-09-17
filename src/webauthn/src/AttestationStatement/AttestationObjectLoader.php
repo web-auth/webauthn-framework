@@ -9,6 +9,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\Normalizable;
+use InvalidArgumentException;
 use function is_array;
 use function ord;
 use Psr\Log\LoggerInterface;
@@ -57,9 +58,11 @@ class AttestationObjectLoader
             $this->logger->info('Loading the Attestation Statement');
             Assertion::isInstanceOf($parsed, Normalizable::class, 'Invalid attestation object. Unexpected object.');
             $attestationObject = $parsed->normalize();
-            Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
+            $stream->isEOF() || throw new InvalidArgumentException(
+                'Invalid attestation object. Presence of extra bytes.'
+            );
             $stream->close();
-            is_array($attestationObject) || throw new \InvalidArgumentException('Invalid attestation object');
+            is_array($attestationObject) || throw new InvalidArgumentException('Invalid attestation object');
             array_key_exists('authData', $attestationObject) || throw new InvalidArgumentException(
                 'Invalid attestation object'
             );
@@ -119,7 +122,9 @@ class AttestationObjectLoader
                     'ed' => $extension,
                 ]);
             }
-            Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+            $authDataStream->isEOF() || throw new InvalidArgumentException(
+                'Invalid authentication data. Presence of extra bytes.'
+            );
             $authDataStream->close();
 
             $authenticatorData = new AuthenticatorData(
