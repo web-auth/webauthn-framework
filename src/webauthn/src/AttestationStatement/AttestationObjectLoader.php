@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\Normalizable;
@@ -56,7 +55,9 @@ class AttestationObjectLoader
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
-            Assertion::isInstanceOf($parsed, Normalizable::class, 'Invalid attestation object. Unexpected object.');
+            $parsed instanceof Normalizable || throw new InvalidArgumentException(
+                'Invalid attestation object. Unexpected object.'
+            );
             $attestationObject = $parsed->normalize();
             $stream->isEOF() || throw new InvalidArgumentException(
                 'Invalid attestation object. Presence of extra bytes.'
@@ -96,9 +97,7 @@ class AttestationObjectLoader
                 $credentialLength = unpack('n', $credentialLength);
                 $credentialId = $authDataStream->read($credentialLength[1]);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
-                Assertion::isInstanceOf(
-                    $credentialPublicKey,
-                    MapObject::class,
+                $credentialPublicKey instanceof MapObject || throw new InvalidArgumentException(
                     'The data does not contain a valid credential public key.'
                 );
                 $attestedCredentialData = new AttestedCredentialData(

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use Assert\InvalidArgumentException;
 use CBOR\Decoder;
 use CBOR\Normalizable;
@@ -77,7 +76,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new \InvalidArgumentException('Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
 
@@ -112,7 +111,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $publicKeyData !== null || throw new \InvalidArgumentException('No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream);
-        Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');
+        $coseKey instanceof Normalizable || throw new \InvalidArgumentException('Invalid attested public key found');
 
         $publicDataStream->isEOF() || throw new \InvalidArgumentException(
             'Invalid public key data. Presence of extra bytes.'
@@ -139,9 +138,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
         $extensionAsAsn1 = ASNObject::fromBinary($extension);
-        Assertion::isInstanceOf(
-            $extensionAsAsn1,
-            Sequence::class,
+        $extensionAsAsn1 instanceof Sequence || throw new \InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $objects = $extensionAsAsn1->getChildren();
@@ -150,9 +147,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         array_key_exists(4, $objects) || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        Assertion::isInstanceOf(
-            $objects[4],
-            OctetString::class,
+        $objects[4] instanceof OctetString || throw new \InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $clientDataHash === hex2bin((string) ($objects[4])->getContent()) || throw new \InvalidArgumentException(
@@ -164,9 +159,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $softwareEnforcedFlags = $objects[6];
-        Assertion::isInstanceOf(
-            $softwareEnforcedFlags,
-            Sequence::class,
+        $softwareEnforcedFlags instanceof Sequence || throw new \InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
@@ -175,9 +168,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $teeEnforcedFlags = $objects[6];
-        Assertion::isInstanceOf(
-            $teeEnforcedFlags,
-            Sequence::class,
+        $teeEnforcedFlags instanceof Sequence || throw new \InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
@@ -186,7 +177,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void
     {
         foreach ($sequence->getChildren() as $tag) {
-            Assertion::isInstanceOf($tag, ExplicitlyTaggedObject::class, 'Invalid tag');
+            $tag instanceof ExplicitlyTaggedObject || throw new \InvalidArgumentException('Invalid tag');
             /** @var ExplicitlyTaggedObject $tag */
             (int) $tag->getTag() !== 600 || throw new \InvalidArgumentException('Forbidden tag 600 found');
         }

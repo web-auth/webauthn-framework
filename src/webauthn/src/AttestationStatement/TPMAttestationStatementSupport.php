@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Algorithms;
@@ -135,7 +134,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         $cborDecoder = Decoder::create();
         $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
-        Assertion::isInstanceOf($publicKey, MapObject::class, 'Invalid public key');
+        $publicKey instanceof MapObject || throw new InvalidArgumentException('Invalid public key');
         $key = Key::create($publicKey->normalize());
 
         switch ($key->type()) {
@@ -292,7 +291,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
 

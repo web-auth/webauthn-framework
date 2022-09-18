@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Key\Ec2Key;
@@ -67,7 +66,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
 
@@ -95,7 +94,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $publicKeyData !== null || throw new InvalidArgumentException('No attested public key found');
         $publicDataStream = new StringStream($publicKeyData);
         $coseKey = $this->decoder->decode($publicDataStream);
-        Assertion::isInstanceOf($coseKey, Normalizable::class, 'Invalid attested public key found');
+        $coseKey instanceof Normalizable || throw new InvalidArgumentException('Invalid attested public key found');
         $publicDataStream->isEOF() || throw new InvalidArgumentException(
             'Invalid public key data. Presence of extra bytes.'
         );

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use InvalidArgumentException;
@@ -164,9 +163,7 @@ class PublicKeyCredentialLoader
                     $credentialLength = unpack('n', $credentialLength);
                     $credentialId = $authDataStream->read($credentialLength[1]);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
-                    Assertion::isInstanceOf(
-                        $credentialPublicKey,
-                        MapObject::class,
+                    $credentialPublicKey instanceof MapObject || throw new InvalidArgumentException(
                         'The data does not contain a valid credential public key.'
                     );
                     $attestedCredentialData = new AttestedCredentialData(

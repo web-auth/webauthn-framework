@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Repository;
 
-use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -26,11 +25,10 @@ class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRe
             $class
         ));
         $manager = $registry->getManagerForClass($class);
-        Assertion::isInstanceOf($manager, EntityManagerInterface::class, sprintf(
+        $manager instanceof EntityManagerInterface || throw new InvalidArgumentException(sprintf(
             'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity\'s metadata.',
             $class
         ));
-
         $this->class = $class;
         $this->manager = $manager;
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
 use InvalidArgumentException;
 use function is_array;
@@ -145,7 +144,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
         $certificates = $trustPath->getCertificates();
         $firstCertificate = current($certificates);
         is_string($firstCertificate) || throw new InvalidArgumentException('No certificate');

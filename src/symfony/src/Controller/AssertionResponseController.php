@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_string;
 use Psr\Log\LoggerInterface;
@@ -45,12 +44,12 @@ final class AssertionResponseController
             is_string($content) || throw new InvalidArgumentException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            Assertion::isInstanceOf($response, AuthenticatorAssertionResponse::class, 'Invalid response');
+            $response instanceof AuthenticatorAssertionResponse || throw new InvalidArgumentException(
+                'Invalid response'
+            );
             $data = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
-            Assertion::isInstanceOf(
-                $publicKeyCredentialRequestOptions,
-                PublicKeyCredentialRequestOptions::class,
+            $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw new InvalidArgumentException(
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();

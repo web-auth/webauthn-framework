@@ -37,7 +37,6 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
-        "beberlei/assert": "^3.3",
         "fgrosse/phpasn1": "^2.4",
         "lcobucci/clock": "^2.2",
         "nyholm/psr7": "^1.5",

@@ -178,9 +178,6 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         );
         $header = $signature->getProtectedHeader();
         array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
-        $header['alg'] === 'ES256' || throw new InvalidArgumentException(
-            'The expected "alg" parameter value should be "ES256".'
-        );
         array_key_exists('x5c', $header) || throw new InvalidArgumentException('The "x5c" parameter is missing.');
         is_array($header['x5c']) || throw new InvalidArgumentException('The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);

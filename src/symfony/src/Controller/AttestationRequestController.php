@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use function count;
 use const FILTER_VALIDATE_BOOLEAN;
 use InvalidArgumentException;
@@ -139,7 +138,9 @@ final class AttestationRequestController
         string $content
     ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
-        Assertion::isInstanceOf($data, PublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
+        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new InvalidArgumentException(
+            'Invalid data'
+        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

@@ -194,9 +194,7 @@ class AuthenticatorAssertionResponseValidator
             $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getAuthData() . $getClientDataJSONHash;
             $signature = $authenticatorAssertionResponse->getSignature();
-            Assertion::isInstanceOf(
-                $credentialPublicKeyStream,
-                Normalizable::class,
+            $credentialPublicKeyStream instanceof Normalizable || throw new InvalidArgumentException(
                 'Invalid attestation object. Unexpected object.'
             );
             $normalizedData = $credentialPublicKeyStream->normalize();
@@ -205,9 +203,7 @@ class AuthenticatorAssertionResponseValidator
             );
             $coseKey = Key::create($normalizedData);
             $algorithm = $this->algorithmManager?->get($coseKey->alg());
-            Assertion::isInstanceOf(
-                $algorithm,
-                Signature::class,
+            $algorithm instanceof Signature || throw new InvalidArgumentException(
                 'Invalid algorithm identifier. Should refer to a signature algorithm'
             );
             $signature = CoseSignatureFixer::fix($signature, $algorithm);

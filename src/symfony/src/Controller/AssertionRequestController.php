@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use function count;
 use InvalidArgumentException;
 use function is_string;
@@ -111,7 +110,9 @@ final class AssertionRequestController
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
         );
-        Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
+        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new InvalidArgumentException(
+            'Invalid data'
+        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

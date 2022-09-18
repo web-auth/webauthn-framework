@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_string;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -50,20 +49,18 @@ final class AttestationResponseController
             is_string($content) || throw new InvalidArgumentException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
+            $response instanceof AuthenticatorAttestationResponse || throw new InvalidArgumentException(
+                'Invalid response'
+            );
 
             $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
 
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
-            Assertion::isInstanceOf(
-                $publicKeyCredentialCreationOptions,
-                PublicKeyCredentialCreationOptions::class,
+            $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new InvalidArgumentException(
                 'Unable to find the public key credential creation options'
             );
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
-            Assertion::isInstanceOf(
-                $userEntity,
-                PublicKeyCredentialUserEntity::class,
+            $userEntity instanceof PublicKeyCredentialUserEntity || throw new InvalidArgumentException(
                 'Unable to find the public key credential user entity'
             );
             $psr7Request = $this->httpMessageFactory->createRequest($request);

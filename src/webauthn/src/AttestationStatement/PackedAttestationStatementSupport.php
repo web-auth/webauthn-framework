@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Algorithm\Manager;
@@ -172,14 +171,15 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential available');
 
         // id-fido-gen-ce-aaguid OID check
-        Assertion::false(
-            in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
+        if (in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true)) {
+            hash_equals(
                 $attestedCredentialData->getAaguid()
                     ->toBinary(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
-            ),
-            'The value of the "aaguid" does not match with the certificate'
-        );
+            ) || throw new InvalidArgumentException(
+                'The value of the "aaguid" does not match with the certificate'
+            );
+        }
     }
 
     private function processWithCertificate(
@@ -229,9 +229,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'Invalid public key. Presence of extra bytes.'
         );
         $publicKeyStream->close();
-        Assertion::isInstanceOf(
-            $publicKey,
-            MapObject::class,
+        $publicKey instanceof MapObject || throw new InvalidArgumentException(
             'The attested credential data does not contain a valid public key.'
         );
         $publicKey = $publicKey->normalize();

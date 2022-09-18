@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
@@ -82,7 +81,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
                 'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
             );
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
         $dataToVerify = "\0";
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
@@ -113,9 +112,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
             'Invalid public key. Presence of extra bytes.'
         );
         $publicKeyStream->close();
-        Assertion::isInstanceOf(
-            $coseKey,
-            MapObject::class,
+        $coseKey instanceof MapObject || throw new InvalidArgumentException(
             'The attested credential data does not contain a valid public key.'
         );
 
