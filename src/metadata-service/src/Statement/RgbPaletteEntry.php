@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_int;
 use JsonSerializable;
@@ -20,9 +19,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        Assertion::range($r, 0, 255, 'The key "r" is invalid');
-        Assertion::range($g, 0, 255, 'The key "g" is invalid');
-        Assertion::range($b, 0, 255, 'The key "b" is invalid');
+        $r >= 0 || $r <= 255 || throw new InvalidArgumentException('The key "r" is invalid');
+        $g >= 0 || $g <= 255 || throw new InvalidArgumentException('The key "g" is invalid');
+        $b >= 0 || $b <= 255 || throw new InvalidArgumentException('The key "b" is invalid');
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;

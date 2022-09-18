@@ -148,11 +148,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        Assertion::eq(
-            200,
-            $response->getStatusCode(),
-            sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
-        );
+        $response->getStatusCode() === 200 || throw new InvalidArgumentException(sprintf(
+            'Unable to contact the server. Response code is %d',
+            $response->getStatusCode()
+        ));
         $response->getBody()
             ->rewind();
         $content = $response->getBody()
@@ -168,9 +167,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     private function getJwsPayload(string $token, array &$rootCertificates): string
     {
         $jws = (new CompactSerializer())->unserialize($token);
-        Assertion::eq(
-            1,
-            $jws->countSignatures(),
+        $jws->countSignatures() === 1 || throw new InvalidArgumentException(
             'Invalid response from the metadata service. Only one signature shall be present.'
         );
         $signature = $jws->getSignature(0);
@@ -178,7 +175,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
         $header = $signature->getProtectedHeader();
         array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
-        //Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
+        $header['alg'] === 'ES256' || throw new InvalidArgumentException(
+            'The expected "alg" parameter value should be "ES256".'
+        );
         array_key_exists('x5c', $header) || throw new InvalidArgumentException('The "x5c" parameter is missing.');
         is_array($header['x5c']) || throw new InvalidArgumentException('The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);

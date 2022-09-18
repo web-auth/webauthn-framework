@@ -62,9 +62,10 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
                 $attestationCertificateKeyIdentifier,
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
-            Assertion::regex(
-                $attestationCertificateKeyIdentifier,
+            ! preg_match(
                 '/^[0-9a-f]+$/',
+                $attestationCertificateKeyIdentifier
+            ) === 1 || throw new InvalidArgumentException(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
         }

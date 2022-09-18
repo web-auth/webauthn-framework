@@ -91,11 +91,10 @@ final class DistantResourceMetadataService implements MetadataService
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        Assertion::eq(
-            200,
-            $response->getStatusCode(),
-            sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
-        );
+        $response->getStatusCode() === 200 || throw new InvalidArgumentException(sprintf(
+            'Unable to contact the server. Response code is %d',
+            $response->getStatusCode()
+        ));
         $response->getBody()
             ->rewind();
         $content = $response->getBody()

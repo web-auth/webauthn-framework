@@ -21,7 +21,9 @@ class ExtensionDescriptor implements JsonSerializable
         private readonly bool $failIfUnknown
     ) {
         if ($tag !== null) {
-            Assertion::greaterOrEqualThan($tag, 0, 'Invalid data. The parameter "tag" shall be a positive integer');
+            $tag >= 0 || throw new InvalidArgumentException(
+                'Invalid data. The parameter "tag" shall be a positive integer'
+            );
         }
         $this->tag = $tag;
     }

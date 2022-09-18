@@ -6,6 +6,7 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use InvalidArgumentException;
 use Webauthn\MetadataService\Utils;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
@@ -16,7 +17,9 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($base, 0, 'Invalid data. The value of "base" must be a positive integer');
+        $base >= 0 || throw new InvalidArgumentException(
+            'Invalid data. The value of "base" must be a positive integer'
+        );
         Assertion::greaterOrEqualThan(
             $minLength,
             0,

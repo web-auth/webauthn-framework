@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_int;
 use JsonSerializable;
@@ -23,8 +22,8 @@ class Version implements JsonSerializable
         if ($major === null && $minor === null) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
-        Assertion::greaterOrEqualThan($major, 0, 'Invalid argument "major"');
-        Assertion::greaterOrEqualThan($minor, 0, 'Invalid argument "minor"');
+        $major >= 0 || throw new InvalidArgumentException('Invalid argument "major"');
+        $minor >= 0 || throw new InvalidArgumentException('Invalid argument "minor"');
 
         $this->major = $major;
         $this->minor = $minor;

@@ -168,16 +168,16 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             $crlData = $response->getBody()
                 ->getContents();
             $crl = UnspecifiedType::fromDER($crlData)->asSequence();
-            Assertion::count($crl, 3, 'Invalid CRL.');
+            count($crl) === 3 || throw new InvalidArgumentException('Invalid CRL.');
             $tbsCertList = $crl->at(0)
                 ->asSequence();
-            Assertion::minCount($tbsCertList, 6, 'Invalid CRL.');
+            count($tbsCertList) >= 6 || throw new InvalidArgumentException('Invalid CRL.');
             $list = $tbsCertList->at(5)
                 ->asSequence();
 
             return array_map(static function (UnspecifiedType $r): string {
                 $sequence = $r->asSequence();
-                Assertion::minCount($sequence, 1, 'Invalid CRL.');
+                count($sequence) >= 1 || throw new InvalidArgumentException('Invalid CRL.');
                 return $sequence->at(0)
                     ->asInteger()
                     ->number();
