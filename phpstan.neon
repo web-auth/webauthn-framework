@@ -60,6 +60,10 @@ parameters:
             message: '#.*ECDAA.*#'
             path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
             count: 2
+        -
+            message: '#Strict comparison using === between mixed and null will always evaluate to false\.#'
+            path: src/metadata-service/src/Statement/StatusReport.php
+            count: 1
         - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
         - '#Property .* does not accept .*\|false\.#'
         - '#Cannot access offset \d+ on array\|false\.#'

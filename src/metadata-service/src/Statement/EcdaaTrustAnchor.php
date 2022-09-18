@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
+use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\MetadataService\Utils;

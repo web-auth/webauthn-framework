@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection\Compiler;
 
 use function array_key_exists;
+use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webauthn\Bundle\Routing\Loader;

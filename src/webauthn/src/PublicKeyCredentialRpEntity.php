@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
+use InvalidArgumentException;
 
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {

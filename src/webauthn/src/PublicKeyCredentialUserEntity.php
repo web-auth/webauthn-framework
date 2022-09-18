@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
+use InvalidArgumentException;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
@@ -21,7 +22,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
-        mb_strlen($id, '8bit') <= 64 || throw new \InvalidArgumentException('User ID max length is 64 bytes');
+        mb_strlen($id, '8bit') <= 64 || throw new InvalidArgumentException('User ID max length is 64 bytes');
         $this->id = $id;
     }
 
@@ -43,7 +44,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        is_array($data) || throw new \InvalidArgumentException('Invalid data');
+        is_array($data) || throw new InvalidArgumentException('Invalid data');
 
         return self::createFromArray($data);
     }

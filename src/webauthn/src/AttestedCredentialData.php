@@ -49,16 +49,15 @@ class AttestedCredentialData implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        $data = [];
         array_key_exists('aaguid', $json) || throw new InvalidArgumentException('Invalid input. "aaguid" is missing.');
         $aaguid = $json['aaguid'];
         is_string($aaguid) || throw new InvalidArgumentException(
             'Invalid input. "aaguid" shall be a string of 36 characters'
         );
-        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw new InvalidArgumentException(
+        mb_strlen($aaguid, '8bit') === 36 || throw new InvalidArgumentException(
             'Invalid input. "aaguid" shall be a string of 36 characters'
         );
-        $uuid = Uuid::fromString($json['aaguid']);
+        $uuid = Uuid::fromString($aaguid);
 
         array_key_exists('credentialId', $json) || throw new InvalidArgumentException(
             'Invalid input. "credentialId" is missing.'

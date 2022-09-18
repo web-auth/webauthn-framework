@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
+use InvalidArgumentException;
 use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 

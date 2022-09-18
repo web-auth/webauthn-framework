@@ -7,6 +7,7 @@ namespace Webauthn;
 use function array_key_exists;
 use function count;
 use function in_array;
+use InvalidArgumentException;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -102,7 +103,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             self::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
-        ], true) || throw new \InvalidArgumentException('Invalid attestation conveyance mode');
+        ], true) || throw new InvalidArgumentException('Invalid attestation conveyance mode');
         $this->attestation = $attestation;
 
         return $this;
@@ -157,7 +158,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         array_key_exists('pubKeyCredParams', $json) || throw new InvalidArgumentException(
             'Invalid input. "pubKeyCredParams" is missing.'
         );
-        is_array($json['pubKeyCredParams']) || throw new \InvalidArgumentException(
+        is_array($json['pubKeyCredParams']) || throw new InvalidArgumentException(
             'Invalid input. "pubKeyCredParams" is not an array.'
         );
         array_key_exists('challenge', $json) || throw new InvalidArgumentException(

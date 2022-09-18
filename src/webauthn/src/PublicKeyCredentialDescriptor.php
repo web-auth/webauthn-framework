@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use function array_key_exists;
 use function count;
+use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;

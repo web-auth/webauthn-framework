@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use function array_key_exists;
+use InvalidArgumentException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

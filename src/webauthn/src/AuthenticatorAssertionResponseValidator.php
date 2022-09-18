@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
@@ -148,9 +147,7 @@ class AuthenticatorAssertionResponseValidator
                 $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            (is_string($clientDataRpId) && $clientDataRpId !== '') || throw new InvalidArgumentException(
-                'Invalid origin rpId.'
-            );
+            $clientDataRpId !== '' || throw new InvalidArgumentException('Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
