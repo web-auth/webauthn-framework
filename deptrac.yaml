@@ -42,10 +42,6 @@ parameters:
       collectors:
         - type: 'className'
           regex: '^CBOR\\'
-    - name: 'Assertion'
-      collectors:
-        - type: 'className'
-          regex: '^Assert\\'
     - name: 'Lcobucci'
       collectors:
         - type: 'className'
@@ -75,7 +71,6 @@ parameters:
       - 'ASN1'
       - 'PIE'
       - 'Lcobucci'
-      - 'Assertion'
     UX: ~
     Webauthn:
       - 'MetadataService'
@@ -84,7 +79,6 @@ parameters:
       - 'WebToken'
       - 'Pki'
       - 'CBOR'
-      - 'Assertion'
       - 'Psr'
       - 'Lcobucci'
       - 'PIE'
@@ -97,7 +91,6 @@ parameters:
       - 'Symfony'
       - 'SymfonyBundle'
       - 'Doctrine'
-      - 'Assertion'
       - 'Psr'
       - 'CBOR'
       - 'PIE'

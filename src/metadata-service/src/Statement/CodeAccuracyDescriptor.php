@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
 use Webauthn\MetadataService\Utils;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
@@ -15,10 +16,10 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan($base, 0, 'Invalid data. The value of "base" must be a positive integer');
-        Assertion::greaterOrEqualThan(
-            $minLength,
-            0,
+        $base >= 0 || throw new InvalidArgumentException(
+            'Invalid data. The value of "base" must be a positive integer'
+        );
+        $minLength >= 0 || throw new InvalidArgumentException(
             'Invalid data. The value of "minLength" must be a positive integer'
         );
         $this->base = $base;
@@ -41,8 +42,10 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
      */
     public static function createFromArray(array $data): self
     {
-        Assertion::keyExists($data, 'base', 'The parameter "base" is missing');
-        Assertion::keyExists($data, 'minLength', 'The parameter "minLength" is missing');
+        array_key_exists('base', $data) || throw new InvalidArgumentException('The parameter "base" is missing');
+        array_key_exists('minLength', $data) || throw new InvalidArgumentException(
+            'The parameter "minLength" is missing'
+        );
 
         return new self(
             $data['base'],

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Assert\Assertion;
+use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use CBOR\Normalizable;
+use InvalidArgumentException;
+use function is_array;
 use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -53,14 +55,24 @@ class AttestationObjectLoader
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
-            Assertion::isInstanceOf($parsed, Normalizable::class, 'Invalid attestation object. Unexpected object.');
+            $parsed instanceof Normalizable || throw new InvalidArgumentException(
+                'Invalid attestation object. Unexpected object.'
+            );
             $attestationObject = $parsed->normalize();
-            Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
+            $stream->isEOF() || throw new InvalidArgumentException(
+                'Invalid attestation object. Presence of extra bytes.'
+            );
             $stream->close();
-            Assertion::isArray($attestationObject, 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'authData', 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'fmt', 'Invalid attestation object');
-            Assertion::keyExists($attestationObject, 'attStmt', 'Invalid attestation object');
+            is_array($attestationObject) || throw new InvalidArgumentException('Invalid attestation object');
+            array_key_exists('authData', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
+            array_key_exists('fmt', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
+            array_key_exists('attStmt', $attestationObject) || throw new InvalidArgumentException(
+                'Invalid attestation object'
+            );
             $authData = $attestationObject['authData'];
 
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);
@@ -85,9 +97,7 @@ class AttestationObjectLoader
                 $credentialLength = unpack('n', $credentialLength);
                 $credentialId = $authDataStream->read($credentialLength[1]);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
-                Assertion::isInstanceOf(
-                    $credentialPublicKey,
-                    MapObject::class,
+                $credentialPublicKey instanceof MapObject || throw new InvalidArgumentException(
                     'The data does not contain a valid credential public key.'
                 );
                 $attestedCredentialData = new AttestedCredentialData(
@@ -111,7 +121,9 @@ class AttestationObjectLoader
                     'ed' => $extension,
                 ]);
             }
-            Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+            $authDataStream->isEOF() || throw new InvalidArgumentException(
+                'Invalid authentication data. Presence of extra bytes.'
+            );
             $authDataStream->close();
 
             $authenticatorData = new AuthenticatorData(

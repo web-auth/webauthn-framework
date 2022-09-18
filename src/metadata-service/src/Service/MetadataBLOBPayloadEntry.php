@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
+use InvalidArgumentException;
+use function is_array;
+use function is_string;
 use JsonSerializable;
 use LogicException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
@@ -52,17 +54,13 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             );
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            Assertion::string(
-                $attestationCertificateKeyIdentifier,
+            is_string($attestationCertificateKeyIdentifier) || throw new InvalidArgumentException(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
-            Assertion::notEmpty(
-                $attestationCertificateKeyIdentifier,
-                'Invalid attestation certificate identifier. Shall be a list of strings'
-            );
-            Assertion::regex(
-                $attestationCertificateKeyIdentifier,
+            preg_match(
                 '/^[0-9a-f]+$/',
+                $attestationCertificateKeyIdentifier
+            ) === 1 || throw new InvalidArgumentException(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
         }
@@ -147,14 +145,13 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        Assertion::keyExists(
-            $data,
-            'timeOfLastStatusChange',
+        array_key_exists('timeOfLastStatusChange', $data) || throw new InvalidArgumentException(
             'Invalid data. The parameter "timeOfLastStatusChange" is missing'
         );
-        Assertion::keyExists($data, 'statusReports', 'Invalid data. The parameter "statusReports" is missing');
-        Assertion::isArray(
-            $data['statusReports'],
+        array_key_exists('statusReports', $data) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "statusReports" is missing'
+        );
+        is_array($data['statusReports']) || throw new InvalidArgumentException(
             'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
         );
         $object = new self(
@@ -170,10 +167,6 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             $object->addStatusReports(StatusReport::createFromArray($statusReport));
         }
         if (array_key_exists('biometricStatusReport', $data)) {
-            Assertion::isArray(
-                $data['biometricStatusReport'],
-                'Invalid data. The parameter "biometricStatusReport" shall be an array of BiometricStatusReport objects'
-            );
             foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
                 $object->addBiometricStatusReports(BiometricStatusReport::createFromArray($biometricStatusReport));
             }

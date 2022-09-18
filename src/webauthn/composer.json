@@ -24,7 +24,6 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
-        "beberlei/assert": "^3.3",
         "fgrosse/phpasn1": "^2.4",
         "paragonie/constant_time_encoding": "^2.6",
         "psr/http-client": "^1.0",
@@ -32,7 +31,7 @@
         "psr/log": "^3.0",
         "spomky-labs/cbor-php": "^3.0",
         "symfony/uid": "^6.1",
-        "web-auth/cose-lib": "^4.0.9",
+        "web-auth/cose-lib": "^4.0.12",
         "web-auth/metadata-service": "self.version"
     },
     "autoload": {

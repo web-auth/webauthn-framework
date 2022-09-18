@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
@@ -12,6 +11,8 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use function count;
 use function in_array;
+use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
@@ -82,53 +83,54 @@ class AuthenticatorAssertionResponseValidator
                 'userHandle' => $userHandle,
             ]);
             if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
-                Assertion::true(
-                    $this->isCredentialIdAllowed(
-                        $credentialId,
-                        $publicKeyCredentialRequestOptions->getAllowCredentials()
-                    ),
-                    'The credential ID is not allowed.'
-                );
+                $this->isCredentialIdAllowed(
+                    $credentialId,
+                    $publicKeyCredentialRequestOptions->getAllowCredentials()
+                ) || throw new InvalidArgumentException('The credential ID is not allowed.');
             }
 
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $credentialId
             );
-            Assertion::notNull($publicKeyCredentialSource, 'The credential ID is invalid.');
+            $publicKeyCredentialSource !== null || throw new InvalidArgumentException('The credential ID is invalid.');
 
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
             $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
 
             if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
-                Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
+                $credentialUserHandle === $userHandle || throw new InvalidArgumentException('Invalid user handle');
                 if ($responseUserHandle !== null && $responseUserHandle !== '') {
-                    Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                    $credentialUserHandle === $responseUserHandle || throw new InvalidArgumentException(
+                        'Invalid user handle'
+                    );
                 }
             } else {
-                Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
-                Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                ($responseUserHandle !== '' && $credentialUserHandle === $responseUserHandle) || throw new InvalidArgumentException(
+                    'Invalid user handle'
+                );
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-            Assertion::notNull($credentialPublicKey, 'No public key available.');
+            $credentialPublicKey !== null || throw new InvalidArgumentException('No public key available.');
             $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
             if ($isU2F === true) {
                 $credentialPublicKey = U2FPublicKey::convertToCoseKey($credentialPublicKey);
             }
             $stream = new StringStream($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
-            Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
+            $stream->isEOF() || throw new InvalidArgumentException('Invalid key. Presence of extra bytes.');
             $stream->close();
 
             $C = $authenticatorAssertionResponse->getClientDataJSON();
 
-            Assertion::eq('webauthn.get', $C->getType(), 'The client data type is not "webauthn.get".');
-
-            Assertion::true(
-                hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()),
-                'Invalid challenge.'
+            $C->getType() === 'webauthn.get' || throw new InvalidArgumentException(
+                'The client data type is not "webauthn.get".'
             );
+            hash_equals(
+                $publicKeyCredentialRequestOptions->getChallenge(),
+                $C->getChallenge()
+            ) || throw new InvalidArgumentException('Invalid challenge.');
 
             $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()
                 ->getHost();
@@ -139,37 +141,35 @@ class AuthenticatorAssertionResponseValidator
                     ->getExtensions()
             );
             $parsedRelyingPartyId = parse_url($C->getOrigin());
-            Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
+            is_array($parsedRelyingPartyId) || throw new InvalidArgumentException('Invalid origin');
             if (! in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-                Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+                $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+            $clientDataRpId !== '' || throw new InvalidArgumentException('Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            Assertion::eq(mb_substr('.' . $clientDataRpId, -($rpIdLength + 1)), '.' . $facetId, 'rpId mismatch.');
+            mb_substr(
+                '.' . $clientDataRpId,
+                -($rpIdLength + 1)
+            ) === '.' . $facetId || throw new InvalidArgumentException('rpId mismatch.');
 
             if ($C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
             }
 
             $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);
-            Assertion::true(
-                hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()),
-                'rpId hash mismatch.'
-            );
+            hash_equals(
+                $rpIdHash,
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->getRpIdHash()
+            ) || throw new InvalidArgumentException('rpId hash mismatch.');
 
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
-                Assertion::true(
-                    $authenticatorAssertionResponse->getAuthenticatorData()
-                        ->isUserPresent(),
-                    'User was not present'
-                );
-                Assertion::true(
-                    $authenticatorAssertionResponse->getAuthenticatorData()
-                        ->isUserVerified(),
-                    'User authentication required.'
-                );
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->isUserPresent() || throw new InvalidArgumentException('User was not present');
+                $authenticatorAssertionResponse->getAuthenticatorData()
+                    ->isUserVerified() || throw new InvalidArgumentException('User authentication required.');
             }
 
             $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()
@@ -191,22 +191,22 @@ class AuthenticatorAssertionResponseValidator
             $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getAuthData() . $getClientDataJSONHash;
             $signature = $authenticatorAssertionResponse->getSignature();
-            Assertion::isInstanceOf(
-                $credentialPublicKeyStream,
-                Normalizable::class,
+            $credentialPublicKeyStream instanceof Normalizable || throw new InvalidArgumentException(
                 'Invalid attestation object. Unexpected object.'
             );
             $normalizedData = $credentialPublicKeyStream->normalize();
-            Assertion::isArray($normalizedData, 'Invalid attestation object. Unexpected object.');
+            is_array($normalizedData) || throw new InvalidArgumentException(
+                'Invalid attestation object. Unexpected object.'
+            );
             $coseKey = Key::create($normalizedData);
             $algorithm = $this->algorithmManager?->get($coseKey->alg());
-            Assertion::isInstanceOf(
-                $algorithm,
-                Signature::class,
+            $algorithm instanceof Signature || throw new InvalidArgumentException(
                 'Invalid algorithm identifier. Should refer to a signature algorithm'
             );
             $signature = CoseSignatureFixer::fix($signature, $algorithm);
-            Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
+            $algorithm->verify($dataToVerify, $coseKey, $signature) || throw new InvalidArgumentException(
+                'Invalid signature.'
+            );
 
             $storedCounter = $publicKeyCredentialSource->getCounter();
             $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use function count;
 use const FILTER_VALIDATE_BOOLEAN;
+use InvalidArgumentException;
 use function is_array;
+use function is_string;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,9 +50,11 @@ final class AttestationRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+                'Only JSON content type allowed'
+            );
             $content = $request->getContent();
-            Assertion::string($content, 'Invalid data');
+            is_string($content) || throw new InvalidArgumentException('Invalid data');
 
             $userEntity = $this->userEntityGuesser->findUserEntity($request);
             $publicKeyCredentialCreationOptions = $this->getPublicKeyCredentialCreationOptions(
@@ -135,7 +138,9 @@ final class AttestationRequestController
         string $content
     ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
-        Assertion::isInstanceOf($data, PublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
+        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new InvalidArgumentException(
+            'Invalid data'
+        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

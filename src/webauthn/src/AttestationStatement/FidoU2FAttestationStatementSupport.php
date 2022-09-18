@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Assert\Assertion;
+use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
+use function count;
 use InvalidArgumentException;
+use function is_array;
 use const OPENSSL_ALGO_SHA256;
 use function openssl_pkey_get_public;
 use function openssl_verify;
@@ -42,23 +44,18 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        array_key_exists('attStmt', $attestation) || throw new InvalidArgumentException('Invalid attestation object');
         foreach (['sig', 'x5c'] as $key) {
-            Assertion::keyExists(
-                $attestation['attStmt'],
-                $key,
-                sprintf('The attestation statement value "%s" is missing.', $key)
-            );
+            array_key_exists($key, $attestation['attStmt']) || throw new InvalidArgumentException(sprintf(
+                'The attestation statement value "%s" is missing.',
+                $key
+            ));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
-        Assertion::count(
-            $certificates,
-            1,
+        is_array($certificates) || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with one certificate.'
         );
-        Assertion::allString(
-            $certificates,
+        count($certificates) === 1 || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with one certificate.'
         );
 
@@ -78,23 +75,21 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        Assertion::eq(
-            $authenticatorData->getAttestedCredentialData()
-                ?->getAaguid()
-                ->__toString(),
-            '00000000-0000-0000-0000-000000000000',
-            'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
-        );
+        $authenticatorData->getAttestedCredentialData()
+            ?->getAaguid()
+            ->__toString() === '00000000-0000-0000-0000-000000000000' || throw new InvalidArgumentException(
+                'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
+            );
         $trustPath = $attestationStatement->getTrustPath();
-        Assertion::isInstanceOf($trustPath, CertificateTrustPath::class, 'Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
         $dataToVerify = "\0";
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
         $dataToVerify .= $authenticatorData->getAttestedCredentialData()
-            ?->getCredentialId();
+            ->getCredentialId();
         $dataToVerify .= $this->extractPublicKey(
             $authenticatorData->getAttestedCredentialData()
-                ?->getCredentialPublicKey()
+                ->getCredentialPublicKey()
         );
 
         return openssl_verify(
@@ -107,15 +102,17 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
 
     private function extractPublicKey(?string $publicKey): string
     {
-        Assertion::notNull($publicKey, 'The attested credential data does not contain a valid public key.');
+        $publicKey !== null || throw new InvalidArgumentException(
+            'The attested credential data does not contain a valid public key.'
+        );
 
         $publicKeyStream = new StringStream($publicKey);
         $coseKey = $this->decoder->decode($publicKeyStream);
-        Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        $publicKeyStream->isEOF() || throw new InvalidArgumentException(
+            'Invalid public key. Presence of extra bytes.'
+        );
         $publicKeyStream->close();
-        Assertion::isInstanceOf(
-            $coseKey,
-            MapObject::class,
+        $coseKey instanceof MapObject || throw new InvalidArgumentException(
             'The attested credential data does not contain a valid public key.'
         );
 
@@ -136,11 +133,21 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
-        Assertion::isArray($details, 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
-        Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
-        Assertion::keyExists($details['ec'], 'curve_oid', 'Invalid certificate or certificate chain');
-        Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
+        is_array($details) || throw new InvalidArgumentException('Invalid certificate or certificate chain');
+        array_key_exists('ec', $details) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
+        array_key_exists('curve_name', $details['ec']) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
+        $details['ec']['curve_name'] === 'prime256v1' || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
+        array_key_exists('curve_oid', $details['ec']) || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
+        $details['ec']['curve_oid'] === '1.2.840.10045.3.1.7' || throw new InvalidArgumentException(
+            'Invalid certificate or certificate chain'
+        );
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
+use function is_int;
 use JsonSerializable;
 
 class RgbPaletteEntry implements JsonSerializable
@@ -17,9 +19,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        Assertion::range($r, 0, 255, 'The key "r" is invalid');
-        Assertion::range($g, 0, 255, 'The key "g" is invalid');
-        Assertion::range($b, 0, 255, 'The key "b" is invalid');
+        ($r >= 0 && $r <= 255) || throw new InvalidArgumentException('The key "r" is invalid');
+        ($g >= 0 && $g <= 255) || throw new InvalidArgumentException('The key "g" is invalid');
+        ($b >= 0 && $b <= 255) || throw new InvalidArgumentException('The key "b" is invalid');
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;
@@ -46,8 +48,11 @@ class RgbPaletteEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['r', 'g', 'b'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
-            Assertion::integer($data[$key], sprintf('The key "%s" is invalid', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The key "%s" is missing',
+                $key
+            ));
+            is_int($data[$key]) || throw new InvalidArgumentException(sprintf('The key "%s" is invalid', $key));
         }
 
         return new self($data['r'], $data['g'], $data['b']);

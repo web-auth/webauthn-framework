@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use InvalidArgumentException;
+use function is_array;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 use function ord;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -60,16 +61,29 @@ class PublicKeyCredentialLoader
         ]);
         try {
             foreach (['id', 'rawId', 'type'] as $key) {
-                Assertion::keyExists($json, $key, sprintf('The parameter "%s" is missing', $key));
-                Assertion::string($json[$key], sprintf('The parameter "%s" shall be a string', $key));
+                array_key_exists($key, $json) || throw new InvalidArgumentException(sprintf(
+                    'The parameter "%s" is missing',
+                    $key
+                ));
+                is_string($json[$key]) || throw new InvalidArgumentException(sprintf(
+                    'The parameter "%s" shall be a string',
+                    $key
+                ));
             }
-            Assertion::keyExists($json, 'response', 'The parameter "response" is missing');
-            Assertion::isArray($json['response'], 'The parameter "response" shall be an array');
-            Assertion::eq($json['type'], 'public-key', sprintf('Unsupported type "%s"', $json['type']));
+            array_key_exists('response', $json) || throw new InvalidArgumentException(
+                'The parameter "response" is missing'
+            );
+            is_array($json['response']) || throw new InvalidArgumentException(
+                'The parameter "response" shall be an array'
+            );
+            $json['type'] === 'public-key' || throw new InvalidArgumentException(sprintf(
+                'Unsupported type "%s"',
+                $json['type']
+            ));
 
             $id = Base64UrlSafe::decodeNoPadding($json['id']);
             $rawId = Base64::decode($json['rawId']);
-            Assertion::true(hash_equals($id, $rawId));
+            hash_equals($id, $rawId) || throw new InvalidArgumentException('Invalid ID');
 
             $publicKeyCredential = new PublicKeyCredential(
                 $json['id'],
@@ -98,7 +112,6 @@ class PublicKeyCredentialLoader
         ]);
         try {
             $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-            Assertion::isArray($json, 'Invalid data');
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {
@@ -114,13 +127,19 @@ class PublicKeyCredentialLoader
      */
     private function createResponse(array $response): AuthenticatorResponse
     {
-        Assertion::keyExists($response, 'clientDataJSON', 'Invalid data. The parameter "clientDataJSON" is missing');
-        Assertion::string($response['clientDataJSON'], 'Invalid data. The parameter "clientDataJSON" is invalid');
-        Assertion::nullOrString($response['userHandle'] ?? null, 'Invalid data. The parameter "userHandle" is invalid');
+        array_key_exists('clientDataJSON', $response) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "clientDataJSON" is missing'
+        );
+        is_string($response['clientDataJSON']) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "clientDataJSON" is invalid'
+        );
+        $userHandle = $response['userHandle'] ?? null;
+        $userHandle === null || is_string($userHandle) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "userHandle" is invalid'
+        );
         switch (true) {
             case array_key_exists('attestationObject', $response):
-                Assertion::string(
-                    $response['attestationObject'],
+                is_string($response['attestationObject']) || throw new InvalidArgumentException(
                     'Invalid data. The parameter "attestationObject   " is invalid'
                 );
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
@@ -144,9 +163,7 @@ class PublicKeyCredentialLoader
                     $credentialLength = unpack('n', $credentialLength);
                     $credentialId = $authDataStream->read($credentialLength[1]);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
-                    Assertion::isInstanceOf(
-                        $credentialPublicKey,
-                        MapObject::class,
+                    $credentialPublicKey instanceof MapObject || throw new InvalidArgumentException(
                         'The data does not contain a valid credential public key.'
                     );
                     $attestedCredentialData = new AttestedCredentialData(
@@ -161,7 +178,9 @@ class PublicKeyCredentialLoader
                     $extension = $this->decoder->decode($authDataStream);
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
-                Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+                $authDataStream->isEOF() || throw new InvalidArgumentException(
+                    'Invalid authentication data. Presence of extra bytes.'
+                );
                 $authDataStream->close();
                 $authenticatorData = new AuthenticatorData(
                     $authData,
