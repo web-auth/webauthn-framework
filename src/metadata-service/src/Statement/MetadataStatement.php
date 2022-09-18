@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_array;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -425,10 +425,12 @@ class MetadataStatement implements JsonSerializable
                 'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
                 $subObject
             ));
-            Assertion::allString(
-                $data[$subObject],
-                sprintf('Invalid Metadata Statement. The parameter "%s" shall be a list of strings.', $subObject)
-            );
+            foreach ($data[$subObject] as $datum) {
+                is_string($datum) || throw new InvalidArgumentException(sprintf(
+                    'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
+                    $subObject
+                ));
+            }
         }
 
         $object = new self(

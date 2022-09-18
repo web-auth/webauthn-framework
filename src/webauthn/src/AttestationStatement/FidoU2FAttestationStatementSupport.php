@@ -9,6 +9,7 @@ use Assert\Assertion;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
+use function count;
 use InvalidArgumentException;
 use function is_array;
 use const OPENSSL_ALGO_SHA256;
@@ -55,13 +56,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         is_array($certificates) || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with one certificate.'
         );
-        Assertion::count(
-            $certificates,
-            1,
-            'The attestation statement value "x5c" must be a list with one certificate.'
-        );
-        Assertion::allString(
-            $certificates,
+        count($certificates) === 1 || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with one certificate.'
         );
 

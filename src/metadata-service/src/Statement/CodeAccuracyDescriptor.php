@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use Webauthn\MetadataService\Utils;
 
@@ -20,9 +19,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         $base >= 0 || throw new InvalidArgumentException(
             'Invalid data. The value of "base" must be a positive integer'
         );
-        Assertion::greaterOrEqualThan(
-            $minLength,
-            0,
+        $minLength >= 0 || throw new InvalidArgumentException(
             'Invalid data. The value of "minLength" must be a positive integer'
         );
         $this->base = $base;

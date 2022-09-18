@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -164,7 +163,7 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $key
             ));
         }
-        Assertion::length($data['aaguid'], 36, 'Invalid AAGUID', null, '8bit');
+        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw new InvalidArgumentException('Invalid AAGUID');
         $uuid = Uuid::fromString($data['aaguid']);
 
         try {

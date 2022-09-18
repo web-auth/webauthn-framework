@@ -12,6 +12,7 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
 use Cose\Key\Key;
+use function count;
 use function in_array;
 use InvalidArgumentException;
 use function is_array;
@@ -98,13 +99,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function loadBasicType(array $attestation): AttestationStatement
     {
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::isArray(
-            $certificates,
+        is_array($certificates) || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
-        Assertion::minCount(
-            $certificates,
-            1,
+        count($certificates) > 0 || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);

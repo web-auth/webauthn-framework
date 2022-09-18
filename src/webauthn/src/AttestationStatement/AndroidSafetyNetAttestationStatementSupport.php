@@ -6,6 +6,7 @@ namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
 use Assert\Assertion;
+use function count;
 use InvalidArgumentException;
 use function is_array;
 use function is_int;
@@ -114,10 +115,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
                 'The attestation statement value "%s" is missing.',
                 $key
             ));
-            Assertion::notEmpty(
-                $attestation['attStmt'][$key],
-                sprintf('The attestation statement value "%s" is empty.', $key)
-            );
+            $attestation['attStmt'][$key] !== '' || throw new InvalidArgumentException(sprintf(
+                'The attestation statement value "%s" is empty.',
+                $key
+            ));
         }
         $jws = $this->jwsSerializer->unserialize($attestation['attStmt']['response']);
         $jwsHeader = $jws->getSignature(0)
@@ -125,8 +126,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         array_key_exists('x5c', $jwsHeader) || throw new InvalidArgumentException(
             'The response in the attestation statement must contain a "x5c" header.'
         );
-        Assertion::notEmpty(
-            $jwsHeader['x5c'],
+        (is_countable($jwsHeader['x5c']) ? count($jwsHeader['x5c']) : 0) > 0 || throw new InvalidArgumentException(
             'The "x5c" parameter in the attestation statement response must contain at least one certificate.'
         );
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
@@ -202,24 +202,16 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             'Invalid attestation object. Timestamp shall be an integer.'
         );
         $currentTime = time() * 1000;
-        Assertion::lessOrEqualThan(
-            $payload['timestampMs'],
-            $currentTime + $this->leeway,
-            sprintf(
-                'Invalid attestation object. Issued in the future. Current time: %d. Response time: %d',
-                $currentTime,
-                $payload['timestampMs']
-            )
-        );
-        Assertion::lessOrEqualThan(
-            $currentTime - $payload['timestampMs'],
-            $this->maxAge,
-            sprintf(
-                'Invalid attestation object. Too old. Current time: %d. Response time: %d',
-                $currentTime,
-                $payload['timestampMs']
-            )
-        );
+        $payload['timestampMs'] <= $currentTime + $this->leeway || throw new InvalidArgumentException(sprintf(
+            'Invalid attestation object. Issued in the future. Current time: %d. Response time: %d',
+            $currentTime,
+            $payload['timestampMs']
+        ));
+        $currentTime - $payload['timestampMs'] <= $this->maxAge || throw new InvalidArgumentException(sprintf(
+            'Invalid attestation object. Too old. Current time: %d. Response time: %d',
+            $currentTime,
+            $payload['timestampMs']
+        ));
     }
 
     private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void

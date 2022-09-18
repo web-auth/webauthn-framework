@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use Assert\Assertion;
 use function count;
 use DateTimeZone;
 use function in_array;
@@ -82,9 +81,7 @@ class PhpCertificateChainValidator implements CertificateChainValidator
                 ->string(),
             array_merge($untrustedCertificates, [$trustedCertificate])
         );
-        Assertion::count(
-            array_unique($uniqueCertificates),
-            count($uniqueCertificates),
+        count(array_unique($uniqueCertificates)) === count($uniqueCertificates) || throw new InvalidArgumentException(
             'Invalid certificate chain with duplicated certificates.'
         );
 

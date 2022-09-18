@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use Assert\Assertion;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
 use Psr\Http\Client\ClientInterface;
@@ -99,7 +98,9 @@ final class DistantResourceMetadataService implements MetadataService
             ->rewind();
         $content = $response->getBody()
             ->getContents();
-        Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+        $content !== '' || throw new InvalidArgumentException(
+            'Unable to contact the server. The response has no content'
+        );
 
         return $content;
     }

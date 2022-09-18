@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function in_array;
+use InvalidArgumentException;
+use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -27,7 +28,9 @@ class StatusReport implements JsonSerializable
         private readonly ?string $certificationPolicyVersion,
         private readonly ?string $certificationRequirementsVersion
     ) {
-        Assertion::inArray($status, AuthenticatorStatus::list(), 'The value of the key "status" is not acceptable');
+        in_array($status, AuthenticatorStatus::list(), true) || throw new InvalidArgumentException(
+            'The value of the key "status" is not acceptable'
+        );
 
         $this->status = $status;
     }
@@ -99,7 +102,11 @@ class StatusReport implements JsonSerializable
             'certificationRequirementsVersion',
         ] as $key) {
             if (isset($data[$key])) {
-                Assertion::nullOrString($data[$key], sprintf('The value of the key "%s" is invalid', $key));
+                $value = $data[$key];
+                $value === null || is_string($value) || throw new InvalidArgumentException(sprintf(
+                    'The value of the key "%s" is invalid',
+                    $key
+                ));
             }
         }
 

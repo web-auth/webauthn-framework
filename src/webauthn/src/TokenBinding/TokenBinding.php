@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
-use Assert\Assertion;
+use function in_array;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
@@ -37,14 +37,10 @@ class TokenBinding
     {
         array_key_exists('status', $json) || throw new InvalidArgumentException('The member "status" is required');
         $status = $json['status'];
-        Assertion::inArray(
-            $status,
-            self::getSupportedStatus(),
-            sprintf(
-                'The member "status" is invalid. Supported values are: %s',
-                implode(', ', self::getSupportedStatus())
-            )
-        );
+        in_array($status, self::getSupportedStatus(), true) || throw new InvalidArgumentException(sprintf(
+            'The member "status" is invalid. Supported values are: %s',
+            implode(', ', self::getSupportedStatus())
+        ));
         $id = array_key_exists('id', $json) ? Base64UrlSafe::decodeNoPadding($json['id']) : null;
 
         return new self($status, $id);

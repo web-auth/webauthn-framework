@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_array;
 use Jose\Component\Core\AlgorithmManager;
@@ -156,7 +155,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
             ->rewind();
         $content = $response->getBody()
             ->getContents();
-        Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+        $content !== '' || throw new InvalidArgumentException(
+            'Unable to contact the server. The response has no content'
+        );
 
         return $content;
     }
@@ -172,7 +173,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         );
         $signature = $jws->getSignature(0);
         $payload = $jws->getPayload();
-        Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
+        $payload !== '' || throw new InvalidArgumentException(
+            'Invalid response from the metadata service. The token payload is empty.'
+        );
         $header = $signature->getProtectedHeader();
         array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
         $header['alg'] === 'ES256' || throw new InvalidArgumentException(

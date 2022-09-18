@@ -107,8 +107,7 @@ class AuthenticatorAssertionResponseValidator
                     );
                 }
             } else {
-                Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
-                $credentialUserHandle === $responseUserHandle || throw new InvalidArgumentException(
+                ($responseUserHandle !== '' && $credentialUserHandle === $responseUserHandle) || throw new InvalidArgumentException(
                     'Invalid user handle'
                 );
             }
@@ -149,7 +148,9 @@ class AuthenticatorAssertionResponseValidator
                 $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+            (is_string($clientDataRpId) && $clientDataRpId !== '') || throw new InvalidArgumentException(
+                'Invalid origin rpId.'
+            );
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,

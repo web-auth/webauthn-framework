@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
-use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -57,15 +55,8 @@ class ExtensionDescriptor implements JsonSerializable
         array_key_exists('id', $data) || throw new InvalidArgumentException(
             'Invalid data. The parameter "id" is missing'
         );
-        is_string($data['id']) || throw new \InvalidArgumentException(
-            'Invalid data. The parameter "id" shall be a string'
-        );
         array_key_exists('fail_if_unknown', $data) || throw new InvalidArgumentException(
             'Invalid data. The parameter "fail_if_unknown" is missing'
-        );
-        Assertion::boolean(
-            $data['fail_if_unknown'],
-            'Invalid data. The parameter "fail_if_unknown" shall be a boolean'
         );
 
         return new self($data['id'], $data['tag'] ?? null, $data['data'] ?? null, $data['fail_if_unknown']);

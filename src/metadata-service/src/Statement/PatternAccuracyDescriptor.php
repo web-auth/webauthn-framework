@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_int;
 use Webauthn\MetadataService\Utils;
@@ -16,9 +15,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        Assertion::greaterOrEqualThan(
-            $minComplexity,
-            0,
+        $minComplexity >= 0 || throw new InvalidArgumentException(
             'Invalid data. The value of "minComplexity" must be a positive integer'
         );
         $this->minComplexity = $minComplexity;

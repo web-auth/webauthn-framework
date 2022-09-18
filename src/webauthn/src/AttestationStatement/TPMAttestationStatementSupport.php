@@ -90,9 +90,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
-        Assertion::minCount(
-            $certificates,
-            1,
+        count($certificates) > 0 || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
 

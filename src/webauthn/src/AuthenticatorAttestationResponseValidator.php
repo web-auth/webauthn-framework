@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
@@ -141,7 +140,7 @@ class AuthenticatorAttestationResponseValidator
                 'Invalid origin rpId.'
             );
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+            $clientDataRpId !== '' || throw new InvalidArgumentException('Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
@@ -214,10 +213,9 @@ class AuthenticatorAttestationResponseValidator
                 'There is no attested credential data.'
             );
             $credentialId = $attestedCredentialData->getCredentialId();
-            Assertion::null(
-                $this->publicKeyCredentialSource->findOneByCredentialId($credentialId),
-                'The credential ID already exists.'
-            );
+            $this->publicKeyCredentialSource->findOneByCredentialId(
+                $credentialId
+            ) === null || throw new InvalidArgumentException('The credential ID already exists.');
 
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
@@ -342,9 +340,7 @@ class AuthenticatorAttestationResponseValidator
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
-            Assertion::inArray(
-                $type,
-                $metadataStatement->getAttestationTypes(),
+            in_array($type, $metadataStatement->getAttestationTypes(), true) || throw new InvalidArgumentException(
                 sprintf(
                     'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator.',
                     $type

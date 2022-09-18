@@ -51,7 +51,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
      */
     public function load(array $attestation): AttestationStatement
     {
-        Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        array_key_exists('attStmt', $attestation) || throw new \InvalidArgumentException('Invalid attestation object');
         foreach (['sig', 'x5c', 'alg'] as $key) {
             array_key_exists($key, $attestation['attStmt']) || throw new \InvalidArgumentException(sprintf(
                 'The attestation statement value "%s" is missing.',
@@ -59,13 +59,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             ));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::greaterThan(
-            is_countable($certificates) ? count($certificates) : 0,
-            0,
-            'The attestation statement value "x5c" must be a list with at least one certificate.'
-        );
-        Assertion::allString(
-            $certificates,
+        (is_countable($certificates) ? count($certificates) : 0) > 0 || throw new \InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
@@ -194,7 +188,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         foreach ($sequence->getChildren() as $tag) {
             Assertion::isInstanceOf($tag, ExplicitlyTaggedObject::class, 'Invalid tag');
             /** @var ExplicitlyTaggedObject $tag */
-            Assertion::notEq(600, (int) $tag->getTag(), 'Forbidden tag 600 found');
+            (int) $tag->getTag() !== 600 || throw new \InvalidArgumentException('Forbidden tag 600 found');
         }
     }
 }

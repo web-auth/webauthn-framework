@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
 use InvalidArgumentException;
 use function is_array;
@@ -56,10 +55,6 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
             is_string($attestationCertificateKeyIdentifier) || throw new InvalidArgumentException(
-                'Invalid attestation certificate identifier. Shall be a list of strings'
-            );
-            Assertion::notEmpty(
-                $attestationCertificateKeyIdentifier,
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             ! preg_match(

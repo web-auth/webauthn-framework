@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
 use function is_array;
+use function is_string;
 
 final class CertificateTrustPath implements TrustPath
 {
@@ -17,10 +17,11 @@ final class CertificateTrustPath implements TrustPath
     public function __construct(
         private readonly array $certificates
     ) {
-        Assertion::allString(
-            $certificates,
-            'The trust path type is invalid. The parameter "x5c" shall contain strings.'
-        );
+        foreach ($this->certificates as $certificate) {
+            is_string($certificate) || throw new InvalidArgumentException(
+                'The trust path type is invalid. The parameter "x5c" shall contain strings.'
+            );
+        }
     }
 
     /**

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
+use function in_array;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -97,12 +97,12 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public function setAttestation(string $attestation): self
     {
-        Assertion::inArray($attestation, [
+        in_array($attestation, [
             self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
-        ], 'Invalid attestation conveyance mode');
+        ], true) || throw new \InvalidArgumentException('Invalid attestation conveyance mode');
         $this->attestation = $attestation;
 
         return $this;

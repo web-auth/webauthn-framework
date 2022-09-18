@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
+use function in_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -64,11 +64,11 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
             return $this;
         }
-        Assertion::inArray($userVerification, [
+        in_array($userVerification, [
             self::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             self::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-        ], 'Invalid user verification requirement');
+        ], true) || throw new \InvalidArgumentException('Invalid user verification requirement');
         $this->userVerification = $userVerification;
 
         return $this;

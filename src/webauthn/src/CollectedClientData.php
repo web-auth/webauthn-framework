@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use Assert\Assertion;
 use InvalidArgumentException;
+use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -48,8 +48,8 @@ class CollectedClientData
             'Invalid parameter "challenge". Shall be a string.'
         );
         $challenge = Base64UrlSafe::decodeNoPadding($challenge);
+        $challenge !== '' || throw new InvalidArgumentException('Invalid parameter "challenge". Shall not be empty.');
         $this->challenge = $challenge;
-        Assertion::notEmpty($challenge, 'Invalid parameter "challenge". Shall not be empty.');
 
         $origin = $data['origin'] ?? '';
         (is_string($origin) && $origin !== '') || throw new InvalidArgumentException(
@@ -58,7 +58,9 @@ class CollectedClientData
         $this->origin = $origin;
 
         $tokenBinding = $data['tokenBinding'] ?? null;
-        Assertion::nullOrIsArray($tokenBinding, 'Invalid parameter "tokenBinding". Shall be an object or .');
+        $tokenBinding === null || is_array($tokenBinding) || throw new InvalidArgumentException(
+            'Invalid parameter "tokenBinding". Shall be an object or .'
+        );
         $this->tokenBinding = $tokenBinding;
 
         $this->data = $data;

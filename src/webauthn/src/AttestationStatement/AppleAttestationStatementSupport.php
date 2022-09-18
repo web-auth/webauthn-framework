@@ -49,13 +49,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
             'The attestation statement value "x5c" is missing.'
         );
         $certificates = $attestation['attStmt']['x5c'];
-        Assertion::greaterThan(
-            is_countable($certificates) ? count($certificates) : 0,
-            0,
-            'The attestation statement value "x5c" must be a list with at least one certificate.'
-        );
-        Assertion::allString(
-            $certificates,
+        (is_countable($certificates) ? count($certificates) : 0) > 0 || throw new InvalidArgumentException(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);

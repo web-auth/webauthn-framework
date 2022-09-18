@@ -134,7 +134,10 @@ class PublicKeyCredentialLoader
         is_string($response['clientDataJSON']) || throw new InvalidArgumentException(
             'Invalid data. The parameter "clientDataJSON" is invalid'
         );
-        Assertion::nullOrString($response['userHandle'] ?? null, 'Invalid data. The parameter "userHandle" is invalid');
+        $userHandle = $response['userHandle'] ?? null;
+        $userHandle === null || is_string($userHandle) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "userHandle" is invalid'
+        );
         switch (true) {
             case array_key_exists('attestationObject', $response):
                 is_string($response['attestationObject']) || throw new InvalidArgumentException(
