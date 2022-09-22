@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use InvalidArgumentException;
+use function is_string;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,25 +42,25 @@ final class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+                'Only JSON content type allowed'
+            );
             $content = $request->getContent();
-            Assertion::string($content, 'Invalid data');
+            is_string($content) || throw new InvalidArgumentException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            Assertion::isInstanceOf($response, AuthenticatorAttestationResponse::class, 'Invalid response');
+            $response instanceof AuthenticatorAttestationResponse || throw new InvalidArgumentException(
+                'Invalid response'
+            );
 
             $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
 
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
-            Assertion::isInstanceOf(
-                $publicKeyCredentialCreationOptions,
-                PublicKeyCredentialCreationOptions::class,
+            $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new InvalidArgumentException(
                 'Unable to find the public key credential creation options'
             );
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
-            Assertion::isInstanceOf(
-                $userEntity,
-                PublicKeyCredentialUserEntity::class,
+            $userEntity instanceof PublicKeyCredentialUserEntity || throw new InvalidArgumentException(
                 'Unable to find the public key credential user entity'
             );
             $psr7Request = $this->httpMessageFactory->createRequest($request);

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use Assert\Assertion;
 use function count;
+use InvalidArgumentException;
+use function is_array;
+use function is_string;
 use Webauthn\AuthenticatorData;
 use Webauthn\TrustPath\EmptyTrustPath;
 
@@ -29,9 +31,10 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         $format = $attestation['fmt'] ?? null;
         $attestationStatement = $attestation['attStmt'] ?? [];
 
-        Assertion::string($format, 'Invalid attestation object');
-        Assertion::notEmpty($format, 'Invalid attestation object');
-        Assertion::noContent($attestationStatement, 'Invalid attestation object');
+        (is_string($format) && $format !== '') || throw new InvalidArgumentException('Invalid attestation object');
+        (is_array($attestationStatement) && $attestationStatement === []) || throw new InvalidArgumentException(
+            'Invalid attestation object'
+        );
 
         return AttestationStatement::createNone($format, $attestationStatement, EmptyTrustPath::create());
     }

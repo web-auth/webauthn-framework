@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
+use function base64_decode;
 use Cose\Algorithms;
 use function count;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
-use function Safe\base64_decode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;

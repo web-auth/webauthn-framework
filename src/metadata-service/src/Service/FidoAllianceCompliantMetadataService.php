@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
+use function is_array;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -90,12 +91,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
-
-        Assertion::keyExists(
-            $this->statements,
-            $aaguid,
-            sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid)
-        );
+        array_key_exists($aaguid, $this->statements) || throw new InvalidArgumentException(sprintf(
+            'The Metadata Statement with AAGUID "%s" is missing',
+            $aaguid
+        ));
 
         return $this->statements[$aaguid];
     }
@@ -148,16 +147,17 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        Assertion::eq(
-            200,
-            $response->getStatusCode(),
-            sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode())
-        );
+        $response->getStatusCode() === 200 || throw new InvalidArgumentException(sprintf(
+            'Unable to contact the server. Response code is %d',
+            $response->getStatusCode()
+        ));
         $response->getBody()
             ->rewind();
         $content = $response->getBody()
             ->getContents();
-        Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+        $content !== '' || throw new InvalidArgumentException(
+            'Unable to contact the server. The response has no content'
+        );
 
         return $content;
     }
@@ -168,27 +168,30 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     private function getJwsPayload(string $token, array &$rootCertificates): string
     {
         $jws = (new CompactSerializer())->unserialize($token);
-        Assertion::eq(
-            1,
-            $jws->countSignatures(),
+        $jws->countSignatures() === 1 || throw new InvalidArgumentException(
             'Invalid response from the metadata service. Only one signature shall be present.'
         );
         $signature = $jws->getSignature(0);
         $payload = $jws->getPayload();
-        Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
+        $payload !== '' || throw new InvalidArgumentException(
+            'Invalid response from the metadata service. The token payload is empty.'
+        );
         $header = $signature->getProtectedHeader();
-        Assertion::keyExists($header, 'alg', 'The "alg" parameter is missing.');
-        //Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
-        Assertion::keyExists($header, 'x5c', 'The "x5c" parameter is missing.');
-        Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
+        array_key_exists('alg', $header) || throw new InvalidArgumentException('The "alg" parameter is missing.');
+        array_key_exists('x5c', $header) || throw new InvalidArgumentException('The "x5c" parameter is missing.');
+        is_array($header['x5c']) || throw new InvalidArgumentException('The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);
         $rootCertificates = $header['x5c'];
 
         $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
         $isValid = $verifier->verifyWithKey($jws, $key, 0);
-        Assertion::true($isValid, 'Invalid response from the metadata service. The token signature is invalid.');
+        $isValid || throw new InvalidArgumentException(
+            'Invalid response from the metadata service. The token signature is invalid.'
+        );
         $payload = $jws->getPayload();
-        Assertion::notNull($payload, 'Invalid response from the metadata service. The payload is missing.');
+        $payload !== null || throw new InvalidArgumentException(
+            'Invalid response from the metadata service. The payload is missing.'
+        );
 
         return $payload;
     }

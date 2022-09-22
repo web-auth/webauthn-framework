@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
 use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -158,9 +158,12 @@ class PublicKeyCredentialSource implements JsonSerializable
             if ($key === 'otherUI') {
                 continue;
             }
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The parameter "%s" is missing',
+                $key
+            ));
         }
-        Assertion::length($data['aaguid'], 36, 'Invalid AAGUID', null, '8bit');
+        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw new InvalidArgumentException('Invalid AAGUID');
         $uuid = Uuid::fromString($data['aaguid']);
 
         try {

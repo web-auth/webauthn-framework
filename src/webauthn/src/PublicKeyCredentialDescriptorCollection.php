@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use function array_key_exists;
 use ArrayIterator;
-use Assert\Assertion;
 use function count;
 use const COUNT_NORMAL;
 use Countable;
@@ -74,7 +73,6 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }

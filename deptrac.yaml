@@ -18,89 +18,30 @@ parameters:
       collectors:
         - type: 'directory'
           regex: 'src/metadata-service/.*'
-    - name: 'CoseLib'
+    - name: 'Vendors'
       collectors:
-        - type: 'className'
-          regex: '^Cose\\'
-    - name: 'Symfony'
-      collectors:
-        - type: 'className'
-          regex: '^Symfony\\'
-    - name: 'WebToken'
-      collectors:
-        - type: 'className'
-          regex: '^Jose\\'
-    - name: 'Psr'
-      collectors:
-        - type: 'className'
-          regex: '^Psr\\'
-    - name: 'Pki'
-      collectors:
-        - type: 'className'
-          regex: '^SpomkyLabs\\Pki\\'
-    - name: 'CBOR'
-      collectors:
-        - type: 'className'
-          regex: '^CBOR\\'
-    - name: 'Assertion'
-      collectors:
-        - type: 'className'
-          regex: '^Assert\\'
-    - name: 'Lcobucci'
-      collectors:
-        - type: 'className'
-          regex: '^Lcobucci\\'
-    - name: 'PIE'
-      collectors:
-        - type: 'className'
-          regex: '^ParagonIE\\'
-    - name: 'ASN1'
-      collectors:
-        - type: 'className'
-          regex: '^FG\\ASN1\\'
-    - name: 'Safe'
-      collectors:
-        - type: 'className'
-          regex: '^Safe\\'
-    - name: 'Doctrine'
-      collectors:
-        - type: 'className'
-          regex: '^Doctrine\\'
+        - { type: className, regex: '^Cose\\' }
+        - { type: className, regex: '^Symfony\\' }
+        - { type: className, regex: '^Jose\\' }
+        - { type: className, regex: '^Psr\\' }
+        - { type: className, regex: '^SpomkyLabs\\Pki\\' }
+        - { type: className, regex: '^CBOR\\' }
+        - { type: className, regex: '^Lcobucci\\' }
+        - { type: className, regex: '^ParagonIE\\' }
+        - { type: className, regex: '^FG\\ASN1\\' }
+        - { type: className, regex: '^Safe\\' }
+        - { type: className, regex: '^Doctrine\\' }
   ruleset:
     MetadataService:
-      - 'Symfony'
-      - 'WebToken'
-      - 'Psr'
-      - 'Pki'
-      - 'ASN1'
-      - 'PIE'
-      - 'Lcobucci'
-      - 'Assertion'
+      - 'Vendors'
     UX: ~
     Webauthn:
+      - 'Vendors'
       - 'MetadataService'
-      - 'CoseLib'
-      - 'Symfony'
-      - 'WebToken'
-      - 'Pki'
-      - 'CBOR'
-      - 'Assertion'
-      - 'Psr'
-      - 'Lcobucci'
-      - 'PIE'
-      - 'ASN1'
-      - 'Safe'
     SymfonyBundle:
+      - 'Vendors'
       - 'Webauthn'
       - 'MetadataService'
-      - 'CoseLib'
-      - 'Symfony'
-      - 'SymfonyBundle'
-      - 'Doctrine'
-      - 'Assertion'
-      - 'Psr'
-      - 'CBOR'
-      - 'PIE'
   skip_violations:
     Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator:
       - Webauthn\Util\CoseSignatureFixer

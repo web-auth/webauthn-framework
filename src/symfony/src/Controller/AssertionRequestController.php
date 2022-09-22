@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use function count;
+use InvalidArgumentException;
+use function is_string;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,9 +49,11 @@ final class AssertionRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+                'Only JSON content type allowed'
+            );
             $content = $request->getContent();
-            Assertion::string($content, 'Invalid data');
+            is_string($content) || throw new InvalidArgumentException('Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
                 $creationOptionsRequest->extensions
@@ -107,7 +110,9 @@ final class AssertionRequestController
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
         );
-        Assertion::isInstanceOf($data, ServerPublicKeyCredentialRequestOptionsRequest::class, 'Invalid data');
+        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new InvalidArgumentException(
+            'Invalid data'
+        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

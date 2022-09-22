@@ -167,15 +167,8 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     /**
      * @test
      */
-    public function p2(): never
+    public function p2(): void
     {
-        $publicKeyCredential = null;
-        $credentialRepository = null;
-        $publicKeyCredentialCreationOptions = null;
-        $request = null;
-        $publicKeyCredentialDescriptor = null;
-        $authenticatorData = null;
-        static::markTestSkipped('To be fixed.');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(
             '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"KhWQ12Gltp92RModoTPgDqpgXCvR73JXKozijHIfwHE","attestation":"direct","user":{"name":"hw1BfGxhRSKwTOAIx39K","id":"NzExYmI2ZTItYmU3My00YTcyLWE1MDUtYTQzYWE3ZTUyYzgw","displayName":"Leona Grayson"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}'
         );

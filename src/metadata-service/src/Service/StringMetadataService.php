@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
 use function sprintf;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
@@ -53,11 +53,10 @@ final class StringMetadataService implements MetadataService
 
     public function get(string $aaguid): MetadataStatement
     {
-        Assertion::keyExists(
-            $this->statements,
-            $aaguid,
-            sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid)
-        );
+        array_key_exists($aaguid, $this->statements) || throw new InvalidArgumentException(sprintf(
+            'The Metadata Statement with AAGUID "%s" is missing',
+            $aaguid
+        ));
 
         return $this->statements[$aaguid];
     }

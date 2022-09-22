@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
 
 class AttestationStatementSupportManager
 {
@@ -31,7 +31,10 @@ class AttestationStatementSupportManager
 
     public function get(string $name): AttestationStatementSupport
     {
-        Assertion::true($this->has($name), sprintf('The attestation statement format "%s" is not supported.', $name));
+        $this->has($name) || throw new InvalidArgumentException(sprintf(
+            'The attestation statement format "%s" is not supported.',
+            $name
+        ));
 
         return $this->attestationStatementSupports[$name];
     }

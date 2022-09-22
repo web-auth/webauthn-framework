@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use Assert\Assertion;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -37,8 +36,9 @@ final class MockClientCallback
      */
     public function addResponses(array $responses): self
     {
-        Assertion::allIsInstanceOf($responses, ResponseInterface::class, 'Invalid argument');
-        $this->responses = $responses;
+        foreach ($responses as $id => $response) {
+            $this->responses[$id] = $response;
+        }
 
         return $this;
     }

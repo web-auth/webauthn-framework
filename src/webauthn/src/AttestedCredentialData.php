@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
+use function is_string;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64;
 use Symfony\Component\Uid\AbstractUid;
@@ -47,15 +49,23 @@ class AttestedCredentialData implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
+        array_key_exists('aaguid', $json) || throw new InvalidArgumentException('Invalid input. "aaguid" is missing.');
         $aaguid = $json['aaguid'];
-        Assertion::string($aaguid, 'Invalid input. "aaguid" shall be a string of 36 characters');
-        Assertion::length($aaguid, 36, 'Invalid input. "aaguid" shall be a string of 36 characters');
-        $uuid = Uuid::fromString($json['aaguid']);
+        is_string($aaguid) || throw new InvalidArgumentException(
+            'Invalid input. "aaguid" shall be a string of 36 characters'
+        );
+        mb_strlen($aaguid, '8bit') === 36 || throw new InvalidArgumentException(
+            'Invalid input. "aaguid" shall be a string of 36 characters'
+        );
+        $uuid = Uuid::fromString($aaguid);
 
-        Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
+        array_key_exists('credentialId', $json) || throw new InvalidArgumentException(
+            'Invalid input. "credentialId" is missing.'
+        );
         $credentialId = $json['credentialId'];
-        Assertion::string($credentialId, 'Invalid input. "credentialId" shall be a string');
+        is_string($credentialId) || throw new InvalidArgumentException(
+            'Invalid input. "credentialId" shall be a string'
+        );
         $credentialId = Base64::decode($credentialId, true);
 
         $credentialPublicKey = null;

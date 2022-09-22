@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
 use JsonSerializable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
@@ -108,7 +108,10 @@ class AttestationStatement implements JsonSerializable
 
     public function get(string $key): mixed
     {
-        Assertion::true($this->has($key), sprintf('The attestation statement has no key "%s".', $key));
+        $this->has($key) || throw new InvalidArgumentException(sprintf(
+            'The attestation statement has no key "%s".',
+            $key
+        ));
 
         return $this->attStmt[$key];
     }
@@ -129,7 +132,10 @@ class AttestationStatement implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The key "%s" is missing',
+                $key
+            ));
         }
 
         return new self(
