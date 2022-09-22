@@ -114,14 +114,8 @@ final class W10Test extends AbstractTestCase
     /**
      * @test
      */
-    public function anAssertionCanBeVerified(): never
+    public function anAssertionCanBeVerified(): void
     {
-        $publicKeyCredential = null;
-        $credentialRepository = null;
-        $publicKeyCredentialSource = null;
-        $publicKeyCredentialRequestOptions = null;
-        $request = null;
-        static::markTestSkipped('This test is buggy and should be fixed.');
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString(
             '{"challenge":"w+BeaUTZZnYMzvUB5GWUpiT1WYOnr9iCGUt5irUiUko=","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x-18"}],"timeout":60000}'
         );
