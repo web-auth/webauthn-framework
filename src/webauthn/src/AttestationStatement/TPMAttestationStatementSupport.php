@@ -20,10 +20,11 @@ use InvalidArgumentException;
 use function is_array;
 use function is_int;
 use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
+use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -33,12 +34,12 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
-    private readonly Clock $clock;
+    private readonly Clock|ClockInterface $clock;
 
-    public function __construct(?Clock $clock = null)
+    public function __construct(null|Clock|ClockInterface $clock = null)
     {
         if ($clock === null) {
-            $clock = new SystemClock(new DateTimeZone('UTC'));
+            $clock = new NativeClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
     }

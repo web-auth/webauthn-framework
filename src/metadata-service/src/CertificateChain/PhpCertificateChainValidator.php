@@ -9,7 +9,6 @@ use DateTimeZone;
 use function in_array;
 use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
 use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
@@ -21,6 +20,8 @@ use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
+use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\Clock\NativeClock;
 use Throwable;
 
 /**
@@ -30,16 +31,16 @@ class PhpCertificateChainValidator implements CertificateChainValidator
 {
     private const MAX_VALIDATION_LENGTH = 5;
 
-    private readonly Clock $clock;
+    private readonly Clock|ClockInterface $clock;
 
     public function __construct(
         private readonly ClientInterface $client,
         private readonly RequestFactoryInterface $requestFactory,
-        ?Clock $clock = null,
+        null|Clock|ClockInterface $clock = null,
         private readonly bool $allowFailures = true
     ) {
         if ($clock === null) {
-            $clock = new SystemClock(new DateTimeZone('UTC'));
+            $clock = new NativeClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
     }

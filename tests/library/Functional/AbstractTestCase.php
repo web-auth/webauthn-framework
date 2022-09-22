@@ -16,11 +16,11 @@ use Cose\Algorithm\Signature\RSA\RS512;
 use DateTimeImmutable;
 use DateTimeZone;
 use Http\Mock\Client;
-use Lcobucci\Clock\FrozenClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Finder\Finder;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
@@ -53,7 +53,7 @@ abstract class AbstractTestCase extends TestCase
     use MockedRequestTrait;
     use MockedPublicKeyCredentialSourceTrait;
 
-    protected ?FrozenClock $clock = null;
+    protected ?MockClock $clock = null;
 
     private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
@@ -75,7 +75,7 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->clock = new FrozenClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
+        $this->clock = new MockClock(new DateTimeImmutable('now'), new DateTimeZone('UTC'));
     }
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader

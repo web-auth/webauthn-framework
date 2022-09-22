@@ -35,6 +35,7 @@
         }
     },
     "suggest": {
+        "symfony/clock": "As of 4.3.x, this library will replace lcobucci/clock",
         "psr/log-implementation": "Recommended to receive logs from the library",
         "web-token/jwt-key-mgmt": "Mandatory for fetching Metadata Statement from distant sources",
         "web-token/jwt-signature-algorithm-ecdsa": "Mandatory for fetching Metadata Statement from distant sources"
