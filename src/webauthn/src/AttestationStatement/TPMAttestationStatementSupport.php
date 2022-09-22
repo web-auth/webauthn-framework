@@ -40,6 +40,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         if ($clock === null) {
             $clock = new NativeClock(new DateTimeZone('UTC'));
+        } elseif ($clock instanceof Clock) {
+            @trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.3.0',
+                'Using "%s" is deprecated, use "%s" instead.',
+                'lcobucci/clock',
+                'symfony/clock'
+            );
         }
         $this->clock = $clock;
     }
