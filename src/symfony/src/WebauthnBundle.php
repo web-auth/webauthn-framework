@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle;
 
-use Assert\Assertion;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use function Safe\realpath;
+use InvalidArgumentException;
+use function realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -70,9 +70,7 @@ final class WebauthnBundle extends Bundle
 
         if ($container->hasExtension('security')) {
             $extension = $container->getExtension('security');
-            Assertion::isInstanceOf(
-                $extension,
-                SecurityExtension::class,
+            $extension instanceof SecurityExtension || throw new InvalidArgumentException(
                 'The security extension is missing or invalid'
             );
             $extension->addAuthenticatorFactory(new WebauthnFactory(new WebauthnServicesFactory()));

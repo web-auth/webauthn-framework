@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use Assert\Assertion;
 use function count;
 use DateTimeZone;
 use function in_array;
 use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
+use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use RuntimeException;
-use function Safe\parse_url;
 use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
@@ -82,9 +81,7 @@ class PhpCertificateChainValidator implements CertificateChainValidator
                 ->string(),
             array_merge($untrustedCertificates, [$trustedCertificate])
         );
-        Assertion::count(
-            array_unique($uniqueCertificates),
-            count($uniqueCertificates),
+        count(array_unique($uniqueCertificates)) === count($uniqueCertificates) || throw new InvalidArgumentException(
             'Invalid certificate chain with duplicated certificates.'
         );
 
@@ -168,16 +165,16 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             $crlData = $response->getBody()
                 ->getContents();
             $crl = UnspecifiedType::fromDER($crlData)->asSequence();
-            Assertion::count($crl, 3, 'Invalid CRL.');
+            count($crl) === 3 || throw new InvalidArgumentException('Invalid CRL.');
             $tbsCertList = $crl->at(0)
                 ->asSequence();
-            Assertion::minCount($tbsCertList, 6, 'Invalid CRL.');
+            count($tbsCertList) >= 6 || throw new InvalidArgumentException('Invalid CRL.');
             $list = $tbsCertList->at(5)
                 ->asSequence();
 
             return array_map(static function (UnspecifiedType $r): string {
                 $sequence = $r->asSequence();
-                Assertion::minCount($sequence, 1, 'Invalid CRL.');
+                count($sequence) >= 1 || throw new InvalidArgumentException('Invalid CRL.');
                 return $sequence->at(0)
                     ->asInteger()
                     ->number();

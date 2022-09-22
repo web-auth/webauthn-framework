@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
 use function count;
+use function in_array;
+use InvalidArgumentException;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -96,12 +98,12 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public function setAttestation(string $attestation): self
     {
-        Assertion::inArray($attestation, [
+        in_array($attestation, [
             self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
-        ], 'Invalid attestation conveyance mode');
+        ], true) || throw new InvalidArgumentException('Invalid attestation conveyance mode');
         $this->attestation = $attestation;
 
         return $this;
@@ -146,19 +148,26 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     public static function createFromString(string $data): static
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
 
     public static function createFromArray(array $json): static
     {
-        Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
-        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
-        Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
-        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
-        Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
-        Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
+        array_key_exists('rp', $json) || throw new InvalidArgumentException('Invalid input. "rp" is missing.');
+        array_key_exists('pubKeyCredParams', $json) || throw new InvalidArgumentException(
+            'Invalid input. "pubKeyCredParams" is missing.'
+        );
+        is_array($json['pubKeyCredParams']) || throw new InvalidArgumentException(
+            'Invalid input. "pubKeyCredParams" is not an array.'
+        );
+        array_key_exists('challenge', $json) || throw new InvalidArgumentException(
+            'Invalid input. "challenge" is missing.'
+        );
+        array_key_exists('attestation', $json) || throw new InvalidArgumentException(
+            'Invalid input. "attestation" is missing.'
+        );
+        array_key_exists('user', $json) || throw new InvalidArgumentException('Invalid input. "user" is missing.');
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {

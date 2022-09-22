@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
-use Assert\Assertion;
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class TokenBindingNotSupportedHandler implements TokenBindingHandler
@@ -16,8 +16,7 @@ final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 
     public function check(TokenBinding $tokenBinding, ServerRequestInterface $request): void
     {
-        Assertion::true(
-            $tokenBinding->getStatus() !== TokenBinding::TOKEN_BINDING_STATUS_PRESENT,
+        $tokenBinding->getStatus() !== TokenBinding::TOKEN_BINDING_STATUS_PRESENT || throw new InvalidArgumentException(
             'Token binding not supported.'
         );
     }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
+use function base64_decode;
 use Cose\Algorithms;
+use function json_decode;
+use function json_encode;
 use const JSON_THROW_ON_ERROR;
-use function Safe\base64_decode;
-use function Safe\json_decode;
-use function Safe\json_encode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use InvalidArgumentException;
+use function is_array;
 use JsonSerializable;
 
 class VerificationMethodANDCombinations implements JsonSerializable
@@ -37,7 +38,7 @@ class VerificationMethodANDCombinations implements JsonSerializable
         $object = new self();
 
         foreach ($data as $datum) {
-            Assertion::isArray($datum, 'Invalid data');
+            is_array($datum) || throw new InvalidArgumentException('Invalid data');
             $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
         }
 
