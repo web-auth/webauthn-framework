@@ -52,7 +52,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service(AttestationStatementSupportManager::class),
             service(PublicKeyCredentialSourceRepository::class),
-            service(TokenBindingHandler::class),
+            service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
             service(EventDispatcherInterface::class),
         ])
@@ -62,7 +62,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
             service(PublicKeyCredentialSourceRepository::class),
-            service(TokenBindingHandler::class),
+            service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
             service('webauthn.cose.algorithm.manager'),
             service(EventDispatcherInterface::class),
@@ -92,11 +92,26 @@ return static function (ContainerConfigurator $container): void {
         ->set(NoneAttestationStatementSupport::class);
 
     $container
-        ->set(IgnoreTokenBindingHandler::class);
+        ->set(IgnoreTokenBindingHandler::class)
+        ->deprecate(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
+        );
     $container
-        ->set(TokenBindingNotSupportedHandler::class);
+        ->set(TokenBindingNotSupportedHandler::class)
+        ->deprecate(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
+        );
     $container
-        ->set(SecTokenBindingHandler::class);
+        ->set(SecTokenBindingHandler::class)
+        ->deprecate(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
+        );
 
     $container
         ->set(ThrowExceptionIfInvalid::class)

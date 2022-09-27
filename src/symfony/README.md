@@ -21,7 +21,6 @@ The official documentation is available at https://github.com/web-auth/webauthn-
 
 # Missing Features
 
-- Token Binding support (see [#2](https://github.com/web-auth/webauthn-framework/issues/2))
 - [Extension support](https://www.w3.org/TR/webauthn/#extensions) is implemented but not fully tested
 
 # Support

@@ -23,7 +23,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
     public function __construct(
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        TokenBindingHandler $tokenBindingHandler,
+        ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {

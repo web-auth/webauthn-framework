@@ -18,7 +18,6 @@ use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -92,8 +91,8 @@ final class Configuration implements ConfigurationInterface
             ->info('This repository is responsible of the user storage')
             ->end()
             ->scalarNode('token_binding_support_handler')
-            ->defaultValue(IgnoreTokenBindingHandler::class)
-            ->cannotBeEmpty()
+            ->defaultNull()
+            ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
             ->info('This handler will check the token binding header from the request. By default, it is ignored.')
             ->end()
             ->scalarNode('counter_checker')

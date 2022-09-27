@@ -8,6 +8,9 @@ use function count;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @deprecated Since 4.3.0 and will be removed in 5.0.0
+ */
 final class SecTokenBindingHandler implements TokenBindingHandler
 {
     public static function create(): self
