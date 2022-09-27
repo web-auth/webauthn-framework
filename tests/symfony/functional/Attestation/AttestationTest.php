@@ -306,7 +306,7 @@ final class AttestationTest extends KernelTestCase
 
         static::assertSame(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertSame([], $options->getExcludeCredentials());
-        static::assertCount(11, $options->getPubKeyCredParams());
+        static::assertCount(0, $options->getPubKeyCredParams());
         static::assertSame('none', $options->getAttestation());
         static::assertNull($options->getTimeout());
     }
