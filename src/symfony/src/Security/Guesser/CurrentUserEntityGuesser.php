@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Guesser;
 
-use Assert\Assertion;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
@@ -21,9 +21,9 @@ final class CurrentUserEntityGuesser implements UserEntityGuesser
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
         $user = $this->tokenStorage->getToken()?->getUser();
-        Assertion::notNull($user, 'Unable to find the user entity');
-        $userEntity = $this->userEntityRepository->findOneByUserHandle($user->getUserIdentifier());
-        Assertion::notNull($userEntity, 'Unable to find the user entity');
+        $user !== null || throw new InvalidArgumentException('Unable to find the user entity');
+        $userEntity = $this->userEntityRepository->findOneByUsername($user->getUserIdentifier());
+        $userEntity !== null || throw new InvalidArgumentException('Unable to find the user entity');
 
         return $userEntity;
     }

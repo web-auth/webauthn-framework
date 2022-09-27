@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use Assert\Assertion;
+use LogicException;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 
@@ -19,7 +19,9 @@ final class CustomSessionStorage implements OptionsStorage
 
     public function get(): Item
     {
-        Assertion::notNull($this->item, 'No public key credential options available for this session.');
+        if ($this->item === null) {
+            throw new LogicException('No public key credential options available for this session.');
+        }
 
         return $this->item;
     }

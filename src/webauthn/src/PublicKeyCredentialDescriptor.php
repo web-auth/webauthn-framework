@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
 use function count;
+use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Webauthn\Util\Base64;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
@@ -64,7 +64,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -74,10 +73,10 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
-        Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
+        array_key_exists('type', $json) || throw new InvalidArgumentException('Invalid input. "type" is missing.');
+        array_key_exists('id', $json) || throw new InvalidArgumentException('Invalid input. "id" is missing.');
 
-        $id = Base64::decodeUrlSafe($json['id']);
+        $id = Base64UrlSafe::decodeNoPadding($json['id']);
 
         return new self($json['type'], $id, $json['transports'] ?? []);
     }

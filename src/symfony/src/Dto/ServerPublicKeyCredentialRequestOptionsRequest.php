@@ -19,7 +19,7 @@ final class ServerPublicKeyCredentialRequestOptionsRequest
         PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED,
         PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
     ])]
-    public ?string $userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+    public ?string $userVerification = null;
 
     /**
      * @var array<string, mixed>|null

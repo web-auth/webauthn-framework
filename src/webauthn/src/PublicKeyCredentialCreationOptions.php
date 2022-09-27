@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
+use function count;
+use function in_array;
+use InvalidArgumentException;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -26,9 +29,9 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      */
     private array $excludeCredentials = [];
 
-    private AuthenticatorSelectionCriteria $authenticatorSelection;
+    private ?AuthenticatorSelectionCriteria $authenticatorSelection = null;
 
-    private string $attestation;
+    private ?string $attestation = null;
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
@@ -40,8 +43,6 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         private array $pubKeyCredParams
     ) {
         parent::__construct($challenge);
-        $this->authenticatorSelection = new AuthenticatorSelectionCriteria();
-        $this->attestation = self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
     }
 
     /**
@@ -88,7 +89,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
-    public function setAuthenticatorSelection(AuthenticatorSelectionCriteria $authenticatorSelection): self
+    public function setAuthenticatorSelection(?AuthenticatorSelectionCriteria $authenticatorSelection): self
     {
         $this->authenticatorSelection = $authenticatorSelection;
 
@@ -97,12 +98,12 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public function setAttestation(string $attestation): self
     {
-        Assertion::inArray($attestation, [
+        in_array($attestation, [
             self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
-        ], 'Invalid attestation conveyance mode');
+        ], true) || throw new InvalidArgumentException('Invalid attestation conveyance mode');
         $this->attestation = $attestation;
 
         return $this;
@@ -134,12 +135,12 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this->excludeCredentials;
     }
 
-    public function getAuthenticatorSelection(): AuthenticatorSelectionCriteria
+    public function getAuthenticatorSelection(): ?AuthenticatorSelectionCriteria
     {
         return $this->authenticatorSelection;
     }
 
-    public function getAttestation(): string
+    public function getAttestation(): ?string
     {
         return $this->attestation;
     }
@@ -147,20 +148,26 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     public static function createFromString(string $data): static
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
 
     public static function createFromArray(array $json): static
     {
-        Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
-        Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
-        Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
-        Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
-        Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
-        Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
-        Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input. "authenticatorSelection" is missing.');
+        array_key_exists('rp', $json) || throw new InvalidArgumentException('Invalid input. "rp" is missing.');
+        array_key_exists('pubKeyCredParams', $json) || throw new InvalidArgumentException(
+            'Invalid input. "pubKeyCredParams" is missing.'
+        );
+        is_array($json['pubKeyCredParams']) || throw new InvalidArgumentException(
+            'Invalid input. "pubKeyCredParams" is not an array.'
+        );
+        array_key_exists('challenge', $json) || throw new InvalidArgumentException(
+            'Invalid input. "challenge" is missing.'
+        );
+        array_key_exists('attestation', $json) || throw new InvalidArgumentException(
+            'Invalid input. "attestation" is missing.'
+        );
+        array_key_exists('user', $json) || throw new InvalidArgumentException('Invalid input. "user" is missing.');
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {
@@ -185,12 +192,14 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
                 $challenge,
                 $pubKeyCredParams
             )
+                ->setTimeout($json['timeout'] ?? null)
                 ->excludeCredentials(...$excludeCredentials)
                 ->setAuthenticatorSelection(
-                    AuthenticatorSelectionCriteria::createFromArray($json['authenticatorSelection'])
+                    isset($json['authenticatorSelection']) ? AuthenticatorSelectionCriteria::createFromArray(
+                        $json['authenticatorSelection']
+                    ) : null
                 )
-                ->setAttestation($json['attestation'])
-                ->setTimeout($json['timeout'] ?? null)
+                ->setAttestation($json['attestation'] ?? null)
                 ->setExtensions(
                     isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
                         $json['extensions']
@@ -205,26 +214,35 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     {
         $json = [
             'rp' => $this->rp->jsonSerialize(),
+            'user' => $this->user->jsonSerialize(),
+            'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
             'pubKeyCredParams' => array_map(
                 static fn (PublicKeyCredentialParameters $object): array => $object->jsonSerialize(),
                 $this->pubKeyCredParams
             ),
-            'challenge' => Base64UrlSafe::encodeUnpadded($this->challenge),
-            'attestation' => $this->attestation,
-            'user' => $this->user->jsonSerialize(),
-            'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),
-            'excludeCredentials' => array_map(
-                static fn (PublicKeyCredentialDescriptor $object): array => $object->jsonSerialize(),
-                $this->excludeCredentials
-            ),
         ];
-
-        if ($this->extensions->count() !== 0) {
-            $json['extensions'] = $this->extensions;
-        }
 
         if ($this->timeout !== null) {
             $json['timeout'] = $this->timeout;
+        }
+
+        if (count($this->excludeCredentials) !== 0) {
+            $json['excludeCredentials'] = array_map(
+                static fn (PublicKeyCredentialDescriptor $object): array => $object->jsonSerialize(),
+                $this->excludeCredentials
+            );
+        }
+
+        if ($this->authenticatorSelection !== null) {
+            $json['authenticatorSelection'] = $this->authenticatorSelection->jsonSerialize();
+        }
+
+        if ($this->attestation !== null) {
+            $json['attestation'] = $this->attestation;
+        }
+
+        if ($this->extensions->count() !== 0) {
+            $json['extensions'] = $this->extensions;
         }
 
         return $json;

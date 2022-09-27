@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Compiler;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webauthn\Bundle\Routing\Loader;
@@ -27,8 +28,14 @@ final class DynamicRouteCompilerPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {
-                Assertion::keyExists($attributes, 'path', sprintf('The path is missing for "%s"', $id));
-                Assertion::keyExists($attributes, 'host', sprintf('The host is missing for "%s"', $id));
+                array_key_exists('path', $attributes) || throw new InvalidArgumentException(sprintf(
+                    'The path is missing for "%s"',
+                    $id
+                ));
+                array_key_exists('host', $attributes) || throw new InvalidArgumentException(sprintf(
+                    'The host is missing for "%s"',
+                    $id
+                ));
                 $definition->addMethodCall('add', [$attributes['path'], $attributes['host'], $id]);
             }
         }

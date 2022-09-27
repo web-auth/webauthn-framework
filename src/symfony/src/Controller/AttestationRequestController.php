@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Assert\Assertion;
 use function count;
+use const FILTER_VALIDATE_BOOLEAN;
+use InvalidArgumentException;
 use function is_array;
+use function is_string;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +19,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\Bundle\Dto\AdditionalPublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
@@ -48,9 +50,11 @@ final class AttestationRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            Assertion::eq('json', $request->getContentType(), 'Only JSON content type allowed');
+            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+                'Only JSON content type allowed'
+            );
             $content = $request->getContent();
-            Assertion::string($content, 'Invalid data');
+            is_string($content) || throw new InvalidArgumentException('Invalid data');
 
             $userEntity = $this->userEntityGuesser->findUserEntity($request);
             $publicKeyCredentialCreationOptions = $this->getPublicKeyCredentialCreationOptions(
@@ -97,15 +101,23 @@ final class AttestationRequestController
         $excludedCredentials = $this->getCredentials($userEntity);
         $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
         $authenticatorSelectionData = $creationOptionsRequest->authenticatorSelection;
+        $authenticatorSelection = null;
         if (is_array($authenticatorSelectionData)) {
             $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
-        } else {
+        } elseif ($creationOptionsRequest->userVerification !== null || $creationOptionsRequest->residentKey !== null || $creationOptionsRequest->authenticatorAttachment !== null) {
             $authenticatorSelection = AuthenticatorSelectionCriteria::create()
                 ->setUserVerification(
                     $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
                 )
-                ->setResidentKey($creationOptionsRequest->residentKey)
                 ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment);
+            if ($creationOptionsRequest->residentKey !== null) {
+                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
+            }
+            if ($creationOptionsRequest->requireResidentKey !== null) {
+                $authenticatorSelection->setRequireResidentKey(
+                    filter_var($creationOptionsRequest->requireResidentKey, FILTER_VALIDATE_BOOLEAN)
+                );
+            }
         }
         $extensions = $creationOptionsRequest->extensions;
         if (is_array($extensions)) {
@@ -124,13 +136,11 @@ final class AttestationRequestController
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): AdditionalPublicKeyCredentialCreationOptionsRequest {
-        $data = $this->serializer->deserialize(
-            $content,
-            AdditionalPublicKeyCredentialCreationOptionsRequest::class,
-            'json'
+    ): PublicKeyCredentialCreationOptionsRequest {
+        $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
+        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new InvalidArgumentException(
+            'Invalid data'
         );
-        Assertion::isInstanceOf($data, AdditionalPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
+use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -38,13 +40,13 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $filter,
         int $interlace
     ) {
-        Assertion::greaterOrEqualThan($width, 0, 'Invalid width');
-        Assertion::greaterOrEqualThan($height, 0, 'Invalid height');
-        Assertion::range($bitDepth, 0, 254, 'Invalid bit depth');
-        Assertion::range($colorType, 0, 254, 'Invalid color type');
-        Assertion::range($compression, 0, 254, 'Invalid compression');
-        Assertion::range($filter, 0, 254, 'Invalid filter');
-        Assertion::range($interlace, 0, 254, 'Invalid interlace');
+        $width >= 0 || throw new InvalidArgumentException('Invalid width');
+        $height >= 0 || throw new InvalidArgumentException('Invalid height');
+        ($bitDepth >= 0 && $bitDepth <= 254) || throw new InvalidArgumentException('Invalid bit depth');
+        ($colorType >= 0 && $colorType <= 254) || throw new InvalidArgumentException('Invalid color type');
+        ($compression >= 0 && $compression <= 254) || throw new InvalidArgumentException('Invalid compression');
+        ($filter >= 0 && $filter <= 254) || throw new InvalidArgumentException('Invalid filter');
+        ($interlace >= 0 && $interlace <= 254) || throw new InvalidArgumentException('Invalid interlace');
 
         $this->width = $width;
         $this->height = $height;
@@ -123,7 +125,10 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
             'filter',
             'interlace',
         ] as $key) {
-            Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The key "%s" is missing',
+                $key
+            ));
         }
         $object = new self(
             $data['width'],
@@ -136,7 +141,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            Assertion::isArray($plte, 'Invalid "plte" parameter');
+            is_array($plte) || throw new InvalidArgumentException('Invalid "plte" parameter');
             foreach ($plte as $item) {
                 $object->addPalettes(RgbPaletteEntry::createFromArray($item));
             }

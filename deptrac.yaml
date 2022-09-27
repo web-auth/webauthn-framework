@@ -10,7 +10,7 @@ parameters:
       collectors:
         - type: 'directory'
           regex: 'src/stimulus/.*'
-    - name: 'Symfony'
+    - name: 'SymfonyBundle'
       collectors:
         - type: 'directory'
           regex: 'src/symfony/.*'
@@ -18,11 +18,30 @@ parameters:
       collectors:
         - type: 'directory'
           regex: 'src/metadata-service/.*'
+    - name: 'Vendors'
+      collectors:
+        - { type: className, regex: '^Cose\\' }
+        - { type: className, regex: '^Symfony\\' }
+        - { type: className, regex: '^Jose\\' }
+        - { type: className, regex: '^Psr\\' }
+        - { type: className, regex: '^SpomkyLabs\\Pki\\' }
+        - { type: className, regex: '^CBOR\\' }
+        - { type: className, regex: '^Lcobucci\\' }
+        - { type: className, regex: '^ParagonIE\\' }
+        - { type: className, regex: '^FG\\ASN1\\' }
+        - { type: className, regex: '^Safe\\' }
+        - { type: className, regex: '^Doctrine\\' }
   ruleset:
-    MetadataService: ~
+    MetadataService:
+      - 'Vendors'
     UX: ~
     Webauthn:
+      - 'Vendors'
       - 'MetadataService'
-    Symfony:
+    SymfonyBundle:
+      - 'Vendors'
       - 'Webauthn'
       - 'MetadataService'
+  skip_violations:
+    Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator:
+      - Webauthn\Util\CoseSignatureFixer

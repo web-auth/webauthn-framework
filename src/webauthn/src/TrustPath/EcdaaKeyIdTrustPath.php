@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
 
+/**
+ * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+ */
 final class EcdaaKeyIdTrustPath implements TrustPath
 {
     public function __construct(
@@ -34,10 +38,8 @@ final class EcdaaKeyIdTrustPath implements TrustPath
      */
     public static function createFromArray(array $data): static
     {
-        Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
-        $ecdaaKeyId = $data['ecdaaKeyId'];
-        Assertion::string($ecdaaKeyId, 'The trust path type is invalid. The parameter "ecdaaKeyId" shall be a string.');
+        array_key_exists('ecdaaKeyId', $data) || throw new InvalidArgumentException('The trust path type is invalid');
 
-        return new self($ecdaaKeyId);
+        return new self($data['ecdaaKeyId']);
     }
 }

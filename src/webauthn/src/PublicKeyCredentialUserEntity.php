@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
+use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -20,7 +22,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
-        Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
+        mb_strlen($id, '8bit') <= 64 || throw new InvalidArgumentException('User ID max length is 64 bytes');
         $this->id = $id;
     }
 
@@ -42,7 +44,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid data');
+        is_array($data) || throw new InvalidArgumentException('Invalid data');
 
         return self::createFromArray($data);
     }
@@ -52,9 +54,11 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
-        Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
-        Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
+        array_key_exists('name', $json) || throw new InvalidArgumentException('Invalid input. "name" is missing.');
+        array_key_exists('id', $json) || throw new InvalidArgumentException('Invalid input. "id" is missing.');
+        array_key_exists('displayName', $json) || throw new InvalidArgumentException(
+            'Invalid input. "displayName" is missing.'
+        );
         $id = Base64::decode($json['id'], true);
 
         return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);

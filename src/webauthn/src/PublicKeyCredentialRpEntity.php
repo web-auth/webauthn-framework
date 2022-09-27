@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
 
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
@@ -31,7 +32,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
      */
     public static function createFromArray(array $json): self
     {
-        Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
+        array_key_exists('name', $json) || throw new InvalidArgumentException('Invalid input. "name" is missing.');
 
         return new self($json['name'], $json['id'] ?? null, $json['icon'] ?? null);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
+use function array_key_exists;
 use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -13,7 +13,6 @@ use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
-use Webauthn\Util\Base64;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -159,21 +158,24 @@ class PublicKeyCredentialSource implements JsonSerializable
             if ($key === 'otherUI') {
                 continue;
             }
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'The parameter "%s" is missing',
+                $key
+            ));
         }
-        Assertion::length($data['aaguid'], 36, 'Invalid AAGUID', null, '8bit');
+        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw new InvalidArgumentException('Invalid AAGUID');
         $uuid = Uuid::fromString($data['aaguid']);
 
         try {
             return new self(
-                Base64::decodeUrlSafe($data['publicKeyCredentialId']),
+                Base64UrlSafe::decodeNoPadding($data['publicKeyCredentialId']),
                 $data['type'],
                 $data['transports'],
                 $data['attestationType'],
                 TrustPathLoader::loadTrustPath($data['trustPath']),
                 $uuid,
-                Base64::decodeUrlSafe($data['credentialPublicKey']),
-                Base64::decodeUrlSafe($data['userHandle']),
+                Base64UrlSafe::decodeNoPadding($data['credentialPublicKey']),
+                Base64UrlSafe::decodeNoPadding($data['userHandle']),
                 $data['counter'],
                 $data['otherUI'] ?? null
             );

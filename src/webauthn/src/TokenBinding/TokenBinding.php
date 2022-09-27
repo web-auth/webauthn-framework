@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
-use Assert\Assertion;
-use Webauthn\Util\Base64;
+use function in_array;
+use InvalidArgumentException;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class TokenBinding
 {
@@ -22,8 +23,7 @@ class TokenBinding
 
     public function __construct(string $status, ?string $id)
     {
-        Assertion::false(
-            $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null,
+        $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null && throw new InvalidArgumentException(
             'The member "id" is required when status is "present"'
         );
         $this->status = $status;
@@ -35,17 +35,13 @@ class TokenBinding
      */
     public static function createFormArray(array $json): self
     {
-        Assertion::keyExists($json, 'status', 'The member "status" is required');
+        array_key_exists('status', $json) || throw new InvalidArgumentException('The member "status" is required');
         $status = $json['status'];
-        Assertion::inArray(
-            $status,
-            self::getSupportedStatus(),
-            sprintf(
-                'The member "status" is invalid. Supported values are: %s',
-                implode(', ', self::getSupportedStatus())
-            )
-        );
-        $id = array_key_exists('id', $json) ? Base64::decodeUrlSafe($json['id']) : null;
+        in_array($status, self::getSupportedStatus(), true) || throw new InvalidArgumentException(sprintf(
+            'The member "status" is invalid. Supported values are: %s',
+            implode(', ', self::getSupportedStatus())
+        ));
+        $id = array_key_exists('id', $json) ? Base64UrlSafe::decodeNoPadding($json['id']) : null;
 
         return new self($status, $id);
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
@@ -38,12 +38,10 @@ final class SingleFileService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadMDS();
-
-        Assertion::keyExists(
-            $this->statements,
-            $aaguid,
-            sprintf('The MDS with the AAGUID "%s" does not exist.', $aaguid)
-        );
+        array_key_exists($aaguid, $this->statements) || throw new InvalidArgumentException(sprintf(
+            'The MDS with the AAGUID "%s" does not exist.',
+            $aaguid
+        ));
 
         return $this->statements[$aaguid];
     }

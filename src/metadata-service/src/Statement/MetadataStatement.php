@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
+use function is_array;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -106,6 +109,9 @@ class MetadataStatement implements JsonSerializable
 
     final public const ATTESTATION_BASIC_SURROGATE = 'basic_surrogate';
 
+    /**
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+     */
     final public const ATTESTATION_ECDAA = 'ecdaa';
 
     final public const ATTESTATION_ATTCA = 'attca';
@@ -193,7 +199,6 @@ class MetadataStatement implements JsonSerializable
     public static function createFromString(string $statement): self
     {
         $data = json_decode($statement, true, 512, JSON_THROW_ON_ERROR);
-        Assertion::isArray($data, 'Invalid Metadata Statement');
 
         return self::createFromArray($data);
     }
@@ -361,6 +366,8 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return EcdaaTrustAnchor[]
+     *
+     * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
      */
     public function getEcdaaTrustAnchors(): array
     {
@@ -400,7 +407,10 @@ class MetadataStatement implements JsonSerializable
             'attestationRootCertificates',
         ];
         foreach ($requiredKeys as $key) {
-            Assertion::keyExists($data, $key, sprintf('The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The key "%s" is missing',
+                $key
+            ));
         }
         $subObjects = [
             'authenticationAlgorithms',
@@ -411,14 +421,16 @@ class MetadataStatement implements JsonSerializable
             'attestationRootCertificates',
         ];
         foreach ($subObjects as $subObject) {
-            Assertion::isArray(
-                $data[$subObject],
-                sprintf('Invalid Metadata Statement. The parameter "%s" shall be a list of strings.', $subObject)
-            );
-            Assertion::allString(
-                $data[$subObject],
-                sprintf('Invalid Metadata Statement. The parameter "%s" shall be a list of strings.', $subObject)
-            );
+            is_array($data[$subObject]) || throw new InvalidArgumentException(sprintf(
+                'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
+                $subObject
+            ));
+            foreach ($data[$subObject] as $datum) {
+                is_string($datum) || throw new InvalidArgumentException(sprintf(
+                    'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
+                    $subObject
+                ));
+            }
         }
 
         $object = new self(
@@ -427,7 +439,7 @@ class MetadataStatement implements JsonSerializable
             $data['protocolFamily'],
             $data['schema'],
             array_map(static function ($upv): Version {
-                Assertion::isArray($upv, 'Invalid Metadata Statement');
+                is_array($upv) || throw new InvalidArgumentException('Invalid Metadata Statement');
 
                 return Version::createFromArray($upv);
             }, $data['upv']),
@@ -435,7 +447,7 @@ class MetadataStatement implements JsonSerializable
             $data['publicKeyAlgAndEncodings'],
             $data['attestationTypes'],
             array_map(static function ($userVerificationDetails): VerificationMethodANDCombinations {
-                Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');
+                is_array($userVerificationDetails) || throw new InvalidArgumentException('Invalid Metadata Statement');
 
                 return VerificationMethodANDCombinations::createFromArray($userVerificationDetails);
             }, $data['userVerificationDetails']),
@@ -460,9 +472,11 @@ class MetadataStatement implements JsonSerializable
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
-            Assertion::isArray($tcDisplayPNGCharacteristics, 'Invalid Metadata Statement');
+            is_array($tcDisplayPNGCharacteristics) || throw new InvalidArgumentException('Invalid Metadata Statement');
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
-                Assertion::isArray($tcDisplayPNGCharacteristic, 'Invalid Metadata Statement');
+                is_array($tcDisplayPNGCharacteristic) || throw new InvalidArgumentException(
+                    'Invalid Metadata Statement'
+                );
                 $object->tcDisplayPNGCharacteristics[] = DisplayPNGCharacteristicsDescriptor::createFromArray(
                     $tcDisplayPNGCharacteristic
                 );
@@ -472,9 +486,9 @@ class MetadataStatement implements JsonSerializable
         $object->icon = $data['icon'] ?? null;
         if (isset($data['supportedExtensions'])) {
             $supportedExtensions = $data['supportedExtensions'];
-            Assertion::isArray($supportedExtensions, 'Invalid Metadata Statement');
+            is_array($supportedExtensions) || throw new InvalidArgumentException('Invalid Metadata Statement');
             foreach ($supportedExtensions as $supportedExtension) {
-                Assertion::isArray($supportedExtension, 'Invalid Metadata Statement');
+                is_array($supportedExtension) || throw new InvalidArgumentException('Invalid Metadata Statement');
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }

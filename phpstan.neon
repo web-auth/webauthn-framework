@@ -3,7 +3,6 @@ parameters:
     paths:
         - src
     ignoreErrors:
-        - '#Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\.#'
         - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
         -
             message: '#Class Webauthn\\CertificateChainChecker\\PhpCertificateChainChecker extends @final class Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator\.#'
@@ -34,17 +33,41 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
             count: 1
         -
-            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\AdditionalPublicKeyCredentialCreationOptionsRequest.*#'
+            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\PublicKeyCredentialCreationOptionsRequest.*#'
             path: src/symfony/src/Controller/AttestationRequestController.php
             count: 1
         -
             message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-            count: 2
+            count: 1
         -
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
             count: 1
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/symfony/src/Controller/AttestationRequestController.php
+            count: 1
+        -
+            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+            count: 1
+        -
+            message: '#.*ECDAA.*#'
+            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
+            count: 2
+        -
+            message: '#.*ECDAA.*#'
+            path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
+            count: 2
+        -
+            message: '#Strict comparison using === between mixed and null will always evaluate to false\.#'
+            path: src/metadata-service/src/Statement/StatusReport.php
+            count: 1
+        - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
+        - '#Property .* does not accept .*\|false\.#'
+        - '#Cannot access offset \d+ on array\|false\.#'
+        - '#Method .* should return string but returns string\|false\.#'
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true
@@ -53,10 +76,8 @@ parameters:
         - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
 includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
-    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/ekino/phpstan-banned-code/extension.neon
-    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon

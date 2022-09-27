@@ -29,15 +29,6 @@ final class ConformanceTest extends KernelTestCase
      */
     public function theMetadataStatementIsMissing(): never
     {
-        $callback = null;
-        $options = null;
-        $result = null;
-        $publicKeyCredential = null;
-        $descriptor = null;
-        $response = null;
-        $publicKeyCredentialCreationOptions = null;
-        $request = null;
-        static::markTestSkipped('To be fixed.');
         $callback = self::getContainer()->get(MockClientCallback::class);
         $callback->addResponses([
             'GET-https://fidoalliance.co.nz/blob.jwt' => new MockResponse(trim(

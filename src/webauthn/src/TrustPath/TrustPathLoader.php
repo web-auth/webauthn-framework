@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
-use Assert\Assertion;
+use function array_key_exists;
+use function class_implements;
 use function in_array;
 use InvalidArgumentException;
-use function Safe\class_implements;
 
 abstract class TrustPathLoader
 {
@@ -16,7 +16,7 @@ abstract class TrustPathLoader
      */
     public static function loadTrustPath(array $data): TrustPath
     {
-        Assertion::keyExists($data, 'type', 'The trust path type is missing');
+        array_key_exists('type', $data) || throw new InvalidArgumentException('The trust path type is missing');
         $type = $data['type'];
         if (class_exists($type) !== true) {
             throw new InvalidArgumentException(sprintf('The trust path type "%s" is not supported', $data['type']));

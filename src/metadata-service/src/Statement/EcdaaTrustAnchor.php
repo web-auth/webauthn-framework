@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Assert\Assertion;
+use function array_key_exists;
+use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+ */
 class EcdaaTrustAnchor implements JsonSerializable
 {
     public function __construct(
@@ -58,7 +62,10 @@ class EcdaaTrustAnchor implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['X', 'Y', 'c', 'sx', 'sy', 'G1Curve'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('Invalid data. The key "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The key "%s" is missing',
+                $key
+            ));
         }
 
         return new self(

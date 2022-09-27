@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Assert\Assertion;
 use CBOR\Stream;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fread;
-use function Safe\fwrite;
-use function Safe\rewind;
+use function fclose;
+use function fopen;
+use function fread;
+use function fwrite;
+use InvalidArgumentException;
+use function rewind;
 
 final class StringStream implements Stream
 {
@@ -39,13 +39,11 @@ final class StringStream implements Stream
         }
         $read = fread($this->data, $length);
         $bytesRead = mb_strlen($read, '8bit');
-        Assertion::length(
-            $read,
+        mb_strlen($read, '8bit') === $length || throw new InvalidArgumentException(sprintf(
+            'Out of range. Expected: %d, read: %d.',
             $length,
-            sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead),
-            null,
-            '8bit'
-        );
+            $bytesRead
+        ));
         $this->totalRead += $bytesRead;
 
         return $read;

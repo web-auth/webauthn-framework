@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
-use Assert\Assertion;
+use InvalidArgumentException;
+use function is_array;
+use function is_int;
+use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Utils;
 
@@ -65,14 +68,20 @@ class MetadataBLOBPayload implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
-            Assertion::keyExists($data, $key, sprintf('Invalid data. The parameter "%s" is missing', $key));
+            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+                'Invalid data. The parameter "%s" is missing',
+                $key
+            ));
         }
-        Assertion::integer($data['no'], 'Invalid data. The parameter "no" shall be an integer');
-        Assertion::string($data['nextUpdate'], 'Invalid data. The parameter "nextUpdate" shall be a string');
-        Assertion::isArray($data['entries'], 'Invalid data. The parameter "entries" shall be a n array of entries');
-        if (array_key_exists('legalHeader', $data)) {
-            Assertion::string($data['legalHeader'], 'Invalid data. The parameter "legalHeader" shall be a string');
-        }
+        is_int($data['no']) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "no" shall be an integer'
+        );
+        is_string($data['nextUpdate']) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "nextUpdate" shall be a string'
+        );
+        is_array($data['entries']) || throw new InvalidArgumentException(
+            'Invalid data. The parameter "entries" shall be a n array of entries'
+        );
         $object = new self($data['no'], $data['nextUpdate'], $data['legalHeader'] ?? null);
         foreach ($data['entries'] as $entry) {
             $object->addEntry(MetadataBLOBPayloadEntry::createFromArray($entry));
