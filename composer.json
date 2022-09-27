@@ -88,7 +88,7 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/orm": "^2.13",
         "ekino/phpstan-banned-code": "^1.0",
-        "infection/infection": "^0.26",
+        "infection/infection": "^0.26.15",
         "matthiasnoback/symfony-dependency-injection-test": "^4.3",
         "php-http/curl-client": "^2.2",
         "php-http/mock-client": "^1.5",
