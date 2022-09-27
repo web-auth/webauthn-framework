@@ -37,10 +37,17 @@ class AuthenticatorAssertionResponseValidator
 
     public function __construct(
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        private readonly TokenBindingHandler $tokenBindingHandler,
+        private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly ?Manager $algorithmManager,
     ) {
+        if ($this->tokenBindingHandler !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.3.0',
+                'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
         $this->decoder = Decoder::create();
         $this->counterChecker = new ThrowExceptionIfInvalid();
         $this->logger = new NullLogger();
@@ -155,7 +162,7 @@ class AuthenticatorAssertionResponseValidator
             ) === '.' . $facetId || throw new InvalidArgumentException('rpId mismatch.');
 
             if ($C->getTokenBinding() !== null) {
-                $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
+                $this->tokenBindingHandler?->check($C->getTokenBinding(), $request);
             }
 
             $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);

@@ -9,6 +9,9 @@ use function in_array;
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
+/**
+ * @deprecated Since 4.3.0 and will be removed in 5.0.0
+ */
 class TokenBinding
 {
     final public const TOKEN_BINDING_STATUS_PRESENT = 'present';

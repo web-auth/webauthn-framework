@@ -27,6 +27,7 @@ class CollectedClientData
 
     /**
      * @var mixed[]|null
+     * @deprecated Since 4.3.0 and will be removed in 5.0.0
      */
     private readonly ?array $tokenBinding;
 
@@ -89,6 +90,9 @@ class CollectedClientData
         return $this->origin;
     }
 
+    /**
+     * @deprecated Since 4.3.0 and will be removed in 5.0.0
+     */
     public function getTokenBinding(): ?TokenBinding
     {
         return $this->tokenBinding === null ? null : TokenBinding::createFormArray($this->tokenBinding);

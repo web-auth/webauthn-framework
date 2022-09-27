@@ -45,9 +45,16 @@ class AuthenticatorAttestationResponseValidator
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        private readonly TokenBindingHandler $tokenBindingHandler,
+        private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
     ) {
+        if ($this->tokenBindingHandler !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.3.0',
+                'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
         $this->logger = new NullLogger();
     }
 
@@ -153,7 +160,7 @@ class AuthenticatorAttestationResponseValidator
             }
 
             if ($C->getTokenBinding() !== null) {
-                $this->tokenBindingHandler->check($C->getTokenBinding(), $request);
+                $this->tokenBindingHandler?->check($C->getTokenBinding(), $request);
             }
 
             $clientDataJSONHash = hash(

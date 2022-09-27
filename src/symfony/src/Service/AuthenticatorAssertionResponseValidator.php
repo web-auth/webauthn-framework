@@ -22,7 +22,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
 {
     public function __construct(
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        TokenBindingHandler $tokenBindingHandler,
+        ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         Manager $algorithmManager,
         private readonly EventDispatcherInterface $eventDispatcher

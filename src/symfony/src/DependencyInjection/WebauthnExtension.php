@@ -78,7 +78,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
 
-        $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
+        if ($config['token_binding_support_handler'] !== null) {
+            $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
+        }
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
