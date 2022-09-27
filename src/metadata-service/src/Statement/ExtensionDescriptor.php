@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class ExtensionDescriptor implements JsonSerializable
@@ -20,7 +20,7 @@ class ExtensionDescriptor implements JsonSerializable
         private readonly bool $failIfUnknown
     ) {
         if ($tag !== null) {
-            $tag >= 0 || throw new InvalidArgumentException(
+            $tag >= 0 || throw MetadataStatementLoadingException::create(
                 'Invalid data. The parameter "tag" shall be a positive integer'
             );
         }
@@ -53,10 +53,10 @@ class ExtensionDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        array_key_exists('id', $data) || throw new InvalidArgumentException(
+        array_key_exists('id', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "id" is missing'
         );
-        array_key_exists('fail_if_unknown', $data) || throw new InvalidArgumentException(
+        array_key_exists('fail_if_unknown', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "fail_if_unknown" is missing'
         );
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_string;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
 class RogueListEntry implements JsonSerializable
 {
@@ -32,10 +32,10 @@ class RogueListEntry implements JsonSerializable
      */
     public static function createFromArray(array $data): self
     {
-        array_key_exists('sk', $data) || throw new InvalidArgumentException('The key "sk" is missing');
-        is_string($data['sk']) || throw new InvalidArgumentException('The key "date" is invalid');
-        array_key_exists('date', $data) || throw new InvalidArgumentException('The key "date" is missing');
-        is_string($data['date']) || throw new InvalidArgumentException('The key "date" is invalid');
+        array_key_exists('sk', $data) || throw MetadataStatementLoadingException::create('The key "sk" is missing');
+        is_string($data['sk']) || throw MetadataStatementLoadingException::create('The key "date" is invalid');
+        array_key_exists('date', $data) || throw MetadataStatementLoadingException::create('The key "date" is missing');
+        is_string($data['date']) || throw MetadataStatementLoadingException::create('The key "date" is invalid');
 
         return new self($data['sk'], $data['date']);
     }

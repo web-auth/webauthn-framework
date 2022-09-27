@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use function file_get_contents;
-use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
-use function sprintf;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
+use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class LocalResourceMetadataService implements MetadataService
@@ -28,17 +28,23 @@ final class LocalResourceMetadataService implements MetadataService
     public function list(): iterable
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
         $aaguid = $this->statement->getAaguid();
-        $aaguid !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
-
-        yield from [$aaguid];
+        if ($aaguid === null) {
+            yield from [];
+        } else {
+            yield from [$aaguid];
+        }
     }
 
     public function has(string $aaguid): bool
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
 
         return $aaguid === $this->statement->getAaguid();
     }
@@ -46,13 +52,15 @@ final class LocalResourceMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
 
         if ($aaguid === $this->statement->getAaguid()) {
             return $this->statement;
         }
 
-        throw new InvalidArgumentException(sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
+        throw MissingMetadataStatementException::create($aaguid);
     }
 
     private function loadData(): void

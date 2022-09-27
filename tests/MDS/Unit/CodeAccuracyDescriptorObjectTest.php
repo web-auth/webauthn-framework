@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
-use LogicException;
 use PHPUnit\Framework\TestCase;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
 
 /**
@@ -59,7 +59,7 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         ?int $blockSlowdown,
         string $expectedMessage
     ): void {
-        $this->expectException(LogicException::class);
+        $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         new CodeAccuracyDescriptor($base, $minLength, $maxRetries, $blockSlowdown);

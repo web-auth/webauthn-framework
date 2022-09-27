@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class VerificationMethodDescriptor implements JsonSerializable
@@ -46,7 +46,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         private readonly ?BiometricAccuracyDescriptor $baDesc = null,
         private readonly ?PatternAccuracyDescriptor $paDesc = null
     ) {
-        $userVerificationMethod >= 0 || throw new InvalidArgumentException(
+        $userVerificationMethod >= 0 || throw MetadataStatementLoadingException::create(
             'The parameter "userVerificationMethod" is invalid'
         );
         $this->userVerificationMethod = $userVerificationMethod;
@@ -147,13 +147,15 @@ class VerificationMethodDescriptor implements JsonSerializable
             $data['userVerificationMethod'] = $data['userVerification'];
             unset($data['userVerification']);
         }
-        array_key_exists('userVerificationMethod', $data) || throw new InvalidArgumentException(
+        array_key_exists('userVerificationMethod', $data) || throw MetadataStatementLoadingException::create(
             'The parameters "userVerificationMethod" is missing'
         );
 
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
-                is_array($data[$key]) || throw new InvalidArgumentException(sprintf('Invalid parameter "%s"', $key));
+                is_array($data[$key]) || throw MetadataStatementLoadingException::create(
+                    sprintf('Invalid parameter "%s"', $key)
+                );
             }
         }
 

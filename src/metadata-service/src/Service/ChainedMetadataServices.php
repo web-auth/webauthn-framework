@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use InvalidArgumentException;
-use function sprintf;
+use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class ChainedMetadataServices implements MetadataService
@@ -62,6 +61,6 @@ final class ChainedMetadataServices implements MetadataService
             }
         }
 
-        throw new InvalidArgumentException(sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
+        throw MissingMetadataStatementException::create($aaguid);
     }
 }

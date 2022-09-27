@@ -6,9 +6,9 @@ namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
 use function in_array;
-use InvalidArgumentException;
 use function is_string;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class StatusReport implements JsonSerializable
@@ -28,7 +28,7 @@ class StatusReport implements JsonSerializable
         private readonly ?string $certificationPolicyVersion,
         private readonly ?string $certificationRequirementsVersion
     ) {
-        in_array($status, AuthenticatorStatus::list(), true) || throw new InvalidArgumentException(
+        in_array($status, AuthenticatorStatus::list(), true) || throw MetadataStatementLoadingException::create(
             'The value of the key "status" is not acceptable'
         );
 
@@ -91,7 +91,9 @@ class StatusReport implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        array_key_exists('status', $data) || throw new InvalidArgumentException('The key "status" is missing');
+        array_key_exists('status', $data) || throw MetadataStatementLoadingException::create(
+            'The key "status" is missing'
+        );
         foreach ([
             'effectiveDate',
             'certificate',
@@ -103,7 +105,7 @@ class StatusReport implements JsonSerializable
         ] as $key) {
             if (isset($data[$key])) {
                 $value = $data[$key];
-                $value === null || is_string($value) || throw new InvalidArgumentException(sprintf(
+                $value === null || is_string($value) || throw MetadataStatementLoadingException::create(sprintf(
                     'The value of the key "%s" is invalid',
                     $key
                 ));

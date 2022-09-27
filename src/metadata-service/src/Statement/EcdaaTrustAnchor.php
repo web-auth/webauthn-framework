@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 /**
@@ -62,7 +62,7 @@ class EcdaaTrustAnchor implements JsonSerializable
     {
         $data = Utils::filterNullValues($data);
         foreach (['X', 'Y', 'c', 'sx', 'sy', 'G1Curve'] as $key) {
-            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+            array_key_exists($key, $data) || throw MetadataStatementLoadingException::create(sprintf(
                 'Invalid data. The key "%s" is missing',
                 $key
             ));
