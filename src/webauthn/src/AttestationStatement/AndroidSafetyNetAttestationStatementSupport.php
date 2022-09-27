@@ -132,7 +132,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
         $attestation['attStmt']['jws'] = $jws;
 
-        return AttestationStatement::createAnonymizationCA(
+        return AttestationStatement::createBasic(
             $this->name(),
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
