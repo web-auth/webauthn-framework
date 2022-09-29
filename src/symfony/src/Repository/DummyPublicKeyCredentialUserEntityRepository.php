@@ -15,8 +15,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository
 {
-    public function __construct(private LoggerInterface $logger = new NullLogger())
-    {
+    public function __construct(
+        private LoggerInterface $logger = new NullLogger()
+    ) {
     }
 
     public function setLogger(LoggerInterface $logger): void
