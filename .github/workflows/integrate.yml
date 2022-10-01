@@ -18,7 +18,7 @@ jobs:
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" == ""
+          test "$(find ./src -type f -not -path './.git/*' -executable)" == ""
 
       - name: "Find non-printable ASCII characters"
         run: |
@@ -226,7 +226,7 @@ jobs:
 
       - name: "Check exported files"
         run: |
-          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json,package.json"
+          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json,link,package.json"
           CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
           echo "CURRENT =${CURRENT}"
           echo "EXPECTED=${EXPECTED}"
