@@ -18,7 +18,7 @@ jobs:
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" == ""
+          test "$(find ./src -type f -not -path './.git/*' -executable)" == ""
 
       - name: "Find non-printable ASCII characters"
         run: |
