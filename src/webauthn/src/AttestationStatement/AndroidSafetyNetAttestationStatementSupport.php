@@ -29,11 +29,11 @@ use const JSON_THROW_ON_ERROR;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -56,12 +56,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     public function __construct()
     {
         if (! class_exists(RS256::class)) {
-            throw new RuntimeException(
+            throw UnsupportedFeatureException::create(
                 'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?'
             );
         }
         if (! class_exists(JWKFactory::class)) {
-            throw new RuntimeException(
+            throw UnsupportedFeatureException::create(
                 'The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?'
             );
         }

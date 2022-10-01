@@ -16,12 +16,12 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function openssl_verify;
-use RuntimeException;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -233,7 +233,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithECDAA(): never
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 
     private function processWithSelfAttestation(

@@ -22,12 +22,12 @@ use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use RuntimeException;
 use function unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -418,6 +418,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private function processWithECDAA(): never
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 }

@@ -7,7 +7,6 @@ namespace Webauthn;
 use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
@@ -186,7 +185,8 @@ class PublicKeyCredentialLoader
                     $extension = $this->decoder->decode($authDataStream);
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
-                $authDataStream->isEOF() || throw new InvalidArgumentException(
+                $authDataStream->isEOF() || throw InvalidDataException::create(
+                    $authData,
                     'Invalid authentication data. Presence of extra bytes.'
                 );
                 $authDataStream->close();
