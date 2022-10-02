@@ -7,13 +7,14 @@ namespace Webauthn\MetadataService\Service;
 use function file_get_contents;
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
-final class LocalResourceMetadataService implements MetadataService
+final class LocalResourceMetadataService implements MetadataService, CanDispatchEvents
 {
     private ?MetadataStatement $statement = null;
 

@@ -20,6 +20,7 @@ use function sprintf;
 use Throwable;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
@@ -27,7 +28,7 @@ use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 
-final class FidoAllianceCompliantMetadataService implements MetadataService
+final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {
     private bool $loaded = false;
 

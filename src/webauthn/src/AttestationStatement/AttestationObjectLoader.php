@@ -10,6 +10,7 @@ use CBOR\MapObject;
 use CBOR\Normalizable;
 use function is_array;
 use function ord;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Uid\Uuid;
@@ -18,11 +19,14 @@ use function unpack;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationObjectLoaded;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\Util\Base64;
 
-class AttestationObjectLoader
+class AttestationObjectLoader implements CanDispatchEvents
 {
     private const FLAG_AT = 0b01000000;
 
@@ -32,11 +36,21 @@ class AttestationObjectLoader
 
     private LoggerInterface $logger;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager
     ) {
         $this->decoder = Decoder::create();
         $this->logger = new NullLogger();
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->dispatcher = $eventDispatcher;
+
+        return $this;
     }
 
     public static function create(AttestationStatementSupportManager $attestationStatementSupportManager): self
@@ -149,6 +163,7 @@ class AttestationObjectLoader
             $this->logger->debug('Attestation Object', [
                 'ed' => $attestationObject,
             ]);
+            $this->dispatcher->dispatch(AttestationObjectLoaded::create($attestationObject));
 
             return $attestationObject;
         } catch (Throwable $throwable) {

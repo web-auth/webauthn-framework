@@ -22,6 +22,7 @@ use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
 use Throwable;
 use Webauthn\MetadataService\Event\BeforeCertificateChainValidation;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\CertificateChainValidationFailed;
 use Webauthn\MetadataService\Event\CertificateChainValidationSucceeded;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -32,7 +33,7 @@ use Webauthn\MetadataService\Exception\InvalidCertificateException;
 /**
  * @final
  */
-class PhpCertificateChainValidator implements CertificateChainValidator
+class PhpCertificateChainValidator implements CertificateChainValidator, CanDispatchEvents
 {
     private const MAX_VALIDATION_LENGTH = 5;
 

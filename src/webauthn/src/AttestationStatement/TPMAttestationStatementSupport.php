@@ -22,20 +22,26 @@ use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use function unpack;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
-final class TPMAttestationStatementSupport implements AttestationStatementSupport
+final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private readonly Clock $clock;
+
+    private EventDispatcherInterface $dispatcher;
 
     public function __construct(?Clock $clock = null)
     {
@@ -43,6 +49,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->dispatcher = $eventDispatcher;
+
+        return $this;
     }
 
     public static function create(?Clock $clock = null): self
@@ -107,11 +121,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
 
-        return AttestationStatement::createAttCA(
+        $attestationStatement = AttestationStatement::createAttCA(
             $this->name(),
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     public function isValid(

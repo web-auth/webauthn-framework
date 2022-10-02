@@ -6,12 +6,13 @@ namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
-final class InMemoryMetadataService implements MetadataService
+final class InMemoryMetadataService implements MetadataService, CanDispatchEvents
 {
     /**
      * @var MetadataStatement[]
