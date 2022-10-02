@@ -8,7 +8,6 @@ use CBOR\ByteStringObject;
 use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
-use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -16,6 +15,8 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\AttestationStatementLoadingException;
+use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\TrustPath\CertificateTrustPath;
 
@@ -29,7 +30,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
         $support = new FidoU2FAttestationStatementSupport();
 
@@ -45,7 +46,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
         $support = new FidoU2FAttestationStatementSupport();
         static::assertFalse($support->load([
@@ -61,7 +62,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with one certificate.');
         $support = new FidoU2FAttestationStatementSupport();
 
@@ -80,7 +81,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementVerificationException::class);
         $this->expectExceptionMessage('Invalid certificate or certificate chain');
         $support = new FidoU2FAttestationStatementSupport();
 

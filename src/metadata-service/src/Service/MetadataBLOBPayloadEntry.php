@@ -6,11 +6,10 @@ namespace Webauthn\MetadataService\Service;
 
 use function array_key_exists;
 use function count;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use JsonSerializable;
-use LogicException;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
@@ -46,21 +45,21 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         private readonly ?string $rogueListHash
     ) {
         if ($aaid !== null && $aaguid !== null) {
-            throw new LogicException('Authenticators cannot support both AAID and AAGUID');
+            throw MetadataStatementLoadingException::create('Authenticators cannot support both AAID and AAGUID');
         }
         if ($aaid === null && $aaguid === null && count($attestationCertificateKeyIdentifiers) === 0) {
-            throw new LogicException(
+            throw MetadataStatementLoadingException::create(
                 'If neither AAID nor AAGUID are set, the attestation certificate identifier list shall not be empty'
             );
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            is_string($attestationCertificateKeyIdentifier) || throw new InvalidArgumentException(
+            is_string($attestationCertificateKeyIdentifier) || throw MetadataStatementLoadingException::create(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
             preg_match(
                 '/^[0-9a-f]+$/',
                 $attestationCertificateKeyIdentifier
-            ) === 1 || throw new InvalidArgumentException(
+            ) === 1 || throw MetadataStatementLoadingException::create(
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
         }
@@ -145,13 +144,13 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        array_key_exists('timeOfLastStatusChange', $data) || throw new InvalidArgumentException(
+        array_key_exists('timeOfLastStatusChange', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "timeOfLastStatusChange" is missing'
         );
-        array_key_exists('statusReports', $data) || throw new InvalidArgumentException(
+        array_key_exists('statusReports', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "statusReports" is missing'
         );
-        is_array($data['statusReports']) || throw new InvalidArgumentException(
+        is_array($data['statusReports']) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
         );
         $object = new self(

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\TrustPath;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
+use Webauthn\Exception\InvalidTrustPathException;
 
 final class CertificateTrustPath implements TrustPath
 {
@@ -39,9 +39,9 @@ final class CertificateTrustPath implements TrustPath
      */
     public static function createFromArray(array $data): static
     {
-        array_key_exists('x5c', $data) || throw new InvalidArgumentException('The trust path type is invalid');
+        array_key_exists('x5c', $data) || throw InvalidTrustPathException::create('The trust path type is invalid');
         $x5c = $data['x5c'];
-        is_array($x5c) || throw new InvalidArgumentException(
+        is_array($x5c) || throw InvalidTrustPathException::create(
             'The trust path type is invalid. The parameter "x5c" shall contain strings.'
         );
 
