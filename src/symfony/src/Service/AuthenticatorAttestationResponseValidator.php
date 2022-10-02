@@ -51,7 +51,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
         PublicKeyCredentialSource $publicKeyCredentialSource
-    ) {
+    ): AuthenticatorAttestationResponseValidationSucceededEvent {
         return new AuthenticatorAttestationResponseValidationSucceededEvent(
             $authenticatorAttestationResponse,
             $publicKeyCredentialCreationOptions,
@@ -65,7 +65,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
         Throwable $throwable
-    ) {
+    ): AuthenticatorAttestationResponseValidationFailedEvent {
         return new AuthenticatorAttestationResponseValidationFailedEvent(
             $authenticatorAttestationResponse,
             $publicKeyCredentialCreationOptions,

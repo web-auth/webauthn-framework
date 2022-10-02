@@ -6,16 +6,11 @@ namespace Webauthn\Event;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
-use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent as BaseAuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
-/**
- * @final
- */
 class AuthenticatorAssertionResponseValidationSucceededEvent
 {
-
     public function __construct(
         private readonly string $credentialId,
         private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,

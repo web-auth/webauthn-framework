@@ -20,8 +20,13 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAssertionResponseValidator
 {
-    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager, ?EventDispatcherInterface $eventDispatcher = null)
-    {
+    public function __construct(
+        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        ?TokenBindingHandler $tokenBindingHandler,
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        ?Manager $algorithmManager,
+        ?EventDispatcherInterface $eventDispatcher = null
+    ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
             '4.3.0',
@@ -40,15 +45,15 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
             $eventDispatcher
         );
     }
+
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface $request,
         ?string $userHandle,
-        PublicKeyCredentialSource $publicKeyCredentialSource)
-    {
-
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ): AuthenticatorAssertionResponseValidationSucceededEvent {
         return new AuthenticatorAssertionResponseValidationSucceededEvent(
             $credentialId,
             $authenticatorAssertionResponse,
@@ -66,8 +71,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         ServerRequestInterface $request,
         ?string $userHandle,
         Throwable $throwable
-    )
-    {
+    ): AuthenticatorAssertionResponseValidationFailedEvent {
         return new AuthenticatorAssertionResponseValidationFailedEvent(
             $credentialId,
             $authenticatorAssertionResponse,

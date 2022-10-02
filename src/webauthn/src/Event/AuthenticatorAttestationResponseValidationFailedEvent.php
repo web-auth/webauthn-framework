@@ -9,9 +9,6 @@ use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
-/**
- * @final
- */
 class AuthenticatorAttestationResponseValidationFailedEvent
 {
     public function __construct(

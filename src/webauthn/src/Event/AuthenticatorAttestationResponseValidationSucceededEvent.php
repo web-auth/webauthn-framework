@@ -9,9 +9,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 
-/**
- * @final
- */
 class AuthenticatorAttestationResponseValidationSucceededEvent
 {
     public function __construct(

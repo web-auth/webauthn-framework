@@ -9,9 +9,6 @@ use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
-use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use function count;
 use function in_array;
 use function is_array;
@@ -20,12 +17,15 @@ use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
@@ -296,6 +296,42 @@ class AuthenticatorAssertionResponseValidator
         return $this;
     }
 
+    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ): AuthenticatorAssertionResponseValidationSucceededEvent {
+        return new AuthenticatorAssertionResponseValidationSucceededEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $publicKeyCredentialSource
+        );
+    }
+
+    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
+    ): AuthenticatorAssertionResponseValidationFailedEvent {
+        return new AuthenticatorAssertionResponseValidationFailedEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
+    }
+
     /**
      * @param array<PublicKeyCredentialDescriptor> $allowedCredentials
      */
@@ -329,43 +365,5 @@ class AuthenticatorAssertionResponseValidator
         }
 
         return $appId;
-    }
-
-    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
-        string $credentialId,
-        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
-        ?string $userHandle,
-        PublicKeyCredentialSource $publicKeyCredentialSource)
-    {
-
-        return new AuthenticatorAssertionResponseValidationSucceededEvent(
-            $credentialId,
-            $authenticatorAssertionResponse,
-            $publicKeyCredentialRequestOptions,
-            $request,
-            $userHandle,
-            $publicKeyCredentialSource
-        );
-    }
-
-    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
-        string $credentialId,
-        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
-        ?string $userHandle,
-        Throwable $throwable
-    )
-    {
-        return new AuthenticatorAssertionResponseValidationFailedEvent(
-            $credentialId,
-            $authenticatorAssertionResponse,
-            $publicKeyCredentialRequestOptions,
-            $request,
-            $userHandle,
-            $throwable
-        );
     }
 }

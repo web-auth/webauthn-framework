@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Event;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
-use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent as BaseAuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
