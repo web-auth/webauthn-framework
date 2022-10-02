@@ -9,6 +9,9 @@ use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use function count;
 use function in_array;
 use function is_array;
@@ -40,6 +43,7 @@ class AuthenticatorAssertionResponseValidator
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly ?Manager $algorithmManager,
+        private readonly ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -58,12 +62,14 @@ class AuthenticatorAssertionResponseValidator
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
+        ?EventDispatcherInterface $eventDispatcher = null,
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
-            $algorithmManager
+            $algorithmManager,
+            $eventDispatcher
         );
     }
 
@@ -248,11 +254,30 @@ class AuthenticatorAssertionResponseValidator
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
 
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationSucceededEvent(
+                $credentialId,
+                $authenticatorAssertionResponse,
+                $publicKeyCredentialRequestOptions,
+                $request,
+                $userHandle,
+                $publicKeyCredentialSource
+            ));
+
             return $publicKeyCredentialSource;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
+
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationFailedEvent(
+                $credentialId,
+                $authenticatorAssertionResponse,
+                $publicKeyCredentialRequestOptions,
+                $request,
+                $userHandle,
+                $throwable
+            ));
+
             throw $throwable;
         }
     }
@@ -304,5 +329,43 @@ class AuthenticatorAssertionResponseValidator
         }
 
         return $appId;
+    }
+
+    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        PublicKeyCredentialSource $publicKeyCredentialSource)
+    {
+
+        return new AuthenticatorAssertionResponseValidationSucceededEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $publicKeyCredentialSource
+        );
+    }
+
+    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
+    )
+    {
+        return new AuthenticatorAssertionResponseValidationFailedEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
     }
 }

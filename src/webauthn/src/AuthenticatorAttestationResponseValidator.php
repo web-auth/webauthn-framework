@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use function array_key_exists;
 use function count;
 use function in_array;
@@ -45,7 +48,8 @@ class AuthenticatorAttestationResponseValidator
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
-        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        private readonly ?EventDispatcherInterface $eventDispatcher,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -61,13 +65,15 @@ class AuthenticatorAttestationResponseValidator
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        ?EventDispatcherInterface $eventDispatcher
     ): self {
         return new self(
             $attestationStatementSupportManager,
             $publicKeyCredentialSource,
             $tokenBindingHandler,
-            $extensionOutputCheckerHandler
+            $extensionOutputCheckerHandler,
+            $eventDispatcher
         );
     }
 
@@ -244,11 +250,25 @@ class AuthenticatorAttestationResponseValidator
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
 
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAttestationResponseValidationSucceededEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $publicKeyCredentialSource
+            ));
+
+
             return $publicKeyCredentialSource;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAttestationResponseValidationFailedEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $throwable
+            ));
             throw $throwable;
         }
     }
@@ -443,5 +463,33 @@ class AuthenticatorAttestationResponseValidator
         }
 
         return $appId;
+    }
+
+    protected function createAuthenticatorAttestationResponseValidationSucceededEvent(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ) {
+        return new AuthenticatorAttestationResponseValidationSucceededEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $publicKeyCredentialSource
+        );
+    }
+
+    protected function createAuthenticatorAttestationResponseValidationFailedEvent(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        Throwable $throwable
+    ) {
+        return new AuthenticatorAttestationResponseValidationFailedEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $throwable
+        );
     }
 }

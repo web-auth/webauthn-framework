@@ -20,57 +20,61 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAssertionResponseValidator
 {
-    public function __construct(
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        ?TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        Manager $algorithmManager,
-        private readonly EventDispatcherInterface $eventDispatcher
-    ) {
-        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);
-    }
+    public function __construct(PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, ?TokenBindingHandler $tokenBindingHandler, ExtensionOutputCheckerHandler $extensionOutputCheckerHandler, ?Manager $algorithmManager, ?EventDispatcherInterface $eventDispatcher = null)
+    {
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            sprintf(
+                'The class "%s" is deprecated since 4.3.x and will be removed in 5.0.0. Please use "%s" instead.',
+                self::class,
+                BaseAuthenticatorAssertionResponseValidator::class
+            )
+        );
 
-    /**
-     * {@inheritdoc}
-     */
-    public function check(
+        parent::__construct(
+            $publicKeyCredentialSourceRepository,
+            $tokenBindingHandler,
+            $extensionOutputCheckerHandler,
+            $algorithmManager,
+            $eventDispatcher
+        );
+    }
+    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface $request,
         ?string $userHandle,
-        array $securedRelyingPartyId = []
-    ): PublicKeyCredentialSource {
-        try {
-            $result = parent::check(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $securedRelyingPartyId
-            );
-            $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationSucceededEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $result
-            ));
+        PublicKeyCredentialSource $publicKeyCredentialSource)
+    {
 
-            return $result;
-        } catch (Throwable $throwable) {
-            $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationFailedEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $throwable
-            ));
+        return new AuthenticatorAssertionResponseValidationSucceededEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $publicKeyCredentialSource
+        );
+    }
 
-            throw $throwable;
-        }
+    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
+    )
+    {
+        return new AuthenticatorAssertionResponseValidationFailedEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
     }
 }

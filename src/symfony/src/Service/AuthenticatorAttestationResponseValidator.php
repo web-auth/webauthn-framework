@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -25,41 +25,52 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private readonly EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher
     ) {
-        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler);
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            sprintf(
+                'The class "%s" is deprecated since 4.3.x and will be removed in 5.0.0. Please use "%s" instead.',
+                self::class,
+                BaseAuthenticatorAttestationResponseValidator::class
+            )
+        );
+
+        parent::__construct(
+            $attestationStatementSupportManager,
+            $publicKeyCredentialSource,
+            $tokenBindingHandler,
+            $extensionOutputCheckerHandler,
+            $eventDispatcher
+        );
     }
 
-    public function check(
+    protected function createAuthenticatorAttestationResponseValidationSucceededEvent(
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         ServerRequestInterface $request,
-        array $securedRelyingPartyId = []
-    ): PublicKeyCredentialSource {
-        try {
-            $result = parent::check(
-                $authenticatorAttestationResponse,
-                $publicKeyCredentialCreationOptions,
-                $request,
-                $securedRelyingPartyId
-            );
-            $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationSucceededEvent(
-                $authenticatorAttestationResponse,
-                $publicKeyCredentialCreationOptions,
-                $request,
-                $result
-            ));
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ) {
+        return new AuthenticatorAttestationResponseValidationSucceededEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $publicKeyCredentialSource
+        );
+    }
 
-            return $result;
-        } catch (Throwable $throwable) {
-            $this->eventDispatcher->dispatch(new AuthenticatorAttestationResponseValidationFailedEvent(
-                $authenticatorAttestationResponse,
-                $publicKeyCredentialCreationOptions,
-                $request,
-                $throwable
-            ));
-
-            throw $throwable;
-        }
+    protected function createAuthenticatorAttestationResponseValidationFailedEvent(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        Throwable $throwable
+    ) {
+        return new AuthenticatorAttestationResponseValidationFailedEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $throwable
+        );
     }
 }
