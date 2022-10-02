@@ -22,6 +22,7 @@ use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
 use Throwable;
 use Webauthn\MetadataService\Event\BeforeCertificateChainValidation;
+use Webauthn\MetadataService\Event\CertificateChainValidationFailed;
 use Webauthn\MetadataService\Event\CertificateChainValidationSucceeded;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\CertificateChainException;
@@ -69,11 +70,18 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             $this->dispatcher->dispatch(
                 BeforeCertificateChainValidation::create($untrustedCertificates, $trustedCertificate)
             );
-            if ($this->validateChain($untrustedCertificates, $trustedCertificate)) {
+            try {
+                if ($this->validateChain($untrustedCertificates, $trustedCertificate)) {
+                    $this->dispatcher->dispatch(
+                        CertificateChainValidationSucceeded::create($untrustedCertificates, $trustedCertificate)
+                    );
+                    return;
+                }
+            } catch (Throwable $exception) {
                 $this->dispatcher->dispatch(
-                    CertificateChainValidationSucceeded::create($untrustedCertificates, $trustedCertificate)
+                    CertificateChainValidationFailed::create($untrustedCertificates, $trustedCertificate)
                 );
-                return;
+                throw $exception;
             }
         }
 

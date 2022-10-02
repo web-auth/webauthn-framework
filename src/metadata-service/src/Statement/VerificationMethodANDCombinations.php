@@ -8,6 +8,9 @@ use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
+/**
+ * @final
+ */
 class VerificationMethodANDCombinations implements JsonSerializable
 {
     /**

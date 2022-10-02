@@ -6,6 +6,9 @@ namespace Webauthn\MetadataService\Statement;
 
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
     public function __construct(

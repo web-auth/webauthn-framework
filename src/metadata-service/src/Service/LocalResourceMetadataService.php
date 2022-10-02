@@ -6,6 +6,9 @@ namespace Webauthn\MetadataService\Service;
 
 use function file_get_contents;
 use ParagonIE\ConstantTime\Base64;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Webauthn\MetadataService\Event\MetadataStatementFound;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
@@ -14,10 +17,20 @@ final class LocalResourceMetadataService implements MetadataService
 {
     private ?MetadataStatement $statement = null;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         private readonly string $filename,
         private readonly bool $isBase64Encoded = false,
     ) {
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->dispatcher = $eventDispatcher;
+
+        return $this;
     }
 
     public static function create(string $filename, bool $isBase64Encoded = false): self
@@ -57,6 +70,8 @@ final class LocalResourceMetadataService implements MetadataService
         );
 
         if ($aaguid === $this->statement->getAaguid()) {
+            $this->dispatcher->dispatch(MetadataStatementFound::create($this->statement));
+
             return $this->statement;
         }
 

@@ -13,6 +13,9 @@ use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class MetadataStatement implements JsonSerializable
 {
     final public const KEY_PROTECTION_SOFTWARE = 'software';

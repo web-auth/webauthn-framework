@@ -10,6 +10,9 @@ use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class VerificationMethodDescriptor implements JsonSerializable
 {
     final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';

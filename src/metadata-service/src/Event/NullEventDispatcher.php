@@ -6,7 +6,7 @@ namespace Webauthn\MetadataService\Event;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-class NullEventDispatcher implements EventDispatcherInterface
+final class NullEventDispatcher implements EventDispatcherInterface
 {
     public function dispatch(object $event): object
     {

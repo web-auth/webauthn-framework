@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Event;
 
-class CertificateChainValidationSucceeded implements WebauthnEvent
+final class CertificateChainValidationSucceeded implements WebauthnEvent
 {
     public function __construct(
         public readonly array $untrustedCertificates,

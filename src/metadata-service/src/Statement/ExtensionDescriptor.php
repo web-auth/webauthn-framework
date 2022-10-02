@@ -9,6 +9,9 @@ use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class ExtensionDescriptor implements JsonSerializable
 {
     private readonly ?int $tag;
