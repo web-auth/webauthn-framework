@@ -10,6 +10,9 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 
+/**
+ * @final
+ */
 class AuthenticatorAttestationResponseValidationSucceededEvent extends Event
 {
     public function __construct(

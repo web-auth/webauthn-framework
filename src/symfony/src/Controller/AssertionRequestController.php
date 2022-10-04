@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use function count;
-use InvalidArgumentException;
 use function is_string;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -49,11 +48,11 @@ final class AssertionRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+            $request->getContentType() === 'json' || throw new BadRequestHttpException(
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new InvalidArgumentException('Invalid data');
+            is_string($content) || throw new BadRequestHttpException('Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
                 $creationOptionsRequest->extensions
@@ -110,7 +109,7 @@ final class AssertionRequestController
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
         );
-        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new InvalidArgumentException(
+        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new BadRequestHttpException(
             'Invalid data'
         );
         $errors = $this->validator->validate($data);
@@ -119,7 +118,7 @@ final class AssertionRequestController
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
-            throw new RuntimeException(implode("\n", $messages));
+            throw new BadRequestHttpException(implode("\n", $messages));
         }
 
         return $data;

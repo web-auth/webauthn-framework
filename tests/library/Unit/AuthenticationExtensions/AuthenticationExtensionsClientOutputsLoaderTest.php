@@ -9,11 +9,11 @@ use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\OtherObject\TrueObject;
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
+use Webauthn\Exception\AuthenticationExtensionException;
 
 /**
  * @internal
@@ -39,7 +39,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
      */
     public function theCBORObjectIsInvalid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AuthenticationExtensionException::class);
         $this->expectExceptionMessage('Invalid extension object');
         $cbor = new ByteStringObject('loc');
 
@@ -51,7 +51,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
      */
     public function theMapKeyIsNotAString(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AuthenticationExtensionException::class);
         $this->expectExceptionMessage('Invalid extension key');
         $cbor = new MapObject([new MapItem(NegativeIntegerObject::create(-100), new TrueObject())]);
 

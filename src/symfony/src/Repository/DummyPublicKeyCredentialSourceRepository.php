@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Repository;
 
-use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -32,7 +32,7 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->logger->critical(
             'Please change the Public Key Credential Source Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialSourceRepository service. Please create your own repository'
         );
     }
@@ -45,7 +45,7 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->logger->critical(
             'Please change the Public Key Credential Source Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialSourceRepository service. Please create your own repository'
         );
     }
@@ -55,7 +55,7 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->logger->critical(
             'Please change the Public Key Credential Source Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialSourceRepository service. Please create your own repository'
         );
     }

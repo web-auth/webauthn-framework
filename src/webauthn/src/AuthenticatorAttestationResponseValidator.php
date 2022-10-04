@@ -7,10 +7,8 @@ namespace Webauthn;
 use function array_key_exists;
 use function count;
 use function in_array;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
-use LogicException;
 use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +21,7 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -118,14 +117,14 @@ class AuthenticatorAttestationResponseValidator
 
             $C = $authenticatorAttestationResponse->getClientDataJSON();
 
-            $C->getType() === 'webauthn.create' || throw new InvalidArgumentException(
+            $C->getType() === 'webauthn.create' || throw AuthenticatorResponseVerificationException::create(
                 'The client data type is not "webauthn.create".'
             );
 
             hash_equals(
                 $publicKeyCredentialCreationOptions->getChallenge(),
                 $C->getChallenge()
-            ) || throw new InvalidArgumentException('Invalid challenge.');
+            ) || throw AuthenticatorResponseVerificationException::create('Invalid challenge.');
 
             $rpId = $publicKeyCredentialCreationOptions->getRp()
                 ->getId() ?? $request->getUri()
@@ -139,24 +138,27 @@ class AuthenticatorAttestationResponseValidator
             );
 
             $parsedRelyingPartyId = parse_url($C->getOrigin());
-            is_array($parsedRelyingPartyId) || throw new InvalidArgumentException(sprintf(
+            is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(sprintf(
                 'The origin URI "%s" is not valid',
                 $C->getOrigin()
             ));
-            array_key_exists('scheme', $parsedRelyingPartyId) || throw new InvalidArgumentException(
-                'Invalid origin rpId.'
-            );
+            array_key_exists(
+                'scheme',
+                $parsedRelyingPartyId
+            ) || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw new InvalidArgumentException('Invalid origin rpId.');
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
                 -($rpIdLength + 1)
-            ) === '.' . $facetId || throw new InvalidArgumentException('rpId mismatch.');
+            ) === '.' . $facetId || throw AuthenticatorResponseVerificationException::create('rpId mismatch.');
 
             if (! in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'];
-                $scheme === 'https' || throw new InvalidArgumentException('Invalid scheme. HTTPS required.');
+                $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
+                    'Invalid scheme. HTTPS required.'
+                );
             }
 
             if ($C->getTokenBinding() !== null) {
@@ -177,13 +179,17 @@ class AuthenticatorAttestationResponseValidator
                 $rpIdHash,
                 $attestationObject->getAuthData()
                     ->getRpIdHash()
-            ) || throw new InvalidArgumentException('rpId hash mismatch.');
+            ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
 
             if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 $attestationObject->getAuthData()
-                    ->isUserPresent() || throw new InvalidArgumentException('User was not present');
+                    ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
+                        'User was not present'
+                    );
                 $attestationObject->getAuthData()
-                    ->isUserVerified() || throw new InvalidArgumentException('User authentication required.');
+                    ->isUserVerified() || throw AuthenticatorResponseVerificationException::create(
+                        'User authentication required.'
+                    );
             }
 
             $extensionsClientOutputs = $attestationObject->getAuthData()
@@ -199,7 +205,9 @@ class AuthenticatorAttestationResponseValidator
             $fmt = $attestationObject->getAttStmt()
                 ->getFmt();
 
-            $this->attestationStatementSupportManager->has($fmt) || throw new InvalidArgumentException(
+            $this->attestationStatementSupportManager->has(
+                $fmt
+            ) || throw AuthenticatorResponseVerificationException::create(
                 'Unsupported attestation statement format.'
             );
 
@@ -208,21 +216,21 @@ class AuthenticatorAttestationResponseValidator
                 $clientDataJSONHash,
                 $attestationObject->getAttStmt(),
                 $attestationObject->getAuthData()
-            ) || throw new InvalidArgumentException('Invalid attestation statement.');
+            ) || throw AuthenticatorResponseVerificationException::create('Invalid attestation statement.');
 
             $attestationObject->getAuthData()
-                ->hasAttestedCredentialData() || throw new InvalidArgumentException(
+                ->hasAttestedCredentialData() || throw AuthenticatorResponseVerificationException::create(
                     'There is no attested credential data.'
                 );
             $attestedCredentialData = $attestationObject->getAuthData()
                 ->getAttestedCredentialData();
-            $attestedCredentialData !== null || throw new InvalidArgumentException(
+            $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
                 'There is no attested credential data.'
             );
             $credentialId = $attestedCredentialData->getCredentialId();
             $this->publicKeyCredentialSource->findOneByCredentialId(
                 $credentialId
-            ) === null || throw new InvalidArgumentException('The credential ID already exists.');
+            ) === null || throw AuthenticatorResponseVerificationException::create('The credential ID already exists.');
 
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
@@ -274,7 +282,9 @@ class AuthenticatorAttestationResponseValidator
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()
             ->getAttestedCredentialData();
-        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential data found');
+        $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
+            'No attested credential data found'
+        );
         $aaguid = $attestedCredentialData->getAaguid()
             ->__toString();
         if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
@@ -328,13 +338,13 @@ class AuthenticatorAttestationResponseValidator
         }
 
         //The MDS Repository is mandatory here
-        $this->metadataStatementRepository !== null || throw new InvalidArgumentException(
+        $this->metadataStatementRepository !== null || throw AuthenticatorResponseVerificationException::create(
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // At this point, the Metadata Statement is mandatory
-        $metadataStatement !== null || throw new InvalidArgumentException(sprintf(
+        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(sprintf(
             'The Metadata Statement for the AAGUID "%s" is missing',
             $aaguid
         ));
@@ -347,7 +357,11 @@ class AuthenticatorAttestationResponseValidator
         // Check Attestation Type is allowed
         if (count($metadataStatement->getAttestationTypes()) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
-            in_array($type, $metadataStatement->getAttestationTypes(), true) || throw new InvalidArgumentException(
+            in_array(
+                $type,
+                $metadataStatement->getAttestationTypes(),
+                true
+            ) || throw AuthenticatorResponseVerificationException::create(
                 sprintf(
                     'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator.',
                     $type
@@ -364,7 +378,7 @@ class AuthenticatorAttestationResponseValidator
             AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
             AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
             AttestationStatement::TYPE_ANONCA => MetadataStatement::ATTESTATION_ANONCA,
-            default => throw new InvalidArgumentException('Invalid attestation type'),
+            default => throw AuthenticatorResponseVerificationException::create('Invalid attestation type'),
         };
     }
 
@@ -376,7 +390,9 @@ class AuthenticatorAttestationResponseValidator
         if (count($statusReports) !== 0) {
             $lastStatusReport = end($statusReports);
             if ($lastStatusReport->isCompromised()) {
-                throw new LogicException('The authenticator is compromised and cannot be used');
+                throw AuthenticatorResponseVerificationException::create(
+                    'The authenticator is compromised and cannot be used'
+                );
             }
         }
     }
@@ -388,7 +404,7 @@ class AuthenticatorAttestationResponseValidator
         string $userHandle
     ): PublicKeyCredentialSource {
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-        $credentialPublicKey !== null || throw new InvalidArgumentException(
+        $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
             'Not credential public key available in the attested credential data'
         );
 

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
@@ -158,12 +158,15 @@ class PublicKeyCredentialSource implements JsonSerializable
             if ($key === 'otherUI') {
                 continue;
             }
-            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+            array_key_exists($key, $data) || throw InvalidDataException::create($data, sprintf(
                 'The parameter "%s" is missing',
                 $key
             ));
         }
-        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw new InvalidArgumentException('Invalid AAGUID');
+        mb_strlen((string) $data['aaguid'], '8bit') === 36 || throw InvalidDataException::create(
+            $data,
+            'Invalid AAGUID'
+        );
         $uuid = Uuid::fromString($data['aaguid']);
 
         try {
@@ -180,7 +183,7 @@ class PublicKeyCredentialSource implements JsonSerializable
                 $data['otherUI'] ?? null
             );
         } catch (Throwable $throwable) {
-            throw new InvalidArgumentException('Unable to load the data', $throwable->getCode(), $throwable);
+            throw InvalidDataException::create($data, 'Unable to load the data', $throwable);
         }
     }
 

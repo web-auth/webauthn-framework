@@ -6,8 +6,8 @@ namespace Webauthn\TokenBinding;
 
 use function array_key_exists;
 use function in_array;
-use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Exception\InvalidDataException;
 
 /**
  * @deprecated Since 4.3.0 and will be removed in 5.0.0
@@ -26,7 +26,8 @@ class TokenBinding
 
     public function __construct(string $status, ?string $id)
     {
-        $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null && throw new InvalidArgumentException(
+        $status === self::TOKEN_BINDING_STATUS_PRESENT && $id === null && throw InvalidDataException::create(
+            [$status, $id],
             'The member "id" is required when status is "present"'
         );
         $this->status = $status;
@@ -38,9 +39,12 @@ class TokenBinding
      */
     public static function createFormArray(array $json): self
     {
-        array_key_exists('status', $json) || throw new InvalidArgumentException('The member "status" is required');
+        array_key_exists('status', $json) || throw InvalidDataException::create(
+            $json,
+            'The member "status" is required'
+        );
         $status = $json['status'];
-        in_array($status, self::getSupportedStatus(), true) || throw new InvalidArgumentException(sprintf(
+        in_array($status, self::getSupportedStatus(), true) || throw InvalidDataException::create($json, sprintf(
             'The member "status" is invalid. Supported values are: %s',
             implode(', ', self::getSupportedStatus())
         ));

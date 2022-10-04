@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\TrustPath;
 
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
+use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
@@ -61,7 +61,7 @@ final class TrustPathTest extends TestCase
      */
     public function theLoaderCannotLoadUnsupportedTypeName(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidTrustPathException::class);
         $this->expectExceptionMessage('The trust path type "foo" is not supported');
         TrustPathLoader::loadTrustPath([
             'type' => 'foo',
@@ -75,7 +75,7 @@ final class TrustPathTest extends TestCase
      */
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidTrustPathException::class);
         $this->expectExceptionMessage(
             'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
         );

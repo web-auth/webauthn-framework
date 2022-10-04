@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Guesser;
 
 use function count;
-use InvalidArgumentException;
 use function is_string;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class RequestBodyUserEntityGuesser implements UserEntityGuesser
@@ -26,9 +25,12 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
-        $request->getContentType() === 'json' || throw new InvalidArgumentException('Only JSON content type allowed');
+        $request->getContentType() === 'json' || throw InvalidDataException::create(
+            $request->getContentType(),
+            'Only JSON content type allowed'
+        );
         $content = $request->getContent();
-        is_string($content) || throw new InvalidArgumentException('Invalid data');
+        is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
 
         /** @var ServerPublicKeyCredentialCreationOptionsRequest $dto */
         $dto = $this->serializer->deserialize($content, ServerPublicKeyCredentialCreationOptionsRequest::class, 'json');
@@ -39,7 +41,7 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
-            throw new RuntimeException(implode("\n", $messages));
+            throw InvalidDataException::create(null, implode("\n", $messages));
         }
 
         $existingUserEntity = $this->userEntityRepository->findOneByUsername($dto->username);
