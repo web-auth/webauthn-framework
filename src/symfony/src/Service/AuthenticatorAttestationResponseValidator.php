@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -24,8 +23,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         ?TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        EventDispatcherInterface $eventDispatcher
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',

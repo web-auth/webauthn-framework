@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Service;
 
 use Cose\Algorithm\Manager;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -24,8 +23,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher = null
+        ?Manager $algorithmManager
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -41,8 +39,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
             $publicKeyCredentialSourceRepository,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
-            $algorithmManager,
-            $eventDispatcher
+            $algorithmManager
         );
     }
 

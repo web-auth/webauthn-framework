@@ -63,14 +63,12 @@ class AuthenticatorAssertionResponseValidator
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher = null,
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
-            $algorithmManager,
-            $eventDispatcher
+            $algorithmManager
         );
     }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use function array_key_exists;
 use RuntimeException;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
