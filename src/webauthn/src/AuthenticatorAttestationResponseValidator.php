@@ -44,12 +44,13 @@ class AuthenticatorAttestationResponseValidator
 
     private ?CertificateChainValidator $certificateChainValidator = null;
 
+    private ?EventDispatcherInterface $eventDispatcher = null;
+
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private readonly ?EventDispatcherInterface $eventDispatcher,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -65,21 +66,26 @@ class AuthenticatorAttestationResponseValidator
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?EventDispatcherInterface $eventDispatcher
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
     ): self {
         return new self(
             $attestationStatementSupportManager,
             $publicKeyCredentialSource,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
-            $eventDispatcher
         );
     }
 
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->eventDispatcher = $eventDispatcher;
 
         return $this;
     }

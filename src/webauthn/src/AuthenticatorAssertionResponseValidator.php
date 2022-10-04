@@ -9,6 +9,7 @@ use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use function count;
 use function in_array;
 use function is_array;
@@ -17,7 +18,6 @@ use function parse_url;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
@@ -38,12 +38,13 @@ class AuthenticatorAssertionResponseValidator
 
     private LoggerInterface $logger;
 
+    private ?EventDispatcherInterface $eventDispatcher = null;
+
     public function __construct(
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly ?Manager $algorithmManager,
-        private readonly ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -285,6 +286,13 @@ class AuthenticatorAssertionResponseValidator
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->eventDispatcher = $eventDispatcher;
 
         return $this;
     }

@@ -27,7 +27,7 @@ class AuthenticatorAssertionResponseValidationFailedEvent extends BaseAuthentica
             'web-auth/webauthn-symfony-bundle',
             '4.3.0',
             sprintf(
-                'The class "%s" is deprecated since 4.3.x and will be removed in 5.0.0. Please use "%s" instead.',
+                'The class "%s" is deprecated since 4.3.0 and will be removed in 5.0.0. Please use "%s" instead.',
                 self::class,
                 BaseAuthenticatorAssertionResponseValidationFailedEvent::class
             )
