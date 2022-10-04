@@ -3,55 +3,66 @@ import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
 
 class default_1 extends Controller {
     initialize() {
+        this._dispatchEvent = this._dispatchEvent.bind(this);
         this._getData = this._getData.bind(this);
         this.fetch = this.fetch.bind(this);
     }
     connect() {
-        ({
+        const options = {
             requestResultUrl: this.requestResultUrl || '/request',
             requestOptionsUrl: this.requestOptionsUrl || '/request/options',
             requestSuccessRedirectUri: this.requestSuccessRedirectUri || null,
             creationResultUrl: this.creationResultUrl || '/creation',
             creationOptionsUrl: this.creationOptionsUrl || '/creation/options',
             creationSuccessRedirectUri: this.creationSuccessRedirectUri || null,
-        });
+        };
+        this._dispatchEvent('webauthn:connect', { options });
     }
     async signin(event) {
         event.preventDefault();
         const data = this._getData();
+        this._dispatchEvent('webauthn:request:options', { data });
         const resp = await this.fetch('POST', this.requestOptionsUrlValue || '/request/options', JSON.stringify(data));
         const respJson = await resp.response;
         const asseResp = await startAuthentication(respJson);
         const verificationResp = await this.fetch('POST', this.requestResultUrlValue || '/request', JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
+        this._dispatchEvent('webauthn:request:response', { response: asseResp });
         if (verificationJSON && verificationJSON.errorMessage === '') {
+            this._dispatchEvent('webauthn:request:success', verificationJSON);
             if (this.requestSuccessRedirectUriValue) {
                 window.location.replace(this.requestSuccessRedirectUriValue);
             }
         }
         else {
-            alert('Something bad happens :( - ' + verificationJSON.errorMessage);
+            this._dispatchEvent('webauthn:request:failure', verificationJSON.errorMessage);
         }
     }
     async signup(event) {
         event.preventDefault();
         const data = this._getData();
+        this._dispatchEvent('webauthn:creation:options', { data });
         const resp = await this.fetch('POST', this.creationOptionsUrlValue || '/creation/options', JSON.stringify(data));
         const respJson = await resp.response;
         if (respJson.excludeCredentials === undefined) {
             respJson.excludeCredentials = [];
         }
         const attResp = await startRegistration(respJson);
+        this._dispatchEvent('webauthn:creation:response', { response: attResp });
         const verificationResp = await this.fetch('POST', this.creationResultUrlValue || '/creation', JSON.stringify(attResp));
         const verificationJSON = await verificationResp.response;
         if (verificationJSON && verificationJSON.errorMessage === '') {
+            this._dispatchEvent('webauthn:creation:success', verificationJSON);
             if (this.creationSuccessRedirectUriValue) {
                 window.location.replace(this.creationSuccessRedirectUriValue);
             }
         }
         else {
-            alert('Something bad happens :( - ' + verificationJSON.errorMessage);
+            this._dispatchEvent('webauthn:creation:failure', verificationJSON.errorMessage);
         }
+    }
+    _dispatchEvent(name, payload) {
+        this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
     }
     fetch(method, url, body) {
         return new Promise(function (resolve, reject) {
