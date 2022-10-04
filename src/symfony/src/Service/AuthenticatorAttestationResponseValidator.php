@@ -39,8 +39,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
             $attestationStatementSupportManager,
             $publicKeyCredentialSource,
             $tokenBindingHandler,
-            $extensionOutputCheckerHandler,
-            $eventDispatcher
+            $extensionOutputCheckerHandler
         );
     }
 

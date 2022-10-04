@@ -9,7 +9,7 @@ use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use function count;
 use function in_array;
 use function is_array;
