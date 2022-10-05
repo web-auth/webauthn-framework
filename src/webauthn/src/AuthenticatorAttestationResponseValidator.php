@@ -10,6 +10,7 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function parse_url;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -21,6 +22,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -41,11 +44,13 @@ class AuthenticatorAttestationResponseValidator
 
     private ?CertificateChainValidator $certificateChainValidator = null;
 
+    private ?EventDispatcherInterface $eventDispatcher = null;
+
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
-        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -67,13 +72,20 @@ class AuthenticatorAttestationResponseValidator
             $attestationStatementSupportManager,
             $publicKeyCredentialSource,
             $tokenBindingHandler,
-            $extensionOutputCheckerHandler
+            $extensionOutputCheckerHandler,
         );
     }
 
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->eventDispatcher = $eventDispatcher;
 
         return $this;
     }
@@ -244,13 +256,54 @@ class AuthenticatorAttestationResponseValidator
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
 
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAttestationResponseValidationSucceededEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $publicKeyCredentialSource
+            ));
+
             return $publicKeyCredentialSource;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAttestationResponseValidationFailedEvent(
+                $authenticatorAttestationResponse,
+                $publicKeyCredentialCreationOptions,
+                $request,
+                $throwable
+            ));
             throw $throwable;
         }
+    }
+
+    protected function createAuthenticatorAttestationResponseValidationSucceededEvent(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ): AuthenticatorAttestationResponseValidationSucceededEvent {
+        return new AuthenticatorAttestationResponseValidationSucceededEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $publicKeyCredentialSource
+        );
+    }
+
+    protected function createAuthenticatorAttestationResponseValidationFailedEvent(
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        Throwable $throwable
+    ): AuthenticatorAttestationResponseValidationFailedEvent {
+        return new AuthenticatorAttestationResponseValidationFailedEvent(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $throwable
+        );
     }
 
     private function checkCertificateChain(

@@ -5,53 +5,41 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Event;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent as BaseAuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 /**
  * @final
  */
-class AuthenticatorAssertionResponseValidationFailedEvent extends Event
+class AuthenticatorAssertionResponseValidationFailedEvent extends BaseAuthenticatorAssertionResponseValidationFailedEvent
 {
     public function __construct(
-        private readonly string $credentialId,
-        private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        private readonly ServerRequestInterface $request,
-        private readonly ?string $userHandle,
-        private readonly Throwable $throwable
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
     ) {
-    }
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            sprintf(
+                'The class "%s" is deprecated since 4.3.0 and will be removed in 5.0.0. Please use "%s" instead.',
+                self::class,
+                BaseAuthenticatorAssertionResponseValidationFailedEvent::class
+            )
+        );
 
-    public function getCredentialId(): string
-    {
-        return $this->credentialId;
-    }
-
-    public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse
-    {
-        return $this->authenticatorAssertionResponse;
-    }
-
-    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
-    {
-        return $this->publicKeyCredentialRequestOptions;
-    }
-
-    public function getRequest(): ServerRequestInterface
-    {
-        return $this->request;
-    }
-
-    public function getUserHandle(): ?string
-    {
-        return $this->userHandle;
-    }
-
-    public function getThrowable(): Throwable
-    {
-        return $this->throwable;
+        parent::__construct(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
     }
 }

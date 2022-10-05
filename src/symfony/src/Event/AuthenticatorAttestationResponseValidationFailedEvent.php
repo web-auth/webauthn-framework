@@ -5,41 +5,37 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Event;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent as BaseAuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
 /**
  * @final
  */
-class AuthenticatorAttestationResponseValidationFailedEvent extends Event
+class AuthenticatorAttestationResponseValidationFailedEvent extends BaseAuthenticatorAttestationResponseValidationFailedEvent
 {
     public function __construct(
-        private readonly AuthenticatorAttestationResponse $authenticatorAttestationResponse,
-        private readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        private readonly ServerRequestInterface $request,
-        private readonly Throwable $throwable
+        AuthenticatorAttestationResponse $authenticatorAttestationResponse,
+        PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
+        ServerRequestInterface $request,
+        Throwable $throwable
     ) {
-    }
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            sprintf(
+                'The class "%s" is deprecated since 4.3.0 and will be removed in 5.0.0. Please use "%s" instead.',
+                self::class,
+                BaseAuthenticatorAttestationResponseValidationFailedEvent::class
+            )
+        );
 
-    public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse
-    {
-        return $this->authenticatorAttestationResponse;
-    }
-
-    public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
-    {
-        return $this->publicKeyCredentialCreationOptions;
-    }
-
-    public function getRequest(): ServerRequestInterface
-    {
-        return $this->request;
-    }
-
-    public function getThrowable(): Throwable
-    {
-        return $this->throwable;
+        parent::__construct(
+            $authenticatorAttestationResponse,
+            $publicKeyCredentialCreationOptions,
+            $request,
+            $throwable
+        );
     }
 }

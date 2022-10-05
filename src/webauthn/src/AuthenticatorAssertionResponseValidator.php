@@ -14,6 +14,7 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function parse_url;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,6 +24,8 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
@@ -34,6 +37,8 @@ class AuthenticatorAssertionResponseValidator
     private CounterChecker $counterChecker;
 
     private LoggerInterface $logger;
+
+    private ?EventDispatcherInterface $eventDispatcher = null;
 
     public function __construct(
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
@@ -248,11 +253,30 @@ class AuthenticatorAssertionResponseValidator
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
 
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationSucceededEvent(
+                $credentialId,
+                $authenticatorAssertionResponse,
+                $publicKeyCredentialRequestOptions,
+                $request,
+                $userHandle,
+                $publicKeyCredentialSource
+            ));
+
             return $publicKeyCredentialSource;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
+
+            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationFailedEvent(
+                $credentialId,
+                $authenticatorAssertionResponse,
+                $publicKeyCredentialRequestOptions,
+                $request,
+                $userHandle,
+                $throwable
+            ));
+
             throw $throwable;
         }
     }
@@ -264,11 +288,54 @@ class AuthenticatorAssertionResponseValidator
         return $this;
     }
 
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    {
+        $this->eventDispatcher = $eventDispatcher;
+
+        return $this;
+    }
+
     public function setCounterChecker(CounterChecker $counterChecker): self
     {
         $this->counterChecker = $counterChecker;
 
         return $this;
+    }
+
+    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ): AuthenticatorAssertionResponseValidationSucceededEvent {
+        return new AuthenticatorAssertionResponseValidationSucceededEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $publicKeyCredentialSource
+        );
+    }
+
+    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
+    ): AuthenticatorAssertionResponseValidationFailedEvent {
+        return new AuthenticatorAssertionResponseValidationFailedEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
     }
 
     /**
