@@ -6,12 +6,12 @@ namespace Webauthn\Bundle\Controller;
 
 use function count;
 use const FILTER_VALIDATE_BOOLEAN;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -50,11 +50,11 @@ final class AttestationRequestController
     public function __invoke(Request $request): Response
     {
         try {
-            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+            $request->getContentType() === 'json' || throw new BadRequestHttpException(
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new InvalidArgumentException('Invalid data');
+            is_string($content) || throw new BadRequestHttpException('Invalid data');
 
             $userEntity = $this->userEntityGuesser->findUserEntity($request);
             $publicKeyCredentialCreationOptions = $this->getPublicKeyCredentialCreationOptions(
@@ -138,7 +138,7 @@ final class AttestationRequestController
         string $content
     ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
-        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new InvalidArgumentException(
+        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new BadRequestHttpException(
             'Invalid data'
         );
         $errors = $this->validator->validate($data);

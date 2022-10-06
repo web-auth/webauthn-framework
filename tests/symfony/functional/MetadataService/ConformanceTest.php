@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\MetadataService;
 
-use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -35,7 +35,7 @@ final class ConformanceTest extends KernelTestCase
                 file_get_contents(__DIR__ . '/../../../blob.jwt')
             )),
         ]);
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage(
             'The Metadata Statement for the AAGUID "4b46ebe2-9866-427e-b7a4-ab926b2aa12f" is missing'
         );

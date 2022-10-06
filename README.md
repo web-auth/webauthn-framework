@@ -18,6 +18,11 @@ into their web applications.
 
 The documentation can be read on the following website: https://webauthn-doc.spomky-labs.com/
 
+# Partnership
+
+This project is tested with BrowserStack (https://www.browserstack.com/) 🎉.
+BrowserStack is an amazing tool that helps in testing apps and browsers. It is especially useful here for debugging or validating features with multiple browsers and platform versions.
+
 # Support
 
 I bring solutions to your problems and answer your questions.

@@ -9,10 +9,10 @@ use ArrayIterator;
 use function count;
 use const COUNT_NORMAL;
 use Countable;
-use InvalidArgumentException;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Webauthn\Exception\AuthenticationExtensionException;
 
 /**
  * @implements IteratorAggregate<AuthenticationExtension>
@@ -58,7 +58,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
 
     public function get(string $key): AuthenticationExtension
     {
-        $this->has($key) || throw new InvalidArgumentException(sprintf(
+        $this->has($key) || throw AuthenticationExtensionException::create(sprintf(
             'The extension with key "%s" is not available',
             $key
         ));

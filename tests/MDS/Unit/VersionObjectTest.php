@@ -6,8 +6,8 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
-use LogicException;
 use PHPUnit\Framework\TestCase;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\Version;
 
 /**
@@ -41,7 +41,7 @@ final class VersionObjectTest extends TestCase
      */
     public function invalidObject(?int $major, ?int $minor, string $expectedMessage): void
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         new Version($major, $minor);

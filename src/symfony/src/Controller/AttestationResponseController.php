@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use InvalidArgumentException;
 use function is_string;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
@@ -42,25 +42,25 @@ final class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+            $request->getContentType() === 'json' || throw new BadRequestHttpException(
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new InvalidArgumentException('Invalid data');
+            is_string($content) || throw new BadRequestHttpException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            $response instanceof AuthenticatorAttestationResponse || throw new InvalidArgumentException(
+            $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
                 'Invalid response'
             );
 
             $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
 
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
-            $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new InvalidArgumentException(
+            $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new BadRequestHttpException(
                 'Unable to find the public key credential creation options'
             );
             $userEntity = $storedData->getPublicKeyCredentialUserEntity();
-            $userEntity instanceof PublicKeyCredentialUserEntity || throw new InvalidArgumentException(
+            $userEntity instanceof PublicKeyCredentialUserEntity || throw new BadRequestHttpException(
                 'Unable to find the public key credential user entity'
             );
             $psr7Request = $this->httpMessageFactory->createRequest($request);
@@ -74,7 +74,7 @@ final class AttestationResponseController
             if ($this->credentialSourceRepository->findOneByCredentialId(
                 $credentialSource->getPublicKeyCredentialId()
             ) !== null) {
-                throw new InvalidArgumentException('The credentials already exists');
+                throw new BadRequestHttpException('The credentials already exists');
             }
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
 

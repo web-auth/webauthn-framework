@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use function array_key_exists;
-use InvalidArgumentException;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
@@ -33,7 +33,7 @@ final class PublicKeyCredentialRequestOptionsFactory
         ?string $userVerification = null,
         ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
     ): PublicKeyCredentialRequestOptions {
-        array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
+        array_key_exists($key, $this->profiles) || throw new RuntimeException(sprintf(
             'The profile with key "%s" does not exist.',
             $key
         ));

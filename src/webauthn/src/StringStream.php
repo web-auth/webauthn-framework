@@ -9,8 +9,8 @@ use function fclose;
 use function fopen;
 use function fread;
 use function fwrite;
-use InvalidArgumentException;
 use function rewind;
+use Webauthn\Exception\InvalidDataException;
 
 final class StringStream implements Stream
 {
@@ -39,7 +39,7 @@ final class StringStream implements Stream
         }
         $read = fread($this->data, $length);
         $bytesRead = mb_strlen($read, '8bit');
-        mb_strlen($read, '8bit') === $length || throw new InvalidArgumentException(sprintf(
+        mb_strlen($read, '8bit') === $length || throw InvalidDataException::create(null, sprintf(
             'Out of range. Expected: %d, read: %d.',
             $length,
             $bytesRead

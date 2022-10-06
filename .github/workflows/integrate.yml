@@ -14,11 +14,11 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" == ""
+          test "$(find ./src -type f -not -path './.git/*' -executable)" == ""
 
       - name: "Find non-printable ASCII characters"
         run: |
@@ -35,7 +35,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -69,7 +69,7 @@ jobs:
           coverage: "xdebug"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -106,7 +106,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Validate Composer configuration"
         run: "composer validate --strict"
@@ -138,7 +138,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Check adherence to EditorConfig"
         uses: "greut/eclint-action@v0"
@@ -171,7 +171,7 @@ jobs:
           coverage: "xdebug"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Fetch Git base reference"
         run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
@@ -200,7 +200,7 @@ jobs:
           coverage: "xdebug"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Fetch Git base reference"
         run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
@@ -222,11 +222,11 @@ jobs:
     runs-on: "ubuntu-20.04"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v3.1.0"
 
       - name: "Check exported files"
         run: |
-          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json,package.json"
+          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json,link,package.json"
           CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
           echo "CURRENT =${CURRENT}"
           echo "EXPECTED=${EXPECTED}"

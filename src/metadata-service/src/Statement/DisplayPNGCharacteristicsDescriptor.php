@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
@@ -40,13 +40,15 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $filter,
         int $interlace
     ) {
-        $width >= 0 || throw new InvalidArgumentException('Invalid width');
-        $height >= 0 || throw new InvalidArgumentException('Invalid height');
-        ($bitDepth >= 0 && $bitDepth <= 254) || throw new InvalidArgumentException('Invalid bit depth');
-        ($colorType >= 0 && $colorType <= 254) || throw new InvalidArgumentException('Invalid color type');
-        ($compression >= 0 && $compression <= 254) || throw new InvalidArgumentException('Invalid compression');
-        ($filter >= 0 && $filter <= 254) || throw new InvalidArgumentException('Invalid filter');
-        ($interlace >= 0 && $interlace <= 254) || throw new InvalidArgumentException('Invalid interlace');
+        $width >= 0 || throw MetadataStatementLoadingException::create('Invalid width');
+        $height >= 0 || throw MetadataStatementLoadingException::create('Invalid height');
+        ($bitDepth >= 0 && $bitDepth <= 254) || throw MetadataStatementLoadingException::create('Invalid bit depth');
+        ($colorType >= 0 && $colorType <= 254) || throw MetadataStatementLoadingException::create('Invalid color type');
+        ($compression >= 0 && $compression <= 254) || throw MetadataStatementLoadingException::create(
+            'Invalid compression'
+        );
+        ($filter >= 0 && $filter <= 254) || throw MetadataStatementLoadingException::create('Invalid filter');
+        ($interlace >= 0 && $interlace <= 254) || throw MetadataStatementLoadingException::create('Invalid interlace');
 
         $this->width = $width;
         $this->height = $height;
@@ -125,7 +127,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
             'filter',
             'interlace',
         ] as $key) {
-            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+            array_key_exists($key, $data) || throw MetadataStatementLoadingException::create(sprintf(
                 'Invalid data. The key "%s" is missing',
                 $key
             ));
@@ -141,7 +143,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            is_array($plte) || throw new InvalidArgumentException('Invalid "plte" parameter');
+            is_array($plte) || throw MetadataStatementLoadingException::create('Invalid "plte" parameter');
             foreach ($plte as $item) {
                 $object->addPalettes(RgbPaletteEntry::createFromArray($item));
             }

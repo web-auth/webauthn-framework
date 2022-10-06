@@ -13,12 +13,15 @@ use Cose\Algorithms;
 use Cose\Key\Key;
 use function count;
 use function in_array;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use function openssl_verify;
-use RuntimeException;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\AttestationStatementLoadingException;
+use Webauthn\Exception\AttestationStatementVerificationException;
+use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\InvalidDataException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -51,13 +54,16 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     public function load(array $attestation): AttestationStatement
     {
-        array_key_exists('sig', $attestation['attStmt']) || throw new InvalidArgumentException(
+        array_key_exists('sig', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+            $attestation,
             'The attestation statement value "sig" is missing.'
         );
-        array_key_exists('alg', $attestation['attStmt']) || throw new InvalidArgumentException(
+        array_key_exists('alg', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+            $attestation,
             'The attestation statement value "alg" is missing.'
         );
-        is_string($attestation['attStmt']['sig']) || throw new InvalidArgumentException(
+        is_string($attestation['attStmt']['sig']) || throw AttestationStatementLoadingException::create(
+            $attestation,
             'The attestation statement value "sig" is missing.'
         );
 
@@ -88,7 +94,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
                 $attestationStatement,
                 $authenticatorData
             ),
-            default => throw new InvalidArgumentException('Unsupported attestation statement'),
+            default => throw InvalidAttestationStatementException::create(
+                $attestationStatement,
+                'Unsupported attestation statement'
+            ),
         };
     }
 
@@ -98,10 +107,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function loadBasicType(array $attestation): AttestationStatement
     {
         $certificates = $attestation['attStmt']['x5c'];
-        is_array($certificates) || throw new InvalidArgumentException(
+        is_array($certificates) || throw AttestationStatementVerificationException::create(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
-        count($certificates) > 0 || throw new InvalidArgumentException(
+        count($certificates) > 0 || throw AttestationStatementVerificationException::create(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
@@ -119,7 +128,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function loadEcdaaType(array $attestation): AttestationStatement
     {
         $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
-        is_string($ecdaaKeyId) || throw new InvalidArgumentException(
+        is_string($ecdaaKeyId) || throw AttestationStatementVerificationException::create(
             'The attestation statement value "ecdaaKeyId" is invalid.'
         );
 
@@ -141,34 +150,47 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
     {
         $parsed = openssl_x509_parse($attestnCert);
-        is_array($parsed) || throw new InvalidArgumentException('Invalid certificate');
+        is_array($parsed) || throw AttestationStatementVerificationException::create('Invalid certificate');
 
         //Check version
-        isset($parsed['version']) || throw new InvalidArgumentException('Invalid certificate version');
-        $parsed['version'] === 2 || throw new InvalidArgumentException('Invalid certificate version');
+        isset($parsed['version']) || throw AttestationStatementVerificationException::create(
+            'Invalid certificate version'
+        );
+        $parsed['version'] === 2 || throw AttestationStatementVerificationException::create(
+            'Invalid certificate version'
+        );
 
         //Check subject field
-        isset($parsed['name']) || throw new InvalidArgumentException(
+        isset($parsed['name']) || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
-        str_contains((string) $parsed['name'], '/OU=Authenticator Attestation') || throw new InvalidArgumentException(
+        str_contains(
+            (string) $parsed['name'],
+            '/OU=Authenticator Attestation'
+        ) || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
         //Check extensions
-        isset($parsed['extensions']) || throw new InvalidArgumentException('Certificate extensions are missing');
-        is_array($parsed['extensions']) || throw new InvalidArgumentException('Certificate extensions are missing');
+        isset($parsed['extensions']) || throw AttestationStatementVerificationException::create(
+            'Certificate extensions are missing'
+        );
+        is_array($parsed['extensions']) || throw AttestationStatementVerificationException::create(
+            'Certificate extensions are missing'
+        );
 
         //Check certificate is not a CA cert
-        isset($parsed['extensions']['basicConstraints']) || throw new InvalidArgumentException(
+        isset($parsed['extensions']['basicConstraints']) || throw AttestationStatementVerificationException::create(
             'The Basic Constraints extension must have the CA component set to false'
         );
-        $parsed['extensions']['basicConstraints'] === 'CA:FALSE' || throw new InvalidArgumentException(
+        $parsed['extensions']['basicConstraints'] === 'CA:FALSE' || throw AttestationStatementVerificationException::create(
             'The Basic Constraints extension must have the CA component set to false'
         );
 
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential available');
+        $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
+            'No attested credential available'
+        );
 
         // id-fido-gen-ce-aaguid OID check
         if (in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true)) {
@@ -176,7 +198,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
                 $attestedCredentialData->getAaguid()
                     ->toBinary(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
-            ) || throw new InvalidArgumentException(
+            ) || throw AttestationStatementVerificationException::create(
                 'The value of the "aaguid" does not match with the certificate'
             );
         }
@@ -211,7 +233,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
     private function processWithECDAA(): never
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 
     private function processWithSelfAttestation(
@@ -220,28 +242,34 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AuthenticatorData $authenticatorData
     ): bool {
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
-        $attestedCredentialData !== null || throw new InvalidArgumentException('No attested credential available');
+        $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
+            'No attested credential available'
+        );
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
-        $credentialPublicKey !== null || throw new InvalidArgumentException('No credential public key available');
+        $credentialPublicKey !== null || throw AttestationStatementVerificationException::create(
+            'No credential public key available'
+        );
         $publicKeyStream = new StringStream($credentialPublicKey);
         $publicKey = $this->decoder->decode($publicKeyStream);
-        $publicKeyStream->isEOF() || throw new InvalidArgumentException(
+        $publicKeyStream->isEOF() || throw AttestationStatementVerificationException::create(
             'Invalid public key. Presence of extra bytes.'
         );
         $publicKeyStream->close();
-        $publicKey instanceof MapObject || throw new InvalidArgumentException(
+        $publicKey instanceof MapObject || throw AttestationStatementVerificationException::create(
             'The attested credential data does not contain a valid public key.'
         );
         $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
-        $publicKey->alg() === (int) $attestationStatement->get('alg') || throw new InvalidArgumentException(
+        $publicKey->alg() === (int) $attestationStatement->get(
+            'alg'
+        ) || throw AttestationStatementVerificationException::create(
             'The algorithm of the attestation statement and the key are not identical.'
         );
 
         $dataToVerify = $authenticatorData->getAuthData() . $clientDataJSONHash;
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         if (! $algorithm instanceof Signature) {
-            throw new RuntimeException('Invalid algorithm');
+            throw InvalidDataException::create($algorithm, 'Invalid algorithm');
         }
         $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);
 

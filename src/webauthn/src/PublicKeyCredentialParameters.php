@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
+use Webauthn\Exception\InvalidDataException;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
@@ -44,8 +44,11 @@ class PublicKeyCredentialParameters implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        array_key_exists('type', $json) || throw new InvalidArgumentException('Invalid input. "type" is missing.');
-        array_key_exists('alg', $json) || throw new InvalidArgumentException('Invalid input. "alg" is missing.');
+        array_key_exists('type', $json) || throw InvalidDataException::create(
+            $json,
+            'Invalid input. "type" is missing.'
+        );
+        array_key_exists('alg', $json) || throw InvalidDataException::create($json, 'Invalid input. "alg" is missing.');
 
         return new self($json['type'], $json['alg']);
     }

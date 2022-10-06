@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use InvalidArgumentException;
 use function is_string;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
@@ -37,19 +37,19 @@ final class AssertionResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            $request->getContentType() === 'json' || throw new InvalidArgumentException(
+            $request->getContentType() === 'json' || throw new BadRequestHttpException(
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new InvalidArgumentException('Invalid data');
+            is_string($content) || throw new BadRequestHttpException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
-            $response instanceof AuthenticatorAssertionResponse || throw new InvalidArgumentException(
+            $response instanceof AuthenticatorAssertionResponse || throw new BadRequestHttpException(
                 'Invalid response'
             );
             $data = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
-            $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw new InvalidArgumentException(
+            $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw new BadRequestHttpException(
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();

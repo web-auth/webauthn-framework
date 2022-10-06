@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function count;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 final class NoneAttestationStatementSupport implements AttestationStatementSupport
@@ -31,8 +31,14 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         $format = $attestation['fmt'] ?? null;
         $attestationStatement = $attestation['attStmt'] ?? [];
 
-        (is_string($format) && $format !== '') || throw new InvalidArgumentException('Invalid attestation object');
-        (is_array($attestationStatement) && $attestationStatement === []) || throw new InvalidArgumentException(
+        (is_string($format) && $format !== '') || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'Invalid attestation object'
+        );
+        (is_array(
+            $attestationStatement
+        ) && $attestationStatement === []) || throw AttestationStatementLoadingException::create(
+            $attestation,
             'Invalid attestation object'
         );
 
