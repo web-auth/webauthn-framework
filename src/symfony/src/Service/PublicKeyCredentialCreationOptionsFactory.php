@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use function array_key_exists;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;

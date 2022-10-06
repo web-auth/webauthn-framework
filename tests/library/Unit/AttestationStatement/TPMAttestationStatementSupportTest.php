@@ -57,7 +57,6 @@ final class TPMAttestationStatementSupportTest extends TestCase
             $pkSourceRepository,
             IgnoreTokenBindingHandler::create(),
             ExtensionOutputCheckerHandler::create(),
-            null,
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
