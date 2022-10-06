@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
+use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
 final class DistantResourceMetadataService implements MetadataService
@@ -43,17 +44,23 @@ final class DistantResourceMetadataService implements MetadataService
     public function list(): iterable
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
         $aaguid = $this->statement->getAaguid();
-        $aaguid !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
-
-        yield from [$aaguid];
+        if ($aaguid === null) {
+            yield from [];
+        } else {
+            yield from [$aaguid];
+        }
     }
 
     public function has(string $aaguid): bool
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
 
         return $aaguid === $this->statement->getAaguid();
     }
@@ -61,13 +68,15 @@ final class DistantResourceMetadataService implements MetadataService
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
-        $this->statement !== null || throw new InvalidArgumentException('Unable to load the metadata statement');
+        $this->statement !== null || throw MetadataStatementLoadingException::create(
+            'Unable to load the metadata statement'
+        );
 
         if ($aaguid === $this->statement->getAaguid()) {
             return $this->statement;
         }
 
-        throw new InvalidArgumentException(sprintf('The Metadata Statement with AAGUID "%s" is missing', $aaguid));
+        throw MissingMetadataStatementException::create($aaguid);
     }
 
     private function loadData(): void
@@ -90,7 +99,7 @@ final class DistantResourceMetadataService implements MetadataService
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        $response->getStatusCode() === 200 || throw new InvalidArgumentException(sprintf(
+        $response->getStatusCode() === 200 || throw MetadataStatementLoadingException::create(sprintf(
             'Unable to contact the server. Response code is %d',
             $response->getStatusCode()
         ));
@@ -98,7 +107,7 @@ final class DistantResourceMetadataService implements MetadataService
             ->rewind();
         $content = $response->getBody()
             ->getContents();
-        $content !== '' || throw new InvalidArgumentException(
+        $content !== '' || throw MetadataStatementLoadingException::create(
             'Unable to contact the server. The response has no content'
         );
 

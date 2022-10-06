@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
+use Webauthn\Exception\AttestationStatementLoadingException;
 
 /**
  * @internal
@@ -18,7 +18,7 @@ final class AppleAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
         $support = new AppleAttestationStatementSupport();
         static::assertFalse($support->load([
@@ -34,7 +34,7 @@ final class AppleAttestationStatementSupportTest extends TestCase
      */
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );

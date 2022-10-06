@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Webauthn\TokenBinding;
 
 use function count;
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use Webauthn\Exception\InvalidDataException;
 
+/**
+ * @deprecated Since 4.3.0 and will be removed in 5.0.0
+ */
 final class SecTokenBindingHandler implements TokenBindingHandler
 {
     public static function create(): self
@@ -21,15 +24,18 @@ final class SecTokenBindingHandler implements TokenBindingHandler
             return;
         }
 
-        $request->hasHeader('Sec-Token-Binding') || throw new InvalidArgumentException(
+        $request->hasHeader('Sec-Token-Binding') || throw InvalidDataException::create(
+            $tokenBinding,
             'The header parameter "Sec-Token-Binding" is missing.'
         );
         $tokenBindingIds = $request->getHeader('Sec-Token-Binding');
-        count($tokenBindingIds) === 1 || throw new InvalidArgumentException(
+        count($tokenBindingIds) === 1 || throw InvalidDataException::create(
+            $tokenBinding,
             'The header parameter "Sec-Token-Binding" is invalid.'
         );
         $tokenBindingId = reset($tokenBindingIds);
-        $tokenBindingId === $tokenBinding->getId() || throw new InvalidArgumentException(
+        $tokenBindingId === $tokenBinding->getId() || throw InvalidDataException::create(
+            $tokenBinding,
             'The header parameter "Sec-Token-Binding" is invalid.'
         );
     }

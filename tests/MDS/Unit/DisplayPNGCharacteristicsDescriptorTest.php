@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\DisplayPNGCharacteristicsDescriptor;
 
 /**
@@ -28,7 +28,7 @@ final class DisplayPNGCharacteristicsDescriptorTest extends TestCase
         string $message
     ): void {
         //Then
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(MetadataStatementLoadingException::class);
         static::expectExceptionMessage($message);
 
         //When

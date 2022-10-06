@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Exception\InvalidDataException;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
@@ -22,7 +22,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
-        mb_strlen($id, '8bit') <= 64 || throw new InvalidArgumentException('User ID max length is 64 bytes');
+        mb_strlen($id, '8bit') <= 64 || throw InvalidDataException::create($id, 'User ID max length is 64 bytes');
         $this->id = $id;
     }
 
@@ -44,7 +44,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        is_array($data) || throw new InvalidArgumentException('Invalid data');
+        is_array($data) || throw InvalidDataException::create($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -54,9 +54,13 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
      */
     public static function createFromArray(array $json): self
     {
-        array_key_exists('name', $json) || throw new InvalidArgumentException('Invalid input. "name" is missing.');
-        array_key_exists('id', $json) || throw new InvalidArgumentException('Invalid input. "id" is missing.');
-        array_key_exists('displayName', $json) || throw new InvalidArgumentException(
+        array_key_exists('name', $json) || throw InvalidDataException::create(
+            $json,
+            'Invalid input. "name" is missing.'
+        );
+        array_key_exists('id', $json) || throw InvalidDataException::create($json, 'Invalid input. "id" is missing.');
+        array_key_exists('displayName', $json) || throw InvalidDataException::create(
+            $json,
             'Invalid input. "displayName" is missing.'
         );
         $id = Base64::decode($json['id'], true);

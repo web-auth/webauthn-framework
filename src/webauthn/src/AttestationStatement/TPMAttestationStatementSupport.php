@@ -16,7 +16,6 @@ use function count;
 use DateTimeImmutable;
 use DateTimeZone;
 use function in_array;
-use InvalidArgumentException;
 use function is_array;
 use function is_int;
 use Lcobucci\Clock\Clock;
@@ -27,6 +26,10 @@ use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\AttestationStatementLoadingException;
+use Webauthn\Exception\AttestationStatementVerificationException;
+use Webauthn\Exception\InvalidAttestationStatementException;
+use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -67,20 +70,28 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
      */
     public function load(array $attestation): AttestationStatement
     {
-        array_key_exists('attStmt', $attestation) || throw new InvalidArgumentException('Invalid attestation object');
-        ! array_key_exists('ecdaaKeyId', $attestation['attStmt']) || throw new InvalidArgumentException(
+        array_key_exists('attStmt', $attestation) || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'Invalid attestation object'
+        );
+        ! array_key_exists('ecdaaKeyId', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+            $attestation,
             'ECDAA not supported'
         );
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
-            array_key_exists($key, $attestation['attStmt']) || throw new InvalidArgumentException(sprintf(
-                'The attestation statement value "%s" is missing.',
-                $key
-            ));
+            array_key_exists($key, $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+                $attestation,
+                sprintf('The attestation statement value "%s" is missing.', $key)
+            );
         }
-        $attestation['attStmt']['ver'] === '2.0' || throw new InvalidArgumentException('Invalid attestation object');
+        $attestation['attStmt']['ver'] === '2.0' || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'Invalid attestation object'
+        );
 
         $certInfo = $this->checkCertInfo($attestation['attStmt']['certInfo']);
-        bin2hex((string) $certInfo['type']) === '8017' || throw new InvalidArgumentException(
+        bin2hex((string) $certInfo['type']) === '8017' || throw AttestationStatementLoadingException::create(
+            $attestation,
             'Invalid attestation object'
         );
 
@@ -92,13 +103,17 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             true
         );
         $attestedName = $pubAreaAttestedNameAlg . $pubAreaHash;
-        $attestedName === $certInfo['attestedName'] || throw new InvalidArgumentException('Invalid attested name');
+        $attestedName === $certInfo['attestedName'] || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'Invalid attested name'
+        );
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
-        count($certificates) > 0 || throw new InvalidArgumentException(
+        count($certificates) > 0 || throw AttestationStatementLoadingException::create(
+            $attestation,
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
 
@@ -122,9 +137,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
         $attestationStatement->get(
             'parsedCertInfo'
-        )['extraData'] === $attToBeSignedHash || throw new InvalidArgumentException('Invalid attestation hash');
+        )['extraData'] === $attToBeSignedHash || throw InvalidAttestationStatementException::create(
+            $attestationStatement,
+            'Invalid attestation hash'
+        );
         $credentialPublicKey = $authenticatorData->getAttestedCredentialData()?->getCredentialPublicKey();
-        $credentialPublicKey !== null || throw new InvalidArgumentException(
+        $credentialPublicKey !== null || throw InvalidAttestationStatementException::create(
+            $attestationStatement,
             'Not credential public key available in the attested credential data'
         );
         $this->checkUniquePublicKey($attestationStatement->get('parsedPubArea')['unique'], $credentialPublicKey);
@@ -135,7 +154,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 $authenticatorData
             ),
             $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
-            default => throw new InvalidArgumentException('Unsupported attestation statement'),
+            default => throw InvalidAttestationStatementException::create(
+                $attestationStatement,
+                'Unsupported attestation statement'
+            ),
         };
     }
 
@@ -143,7 +165,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     {
         $cborDecoder = Decoder::create();
         $publicKey = $cborDecoder->decode(new StringStream($cborPublicKey));
-        $publicKey instanceof MapObject || throw new InvalidArgumentException('Invalid public key');
+        $publicKey instanceof MapObject || throw AttestationStatementVerificationException::create(
+            'Invalid public key'
+        );
         $key = Key::create($publicKey->normalize());
 
         switch ($key->type()) {
@@ -158,10 +182,12 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 $uniqueFromKey = (new RsaKey($key->getData()))->n();
                 break;
             default:
-                throw new InvalidArgumentException('Invalid or unsupported key type.');
+                throw AttestationStatementVerificationException::create('Invalid or unsupported key type.');
         }
 
-        $unique === $uniqueFromKey || throw new InvalidArgumentException('Invalid pubArea.unique value');
+        $unique === $uniqueFromKey || throw AttestationStatementVerificationException::create(
+            'Invalid pubArea.unique value'
+        );
     }
 
     /**
@@ -172,7 +198,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $certInfo = new StringStream($data);
 
         $magic = $certInfo->read(4);
-        bin2hex($magic) === 'ff544347' || throw new InvalidArgumentException('Invalid attestation object');
+        bin2hex($magic) === 'ff544347' || throw AttestationStatementVerificationException::create(
+            'Invalid attestation object'
+        );
 
         $type = $certInfo->read(2);
 
@@ -191,7 +219,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         $attestedQualifiedNameLength = unpack('n', $certInfo->read(2))[1];
         $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLength); //Ignore
-        $certInfo->isEOF() || throw new InvalidArgumentException(
+        $certInfo->isEOF() || throw AttestationStatementVerificationException::create(
             'Invalid certificate information. Presence of extra bytes.'
         );
         $certInfo->close();
@@ -227,7 +255,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $parameters = $this->getParameters($type, $pubArea);
 
         $unique = $this->getUnique($type, $pubArea);
-        $pubArea->isEOF() || throw new InvalidArgumentException('Invalid public area. Presence of extra bytes.');
+        $pubArea->isEOF() || throw AttestationStatementVerificationException::create(
+            'Invalid public area. Presence of extra bytes.'
+        );
         $pubArea->close();
 
         return [
@@ -258,7 +288,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 'curveId' => $stream->read(2),
                 'kdf' => $stream->read(2),
             ],
-            default => throw new InvalidArgumentException('Unsupported type'),
+            default => throw AttestationStatementVerificationException::create('Unsupported type'),
         };
     }
 
@@ -275,7 +305,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 $y = $stream->read($yLen);
                 return "\04" . $x . $y;
             default:
-                throw new InvalidArgumentException('Unsupported type');
+                throw AttestationStatementVerificationException::create('Unsupported type');
         }
     }
 
@@ -291,7 +321,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             '000b' => 'sha256',
             '000c' => 'sha384',
             '000d' => 'sha512',
-            default => throw new InvalidArgumentException('Unsupported hash algorithm'),
+            default => throw AttestationStatementVerificationException::create('Unsupported hash algorithm'),
         };
     }
 
@@ -300,7 +330,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         AuthenticatorData $authenticatorData
     ): bool {
         $trustPath = $attestationStatement->getTrustPath();
-        $trustPath instanceof CertificateTrustPath || throw new InvalidArgumentException('Invalid trust path');
+        $trustPath instanceof CertificateTrustPath || throw AttestationStatementVerificationException::create(
+            'Invalid trust path'
+        );
 
         $certificates = $trustPath->getCertificates();
 
@@ -324,54 +356,62 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
     {
         $parsed = openssl_x509_parse($attestnCert);
-        is_array($parsed) || throw new InvalidArgumentException('Invalid certificate');
+        is_array($parsed) || throw AttestationStatementVerificationException::create('Invalid certificate');
 
         //Check version
-        (isset($parsed['version']) && $parsed['version'] === 2) || throw new InvalidArgumentException(
+        (isset($parsed['version']) && $parsed['version'] === 2) || throw AttestationStatementVerificationException::create(
             'Invalid certificate version'
         );
 
         //Check subject field is empty
-        isset($parsed['subject']) || throw new InvalidArgumentException(
+        isset($parsed['subject']) || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject should be empty'
         );
-        is_array($parsed['subject']) || throw new InvalidArgumentException(
+        is_array($parsed['subject']) || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject should be empty'
         );
-        count($parsed['subject']) === 0 || throw new InvalidArgumentException(
+        count($parsed['subject']) === 0 || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject should be empty'
         );
 
         // Check period of validity
-        array_key_exists('validFrom_time_t', $parsed) || throw new InvalidArgumentException(
+        array_key_exists('validFrom_time_t', $parsed) || throw AttestationStatementVerificationException::create(
             'Invalid certificate start date.'
         );
-        is_int($parsed['validFrom_time_t']) || throw new InvalidArgumentException('Invalid certificate start date.');
+        is_int($parsed['validFrom_time_t']) || throw AttestationStatementVerificationException::create(
+            'Invalid certificate start date.'
+        );
         $startDate = (new DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
-        $startDate < $this->clock->now() || throw new InvalidArgumentException('Invalid certificate start date.');
+        $startDate < $this->clock->now() || throw AttestationStatementVerificationException::create(
+            'Invalid certificate start date.'
+        );
 
-        array_key_exists('validTo_time_t', $parsed) || throw new InvalidArgumentException(
+        array_key_exists('validTo_time_t', $parsed) || throw AttestationStatementVerificationException::create(
             'Invalid certificate end date.'
         );
-        is_int($parsed['validTo_time_t']) || throw new InvalidArgumentException('Invalid certificate end date.');
+        is_int($parsed['validTo_time_t']) || throw AttestationStatementVerificationException::create(
+            'Invalid certificate end date.'
+        );
         $endDate = (new DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
-        $endDate > $this->clock->now() || throw new InvalidArgumentException('Invalid certificate end date.');
-
-        //Check extensions
-        (isset($parsed['extensions']) && is_array($parsed['extensions'])) || throw new InvalidArgumentException(
-            'Certificate extensions are missing'
+        $endDate > $this->clock->now() || throw AttestationStatementVerificationException::create(
+            'Invalid certificate end date.'
         );
 
+        //Check extensions
+        (isset($parsed['extensions']) && is_array(
+            $parsed['extensions']
+        )) || throw AttestationStatementVerificationException::create('Certificate extensions are missing');
+
         //Check subjectAltName
-        isset($parsed['extensions']['subjectAltName']) || throw new InvalidArgumentException(
+        isset($parsed['extensions']['subjectAltName']) || throw AttestationStatementVerificationException::create(
             'The "subjectAltName" is missing'
         );
 
         //Check extendedKeyUsage
-        isset($parsed['extensions']['extendedKeyUsage']) || throw new InvalidArgumentException(
+        isset($parsed['extensions']['extendedKeyUsage']) || throw AttestationStatementVerificationException::create(
             'The "subjectAltName" is missing'
         );
-        $parsed['extensions']['extendedKeyUsage'] === '2.23.133.8.3' || throw new InvalidArgumentException(
+        $parsed['extensions']['extendedKeyUsage'] === '2.23.133.8.3' || throw AttestationStatementVerificationException::create(
             'The "extendedKeyUsage" is invalid'
         );
 
@@ -381,11 +421,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 ?->getAaguid()
                 ->toBinary() ?? '',
             $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
-        ) && throw new InvalidArgumentException('The value of the "aaguid" does not match with the certificate');
+        ) && throw AttestationStatementVerificationException::create(
+            'The value of the "aaguid" does not match with the certificate'
+        );
     }
 
     private function processWithECDAA(): never
     {
-        throw new RuntimeException('ECDAA not supported');
+        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 }

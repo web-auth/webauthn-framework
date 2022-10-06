@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_int;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
@@ -15,7 +15,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        $minComplexity >= 0 || throw new InvalidArgumentException(
+        $minComplexity >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "minComplexity" must be a positive integer'
         );
         $this->minComplexity = $minComplexity;
@@ -33,12 +33,12 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
     public static function createFromArray(array $data): self
     {
         $data = Utils::filterNullValues($data);
-        array_key_exists('minComplexity', $data) || throw new InvalidArgumentException(
+        array_key_exists('minComplexity', $data) || throw MetadataStatementLoadingException::create(
             'The key "minComplexity" is missing'
         );
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
-                is_int($data[$key]) || throw new InvalidArgumentException(
+                is_int($data[$key]) || throw MetadataStatementLoadingException::create(
                     sprintf('Invalid data. The value of "%s" must be a positive integer', $key)
                 );
             }

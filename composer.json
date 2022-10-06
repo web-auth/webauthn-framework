@@ -104,6 +104,7 @@
         "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^6.1",
         "symfony/clock": "6.2.x-dev",
+        "symfony/filesystem": "^6.1",
         "symfony/finder": "^6.1",
         "symfony/monolog-bundle": "^3.8",
         "symfony/phpunit-bridge": "^6.1",

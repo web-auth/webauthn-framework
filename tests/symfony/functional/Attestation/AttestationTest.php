@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
 use Cose\Algorithms;
-use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -156,7 +156,7 @@ final class AttestationTest extends KernelTestCase
     public function aFullCertificateChainShouldNotBeUsedForThisSelfAttestation(): void
     {
         self::getContainer()->get(MockClientCallback::class);
-        $this->expectException(RuntimeException::class);
+        $this->expectException(CertificateChainException::class);
         $this->expectExceptionMessage('Unable to validate the certificate chain.');
 
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"h8lQZpu-S0rTLOOeAr7BeWoPPTkhtqcEzlHizEyzVeQ","attestation":"direct","user":{"name":"fwOcfew16ujF_p7Hl5eh","id":"ZTc4N2YzZmItMDgwZS00ZDNjLTlhZDItYmE3OTAwYTVlNTg1","displayName":"Gretchen Mo"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
@@ -248,7 +248,7 @@ final class AttestationTest extends KernelTestCase
      */
     public function certificateExpired(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(CertificateChainException::class);
         $this->expectExceptionMessage('Unable to validate the certificate chain.');
         self::bootKernel();
 
@@ -306,7 +306,7 @@ final class AttestationTest extends KernelTestCase
 
         static::assertSame(32, mb_strlen($options->getChallenge(), '8bit'));
         static::assertSame([], $options->getExcludeCredentials());
-        static::assertCount(11, $options->getPubKeyCredParams());
+        static::assertCount(0, $options->getPubKeyCredParams());
         static::assertSame('none', $options->getAttestation());
         static::assertNull($options->getTimeout());
     }

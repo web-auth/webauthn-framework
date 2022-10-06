@@ -7,14 +7,12 @@ namespace Webauthn\MetadataService\CertificateChain;
 use function count;
 use DateTimeZone;
 use function in_array;
-use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use RuntimeException;
 use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
@@ -23,6 +21,9 @@ use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\NativeClock;
 use Throwable;
+use Webauthn\MetadataService\Exception\CertificateChainException;
+use Webauthn\MetadataService\Exception\CertificateRevocationListException;
+use Webauthn\MetadataService\Exception\InvalidCertificateException;
 
 /**
  * @final
@@ -65,7 +66,7 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             }
         }
 
-        throw new RuntimeException('Unable to validate the certificate chain.');
+        throw CertificateChainException::create($untrustedCertificates, $trustedCertificates);
     }
 
     /**
@@ -90,7 +91,11 @@ class PhpCertificateChainValidator implements CertificateChainValidator
                 ->string(),
             array_merge($untrustedCertificates, [$trustedCertificate])
         );
-        count(array_unique($uniqueCertificates)) === count($uniqueCertificates) || throw new InvalidArgumentException(
+        count(array_unique($uniqueCertificates)) === count(
+            $uniqueCertificates
+        ) || throw CertificateChainException::create(
+            $untrustedCertificates,
+            [$trustedCertificate],
             'Invalid certificate chain with duplicated certificates.'
         );
 
@@ -102,7 +107,11 @@ class PhpCertificateChainValidator implements CertificateChainValidator
         $numCerts = count($certificates);
         for ($i = 1; $i < $numCerts; $i++) {
             if ($this->isRevoked($certificates[$i])) {
-                throw new RuntimeException('Unable to validate the certificate chain. Revoked certificate found.');
+                throw CertificateChainException::create(
+                    $untrustedCertificates,
+                    [$trustedCertificate],
+                    'Unable to validate the certificate chain. Revoked certificate found.'
+                );
             }
         }
 
@@ -115,16 +124,26 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             $csn = $subject->tbsCertificate()
                 ->serialNumber();
         } catch (Throwable $e) {
-            throw new InvalidArgumentException(sprintf('Failed to parse certificate: %s', $e->getMessage()), 0, $e);
+            throw InvalidCertificateException::create(
+                $subject->toPEM()
+                    ->string(),
+                sprintf('Failed to parse certificate: %s', $e->getMessage()),
+                $e
+            );
         }
 
         try {
             $urls = $this->getCrlUrlList($subject);
-        } catch (InvalidArgumentException $e) {
+        } catch (Throwable $e) {
             if ($this->allowFailures) {
                 return false;
             }
-            throw new InvalidArgumentException('Failed to get CRL distribution points: ' . $e->getMessage(), 0, $e);
+            throw InvalidCertificateException::create(
+                $subject->toPEM()
+                    ->string(),
+                'Failed to get CRL distribution points: ' . $e->getMessage(),
+                $e
+            );
         }
 
         foreach ($urls as $url) {
@@ -138,11 +157,10 @@ class PhpCertificateChainValidator implements CertificateChainValidator
                 if ($this->allowFailures) {
                     return false;
                 }
-                throw new InvalidArgumentException(sprintf(
-                    'Failed to retrieve CRL %s:' . PHP_EOL . '%s',
-                    $url,
+                throw CertificateRevocationListException::create($url, sprintf(
+                    'Failed to retrieve the CRL:' . PHP_EOL . '%s',
                     $e->getMessage()
-                ), 0, $e);
+                ), $e);
             }
         }
         return false;
@@ -169,30 +187,27 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             $request = $this->requestFactory->createRequest('GET', $url);
             $response = $this->client->sendRequest($request);
             if ($response->getStatusCode() !== 200) {
-                throw new InvalidArgumentException(sprintf('Failed to download CRL for certificate from %s', $url));
+                throw CertificateRevocationListException::create($url, 'Failed to download the CRL');
             }
             $crlData = $response->getBody()
                 ->getContents();
             $crl = UnspecifiedType::fromDER($crlData)->asSequence();
-            count($crl) === 3 || throw new InvalidArgumentException('Invalid CRL.');
+            count($crl) === 3 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
             $tbsCertList = $crl->at(0)
                 ->asSequence();
-            count($tbsCertList) >= 6 || throw new InvalidArgumentException('Invalid CRL.');
+            count($tbsCertList) >= 6 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
             $list = $tbsCertList->at(5)
                 ->asSequence();
 
-            return array_map(static function (UnspecifiedType $r): string {
+            return array_map(static function (UnspecifiedType $r) use ($url): string {
                 $sequence = $r->asSequence();
-                count($sequence) >= 1 || throw new InvalidArgumentException('Invalid CRL.');
+                count($sequence) >= 1 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
                 return $sequence->at(0)
                     ->asInteger()
                     ->number();
             }, $list->elements());
         } catch (Throwable $e) {
-            throw new InvalidArgumentException(sprintf(
-                'Failed to download CRL for certificate from %s',
-                $url
-            ), 0, $e);
+            throw CertificateRevocationListException::create($url, 'Failed to download the CRL', $e);
         }
     }
 
@@ -221,9 +236,10 @@ class PhpCertificateChainValidator implements CertificateChainValidator
             }
             return $urls;
         } catch (Throwable $e) {
-            throw new InvalidArgumentException(
+            throw InvalidCertificateException::create(
+                $subject->toPEM()
+                    ->string(),
                 'Failed to get CRL distribution points from certificate: ' . $e->getMessage(),
-                0,
                 $e
             );
         }

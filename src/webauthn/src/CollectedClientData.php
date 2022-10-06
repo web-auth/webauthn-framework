@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
@@ -25,8 +25,11 @@ class CollectedClientData
 
     private readonly string $origin;
 
+    private readonly bool $crossOrigin;
+
     /**
      * @var mixed[]|null
+     * @deprecated Since 4.3.0 and will be removed in 5.0.0
      */
     private readonly ?array $tokenBinding;
 
@@ -38,27 +41,36 @@ class CollectedClientData
         array $data
     ) {
         $type = $data['type'] ?? '';
-        (is_string($type) && $type !== '') || throw new InvalidArgumentException(
+        (is_string($type) && $type !== '') || throw InvalidDataException::create(
+            $data,
             'Invalid parameter "type". Shall be a non-empty string.'
         );
         $this->type = $type;
 
         $challenge = $data['challenge'] ?? '';
-        is_string($challenge) || throw new InvalidArgumentException(
+        is_string($challenge) || throw InvalidDataException::create(
+            $data,
             'Invalid parameter "challenge". Shall be a string.'
         );
         $challenge = Base64UrlSafe::decodeNoPadding($challenge);
-        $challenge !== '' || throw new InvalidArgumentException('Invalid parameter "challenge". Shall not be empty.');
+        $challenge !== '' || throw InvalidDataException::create(
+            $data,
+            'Invalid parameter "challenge". Shall not be empty.'
+        );
         $this->challenge = $challenge;
 
         $origin = $data['origin'] ?? '';
-        (is_string($origin) && $origin !== '') || throw new InvalidArgumentException(
+        (is_string($origin) && $origin !== '') || throw InvalidDataException::create(
+            $data,
             'Invalid parameter "origin". Shall be a non-empty string.'
         );
         $this->origin = $origin;
 
+        $this->crossOrigin = $data['crossOrigin'] ?? false;
+
         $tokenBinding = $data['tokenBinding'] ?? null;
-        $tokenBinding === null || is_array($tokenBinding) || throw new InvalidArgumentException(
+        $tokenBinding === null || is_array($tokenBinding) || throw InvalidDataException::create(
+            $data,
             'Invalid parameter "tokenBinding". Shall be an object or .'
         );
         $this->tokenBinding = $tokenBinding;
@@ -89,6 +101,14 @@ class CollectedClientData
         return $this->origin;
     }
 
+    public function getCrossOrigin(): bool
+    {
+        return $this->crossOrigin;
+    }
+
+    /**
+     * @deprecated Since 4.3.0 and will be removed in 5.0.0
+     */
     public function getTokenBinding(): ?TokenBinding
     {
         return $this->tokenBinding === null ? null : TokenBinding::createFormArray($this->tokenBinding);
@@ -115,7 +135,7 @@ class CollectedClientData
     public function get(string $key): mixed
     {
         if (! $this->has($key)) {
-            throw new InvalidArgumentException(sprintf('The key "%s" is missing', $key));
+            throw InvalidDataException::create($this->data, sprintf('The key "%s" is missing', $key));
         }
 
         return $this->data[$key];

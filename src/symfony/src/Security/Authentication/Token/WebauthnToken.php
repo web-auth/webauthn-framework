@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -78,7 +78,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         is_subclass_of(
             $publicKeyCredentialOptionsClass,
             PublicKeyCredentialOptions::class
-        ) || throw new InvalidArgumentException('Invalid PublicKeyCredentialOptions class');
+        ) || throw InvalidDataException::create($serialized, 'Invalid PublicKeyCredentialOptions class');
         $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString(
             $publicKeyCredentialUserEntity
         );

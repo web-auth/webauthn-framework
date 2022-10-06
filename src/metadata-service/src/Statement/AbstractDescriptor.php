@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use InvalidArgumentException;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
 abstract class AbstractDescriptor implements JsonSerializable
 {
@@ -15,10 +15,10 @@ abstract class AbstractDescriptor implements JsonSerializable
 
     public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        $maxRetries >= 0 || throw new InvalidArgumentException(
+        $maxRetries >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "maxRetries" must be a positive integer'
         );
-        $blockSlowdown >= 0 || throw new InvalidArgumentException(
+        $blockSlowdown >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "blockSlowdown" must be a positive integer'
         );
 
