@@ -25,6 +25,8 @@ class CollectedClientData
 
     private readonly string $origin;
 
+    private readonly bool $crossOrigin;
+
     /**
      * @var mixed[]|null
      * @deprecated Since 4.3.0 and will be removed in 5.0.0
@@ -64,6 +66,8 @@ class CollectedClientData
         );
         $this->origin = $origin;
 
+        $this->crossOrigin = $data['crossOrigin'] ?? false;
+
         $tokenBinding = $data['tokenBinding'] ?? null;
         $tokenBinding === null || is_array($tokenBinding) || throw InvalidDataException::create(
             $data,
@@ -95,6 +99,11 @@ class CollectedClientData
     public function getOrigin(): string
     {
         return $this->origin;
+    }
+
+    public function getCrossOrigin(): bool
+    {
+        return $this->crossOrigin;
     }
 
     /**
