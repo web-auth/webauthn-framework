@@ -65,9 +65,19 @@ final class WebauthnFirewallConfig
         return $this->options['authentication']['routes']['host'] ?? null;
     }
 
+    public function getAuthenticationOptionsMethod(): string
+    {
+        return $this->options['authentication']['routes']['options_method'] ?? WebauthnFactory::DEFAULT_LOGIN_OPTIONS_METHOD;
+    }
+
     public function getAuthenticationOptionsPath(): string
     {
         return $this->options['authentication']['routes']['options_path'] ?? WebauthnFactory::DEFAULT_LOGIN_OPTIONS_PATH;
+    }
+
+    public function getAuthenticationResultMethod(): string
+    {
+        return $this->options['authentication']['routes']['result_method'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_METHOD;
     }
 
     public function getAuthenticationResultPath(): string
@@ -95,14 +105,24 @@ final class WebauthnFirewallConfig
         return $this->options['registration']['routes']['host'] ?? null;
     }
 
+    public function getRegistrationOptionsMethod(): string
+    {
+        return $this->options['registration']['routes']['options_method'] ?? WebauthnFactory::DEFAULT_REGISTER_OPTIONS_METHOD;
+    }
+
     public function getRegistrationOptionsPath(): string
     {
-        return $this->options['registration']['routes']['options_path'] ?? WebauthnFactory::DEFAULT_LOGIN_OPTIONS_PATH;
+        return $this->options['registration']['routes']['options_path'] ?? WebauthnFactory::DEFAULT_REGISTER_OPTIONS_PATH;
+    }
+
+    public function getRegistrationResultMethod(): string
+    {
+        return $this->options['registration']['routes']['result_method'] ?? WebauthnFactory::DEFAULT_REGISTER_RESULT_METHOD;
     }
 
     public function getRegistrationResultPath(): string
     {
-        return $this->options['registration']['routes']['result_path'] ?? WebauthnFactory::DEFAULT_LOGIN_RESULT_PATH;
+        return $this->options['registration']['routes']['result_path'] ?? WebauthnFactory::DEFAULT_REGISTER_RESULT_PATH;
     }
 
     /**

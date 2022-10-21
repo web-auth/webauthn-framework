@@ -169,6 +169,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     new Reference($creationConfig['failure_handler']),
                 ])
                 ->addTag(DynamicRouteCompilerPass::TAG, [
+                    'method' => $creationConfig['options_method'],
                     'path' => $creationConfig['options_path'],
                     'host' => $creationConfig['host'],
                 ])
@@ -187,6 +188,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $creationConfig['secured_rp_ids'],
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
+                'method' => $creationConfig['result_method'],
                 'path' => $creationConfig['result_path'],
                 'host' => $creationConfig['host'],
             ]);
@@ -211,6 +213,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     new Reference($requestConfig['failure_handler']),
                 ])
                 ->addTag(DynamicRouteCompilerPass::TAG, [
+                    'method' => $requestConfig['options_method'],
                     'path' => $requestConfig['options_path'],
                     'host' => $requestConfig['host'],
                 ])
@@ -229,6 +232,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $requestConfig['secured_rp_ids'],
             ]);
             $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [
+                'method' => $requestConfig['result_method'],
                 'path' => $requestConfig['result_path'],
                 'host' => $requestConfig['host'],
             ]);

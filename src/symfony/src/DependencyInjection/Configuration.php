@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
@@ -103,7 +104,7 @@ final class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    protected function addCreationProfilesConfig(ArrayNodeDefinition $rootNode)
+    protected function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultCreationProfiles = [
@@ -213,7 +214,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addRequestProfilesConfig(ArrayNodeDefinition $rootNode)
+    protected function addRequestProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultRequestProfiles = [
@@ -257,7 +258,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addControllersConfig(ArrayNodeDefinition $rootNode)
+    protected function addControllersConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('controllers')
@@ -271,8 +272,16 @@ final class Configuration implements ConfigurationInterface
                         ->arrayPrototype()
                             ->addDefaultsIfNotSet()
                             ->children()
+                                ->scalarNode('options_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
+                                ->end()
                                 ->scalarNode('options_path')
                                     ->isRequired()
+                                ->end()
+                                ->scalarNode('result_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('result_path')
                                     ->isRequired()
@@ -318,8 +327,16 @@ final class Configuration implements ConfigurationInterface
                         ->arrayPrototype()
                             ->addDefaultsIfNotSet()
                             ->children()
+                                ->scalarNode('options_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
+                                ->end()
                                 ->scalarNode('options_path')
                                     ->isRequired()
+                                ->end()
+                                ->scalarNode('result_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('result_path')
                                     ->isRequired()
@@ -359,7 +376,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addMetadataConfig(ArrayNodeDefinition $rootNode)
+    protected function addMetadataConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('metadata')
@@ -384,7 +401,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode)
+    protected function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('android_safetynet')
