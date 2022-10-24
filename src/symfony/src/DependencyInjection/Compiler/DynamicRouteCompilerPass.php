@@ -28,6 +28,10 @@ final class DynamicRouteCompilerPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {
+                array_key_exists('method', $attributes) || throw new RuntimeException(sprintf(
+                    'The path is missing for "%s"',
+                    $id
+                ));
                 array_key_exists('path', $attributes) || throw new RuntimeException(sprintf(
                     'The path is missing for "%s"',
                     $id
@@ -36,7 +40,7 @@ final class DynamicRouteCompilerPass implements CompilerPassInterface
                     'The host is missing for "%s"',
                     $id
                 ));
-                $definition->addMethodCall('add', [$attributes['path'], $attributes['host'], $id]);
+                $definition->addMethodCall('add', [$attributes['method'], $attributes['path'], $attributes['host'], $id]);
             }
         }
     }
