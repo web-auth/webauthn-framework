@@ -32,6 +32,8 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
+
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
@@ -103,7 +105,7 @@ final class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    protected function addCreationProfilesConfig(ArrayNodeDefinition $rootNode)
+    protected function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultCreationProfiles = [
@@ -213,7 +215,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addRequestProfilesConfig(ArrayNodeDefinition $rootNode)
+    protected function addRequestProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultRequestProfiles = [
@@ -257,7 +259,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addControllersConfig(ArrayNodeDefinition $rootNode)
+    protected function addControllersConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('controllers')
@@ -359,7 +361,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addMetadataConfig(ArrayNodeDefinition $rootNode)
+    protected function addMetadataConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('metadata')
@@ -384,7 +386,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode)
+    protected function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('android_safetynet')
