@@ -22,13 +22,13 @@ class Loader extends SymfonyLoader
         $this->routes = new RouteCollection();
     }
 
-    public function add(string $pattern, ?string $host, string $name): void
+    public function add(string $method, string $pattern, ?string $host, string $name): void
     {
         $controllerId = sprintf('%s', $name);
         $defaults = [
             '_controller' => $controllerId,
         ];
-        $route = new Route($pattern, $defaults, [], [], $host, [], [Request::METHOD_POST]);
+        $route = new Route($pattern, $defaults, [], [], $host, [], [$method]);
         $this->routes->add($name, $route);
     }
 

@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
@@ -32,7 +33,6 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
-
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
@@ -276,6 +276,10 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarNode('options_path')
                                     ->isRequired()
                                 ->end()
+                                ->scalarNode('result_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
+                                ->end()
                                 ->scalarNode('result_path')
                                     ->isRequired()
                                 ->end()
@@ -322,6 +326,10 @@ final class Configuration implements ConfigurationInterface
                             ->children()
                                 ->scalarNode('options_path')
                                     ->isRequired()
+                                ->end()
+                                ->scalarNode('result_method')
+                                    ->isRequired()
+                                    ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('result_path')
                                     ->isRequired()

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
+use Symfony\Component\HttpFoundation\Request;
 use function assert;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
@@ -41,13 +42,21 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const DEFAULT_FAILURE_HANDLER_SERVICE = DefaultFailureHandler::class;
 
+    public const DEFAULT_LOGIN_OPTIONS_METHOD = Request::METHOD_POST;
+
     public const DEFAULT_LOGIN_OPTIONS_PATH = '/login/options';
+
+    public const DEFAULT_LOGIN_RESULT_METHOD = Request::METHOD_POST;
 
     public const DEFAULT_LOGIN_RESULT_PATH = '/login';
 
     public const DEFAULT_REQUEST_OPTIONS_HANDLER_SERVICE = DefaultRequestOptionsHandler::class;
 
+    public const DEFAULT_REGISTER_OPTIONS_METHOD = Request::METHOD_POST;
+
     public const DEFAULT_REGISTER_OPTIONS_PATH = '/register/options';
+
+    public const DEFAULT_REGISTER_RESULT_METHOD = Request::METHOD_POST;
 
     public const DEFAULT_REGISTER_RESULT_PATH = '/register';
 
@@ -132,8 +141,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->scalarNode('host')
             ->defaultNull()
             ->end()
+            ->scalarNode('options_method')
+            ->defaultValue(self::DEFAULT_LOGIN_OPTIONS_METHOD)
+            ->end()
             ->scalarNode('options_path')
             ->defaultValue(self::DEFAULT_LOGIN_OPTIONS_PATH)
+            ->end()
+            ->scalarNode('result_method')
+            ->defaultValue(self::DEFAULT_LOGIN_RESULT_METHOD)
             ->end()
             ->scalarNode('result_path')
             ->defaultValue(self::DEFAULT_LOGIN_RESULT_PATH)
@@ -157,8 +172,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->scalarNode('host')
             ->defaultNull()
             ->end()
+            ->scalarNode('options_method')
+            ->defaultValue(self::DEFAULT_REGISTER_OPTIONS_METHOD)
+            ->end()
             ->scalarNode('options_path')
             ->defaultValue(self::DEFAULT_REGISTER_OPTIONS_PATH)
+            ->end()
+            ->scalarNode('result_method')
+            ->defaultValue(self::DEFAULT_REGISTER_RESULT_METHOD)
             ->end()
             ->scalarNode('result_path')
             ->defaultValue(self::DEFAULT_REGISTER_RESULT_PATH)
@@ -253,6 +274,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $this->createAssertionRequestControllerAndRoute(
             $container,
             $firewallName,
+            $config['authentication']['routes']['options_method'],
             $config['authentication']['routes']['options_path'],
             $config['authentication']['routes']['host'],
             $config['authentication']['profile'],
@@ -264,6 +286,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $container,
             $firewallName,
             'request',
+            $config['authentication']['routes']['result_method'],
             $config['authentication']['routes']['result_path'],
             $config['authentication']['routes']['host']
         );
@@ -284,6 +307,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $this->createAttestationRequestControllerAndRoute(
             $container,
             $firewallName,
+            $config['registration']['routes']['options_method'],
             $config['registration']['routes']['options_path'],
             $config['registration']['routes']['host'],
             $config['registration']['profile'],
@@ -295,6 +319,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $container,
             $firewallName,
             'creation',
+            $config['registration']['routes']['result_method'],
             $config['registration']['routes']['result_path'],
             $config['registration']['routes']['host']
         );
@@ -303,6 +328,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     private function createAssertionRequestControllerAndRoute(
         ContainerBuilder $container,
         string $firewallName,
+        string $method,
         string $path,
         ?string $host,
         string $profile,
@@ -318,12 +344,13 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
             ]);
-        $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $path, $host);
+        $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $method, $path, $host);
     }
 
     private function createAttestationRequestControllerAndRoute(
         ContainerBuilder $container,
         string $firewallName,
+        string $method,
         string $path,
         ?string $host,
         string $profile,
@@ -340,19 +367,20 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
             ]);
-        $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $path, $host);
+        $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $method, $path, $host);
     }
 
     private function createResponseControllerAndRoute(
         ContainerBuilder $container,
         string $firewallName,
         string $action,
+        string $method,
         string $path,
         ?string $host
     ): void {
         $controller = (new Definition(DummyController::class))
             ->setFactory([new Reference(DummyControllerFactory::class), 'create']);
-        $this->createControllerAndRoute($container, $controller, $action, 'result', $firewallName, $path, $host);
+        $this->createControllerAndRoute($container, $controller, $action, 'result', $firewallName, $method, $path, $host);
     }
 
     private function createControllerAndRoute(
@@ -361,12 +389,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $name,
         string $operation,
         string $firewallName,
+        string $method,
         string $path,
         ?string $host
     ): void {
         $controller
             ->addTag('controller.service_arguments')
             ->addTag(DynamicRouteCompilerPass::TAG, [
+                'method' => $method,
                 'path' => $path,
                 'host' => $host,
             ])
