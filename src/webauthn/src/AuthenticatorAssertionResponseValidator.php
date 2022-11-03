@@ -92,7 +92,9 @@ class AuthenticatorAssertionResponseValidator
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $credentialId
             );
-            $publicKeyCredentialSource !== null || throw new InvalidArgumentException('The credential ID is invalid.');
+            $publicKeyCredentialSource !== null || throw new InvalidArgumentException(
+                'The credential ID is invalid.'
+            );
 
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();

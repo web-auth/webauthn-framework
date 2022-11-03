@@ -99,7 +99,9 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('counter_checker')
             ->defaultValue(ThrowExceptionIfInvalid::class)
             ->cannotBeEmpty()
-            ->info('This service will check if the counter is valid. By default it throws an exception (recommended).')
+            ->info(
+                'This service will check if the counter is valid. By default it throws an exception (recommended).'
+            )
             ->end()
             ->arrayNode('android_safetynet')
             ->addDefaultsIfNotSet()

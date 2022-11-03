@@ -12,8 +12,9 @@ use Webauthn\PublicKeyCredentialSource;
 
 final class ThrowExceptionIfInvalid implements CounterChecker
 {
-    public function __construct(private LoggerInterface $logger = new NullLogger())
-    {
+    public function __construct(
+        private LoggerInterface $logger = new NullLogger()
+    ) {
     }
 
     public function setLogger(LoggerInterface $logger): void
