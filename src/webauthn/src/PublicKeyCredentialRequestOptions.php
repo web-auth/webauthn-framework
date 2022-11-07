@@ -7,10 +7,10 @@ namespace Webauthn;
 use function array_key_exists;
 use function count;
 use function in_array;
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
 
 final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
@@ -69,7 +69,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
             self::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             self::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-        ], true) || throw new InvalidArgumentException('Invalid user verification requirement');
+        ], true) || throw InvalidDataException::create($userVerification, 'Invalid user verification requirement');
         $this->userVerification = $userVerification;
 
         return $this;
@@ -105,7 +105,8 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
      */
     public static function createFromArray(array $json): static
     {
-        array_key_exists('challenge', $json) || throw new InvalidArgumentException(
+        array_key_exists('challenge', $json) || throw InvalidDataException::create(
+            $json,
             'Invalid input. "challenge" is missing.'
         );
 

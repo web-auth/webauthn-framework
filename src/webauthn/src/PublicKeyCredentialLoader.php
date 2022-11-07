@@ -7,7 +7,6 @@ namespace Webauthn;
 use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
@@ -20,6 +19,7 @@ use Throwable;
 use function unpack;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
 
 class PublicKeyCredentialLoader
@@ -61,29 +61,31 @@ class PublicKeyCredentialLoader
         ]);
         try {
             foreach (['id', 'rawId', 'type'] as $key) {
-                array_key_exists($key, $json) || throw new InvalidArgumentException(sprintf(
+                array_key_exists($key, $json) || throw InvalidDataException::create($json, sprintf(
                     'The parameter "%s" is missing',
                     $key
                 ));
-                is_string($json[$key]) || throw new InvalidArgumentException(sprintf(
+                is_string($json[$key]) || throw InvalidDataException::create($json, sprintf(
                     'The parameter "%s" shall be a string',
                     $key
                 ));
             }
-            array_key_exists('response', $json) || throw new InvalidArgumentException(
+            array_key_exists('response', $json) || throw InvalidDataException::create(
+                $json,
                 'The parameter "response" is missing'
             );
-            is_array($json['response']) || throw new InvalidArgumentException(
+            is_array($json['response']) || throw InvalidDataException::create(
+                $json,
                 'The parameter "response" shall be an array'
             );
-            $json['type'] === 'public-key' || throw new InvalidArgumentException(sprintf(
+            $json['type'] === 'public-key' || throw InvalidDataException::create($json, sprintf(
                 'Unsupported type "%s"',
                 $json['type']
             ));
 
             $id = Base64UrlSafe::decodeNoPadding($json['id']);
             $rawId = Base64::decode($json['rawId']);
-            hash_equals($id, $rawId) || throw new InvalidArgumentException('Invalid ID');
+            hash_equals($id, $rawId) || throw InvalidDataException::create($json, 'Invalid ID');
 
             $publicKeyCredential = new PublicKeyCredential(
                 $json['id'],
@@ -127,19 +129,23 @@ class PublicKeyCredentialLoader
      */
     private function createResponse(array $response): AuthenticatorResponse
     {
-        array_key_exists('clientDataJSON', $response) || throw new InvalidArgumentException(
+        array_key_exists('clientDataJSON', $response) || throw InvalidDataException::create(
+            $response,
             'Invalid data. The parameter "clientDataJSON" is missing'
         );
-        is_string($response['clientDataJSON']) || throw new InvalidArgumentException(
+        is_string($response['clientDataJSON']) || throw InvalidDataException::create(
+            $response,
             'Invalid data. The parameter "clientDataJSON" is invalid'
         );
         $userHandle = $response['userHandle'] ?? null;
-        $userHandle === null || is_string($userHandle) || throw new InvalidArgumentException(
+        $userHandle === null || is_string($userHandle) || throw InvalidDataException::create(
+            $response,
             'Invalid data. The parameter "userHandle" is invalid'
         );
         switch (true) {
             case array_key_exists('attestationObject', $response):
-                is_string($response['attestationObject']) || throw new InvalidArgumentException(
+                is_string($response['attestationObject']) || throw InvalidDataException::create(
+                    $response,
                     'Invalid data. The parameter "attestationObject   " is invalid'
                 );
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
@@ -163,7 +169,8 @@ class PublicKeyCredentialLoader
                     $credentialLength = unpack('n', $credentialLength);
                     $credentialId = $authDataStream->read($credentialLength[1]);
                     $credentialPublicKey = $this->decoder->decode($authDataStream);
-                    $credentialPublicKey instanceof MapObject || throw new InvalidArgumentException(
+                    $credentialPublicKey instanceof MapObject || throw InvalidDataException::create(
+                        $authData,
                         'The data does not contain a valid credential public key.'
                     );
                     $attestedCredentialData = new AttestedCredentialData(
@@ -178,7 +185,8 @@ class PublicKeyCredentialLoader
                     $extension = $this->decoder->decode($authDataStream);
                     $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
                 }
-                $authDataStream->isEOF() || throw new InvalidArgumentException(
+                $authDataStream->isEOF() || throw InvalidDataException::create(
+                    $authData,
                     'Invalid authentication data. Presence of extra bytes.'
                 );
                 $authDataStream->close();
@@ -194,7 +202,11 @@ class PublicKeyCredentialLoader
                 try {
                     $signature = Base64::decode($response['signature']);
                 } catch (Throwable $e) {
-                    throw new InvalidArgumentException('The signature shall be Base64 Url Safe encoded', 0, $e);
+                    throw InvalidDataException::create(
+                        $response['signature'],
+                        'The signature shall be Base64 Url Safe encoded',
+                        $e
+                    );
                 }
 
                 return new AuthenticatorAssertionResponse(
@@ -204,7 +216,7 @@ class PublicKeyCredentialLoader
                     $response['userHandle'] ?? null
                 );
             default:
-                throw new InvalidArgumentException('Unable to create the response object');
+                throw InvalidDataException::create($response, 'Unable to create the response object');
         }
     }
 }

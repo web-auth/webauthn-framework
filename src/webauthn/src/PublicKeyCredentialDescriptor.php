@@ -6,10 +6,10 @@ namespace Webauthn;
 
 use function array_key_exists;
 use function count;
-use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Exception\InvalidDataException;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {
@@ -73,8 +73,11 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        array_key_exists('type', $json) || throw new InvalidArgumentException('Invalid input. "type" is missing.');
-        array_key_exists('id', $json) || throw new InvalidArgumentException('Invalid input. "id" is missing.');
+        array_key_exists('type', $json) || throw InvalidDataException::create(
+            $json,
+            'Invalid input. "type" is missing.'
+        );
+        array_key_exists('id', $json) || throw InvalidDataException::create($json, 'Invalid input. "id" is missing.');
 
         $id = Base64UrlSafe::decodeNoPadding($json['id']);
 

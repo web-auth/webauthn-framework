@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_int;
 use JsonSerializable;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
 class RgbPaletteEntry implements JsonSerializable
 {
@@ -19,9 +19,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        ($r >= 0 && $r <= 255) || throw new InvalidArgumentException('The key "r" is invalid');
-        ($g >= 0 && $g <= 255) || throw new InvalidArgumentException('The key "g" is invalid');
-        ($b >= 0 && $b <= 255) || throw new InvalidArgumentException('The key "b" is invalid');
+        ($r >= 0 && $r <= 255) || throw MetadataStatementLoadingException::create('The key "r" is invalid');
+        ($g >= 0 && $g <= 255) || throw MetadataStatementLoadingException::create('The key "g" is invalid');
+        ($b >= 0 && $b <= 255) || throw MetadataStatementLoadingException::create('The key "b" is invalid');
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;
@@ -48,11 +48,13 @@ class RgbPaletteEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['r', 'g', 'b'] as $key) {
-            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+            array_key_exists($key, $data) || throw MetadataStatementLoadingException::create(sprintf(
                 'The key "%s" is missing',
                 $key
             ));
-            is_int($data[$key]) || throw new InvalidArgumentException(sprintf('The key "%s" is invalid', $key));
+            is_int($data[$key]) || throw MetadataStatementLoadingException::create(
+                sprintf('The key "%s" is invalid', $key)
+            );
         }
 
         return new self($data['r'], $data['g'], $data['b']);

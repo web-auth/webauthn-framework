@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Service;
 
 use Cose\Algorithm\Manager;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -22,55 +21,61 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
 {
     public function __construct(
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        TokenBindingHandler $tokenBindingHandler,
+        ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        Manager $algorithmManager,
-        private readonly EventDispatcherInterface $eventDispatcher
+        ?Manager $algorithmManager
     ) {
-        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager);
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.3.0',
+            sprintf(
+                'The class "%s" is deprecated since 4.3.0 and will be removed in 5.0.0. Please use "%s" instead.',
+                self::class,
+                BaseAuthenticatorAssertionResponseValidator::class
+            )
+        );
+
+        parent::__construct(
+            $publicKeyCredentialSourceRepository,
+            $tokenBindingHandler,
+            $extensionOutputCheckerHandler,
+            $algorithmManager
+        );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function check(
+    protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface $request,
         ?string $userHandle,
-        array $securedRelyingPartyId = []
-    ): PublicKeyCredentialSource {
-        try {
-            $result = parent::check(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $securedRelyingPartyId
-            );
-            $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationSucceededEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $result
-            ));
+        PublicKeyCredentialSource $publicKeyCredentialSource
+    ): AuthenticatorAssertionResponseValidationSucceededEvent {
+        return new AuthenticatorAssertionResponseValidationSucceededEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $publicKeyCredentialSource
+        );
+    }
 
-            return $result;
-        } catch (Throwable $throwable) {
-            $this->eventDispatcher->dispatch(new AuthenticatorAssertionResponseValidationFailedEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $throwable
-            ));
-
-            throw $throwable;
-        }
+    protected function createAuthenticatorAssertionResponseValidationFailedEvent(
+        string $credentialId,
+        AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        ServerRequestInterface $request,
+        ?string $userHandle,
+        Throwable $throwable
+    ): AuthenticatorAssertionResponseValidationFailedEvent {
+        return new AuthenticatorAssertionResponseValidationFailedEvent(
+            $credentialId,
+            $authenticatorAssertionResponse,
+            $publicKeyCredentialRequestOptions,
+            $request,
+            $userHandle,
+            $throwable
+        );
     }
 }

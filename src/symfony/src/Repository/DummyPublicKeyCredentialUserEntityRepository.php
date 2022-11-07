@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Repository;
 
-use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -30,7 +30,7 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialUserEntityRepository service. Please create your own repository'
         );
     }
@@ -40,7 +40,7 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialUserEntityRepository service. Please create your own repository'
         );
     }
@@ -50,7 +50,7 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialUserEntityRepository service. Please create your own repository'
         );
     }
@@ -60,7 +60,7 @@ class DummyPublicKeyCredentialUserEntityRepository implements PublicKeyCredentia
         $this->logger->critical(
             'Please change the Public Key Credential User Entity Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
         );
-        throw new LogicException(
+        throw new RuntimeException(
             'You are using the DummyPublicKeyCredentialUserEntityRepository service. Please create your own repository'
         );
     }

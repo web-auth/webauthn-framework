@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use function array_key_exists;
-use InvalidArgumentException;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
 class MetadataStatement implements JsonSerializable
@@ -407,7 +407,7 @@ class MetadataStatement implements JsonSerializable
             'attestationRootCertificates',
         ];
         foreach ($requiredKeys as $key) {
-            array_key_exists($key, $data) || throw new InvalidArgumentException(sprintf(
+            array_key_exists($key, $data) || throw MetadataStatementLoadingException::create(sprintf(
                 'Invalid data. The key "%s" is missing',
                 $key
             ));
@@ -421,12 +421,12 @@ class MetadataStatement implements JsonSerializable
             'attestationRootCertificates',
         ];
         foreach ($subObjects as $subObject) {
-            is_array($data[$subObject]) || throw new InvalidArgumentException(sprintf(
+            is_array($data[$subObject]) || throw MetadataStatementLoadingException::create(sprintf(
                 'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
                 $subObject
             ));
             foreach ($data[$subObject] as $datum) {
-                is_string($datum) || throw new InvalidArgumentException(sprintf(
+                is_string($datum) || throw MetadataStatementLoadingException::create(sprintf(
                     'Invalid Metadata Statement. The parameter "%s" shall be a list of strings.',
                     $subObject
                 ));
@@ -439,7 +439,7 @@ class MetadataStatement implements JsonSerializable
             $data['protocolFamily'],
             $data['schema'],
             array_map(static function ($upv): Version {
-                is_array($upv) || throw new InvalidArgumentException('Invalid Metadata Statement');
+                is_array($upv) || throw MetadataStatementLoadingException::create('Invalid Metadata Statement');
 
                 return Version::createFromArray($upv);
             }, $data['upv']),
@@ -447,7 +447,9 @@ class MetadataStatement implements JsonSerializable
             $data['publicKeyAlgAndEncodings'],
             $data['attestationTypes'],
             array_map(static function ($userVerificationDetails): VerificationMethodANDCombinations {
-                is_array($userVerificationDetails) || throw new InvalidArgumentException('Invalid Metadata Statement');
+                is_array($userVerificationDetails) || throw MetadataStatementLoadingException::create(
+                    'Invalid Metadata Statement'
+                );
 
                 return VerificationMethodANDCombinations::createFromArray($userVerificationDetails);
             }, $data['userVerificationDetails']),
@@ -472,11 +474,11 @@ class MetadataStatement implements JsonSerializable
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
-            is_array($tcDisplayPNGCharacteristics) || throw new InvalidArgumentException(
+            is_array($tcDisplayPNGCharacteristics) || throw MetadataStatementLoadingException::create(
                 'Invalid Metadata Statement'
             );
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
-                is_array($tcDisplayPNGCharacteristic) || throw new InvalidArgumentException(
+                is_array($tcDisplayPNGCharacteristic) || throw MetadataStatementLoadingException::create(
                     'Invalid Metadata Statement'
                 );
                 $object->tcDisplayPNGCharacteristics[] = DisplayPNGCharacteristicsDescriptor::createFromArray(
@@ -488,9 +490,13 @@ class MetadataStatement implements JsonSerializable
         $object->icon = $data['icon'] ?? null;
         if (isset($data['supportedExtensions'])) {
             $supportedExtensions = $data['supportedExtensions'];
-            is_array($supportedExtensions) || throw new InvalidArgumentException('Invalid Metadata Statement');
+            is_array($supportedExtensions) || throw MetadataStatementLoadingException::create(
+                'Invalid Metadata Statement'
+            );
             foreach ($supportedExtensions as $supportedExtension) {
-                is_array($supportedExtension) || throw new InvalidArgumentException('Invalid Metadata Statement');
+                is_array($supportedExtension) || throw MetadataStatementLoadingException::create(
+                    'Invalid Metadata Statement'
+                );
                 $object->supportedExtensions[] = ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }

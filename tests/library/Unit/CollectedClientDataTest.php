@@ -7,7 +7,6 @@ namespace Webauthn\Tests\Unit;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\TestCase;
 use Webauthn\CollectedClientData;
-use Webauthn\TokenBinding\TokenBinding;
 
 /**
  * @internal
@@ -24,6 +23,7 @@ final class CollectedClientDataTest extends TestCase
             [
                 'type' => 'type',
                 'origin' => 'origin',
+                'crossOrigin' => true,
                 'challenge' => Base64UrlSafe::encodeUnpadded('challenge'),
                 'extensions' => 'extensions',
                 'tokenBinding' => [
@@ -35,13 +35,11 @@ final class CollectedClientDataTest extends TestCase
 
         static::assertSame('raw_data', $collectedClientData->getRawData());
         static::assertSame('origin', $collectedClientData->getOrigin());
+        static::assertTrue($collectedClientData->getCrossOrigin());
         static::assertSame('challenge', $collectedClientData->getChallenge());
-        static::assertInstanceOf(TokenBinding::class, $collectedClientData->getTokenBinding());
-        static::assertSame('id', $collectedClientData->getTokenBinding()->getId());
-        static::assertSame('present', $collectedClientData->getTokenBinding()->getStatus());
         static::assertSame('type', $collectedClientData->getType());
         static::assertSame(
-            ['type', 'origin', 'challenge', 'extensions', 'tokenBinding'],
+            ['type', 'origin', 'crossOrigin', 'challenge', 'extensions', 'tokenBinding'],
             $collectedClientData->all()
         );
         static::assertTrue($collectedClientData->has('extensions'));

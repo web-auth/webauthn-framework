@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
-use Cose\Algorithms;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -18,7 +17,6 @@ use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -92,8 +90,8 @@ final class Configuration implements ConfigurationInterface
             ->info('This repository is responsible of the user storage')
             ->end()
             ->scalarNode('token_binding_support_handler')
-            ->defaultValue(IgnoreTokenBindingHandler::class)
-            ->cannotBeEmpty()
+            ->defaultNull()
+            ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
             ->info('This handler will check the token binding header from the request. By default, it is ignored.')
             ->end()
             ->scalarNode('counter_checker')
@@ -329,19 +327,7 @@ final class Configuration implements ConfigurationInterface
             ->treatNullLike([])
             ->treatFalseLike([])
             ->treatTrueLike([])
-            ->defaultValue([
-                Algorithms::COSE_ALGORITHM_EDDSA,
-                Algorithms::COSE_ALGORITHM_ES256,
-                Algorithms::COSE_ALGORITHM_ES256K,
-                Algorithms::COSE_ALGORITHM_ES384,
-                Algorithms::COSE_ALGORITHM_ES512,
-                Algorithms::COSE_ALGORITHM_RS256,
-                Algorithms::COSE_ALGORITHM_RS384,
-                Algorithms::COSE_ALGORITHM_RS512,
-                Algorithms::COSE_ALGORITHM_PS256,
-                Algorithms::COSE_ALGORITHM_PS384,
-                Algorithms::COSE_ALGORITHM_PS512,
-            ])
+            ->defaultValue([])
             ->end()
             ->scalarNode('attestation_conveyance')
             ->defaultValue(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)

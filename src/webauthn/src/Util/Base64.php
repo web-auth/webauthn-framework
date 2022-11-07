@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Util;
 
-use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Throwable;
+use Webauthn\Exception\InvalidDataException;
 
 abstract class Base64
 {
@@ -20,7 +20,7 @@ abstract class Base64
         try {
             return \ParagonIE\ConstantTime\Base64::decode($data, true);
         } catch (Throwable $e) {
-            throw new InvalidArgumentException('Invalid data submitted', 0, $e);
+            throw InvalidDataException::create($data, 'Invalid data submitted', $e);
         }
     }
 }
