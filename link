@@ -38,6 +38,12 @@ foreach ($directories as $dir) {
     }
 }
 
+if (is_dir("$pathToProject/vendor/web-auth/webauthn-framework")) {
+    if ($filesystem->exists($composer = "$pathToProject/vendor/web-auth/webauthn-framework/composer.json")) {
+        $packages[json_decode(file_get_contents($composer))->name] = realpath(__DIR__);
+    }
+}
+
 foreach (glob("$pathToProject/vendor/web-auth/*", GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
     $package = 'web-auth/'.basename($dir);
     if (!$copy && is_link($dir)) {
