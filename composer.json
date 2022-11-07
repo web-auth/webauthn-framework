@@ -99,7 +99,7 @@
         "phpstan/phpstan-strict-rules": "^1.4",
         "phpunit/phpunit": "^9.5.24",
         "psr/log": "^3.0",
-        "qossmic/deptrac-shim": "^0.24",
+        "qossmic/deptrac-shim": "^1.0",
         "rector/rector": "^0.14",
         "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^6.1",
