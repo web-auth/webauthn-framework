@@ -132,7 +132,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
             'The certificate has no extension'
         );
-        is_array($certDetails['extensions']) || throw new InvalidArgumentException('The certificate has no extension');
+        is_array($certDetails['extensions']) || throw new InvalidArgumentException(
+            'The certificate has no extension'
+        );
         array_key_exists('1.3.6.1.4.1.11129.2.1.17', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
         );
@@ -144,9 +146,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $objects = $extensionAsAsn1->getChildren();
 
         //Check that attestationChallenge is set to the clientDataHash.
-        array_key_exists(4, $objects) || throw new InvalidArgumentException(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
-        );
+        array_key_exists(
+            4,
+            $objects
+        ) || throw new InvalidArgumentException('The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
         $objects[4] instanceof OctetString || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
@@ -155,9 +158,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
 
         //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
-        array_key_exists(6, $objects) || throw new InvalidArgumentException(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
-        );
+        array_key_exists(
+            6,
+            $objects
+        ) || throw new InvalidArgumentException('The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid');
         $softwareEnforcedFlags = $objects[6];
         $softwareEnforcedFlags instanceof Sequence || throw new InvalidArgumentException(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'

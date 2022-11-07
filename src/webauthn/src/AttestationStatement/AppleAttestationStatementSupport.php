@@ -116,7 +116,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         array_key_exists('extensions', $certDetails) || throw new InvalidArgumentException(
             'The certificate has no extension'
         );
-        is_array($certDetails['extensions']) || throw new InvalidArgumentException('The certificate has no extension');
+        is_array($certDetails['extensions']) || throw new InvalidArgumentException(
+            'The certificate has no extension'
+        );
         array_key_exists('1.2.840.113635.100.8.2', $certDetails['extensions']) || throw new InvalidArgumentException(
             'The certificate extension "1.2.840.113635.100.8.2" is missing'
         );
@@ -126,8 +128,8 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
-        '3024a1220420' . $nonce === bin2hex((string) $extension) || throw new InvalidArgumentException(
-            'The client data hash is not valid'
-        );
+        '3024a1220420' . $nonce === bin2hex(
+            (string) $extension
+        ) || throw new InvalidArgumentException('The client data hash is not valid');
     }
 }

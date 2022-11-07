@@ -31,7 +31,11 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
         is_string($content) || throw new InvalidArgumentException('Invalid data');
 
         /** @var ServerPublicKeyCredentialCreationOptionsRequest $dto */
-        $dto = $this->serializer->deserialize($content, ServerPublicKeyCredentialCreationOptionsRequest::class, 'json');
+        $dto = $this->serializer->deserialize(
+            $content,
+            ServerPublicKeyCredentialCreationOptionsRequest::class,
+            'json'
+        );
         $errors = $this->validator->validate($dto);
 
         if (count($errors) > 0) {

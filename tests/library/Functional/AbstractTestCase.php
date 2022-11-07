@@ -145,8 +145,9 @@ abstract class AbstractTestCase extends TestCase
         return $urls;
     }
 
-    private function getAttestationStatementSupportManager(?ClientInterface $client): AttestationStatementSupportManager
-    {
+    private function getAttestationStatementSupportManager(
+        ?ClientInterface $client
+    ): AttestationStatementSupportManager {
         if ($client === null) {
             $client = new Client();
         }

@@ -109,7 +109,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
-        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('', $data['errorMessage']);
 
@@ -146,7 +146,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
-        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('', $data['errorMessage']);
 
@@ -188,7 +188,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
-        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('', $data['errorMessage']);
 
@@ -227,7 +227,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
-        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
     }
 
     /**
@@ -287,7 +287,7 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
-        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertArrayHasKey('errorMessage', $data);
         static::assertSame('', $data['errorMessage']);
 

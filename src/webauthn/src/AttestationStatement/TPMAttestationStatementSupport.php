@@ -349,9 +349,9 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $endDate > $this->clock->now() || throw new InvalidArgumentException('Invalid certificate end date.');
 
         //Check extensions
-        (isset($parsed['extensions']) && is_array($parsed['extensions'])) || throw new InvalidArgumentException(
-            'Certificate extensions are missing'
-        );
+        (isset($parsed['extensions']) && is_array(
+            $parsed['extensions']
+        )) || throw new InvalidArgumentException('Certificate extensions are missing');
 
         //Check subjectAltName
         isset($parsed['extensions']['subjectAltName']) || throw new InvalidArgumentException(

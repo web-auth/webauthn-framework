@@ -327,10 +327,9 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // At this point, the Metadata Statement is mandatory
-        $metadataStatement !== null || throw new InvalidArgumentException(sprintf(
-            'The Metadata Statement for the AAGUID "%s" is missing',
-            $aaguid
-        ));
+        $metadataStatement !== null || throw new InvalidArgumentException(
+            sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
+        );
         // We check the last status report
         $this->checkStatusReport($aaguid);
 

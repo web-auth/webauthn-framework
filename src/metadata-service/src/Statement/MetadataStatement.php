@@ -472,7 +472,9 @@ class MetadataStatement implements JsonSerializable
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
-            is_array($tcDisplayPNGCharacteristics) || throw new InvalidArgumentException('Invalid Metadata Statement');
+            is_array($tcDisplayPNGCharacteristics) || throw new InvalidArgumentException(
+                'Invalid Metadata Statement'
+            );
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
                 is_array($tcDisplayPNGCharacteristic) || throw new InvalidArgumentException(
                     'Invalid Metadata Statement'
