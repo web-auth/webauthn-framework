@@ -26,8 +26,10 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?PublicKeyCredentialDescriptorCollection
-    {
+    public function convertToPHPValue(
+        $value,
+        AbstractPlatform $platform
+    ): ?PublicKeyCredentialDescriptorCollection {
         if ($value === null || $value instanceof PublicKeyCredentialDescriptorCollection) {
             return $value;
         }

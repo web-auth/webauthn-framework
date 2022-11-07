@@ -159,7 +159,9 @@ class AuthenticatorAttestationResponseValidator
                 $parsedRelyingPartyId
             ) || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid origin rpId.'
+            );
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
@@ -242,7 +244,9 @@ class AuthenticatorAttestationResponseValidator
             $credentialId = $attestedCredentialData->getCredentialId();
             $this->publicKeyCredentialSource->findOneByCredentialId(
                 $credentialId
-            ) === null || throw AuthenticatorResponseVerificationException::create('The credential ID already exists.');
+            ) === null || throw AuthenticatorResponseVerificationException::create(
+                'The credential ID already exists.'
+            );
 
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
@@ -397,10 +401,9 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // At this point, the Metadata Statement is mandatory
-        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(sprintf(
-            'The Metadata Statement for the AAGUID "%s" is missing',
-            $aaguid
-        ));
+        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(
+            sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
+        );
         // We check the last status report
         $this->checkStatusReport($aaguid);
 

@@ -34,7 +34,9 @@ class RogueListEntry implements JsonSerializable
     {
         array_key_exists('sk', $data) || throw MetadataStatementLoadingException::create('The key "sk" is missing');
         is_string($data['sk']) || throw MetadataStatementLoadingException::create('The key "date" is invalid');
-        array_key_exists('date', $data) || throw MetadataStatementLoadingException::create('The key "date" is missing');
+        array_key_exists('date', $data) || throw MetadataStatementLoadingException::create(
+            'The key "date" is missing'
+        );
         is_string($data['date']) || throw MetadataStatementLoadingException::create('The key "date" is invalid');
 
         return new self($data['sk'], $data['date']);
