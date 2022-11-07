@@ -35,6 +35,7 @@ final class DynamicRouteCompilerPassTest extends AbstractCompilerPassTestCase
         $route2->addTag(DynamicRouteCompilerPass::TAG, [
             'path' => '/{id}/enable',
             'host' => 'www.foo.bar',
+            'method' => 'GET',
         ]);
         $this->setDefinition('route_2', $route2);
 
@@ -45,12 +46,12 @@ final class DynamicRouteCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             Loader::class,
             'add',
-            ['/foo/bar', null, 'route_1']
+            ['/foo/bar', null, 'route_1', 'POST']
         );
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             Loader::class,
             'add',
-            ['/{id}/enable', 'www.foo.bar', 'route_2']
+            ['/{id}/enable', 'www.foo.bar', 'route_2', 'GET']
         );
     }
 

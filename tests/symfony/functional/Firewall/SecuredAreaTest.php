@@ -60,7 +60,7 @@ final class SecuredAreaTest extends WebTestCase
             'HTTPS' => 'on',
         ], json_encode($body, JSON_THROW_ON_ERROR));
 
-        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         $json = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
@@ -118,7 +118,7 @@ final class SecuredAreaTest extends WebTestCase
             'HTTP_HOST' => 'localhost',
         ], $assertion);
 
-        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertSame(
             '{"status":"ok","errorMessage":"","userIdentifier":"admin"}',
             $this->client->getResponse()
@@ -129,6 +129,6 @@ final class SecuredAreaTest extends WebTestCase
         $this->client->request('GET', '/admin', [], [], []);
 
         static::assertSame('["Hello admin"]', $this->client->getResponse()->getContent());
-        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
     }
 }

@@ -14,7 +14,7 @@ jobs:
         uses: snow-actions/tweet@v1.3.0
         with:
           status: |
-            We are proud to announce that ${{ github.event.release.name }}
+            We are proud to announce that ${{ github.repository }} · ${{ github.event.release.name }}
             ${{ github.event.release.html_url }} is now released 🚀.
         env:
           CONSUMER_API_KEY: ${{ secrets.TWITTER_CONSUMER_API_KEY }}

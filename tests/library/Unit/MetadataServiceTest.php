@@ -25,7 +25,11 @@ final class MetadataServiceTest extends TestCase
         $client = new Client();
         $client->addResponse($response);
 
-        $service = new FidoAllianceCompliantMetadataService(new Psr17Factory(), $client, 'https://fidoalliance.co.nz');
+        $service = new FidoAllianceCompliantMetadataService(
+            new Psr17Factory(),
+            $client,
+            'https://fidoalliance.co.nz'
+        );
         $aaguids = $service->list();
         foreach ($aaguids as $aaguid) {
             static::assertTrue($service->has($aaguid));

@@ -43,12 +43,16 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         $width >= 0 || throw MetadataStatementLoadingException::create('Invalid width');
         $height >= 0 || throw MetadataStatementLoadingException::create('Invalid height');
         ($bitDepth >= 0 && $bitDepth <= 254) || throw MetadataStatementLoadingException::create('Invalid bit depth');
-        ($colorType >= 0 && $colorType <= 254) || throw MetadataStatementLoadingException::create('Invalid color type');
+        ($colorType >= 0 && $colorType <= 254) || throw MetadataStatementLoadingException::create(
+            'Invalid color type'
+        );
         ($compression >= 0 && $compression <= 254) || throw MetadataStatementLoadingException::create(
             'Invalid compression'
         );
         ($filter >= 0 && $filter <= 254) || throw MetadataStatementLoadingException::create('Invalid filter');
-        ($interlace >= 0 && $interlace <= 254) || throw MetadataStatementLoadingException::create('Invalid interlace');
+        ($interlace >= 0 && $interlace <= 254) || throw MetadataStatementLoadingException::create(
+            'Invalid interlace'
+        );
 
         $this->width = $width;
         $this->height = $height;

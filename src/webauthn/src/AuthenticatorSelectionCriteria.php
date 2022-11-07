@@ -130,7 +130,10 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
             $json,
             'Invalid "authenticatorAttachment" value'
         );
-        is_bool($requireResidentKey) || throw InvalidDataException::create($json, 'Invalid "requireResidentKey" value');
+        is_bool($requireResidentKey) || throw InvalidDataException::create(
+            $json,
+            'Invalid "requireResidentKey" value'
+        );
         is_string($userVerification) || throw InvalidDataException::create($json, 'Invalid "userVerification" value');
         is_string($residentKey) || throw InvalidDataException::create($json, 'Invalid "residentKey" value');
 

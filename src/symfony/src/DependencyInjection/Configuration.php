@@ -86,12 +86,16 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('token_binding_support_handler')
                 ->defaultNull()
                 ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
-                ->info('This handler will check the token binding header from the request. By default, it is ignored.')
+                ->info(
+                    'This handler will check the token binding header from the request. By default, it is ignored.'
+                )
             ->end()
             ->scalarNode('counter_checker')
                 ->defaultValue(ThrowExceptionIfInvalid::class)
                 ->cannotBeEmpty()
-                ->info('This service will check if the counter is valid. By default it throws an exception (recommended).')
+                ->info(
+                    'This service will check if the counter is valid. By default it throws an exception (recommended).'
+                )
             ->end()
         ->end();
 
@@ -101,11 +105,10 @@ final class Configuration implements ConfigurationInterface
         $this->addControllersConfig($rootNode);
         $this->addAndroidSafetynetConfig($rootNode);
 
-
         return $treeBuilder;
     }
 
-    protected function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void
+    private function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultCreationProfiles = [
@@ -115,7 +118,6 @@ final class Configuration implements ConfigurationInterface
                 ],
             ],
         ];
-
         $rootNode->children()
             ->arrayNode('creation_profiles')
                 ->treatFalseLike($defaultCreationProfiles)
@@ -165,7 +167,9 @@ final class Configuration implements ConfigurationInterface
                                 ->defaultFalse()
                             ->end()
                             ->scalarNode('user_verification')
-                                ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+                                ->defaultValue(
+                                    AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+                                )
                                 ->validate()
                                 ->ifNotInArray([
                                     AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
@@ -215,7 +219,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addRequestProfilesConfig(ArrayNodeDefinition $rootNode): void
+    private function addRequestProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultRequestProfiles = [
@@ -259,7 +263,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addControllersConfig(ArrayNodeDefinition $rootNode): void
+    private function addControllersConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('controllers')
@@ -296,7 +300,9 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->scalarNode('options_storage')
                                     ->defaultValue(SessionStorage::class)
-                                    ->info('Service responsible of the options/user entity storage during the ceremony')
+                                    ->info(
+                                        'Service responsible of the options/user entity storage during the ceremony'
+                                    )
                                 ->end()
                                 ->scalarNode('success_handler')
                                     ->defaultValue(DefaultSuccessHandler::class)
@@ -346,7 +352,9 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->scalarNode('options_storage')
                                     ->defaultValue(SessionStorage::class)
-                                    ->info('Service responsible of the options/user entity storage during the ceremony')
+                                    ->info(
+                                        'Service responsible of the options/user entity storage during the ceremony'
+                                    )
                                 ->end()
                                 ->scalarNode('success_handler')
                                     ->defaultValue(DefaultSuccessHandler::class)
@@ -373,12 +381,14 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addMetadataConfig(ArrayNodeDefinition $rootNode): void
+    private function addMetadataConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('metadata')
                 ->canBeEnabled()
-                ->info('Enable the support of the Metadata Statements. Please read the documentation for this feature.')
+                ->info(
+                    'Enable the support of the Metadata Statements. Please read the documentation for this feature.'
+                )
                 ->children()
                     ->scalarNode('mds_repository')
                         ->isRequired()
@@ -398,7 +408,7 @@ final class Configuration implements ConfigurationInterface
         ->end();
     }
 
-    protected function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
+    private function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('android_safetynet')
@@ -408,7 +418,9 @@ final class Configuration implements ConfigurationInterface
                     ->integerNode('leeway')
                         ->defaultValue(0)
                         ->min(0)
-                        ->info('Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.')
+                        ->info(
+                            'Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.'
+                        )
                     ->end()
                     ->integerNode('max_age')
                         ->min(0)
@@ -417,11 +429,12 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                     ->scalarNode('api_key')
                         ->defaultNull()
-                        ->info('If set, the application will verify the statements using Google API. See https://console.cloud.google.com/apis/library to get it.')
+                        ->info(
+                            'If set, the application will verify the statements using Google API. See https://console.cloud.google.com/apis/library to get it.'
+                        )
                     ->end()
                 ->end()
             ->end()
         ->end();
     }
 }
-

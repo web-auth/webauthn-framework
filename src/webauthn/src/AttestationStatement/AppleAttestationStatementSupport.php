@@ -97,7 +97,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
     ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
-        is_array($details) || throw AttestationStatementVerificationException::create('Unable to read the certificate');
+        is_array($details) || throw AttestationStatementVerificationException::create(
+            'Unable to read the certificate'
+        );
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
@@ -132,9 +134,9 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
-        is_array($certDetails) || throw AttestationStatementVerificationException::create(
-            'The certificate is not valid'
-        );
+        is_array(
+            $certDetails
+        ) || throw AttestationStatementVerificationException::create('The certificate is not valid');
         array_key_exists('extensions', $certDetails) || throw AttestationStatementVerificationException::create(
             'The certificate has no extension'
         );

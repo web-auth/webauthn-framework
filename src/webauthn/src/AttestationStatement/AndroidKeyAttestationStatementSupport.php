@@ -114,7 +114,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     ): void {
         $resource = openssl_pkey_get_public($certificate);
         $details = openssl_pkey_get_details($resource);
-        is_array($details) || throw AttestationStatementVerificationException::create('Unable to read the certificate');
+        is_array($details) || throw AttestationStatementVerificationException::create(
+            'Unable to read the certificate'
+        );
 
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
@@ -148,9 +150,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $certDetails = openssl_x509_parse($certificate);
 
         //Find Android KeyStore Extension with OID "1.3.6.1.4.1.11129.2.1.17" in certificate extensions
-        is_array($certDetails) || throw AttestationStatementVerificationException::create(
-            'The certificate is not valid'
-        );
+        is_array(
+            $certDetails
+        ) || throw AttestationStatementVerificationException::create('The certificate is not valid');
         array_key_exists('extensions', $certDetails) || throw AttestationStatementVerificationException::create(
             'The certificate has no extension'
         );

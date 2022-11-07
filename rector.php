@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Core\ValueObject\PhpVersion;
+use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodParameterRector;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Php74\Rector\Property\TypedPropertyRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
@@ -28,7 +29,10 @@ return static function (RectorConfig $config): void {
     $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $config->skip([
-        'tests/symfony/config/routing.php'
+        'tests/symfony/config/routing.php',
+        RemoveUnusedPrivateMethodParameterRector::class => [
+            __DIR__ . '*/DependencyInjection/Configuration.php',
+        ],
     ]);
     $config->phpVersion(PhpVersion::PHP_81);
     $config->parallel();
