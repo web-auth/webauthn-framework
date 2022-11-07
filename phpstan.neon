@@ -25,9 +25,9 @@ parameters:
             path: src/symfony/src/Security/Authorization/Voter/IsUserVerifiedVoter.php
             count: 1
         -
-            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::(.*)\(\)#'
+            message: '#Cannot call method (scalar|integer)Node\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null.#'
             path: src/symfony/src/DependencyInjection/Configuration.php
-            count: 1
+            count: 6
         -
             message: '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php

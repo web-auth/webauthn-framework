@@ -33,6 +33,7 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
@@ -273,14 +274,12 @@ final class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('options_method')
-                                    ->isRequired()
                                     ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('options_path')
                                     ->isRequired()
                                 ->end()
                                 ->scalarNode('result_method')
-                                    ->isRequired()
                                     ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('result_path')
@@ -328,14 +327,12 @@ final class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('options_method')
-                                    ->isRequired()
                                     ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('options_path')
                                     ->isRequired()
                                 ->end()
                                 ->scalarNode('result_method')
-                                    ->isRequired()
                                     ->defaultValue(Request::METHOD_POST)
                                 ->end()
                                 ->scalarNode('result_path')
