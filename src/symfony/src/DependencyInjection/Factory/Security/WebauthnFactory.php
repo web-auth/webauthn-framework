@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
-use Symfony\Component\HttpFoundation\Request;
 use function assert;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
@@ -14,6 +13,7 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpFoundation\Request;
 use Webauthn\Bundle\Controller\AssertionControllerFactory;
 use Webauthn\Bundle\Controller\AssertionRequestController;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
@@ -344,7 +344,16 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
             ]);
-        $this->createControllerAndRoute($container, $controller, 'request', 'options', $firewallName, $method, $path, $host);
+        $this->createControllerAndRoute(
+            $container,
+            $controller,
+            'request',
+            'options',
+            $firewallName,
+            $method,
+            $path,
+            $host
+        );
     }
 
     private function createAttestationRequestControllerAndRoute(
@@ -367,7 +376,16 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
             ]);
-        $this->createControllerAndRoute($container, $controller, 'creation', 'options', $firewallName, $method, $path, $host);
+        $this->createControllerAndRoute(
+            $container,
+            $controller,
+            'creation',
+            'options',
+            $firewallName,
+            $method,
+            $path,
+            $host
+        );
     }
 
     private function createResponseControllerAndRoute(
@@ -380,7 +398,16 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     ): void {
         $controller = (new Definition(DummyController::class))
             ->setFactory([new Reference(DummyControllerFactory::class), 'create']);
-        $this->createControllerAndRoute($container, $controller, $action, 'result', $firewallName, $method, $path, $host);
+        $this->createControllerAndRoute(
+            $container,
+            $controller,
+            $action,
+            'result',
+            $firewallName,
+            $method,
+            $path,
+            $host
+        );
     }
 
     private function createControllerAndRoute(

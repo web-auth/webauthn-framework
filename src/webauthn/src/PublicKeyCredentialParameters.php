@@ -48,7 +48,10 @@ class PublicKeyCredentialParameters implements JsonSerializable
             $json,
             'Invalid input. "type" is missing.'
         );
-        array_key_exists('alg', $json) || throw InvalidDataException::create($json, 'Invalid input. "alg" is missing.');
+        array_key_exists('alg', $json) || throw InvalidDataException::create(
+            $json,
+            'Invalid input. "alg" is missing.'
+        );
 
         return new self($json['type'], $json['alg']);
     }

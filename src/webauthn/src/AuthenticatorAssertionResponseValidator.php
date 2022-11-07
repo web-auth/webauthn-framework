@@ -171,7 +171,9 @@ class AuthenticatorAssertionResponseValidator
                 );
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid origin rpId.'
+            );
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
