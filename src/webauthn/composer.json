@@ -28,7 +28,7 @@
         "paragonie/constant_time_encoding": "^2.6",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
-        "psr/log": "^3.0",
+        "psr/log": "^1.0|^2.0|^3.0",
         "spomky-labs/cbor-php": "^3.0",
         "symfony/uid": "^6.1",
         "web-auth/cose-lib": "^4.0.12",

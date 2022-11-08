@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Routing;
 
 use Symfony\Component\Config\Loader\Loader as SymfonyLoader;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -22,13 +21,13 @@ class Loader extends SymfonyLoader
         $this->routes = new RouteCollection();
     }
 
-    public function add(string $pattern, ?string $host, string $name): void
+    public function add(string $pattern, ?string $host, string $name, string $method = 'POST'): void
     {
         $controllerId = sprintf('%s', $name);
         $defaults = [
             '_controller' => $controllerId,
         ];
-        $route = new Route($pattern, $defaults, [], [], $host, [], [Request::METHOD_POST]);
+        $route = new Route($pattern, $defaults, [], [], $host, [], [$method]);
         $this->routes->add($name, $route);
     }
 

@@ -36,7 +36,10 @@ final class DynamicRouteCompilerPass implements CompilerPassInterface
                     'The host is missing for "%s"',
                     $id
                 ));
-                $definition->addMethodCall('add', [$attributes['path'], $attributes['host'], $id]);
+                $definition->addMethodCall(
+                    'add',
+                    [$attributes['path'], $attributes['host'], $id, $attributes['method'] ?? 'POST']
+                );
             }
         }
     }

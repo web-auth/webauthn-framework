@@ -27,6 +27,7 @@ use PhpCsFixer\Fixer\Strict\StrictComparisonFixer;
 use PhpCsFixer\Fixer\Strict\StrictParamFixer;
 use PhpCsFixer\Fixer\Whitespace\ArrayIndentationFixer;
 use PhpCsFixer\Fixer\Whitespace\CompactNullableTypehintFixer;
+use PhpCsFixer\Fixer\Whitespace\MethodChainingIndentationFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
@@ -86,6 +87,11 @@ return static function (ECSConfig $config) use ($header): void {
         'import_classes' => true,
         'import_constants' => true,
         'import_functions' => true,
+    ]);
+    $config->skip([
+        MethodChainingIndentationFixer::class => [
+            __DIR__ . '*/DependencyInjection/Configuration.php',
+        ],
     ]);
 
     $config->services()
