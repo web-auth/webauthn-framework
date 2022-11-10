@@ -46,7 +46,7 @@ final class AssertionControllerFactory
         string $profile,
         OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
-        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
         return new AssertionRequestController(
             $this->serializer,
@@ -62,10 +62,14 @@ final class AssertionControllerFactory
         );
     }
 
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        array $securedRelyingPartyIds
     ): AssertionResponseController {
         return new AssertionResponseController(
             $this->httpMessageFactory,
@@ -75,6 +79,7 @@ final class AssertionControllerFactory
             $optionStorage,
             $successHandler,
             $failureHandler,
+            $securedRelyingPartyIds
         );
     }
 }

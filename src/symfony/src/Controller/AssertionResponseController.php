@@ -23,6 +23,9 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class AssertionResponseController
 {
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function __construct(
         private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -31,6 +34,7 @@ final class AssertionResponseController
         private readonly OptionsStorage $optionsStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private readonly array $securedRelyingPartyIds,
     ) {
     }
 
@@ -59,7 +63,8 @@ final class AssertionResponseController
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $psr7Request,
-                $userEntity?->getId()
+                $userEntity?->getId(),
+                $this->securedRelyingPartyIds
             );
 
             return $this->successHandler->onSuccess($request);
