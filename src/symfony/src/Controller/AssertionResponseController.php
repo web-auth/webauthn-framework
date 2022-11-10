@@ -31,6 +31,7 @@ final class AssertionResponseController
         private readonly OptionsStorage $optionsStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private readonly array $securedRelyingPartyIds,
     ) {
     }
 
@@ -59,7 +60,8 @@ final class AssertionResponseController
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $psr7Request,
-                $userEntity?->getId()
+                $userEntity?->getId(),
+                $this->securedRelyingPartyIds
             );
 
             return $this->successHandler->onSuccess($request);
