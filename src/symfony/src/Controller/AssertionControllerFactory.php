@@ -62,6 +62,9 @@ final class AssertionControllerFactory
         );
     }
 
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
