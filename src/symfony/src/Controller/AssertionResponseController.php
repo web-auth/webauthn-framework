@@ -23,6 +23,9 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class AssertionResponseController
 {
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
     public function __construct(
         private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
