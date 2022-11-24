@@ -8,6 +8,7 @@ use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -57,6 +58,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
             $pkSourceRepository,
             IgnoreTokenBindingHandler::create(),
             ExtensionOutputCheckerHandler::create(),
+            new EventDispatcher()
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
