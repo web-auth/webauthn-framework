@@ -299,7 +299,6 @@ class AuthenticatorAssertionResponseValidator
             'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
         );
 
-
         $this->eventDispatcher = $eventDispatcher;
 
         return $this;
