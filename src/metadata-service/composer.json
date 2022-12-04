@@ -24,6 +24,7 @@
         "ext-json": "*",
         "lcobucci/clock": "^2.2",
         "paragonie/constant_time_encoding": "^2.6",
+        "psr/clock": "^1.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/log": "^3.0",
@@ -35,6 +36,7 @@
         }
     },
     "suggest": {
+        "psr/clock-implementation": "As of 4.5.x, the PSR Clock implementation will replace lcobucci/clock",
         "psr/log-implementation": "Recommended to receive logs from the library",
         "web-token/jwt-key-mgmt": "Mandatory for fetching Metadata Statement from distant sources",
         "web-token/jwt-signature-algorithm-ecdsa": "Mandatory for fetching Metadata Statement from distant sources"

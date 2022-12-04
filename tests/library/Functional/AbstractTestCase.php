@@ -16,7 +16,6 @@ use Cose\Algorithm\Signature\RSA\RS512;
 use DateTimeImmutable;
 use DateTimeZone;
 use Http\Mock\Client;
-use Lcobucci\Clock\FrozenClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -43,6 +42,7 @@ use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\MetadataService\Service\StringMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
 use Webauthn\Tests\MockedRequestTrait;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
@@ -53,7 +53,7 @@ abstract class AbstractTestCase extends TestCase
     use MockedRequestTrait;
     use MockedPublicKeyCredentialSourceTrait;
 
-    protected ?FrozenClock $clock = null;
+    protected ?MockClock $clock = null;
 
     private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
@@ -75,7 +75,7 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->clock = new FrozenClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
+        $this->clock = new MockClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
     }
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader

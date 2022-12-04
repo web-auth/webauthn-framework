@@ -22,6 +22,7 @@ use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Psr\Clock\ClockInterface;
 use function unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\AttestationStatementLoadingException;
@@ -35,11 +36,16 @@ use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport
 {
-    private readonly Clock $clock;
+    private readonly Clock|ClockInterface $clock;
 
-    public function __construct(?Clock $clock = null)
+    public function __construct(null|Clock|ClockInterface $clock = null)
     {
         if ($clock === null) {
+            trigger_deprecation(
+                'web-auth/metadata-service',
+                '4.5.0',
+                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
+            );
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;

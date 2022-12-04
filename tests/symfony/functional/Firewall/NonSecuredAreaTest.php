@@ -21,7 +21,7 @@ final class NonSecuredAreaTest extends WebTestCase
             'HTTPS' => 'on',
         ]);
 
-        static::assertSame(200, $client->getResponse()->getStatusCode());
+        static::assertResponseIsSuccessful();
         static::assertSame('Home', $client->getResponse()->getContent());
     }
 }
