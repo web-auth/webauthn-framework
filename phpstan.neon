@@ -15,7 +15,7 @@ parameters:
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
-            count: 2
+            count: 1
         -
             message: '#Method Webauthn\\Bundle\\Security\\Authorization\\Voter\\IsUserPresentVoter::vote\(\) has parameter \$attributes with no value type specified in iterable type array\.#'
             path: src/symfony/src/Security/Authorization/Voter/IsUserPresentVoter.php
@@ -69,6 +69,7 @@ parameters:
         - '#Property .* does not accept .*\|false\.#'
         - '#Cannot access offset \d+ on array\|false\.#'
         - '#Method .* should return string but returns string\|false\.#'
+        - '#Call to deprecated method getContentType\(\) of class Symfony\\Component\\HttpFoundation\\Request#'
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true

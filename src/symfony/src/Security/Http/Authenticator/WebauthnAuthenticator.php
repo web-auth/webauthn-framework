@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
-use function is_string;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -171,7 +170,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             $response instanceof AuthenticatorAssertionResponse || throw InvalidDataException::create(
@@ -226,7 +224,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             $response instanceof AuthenticatorAttestationResponse || throw InvalidDataException::create(
