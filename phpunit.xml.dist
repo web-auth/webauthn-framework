@@ -53,18 +53,7 @@
         <ini name="memory_limit" value="-1"/>
     </php>
     <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
-            <arguments>
-                <array>
-                    <element key="time-sensitive">
-                        <string>Webauthn</string>
-                    </element>
-                    <element key="time-sensitive">
-                        <string>Webauthn\CertificateChainChecker</string>
-                    </element>
-                </array>
-            </arguments>
-        </listener>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
         <listener class="Symfony\Bridge\PhpUnit\CoverageListener"/>
     </listeners>
 </phpunit>
