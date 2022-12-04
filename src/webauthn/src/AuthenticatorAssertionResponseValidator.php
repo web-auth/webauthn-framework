@@ -38,13 +38,12 @@ class AuthenticatorAssertionResponseValidator
 
     private LoggerInterface $logger;
 
-    private ?EventDispatcherInterface $eventDispatcher = null;
-
     public function __construct(
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly ?Manager $algorithmManager,
+        private ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -63,12 +62,14 @@ class AuthenticatorAssertionResponseValidator
         TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
+        EventDispatcherInterface $eventDispatcher = null,
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
-            $algorithmManager
+            $algorithmManager,
+            $eventDispatcher,
         );
     }
 
@@ -171,7 +172,9 @@ class AuthenticatorAssertionResponseValidator
                 );
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid origin rpId.'
+            );
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
@@ -290,6 +293,12 @@ class AuthenticatorAssertionResponseValidator
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
     {
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.4.2',
+            'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
+        );
+
         $this->eventDispatcher = $eventDispatcher;
 
         return $this;

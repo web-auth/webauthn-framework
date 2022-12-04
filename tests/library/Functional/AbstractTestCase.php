@@ -20,6 +20,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Finder\Finder;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
@@ -116,7 +117,8 @@ abstract class AbstractTestCase extends TestCase
                 $credentialRepository,
                 new TokenBindingNotSupportedHandler(),
                 new ExtensionOutputCheckerHandler(),
-                $this->getAlgorithmManager()
+                $this->getAlgorithmManager(),
+                new EventDispatcher()
             );
         }
 
@@ -145,8 +147,9 @@ abstract class AbstractTestCase extends TestCase
         return $urls;
     }
 
-    private function getAttestationStatementSupportManager(?ClientInterface $client): AttestationStatementSupportManager
-    {
+    private function getAttestationStatementSupportManager(
+        ?ClientInterface $client
+    ): AttestationStatementSupportManager {
         if ($client === null) {
             $client = new Client();
         }

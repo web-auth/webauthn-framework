@@ -70,10 +70,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $attestation,
             'Invalid attestation object'
         );
-        ! array_key_exists('ecdaaKeyId', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
-            $attestation,
-            'ECDAA not supported'
-        );
+        ! array_key_exists(
+            'ecdaaKeyId',
+            $attestation['attStmt']
+        ) || throw AttestationStatementLoadingException::create($attestation, 'ECDAA not supported');
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
             array_key_exists($key, $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
                 $attestation,
@@ -371,9 +371,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         );
 
         // Check period of validity
-        array_key_exists('validFrom_time_t', $parsed) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate start date.'
-        );
+        array_key_exists(
+            'validFrom_time_t',
+            $parsed
+        ) || throw AttestationStatementVerificationException::create('Invalid certificate start date.');
         is_int($parsed['validFrom_time_t']) || throw AttestationStatementVerificationException::create(
             'Invalid certificate start date.'
         );

@@ -44,13 +44,12 @@ class AuthenticatorAttestationResponseValidator
 
     private ?CertificateChainValidator $certificateChainValidator = null;
 
-    private ?EventDispatcherInterface $eventDispatcher = null;
-
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        private ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
@@ -66,13 +65,15 @@ class AuthenticatorAttestationResponseValidator
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         TokenBindingHandler $tokenBindingHandler,
-        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler
+        ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
+        EventDispatcherInterface $eventDispatcher = null,
     ): self {
         return new self(
             $attestationStatementSupportManager,
             $publicKeyCredentialSource,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
+            $eventDispatcher,
         );
     }
 
@@ -85,6 +86,12 @@ class AuthenticatorAttestationResponseValidator
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
     {
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '4.4.2',
+            'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
+        );
+
         $this->eventDispatcher = $eventDispatcher;
 
         return $this;
@@ -159,7 +166,9 @@ class AuthenticatorAttestationResponseValidator
                 $parsedRelyingPartyId
             ) || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid origin rpId.'
+            );
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
@@ -242,7 +251,9 @@ class AuthenticatorAttestationResponseValidator
             $credentialId = $attestedCredentialData->getCredentialId();
             $this->publicKeyCredentialSource->findOneByCredentialId(
                 $credentialId
-            ) === null || throw AuthenticatorResponseVerificationException::create('The credential ID already exists.');
+            ) === null || throw AuthenticatorResponseVerificationException::create(
+                'The credential ID already exists.'
+            );
 
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
@@ -397,10 +408,9 @@ class AuthenticatorAttestationResponseValidator
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // At this point, the Metadata Statement is mandatory
-        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(sprintf(
-            'The Metadata Statement for the AAGUID "%s" is missing',
-            $aaguid
-        ));
+        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(
+            sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
+        );
         // We check the last status report
         $this->checkStatusReport($aaguid);
 
