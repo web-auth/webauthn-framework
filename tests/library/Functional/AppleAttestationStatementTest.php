@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
-use DateTimeImmutable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Symfony\Bridge\PhpUnit\ClockMock;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -28,7 +29,8 @@ final class AppleAttestationStatementTest extends AbstractTestCase
      */
     public function anAppleAttestationCanBeVerified(): void
     {
-        $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));
+        ClockMock::register(PhpCertificateChainValidator::class);
+        ClockMock::withClockMock(1_600_000_000.0);
 
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
@@ -101,6 +103,6 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
 
-        $this->clock->set(new DateTimeImmutable());
+        ClockMock::withClockMock(false);
     }
 }

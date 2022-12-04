@@ -12,7 +12,6 @@ use Lcobucci\Clock\SystemClock;
 use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
-use Psr\Clock\ClockInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
@@ -32,20 +31,15 @@ class PhpCertificateChainValidator implements CertificateChainValidator
 {
     private const MAX_VALIDATION_LENGTH = 5;
 
-    private readonly Clock|ClockInterface $clock;
+    private readonly Clock $clock;
 
     public function __construct(
         private readonly ClientInterface $client,
         private readonly RequestFactoryInterface $requestFactory,
-        null|Clock|ClockInterface $clock = null,
+        ?Clock $clock = null,
         private readonly bool $allowFailures = true
     ) {
         if ($clock === null) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.5.0',
-                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
-            );
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
