@@ -7,7 +7,6 @@ namespace Webauthn\Bundle\Controller;
 use function count;
 use const FILTER_VALIDATE_BOOLEAN;
 use function is_array;
-use function is_string;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +53,6 @@ final class AttestationRequestController
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new BadRequestHttpException('Invalid data');
 
             $userEntity = $this->userEntityGuesser->findUserEntity($request);
             $publicKeyCredentialCreationOptions = $this->getPublicKeyCredentialCreationOptions(

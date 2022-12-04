@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use function is_string;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,7 +45,6 @@ final class AttestationResponseController
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new BadRequestHttpException('Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(

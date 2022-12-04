@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use function count;
-use function is_string;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,7 +51,6 @@ final class AssertionRequestController
                 'Only JSON content type allowed'
             );
             $content = $request->getContent();
-            is_string($content) || throw new BadRequestHttpException('Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
             $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
                 $creationOptionsRequest->extensions
