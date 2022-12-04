@@ -64,9 +64,6 @@ services:
     autowire: true
     tags: [ 'controller.service_arguments' ]
 
-  Psr\Clock\ClockInterface:
-    class: Webauthn\Tests\Bundle\Functional\MockClock
-
   ### MDS ###
   mds_single_file_1:
     class: Webauthn\Tests\Bundle\Functional\SingleFileService
