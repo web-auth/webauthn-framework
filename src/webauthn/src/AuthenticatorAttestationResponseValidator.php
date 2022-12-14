@@ -64,7 +64,7 @@ class AuthenticatorAttestationResponseValidator
     public static function create(
         AttestationStatementSupportManager $attestationStatementSupportManager,
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        TokenBindingHandler $tokenBindingHandler,
+        ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         EventDispatcherInterface $eventDispatcher = null,
     ): self {
