@@ -59,7 +59,7 @@ class AuthenticatorAssertionResponseValidator
 
     public static function create(
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        TokenBindingHandler $tokenBindingHandler,
+        ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
         EventDispatcherInterface $eventDispatcher = null,
