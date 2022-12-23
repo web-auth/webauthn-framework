@@ -91,7 +91,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
     /**
      * @test
      */
-    public function fromTheBlog(): void
+    public function aValidInputCanBeVerified(): void
     {
         // Given
         $support = AndroidKeyAttestationStatementSupport::create();
@@ -102,16 +102,18 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         $publicKeyCredential = $loader->load($input);
         /** @var AuthenticatorAttestationResponse $response */
         $response = $publicKeyCredential->getResponse();
-        $clientDataJSONHash = hash('sha256', $response->getClientDataJSON() ->getRawData(), true);
+        $clientDataJSONHash = hash('sha256', $response->getClientDataJSON()->getRawData(), true);
 
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-
-        $support->isValid(
+        //When
+        $result = $support->isValid(
             $clientDataJSONHash,
             $response->getAttestationObject()
                 ->getAttStmt(),
             $response->getAttestationObject()
                 ->getAuthData()
         );
+
+        // Then
+        static::assertTrue($result);
     }
 }

@@ -28,6 +28,8 @@ return static function (RectorConfig $config): void {
     $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $config->skip([
+        'src/symfony/src/DependencyInjection/Configuration.php',
+        'src/symfony/src/Routing/Loader.php',
         'tests/symfony/config/routing.php',
         RemoveUnusedPrivateMethodParameterRector::class => [
             __DIR__ . '*/DependencyInjection/Configuration.php',
