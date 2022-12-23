@@ -12,14 +12,12 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
-use FG\ASN1\ASNObject;
-use FG\ASN1\ExplicitlyTaggedObject;
-use FG\ASN1\Universal\OctetString;
-use FG\ASN1\Universal\Sequence;
-use function hex2bin;
 use function is_array;
 use function openssl_pkey_get_public;
 use function openssl_verify;
+use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
+use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
+use SpomkyLabs\Pki\ASN1\Type\Tagged\ExplicitTagging;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
@@ -166,37 +164,39 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
         );
         $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
-        $extensionAsAsn1 = ASNObject::fromBinary($extension);
-        $extensionAsAsn1 instanceof Sequence || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
-        );
-        $objects = $extensionAsAsn1->getChildren();
+        $extensionAsAsn1 = Sequence::fromDER($extension);
+        $extensionAsAsn1->has(4);
 
         //Check that attestationChallenge is set to the clientDataHash.
-        array_key_exists(4, $objects) || throw AttestationStatementVerificationException::create(
+        $extensionAsAsn1->has(4) || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        $objects[4] instanceof OctetString || throw AttestationStatementVerificationException::create(
+        $ext = $extensionAsAsn1->at(4)
+            ->asElement();
+        $ext instanceof OctetString || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        $clientDataHash === hex2bin(
-            (string) ($objects[4])->getContent()
-        ) || throw AttestationStatementVerificationException::create('The client data hash is not valid');
+        $clientDataHash === $ext->string() || throw AttestationStatementVerificationException::create(
+            'The client data hash is not valid'
+        );
 
         //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
-        array_key_exists(6, $objects) || throw AttestationStatementVerificationException::create(
+        $extensionAsAsn1->has(6) || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        $softwareEnforcedFlags = $objects[6];
+
+        $softwareEnforcedFlags = $extensionAsAsn1->at(6)
+            ->asElement();
         $softwareEnforcedFlags instanceof Sequence || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
         $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
 
-        array_key_exists(7, $objects) || throw AttestationStatementVerificationException::create(
+        $extensionAsAsn1->has(7) || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
-        $teeEnforcedFlags = $objects[6];
+        $teeEnforcedFlags = $extensionAsAsn1->at(7)
+            ->asElement();
         $teeEnforcedFlags instanceof Sequence || throw AttestationStatementVerificationException::create(
             'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
         );
@@ -205,13 +205,12 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void
     {
-        foreach ($sequence->getChildren() as $tag) {
-            $tag instanceof ExplicitlyTaggedObject || throw AttestationStatementVerificationException::create(
+        foreach ($sequence->elements() as $tag) {
+            $tag->asElement() instanceof ExplicitTagging || throw AttestationStatementVerificationException::create(
                 'Invalid tag'
             );
-            (int) $tag->getTag() !== 600 || throw AttestationStatementVerificationException::create(
-                'Forbidden tag 600 found'
-            );
+            $tag->asElement()
+                ->tag() !== 600 || throw AttestationStatementVerificationException::create('Forbidden tag 600 found');
         }
     }
 }
