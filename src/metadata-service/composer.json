@@ -28,7 +28,8 @@
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/log": "^1.0|^2.0|^3.0",
-        "spomky-labs/pki-framework": "^1.0"
+        "spomky-labs/pki-framework": "^1.0",
+        "symfony/deprecation-contracts": "^3.2"
     },
     "autoload": {
         "psr-4": {
