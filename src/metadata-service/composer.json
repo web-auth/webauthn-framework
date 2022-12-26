@@ -22,7 +22,7 @@
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
-        "lcobucci/clock": "^2.2",
+        "lcobucci/clock": "^2.2|^3.0",
         "paragonie/constant_time_encoding": "^2.6",
         "psr/clock": "^1.0",
         "psr/http-client": "^1.0",
