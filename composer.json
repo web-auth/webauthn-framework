@@ -85,7 +85,7 @@
         "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"
     },
     "require-dev": {
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^1.13 || ^2.0",
         "doctrine/dbal": "^3.4",
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/orm": "^2.13",
