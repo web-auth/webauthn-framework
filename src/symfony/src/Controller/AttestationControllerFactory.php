@@ -43,7 +43,7 @@ final class AttestationControllerFactory
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AttestationRequestController {
-        $extractor = new ProfileBasedCreationOptionsBuilder(
+        $optionsBuilder = new ProfileBasedCreationOptionsBuilder(
             $this->serializer,
             $this->validator,
             $this->publicKeyCredentialSourceRepository,
@@ -51,7 +51,7 @@ final class AttestationControllerFactory
             $profile
         );
         return $this->createRequestController(
-            $extractor,
+            $optionsBuilder,
             $userEntityGuesser,
             $optionStorage,
             $creationOptionsHandler,
@@ -60,14 +60,14 @@ final class AttestationControllerFactory
     }
 
     public function createRequestController(
-        PublicKeyCredentialCreationOptionsBuilder $extractor,
+        PublicKeyCredentialCreationOptionsBuilder $optionsBuilder,
         UserEntityGuesser $userEntityGuesser,
         OptionsStorage $optionStorage,
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AttestationRequestController {
         return new AttestationRequestController(
-            $extractor,
+            $optionsBuilder,
             $userEntityGuesser,
             $optionStorage,
             $creationOptionsHandler,

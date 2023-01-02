@@ -53,7 +53,7 @@ final class AssertionControllerFactory
         RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
-        $extractor = new ProfileBasedRequestOptionsBuilder(
+        $optionsBuilder = new ProfileBasedRequestOptionsBuilder(
             $this->serializer,
             $this->validator,
             $this->publicKeyCredentialUserEntityRepository,
@@ -62,17 +62,17 @@ final class AssertionControllerFactory
             $profile,
         );
 
-        return $this->createRequestController($extractor, $optionStorage, $optionsHandler, $failureHandler);
+        return $this->createRequestController($optionsBuilder, $optionStorage, $optionsHandler, $failureHandler);
     }
 
     public function createRequestController(
-        PublicKeyCredentialRequestOptionsBuilder $extractor,
+        PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
         OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
         return new AssertionRequestController(
-            $extractor,
+            $optionsBuilder,
             $optionStorage,
             $optionsHandler,
             $failureHandler,

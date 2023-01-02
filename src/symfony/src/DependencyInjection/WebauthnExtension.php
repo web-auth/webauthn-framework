@@ -163,10 +163,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     {
         foreach ($config as $name => $creationConfig) {
             if ($creationConfig['options_builder'] !== null) {
-                $creationOptionsExtractorId = $creationConfig['options_builder'];
+                $creationOptionsBuilderId = $creationConfig['options_builder'];
             } else {
-                $creationOptionsExtractorId = sprintf('webauthn.controller.creation.extractor.%s', $name);
-                $creationOptionsExtractor = (new Definition(ProfileBasedCreationOptionsBuilder::class))
+                $creationOptionsBuilderId = sprintf('webauthn.controller.creation.options_builder.%s', $name);
+                $creationOptionsBuilder = (new Definition(ProfileBasedCreationOptionsBuilder::class))
                     ->setArguments([
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
@@ -174,14 +174,14 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                         new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                         $creationConfig['profile'],
                     ]);
-                $container->setDefinition($creationOptionsExtractorId, $creationOptionsExtractor);
+                $container->setDefinition($creationOptionsBuilderId, $creationOptionsBuilder);
             }
 
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
             $attestationRequestController = (new Definition(AttestationRequestController::class))
                 ->setFactory([new Reference(AttestationControllerFactory::class), 'createRequestController'])
                 ->setArguments([
-                    new Reference($creationOptionsExtractorId),
+                    new Reference($creationOptionsBuilderId),
                     new Reference($creationConfig['user_entity_guesser']),
                     new Reference($creationConfig['options_storage']),
                     new Reference($creationConfig['options_handler']),
@@ -223,10 +223,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     {
         foreach ($config as $name => $requestConfig) {
             if ($requestConfig['options_builder'] !== null) {
-                $assertionOptionsExtractorId = $requestConfig['options_builder'];
+                $assertionOptionsBuilderId = $requestConfig['options_builder'];
             } else {
-                $assertionOptionsExtractorId = sprintf('webauthn.controller.request.extractor.%s', $name);
-                $assertionOptionsExtractor = (new Definition(ProfileBasedRequestOptionsBuilder::class))
+                $assertionOptionsBuilderId = sprintf('webauthn.controller.request.options_builder.%s', $name);
+                $assertionOptionsBuilder = (new Definition(ProfileBasedRequestOptionsBuilder::class))
                     ->setArguments([
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
@@ -235,14 +235,14 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                         new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                         $requestConfig['profile'],
                     ]);
-                $container->setDefinition($assertionOptionsExtractorId, $assertionOptionsExtractor);
+                $container->setDefinition($assertionOptionsBuilderId, $assertionOptionsBuilder);
             }
 
             $assertionRequestControllerId = sprintf('webauthn.controller.request.request.%s', $name);
             $assertionRequestController = (new Definition(AssertionRequestController::class))
                 ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
                 ->setArguments([
-                    new Reference($assertionOptionsExtractorId),
+                    new Reference($assertionOptionsBuilderId),
                     new Reference($requestConfig['options_storage']),
                     new Reference($requestConfig['options_handler']),
                     new Reference($requestConfig['failure_handler']),

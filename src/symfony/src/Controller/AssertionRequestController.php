@@ -19,7 +19,7 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 final class AssertionRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialRequestOptionsBuilder $extractor,
+        private readonly PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
         private readonly OptionsStorage $optionsStorage,
         private readonly RequestOptionsHandler $optionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
@@ -31,7 +31,7 @@ final class AssertionRequestController
     {
         try {
             $userEntity = null;
-            $publicKeyCredentialRequestOptions = $this->extractor->getFromRequest($request, $userEntity);
+            $publicKeyCredentialRequestOptions = $this->optionsBuilder->getFromRequest($request, $userEntity);
             $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
             $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity));
 

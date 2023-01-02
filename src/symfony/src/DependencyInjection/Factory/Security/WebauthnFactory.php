@@ -285,7 +285,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         if ($config['authentication']['enabled'] === false) {
             return;
         }
-        $extractorId = $this->getAssertionExtractionId($container, $firewallName, $config['authentication']);
+        $optionsBuilderId = $this->getAssertionOptionsBuilderId($container, $firewallName, $config['authentication']);
 
         $this->createAssertionRequestControllerAndRoute(
             $container,
@@ -293,7 +293,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $config['authentication']['routes']['options_method'],
             $config['authentication']['routes']['options_path'],
             $config['authentication']['routes']['host'],
-            $extractorId,
+            $optionsBuilderId,
             $config['options_storage'],
             $config['authentication']['options_handler'],
             $config['failure_handler'],
@@ -319,7 +319,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         if ($config['registration']['enabled'] === false) {
             return;
         }
-        $extractorId = $this->getAttestationExtractionId($container, $firewallName, $config['registration']);
+        $optionsBuilderId = $this->getAttestationOptionsBuilderId($container, $firewallName, $config['registration']);
 
         $this->createAttestationRequestControllerAndRoute(
             $container,
@@ -327,7 +327,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $config['registration']['routes']['options_method'],
             $config['registration']['routes']['options_path'],
             $config['registration']['routes']['host'],
-            $extractorId,
+            $optionsBuilderId,
             $config['options_storage'],
             $config['registration']['options_handler'],
             $config['failure_handler'],
@@ -348,7 +348,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $method,
         string $path,
         ?string $host,
-        string $extractorId,
+        string $optionsBuilderId,
         string $optionsStorageId,
         string $optionsHandlerId,
         string $failureHandlerId,
@@ -356,7 +356,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $controller = (new Definition(AssertionRequestController::class))
             ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
             ->setArguments([
-                new Reference($extractorId),
+                new Reference($optionsBuilderId),
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
@@ -379,7 +379,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $method,
         string $path,
         ?string $host,
-        string $extractorId,
+        string $optionsBuilderId,
         string $optionsStorageId,
         string $optionsHandlerId,
         string $failureHandlerId,
@@ -387,7 +387,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $controller = (new Definition(AttestationRequestController::class))
             ->setFactory([new Reference(AttestationControllerFactory::class), 'createRequestController'])
             ->setArguments([
-                new Reference($extractorId),
+                new Reference($optionsBuilderId),
                 new Reference(RequestBodyUserEntityGuesser::class),
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
@@ -451,7 +451,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $container->setDefinition($controllerId, $controller);
     }
 
-    private function getAssertionExtractionId(
+    private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
         array $config
@@ -460,8 +460,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             return $config['options_builder'];
         }
 
-        $extractorId = sprintf('webauthn.controller.request.extractor.firewall.%s', $firewallName);
-        $extractor = (new Definition(ProfileBasedRequestOptionsBuilder::class))
+        $optionsBuilderId = sprintf('webauthn.controller.request.options_builder.firewall.%s', $firewallName);
+        $optionsBuilder = (new Definition(ProfileBasedRequestOptionsBuilder::class))
             ->setArguments([
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
@@ -470,12 +470,12 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
             ]);
-        $container->setDefinition($extractorId, $extractor);
+        $container->setDefinition($optionsBuilderId, $optionsBuilder);
 
-        return $extractorId;
+        return $optionsBuilderId;
     }
 
-    private function getAttestationExtractionId(
+    private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
         array $config
@@ -484,8 +484,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             return $config['options_builder'];
         }
 
-        $extractorId = sprintf('webauthn.controller.creation.extractor.firewall.%s', $firewallName);
-        $extractor = (new Definition(ProfileBasedCreationOptionsBuilder::class))
+        $optionsBuilderId = sprintf('webauthn.controller.creation.options_builder.firewall.%s', $firewallName);
+        $optionsBuilder = (new Definition(ProfileBasedCreationOptionsBuilder::class))
             ->setArguments([
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
@@ -493,8 +493,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                 $config['profile'],
             ]);
-        $container->setDefinition($extractorId, $extractor);
+        $container->setDefinition($optionsBuilderId, $optionsBuilder);
 
-        return $extractorId;
+        return $optionsBuilderId;
     }
 }
