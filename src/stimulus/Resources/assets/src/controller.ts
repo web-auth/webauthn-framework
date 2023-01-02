@@ -5,52 +5,61 @@ import {startAuthentication, startRegistration} from '@simplewebauthn/browser';
 
 export default class extends Controller {
     static values = {
-        requestResultUrl: String,
-        requestOptionsUrl: String,
+        requestResultUrl: {type: String, default: '/request'},
+        requestOptionsUrl: {type: String, default: '/request/options'},
         requestSuccessRedirectUri: String,
-        creationResultUrl: String,
-        creationOptionsUrl: String,
+        creationResultUrl: {type: String, default: '/creation'},
+        creationOptionsUrl: {type: String, default: '/creation/options'},
         creationSuccessRedirectUri: String,
-        usernameField: String,
-        displayNameField: String,
-        attestationField: String,
-        userVerificationField: String,
-        residentKeyField: String,
-        requireResidentKeyField: String,
-        authenticatorAttachmentField: String,
-        useBrowserAutofill: Boolean,
+        usernameField: {type: String, default: 'username'},
+        displayNameField: {type: String, default: 'displayName'},
+        attestationField: {type: String, default: 'attestation'},
+        userVerificationField: {type: String, default: 'userVerification'},
+        residentKeyField: {type: String, default: 'residentKey'},
+        requireResidentKeyField: {type: String, default: 'requireResidentKey'},
+        authenticatorAttachmentField: {type: String, default: 'authenticatorAttachment'},
+        useBrowserAutofill: {type: Boolean, default: false},
     };
 
-    initialize() {
-        this._dispatchEvent = this._dispatchEvent.bind(this);
-        this._getData = this._getData.bind(this);
-        this.fetch = this.fetch.bind(this);
-    }
+    declare readonly requestResultUrlValue: string;
+    declare readonly requestOptionsUrlValue: string;
+    declare readonly requestSuccessRedirectUriValue?: string;
+    declare readonly creationResultUrlValue: string;
+    declare readonly creationOptionsUrlValue: string;
+    declare readonly creationSuccessRedirectUriValue?: string;
+    declare readonly usernameFieldValue: string;
+    declare readonly displayNameFieldValue: string;
+    declare readonly attestationFieldValue: string;
+    declare readonly userVerificationFieldValue: string;
+    declare readonly residentKeyFieldValue: string;
+    declare readonly requireResidentKeyFieldValue: string;
+    declare readonly authenticatorAttachmentFieldValue: string;
+    declare readonly useBrowserAutofillValue: boolean;
 
     connect() {
         const options = {
-            requestResultUrl: this.requestResultUrl || '/request',
-            requestOptionsUrl: this.requestOptionsUrl || '/request/options',
-            requestSuccessRedirectUri: this.requestSuccessRedirectUri || null,
-            creationResultUrl: this.creationResultUrl || '/creation',
-            creationOptionsUrl: this.creationOptionsUrl || '/creation/options',
-            creationSuccessRedirectUri: this.creationSuccessRedirectUri || null,
+            requestResultUrl: this.requestResultUrlValue,
+            requestOptionsUrl: this.requestOptionsUrlValue,
+            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            creationResultUrl: this.creationResultUrlValue,
+            creationOptionsUrl: this.creationOptionsUrlValue,
+            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
         };
 
         this._dispatchEvent('webauthn:connect', {options});
     }
 
-    async signin(event: Event) {
+    async signin(event: Event): Promise<void> {
         event.preventDefault();
         const data = this._getData();
 
         this._dispatchEvent('webauthn:request:options', {data});
 
-        const resp = await this.fetch('POST', this.requestOptionsUrlValue || '/request/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
         const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue || false);
+        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue);
 
-        const verificationResp = await this.fetch('POST', this.requestResultUrlValue || '/request', JSON.stringify(asseResp));
+        const verificationResp = await this.fetch('POST', this.requestResultUrlValue, JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
         this._dispatchEvent('webauthn:request:response', {response: asseResp});
 
@@ -64,11 +73,11 @@ export default class extends Controller {
         }
     }
 
-    async signup(event: Event) {
+    async signup(event: Event): Promise<void> {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:creation:options', {data});
-        const resp = await this.fetch('POST', this.creationOptionsUrlValue || '/creation/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.creationOptionsUrlValue, JSON.stringify(data));
 
         const respJson = await resp.response;
         if (respJson.excludeCredentials === undefined) {
@@ -76,7 +85,7 @@ export default class extends Controller {
         }
         const attResp = await startRegistration(respJson);
         this._dispatchEvent('webauthn:creation:response', {response: attResp});
-        const verificationResp = await this.fetch('POST', this.creationResultUrlValue || '/creation', JSON.stringify(attResp));
+        const verificationResp = await this.fetch('POST', this.creationResultUrlValue, JSON.stringify(attResp));
 
         const verificationJSON = await verificationResp.response;
         if (verificationJSON && verificationJSON.errorMessage === '') {
@@ -89,7 +98,7 @@ export default class extends Controller {
         }
     }
 
-    _dispatchEvent(name: string, payload: any) {
+    _dispatchEvent(name: string, payload: any): void {
         this.element.dispatchEvent(new CustomEvent(name, {detail: payload, bubbles: true}));
     }
 
@@ -127,7 +136,7 @@ export default class extends Controller {
             //Nothing to do
         }
 
-        function removeEmpty(obj) {
+        function removeEmpty(obj: Object): any {
             return Object.entries(obj)
                 .filter(([_, v]) => (v !== null && v !== ''))
                 .reduce(
@@ -137,13 +146,13 @@ export default class extends Controller {
         }
 
         return removeEmpty({
-            username: data.get(this.usernameField || 'username'),
-            displayName: data.get(this.displayNameField || 'displayName'),
-            attestation: data.get(this.attestationField || 'attestation'),
-            userVerification: data.get(this.userVerificationField || 'userVerification'),
-            residentKey: data.get(this.residentKeyField || 'residentKey'),
-            requireResidentKey: data.get(this.requireResidentKeyField || 'requireResidentKey'),
-            authenticatorAttachment: data.get(this.authenticatorAttachmentField || 'authenticatorAttachment'),
+            username: data.get(this.usernameFieldValue),
+            displayName: data.get(this.displayNameFieldValue),
+            attestation: data.get(this.attestationFieldValue),
+            userVerification: data.get(this.userVerificationFieldValue),
+            residentKey: data.get(this.residentKeyFieldValue),
+            requireResidentKey: data.get(this.requireResidentKeyFieldValue),
+            authenticatorAttachment: data.get(this.authenticatorAttachmentFieldValue),
         });
     }
 }

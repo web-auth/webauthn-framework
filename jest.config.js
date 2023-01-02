@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     testEnvironmentOptions: {
-        "url": "http://localhost/"
+        "url": "https://localhost/"
     },
     verbose: true,
     testRegex: "test/.*\\.test.ts",
