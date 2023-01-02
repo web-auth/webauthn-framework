@@ -10,21 +10,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
+use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialRequestOptionsBuilder;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
-use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsExtractor;
 
 final class AssertionRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialRequestOptionsExtractor $extractor,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly RequestOptionsHandler $optionsHandler,
+        private readonly PublicKeyCredentialRequestOptionsBuilder             $extractor,
+        private readonly OptionsStorage                                       $optionsStorage,
+        private readonly RequestOptionsHandler                                $optionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly LoggerInterface $logger,
-    ) {
+        private readonly LoggerInterface                                      $logger,
+    )
+    {
     }
 
     public function __invoke(Request $request): Response

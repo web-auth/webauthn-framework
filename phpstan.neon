@@ -11,7 +11,7 @@ parameters:
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-            count: 2
+            count: 4
         -
             message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
@@ -34,7 +34,7 @@ parameters:
             count: 1
         -
             message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\PublicKeyCredentialCreationOptionsRequest.*#'
-            path: src/symfony/src/Controller/AttestationRequestController.php
+            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
             count: 1
         -
             message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
@@ -46,7 +46,7 @@ parameters:
             count: 1
         -
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
-            path: src/symfony/src/Controller/AttestationRequestController.php
+            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
             count: 1
         -
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'

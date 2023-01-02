@@ -9,22 +9,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Throwable;
+use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialCreationOptionsBuilder;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
-use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsExtractor;
 
 final class AttestationRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialCreationOptionsExtractor $extractor,
-        private readonly UserEntityGuesser $userEntityGuesser,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly CreationOptionsHandler $creationOptionsHandler,
+        private readonly PublicKeyCredentialCreationOptionsBuilder            $extractor,
+        private readonly UserEntityGuesser                                    $userEntityGuesser,
+        private readonly OptionsStorage                                       $optionsStorage,
+        private readonly CreationOptionsHandler                               $creationOptionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-    ) {
+    )
+    {
     }
 
     public function __invoke(Request $request): Response
