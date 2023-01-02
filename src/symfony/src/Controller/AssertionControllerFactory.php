@@ -27,16 +27,15 @@ final class AssertionControllerFactory
     private LoggerInterface $logger;
 
     public function __construct(
-        private readonly HttpMessageFactoryInterface              $httpMessageFactory,
-        private readonly SerializerInterface                      $serializer,
-        private readonly ValidatorInterface                       $validator,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
-        private readonly PublicKeyCredentialLoader                $publicKeyCredentialLoader,
-        private readonly AuthenticatorAssertionResponseValidator  $attestationResponseValidator,
-        private readonly PublicKeyCredentialUserEntityRepository  $publicKeyCredentialUserEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository      $publicKeyCredentialSourceRepository
-    )
-    {
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly AuthenticatorAssertionResponseValidator $attestationResponseValidator,
+        private readonly PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+    ) {
         $this->logger = new NullLogger();
     }
 
@@ -49,12 +48,11 @@ final class AssertionControllerFactory
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createRequestController instead.
      */
     public function createAssertionRequestController(
-        string                                               $profile,
-        OptionsStorage                                       $optionStorage,
-        RequestOptionsHandler                                $optionsHandler,
+        string $profile,
+        OptionsStorage $optionStorage,
+        RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
-    ): AssertionRequestController
-    {
+    ): AssertionRequestController {
         $extractor = new ProfileBasedRequestOptionsBuilder(
             $this->serializer,
             $this->validator,
@@ -68,12 +66,11 @@ final class AssertionControllerFactory
     }
 
     public function createRequestController(
-        PublicKeyCredentialRequestOptionsBuilder             $extractor,
-        OptionsStorage                                       $optionStorage,
-        RequestOptionsHandler                                $optionsHandler,
+        PublicKeyCredentialRequestOptionsBuilder $extractor,
+        OptionsStorage $optionStorage,
+        RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
-    ): AssertionRequestController
-    {
+    ): AssertionRequestController {
         return new AssertionRequestController(
             $extractor,
             $optionStorage,
@@ -88,12 +85,11 @@ final class AssertionControllerFactory
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
      */
     public function createAssertionResponseController(
-        OptionsStorage                                       $optionStorage,
-        SuccessHandler                                       $successHandler,
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array                                                $securedRelyingPartyIds
-    ): AssertionResponseController
-    {
+        array $securedRelyingPartyIds
+    ): AssertionResponseController {
         return $this->createResponseController(
             $optionStorage,
             $successHandler,
@@ -106,12 +102,11 @@ final class AssertionControllerFactory
      * @param string[] $securedRelyingPartyIds
      */
     public function createResponseController(
-        OptionsStorage                                       $optionStorage,
-        SuccessHandler                                       $successHandler,
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array                                                $securedRelyingPartyIds
-    ): AssertionResponseController
-    {
+        array $securedRelyingPartyIds
+    ): AssertionResponseController {
         return new AssertionResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,

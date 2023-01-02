@@ -24,8 +24,7 @@ final class Configuration implements ConfigurationInterface
 {
     public function __construct(
         private readonly string $alias
-    )
-    {
+    ) {
     }
 
     /**
@@ -42,10 +41,10 @@ final class Configuration implements ConfigurationInterface
             ->beforeNormalization()
             ->ifArray()
             ->then(static function ($v): array {
-                if (!isset($v['creation_profiles'])) {
+                if (! isset($v['creation_profiles'])) {
                     $v['creation_profiles'] = null;
                 }
-                if (!isset($v['request_profiles'])) {
+                if (! isset($v['request_profiles'])) {
                     $v['request_profiles'] = null;
                 }
 
@@ -87,9 +86,7 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('token_binding_support_handler')
             ->defaultNull()
             ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
-            ->info(
-                'This handler will check the token binding header from the request. By default, it is ignored.'
-            )
+            ->info('This handler will check the token binding header from the request. By default, it is ignored.')
             ->end()
             ->scalarNode('counter_checker')
             ->defaultValue(ThrowExceptionIfInvalid::class)
@@ -168,9 +165,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultFalse()
             ->end()
             ->scalarNode('user_verification')
-            ->defaultValue(
-                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-            )
+            ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
             ->validate()
             ->ifNotInArray([
                 AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
@@ -297,7 +292,9 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('default')
             ->end()
             ->scalarNode('options_builder')
-            ->info('When set, corresponds to the ID of the Public Key Credential Creation Builder. The profile-based ebuilder is ignored.')
+            ->info(
+                'When set, corresponds to the ID of the Public Key Credential Creation Builder. The profile-based ebuilder is ignored.'
+            )
             ->defaultNull()
             ->end()
             ->scalarNode('user_entity_guesser')
@@ -305,9 +302,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('options_storage')
             ->defaultValue(SessionStorage::class)
-            ->info(
-                'Service responsible of the options/user entity storage during the ceremony'
-            )
+            ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(DefaultSuccessHandler::class)
@@ -356,14 +351,14 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('default')
             ->end()
             ->scalarNode('options_builder')
-            ->info('When set, corresponds to the ID of the Public Key Credential Creation Builder. The profile-based ebuilder is ignored.')
+            ->info(
+                'When set, corresponds to the ID of the Public Key Credential Creation Builder. The profile-based ebuilder is ignored.'
+            )
             ->defaultNull()
             ->end()
             ->scalarNode('options_storage')
             ->defaultValue(SessionStorage::class)
-            ->info(
-                'Service responsible of the options/user entity storage during the ceremony'
-            )
+            ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(DefaultSuccessHandler::class)
@@ -395,9 +390,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode->children()
             ->arrayNode('metadata')
             ->canBeEnabled()
-            ->info(
-                'Enable the support of the Metadata Statements. Please read the documentation for this feature.'
-            )
+            ->info('Enable the support of the Metadata Statements. Please read the documentation for this feature.')
             ->children()
             ->scalarNode('mds_repository')
             ->isRequired()

@@ -11,7 +11,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 interface PublicKeyCredentialRequestOptionsBuilder
 {
     public function getFromRequest(
-        Request                        $request,
+        Request $request,
         ?PublicKeyCredentialUserEntity &$userEntity = null
     ): PublicKeyCredentialRequestOptions;
 }

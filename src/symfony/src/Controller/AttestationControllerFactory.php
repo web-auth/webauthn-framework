@@ -23,28 +23,26 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 final class AttestationControllerFactory
 {
     public function __construct(
-        private readonly HttpMessageFactoryInterface               $httpMessageFactory,
-        private readonly SerializerInterface                       $serializer,
-        private readonly ValidatorInterface                        $validator,
+        private readonly HttpMessageFactoryInterface $httpMessageFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        private readonly PublicKeyCredentialLoader                 $publicKeyCredentialLoader,
+        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private readonly PublicKeyCredentialSourceRepository       $publicKeyCredentialSourceRepository
-    )
-    {
+        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
+    ) {
     }
 
     /**
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
      */
     public function createAttestationRequestController(
-        UserEntityGuesser                                    $userEntityGuesser,
-        string                                               $profile,
-        OptionsStorage                                       $optionStorage,
-        CreationOptionsHandler                               $creationOptionsHandler,
+        UserEntityGuesser $userEntityGuesser,
+        string $profile,
+        OptionsStorage $optionStorage,
+        CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-    ): AttestationRequestController
-    {
+    ): AttestationRequestController {
         $extractor = new ProfileBasedCreationOptionsBuilder(
             $this->serializer,
             $this->validator,
@@ -62,13 +60,12 @@ final class AttestationControllerFactory
     }
 
     public function createRequestController(
-        PublicKeyCredentialCreationOptionsBuilder            $extractor,
-        UserEntityGuesser                                    $userEntityGuesser,
-        OptionsStorage                                       $optionStorage,
-        CreationOptionsHandler                               $creationOptionsHandler,
+        PublicKeyCredentialCreationOptionsBuilder $extractor,
+        UserEntityGuesser $userEntityGuesser,
+        OptionsStorage $optionStorage,
+        CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-    ): AttestationRequestController
-    {
+    ): AttestationRequestController {
         return new AttestationRequestController(
             $extractor,
             $userEntityGuesser,
@@ -83,12 +80,11 @@ final class AttestationControllerFactory
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
      */
     public function createAttestationResponseController(
-        OptionsStorage                                       $optionStorage,
-        SuccessHandler                                       $successHandler,
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array                                                $securedRelyingPartyIds
-    ): AttestationResponseController
-    {
+        array $securedRelyingPartyIds
+    ): AttestationResponseController {
         return $this->createResponseController(
             $optionStorage,
             $successHandler,
@@ -101,12 +97,11 @@ final class AttestationControllerFactory
      * @param string[] $securedRelyingPartyIds
      */
     public function createResponseController(
-        OptionsStorage                                       $optionStorage,
-        SuccessHandler                                       $successHandler,
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array                                                $securedRelyingPartyIds
-    ): AttestationResponseController
-    {
+        array $securedRelyingPartyIds
+    ): AttestationResponseController {
         return new AttestationResponseController(
             $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,

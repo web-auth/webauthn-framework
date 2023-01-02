@@ -19,13 +19,12 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 final class AttestationRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialCreationOptionsBuilder            $extractor,
-        private readonly UserEntityGuesser                                    $userEntityGuesser,
-        private readonly OptionsStorage                                       $optionsStorage,
-        private readonly CreationOptionsHandler                               $creationOptionsHandler,
+        private readonly PublicKeyCredentialCreationOptionsBuilder $extractor,
+        private readonly UserEntityGuesser $userEntityGuesser,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly CreationOptionsHandler $creationOptionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-    )
-    {
+    ) {
     }
 
     public function __invoke(Request $request): Response

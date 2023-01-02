@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
+use function count;
+use const FILTER_VALIDATE_BOOLEAN;
+use function is_array;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -18,27 +21,22 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function count;
-use function is_array;
-use const FILTER_VALIDATE_BOOLEAN;
 
 final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCreationOptionsBuilder
 {
     public function __construct(
-        private readonly SerializerInterface                       $serializer,
-        private readonly ValidatorInterface                        $validator,
-        private readonly PublicKeyCredentialSourceRepository       $credentialSourceRepository,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        private readonly string                                    $profile,
-    )
-    {
+        private readonly string $profile,
+    ) {
     }
 
     public function getFromRequest(
-        Request                       $request,
+        Request $request,
         PublicKeyCredentialUserEntity $userEntity
-    ): PublicKeyCredentialCreationOptions
-    {
+    ): PublicKeyCredentialCreationOptions {
         $request->getContentType() === 'json' || throw new BadRequestHttpException(
             'Only JSON content type allowed'
         );
@@ -88,15 +86,14 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         $credentialSources = $this->credentialSourceRepository->findAllForUserEntity($userEntity);
 
         return array_map(
-            static fn(PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
+            static fn (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
             $credentialSources
         );
     }
 
     private function getServerPublicKeyCredentialCreationOptionsRequest(
         string $content
-    ): PublicKeyCredentialCreationOptionsRequest
-    {
+    ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
         $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new BadRequestHttpException(
             'Invalid data'

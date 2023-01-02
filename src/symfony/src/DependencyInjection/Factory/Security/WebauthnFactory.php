@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
+use function array_key_exists;
+use function assert;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
@@ -21,9 +23,9 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\DummyController;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
-use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
+use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
@@ -34,8 +36,6 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialSourceRepository;
-use function array_key_exists;
-use function assert;
 
 final class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {
@@ -99,8 +99,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public function __construct(
         private readonly WebauthnServicesFactory $servicesFactory
-    )
-    {
+    ) {
     }
 
     public function getPriority(): int
@@ -217,11 +216,10 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
      */
     public function createAuthenticator(
         ContainerBuilder $container,
-        string           $firewallName,
-        array            $config,
-        string           $userProviderId
-    ): string|array
-    {
+        string $firewallName,
+        array $config,
+        string $userProviderId
+    ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
@@ -254,15 +252,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
      */
     private function createAuthenticatorService(
         ContainerBuilder $container,
-        string           $firewallName,
-        string           $userProviderId,
-        string           $successHandlerId,
-        string           $failureHandlerId,
-        string           $firewallConfigId,
-        string           $optionsStorageId,
-        array            $securedRpIds
-    ): string
-    {
+        string $firewallName,
+        string $userProviderId,
+        string $successHandlerId,
+        string $failureHandlerId,
+        string $firewallConfigId,
+        string $optionsStorageId,
+        array $securedRpIds
+    ): string {
         $authenticatorId = self::AUTHENTICATOR_ID_PREFIX . $firewallName;
         $container
             ->setDefinition($authenticatorId, new ChildDefinition(self::AUTHENTICATOR_DEFINITION_ID))
@@ -282,10 +279,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
      */
     private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
-        string           $firewallName,
-        array            $config
-    ): void
-    {
+        string $firewallName,
+        array $config
+    ): void {
         if ($config['authentication']['enabled'] === false) {
             return;
         }
@@ -317,10 +313,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
      */
     private function createAttestationControllersAndRoutes(
         ContainerBuilder $container,
-        string           $firewallName,
-        array            $config
-    ): void
-    {
+        string $firewallName,
+        array $config
+    ): void {
         if ($config['registration']['enabled'] === false) {
             return;
         }
@@ -349,16 +344,15 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function createAssertionRequestControllerAndRoute(
         ContainerBuilder $container,
-        string           $firewallName,
-        string           $method,
-        string           $path,
-        ?string          $host,
-        string           $extractorId,
-        string           $optionsStorageId,
-        string           $optionsHandlerId,
-        string           $failureHandlerId,
-    ): void
-    {
+        string $firewallName,
+        string $method,
+        string $path,
+        ?string $host,
+        string $extractorId,
+        string $optionsStorageId,
+        string $optionsHandlerId,
+        string $failureHandlerId,
+    ): void {
         $controller = (new Definition(AssertionRequestController::class))
             ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
             ->setArguments([
@@ -381,16 +375,15 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function createAttestationRequestControllerAndRoute(
         ContainerBuilder $container,
-        string           $firewallName,
-        string           $method,
-        string           $path,
-        ?string          $host,
-        string           $extractorId,
-        string           $optionsStorageId,
-        string           $optionsHandlerId,
-        string           $failureHandlerId,
-    ): void
-    {
+        string $firewallName,
+        string $method,
+        string $path,
+        ?string $host,
+        string $extractorId,
+        string $optionsStorageId,
+        string $optionsHandlerId,
+        string $failureHandlerId,
+    ): void {
         $controller = (new Definition(AttestationRequestController::class))
             ->setFactory([new Reference(AttestationControllerFactory::class), 'createRequestController'])
             ->setArguments([
@@ -414,13 +407,12 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function createResponseControllerAndRoute(
         ContainerBuilder $container,
-        string           $firewallName,
-        string           $action,
-        string           $method,
-        string           $path,
-        ?string          $host
-    ): void
-    {
+        string $firewallName,
+        string $action,
+        string $method,
+        string $path,
+        ?string $host
+    ): void {
         $controller = (new Definition(DummyController::class))
             ->setFactory([new Reference(DummyControllerFactory::class), 'create']);
         $this->createControllerAndRoute(
@@ -437,15 +429,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function createControllerAndRoute(
         ContainerBuilder $container,
-        Definition       $controller,
-        string           $name,
-        string           $operation,
-        string           $firewallName,
-        string           $method,
-        string           $path,
-        ?string          $host
-    ): void
-    {
+        Definition $controller,
+        string $name,
+        string $operation,
+        string $firewallName,
+        string $method,
+        string $path,
+        ?string $host
+    ): void {
         $controller
             ->addTag('controller.service_arguments')
             ->addTag(DynamicRouteCompilerPass::TAG, [
@@ -462,10 +453,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function getAssertionExtractionId(
         ContainerBuilder $container,
-        string           $firewallName,
-        array            $config
-    ): string
-    {
+        string $firewallName,
+        array $config
+    ): string {
         if (array_key_exists('options_builder', $config) && $config['options_builder'] !== null) {
             return $config['options_builder'];
         }
@@ -487,10 +477,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     private function getAttestationExtractionId(
         ContainerBuilder $container,
-        string           $firewallName,
-        array            $config
-    ): string
-    {
+        string $firewallName,
+        array $config
+    ): string {
         if (array_key_exists('options_builder', $config) && $config['options_builder'] !== null) {
             return $config['options_builder'];
         }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use function array_key_exists;
 use Cose\Algorithm\Algorithm;
+use function count;
+use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -25,13 +28,13 @@ use Webauthn\Bundle\Controller\AssertionResponseController;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\AttestationResponseController;
+use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
+use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
-use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
-use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -41,16 +44,12 @@ use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
-use function array_key_exists;
-use function count;
-use function is_array;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
     public function __construct(
         private readonly string $alias
-    )
-    {
+    ) {
     }
 
     /**
@@ -118,7 +117,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function prepend(ContainerBuilder $container): void
     {
         $bundles = $container->getParameter('kernel.bundles');
-        if (!is_array($bundles) || !array_key_exists('DoctrineBundle', $bundles)) {
+        if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
             return;
         }
         $configs = $container->getExtensionConfig('doctrine');
@@ -126,10 +125,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
         $config = current($configs);
-        if (!isset($config['dbal'])) {
+        if (! isset($config['dbal'])) {
             $config['dbal'] = [];
         }
-        if (!isset($config['dbal']['types'])) {
+        if (! isset($config['dbal']['types'])) {
             $config['dbal']['types'] = [];
         }
         $config['dbal']['types'] += [

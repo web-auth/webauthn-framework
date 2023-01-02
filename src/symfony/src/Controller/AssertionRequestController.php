@@ -19,13 +19,12 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 final class AssertionRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialRequestOptionsBuilder             $extractor,
-        private readonly OptionsStorage                                       $optionsStorage,
-        private readonly RequestOptionsHandler                                $optionsHandler,
+        private readonly PublicKeyCredentialRequestOptionsBuilder $extractor,
+        private readonly OptionsStorage $optionsStorage,
+        private readonly RequestOptionsHandler $optionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly LoggerInterface                                      $logger,
-    )
-    {
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(Request $request): Response
