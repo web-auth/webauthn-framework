@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "lib": [
             "dom",
             "es2015"
@@ -21,7 +23,8 @@
         "jsx": "react"
     },
     "exclude": [
-        "src/*/Resources/assets/dist"
+        "src/*/Resources/assets/dist",
+        "node_modules"
     ],
     "include": [
         "src/*/Resources/assets/src",

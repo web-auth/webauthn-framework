@@ -2,19 +2,14 @@ import { Controller } from '@hotwired/stimulus';
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 
 class default_1 extends Controller {
-    initialize() {
-        this._dispatchEvent = this._dispatchEvent.bind(this);
-        this._getData = this._getData.bind(this);
-        this.fetch = this.fetch.bind(this);
-    }
     connect() {
         const options = {
-            requestResultUrl: this.requestResultUrl || '/request',
-            requestOptionsUrl: this.requestOptionsUrl || '/request/options',
-            requestSuccessRedirectUri: this.requestSuccessRedirectUri || null,
-            creationResultUrl: this.creationResultUrl || '/creation',
-            creationOptionsUrl: this.creationOptionsUrl || '/creation/options',
-            creationSuccessRedirectUri: this.creationSuccessRedirectUri || null,
+            requestResultUrl: this.requestResultUrlValue,
+            requestOptionsUrl: this.requestOptionsUrlValue,
+            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            creationResultUrl: this.creationResultUrlValue,
+            creationOptionsUrl: this.creationOptionsUrlValue,
+            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
         };
         this._dispatchEvent('webauthn:connect', { options });
     }
@@ -22,10 +17,10 @@ class default_1 extends Controller {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:request:options', { data });
-        const resp = await this.fetch('POST', this.requestOptionsUrl || '/request/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
         const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson, this.useBrowserAutofill || false);
-        const verificationResp = await this.fetch('POST', this.requestResultUrl || '/request', JSON.stringify(asseResp));
+        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue);
+        const verificationResp = await this.fetch('POST', this.requestResultUrlValue, JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
         this._dispatchEvent('webauthn:request:response', { response: asseResp });
         if (verificationJSON && verificationJSON.errorMessage === '') {
@@ -42,14 +37,14 @@ class default_1 extends Controller {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:creation:options', { data });
-        const resp = await this.fetch('POST', this.creationOptionsUrl || '/creation/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.creationOptionsUrlValue, JSON.stringify(data));
         const respJson = await resp.response;
         if (respJson.excludeCredentials === undefined) {
             respJson.excludeCredentials = [];
         }
         const attResp = await startRegistration(respJson);
         this._dispatchEvent('webauthn:creation:response', { response: attResp });
-        const verificationResp = await this.fetch('POST', this.creationResultUrl || '/creation', JSON.stringify(attResp));
+        const verificationResp = await this.fetch('POST', this.creationResultUrlValue, JSON.stringify(attResp));
         const verificationJSON = await verificationResp.response;
         if (verificationJSON && verificationJSON.errorMessage === '') {
             this._dispatchEvent('webauthn:creation:success', verificationJSON);
@@ -103,31 +98,31 @@ class default_1 extends Controller {
                 .reduce((acc, [k, v]) => (Object.assign(Object.assign({}, acc), { [k]: v === Object(v) ? removeEmpty(v) : v })), {});
         }
         return removeEmpty({
-            username: data.get(this.usernameField || 'username'),
-            displayName: data.get(this.displayNameField || 'displayName'),
-            attestation: data.get(this.attestationField || 'attestation'),
-            userVerification: data.get(this.userVerificationField || 'userVerification'),
-            residentKey: data.get(this.residentKeyField || 'residentKey'),
-            requireResidentKey: data.get(this.requireResidentKeyField || 'requireResidentKey'),
-            authenticatorAttachment: data.get(this.authenticatorAttachmentField || 'authenticatorAttachment'),
+            username: data.get(this.usernameFieldValue),
+            displayName: data.get(this.displayNameFieldValue),
+            attestation: data.get(this.attestationFieldValue),
+            userVerification: data.get(this.userVerificationFieldValue),
+            residentKey: data.get(this.residentKeyFieldValue),
+            requireResidentKey: data.get(this.requireResidentKeyFieldValue),
+            authenticatorAttachment: data.get(this.authenticatorAttachmentFieldValue),
         });
     }
 }
 default_1.values = {
-    requestResultUrl: String,
-    requestOptionsUrl: String,
+    requestResultUrl: { type: String, default: '/request' },
+    requestOptionsUrl: { type: String, default: '/request/options' },
     requestSuccessRedirectUri: String,
-    creationResultUrl: String,
-    creationOptionsUrl: String,
+    creationResultUrl: { type: String, default: '/creation' },
+    creationOptionsUrl: { type: String, default: '/creation/options' },
     creationSuccessRedirectUri: String,
-    usernameField: String,
-    displayNameField: String,
-    attestationField: String,
-    userVerificationField: String,
-    residentKeyField: String,
-    requireResidentKeyField: String,
-    authenticatorAttachmentField: String,
-    useBrowserAutofill: Boolean,
+    usernameField: { type: String, default: 'username' },
+    displayNameField: { type: String, default: 'displayName' },
+    attestationField: { type: String, default: 'attestation' },
+    userVerificationField: { type: String, default: 'userVerification' },
+    residentKeyField: { type: String, default: 'residentKey' },
+    requireResidentKeyField: { type: String, default: 'requireResidentKey' },
+    authenticatorAttachmentField: { type: String, default: 'authenticatorAttachment' },
+    useBrowserAutofill: { type: Boolean, default: false },
 };
 
 export { default_1 as default };
