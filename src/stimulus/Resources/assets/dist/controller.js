@@ -22,10 +22,10 @@ class default_1 extends Controller {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:request:options', { data });
-        const resp = await this.fetch('POST', this.requestOptionsUrlValue || '/request/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.requestOptionsUrl || '/request/options', JSON.stringify(data));
         const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue || false);
-        const verificationResp = await this.fetch('POST', this.requestResultUrlValue || '/request', JSON.stringify(asseResp));
+        const asseResp = await startAuthentication(respJson, this.useBrowserAutofill || false);
+        const verificationResp = await this.fetch('POST', this.requestResultUrl || '/request', JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
         this._dispatchEvent('webauthn:request:response', { response: asseResp });
         if (verificationJSON && verificationJSON.errorMessage === '') {
@@ -42,14 +42,14 @@ class default_1 extends Controller {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:creation:options', { data });
-        const resp = await this.fetch('POST', this.creationOptionsUrlValue || '/creation/options', JSON.stringify(data));
+        const resp = await this.fetch('POST', this.creationOptionsUrl || '/creation/options', JSON.stringify(data));
         const respJson = await resp.response;
         if (respJson.excludeCredentials === undefined) {
             respJson.excludeCredentials = [];
         }
         const attResp = await startRegistration(respJson);
         this._dispatchEvent('webauthn:creation:response', { response: attResp });
-        const verificationResp = await this.fetch('POST', this.creationResultUrlValue || '/creation', JSON.stringify(attResp));
+        const verificationResp = await this.fetch('POST', this.creationResultUrl || '/creation', JSON.stringify(attResp));
         const verificationJSON = await verificationResp.response;
         if (verificationJSON && verificationJSON.errorMessage === '') {
             this._dispatchEvent('webauthn:creation:success', verificationJSON);

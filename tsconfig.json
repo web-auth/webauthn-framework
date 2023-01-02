@@ -21,9 +21,10 @@
         "jsx": "react"
     },
     "exclude": [
-        "src/**/dist"
+        "src/*/Resources/assets/dist"
     ],
     "include": [
-        "src/**/*"
+        "src/*/Resources/assets/src",
+        "src/*/Resources/assets/test"
     ]
 }
