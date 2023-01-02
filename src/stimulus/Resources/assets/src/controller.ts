@@ -18,6 +18,7 @@ export default class extends Controller {
         residentKeyField: String,
         requireResidentKeyField: String,
         authenticatorAttachmentField: String,
+        useBrowserAutofill: Boolean,
     };
 
     initialize() {
@@ -47,7 +48,7 @@ export default class extends Controller {
 
         const resp = await this.fetch('POST', this.requestOptionsUrlValue || '/request/options', JSON.stringify(data));
         const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson);
+        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue || false);
 
         const verificationResp = await this.fetch('POST', this.requestResultUrlValue || '/request', JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
@@ -92,7 +93,7 @@ export default class extends Controller {
         this.element.dispatchEvent(new CustomEvent(name, {detail: payload, bubbles: true}));
     }
 
-    fetch (method: string, url: string, body: string): Promise<XMLHttpRequest> {
+    fetch(method: string, url: string, body: string): Promise<XMLHttpRequest> {
         return new Promise(function (resolve, reject) {
             const xhr = new XMLHttpRequest();
             xhr.open(method, url);
