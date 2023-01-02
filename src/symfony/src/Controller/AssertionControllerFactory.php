@@ -16,6 +16,7 @@ use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Bundle\Service\DefaultPublicKeyCredentialRequestOptionsExtractor;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -48,13 +49,17 @@ final class AssertionControllerFactory
         RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
-        return new AssertionRequestController(
+        $extractor = new DefaultPublicKeyCredentialRequestOptionsExtractor(
             $this->serializer,
             $this->validator,
             $this->publicKeyCredentialUserEntityRepository,
             $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
+        );
+
+        return new AssertionRequestController(
+            $extractor,
             $optionStorage,
             $optionsHandler,
             $failureHandler,

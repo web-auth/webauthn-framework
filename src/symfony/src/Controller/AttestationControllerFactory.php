@@ -14,6 +14,7 @@ use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Bundle\Service\DefaultPublicKeyCredentialCreationOptionsExtractor;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -38,13 +39,16 @@ final class AttestationControllerFactory
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
     ): AttestationRequestController {
-        return new AttestationRequestController(
-            $userEntityGuesser,
+        $extractor = new DefaultPublicKeyCredentialCreationOptionsExtractor(
             $this->serializer,
             $this->validator,
             $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialCreationOptionsFactory,
-            $profile,
+            $profile
+        );
+        return new AttestationRequestController(
+            $extractor,
+            $userEntityGuesser,
             $optionStorage,
             $creationOptionsHandler,
             $failureHandler
