@@ -24,7 +24,7 @@ class default_1 extends Controller {
         this._dispatchEvent('webauthn:request:options', { data });
         const resp = await this.fetch('POST', this.requestOptionsUrlValue || '/request/options', JSON.stringify(data));
         const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson);
+        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue || false);
         const verificationResp = await this.fetch('POST', this.requestResultUrlValue || '/request', JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
         this._dispatchEvent('webauthn:request:response', { response: asseResp });
@@ -127,6 +127,7 @@ default_1.values = {
     residentKeyField: String,
     requireResidentKeyField: String,
     authenticatorAttachmentField: String,
+    useBrowserAutofill: Boolean,
 };
 
 export { default_1 as default };

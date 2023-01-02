@@ -28,7 +28,6 @@ parameters:
         - { type: className, regex: '^CBOR\\' }
         - { type: className, regex: '^Lcobucci\\' }
         - { type: className, regex: '^ParagonIE\\' }
-        - { type: className, regex: '^FG\\ASN1\\' }
         - { type: className, regex: '^Safe\\' }
         - { type: className, regex: '^Doctrine\\' }
   ruleset:
