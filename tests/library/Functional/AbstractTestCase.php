@@ -74,8 +74,6 @@ abstract class AbstractTestCase extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->clock = new MockClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
     }
 

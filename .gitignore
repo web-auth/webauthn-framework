@@ -7,3 +7,5 @@ yarn.lock
 yarn-error.log
 /composer.lock
 /vendor
+/tools/composer.lock
+/tools/vendor

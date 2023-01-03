@@ -24,6 +24,9 @@ jobs:
         run: |
           ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]"
 
+      - name: "Validate Composer configuration"
+        run: "make composer-validate"
+
   syntax_errors:
     name: "1️⃣ Syntax errors"
     runs-on: "ubuntu-latest"
@@ -43,7 +46,7 @@ jobs:
           dependency-versions: "highest"
 
       - name: "Check source code for syntax errors"
-        run: "composer exec -- parallel-lint src/ tests/"
+        run: "make qa-parallel-lint"
 
   unit_tests:
     name: "2️⃣ Unit and functional tests"
@@ -78,18 +81,10 @@ jobs:
           composer-options: "--optimize-autoloader"
 
       - name: "Execute tests (PHP)"
-        run: "make ci-cc"
+        run: "make tests-php"
 
       - name: "Execute tests (JS)"
-        run: "make js"
-
-  #      - name: Send coverage to Coveralls
-  #        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
-  #        env:
-  #          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  #        run: |
-  #          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-  #          php ./php-coveralls.phar -v
+        run: "make tests-yarn"
 
   static_analysis:
     name: "3️⃣ Static Analysis"
@@ -108,9 +103,6 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3.2.0"
 
-      - name: "Validate Composer configuration"
-        run: "composer validate"
-
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
         with:
@@ -121,7 +113,7 @@ jobs:
         run: "composer dump-autoload --optimize --strict-psr"
 
       - name: "Execute static analysis"
-        run: "make st"
+        run: "make qa-phpstan"
 
   coding_standards:
     name: "4️⃣ Coding Standards"
@@ -150,11 +142,10 @@ jobs:
           composer-options: "--optimize-autoloader"
 
       - name: "Check coding style"
-        run: "make ci-cs"
+        run: "make qa-ecs-dry-run"
 
       - name: "Deptrac"
-        run: |
-          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
+        run: "make qa-deptrac"
 
   mutation_testing:
     name: "5️⃣ Mutation Testing"
@@ -183,7 +174,7 @@ jobs:
           composer-options: "--optimize-autoloader"
 
       - name: "Execute Infection"
-        run: "make ci-mu"
+        run: "make tests-infection"
 
   rector_checkstyle:
     name: "6️⃣ Rector Checkstyle"
@@ -212,7 +203,7 @@ jobs:
           composer-options: "--optimize-autoloader"
 
       - name: "Execute Rector"
-        run: "make rector"
+        run: "make qa-rector-dry-run"
 
   exported_files:
     name: "7️⃣ Exported files"

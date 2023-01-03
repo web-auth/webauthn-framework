@@ -7,6 +7,9 @@
     "logs": {
         "text": "infection.log"
     },
+    "phpUnit": {
+        "customPath": "tools/vendor/bin/simple-phpunit"
+    },
     "mutators": {
         "@default": true,
         "MBString": {

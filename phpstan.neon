@@ -77,9 +77,9 @@ parameters:
     scanFiles:
         - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
 includes:
-    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    - vendor/phpstan/phpstan-phpunit/rules.neon
-    - vendor/phpstan/phpstan-phpunit/extension.neon
-    - vendor/phpstan/phpstan-strict-rules/rules.neon
-    - vendor/ekino/phpstan-banned-code/extension.neon
+    - tools/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - tools/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - tools/vendor/phpstan/phpstan-phpunit/rules.neon
+    - tools/vendor/phpstan/phpstan-phpunit/extension.neon
+    - tools/vendor/phpstan/phpstan-strict-rules/rules.neon
+    - tools/vendor/ekino/phpstan-banned-code/extension.neon
