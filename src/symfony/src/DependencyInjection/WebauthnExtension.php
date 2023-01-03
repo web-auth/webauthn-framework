@@ -101,7 +101,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('cose.php');
         $loader->load('security.php');
 
-        if ($container->getParameter('kernel.debug') === true) {
+        if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
         }
     }
@@ -116,6 +116,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
      */
     public function prepend(ContainerBuilder $container): void
     {
+        if (! $container->hasParameter('kernel.bundles')) {
+            return;
+        }
         $bundles = $container->getParameter('kernel.bundles');
         if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
             return;
