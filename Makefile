@@ -49,10 +49,13 @@ help: ## Show this help.
 ## === 📦  COMPOSER ==============================================
 composer-install: ## Install composer dependencies.
 	$(COMPOSER_INSTALL)
+.PHONY: composer-install
+
+composer-install-tools: ## Install tools.
 	cd tools
 	$(COMPOSER_INSTALL)
 	cd ..
-.PHONY: composer-install
+.PHONY: composer-install-tools
 
 composer-update: ## Update composer dependencies.
 	$(COMPOSER_UPDATE)
@@ -183,7 +186,7 @@ tests-infection: ## Run infection.
 before-commit: qa-rector-fix qa-ecs-fix qa-phpstan tests ## Run before commit.
 .PHONY: before-commit
 
-install: composer-install yarn-install yarn-build ## First install.
+install: composer-install composer-install-tools yarn-install yarn-build ## First install.
 .PHONY: install
 
 #---------------------------------------------#

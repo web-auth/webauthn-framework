@@ -45,6 +45,9 @@ jobs:
         with:
           dependency-versions: "highest"
 
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
+
       - name: "Check source code for syntax errors"
         run: "make qa-parallel-lint"
 
@@ -80,6 +83,9 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--optimize-autoloader"
 
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
+
       - name: "Execute tests (PHP)"
         run: "make tests-php"
 
@@ -108,6 +114,9 @@ jobs:
         with:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
+
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
 
       - name: "Check PSR-4 mapping"
         run: "composer dump-autoload --optimize --strict-psr"
@@ -141,6 +150,9 @@ jobs:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
 
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
+
       - name: "Check coding style"
         run: "make qa-ecs-dry-run"
 
@@ -173,6 +185,9 @@ jobs:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
 
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
+
       - name: "Execute Infection"
         run: "make tests-infection"
 
@@ -201,6 +216,9 @@ jobs:
         with:
           dependency-versions: "highest"
           composer-options: "--optimize-autoloader"
+
+      - name: "Install dependencies"
+        run: "make composer-install-tools"
 
       - name: "Execute Rector"
         run: "make qa-rector-dry-run"
