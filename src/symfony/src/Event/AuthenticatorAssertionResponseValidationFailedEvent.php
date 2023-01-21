@@ -19,7 +19,7 @@ class AuthenticatorAssertionResponseValidationFailedEvent extends BaseAuthentica
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         Throwable $throwable
     ) {

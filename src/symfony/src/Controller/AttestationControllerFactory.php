@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,7 +20,6 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 final class AttestationControllerFactory
 {
     public function __construct(
-        private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
@@ -61,7 +59,6 @@ final class AttestationControllerFactory
         array $securedRelyingPartyIds
     ): AttestationResponseController {
         return new AttestationResponseController(
-            $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->publicKeyCredentialSourceRepository,

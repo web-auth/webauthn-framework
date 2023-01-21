@@ -18,7 +18,7 @@ class AuthenticatorAttestationResponseValidationFailedEvent extends BaseAuthenti
     public function __construct(
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         Throwable $throwable
     ) {
         trigger_deprecation(
@@ -30,12 +30,6 @@ class AuthenticatorAttestationResponseValidationFailedEvent extends BaseAuthenti
                 BaseAuthenticatorAttestationResponseValidationFailedEvent::class
             )
         );
-
-        parent::__construct(
-            $authenticatorAttestationResponse,
-            $publicKeyCredentialCreationOptions,
-            $request,
-            $throwable
-        );
+        parent::__construct($authenticatorAttestationResponse, $publicKeyCredentialCreationOptions, $request, $throwable);
     }
 }

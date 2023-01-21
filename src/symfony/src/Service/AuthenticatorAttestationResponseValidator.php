@@ -25,7 +25,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?EventDispatcherInterface $eventDispatcher,
+        ?EventDispatcherInterface $eventDispatcher
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -36,20 +36,13 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
                 BaseAuthenticatorAttestationResponseValidator::class
             )
         );
-
-        parent::__construct(
-            $attestationStatementSupportManager,
-            $publicKeyCredentialSource,
-            $tokenBindingHandler,
-            $extensionOutputCheckerHandler,
-            $eventDispatcher,
-        );
+        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $eventDispatcher);
     }
 
     protected function createAuthenticatorAttestationResponseValidationSucceededEvent(
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         PublicKeyCredentialSource $publicKeyCredentialSource
     ): AuthenticatorAttestationResponseValidationSucceededEvent {
         return new AuthenticatorAttestationResponseValidationSucceededEvent(
@@ -63,7 +56,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
     protected function createAuthenticatorAttestationResponseValidationFailedEvent(
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         Throwable $throwable
     ): AuthenticatorAttestationResponseValidationFailedEvent {
         return new AuthenticatorAttestationResponseValidationFailedEvent(

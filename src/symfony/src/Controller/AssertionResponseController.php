@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Controller;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -26,7 +25,6 @@ final class AssertionResponseController
      * @param string[] $securedRelyingPartyIds
      */
     public function __construct(
-        private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly LoggerInterface $logger,
@@ -55,16 +53,14 @@ final class AssertionResponseController
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
-            $psr7Request = $this->httpMessageFactory->createRequest($request);
             $this->assertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
                 $publicKeyCredentialRequestOptions,
-                $psr7Request,
+                $request->getHost(),
                 $userEntity?->getId(),
                 $this->securedRelyingPartyIds
             );
-
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage());
@@ -74,7 +70,6 @@ final class AssertionResponseController
                     new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
                 );
             }
-
             return $this->failureHandler->onFailure($request, $throwable);
         }
     }

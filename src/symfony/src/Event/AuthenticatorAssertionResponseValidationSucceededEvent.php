@@ -19,7 +19,7 @@ class AuthenticatorAssertionResponseValidationSucceededEvent extends BaseAuthent
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         PublicKeyCredentialSource $publicKeyCredentialSource
     ) {

@@ -15,10 +15,20 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         private readonly string $credentialId,
         private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        private readonly ServerRequestInterface $request,
+        public readonly ServerRequestInterface|string $host,
         private readonly ?string $userHandle,
         private readonly PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
+        if ($host instanceof ServerRequestInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                sprintf(
+                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    self::class
+                )
+            );
+        }
     }
 
     public function getCredentialId(): string
@@ -36,9 +46,12 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         return $this->publicKeyCredentialRequestOptions;
     }
 
-    public function getRequest(): ServerRequestInterface
+    /**
+     * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use the `host` property instead
+     */
+    public function getRequest(): ServerRequestInterface|string
     {
-        return $this->request;
+        return $this->host;
     }
 
     public function getUserHandle(): ?string
