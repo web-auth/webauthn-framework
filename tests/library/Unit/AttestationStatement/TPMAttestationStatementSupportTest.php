@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use Http\Mock\Client;
+use Lcobucci\Clock\SystemClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -39,7 +40,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
         $metadataStatementRepository = new DummyMetadataStatementRepository();
         $pkSourceRepository = new DummyPublicKeyCredentialSourceRepository();
         $attnManager = AttestationStatementSupportManager::create();
-        $attnManager->add(TPMAttestationStatementSupport::create());
+        $attnManager->add(TPMAttestationStatementSupport::create(SystemClock::fromSystemTimezone()));
         $attnManager->add(NoneAttestationStatementSupport::create());
         $attnLoader = AttestationObjectLoader::create($attnManager);
         $pkLoader = PublicKeyCredentialLoader::create($attnLoader);
@@ -53,13 +54,13 @@ final class TPMAttestationStatementSupportTest extends TestCase
         $validator = AuthenticatorAttestationResponseValidator::create(
             $attnManager,
             $pkSourceRepository,
-            IgnoreTokenBindingHandler::create(),
+            null,
             ExtensionOutputCheckerHandler::create(),
             new EventDispatcher()
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
-            new PhpCertificateChainValidator(new Client(), new Psr17Factory())
+            new PhpCertificateChainValidator(new Client(), new Psr17Factory(), SystemClock::fromSystemTimezone())
         );
         //When
         $response = $pkLoader->load($data);

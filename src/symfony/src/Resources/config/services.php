@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Lcobucci\Clock\SystemClock;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -14,8 +15,8 @@ use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
-use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
+use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Controller\AssertionControllerFactory;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
@@ -23,8 +24,6 @@ use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Routing\Loader;
-use Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator;
-use Webauthn\Bundle\Service\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
@@ -42,8 +41,13 @@ return static function (ContainerConfigurator $container): void {
         ->autoconfigure();
 
     $container
-        ->set(BaseAuthenticatorAttestationResponseValidator::class)
-        ->class(AuthenticatorAttestationResponseValidator::class)
+        ->set('webauthn.clock.default')
+        ->class(SystemClock::class)
+        ->factory([SystemClock::class, 'fromSystemTimezone'])
+    ;
+
+    $container
+        ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([
             service(AttestationStatementSupportManager::class),
             service(PublicKeyCredentialSourceRepository::class),
@@ -53,7 +57,7 @@ return static function (ContainerConfigurator $container): void {
         ])
         ->public();
     $container
-        ->set(BaseAuthenticatorAssertionResponseValidator::class)
+        ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
             service(PublicKeyCredentialSourceRepository::class),
@@ -123,7 +127,7 @@ return static function (ContainerConfigurator $container): void {
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
-            service(BaseAuthenticatorAttestationResponseValidator::class),
+            service(AuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepository::class),
         ]);
     $container
@@ -133,7 +137,7 @@ return static function (ContainerConfigurator $container): void {
             service(ValidatorInterface::class),
             service(PublicKeyCredentialRequestOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
-            service(BaseAuthenticatorAssertionResponseValidator::class),
+            service(AuthenticatorAssertionResponseValidator::class),
             service(PublicKeyCredentialUserEntityRepository::class),
             service(PublicKeyCredentialSourceRepository::class),
         ]);

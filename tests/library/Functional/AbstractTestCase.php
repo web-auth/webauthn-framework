@@ -38,7 +38,6 @@ use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRepositoryInterface;
 use Webauthn\MetadataService\Service\ChainedMetadataServices;
-use Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\MetadataService\Service\StringMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
@@ -46,15 +45,13 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
 use Webauthn\Tests\MockedRequestTrait;
-use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
-use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 abstract class AbstractTestCase extends TestCase
 {
     use MockedRequestTrait;
     use MockedPublicKeyCredentialSourceTrait;
 
-    protected ?MockClock $clock = null;
+    protected MockClock $clock;
 
     private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
@@ -76,7 +73,7 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->clock = new MockClock(new DateTimeImmutable('now', new DateTimeZone('UTC')));
+        $this->clock = new MockClock();
     }
 
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
@@ -96,7 +93,7 @@ abstract class AbstractTestCase extends TestCase
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
                 $credentialRepository,
-                new IgnoreTokenBindingHandler(),
+                null,
                 new ExtensionOutputCheckerHandler()
             );
             $this->authenticatorAttestationResponseValidator->enableMetadataStatementSupport(
@@ -115,7 +112,7 @@ abstract class AbstractTestCase extends TestCase
         if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
                 $credentialRepository,
-                new TokenBindingNotSupportedHandler(),
+                null,
                 new ExtensionOutputCheckerHandler(),
                 $this->getAlgorithmManager(),
                 new EventDispatcher()

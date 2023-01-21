@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
+use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -15,7 +16,6 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Throwable;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
-use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
