@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputChecker;
 use Webauthn\Bundle\Controller\AssertionControllerFactory;
@@ -26,12 +28,16 @@ use Webauthn\Bundle\Controller\AssertionResponseController;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\AttestationRequestController;
 use Webauthn\Bundle\Controller\AttestationResponseController;
+use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
+use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -95,7 +101,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('cose.php');
         $loader->load('security.php');
 
-        if ($container->getParameter('kernel.debug') === true) {
+        if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
         }
     }
@@ -110,6 +116,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
      */
     public function prepend(ContainerBuilder $container): void
     {
+        if (! $container->hasParameter('kernel.bundles')) {
+            return;
+        }
         $bundles = $container->getParameter('kernel.bundles');
         if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
             return;
@@ -156,14 +165,27 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadCreationControllersSupport(ContainerBuilder $container, array $config): void
     {
         foreach ($config as $name => $creationConfig) {
+            if ($creationConfig['options_builder'] !== null) {
+                $creationOptionsBuilderId = $creationConfig['options_builder'];
+            } else {
+                $creationOptionsBuilderId = sprintf('webauthn.controller.creation.options_builder.%s', $name);
+                $creationOptionsBuilder = (new Definition(ProfileBasedCreationOptionsBuilder::class))
+                    ->setArguments([
+                        new Reference(SerializerInterface::class),
+                        new Reference(ValidatorInterface::class),
+                        new Reference(PublicKeyCredentialSourceRepository::class),
+                        new Reference(PublicKeyCredentialCreationOptionsFactory::class),
+                        $creationConfig['profile'],
+                    ]);
+                $container->setDefinition($creationOptionsBuilderId, $creationOptionsBuilder);
+            }
+
             $attestationRequestControllerId = sprintf('webauthn.controller.creation.request.%s', $name);
             $attestationRequestController = (new Definition(AttestationRequestController::class))
-                ->setFactory(
-                    [new Reference(AttestationControllerFactory::class), 'createAttestationRequestController']
-                )
+                ->setFactory([new Reference(AttestationControllerFactory::class), 'createRequestController'])
                 ->setArguments([
+                    new Reference($creationOptionsBuilderId),
                     new Reference($creationConfig['user_entity_guesser']),
-                    $creationConfig['profile'],
                     new Reference($creationConfig['options_storage']),
                     new Reference($creationConfig['options_handler']),
                     new Reference($creationConfig['failure_handler']),
@@ -179,7 +201,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
             $attestationResponseController = new Definition(AttestationResponseController::class);
             $attestationResponseController->setFactory(
-                [new Reference(AttestationControllerFactory::class), 'createAttestationResponseController']
+                [new Reference(AttestationControllerFactory::class), 'createResponseController']
             );
             $attestationResponseController->setArguments([
                 new Reference($creationConfig['options_storage']),
@@ -203,11 +225,27 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadRequestControllersSupport(ContainerBuilder $container, array $config): void
     {
         foreach ($config as $name => $requestConfig) {
+            if ($requestConfig['options_builder'] !== null) {
+                $assertionOptionsBuilderId = $requestConfig['options_builder'];
+            } else {
+                $assertionOptionsBuilderId = sprintf('webauthn.controller.request.options_builder.%s', $name);
+                $assertionOptionsBuilder = (new Definition(ProfileBasedRequestOptionsBuilder::class))
+                    ->setArguments([
+                        new Reference(SerializerInterface::class),
+                        new Reference(ValidatorInterface::class),
+                        new Reference(PublicKeyCredentialUserEntityRepository::class),
+                        new Reference(PublicKeyCredentialSourceRepository::class),
+                        new Reference(PublicKeyCredentialRequestOptionsFactory::class),
+                        $requestConfig['profile'],
+                    ]);
+                $container->setDefinition($assertionOptionsBuilderId, $assertionOptionsBuilder);
+            }
+
             $assertionRequestControllerId = sprintf('webauthn.controller.request.request.%s', $name);
             $assertionRequestController = (new Definition(AssertionRequestController::class))
-                ->setFactory([new Reference(AssertionControllerFactory::class), 'createAssertionRequestController'])
+                ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
                 ->setArguments([
-                    $requestConfig['profile'],
+                    new Reference($assertionOptionsBuilderId),
                     new Reference($requestConfig['options_storage']),
                     new Reference($requestConfig['options_handler']),
                     new Reference($requestConfig['failure_handler']),
@@ -224,7 +262,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);
             $assertionResponseController = new Definition(AssertionResponseController::class);
             $assertionResponseController->setFactory(
-                [new Reference(AssertionControllerFactory::class), 'createAssertionResponseController']
+                [new Reference(AssertionControllerFactory::class), 'createResponseController']
             );
             $assertionResponseController->setArguments([
                 new Reference($requestConfig['options_storage']),

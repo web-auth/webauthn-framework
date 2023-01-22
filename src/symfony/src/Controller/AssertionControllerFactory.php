@@ -10,6 +10,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
+use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialRequestOptionsBuilder;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
@@ -40,19 +42,35 @@ final class AssertionControllerFactory
         $this->logger = $logger;
     }
 
+    /**
+     * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createRequestController instead.
+     */
     public function createAssertionRequestController(
         string $profile,
         OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
-        return new AssertionRequestController(
+        $optionsBuilder = new ProfileBasedRequestOptionsBuilder(
             $this->serializer,
             $this->validator,
             $this->publicKeyCredentialUserEntityRepository,
             $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
+        );
+
+        return $this->createRequestController($optionsBuilder, $optionStorage, $optionsHandler, $failureHandler);
+    }
+
+    public function createRequestController(
+        PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
+        OptionsStorage $optionStorage,
+        RequestOptionsHandler $optionsHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
+    ): AssertionRequestController {
+        return new AssertionRequestController(
+            $optionsBuilder,
             $optionStorage,
             $optionsHandler,
             $failureHandler,
@@ -62,8 +80,26 @@ final class AssertionControllerFactory
 
     /**
      * @param string[] $securedRelyingPartyIds
+     * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
      */
     public function createAssertionResponseController(
+        OptionsStorage $optionStorage,
+        SuccessHandler $successHandler,
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        array $securedRelyingPartyIds
+    ): AssertionResponseController {
+        return $this->createResponseController(
+            $optionStorage,
+            $successHandler,
+            $failureHandler,
+            $securedRelyingPartyIds
+        );
+    }
+
+    /**
+     * @param string[] $securedRelyingPartyIds
+     */
+    public function createResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
