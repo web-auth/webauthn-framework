@@ -37,9 +37,11 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         Request $request,
         PublicKeyCredentialUserEntity $userEntity
     ): PublicKeyCredentialCreationOptions {
-        $request->getContentType() === 'json' || throw new BadRequestHttpException(
-            'Only JSON content type allowed'
-        );
+        $format = method_exists(
+            $request,
+            'getContentTypeFormat'
+        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
 
         $excludedCredentials = $this->getCredentials($userEntity);

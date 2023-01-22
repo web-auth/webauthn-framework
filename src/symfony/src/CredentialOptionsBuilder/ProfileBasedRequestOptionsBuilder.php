@@ -36,9 +36,11 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         Request $request,
         ?PublicKeyCredentialUserEntity &$userEntity = null
     ): PublicKeyCredentialRequestOptions {
-        $request->getContentType() === 'json' || throw new BadRequestHttpException(
-            'Only JSON content type allowed'
-        );
+        $format = method_exists(
+            $request,
+            'getContentTypeFormat'
+        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
         $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
         $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(

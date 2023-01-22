@@ -24,10 +24,11 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
-        $request->getContentType() === 'json' || throw InvalidDataException::create(
-            $request->getContentType(),
-            'Only JSON content type allowed'
-        );
+        $format = method_exists(
+            $request,
+            'getContentTypeFormat'
+        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
         $content = $request->getContent();
 
         /** @var ServerPublicKeyCredentialCreationOptionsRequest $dto */

@@ -39,9 +39,11 @@ final class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            $request->getContentType() === 'json' || throw new BadRequestHttpException(
-                'Only JSON content type allowed'
-            );
+            $format = method_exists(
+                $request,
+                'getContentTypeFormat'
+            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();

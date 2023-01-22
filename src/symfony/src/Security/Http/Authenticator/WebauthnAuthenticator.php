@@ -154,10 +154,11 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAssertion(Request $request): Passport
     {
         try {
-            $request->getContentType() === 'json' || throw InvalidDataException::create(
-                $request->getContentType(),
-                'Only JSON content type allowed'
-            );
+            $format = method_exists(
+                $request,
+                'getContentTypeFormat'
+            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
@@ -202,10 +203,11 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAttestation(Request $request): Passport
     {
         try {
-            $request->getContentType() === 'json' || throw InvalidDataException::create(
-                $request->getContentType(),
-                'Only JSON content type allowed'
-            );
+            $format = method_exists(
+                $request,
+                'getContentTypeFormat'
+            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
