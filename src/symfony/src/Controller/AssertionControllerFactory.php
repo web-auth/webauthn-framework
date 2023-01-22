@@ -18,10 +18,11 @@ use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
-final class AssertionControllerFactory
+final class AssertionControllerFactory implements CanLogData
 {
     private LoggerInterface $logger;
 

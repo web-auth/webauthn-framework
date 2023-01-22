@@ -215,7 +215,6 @@ webauthn:
     status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
 
 security:
-  enable_authenticator_manager: true
   providers:
     default:
       id: 'Webauthn\Tests\Bundle\Functional\UserProvider'

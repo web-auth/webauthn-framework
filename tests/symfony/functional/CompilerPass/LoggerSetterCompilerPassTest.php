@@ -12,7 +12,11 @@ use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Controller\AssertionControllerFactory;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
+use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
+use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
+use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\PublicKeyCredentialLoader;
 
 /**
@@ -22,42 +26,41 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
+     * @dataProvider getClassList
      */
-    public function androidSafetyNetApiVerificationIsEnabledWhenAllServicesAndParametersAreSet(): void
+    public function loggerIsCorrectlySet(string $className): void
     {
         //Given
         $this->setDefinition('my_logger', new Definition());
         $this->container->setAlias('webauthn.logger', 'my_logger');
 
-        $this->setDefinition(AuthenticatorAssertionResponseValidator::class, new Definition());
-        $this->setDefinition(AuthenticatorAttestationResponseValidator::class, new Definition());
-        $this->setDefinition(PublicKeyCredentialLoader::class, new Definition());
-        $this->setDefinition(AttestationObjectLoader::class, new Definition());
+        $definition = new Definition();
+        $definition->addTag(LoggerSetterCompilerPass::TAG);
+        $this->setDefinition($className, $definition);
 
         //When
         $this->compile();
 
         //Then
+
+        //Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            AuthenticatorAssertionResponseValidator::class,
+            $className,
             'setLogger',
             [new Reference('webauthn.logger')]
         );
-        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            AuthenticatorAttestationResponseValidator::class,
-            'setLogger',
-            [new Reference('webauthn.logger')]
-        );
-        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            PublicKeyCredentialLoader::class,
-            'setLogger',
-            [new Reference('webauthn.logger')]
-        );
-        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            AttestationObjectLoader::class,
-            'setLogger',
-            [new Reference('webauthn.logger')]
-        );
+    }
+
+    public function getClassList(): iterable
+    {
+        yield [AssertionControllerFactory::class];
+        yield [WebauthnExtension::class];
+        yield [WebauthnAuthenticator::class];
+        yield [AuthenticatorAssertionResponseValidator::class];
+        yield [AuthenticatorAttestationResponseValidator::class];
+        yield [PublicKeyCredentialLoader::class];
+        yield [AttestationObjectLoader::class];
+        yield [ThrowExceptionIfInvalid::class];
     }
 
     protected function registerCompilerPass(ContainerBuilder $container): void

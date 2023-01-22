@@ -25,6 +25,7 @@ use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
@@ -34,7 +35,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-class AuthenticatorAttestationResponseValidator
+class AuthenticatorAttestationResponseValidator implements CanLogData
 {
     private LoggerInterface $logger;
 
@@ -77,10 +78,9 @@ class AuthenticatorAttestationResponseValidator
         );
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-        return $this;
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self

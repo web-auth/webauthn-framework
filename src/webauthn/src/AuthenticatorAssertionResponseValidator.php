@@ -27,10 +27,11 @@ use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
 
-class AuthenticatorAssertionResponseValidator
+class AuthenticatorAssertionResponseValidator implements CanLogData
 {
     private readonly Decoder $decoder;
 
@@ -279,10 +280,9 @@ class AuthenticatorAssertionResponseValidator
         }
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-        return $this;
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self

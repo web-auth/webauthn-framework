@@ -21,12 +21,13 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoade
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationObjectLoaded;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\Util\Base64;
 
-class AttestationObjectLoader implements CanDispatchEvents
+class AttestationObjectLoader implements CanDispatchEvents, CanLogData
 {
     private const FLAG_AT = 0b01000000;
 
@@ -174,10 +175,8 @@ class AttestationObjectLoader implements CanDispatchEvents
         }
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 }
