@@ -25,7 +25,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher,
+        ?EventDispatcherInterface $eventDispatcher
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -36,21 +36,14 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
                 BaseAuthenticatorAssertionResponseValidator::class
             )
         );
-
-        parent::__construct(
-            $publicKeyCredentialSourceRepository,
-            $tokenBindingHandler,
-            $extensionOutputCheckerHandler,
-            $algorithmManager,
-            $eventDispatcher
-        );
+        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher);
     }
 
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         PublicKeyCredentialSource $publicKeyCredentialSource
     ): AuthenticatorAssertionResponseValidationSucceededEvent {
@@ -68,7 +61,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         Throwable $throwable
     ): AuthenticatorAssertionResponseValidationFailedEvent {

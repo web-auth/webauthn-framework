@@ -40,10 +40,8 @@ final class W10Test extends AbstractTestCase
             ->load($publicKeyCredentialData);
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-
-        $request = $this->createRequestWithHost($host);
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
-            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $request);
+            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $host);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
         static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->getId()));
         static::assertSame($credentialId, $publicKeyCredentialDescriptor->getId());
@@ -65,7 +63,6 @@ final class W10Test extends AbstractTestCase
         static::assertSame($signCount, $authenticatorData->getSignCount());
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
         static::assertFalse($authenticatorData->hasExtensions());
-
         if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             static::assertSame(
                 '00000000-0000-0000-0000-000000000000',
@@ -79,15 +76,13 @@ final class W10Test extends AbstractTestCase
 
     public function getAttestationCanBeVerifiedData(): array
     {
-        return [
-            [
-                '{"rp":{"name":"Webauthn Demo"},"pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"challenge":"XKADkZSW9B4h0Fek8KbhQun3m4dfJYN3ci9wdXDNJvU=","attestation":"direct","user":{"name":"test**","id":"ZjZlYWJjNGItYjkyYi00YzI0LTg2N2MtZWZjYmE4OGNjOTRm","displayName":"test**"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}',
-                '{"id":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY","type":"public-key","rawId":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY=","response":{"clientDataJSON":"ew0KCSJ0eXBlIiA6ICJ3ZWJhdXRobi5jcmVhdGUiLA0KCSJjaGFsbGVuZ2UiIDogIlhLQURrWlNXOUI0aDBGZWs4S2JoUXVuM200ZGZKWU4zY2k5d2RYRE5KdlUiLA0KCSJvcmlnaW4iIDogImh0dHBzOi8vd2ViYXV0aG4uc3BvbWt5LWxhYnMuY29tIiwNCgkidG9rZW5CaW5kaW5nIiA6IA0KCXsNCgkJInN0YXR1cyIgOiAic3VwcG9ydGVkIg0KCX0NCn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBZ5YE6oKCTpikraFLRGLQ1zqOxGkTDakbGTB0WSKfdKNZRQAAAABgKLAXsdRMArSzr82vyWuyACBaxUSBWmUWEuRF3rzJbcoAjJUn3RmxA4cWOcvvViKtJqQBAwM5AQAgWQEAv5VUWjpRGBvp2zawiX2JKC9WSDvVxlLfqNqU1EYsdN6iNg16FFF/0EHkt7tJz9wkwC3Cx5vYFyblUw7UF5m8qS579OcGRjvb6MHj+MQFuOKCoowBMY/VjuF+TT14deKMuWtShT2MCab1gtfnkuGAlEcu2CASvAwtbEPKZ2JkaouWWaJ3hDOYTXWYgCgtM5DqqnN9JUZjXrgmAfQC82SYh6ZAV+MQ2s4RG2jP/dvEt235oFSIkr3JEqhStQvJ+CFmjVk67oFtofcISax44CynCd2Lr89inWU1B0JwSB1oyuLPq5HCQuSmFed/piGjVfFgCbN0tCXJkAGufkDXE3J4xSFDAQAB"}}',
-                base64_decode('WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY=', true),
-                'webauthn.spomky-labs.com',
-                hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'),
-                0,
-            ],
+        return [[
+            '{"rp":{"name":"Webauthn Demo"},"pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"challenge":"XKADkZSW9B4h0Fek8KbhQun3m4dfJYN3ci9wdXDNJvU=","attestation":"direct","user":{"name":"test**","id":"ZjZlYWJjNGItYjkyYi00YzI0LTg2N2MtZWZjYmE4OGNjOTRm","displayName":"test**"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}', '{"id":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY","type":"public-key","rawId":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY=","response":{"clientDataJSON":"ew0KCSJ0eXBlIiA6ICJ3ZWJhdXRobi5jcmVhdGUiLA0KCSJjaGFsbGVuZ2UiIDogIlhLQURrWlNXOUI0aDBGZWs4S2JoUXVuM200ZGZKWU4zY2k5d2RYRE5KdlUiLA0KCSJvcmlnaW4iIDogImh0dHBzOi8vd2ViYXV0aG4uc3BvbWt5LWxhYnMuY29tIiwNCgkidG9rZW5CaW5kaW5nIiA6IA0KCXsNCgkJInN0YXR1cyIgOiAic3VwcG9ydGVkIg0KCX0NCn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBZ5YE6oKCTpikraFLRGLQ1zqOxGkTDakbGTB0WSKfdKNZRQAAAABgKLAXsdRMArSzr82vyWuyACBaxUSBWmUWEuRF3rzJbcoAjJUn3RmxA4cWOcvvViKtJqQBAwM5AQAgWQEAv5VUWjpRGBvp2zawiX2JKC9WSDvVxlLfqNqU1EYsdN6iNg16FFF/0EHkt7tJz9wkwC3Cx5vYFyblUw7UF5m8qS579OcGRjvb6MHj+MQFuOKCoowBMY/VjuF+TT14deKMuWtShT2MCab1gtfnkuGAlEcu2CASvAwtbEPKZ2JkaouWWaJ3hDOYTXWYgCgtM5DqqnN9JUZjXrgmAfQC82SYh6ZAV+MQ2s4RG2jP/dvEt235oFSIkr3JEqhStQvJ+CFmjVk67oFtofcISax44CynCd2Lr89inWU1B0JwSB1oyuLPq5HCQuSmFed/piGjVfFgCbN0tCXJkAGufkDXE3J4xSFDAQAB"}}', base64_decode(
+                'WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY=',
+                true
+            ), 'webauthn.spomky-labs.com', hex2bin(
+                '9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'
+            ), 0, ],
             [
                 '{"rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-46},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"8zaIzbt6jRK-dgL-QbWeuo2jkIeRC4OB89z7ZbKbucY","attestation":"none","user":{"name":"11","id":"N2Q3ZTQ2ZTktMzI5Yy00YzE0LWI5MWYtMDYyMWYyOTIyYWQ4","displayName":"ee1"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}',
                 '{"id":"OiAPhrzVRTolk1HfuApGPO9-ZfB7t0txSSAc2evu-p3F5sr_f0qAHg4UJpv7L7146VDVZXTiko36s4rJN4tcmA","type":"public-key","rawId":"OiAPhrzVRTolk1HfuApGPO9+ZfB7t0txSSAc2evu+p3F5sr/f0qAHg4UJpv7L7146VDVZXTiko36s4rJN4tcmA==","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI4emFJemJ0NmpSSy1kZ0wtUWJXZXVvMmprSWVSQzRPQjg5ejdaYktidWNZIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly93ZWJhdXRobi5zcG9ta3ktbGFicy5jb20iLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0","attestationObject":"o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEcwRQIhAPrFFPc+JNPbQS9VLMZ0g8WC5cy7c0pCmd7acJmIY7hpAiAhW+5xovldQQixw/nAqdx5yTCffdrjBn9XfaGYhpxFLmN4NWOBWQLCMIICvjCCAaagAwIBAgIEdIb9wjANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowbzELMAkGA1UEBhMCU0UxEjAQBgNVBAoMCVl1YmljbyBBQjEiMCAGA1UECwwZQXV0aGVudGljYXRvciBBdHRlc3RhdGlvbjEoMCYGA1UEAwwfWXViaWNvIFUyRiBFRSBTZXJpYWwgMTk1NTAwMzg0MjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJVd8633JH0xde/9nMTzGk6HjrrhgQlWYVD7OIsuX2Unv1dAmqWBpQ0KxS8YRFwKE1SKE1PIpOWacE5SO8BN6+2jbDBqMCIGCSsGAQQBgsQKAgQVMS4zLjYuMS40LjEuNDE0ODIuMS4xMBMGCysGAQQBguUcAgEBBAQDAgUgMCEGCysGAQQBguUcAQEEBBIEEPigEfOMCk0VgAYXER+e3H0wDAYDVR0TAQH/BAIwADANBgkqhkiG9w0BAQsFAAOCAQEAMVxIgOaaUn44Zom9af0KqG9J655OhUVBVW+q0As6AIod3AH5bHb2aDYakeIyyBCnnGMHTJtuekbrHbXYXERIn4aKdkPSKlyGLsA/A+WEi+OAfXrNVfjhrh7iE6xzq0sg4/vVJoywe4eAJx0fS+Dl3axzTTpYl71Nc7p/NX6iCMmdik0pAuYJegBcTckE3AoYEg4K99AM/JaaKIblsbFh8+3LxnemeNf7UwOczaGGvjS6UzGVI0Odf9lKcPIwYhuTxM5CaNMXTZQ7xq4/yTfC3kPWtE4hFT34UJJflZBiLrxG4OsYxkHw/n5vKgmpspB3GfYuYTWhkDKiE8CYtyg87mhhdXRoRGF0YVjElgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1lFAAABhvigEfOMCk0VgAYXER+e3H0AQDogD4a81UU6JZNR37gKRjzvfmXwe7dLcUkgHNnr7vqdxebK/39KgB4OFCab+y+9eOlQ1WV04pKN+rOKyTeLXJilAQIDJiABIVgg7EAfa9hDOFV9meRyhpqEWhLWwhuZjCEs2eX6RN4TnusiWCD/H1u+zBIuH79akbnFHgEHMEy0FbNaCZwsjAxguhyQ7Q=="}}',
@@ -134,21 +129,16 @@ final class W10Test extends AbstractTestCase
                 true
             )
         );
-
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-
-        $request = $this->createRequestWithHost('webauthn.spomky-labs.com');
-
         $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
             ->check(
                 $publicKeyCredential->getRawId(),
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
-                $request,
+                'webauthn.spomky-labs.com',
                 'ee13d4f1-4863-47dd-a407-097cb49ac822'
             );
-
         static::assertSame(4, $publicKeyCredentialSource->getCounter());
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Nyholm\Psr7\ServerRequest;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
@@ -21,17 +20,14 @@ final class MetadataStatementTest extends AbstractTestCase
     {
         //Then
         $this->expectExceptionMessage($message);
-
         //Given
-        $request = new ServerRequest('POST', 'https://localhost/');
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $pkOptions = PublicKeyCredentialCreationOptions::createFromString($options);
-
         //When
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
         $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
-            ->check($publicKeyCredential->getResponse(), $pkOptions, $request);
+            ->check($publicKeyCredential->getResponse(), $pkOptions, 'localhost');
     }
 
     /**

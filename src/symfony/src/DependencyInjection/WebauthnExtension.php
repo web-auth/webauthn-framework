@@ -70,7 +70,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         );
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
-        $container->setAlias('webauthn.http_message_factory', $config['http_message_factory']);
+        $container->setAlias('webauthn.clock', $config['clock']);
         $container->setAlias('webauthn.request_factory', $config['request_factory']);
         $container->setAlias('webauthn.http_client', $config['http_client']);
         $container->setAlias('webauthn.logger', $config['logger']);

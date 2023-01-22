@@ -55,9 +55,17 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('http_message_factory')
-                ->cannotBeEmpty()
-                ->defaultValue('webauthn.http_message_factory.default')
+                ->setDeprecated(
+                    'web-auth/webauthn-symfony-bundle',
+                    '4.5.0',
+                    'The class "http_message_factory" configuration option is deprecated since 4.5.0 and will be removed in 5.0.0. Not needed anymore.'
+                )
+                ->defaultNull()
                 ->info('Creates PSR-7 HTTP Request and Response instances from Symfony ones.')
+            ->end()
+            ->scalarNode('clock')
+                ->defaultValue('webauthn.clock.default')
+                ->info('PSR-20 Clock service.')
             ->end()
             ->scalarNode('request_factory')
                 ->cannotBeEmpty()

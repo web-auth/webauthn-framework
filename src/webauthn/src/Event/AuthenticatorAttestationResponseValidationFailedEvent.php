@@ -14,9 +14,19 @@ class AuthenticatorAttestationResponseValidationFailedEvent
     public function __construct(
         private readonly AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         private readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        private readonly ServerRequestInterface $request,
+        public readonly ServerRequestInterface|string $host,
         private readonly Throwable $throwable
     ) {
+        if ($host instanceof ServerRequestInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                sprintf(
+                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    self::class
+                )
+            );
+        }
     }
 
     public function getAuthenticatorAttestationResponse(): AuthenticatorAttestationResponse
@@ -29,9 +39,12 @@ class AuthenticatorAttestationResponseValidationFailedEvent
         return $this->publicKeyCredentialCreationOptions;
     }
 
-    public function getRequest(): ServerRequestInterface
+    /**
+     * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use the `host` property instead
+     */
+    public function getRequest(): ServerRequestInterface|string
     {
-        return $this->request;
+        return $this->host;
     }
 
     public function getThrowable(): Throwable

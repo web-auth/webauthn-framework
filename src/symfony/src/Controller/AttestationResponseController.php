@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Controller;
 
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -27,7 +26,6 @@ final class AttestationResponseController
      * @param string[] $securedRelyingPartyIds
      */
     public function __construct(
-        private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
@@ -50,9 +48,7 @@ final class AttestationResponseController
             $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
                 'Invalid response'
             );
-
             $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
-
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new BadRequestHttpException(
                 'Unable to find the public key credential creation options'
@@ -61,21 +57,18 @@ final class AttestationResponseController
             $userEntity instanceof PublicKeyCredentialUserEntity || throw new BadRequestHttpException(
                 'Unable to find the public key credential user entity'
             );
-            $psr7Request = $this->httpMessageFactory->createRequest($request);
             $credentialSource = $this->attestationResponseValidator->check(
                 $response,
                 $publicKeyCredentialCreationOptions,
-                $psr7Request,
+                $request->getHost(),
                 $this->securedRelyingPartyIds
             );
-
             if ($this->credentialSourceRepository->findOneByCredentialId(
                 $credentialSource->getPublicKeyCredentialId()
             ) !== null) {
                 throw new BadRequestHttpException('The credentials already exists');
             }
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
-
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
@@ -84,7 +77,6 @@ final class AttestationResponseController
                     new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
                 );
             }
-
             return $this->failureHandler->onFailure($request, $throwable);
         }
     }
