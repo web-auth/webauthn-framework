@@ -15,6 +15,9 @@ use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class MetadataBLOBPayloadEntry implements JsonSerializable
 {
     /**

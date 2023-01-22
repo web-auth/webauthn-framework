@@ -7,12 +7,28 @@ namespace Webauthn\AttestationStatement;
 use function count;
 use function is_array;
 use function is_string;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-final class NoneAttestationStatementSupport implements AttestationStatementSupport
+final class NoneAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
+    private EventDispatcherInterface $dispatcher;
+
+    public function __construct()
+    {
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
+    }
+
     public static function create(): self
     {
         return new self();
@@ -42,7 +58,14 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
             'Invalid attestation object'
         );
 
-        return AttestationStatement::createNone($format, $attestationStatement, EmptyTrustPath::create());
+        $attestationStatement = AttestationStatement::createNone(
+            $format,
+            $attestationStatement,
+            EmptyTrustPath::create()
+        );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     public function isValid(

@@ -8,9 +8,10 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
 use Webauthn\Exception\CounterException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialSource;
 
-final class ThrowExceptionIfInvalid implements CounterChecker
+final class ThrowExceptionIfInvalid implements CounterChecker, CanLogData
 {
     public function __construct(
         private LoggerInterface $logger = new NullLogger()

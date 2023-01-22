@@ -15,10 +15,10 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Throwable;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
-use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {

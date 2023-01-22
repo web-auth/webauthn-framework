@@ -26,18 +26,22 @@ use Jose\Component\Signature\JWS;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use const JSON_THROW_ON_ERROR;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\TrustPath\CertificateTrustPath;
 
-final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport
+final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private ?string $apiKey = null;
 
@@ -53,6 +57,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private int $maxAge = 60000;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct()
     {
         if (! class_exists(RS256::class)) {
@@ -67,6 +73,12 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
         $this->jwsSerializer = new CompactSerializer();
         $this->initJwsVerifier();
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     public static function create(): self
@@ -140,11 +152,14 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
         $attestation['attStmt']['jws'] = $jws;
 
-        return AttestationStatement::createBasic(
+        $attestationStatement = AttestationStatement::createBasic(
             $this->name(),
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     public function isValid(

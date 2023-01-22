@@ -7,18 +7,11 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\Bundle\Controller\AssertionControllerFactory;
-use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
-use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
-use Webauthn\Counter\ThrowExceptionIfInvalid;
-use Webauthn\PublicKeyCredentialLoader;
 
 final class LoggerSetterCompilerPass implements CompilerPassInterface
 {
+    public const TAG = 'webauthn_can_log_data';
+
     /**
      * {@inheritdoc}
      */
@@ -28,24 +21,10 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
             return;
         }
 
-        $this->setLoggerToServiceDefinition($container, AuthenticatorAssertionResponseValidator::class);
-        $this->setLoggerToServiceDefinition($container, AuthenticatorAttestationResponseValidator::class);
-        $this->setLoggerToServiceDefinition($container, PublicKeyCredentialLoader::class);
-        $this->setLoggerToServiceDefinition($container, AttestationObjectLoader::class);
-        $this->setLoggerToServiceDefinition($container, ThrowExceptionIfInvalid::class);
-        $this->setLoggerToServiceDefinition($container, DummyPublicKeyCredentialUserEntityRepository::class);
-        $this->setLoggerToServiceDefinition($container, DummyPublicKeyCredentialSourceRepository::class);
-        $this->setLoggerToServiceDefinition($container, WebauthnAuthenticator::class);
-        $this->setLoggerToServiceDefinition($container, AssertionControllerFactory::class);
-    }
-
-    private function setLoggerToServiceDefinition(ContainerBuilder $container, string $service): void
-    {
-        if (! $container->hasDefinition($service)) {
-            return;
+        $taggedServices = $container->findTaggedServiceIds(self::TAG);
+        foreach ($taggedServices as $id => $attributes) {
+            $service = $container->getDefinition($id);
+            $service->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
         }
-
-        $definition = $container->getDefinition($service);
-        $definition->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
     }
 }

@@ -17,6 +17,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerificationCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementSupportCompilerPass;
@@ -37,6 +38,11 @@ final class WebauthnBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
+        $container->addCompilerPass(
+            new EventDispatcherSetterCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
         $container->addCompilerPass(
             new AttestationStatementSupportCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,

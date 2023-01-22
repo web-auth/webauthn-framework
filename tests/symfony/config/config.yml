@@ -64,6 +64,9 @@ services:
     autowire: true
     tags: [ 'controller.service_arguments' ]
 
+  Psr\Clock\ClockInterface:
+    class: Webauthn\Tests\Bundle\Functional\MockClock
+
   ### MDS ###
   mds_single_file_1:
     class: Webauthn\Tests\Bundle\Functional\SingleFileService
@@ -212,7 +215,6 @@ webauthn:
     status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
 
 security:
-  enable_authenticator_manager: true
   providers:
     default:
       id: 'Webauthn\Tests\Bundle\Functional\UserProvider'

@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Service;
 
 use ParagonIE\ConstantTime\Base64;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\MetadataStatementFound;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
-final class DistantResourceMetadataService implements MetadataService
+final class DistantResourceMetadataService implements MetadataService, CanDispatchEvents
 {
     private ?MetadataStatement $statement = null;
+
+    private EventDispatcherInterface $dispatcher;
 
     /**
      * @param array<string, string> $additionalHeaderParameters
@@ -26,6 +32,12 @@ final class DistantResourceMetadataService implements MetadataService
         private readonly bool $isBase64Encoded = false,
         private readonly array $additionalHeaderParameters = [],
     ) {
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     /**
@@ -73,6 +85,8 @@ final class DistantResourceMetadataService implements MetadataService
         );
 
         if ($aaguid === $this->statement->getAaguid()) {
+            $this->dispatcher->dispatch(MetadataStatementFound::create($this->statement));
+
             return $this->statement;
         }
 

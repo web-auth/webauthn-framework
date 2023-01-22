@@ -22,27 +22,45 @@ use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Psr\Clock\ClockInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use function unpack;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 
-final class TPMAttestationStatementSupport implements AttestationStatementSupport
+final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
-    private readonly Clock $clock;
+    private readonly Clock|ClockInterface $clock;
 
-    public function __construct(?Clock $clock = null)
+    private EventDispatcherInterface $dispatcher;
+
+    public function __construct(null|Clock|ClockInterface $clock = null)
     {
         if ($clock === null) {
+            trigger_deprecation(
+                'web-auth/metadata-service',
+                '4.5.0',
+                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
+            );
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     public static function create(?Clock $clock = null): self
@@ -107,11 +125,14 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
 
-        return AttestationStatement::createAttCA(
+        $attestationStatement = AttestationStatement::createAttCA(
             $this->name(),
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     public function isValid(

@@ -13,21 +13,33 @@ use Cose\Key\RsaKey;
 use function count;
 use function is_array;
 use function openssl_pkey_get_public;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 
-final class AppleAttestationStatementSupport implements AttestationStatementSupport
+final class AppleAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private readonly Decoder $decoder;
+
+    private EventDispatcherInterface $dispatcher;
 
     public function __construct()
     {
         $this->decoder = Decoder::create();
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     public static function create(): self
@@ -62,11 +74,14 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createAnonymizationCA(
+        $attestationStatement = AttestationStatement::createAnonymizationCA(
             $attestation['fmt'],
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     public function isValid(

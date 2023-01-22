@@ -12,6 +12,8 @@ use Lcobucci\Clock\SystemClock;
 use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
+use Psr\Clock\ClockInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
@@ -20,6 +22,11 @@ use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
 use Throwable;
+use Webauthn\MetadataService\Event\BeforeCertificateChainValidation;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\CertificateChainValidationFailed;
+use Webauthn\MetadataService\Event\CertificateChainValidationSucceeded;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\MetadataService\Exception\CertificateRevocationListException;
 use Webauthn\MetadataService\Exception\InvalidCertificateException;
@@ -27,22 +34,35 @@ use Webauthn\MetadataService\Exception\InvalidCertificateException;
 /**
  * @final
  */
-class PhpCertificateChainValidator implements CertificateChainValidator
+class PhpCertificateChainValidator implements CertificateChainValidator, CanDispatchEvents
 {
     private const MAX_VALIDATION_LENGTH = 5;
 
-    private readonly Clock $clock;
+    private readonly Clock|ClockInterface $clock;
+
+    private EventDispatcherInterface $dispatcher;
 
     public function __construct(
         private readonly ClientInterface $client,
         private readonly RequestFactoryInterface $requestFactory,
-        ?Clock $clock = null,
+        null|Clock|ClockInterface $clock = null,
         private readonly bool $allowFailures = true
     ) {
         if ($clock === null) {
+            trigger_deprecation(
+                'web-auth/metadata-service',
+                '4.5.0',
+                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
+            );
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
         $this->clock = $clock;
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     /**
@@ -52,8 +72,21 @@ class PhpCertificateChainValidator implements CertificateChainValidator
     public function check(array $untrustedCertificates, array $trustedCertificates): void
     {
         foreach ($trustedCertificates as $trustedCertificate) {
-            if ($this->validateChain($untrustedCertificates, $trustedCertificate)) {
-                return;
+            $this->dispatcher->dispatch(
+                BeforeCertificateChainValidation::create($untrustedCertificates, $trustedCertificate)
+            );
+            try {
+                if ($this->validateChain($untrustedCertificates, $trustedCertificate)) {
+                    $this->dispatcher->dispatch(
+                        CertificateChainValidationSucceeded::create($untrustedCertificates, $trustedCertificate)
+                    );
+                    return;
+                }
+            } catch (Throwable $exception) {
+                $this->dispatcher->dispatch(
+                    CertificateChainValidationFailed::create($untrustedCertificates, $trustedCertificate)
+                );
+                throw $exception;
             }
         }
 
@@ -63,7 +96,7 @@ class PhpCertificateChainValidator implements CertificateChainValidator
     /**
      * @param string[] $untrustedCertificates
      */
-    public function validateChain(array $untrustedCertificates, string $trustedCertificate): bool
+    private function validateChain(array $untrustedCertificates, string $trustedCertificate): bool
     {
         $untrustedCertificates = array_map(
             static fn (string $cert): Certificate => Certificate::fromPEM(PEM::fromString($cert)),
@@ -109,7 +142,7 @@ class PhpCertificateChainValidator implements CertificateChainValidator
         return true;
     }
 
-    public function isRevoked(Certificate $subject): bool
+    private function isRevoked(Certificate $subject): bool
     {
         try {
             $csn = $subject->tbsCertificate()

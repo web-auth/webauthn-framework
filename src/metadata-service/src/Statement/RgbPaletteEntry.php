@@ -9,6 +9,9 @@ use function is_int;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
+/**
+ * @final
+ */
 class RgbPaletteEntry implements JsonSerializable
 {
     private readonly int $r;

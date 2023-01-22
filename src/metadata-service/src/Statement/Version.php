@@ -10,6 +10,9 @@ use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class Version implements JsonSerializable
 {
     private readonly ?int $major;

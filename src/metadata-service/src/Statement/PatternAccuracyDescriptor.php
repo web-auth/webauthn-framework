@@ -9,6 +9,9 @@ use function is_int;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
     private readonly int $minComplexity;
