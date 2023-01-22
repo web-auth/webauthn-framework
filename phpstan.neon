@@ -3,6 +3,7 @@ parameters:
     paths:
         - src
     ignoreErrors:
+        - '#Call to function method_exists\(\) with Symfony\\Component\\HttpFoundation\\Request and .* will always evaluate to true\.#'
         - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
         -
             message: '#Class Webauthn\\CertificateChainChecker\\PhpCertificateChainChecker extends @final class Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator\.#'
