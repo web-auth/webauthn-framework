@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Lcobucci\Clock\SystemClock;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\NullLogger;
@@ -53,7 +52,6 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialSourceRepository::class),
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
-            service(EventDispatcherInterface::class),
         ])
         ->public();
     $container
@@ -64,7 +62,6 @@ return static function (ContainerConfigurator $container): void {
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
             service('webauthn.cose.algorithm.manager'),
-            service(EventDispatcherInterface::class),
         ])
         ->public();
     $container
@@ -73,11 +70,11 @@ return static function (ContainerConfigurator $container): void {
         ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
-        ->args(['%webauthn.creation_profiles%', service(EventDispatcherInterface::class)])
+        ->args(['%webauthn.creation_profiles%'])
         ->public();
     $container
         ->set(PublicKeyCredentialRequestOptionsFactory::class)
-        ->args(['%webauthn.request_profiles%', service(EventDispatcherInterface::class)])
+        ->args(['%webauthn.request_profiles%'])
         ->public();
 
     $container

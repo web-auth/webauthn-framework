@@ -20,9 +20,10 @@ use function unpack;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\Util\Base64;
 
-class PublicKeyCredentialLoader
+class PublicKeyCredentialLoader implements CanLogData
 {
     private const FLAG_AT = 0b01000000;
 
@@ -44,11 +45,9 @@ class PublicKeyCredentialLoader
         return new self($attestationObjectLoader);
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
     /**

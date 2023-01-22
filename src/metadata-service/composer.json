@@ -25,6 +25,7 @@
         "lcobucci/clock": "^2.2|^3.0",
         "paragonie/constant_time_encoding": "^2.6",
         "psr/clock": "^1.0",
+        "psr/event-dispatcher": "^1.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/log": "^1.0|^2.0|^3.0",

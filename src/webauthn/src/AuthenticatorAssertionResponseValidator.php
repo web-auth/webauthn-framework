@@ -27,10 +27,13 @@ use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
+use Webauthn\MetadataService\CanLogData;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
 
-class AuthenticatorAssertionResponseValidator
+class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatchEvents
 {
     private readonly Decoder $decoder;
 
@@ -38,18 +41,30 @@ class AuthenticatorAssertionResponseValidator
 
     private LoggerInterface $logger;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         private readonly ?Manager $algorithmManager,
-        private ?EventDispatcherInterface $eventDispatcher = null,
+        ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
                 'web-auth/webauthn-symfony-bundle',
                 '4.3.0',
                 'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
+        if ($eventDispatcher === null) {
+            $this->eventDispatcher = new NullEventDispatcher();
+        } else {
+            $this->eventDispatcher = $eventDispatcher;
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
             );
         }
         $this->decoder = Decoder::create();
@@ -62,7 +77,7 @@ class AuthenticatorAssertionResponseValidator
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
-        EventDispatcherInterface $eventDispatcher = null
+        ?EventDispatcherInterface $eventDispatcher = null
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
@@ -250,7 +265,7 @@ class AuthenticatorAssertionResponseValidator
             $this->logger->debug('Public Key Credential Source', [
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
-            $this->eventDispatcher?->dispatch(
+            $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationSucceededEvent(
                     $credentialId,
                     $authenticatorAssertionResponse,
@@ -265,7 +280,7 @@ class AuthenticatorAssertionResponseValidator
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            $this->eventDispatcher?->dispatch(
+            $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationFailedEvent(
                     $credentialId,
                     $authenticatorAssertionResponse,
@@ -279,21 +294,14 @@ class AuthenticatorAssertionResponseValidator
         }
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-        return $this;
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
-        trigger_deprecation(
-            'web-auth/webauthn-symfony-bundle',
-            '4.4.2',
-            'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
-        );
         $this->eventDispatcher = $eventDispatcher;
-        return $this;
     }
 
     public function setCounterChecker(CounterChecker $counterChecker): self

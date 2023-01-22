@@ -29,13 +29,14 @@ use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCre
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface
+final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface, CanLogData
 {
     private LoggerInterface $logger;
 

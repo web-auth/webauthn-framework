@@ -8,23 +8,23 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-final class LoggerSetterCompilerPass implements CompilerPassInterface
+final class EventDispatcherSetterCompilerPass implements CompilerPassInterface
 {
-    public const TAG = 'webauthn_can_log_data';
+    public const TAG = 'webauthn_can_dispatch_events';
 
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container): void
     {
-        if (! $container->hasAlias('webauthn.logger')) {
+        if (! $container->hasAlias('webauthn.event_dispatcher')) {
             return;
         }
 
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $attributes) {
             $service = $container->getDefinition($id);
-            $service->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
+            $service->addMethodCall('setEventDispatcher', [new Reference('webauthn.event_dispatcher')]);
         }
     }
 }

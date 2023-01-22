@@ -13,18 +13,22 @@ use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use const JSON_THROW_ON_ERROR;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
 use Throwable;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\MetadataStatementFound;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 
-final class FidoAllianceCompliantMetadataService implements MetadataService
+final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {
     private bool $loaded = false;
 
@@ -38,6 +42,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
      */
     private array $statusReports = [];
 
+    private EventDispatcherInterface $dispatcher;
+
     /**
      * @param array<string, mixed> $additionalHeaderParameters
      */
@@ -49,6 +55,12 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
         private readonly ?CertificateChainValidator $certificateChainValidator = null,
         private readonly ?string $rootCertificateUri = null,
     ) {
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     /**
@@ -93,8 +105,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService
     {
         $this->loadData();
         array_key_exists($aaguid, $this->statements) || throw MissingMetadataStatementException::create($aaguid);
+        $mds = $this->statements[$aaguid];
+        $this->dispatcher->dispatch(MetadataStatementFound::create($mds));
 
-        return $this->statements[$aaguid];
+        return $mds;
     }
 
     /**

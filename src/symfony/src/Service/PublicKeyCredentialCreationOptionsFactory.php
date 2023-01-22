@@ -11,21 +11,40 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class PublicKeyCredentialCreationOptionsFactory
+final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {
+    private EventDispatcherInterface $eventDispatcher;
+
     /**
      * @param mixed[] $profiles
      */
     public function __construct(
         private readonly array $profiles,
-        private readonly EventDispatcherInterface $eventDispatcher
+        ?EventDispatcherInterface $eventDispatcher = null
     ) {
+        if ($eventDispatcher === null) {
+            $this->eventDispatcher = new NullEventDispatcher();
+        } else {
+            $this->eventDispatcher = $eventDispatcher;
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.5.0',
+                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
+            );
+        }
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -59,7 +78,7 @@ final class PublicKeyCredentialCreationOptionsFactory
                 ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
                 ->setTimeout($profile['timeout']);
-        $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
+        $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;
     }

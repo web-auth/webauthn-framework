@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -66,6 +67,10 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('clock')
                 ->defaultValue('webauthn.clock.default')
                 ->info('PSR-20 Clock service.')
+            ->end()
+            ->scalarNode('event_dispatcher')
+                ->defaultValue(EventDispatcherInterface::class)
+                ->info('PSR-14 Event Dispatcher service.')
             ->end()
             ->scalarNode('request_factory')
             ->cannotBeEmpty()

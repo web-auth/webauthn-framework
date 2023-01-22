@@ -8,6 +8,9 @@ use function array_key_exists;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 
+/**
+ * @final
+ */
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
     private readonly int $base;

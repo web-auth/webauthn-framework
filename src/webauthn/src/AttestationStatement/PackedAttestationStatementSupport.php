@@ -16,27 +16,39 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function openssl_verify;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
+use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\Util\CoseSignatureFixer;
 
-final class PackedAttestationStatementSupport implements AttestationStatementSupport
+final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private readonly Decoder $decoder;
+
+    private EventDispatcherInterface $dispatcher;
 
     public function __construct(
         private readonly Manager $algorithmManager
     ) {
         $this->decoder = Decoder::create();
+        $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->dispatcher = $eventDispatcher;
     }
 
     public static function create(Manager $algorithmManager): self
@@ -115,11 +127,14 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
-        return AttestationStatement::createBasic(
+        $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
             new CertificateTrustPath($certificates)
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     /**
@@ -132,11 +147,14 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'The attestation statement value "ecdaaKeyId" is invalid.'
         );
 
-        return AttestationStatement::createEcdaa(
+        $attestationStatement = AttestationStatement::createEcdaa(
             $attestation['fmt'],
             $attestation['attStmt'],
             new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId'])
         );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     /**
@@ -144,7 +162,14 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private function loadEmptyType(array $attestation): AttestationStatement
     {
-        return AttestationStatement::createSelf($attestation['fmt'], $attestation['attStmt'], new EmptyTrustPath());
+        $attestationStatement = AttestationStatement::createSelf(
+            $attestation['fmt'],
+            $attestation['attStmt'],
+            new EmptyTrustPath()
+        );
+        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
+
+        return $attestationStatement;
     }
 
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void

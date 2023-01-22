@@ -17,6 +17,11 @@ class PublicKeyCredentialRequestOptionsCreatedEvent extends Event
     ) {
     }
 
+    public static function create(PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions): self
+    {
+        return new self($publicKeyCredentialRequestOptions);
+    }
+
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
     {
         return $this->publicKeyCredentialRequestOptions;
