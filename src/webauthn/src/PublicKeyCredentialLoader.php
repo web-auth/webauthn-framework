@@ -119,7 +119,7 @@ class PublicKeyCredentialLoader implements CanLogData
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            throw $throwable;
+            throw InvalidDataException::create($data, 'Unable to load the data', $throwable);
         }
     }
 
