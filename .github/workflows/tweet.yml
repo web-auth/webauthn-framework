@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Tweet
-        uses: snow-actions/tweet@v1.3.0
+        uses: snow-actions/tweet@v1.4.0
         with:
           status: |
             We are proud to announce that ${{ github.repository }} · ${{ github.event.release.name }}
-            ${{ github.event.release.html_url }} is now released 🚀.
+            ${{ github.event.release.html_url }} is now released 🚀. #php #webauthn #symfony
         env:
           CONSUMER_API_KEY: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
           CONSUMER_API_SECRET_KEY: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
