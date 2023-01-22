@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use RangeException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
@@ -23,8 +23,8 @@ final class AttestationTest extends AbstractTestCase
      */
     public function aResponseCannotBeLoaded(): void
     {
-        static::expectException(RangeException::class);
-        static::expectExceptionMessage('Incorrect padding');
+        static::expectException(InvalidDataException::class);
+        static::expectExceptionMessage('Unable to load the data');
         $response = '{"id":"wHU13DaUWRqIQq94SAfCG8jqUZGdW0N95hnchI3rG7s===","rawId":"wHU13DaUWRqIQq94SAfCG8jqUZGdW0N95hnchI3rG7s","response":{"authenticatorData":"lgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1kBAAAAag","signature":"MEYCIQD4faYQG08_xpmAxFwp33OObSPavG7iUCJimHhH2QwyVAIhAMVRovz5DR_itNGYzTpKgO2urLgx5F2mZf3U4INTRR74","userHandle":"MDFHN0VEWUMxQ1QxSjBUUVBIWEY3QVlGNUs","clientDataJSON":"eyJvcmlnaW4iOiJodHRwczovL3dlYmF1dGhuLnNwb21reS1sYWJzLmNvbSIsImNoYWxsZW5nZSI6IkhaaktrWURKTEgtVnF6bFgtaXpCcUc3Q1pvN0FVRmtobG12TnRHM1VKSjQiLCJ0eXBlIjoid2ViYXV0aG4uZ2V0In0"},"getClientExtensionResults":{},"type":"public-key"}';
         $this->getPublicKeyCredentialLoader()
             ->load($response);
