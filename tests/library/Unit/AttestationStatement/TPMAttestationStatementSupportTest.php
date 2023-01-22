@@ -24,7 +24,6 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Unit\DummyMetadataStatementRepository;
 use Webauthn\Tests\Unit\DummyPublicKeyCredentialSourceRepository;
-use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 
 /**
  * @internal
