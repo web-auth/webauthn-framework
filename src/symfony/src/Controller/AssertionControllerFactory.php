@@ -6,7 +6,6 @@ namespace Webauthn\Bundle\Controller;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -27,7 +26,6 @@ final class AssertionControllerFactory
     private LoggerInterface $logger;
 
     public function __construct(
-        private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
@@ -108,7 +106,6 @@ final class AssertionControllerFactory
         array $securedRelyingPartyIds
     ): AssertionResponseController {
         return new AssertionResponseController(
-            $this->httpMessageFactory,
             $this->publicKeyCredentialLoader,
             $this->attestationResponseValidator,
             $this->logger,

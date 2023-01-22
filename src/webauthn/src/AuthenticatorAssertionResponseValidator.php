@@ -62,7 +62,7 @@ class AuthenticatorAssertionResponseValidator
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
-        EventDispatcherInterface $eventDispatcher = null,
+        EventDispatcherInterface $eventDispatcher = null
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
@@ -82,16 +82,26 @@ class AuthenticatorAssertionResponseValidator
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         array $securedRelyingPartyId = []
     ): PublicKeyCredentialSource {
+        if ($request instanceof ServerRequestInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                sprintf(
+                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    self::class
+                )
+            );
+        }
         try {
             $this->logger->info('Checking the authenticator assertion response', [
                 'credentialId' => $credentialId,
                 'authenticatorAssertionResponse' => $authenticatorAssertionResponse,
                 'publicKeyCredentialRequestOptions' => $publicKeyCredentialRequestOptions,
-                'host' => $request->getUri()
+                'host' => is_string($request) ? $request : $request->getUri()
                     ->getHost(),
                 'userHandle' => $userHandle,
             ]);
@@ -101,18 +111,15 @@ class AuthenticatorAssertionResponseValidator
                     $publicKeyCredentialRequestOptions->getAllowCredentials()
                 ) || throw AuthenticatorResponseVerificationException::create('The credential ID is not allowed.');
             }
-
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $credentialId
             );
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
             );
-
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
             $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
-
             if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
                 $credentialUserHandle === $userHandle || throw AuthenticatorResponseVerificationException::create(
                     'Invalid user handle'
@@ -127,7 +134,6 @@ class AuthenticatorAssertionResponseValidator
                     'Invalid user handle'
                 );
             }
-
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
             $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
                 'No public key available.'
@@ -142,9 +148,7 @@ class AuthenticatorAssertionResponseValidator
                 'Invalid key. Presence of extra bytes.'
             );
             $stream->close();
-
             $C = $authenticatorAssertionResponse->getClientDataJSON();
-
             $C->getType() === 'webauthn.get' || throw AuthenticatorResponseVerificationException::create(
                 'The client data type is not "webauthn.get".'
             );
@@ -152,9 +156,10 @@ class AuthenticatorAssertionResponseValidator
                 $publicKeyCredentialRequestOptions->getChallenge(),
                 $C->getChallenge()
             ) || throw AuthenticatorResponseVerificationException::create('Invalid challenge.');
-
-            $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()
-                ->getHost();
+            $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? (is_string(
+                $request
+            ) ? $request : $request->getUri()
+                ->getHost());
             $facetId = $this->getFacetId(
                 $rpId,
                 $publicKeyCredentialRequestOptions->getExtensions(),
@@ -172,26 +177,21 @@ class AuthenticatorAssertionResponseValidator
                 );
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create(
-                'Invalid origin rpId.'
-            );
+            $clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
             mb_substr(
                 '.' . $clientDataRpId,
                 -($rpIdLength + 1)
             ) === '.' . $facetId || throw AuthenticatorResponseVerificationException::create('rpId mismatch.');
-
-            if ($C->getTokenBinding() !== null) {
+            if (! is_string($request) && $C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler?->check($C->getTokenBinding(), $request);
             }
-
             $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);
             hash_equals(
                 $rpIdHash,
                 $authenticatorAssertionResponse->getAuthenticatorData()
                     ->getRpIdHash()
             ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
-
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 $authenticatorAssertionResponse->getAuthenticatorData()
                     ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
@@ -202,7 +202,6 @@ class AuthenticatorAssertionResponseValidator
                         'User authentication required.'
                     );
             }
-
             $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getExtensions();
             if ($extensionsClientOutputs !== null) {
@@ -211,14 +210,12 @@ class AuthenticatorAssertionResponseValidator
                     $extensionsClientOutputs
                 );
             }
-
             $getClientDataJSONHash = hash(
                 'sha256',
                 $authenticatorAssertionResponse->getClientDataJSON()
                     ->getRawData(),
                 true
             );
-
             $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getAuthData() . $getClientDataJSONHash;
             $signature = $authenticatorAssertionResponse->getSignature();
@@ -240,7 +237,6 @@ class AuthenticatorAssertionResponseValidator
                 $coseKey,
                 $signature
             ) || throw AuthenticatorResponseVerificationException::create('Invalid signature.');
-
             $storedCounter = $publicKeyCredentialSource->getCounter();
             $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()
                 ->getSignCount();
@@ -249,37 +245,36 @@ class AuthenticatorAssertionResponseValidator
             }
             $publicKeyCredentialSource->setCounter($responseCounter);
             $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
-
             //All good. We can continue.
             $this->logger->info('The assertion is valid');
             $this->logger->debug('Public Key Credential Source', [
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
-
-            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationSucceededEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $publicKeyCredentialSource
-            ));
-
+            $this->eventDispatcher?->dispatch(
+                $this->createAuthenticatorAssertionResponseValidationSucceededEvent(
+                    $credentialId,
+                    $authenticatorAssertionResponse,
+                    $publicKeyCredentialRequestOptions,
+                    $request,
+                    $userHandle,
+                    $publicKeyCredentialSource
+                )
+            );
             return $publicKeyCredentialSource;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-
-            $this->eventDispatcher?->dispatch($this->createAuthenticatorAssertionResponseValidationFailedEvent(
-                $credentialId,
-                $authenticatorAssertionResponse,
-                $publicKeyCredentialRequestOptions,
-                $request,
-                $userHandle,
-                $throwable
-            ));
-
+            $this->eventDispatcher?->dispatch(
+                $this->createAuthenticatorAssertionResponseValidationFailedEvent(
+                    $credentialId,
+                    $authenticatorAssertionResponse,
+                    $publicKeyCredentialRequestOptions,
+                    $request,
+                    $userHandle,
+                    $throwable
+                )
+            );
             throw $throwable;
         }
     }
@@ -287,7 +282,6 @@ class AuthenticatorAssertionResponseValidator
     public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
-
         return $this;
     }
 
@@ -298,16 +292,13 @@ class AuthenticatorAssertionResponseValidator
             '4.4.2',
             'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
         );
-
         $this->eventDispatcher = $eventDispatcher;
-
         return $this;
     }
 
     public function setCounterChecker(CounterChecker $counterChecker): self
     {
         $this->counterChecker = $counterChecker;
-
         return $this;
     }
 
@@ -315,10 +306,20 @@ class AuthenticatorAssertionResponseValidator
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         PublicKeyCredentialSource $publicKeyCredentialSource
     ): AuthenticatorAssertionResponseValidationSucceededEvent {
+        if ($request instanceof ServerRequestInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                sprintf(
+                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    self::class
+                )
+            );
+        }
         return new AuthenticatorAssertionResponseValidationSucceededEvent(
             $credentialId,
             $authenticatorAssertionResponse,
@@ -333,10 +334,20 @@ class AuthenticatorAssertionResponseValidator
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         Throwable $throwable
     ): AuthenticatorAssertionResponseValidationFailedEvent {
+        if ($request instanceof ServerRequestInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.5.0',
+                sprintf(
+                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    self::class
+                )
+            );
+        }
         return new AuthenticatorAssertionResponseValidationFailedEvent(
             $credentialId,
             $authenticatorAssertionResponse,
@@ -357,7 +368,6 @@ class AuthenticatorAssertionResponseValidator
                 return true;
             }
         }
-
         return false;
     }
 
@@ -378,7 +388,6 @@ class AuthenticatorAssertionResponseValidator
         if (! is_string($appId) || $wasUsed !== true) {
             return $rpId;
         }
-
         return $appId;
     }
 }
