@@ -60,7 +60,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
                 ->allowCredentials(...$allowCredentials)
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
                 ->setTimeout($profile['timeout']);
-        $this->eventDispatcher->dispatch(new PublicKeyCredentialRequestOptionsCreatedEvent($options));
+        $this->eventDispatcher->dispatch(PublicKeyCredentialRequestOptionsCreatedEvent::create($options));
 
         return $options;
     }

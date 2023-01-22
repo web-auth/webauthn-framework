@@ -78,7 +78,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
                 ->setTimeout($profile['timeout']);
-        $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
+        $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;
     }
