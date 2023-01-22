@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Guesser;
 
 use function count;
-use function is_string;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,12 +24,12 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
 
     public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
-        $request->getContentType() === 'json' || throw InvalidDataException::create(
-            $request->getContentType(),
-            'Only JSON content type allowed'
-        );
+        $format = method_exists(
+            $request,
+            'getContentTypeFormat'
+        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
         $content = $request->getContent();
-        is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
 
         /** @var ServerPublicKeyCredentialCreationOptionsRequest $dto */
         $dto = $this->serializer->deserialize(

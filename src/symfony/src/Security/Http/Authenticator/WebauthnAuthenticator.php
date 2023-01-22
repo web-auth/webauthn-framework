@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
-use function is_string;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -51,7 +49,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly AuthenticationFailureHandlerInterface $failureHandler,
         private readonly OptionsStorage $optionsStorage,
         private readonly array $securedRelyingPartyIds,
-        private readonly HttpMessageFactoryInterface $httpMessageFactory,
         private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -71,7 +68,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         if ($request->getMethod() !== Request::METHOD_POST) {
             return false;
         }
-
         if ($this->firewallConfig->isAuthenticationEnabled() && $this->firewallConfig->isAuthenticationResultPathRequest(
             $request
         )) {
@@ -82,7 +78,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         )) {
             return true;
         }
-
         return false;
     }
 
@@ -91,7 +86,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         if ($this->firewallConfig->isAuthenticationResultPathRequest($request)) {
             return $this->processWithAssertion($request);
         }
-
         return $this->processWithAttestation($request);
     }
 
@@ -102,10 +96,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $credentialsBadge,
             'Invalid credentials'
         );
-
         $userBadge = $passport->getBadge(UserBadge::class);
         $userBadge instanceof UserBadge || throw InvalidDataException::create($userBadge, 'Invalid user');
-
         /** @var AuthenticatorAttestationResponse|AuthenticatorAssertionResponse $response */
         $response = $credentialsBadge->getAuthenticatorResponse();
         if ($response instanceof AuthenticatorAssertionResponse) {
@@ -116,7 +108,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
         $userEntity !== null || throw new MissingUserEntityException('The user entity is missing');
-
         $token = new WebauthnToken(
             $userEntity,
             $credentialsBadge->getPublicKeyCredentialOptions(),
@@ -133,7 +124,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 ->getRoles()
         );
         $token->setUser($userBadge->getUser());
-
         return $token;
     }
 
@@ -144,7 +134,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             'firewallName' => $firewallName,
             'identifier' => $token->getUserIdentifier(),
         ]);
-
         return $this->successHandler->onAuthenticationSuccess($request, $token);
     }
 
@@ -154,7 +143,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             'request' => $request,
             'exception' => $exception,
         ]);
-
         return $this->failureHandler->onAuthenticationFailure($request, $exception);
     }
 
@@ -166,43 +154,38 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAssertion(Request $request): Passport
     {
         try {
-            $request->getContentType() === 'json' || throw InvalidDataException::create(
-                $request->getContentType(),
-                'Only JSON content type allowed'
-            );
+            $format = method_exists(
+                $request,
+                'getContentTypeFormat'
+            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             $response instanceof AuthenticatorAssertionResponse || throw InvalidDataException::create(
                 $response,
                 'Invalid response'
             );
-
             $data = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw InvalidDataException::create(
                 $publicKeyCredentialRequestOptions,
                 'Invalid data'
             );
-
             $userEntity = $data->getPublicKeyCredentialUserEntity();
-            $psr7Request = $this->httpMessageFactory->createRequest($request);
             $source = $this->assertionResponseValidator->check(
                 $publicKeyCredential->getRawId(),
                 $response,
                 $publicKeyCredentialRequestOptions,
-                $psr7Request,
+                $request->getHost(),
                 $userEntity?->getId(),
                 $this->securedRelyingPartyIds
             );
-
             $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle($source->getUserHandle());
             $userEntity instanceof PublicKeyCredentialUserEntity || throw InvalidDataException::create(
                 $userEntity,
                 'Invalid user entity'
             );
-
             $credentials = new WebauthnCredentials(
                 $response,
                 $publicKeyCredentialRequestOptions,
@@ -211,7 +194,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $this->firewallConfig->getFirewallName()
             );
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
-
             return new Passport($userBadge, $credentials, []);
         } catch (Throwable $e) {
             throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);
@@ -221,19 +203,18 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAttestation(Request $request): Passport
     {
         try {
-            $request->getContentType() === 'json' || throw InvalidDataException::create(
-                $request->getContentType(),
-                'Only JSON content type allowed'
-            );
+            $format = method_exists(
+                $request,
+                'getContentTypeFormat'
+            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            is_string($content) || throw InvalidDataException::create($content, 'Invalid data');
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
             $response = $publicKeyCredential->getResponse();
             $response instanceof AuthenticatorAttestationResponse || throw InvalidDataException::create(
                 $response,
                 'Invalid response'
             );
-
             $storedData = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw InvalidDataException::create(
@@ -245,12 +226,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $userEntity,
                 'Unable to find the public key credential user entity'
             );
-
-            $psr7Request = $this->httpMessageFactory->createRequest($request);
             $credentialSource = $this->attestationResponseValidator->check(
                 $response,
                 $publicKeyCredentialCreationOptions,
-                $psr7Request,
+                $request->getHost(),
                 $this->securedRelyingPartyIds
             );
             if ($this->credentialUserEntityRepository->findOneByUsername($userEntity->getName()) !== null) {
@@ -263,7 +242,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             }
             $this->credentialUserEntityRepository->saveUserEntity($userEntity);
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
-
             $credentials = new WebauthnCredentials(
                 $response,
                 $publicKeyCredentialCreationOptions,
@@ -272,7 +250,6 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $this->firewallConfig->getFirewallName()
             );
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
-
             return new Passport($userBadge, $credentials, []);
         } catch (Throwable $e) {
             throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Cose\Algorithm\Manager;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -23,7 +24,8 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?Manager $algorithmManager
+        ?Manager $algorithmManager,
+        ?EventDispatcherInterface $eventDispatcher
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -34,20 +36,14 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
                 BaseAuthenticatorAssertionResponseValidator::class
             )
         );
-
-        parent::__construct(
-            $publicKeyCredentialSourceRepository,
-            $tokenBindingHandler,
-            $extensionOutputCheckerHandler,
-            $algorithmManager
-        );
+        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher);
     }
 
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         PublicKeyCredentialSource $publicKeyCredentialSource
     ): AuthenticatorAssertionResponseValidationSucceededEvent {
@@ -65,7 +61,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
         string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
-        ServerRequestInterface $request,
+        ServerRequestInterface|string $request,
         ?string $userHandle,
         Throwable $throwable
     ): AuthenticatorAssertionResponseValidationFailedEvent {

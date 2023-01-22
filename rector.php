@@ -6,7 +6,6 @@ use Rector\Config\RectorConfig;
 use Rector\Core\ValueObject\PhpVersion;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodParameterRector;
 use Rector\Doctrine\Set\DoctrineSetList;
-use Rector\Php74\Rector\Property\TypedPropertyRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
@@ -29,6 +28,8 @@ return static function (RectorConfig $config): void {
     $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $config->skip([
+        'src/symfony/src/DependencyInjection/Configuration.php',
+        'src/symfony/src/Routing/Loader.php',
         'tests/symfony/config/routing.php',
         RemoveUnusedPrivateMethodParameterRector::class => [
             __DIR__ . '*/DependencyInjection/Configuration.php',
@@ -39,7 +40,4 @@ return static function (RectorConfig $config): void {
     $config->importNames();
     $config->importNames();
     $config->importShortClasses();
-
-    $services = $config->services();
-    $services->set(TypedPropertyRector::class);
 };
