@@ -8,5 +8,5 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 interface CanDispatchEvents
 {
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self;
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void;
 }

@@ -35,11 +35,9 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
         $this->dispatcher = new NullEventDispatcher();
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->dispatcher = $eventDispatcher;
-
-        return $this;
     }
 
     /**

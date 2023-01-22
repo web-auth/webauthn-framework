@@ -18,7 +18,6 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Finder\Finder;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
@@ -113,7 +112,6 @@ abstract class AbstractTestCase extends TestCase
                 null,
                 new ExtensionOutputCheckerHandler(),
                 $this->getAlgorithmManager(),
-                new EventDispatcher()
             );
         }
 

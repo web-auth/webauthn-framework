@@ -28,6 +28,8 @@ use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\StatusReportRepository;
@@ -35,9 +37,11 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-class AuthenticatorAttestationResponseValidator implements CanLogData
+class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispatchEvents
 {
     private LoggerInterface $logger;
+
+    private EventDispatcherInterface $eventDispatcher;
 
     private ?MetadataStatementRepository $metadataStatementRepository = null;
 
@@ -50,13 +54,23 @@ class AuthenticatorAttestationResponseValidator implements CanLogData
         private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         private readonly ?TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private ?EventDispatcherInterface $eventDispatcher = null,
+        ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
                 'web-auth/webauthn-symfony-bundle',
                 '4.3.0',
                 'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
+        if ($eventDispatcher === null) {
+            $this->eventDispatcher = new NullEventDispatcher();
+        } else {
+            $this->eventDispatcher = $eventDispatcher;
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.5.0',
+                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
             );
         }
         $this->logger = new NullLogger();
@@ -67,7 +81,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData
         PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        EventDispatcherInterface $eventDispatcher = null
+        ?EventDispatcherInterface $eventDispatcher = null
     ): self {
         return new self(
             $attestationStatementSupportManager,
@@ -83,15 +97,9 @@ class AuthenticatorAttestationResponseValidator implements CanLogData
         $this->logger = $logger;
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
-        trigger_deprecation(
-            'web-auth/webauthn-symfony-bundle',
-            '4.4.2',
-            'The method "setEventDispatcher" is deprecated since 4.4.2 and will be removed in 5.0.0. Please use "$eventDispatcher" parameter in __construct method instead.'
-        );
         $this->eventDispatcher = $eventDispatcher;
-        return $this;
     }
 
     public function setCertificateChainValidator(): self
@@ -251,7 +259,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData
             $this->logger->debug('Public Key Credential Source', [
                 'publicKeyCredentialSource' => $publicKeyCredentialSource,
             ]);
-            $this->eventDispatcher?->dispatch(
+            $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAttestationResponseValidationSucceededEvent(
                     $authenticatorAttestationResponse,
                     $publicKeyCredentialCreationOptions,
@@ -264,7 +272,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
-            $this->eventDispatcher?->dispatch(
+            $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAttestationResponseValidationFailedEvent(
                     $authenticatorAttestationResponse,
                     $publicKeyCredentialCreationOptions,

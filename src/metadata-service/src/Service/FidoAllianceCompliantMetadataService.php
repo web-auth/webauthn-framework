@@ -58,11 +58,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         $this->dispatcher = new NullEventDispatcher();
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->dispatcher = $eventDispatcher;
-
-        return $this;
     }
 
     /**

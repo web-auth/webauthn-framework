@@ -60,11 +60,9 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
         $this->dispatcher = new NullEventDispatcher();
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->dispatcher = $eventDispatcher;
-
-        return $this;
     }
 
     /**

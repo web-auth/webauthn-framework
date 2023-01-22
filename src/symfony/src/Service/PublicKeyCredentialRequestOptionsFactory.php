@@ -10,18 +10,32 @@ use RuntimeException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
+use Webauthn\MetadataService\Event\CanDispatchEvents;
+use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
-final class PublicKeyCredentialRequestOptionsFactory
+final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvents
 {
+    private EventDispatcherInterface $eventDispatcher;
+
     /**
      * @param mixed[] $profiles
      */
     public function __construct(
         private readonly array $profiles,
-        private readonly EventDispatcherInterface $eventDispatcher
+        ?EventDispatcherInterface $eventDispatcher = null
     ) {
+        if ($eventDispatcher === null) {
+            $this->eventDispatcher = new NullEventDispatcher();
+        } else {
+            $this->eventDispatcher = $eventDispatcher;
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.5.0',
+                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
+            );
+        }
     }
 
     /**
@@ -49,6 +63,11 @@ final class PublicKeyCredentialRequestOptionsFactory
         $this->eventDispatcher->dispatch(new PublicKeyCredentialRequestOptionsCreatedEvent($options));
 
         return $options;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

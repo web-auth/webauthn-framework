@@ -29,11 +29,9 @@ final class StringMetadataService implements MetadataService, CanDispatchEvents
         $this->dispatcher = new NullEventDispatcher();
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->dispatcher = $eventDispatcher;
-
-        return $this;
     }
 
     public static function create(string ...$statements): self
