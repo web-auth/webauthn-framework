@@ -97,9 +97,6 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         string $content
     ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
-        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new BadRequestHttpException(
-            'Invalid data'
-        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

@@ -46,7 +46,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     private string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
 
-    private string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
+    private null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
 
     public static function create(): self
     {
@@ -78,7 +78,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this;
     }
 
-    public function setResidentKey(string $residentKey): self
+    public function setResidentKey(null|string $residentKey): self
     {
         $this->residentKey = $residentKey;
         //$this->requireResidentKey = $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
@@ -104,7 +104,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         return $this->userVerification;
     }
 
-    public function getResidentKey(): string
+    public function getResidentKey(): null|string
     {
         return $this->residentKey;
     }
