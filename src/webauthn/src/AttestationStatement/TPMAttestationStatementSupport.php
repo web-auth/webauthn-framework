@@ -63,7 +63,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $this->dispatcher = $eventDispatcher;
     }
 
-    public static function create(?Clock $clock = null): self
+    public static function create(null|Clock|ClockInterface $clock = null): self
     {
         return new self($clock);
     }

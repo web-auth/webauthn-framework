@@ -82,9 +82,6 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
         );
-        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new BadRequestHttpException(
-            'Invalid data'
-        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

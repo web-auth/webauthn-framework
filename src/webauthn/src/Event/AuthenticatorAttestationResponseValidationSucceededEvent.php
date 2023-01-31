@@ -22,7 +22,8 @@ class AuthenticatorAttestationResponseValidationSucceededEvent
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );
