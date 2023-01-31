@@ -106,7 +106,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `check` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );
@@ -323,7 +324,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `createAuthenticatorAssertionResponseValidationSucceededEvent` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );
@@ -351,7 +353,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `createAuthenticatorAssertionResponseValidationFailedEvent` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );
