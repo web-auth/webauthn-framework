@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use Cose\Algorithms;
 use DateTimeImmutable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -23,9 +24,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class AppleAttestationStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAppleAttestationCanBeVerified(): void
     {
         $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));

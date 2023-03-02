@@ -6,6 +6,8 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\Version;
@@ -15,10 +17,8 @@ use Webauthn\MetadataService\Statement\Version;
  */
 final class VersionObjectTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider validObjectData
-     */
+    #[Test]
+    #[DataProvider('validObjectData')]
     public function validObject(Version $object, ?int $major, ?int $minor, string $expectedJson): void
     {
         static::assertSame($major, $object->getMajor());
@@ -26,19 +26,15 @@ final class VersionObjectTest extends TestCase
         static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
     }
 
-    public function validObjectData(): array
+    public static function validObjectData(): iterable
     {
-        return [
-            [new Version(1, null), 1, null, '{"major":1}'],
-            [new Version(null, 50), null, 50, '{"minor":50}'],
-            [new Version(1, 50), 1, 50, '{"major":1,"minor":50}'],
-        ];
+        yield [new Version(1, null), 1, null, '{"major":1}'];
+        yield [new Version(null, 50), null, 50, '{"minor":50}'];
+        yield [new Version(1, 50), 1, 50, '{"major":1,"minor":50}'];
     }
 
-    /**
-     * @test
-     * @dataProvider invalidObjectData
-     */
+    #[Test]
+    #[DataProvider('invalidObjectData')]
     public function invalidObject(?int $major, ?int $minor, string $expectedMessage): void
     {
         $this->expectException(MetadataStatementLoadingException::class);
@@ -47,8 +43,8 @@ final class VersionObjectTest extends TestCase
         new Version($major, $minor);
     }
 
-    public function invalidObjectData(): array
+    public static function invalidObjectData(): iterable
     {
-        return [[null, null, 'Invalid data. Must contain at least one item']];
+        yield [null, null, 'Invalid data. Must contain at least one item'];
     }
 }

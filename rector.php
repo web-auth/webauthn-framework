@@ -6,6 +6,7 @@ use Rector\Config\RectorConfig;
 use Rector\Core\ValueObject\PhpVersion;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodParameterRector;
 use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\PHPUnit\Set\PHPUnitLevelSetList;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
@@ -24,7 +25,7 @@ return static function (RectorConfig $config): void {
     $config->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(PHPUnitSetList::PHPUNIT_EXCEPTION);
     $config->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
-    $config->import(PHPUnitSetList::PHPUNIT_91);
+    $config->import(PHPUnitLevelSetList::UP_TO_PHPUNIT_100);
     $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $config->skip([
@@ -37,7 +38,6 @@ return static function (RectorConfig $config): void {
     ]);
     $config->phpVersion(PhpVersion::PHP_81);
     $config->parallel();
-    $config->importNames();
     $config->importNames();
     $config->importShortClasses();
 };

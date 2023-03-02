@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 
@@ -13,10 +14,9 @@ use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 final class CertificateChainValidatorTest extends TestCase
 {
     /**
-     * @test
-     *
      * @use \Webauthn\CertificateToolbox::checkChain
      */
+    #[Test]
     public function anCertificateChainValidatorCanBeCreatedAndValueAccessed(): void
     {
         $x5c = [

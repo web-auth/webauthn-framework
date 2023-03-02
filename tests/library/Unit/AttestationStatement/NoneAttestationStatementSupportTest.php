@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -15,9 +16,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 final class NoneAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementIsNotValid(): void
     {
         $support = new NoneAttestationStatementSupport();
@@ -29,9 +28,7 @@ final class NoneAttestationStatementSupportTest extends TestCase
         static::assertTrue($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementIsValid(): void
     {
         $support = new NoneAttestationStatementSupport();

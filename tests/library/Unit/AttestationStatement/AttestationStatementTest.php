@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -15,9 +16,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 final class AttestationStatementTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationStatementOfNoneTypeReturnsTheExpectedProperties(): void
     {
         $attestationStatement = AttestationStatement::createNone('fmt', [
@@ -34,9 +33,7 @@ final class AttestationStatementTest extends TestCase
         static::assertSame('none', $attestationStatement->getType());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationStatementOfEcdaaTypeReturnsTheExpectedProperties(): void
     {
         $attestationStatement = AttestationStatement::createEcdaa('fmt', [
@@ -53,9 +50,7 @@ final class AttestationStatementTest extends TestCase
         static::assertSame('ecdaa', $attestationStatement->getType());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationStatementOfBasicTypeReturnsTheExpectedProperties(): void
     {
         $attestationStatement = AttestationStatement::createBasic('fmt', [
@@ -72,9 +67,7 @@ final class AttestationStatementTest extends TestCase
         static::assertSame('basic', $attestationStatement->getType());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationStatementOfAttCATypeReturnsTheExpectedProperties(): void
     {
         $attestationStatement = AttestationStatement::createAttCA('fmt', [
@@ -91,9 +84,7 @@ final class AttestationStatementTest extends TestCase
         static::assertSame('attca', $attestationStatement->getType());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationStatementOfSelfTypeReturnsTheExpectedProperties(): void
     {
         $attestationStatement = AttestationStatement::createSelf('fmt', [

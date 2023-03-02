@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialParameters;
 
@@ -13,9 +14,7 @@ use Webauthn\PublicKeyCredentialParameters;
  */
 final class PublicKeyCredentialParametersTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anPublicKeyCredentialParametersCanBeCreatedAndValueAccessed(): void
     {
         $parameters = new PublicKeyCredentialParameters('type', 100);

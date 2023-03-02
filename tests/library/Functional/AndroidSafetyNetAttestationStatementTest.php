@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use Cose\Algorithms;
 use Http\Mock\Client;
 use Nyholm\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -20,9 +21,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anExpiredAndroidSafetyNetAttestationCannotBeVerified(): void
     {
         $this->expectException(CertificateChainException::class);

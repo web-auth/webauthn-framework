@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -24,10 +26,8 @@ use Webauthn\PublicKeyCredentialLoader;
  */
 final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     * @dataProvider getClassList
-     */
+    #[Test]
+    #[DataProvider('getClassList')]
     public function loggerIsCorrectlySet(string $className): void
     {
         //Given
@@ -51,7 +51,7 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
         );
     }
 
-    public function getClassList(): iterable
+    public static function getClassList(): iterable
     {
         yield [AssertionControllerFactory::class];
         yield [WebauthnExtension::class];

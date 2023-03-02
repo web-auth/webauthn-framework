@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -18,9 +19,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class AttestationTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function aResponseCannotBeLoaded(): void
     {
         static::expectException(InvalidDataException::class);
@@ -30,9 +29,7 @@ final class AttestationTest extends AbstractTestCase
             ->load($response);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationSignedWithEcDSA521ShouldBeVerified(): void
     {
         $publicKeyCredentialDescriptor = null;

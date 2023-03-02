@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -21,9 +22,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(

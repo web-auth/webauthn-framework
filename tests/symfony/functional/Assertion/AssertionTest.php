@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Assertion;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -22,9 +23,7 @@ final class AssertionTest extends WebTestCase
 {
     use MockedRequestTrait;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionResponseCanBeLoadedAndVerified(): void
     {
         $publicKeyCredential = null;
@@ -71,9 +70,7 @@ final class AssertionTest extends WebTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
     {
         self::bootKernel();

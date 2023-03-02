@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\Exception\AttestationStatementLoadingException;
@@ -13,9 +14,7 @@ use Webauthn\Exception\AttestationStatementLoadingException;
  */
 final class AppleAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -29,9 +28,7 @@ final class AppleAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);

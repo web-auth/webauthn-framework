@@ -6,6 +6,7 @@ namespace Webauthn\Tests;
 
 use DirectoryIterator;
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Traversable;
 
@@ -16,9 +17,7 @@ final class ComposerJsonTest extends TestCase
 {
     private const SRC_DIR = __DIR__ . '/../../src';
 
-    /**
-     * @test
-     */
+    #[Test]
     public function packageDependenciesEqualRootDependencies(): void
     {
         $usedDependencies = ['symfony/symfony']; // Some builds add this to composer.json
@@ -59,9 +58,7 @@ final class ComposerJsonTest extends TestCase
         static::assertCount(0, $unusedDependencies, $message);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function rootReplacesSubPackages(): void
     {
         $rootReplaces = $this->getComposerReplaces(__DIR__ . '/../../composer.json');
