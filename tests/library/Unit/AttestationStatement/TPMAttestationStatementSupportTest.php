@@ -7,8 +7,8 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 use Http\Mock\Client;
 use Lcobucci\Clock\SystemClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -30,9 +30,7 @@ use Webauthn\Tests\Unit\DummyPublicKeyCredentialSourceRepository;
  */
 final class TPMAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementIsAValidECC(): void
     {
         //Given
@@ -55,7 +53,6 @@ final class TPMAttestationStatementSupportTest extends TestCase
             $pkSourceRepository,
             null,
             ExtensionOutputCheckerHandler::create(),
-            new EventDispatcher()
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
@@ -15,9 +16,7 @@ use Webauthn\AuthenticatorData;
  */
 final class AuthenticatorDataTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
         $attestedCredentialData = new AttestedCredentialData(Uuid::v4(), '', null);

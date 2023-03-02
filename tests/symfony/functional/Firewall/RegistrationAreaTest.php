@@ -9,6 +9,7 @@ use Cose\Algorithms;
 use function json_decode;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,9 +42,7 @@ final class RegistrationAreaTest extends WebTestCase
         $this->storage = static::getContainer()->get(CustomSessionStorage::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aRequestWithoutUsernameCannotBeProcessed(): void
     {
         $content = [
@@ -63,9 +62,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame('username: This value should not be blank.', $data['errorMessage']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aRequestWithoutDisplayNameCannotBeProcessed(): void
     {
         $content = [
@@ -85,9 +82,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aValidRequestProcessed(): void
     {
         $content = [
@@ -125,9 +120,7 @@ final class RegistrationAreaTest extends WebTestCase
         ], $data['authenticatorSelection']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aValidRequestProcessedOnOtherHost(): void
     {
         $content = [
@@ -161,9 +154,7 @@ final class RegistrationAreaTest extends WebTestCase
         ], $data['authenticatorSelection']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aValidRequestProcessedWithExtensions(): void
     {
         $content = [
@@ -209,9 +200,9 @@ final class RegistrationAreaTest extends WebTestCase
     }
 
     /**
-     * @test
      * Note that this use case should fail on the attestation response step
      */
+    #[Test]
     public function aRegistrationOptionsRequestCanBeAcceptedForExistingUsers(): void
     {
         $content = [
@@ -230,9 +221,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertResponseIsSuccessful();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aRegistrationResultRequestCannotBeAcceptedIfNoOptionsAreAvailableInTheStorage(): void
     {
         $content = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
@@ -251,9 +240,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame('No public key credential options available for this session.', $data['errorMessage']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aValidRegistrationResultRequestIsCorrectlyManaged(): void
     {
         $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
@@ -14,10 +16,8 @@ use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
  */
 final class CodeAccuracyDescriptorObjectTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider validObjectData
-     */
+    #[Test]
+    #[DataProvider('validObjectData')]
     public function validObject(
         CodeAccuracyDescriptor $object,
         int $base,
@@ -33,25 +33,21 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
     }
 
-    public function validObjectData(): array
+    public static function validObjectData(): iterable
     {
-        return [
-            [new CodeAccuracyDescriptor(10, 4), 10, 4, null, null, '{"base":10,"minLength":4}'],
-            [
-                new CodeAccuracyDescriptor(10, 4, 50, 15),
-                10,
-                4,
-                50,
-                15,
-                '{"base":10,"minLength":4,"maxRetries":50,"blockSlowdown":15}',
-            ],
+        yield [new CodeAccuracyDescriptor(10, 4), 10, 4, null, null, '{"base":10,"minLength":4}'];
+        yield [
+            new CodeAccuracyDescriptor(10, 4, 50, 15),
+            10,
+            4,
+            50,
+            15,
+            '{"base":10,"minLength":4,"maxRetries":50,"blockSlowdown":15}',
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider invalidObjectData
-     */
+    #[Test]
+    #[DataProvider('invalidObjectData')]
     public function invalidObject(
         int $base,
         int $minLength,
@@ -65,13 +61,11 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         new CodeAccuracyDescriptor($base, $minLength, $maxRetries, $blockSlowdown);
     }
 
-    public function invalidObjectData(): array
+    public static function invalidObjectData(): iterable
     {
-        return [
-            [-1, -1, null, null, 'Invalid data. The value of "base" must be a positive integer'],
-            [11, -1, -1, null, 'Invalid data. The value of "minLength" must be a positive integer'],
-            [11, 1, -1, -1, 'Invalid data. The value of "maxRetries" must be a positive integer'],
-            [11, 1, 1, -1, 'Invalid data. The value of "blockSlowdown" must be a positive integer'],
-        ];
+        yield [-1, -1, null, null, 'Invalid data. The value of "base" must be a positive integer'];
+        yield [11, -1, -1, null, 'Invalid data. The value of "minLength" must be a positive integer'];
+        yield [11, 1, -1, -1, 'Invalid data. The value of "maxRetries" must be a positive integer'];
+        yield [11, 1, 1, -1, 'Invalid data. The value of "blockSlowdown" must be a positive integer'];
     }
 }

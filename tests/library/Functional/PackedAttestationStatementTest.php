@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
@@ -21,9 +22,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class PackedAttestationStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function aPackedAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
@@ -81,9 +80,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
         static::assertFalse($authenticatorData->hasExtensions());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aPackedAttestationWithSelfStatementCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
@@ -142,9 +139,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
         static::assertFalse($authenticatorData->hasExtensions());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function p2(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(

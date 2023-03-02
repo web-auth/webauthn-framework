@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use PHPUnit\Framework\Attributes\Test;
+
 /**
  * @internal
  */
 final class AndroidKeyAttestationStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAndroidKeyAttestationCanBeVerified(): never
     {
         static::markTestIncomplete(

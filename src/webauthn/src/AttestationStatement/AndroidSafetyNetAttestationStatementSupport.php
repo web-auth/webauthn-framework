@@ -349,7 +349,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $algorithms = [];
         foreach ($algorithmClasses as $algorithm) {
             if (class_exists($algorithm)) {
-                /** @var AlgorithmInterface $algorithm */
                 $algorithms[] = new $algorithm();
             }
         }

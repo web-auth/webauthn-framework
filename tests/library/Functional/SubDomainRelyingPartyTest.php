@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
@@ -13,9 +14,7 @@ use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
  */
 final class SubDomainRelyingPartyTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAuthenticatorAttestationResponseWithSubdomainCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(

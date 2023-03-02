@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -21,10 +23,8 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 final class W10Test extends AbstractTestCase
 {
-    /**
-     * @test
-     * @dataProvider getAttestationCanBeVerifiedData
-     */
+    #[Test]
+    #[DataProvider('getAttestationCanBeVerifiedData')]
     public function anAttestationCanBeVerified(
         string $publicKeyCredentialCreationOptionsData,
         string $publicKeyCredentialData,
@@ -74,7 +74,7 @@ final class W10Test extends AbstractTestCase
         }
     }
 
-    public function getAttestationCanBeVerifiedData(): array
+    public static function getAttestationCanBeVerifiedData(): array
     {
         return [[
             '{"rp":{"name":"Webauthn Demo"},"pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"challenge":"XKADkZSW9B4h0Fek8KbhQun3m4dfJYN3ci9wdXDNJvU=","attestation":"direct","user":{"name":"test**","id":"ZjZlYWJjNGItYjkyYi00YzI0LTg2N2MtZWZjYmE4OGNjOTRm","displayName":"test**"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}', '{"id":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY","type":"public-key","rawId":"WsVEgVplFhLkRd68yW3KAIyVJ90ZsQOHFjnL71YirSY=","response":{"clientDataJSON":"ew0KCSJ0eXBlIiA6ICJ3ZWJhdXRobi5jcmVhdGUiLA0KCSJjaGFsbGVuZ2UiIDogIlhLQURrWlNXOUI0aDBGZWs4S2JoUXVuM200ZGZKWU4zY2k5d2RYRE5KdlUiLA0KCSJvcmlnaW4iIDogImh0dHBzOi8vd2ViYXV0aG4uc3BvbWt5LWxhYnMuY29tIiwNCgkidG9rZW5CaW5kaW5nIiA6IA0KCXsNCgkJInN0YXR1cyIgOiAic3VwcG9ydGVkIg0KCX0NCn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBZ5YE6oKCTpikraFLRGLQ1zqOxGkTDakbGTB0WSKfdKNZRQAAAABgKLAXsdRMArSzr82vyWuyACBaxUSBWmUWEuRF3rzJbcoAjJUn3RmxA4cWOcvvViKtJqQBAwM5AQAgWQEAv5VUWjpRGBvp2zawiX2JKC9WSDvVxlLfqNqU1EYsdN6iNg16FFF/0EHkt7tJz9wkwC3Cx5vYFyblUw7UF5m8qS579OcGRjvb6MHj+MQFuOKCoowBMY/VjuF+TT14deKMuWtShT2MCab1gtfnkuGAlEcu2CASvAwtbEPKZ2JkaouWWaJ3hDOYTXWYgCgtM5DqqnN9JUZjXrgmAfQC82SYh6ZAV+MQ2s4RG2jP/dvEt235oFSIkr3JEqhStQvJ+CFmjVk67oFtofcISax44CynCd2Lr89inWU1B0JwSB1oyuLPq5HCQuSmFed/piGjVfFgCbN0tCXJkAGufkDXE3J4xSFDAQAB"}}', base64_decode(
@@ -106,9 +106,7 @@ final class W10Test extends AbstractTestCase
         ];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString(

@@ -10,6 +10,7 @@ use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\OtherObject\TrueObject;
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
@@ -20,9 +21,7 @@ use Webauthn\Exception\AuthenticationExtensionException;
  */
 final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theExtensionsCanBeLoaded(): void
     {
         $cbor = new MapObject([new MapItem(new ByteStringObject('loc'), new TrueObject())]);
@@ -34,9 +33,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         static::assertSame('{"loc":true}', json_encode($extensions, JSON_THROW_ON_ERROR));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theCBORObjectIsInvalid(): void
     {
         $this->expectException(AuthenticationExtensionException::class);
@@ -46,9 +43,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         AuthenticationExtensionsClientOutputsLoader::load($cbor);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theMapKeyIsNotAString(): void
     {
         $this->expectException(AuthenticationExtensionException::class);

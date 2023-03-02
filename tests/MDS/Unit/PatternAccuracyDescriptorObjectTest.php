@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
@@ -14,10 +16,8 @@ use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
  */
 final class PatternAccuracyDescriptorObjectTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider validObjectData
-     */
+    #[Test]
+    #[DataProvider('validObjectData')]
     public function validObject(
         PatternAccuracyDescriptor $object,
         int $minComplexity,
@@ -31,24 +31,20 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
     }
 
-    public function validObjectData(): array
+    public static function validObjectData(): iterable
     {
-        return [
-            [new PatternAccuracyDescriptor(10), 10, null, null, '{"minComplexity":10}'],
-            [
-                new PatternAccuracyDescriptor(10, 50, 15),
-                10,
-                50,
-                15,
-                '{"minComplexity":10,"maxRetries":50,"blockSlowdown":15}',
-            ],
+        yield [new PatternAccuracyDescriptor(10), 10, null, null, '{"minComplexity":10}'];
+        yield [
+            new PatternAccuracyDescriptor(10, 50, 15),
+            10,
+            50,
+            15,
+            '{"minComplexity":10,"maxRetries":50,"blockSlowdown":15}',
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider invalidObjectData
-     */
+    #[Test]
+    #[DataProvider('invalidObjectData')]
     public function invalidObject(
         int $minComplexity,
         ?int $maxRetries,
@@ -61,12 +57,10 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         new PatternAccuracyDescriptor($minComplexity, $maxRetries, $blockSlowdown);
     }
 
-    public function invalidObjectData(): array
+    public static function invalidObjectData(): iterable
     {
-        return [
-            [-1, null, null, 'Invalid data. The value of "minComplexity" must be a positive integer'],
-            [11, -1, null, 'Invalid data. The value of "maxRetries" must be a positive integer'],
-            [11, 1, -1, 'Invalid data. The value of "blockSlowdown" must be a positive integer'],
-        ];
+        yield [-1, null, null, 'Invalid data. The value of "minComplexity" must be a positive integer'];
+        yield [11, -1, null, 'Invalid data. The value of "maxRetries" must be a positive integer'];
+        yield [11, 1, -1, 'Invalid data. The value of "blockSlowdown" must be a positive integer'];
     }
 }

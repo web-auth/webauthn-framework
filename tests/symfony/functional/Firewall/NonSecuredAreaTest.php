@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -11,9 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 final class NonSecuredAreaTest extends WebTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function aClientWantsToAccessOnNonSecuredResource(): void
     {
         $client = static::createClient();
