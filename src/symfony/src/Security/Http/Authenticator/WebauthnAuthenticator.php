@@ -188,7 +188,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
 
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId($publicKeyCredential->getRawId());
+            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                $publicKeyCredential->getRawId()
+            );
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
             );
