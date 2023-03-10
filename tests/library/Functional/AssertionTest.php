@@ -54,9 +54,9 @@ final class AssertionTest extends AbstractTestCase
         );
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'localhost',
@@ -103,9 +103,9 @@ final class AssertionTest extends AbstractTestCase
         );
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'localhost',
@@ -152,9 +152,9 @@ final class AssertionTest extends AbstractTestCase
         );
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'spomky-webauthn.herokuapp.com',

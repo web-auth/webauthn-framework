@@ -23,7 +23,6 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Unit\DummyMetadataStatementRepository;
-use Webauthn\Tests\Unit\DummyPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
@@ -35,7 +34,6 @@ final class TPMAttestationStatementSupportTest extends TestCase
     {
         //Given
         $metadataStatementRepository = new DummyMetadataStatementRepository();
-        $pkSourceRepository = new DummyPublicKeyCredentialSourceRepository();
         $attnManager = AttestationStatementSupportManager::create();
         $attnManager->add(TPMAttestationStatementSupport::create(SystemClock::fromSystemTimezone()));
         $attnManager->add(NoneAttestationStatementSupport::create());
@@ -50,7 +48,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
         )->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
         $validator = AuthenticatorAttestationResponseValidator::create(
             $attnManager,
-            $pkSourceRepository,
+            null,
             null,
             ExtensionOutputCheckerHandler::create(),
         )->enableMetadataStatementSupport(

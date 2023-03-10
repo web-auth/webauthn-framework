@@ -12,7 +12,6 @@ use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
@@ -40,8 +39,7 @@ final class AttestationTest extends AbstractTestCase
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $this->getAuthenticatorAttestationResponseValidator()
             ->check(
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialCreationOptions,

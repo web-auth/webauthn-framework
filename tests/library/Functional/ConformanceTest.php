@@ -7,7 +7,6 @@ namespace Webauthn\Tests\Functional;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
@@ -26,9 +25,8 @@ final class ConformanceTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         // When
-        $pkSource = $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $pkSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check(
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialCreationOptions,

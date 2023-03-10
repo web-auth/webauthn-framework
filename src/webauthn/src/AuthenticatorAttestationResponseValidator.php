@@ -51,16 +51,23 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
 
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager,
-        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        private readonly ?TokenBindingHandler $tokenBindingHandler,
+        private readonly null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private readonly null|TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?EventDispatcherInterface $eventDispatcher = null,
+        null|EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
                 'web-auth/webauthn-symfony-bundle',
                 '4.3.0',
                 'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
+        if ($this->publicKeyCredentialSourceRepository !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                'The parameter "$publicKeyCredentialSourceRepository" is deprecated since 4.6.0 and will be removed in 5.0.0. Please set "null" instead.'
             );
         }
         if ($eventDispatcher === null) {
@@ -78,14 +85,14 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
 
     public static function create(
         AttestationStatementSupportManager $attestationStatementSupportManager,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
-        ?TokenBindingHandler $tokenBindingHandler,
+        null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        null|TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?EventDispatcherInterface $eventDispatcher = null
+        null|EventDispatcherInterface $eventDispatcher = null
     ): self {
         return new self(
             $attestationStatementSupportManager,
-            $publicKeyCredentialSource,
+            $publicKeyCredentialSourceRepository,
             $tokenBindingHandler,
             $extensionOutputCheckerHandler,
             $eventDispatcher,
@@ -244,11 +251,13 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 'There is no attested credential data.'
             );
             $credentialId = $attestedCredentialData->getCredentialId();
-            $this->publicKeyCredentialSource->findOneByCredentialId(
-                $credentialId
-            ) === null || throw AuthenticatorResponseVerificationException::create(
-                'The credential ID already exists.'
-            );
+            if ($this->publicKeyCredentialSourceRepository !== null) {
+                $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                    $credentialId
+                ) === null || throw AuthenticatorResponseVerificationException::create(
+                    'The credential ID already exists.'
+                );
+            }
             $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
                 $credentialId,
                 $attestedCredentialData,

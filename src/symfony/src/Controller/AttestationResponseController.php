@@ -12,6 +12,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -28,12 +29,23 @@ final class AttestationResponseController
     public function __construct(
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly OptionsStorage $optionStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private readonly array $securedRelyingPartyIds,
     ) {
+        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
     }
 
     public function __invoke(Request $request): Response

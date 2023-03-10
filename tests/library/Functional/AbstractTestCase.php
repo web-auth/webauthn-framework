@@ -38,7 +38,6 @@ use Webauthn\MetadataService\Service\ChainedMetadataServices;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\MetadataService\Service\StringMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
 use Webauthn\Tests\MockedRequestTrait;
@@ -83,13 +82,12 @@ abstract class AbstractTestCase extends TestCase
     }
 
     protected function getAuthenticatorAttestationResponseValidator(
-        PublicKeyCredentialSourceRepository $credentialRepository,
         ?ClientInterface $client = null
     ): AuthenticatorAttestationResponseValidator {
         if ($this->authenticatorAttestationResponseValidator === null) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
-                $credentialRepository,
+                null,
                 null,
                 new ExtensionOutputCheckerHandler()
             );
@@ -103,12 +101,11 @@ abstract class AbstractTestCase extends TestCase
         return $this->authenticatorAttestationResponseValidator;
     }
 
-    protected function getAuthenticatorAssertionResponseValidator(
-        PublicKeyCredentialSourceRepository $credentialRepository
-    ): AuthenticatorAssertionResponseValidator {
+    protected function getAuthenticatorAssertionResponseValidator(): AuthenticatorAssertionResponseValidator
+    {
         if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-                $credentialRepository,
+                null,
                 null,
                 new ExtensionOutputCheckerHandler(),
                 $this->getAlgorithmManager(),

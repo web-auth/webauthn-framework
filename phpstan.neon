@@ -65,7 +65,9 @@ parameters:
             message: '#Strict comparison using === between mixed and null will always evaluate to false\.#'
             path: src/metadata-service/src/Statement/StatusReport.php
             count: 1
+        - '#Fetching class constant class of deprecated class Webauthn\\PublicKeyCredentialSourceRepository\.#'
         - '#.*Binding.*#'
+        - '#Parameter .* of method .* has typehint with deprecated interface Webauthn\\PublicKeyCredentialSourceRepository\.#'
         - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
         - '#Property .* does not accept .*\|false\.#'
         - '#Cannot access offset \d+ on array\|false\.#'

@@ -15,13 +15,11 @@ use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAssertionResponseValidator
 {
     public function __construct(
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
@@ -36,11 +34,11 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
                 BaseAuthenticatorAssertionResponseValidator::class
             )
         );
-        parent::__construct($publicKeyCredentialSourceRepository, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher);
+        parent::__construct(null, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher);
     }
 
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
-        string $credentialId,
+        null|string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $request,

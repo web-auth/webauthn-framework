@@ -39,8 +39,7 @@ final class W10Test extends AbstractTestCase
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($publicKeyCredentialData);
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $host);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
         static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->getId()));
@@ -129,9 +128,9 @@ final class W10Test extends AbstractTestCase
         );
         $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
         $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'webauthn.spomky-labs.com',
