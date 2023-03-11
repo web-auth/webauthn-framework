@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -25,7 +25,7 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository,
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
         private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly string $profile,

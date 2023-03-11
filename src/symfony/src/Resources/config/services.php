@@ -21,7 +21,7 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -135,7 +135,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialRequestOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAssertionResponseValidator::class),
-            service(PublicKeyCredentialUserEntityRepository::class),
+            service(PublicKeyCredentialUserEntityRepositoryInterface::class),
             service(PublicKeyCredentialSourceRepository::class),
         ]);
 
