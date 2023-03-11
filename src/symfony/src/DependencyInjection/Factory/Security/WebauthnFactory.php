@@ -27,7 +27,7 @@ use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
@@ -465,7 +465,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->setArguments([
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
-                new Reference(PublicKeyCredentialUserEntityRepository::class),
+                new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
                 new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],

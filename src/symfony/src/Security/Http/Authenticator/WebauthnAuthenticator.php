@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
+use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Exception\MissingUserEntityException;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -53,7 +54,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly OptionsStorage $optionsStorage,
         private readonly array $securedRelyingPartyIds,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
-        private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
@@ -224,6 +225,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 
     private function processWithAttestation(Request $request): Passport
     {
+        if (! $this->credentialUserEntityRepository instanceof CanRegisterUserEntity) {
+            throw new LogicException('The credential source repository must implement CanRegisterUserEntity');
+        }
         try {
             $format = method_exists(
                 $request,

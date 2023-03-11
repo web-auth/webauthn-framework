@@ -13,7 +13,7 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialRequestOptionsBuilder;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
@@ -33,7 +33,7 @@ final class AssertionControllerFactory implements CanLogData
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $attestationResponseValidator,
-        private readonly PublicKeyCredentialUserEntityRepository $publicKeyCredentialUserEntityRepository,
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $publicKeyCredentialUserEntityRepository,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
         $this->logger = new NullLogger();
