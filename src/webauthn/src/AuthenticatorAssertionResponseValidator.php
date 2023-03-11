@@ -22,7 +22,6 @@ use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\Bundle\Repository\CanSaveCredentialSource;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
@@ -281,7 +280,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             $publicKeyCredentialSource->setCounter($responseCounter);
             if (is_string(
                 $credentialId
-            ) && ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource)) {
+            ) && ($this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepository)) {
                 $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
             }
             //All good. We can continue.
