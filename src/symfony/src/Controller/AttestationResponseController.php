@@ -12,6 +12,9 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Exception\HttpNotImplementedException;
+use Webauthn\Bundle\Exception\MissingFeatureException;
+use Webauthn\Bundle\Repository\CanSaveCredentialSource;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
@@ -51,6 +54,9 @@ final class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
+            if (! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
+                throw MissingFeatureException::create('Unable to register the credential.');
+            }
             $format = method_exists(
                 $request,
                 'getContentTypeFormat'
@@ -85,13 +91,14 @@ final class AttestationResponseController
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
-            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
-                return $this->failureHandler->onAuthenticationFailure(
-                    $request,
-                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
-                );
+            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
+            if ($throwable instanceof MissingFeatureException) {
+                $exception = new HttpNotImplementedException($throwable->getMessage(), $throwable);
             }
-            return $this->failureHandler->onFailure($request, $throwable);
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure($request, $exception);
+            }
+            return $this->failureHandler->onFailure($request, $exception);
         }
     }
 }

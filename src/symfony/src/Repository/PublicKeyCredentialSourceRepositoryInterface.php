@@ -9,8 +9,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 interface PublicKeyCredentialSourceRepositoryInterface
 {
-    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void;
-
     /**
      * @return PublicKeyCredentialSource[]
      */

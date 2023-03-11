@@ -11,7 +11,7 @@ use RuntimeException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, ServiceEntityRepositoryInterface
+class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource, ServiceEntityRepositoryInterface
 {
     private readonly EntityManagerInterface $manager;
 

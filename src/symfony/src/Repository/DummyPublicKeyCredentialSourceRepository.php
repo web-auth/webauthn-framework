@@ -27,16 +27,6 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->logger = $logger;
     }
 
-    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
-    {
-        $this->logger->critical(
-            'Please change the Public Key Credential Source Repository in the bundle configuration. See https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#repositories-1'
-        );
-        throw new RuntimeException(
-            'You are using the DummyPublicKeyCredentialSourceRepository service. Please create your own repository'
-        );
-    }
-
     /**
      * {@inheritdoc}
      */

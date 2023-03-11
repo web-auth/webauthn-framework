@@ -15,7 +15,6 @@ use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
@@ -126,8 +125,6 @@ final class W10Test extends AbstractTestCase
                 true
             )
         );
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
