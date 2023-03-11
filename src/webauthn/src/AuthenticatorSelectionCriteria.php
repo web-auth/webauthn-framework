@@ -66,7 +66,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public function setRequireResidentKey(bool $requireResidentKey): self
     {
         $this->requireResidentKey = $requireResidentKey;
-        //$this->residentKey = $requireResidentKey ? self::RESIDENT_KEY_REQUIREMENT_REQUIRED : self::RESIDENT_KEY_REQUIREMENT_DISCOURAGED;
+        if ($requireResidentKey === true) {
+            $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
+        }
 
         return $this;
     }
@@ -81,7 +83,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public function setResidentKey(null|string $residentKey): self
     {
         $this->residentKey = $residentKey;
-        //$this->requireResidentKey = $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
+        $this->requireResidentKey = $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
 
         return $this;
     }
@@ -137,11 +139,18 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         is_string($userVerification) || throw InvalidDataException::create($json, 'Invalid "userVerification" value');
         is_string($residentKey) || throw InvalidDataException::create($json, 'Invalid "residentKey" value');
 
-        return self::create()
+        $object = self::create()
             ->setAuthenticatorAttachment($authenticatorAttachment)
-            ->setRequireResidentKey($requireResidentKey)
             ->setUserVerification($userVerification)
-            ->setResidentKey($residentKey);
+        ;
+        if (isset($json['requireResidentKey'])) {
+            $object->setRequireResidentKey($json['requireResidentKey']);
+        }
+        if (isset($json['residentKey'])) {
+            $object->setResidentKey($json['residentKey']);
+        }
+
+        return $object;
     }
 
     /**
@@ -152,7 +161,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         $json = [
             'requireResidentKey' => $this->requireResidentKey,
             'userVerification' => $this->userVerification,
-            // 'residentKey' => $this->residentKey, // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
+            'residentKey' => $this->residentKey,
         ];
         if ($this->authenticatorAttachment !== null) {
             $json['authenticatorAttachment'] = $this->authenticatorAttachment;

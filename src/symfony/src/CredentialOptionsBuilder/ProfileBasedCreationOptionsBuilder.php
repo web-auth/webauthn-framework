@@ -56,13 +56,13 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
                     $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
                 )
                 ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment);
-            if ($creationOptionsRequest->residentKey !== null) {
-                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
-            }
             if ($creationOptionsRequest->requireResidentKey !== null) {
                 $authenticatorSelection->setRequireResidentKey(
                     filter_var($creationOptionsRequest->requireResidentKey, FILTER_VALIDATE_BOOLEAN)
                 );
+            }
+            if ($creationOptionsRequest->residentKey !== null) {
+                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
             }
         }
         $extensions = $creationOptionsRequest->extensions;

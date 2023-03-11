@@ -40,7 +40,7 @@ parameters:
         -
             message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-            count: 1
+            count: 2
         -
             message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
