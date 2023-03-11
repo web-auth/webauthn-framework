@@ -65,6 +65,7 @@ parameters:
             message: '#Strict comparison using === between mixed and null will always evaluate to false\.#'
             path: src/metadata-service/src/Statement/StatusReport.php
             count: 1
+        - '#Fetching class constant class of deprecated class Webauthn\\Bundle\\Repository\\PublicKeyCredentialUserEntityRepository.*#'
         - '#.*Binding.*#'
         - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
         - '#Property .* does not accept .*\|false\.#'

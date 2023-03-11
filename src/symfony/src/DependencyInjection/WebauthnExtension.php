@@ -38,6 +38,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerP
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\CounterChecker;
@@ -92,6 +93,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
+        $container->setAlias(PublicKeyCredentialUserEntityRepositoryInterface::class, $config['user_repository']);
 
         if ($config['token_binding_support_handler'] !== null) {
             $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
@@ -242,7 +244,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     ->setArguments([
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
-                        new Reference(PublicKeyCredentialUserEntityRepository::class),
+                        new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
                         new Reference(PublicKeyCredentialSourceRepository::class),
                         new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                         $requestConfig['profile'],
