@@ -115,7 +115,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'userVerification' => 'preferred',
-            // 'residentKey' => 'preferred', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
+            'residentKey' => 'required',
             'authenticatorAttachment' => 'cross-platform',
         ], $data['authenticatorSelection']);
     }
@@ -150,7 +150,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'userVerification' => 'preferred',
-            // 'residentKey' => 'preferred', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
+            'residentKey' => 'required',
         ], $data['authenticatorSelection']);
     }
 
@@ -194,7 +194,7 @@ final class RegistrationAreaTest extends WebTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'userVerification' => 'required',
-            // 'residentKey' => 'preferred', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
+            'residentKey' => 'required',
             'authenticatorAttachment' => 'platform',
         ], $data['authenticatorSelection']);
     }
