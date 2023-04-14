@@ -49,7 +49,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([
             service(AttestationStatementSupportManager::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            null,
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
         ])
@@ -58,7 +58,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
-            service(PublicKeyCredentialSourceRepository::class),
+            null,
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
             service('webauthn.cose.algorithm.manager'),
@@ -125,7 +125,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialCreationOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAttestationResponseValidator::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
         ]);
     $container
         ->set(AssertionControllerFactory::class)
@@ -136,7 +136,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAssertionResponseValidator::class),
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
         ]);
 
     $container

@@ -8,13 +8,14 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
+use Webauthn\Bundle\Repository\CanSaveCredentialSource;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository as PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface
+final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
     public function __construct(
         private readonly CacheItemPoolInterface $cacheItemPool

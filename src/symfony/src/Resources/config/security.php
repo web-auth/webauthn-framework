@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
@@ -26,7 +27,6 @@ use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
@@ -44,9 +44,9 @@ return static function (ContainerConfigurator $container): void {
     $container->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)->abstract()->args(
         [abstract_arg('Firewall config'), abstract_arg('User provider'), abstract_arg('Success handler'), abstract_arg(
             'Failure handler'
-        ), abstract_arg(
-            'Options Storage'
-        ), abstract_arg('Secured Relying Party IDs'), service(PublicKeyCredentialSourceRepository::class), service(
+        ), abstract_arg('Options Storage'), abstract_arg('Secured Relying Party IDs'), service(
+            PublicKeyCredentialSourceRepositoryInterface::class
+        ), service(
             PublicKeyCredentialUserEntityRepositoryInterface::class
         ), service(PublicKeyCredentialLoader::class), service(
             AuthenticatorAssertionResponseValidator::class

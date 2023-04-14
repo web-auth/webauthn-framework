@@ -17,7 +17,6 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
@@ -45,8 +44,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             "type": "public-key"
         }');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
         static::assertSame(

@@ -13,9 +13,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
@@ -32,6 +34,7 @@ final class AssertionResponseController
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private readonly array $securedRelyingPartyIds,
+        private readonly ?PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository = null
     ) {
     }
 
@@ -55,8 +58,15 @@ final class AssertionResponseController
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
+            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository === null ? $publicKeyCredential->getRawId() : $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                $publicKeyCredential->getRawId()
+            );
+            $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
+                'The credential ID is invalid.'
+            );
+
             $this->assertionResponseValidator->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),

@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -26,10 +27,21 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly string $profile,
     ) {
+        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
     }
 
     public function getFromRequest(

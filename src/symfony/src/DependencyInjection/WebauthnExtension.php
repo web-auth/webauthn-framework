@@ -37,6 +37,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPa
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
@@ -92,6 +93,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.logger', $config['logger']);
 
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
+        $container->setAlias(PublicKeyCredentialSourceRepositoryInterface::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepositoryInterface::class, $config['user_repository']);
 
@@ -184,7 +186,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     ->setArguments([
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
-                        new Reference(PublicKeyCredentialSourceRepository::class),
+                        new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                         new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                         $creationConfig['profile'],
                     ]);
@@ -245,7 +247,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
                         new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
-                        new Reference(PublicKeyCredentialSourceRepository::class),
+                        new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                         new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                         $requestConfig['profile'],
                     ]);

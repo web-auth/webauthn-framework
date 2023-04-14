@@ -26,6 +26,7 @@ use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
@@ -35,7 +36,6 @@ use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\PublicKeyCredentialSourceRepository;
 
 final class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {
@@ -466,7 +466,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
                 new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
-                new Reference(PublicKeyCredentialSourceRepository::class),
+                new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
             ]);
@@ -489,7 +489,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->setArguments([
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
-                new Reference(PublicKeyCredentialSourceRepository::class),
+                new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                 $config['profile'],
             ]);

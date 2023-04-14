@@ -24,9 +24,8 @@ final class FailureHandler implements AuthenticationFailureHandlerInterface, Fai
         $data = [
             'status' => 'error',
             'errorMessage' => $exception->getMessage(),
-            'errorCode' => $exception->getCode(),
         ];
 
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        return new JsonResponse($data, $exception->getCode() ?: Response::HTTP_UNAUTHORIZED);
     }
 }
