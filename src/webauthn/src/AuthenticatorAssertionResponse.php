@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use ParagonIE\ConstantTime\Base64;
+use Webauthn\Util\Base64;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
