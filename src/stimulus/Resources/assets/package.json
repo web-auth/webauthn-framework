@@ -15,10 +15,10 @@
     },
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^6.0.0"
+        "@simplewebauthn/browser": "^7.0.0"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^6.0.0"
+        "@simplewebauthn/browser": "^7.0.0"
     }
 }
