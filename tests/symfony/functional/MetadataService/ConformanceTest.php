@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\MetadataService;
 
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -24,9 +25,7 @@ final class ConformanceTest extends KernelTestCase
 {
     use MockedRequestTrait;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theMetadataStatementIsMissing(): void
     {
         $callback = self::getContainer()->get(MockClientCallback::class);

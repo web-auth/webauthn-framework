@@ -12,6 +12,10 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Exception\HttpNotImplementedException;
+use Webauthn\Bundle\Exception\MissingFeatureException;
+use Webauthn\Bundle\Repository\CanSaveCredentialSource;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -28,17 +32,31 @@ final class AttestationResponseController
     public function __construct(
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly OptionsStorage $optionStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private readonly array $securedRelyingPartyIds,
     ) {
+        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
     {
         try {
+            if (! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
+                throw MissingFeatureException::create('Unable to register the credential.');
+            }
             $format = method_exists(
                 $request,
                 'getContentTypeFormat'
@@ -73,13 +91,14 @@ final class AttestationResponseController
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
-            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
-                return $this->failureHandler->onAuthenticationFailure(
-                    $request,
-                    new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
-                );
+            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
+            if ($throwable instanceof MissingFeatureException) {
+                $exception = new HttpNotImplementedException($throwable->getMessage(), $throwable);
             }
-            return $this->failureHandler->onFailure($request, $throwable);
+            if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
+                return $this->failureHandler->onAuthenticationFailure($request, $exception);
+            }
+            return $this->failureHandler->onFailure($request, $exception);
         }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\ServiceDefinition;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 
@@ -13,9 +14,7 @@ use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
  */
 final class OptionsBuilderParameterTest extends AbstractExtensionTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theDefaultOptionsBuilderIsUsedWhenNoOptionIsSet(): void
     {
         // When
@@ -63,9 +62,7 @@ final class OptionsBuilderParameterTest extends AbstractExtensionTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aCustomOptionsBuilderCanBeSet(): void
     {
         // When

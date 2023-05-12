@@ -12,7 +12,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser;
@@ -26,7 +27,6 @@ use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
@@ -44,10 +44,10 @@ return static function (ContainerConfigurator $container): void {
     $container->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)->abstract()->args(
         [abstract_arg('Firewall config'), abstract_arg('User provider'), abstract_arg('Success handler'), abstract_arg(
             'Failure handler'
-        ), abstract_arg(
-            'Options Storage'
-        ), abstract_arg('Secured Relying Party IDs'), service(PublicKeyCredentialSourceRepository::class), service(
-            PublicKeyCredentialUserEntityRepository::class
+        ), abstract_arg('Options Storage'), abstract_arg('Secured Relying Party IDs'), service(
+            PublicKeyCredentialSourceRepositoryInterface::class
+        ), service(
+            PublicKeyCredentialUserEntityRepositoryInterface::class
         ), service(PublicKeyCredentialLoader::class), service(
             AuthenticatorAssertionResponseValidator::class
         ), service(AuthenticatorAttestationResponseValidator::class), ]
@@ -56,11 +56,11 @@ return static function (ContainerConfigurator $container): void {
         ->args([[], // Firewall settings
             abstract_arg('Firewall name'), service('security.http_utils'), ]);
     $container->set(CurrentUserEntityGuesser::class)->args(
-        [service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepository::class)]
+        [service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepositoryInterface::class)]
     );
     $container->set(RequestBodyUserEntityGuesser::class)->args(
         [service(SerializerInterface::class), service(ValidatorInterface::class), service(
-            PublicKeyCredentialUserEntityRepository::class
+            PublicKeyCredentialUserEntityRepositoryInterface::class
         ), ]
     );
 };

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\PublicKeyCredentialSource;
@@ -15,9 +16,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 final class PublicKeyCredentialSourceTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function backwardCompatibilityIsEnsured(): void
     {
         $data = '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"014c0f17-f86f-4586-9914-2779922ba877","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789}';
@@ -27,9 +26,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
         static::assertSame('publicKeyCredentialId', $source->getPublicKeyCredentialId());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function objectSerialization(): void
     {
         $tokenBinding = new PublicKeyCredentialSource(

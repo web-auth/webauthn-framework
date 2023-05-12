@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -14,9 +15,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 final class EntityTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
     {
         $user = new PublicKeyCredentialUserEntity('name', 'id', 'display_name', 'icon');
@@ -31,9 +30,7 @@ final class EntityTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
         $rp = PublicKeyCredentialRpEntity::create('name', 'id', 'icon');

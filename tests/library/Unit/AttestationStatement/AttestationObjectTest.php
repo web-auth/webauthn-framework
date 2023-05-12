@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -15,9 +16,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  */
 final class AttestationObjectTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationObjectCanBeCreated(): void
     {
         $attestationStatement = new AttestationStatement('', [], '', new EmptyTrustPath());

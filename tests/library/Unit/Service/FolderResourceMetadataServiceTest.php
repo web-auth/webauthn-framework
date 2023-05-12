@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\Service;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 use Webauthn\MetadataService\Service\FolderResourceMetadataService;
@@ -13,9 +14,7 @@ use Webauthn\MetadataService\Service\FolderResourceMetadataService;
  */
 final class FolderResourceMetadataServiceTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theListIsCorrect(): void
     {
         // Given
@@ -31,9 +30,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
         static::assertContains('a8d59924-63b7-49ea-b9de-34a753de1e01', $list);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAAGUIDIsSupported(): void
     {
         // Given
@@ -46,9 +43,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
         static::assertTrue($isValid);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theMetadataStatementIsRead(): void
     {
         // Given
@@ -61,9 +56,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
         static::assertSame('9debdbfd-14dd-4e8d-877b-4a6e35ddb375', $mds->getAaguid());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theMetadataStatementIsInvalid(): void
     {
         // Then

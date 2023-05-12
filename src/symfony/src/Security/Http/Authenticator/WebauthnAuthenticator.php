@@ -22,12 +22,18 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\Exception\HttpNotImplementedException;
+use Webauthn\Bundle\Exception\MissingFeatureException;
 use Webauthn\Bundle\Exception\MissingUserEntityException;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\CanRegisterUserEntity;
+use Webauthn\Bundle\Repository\CanSaveCredentialSource;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
+use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -50,12 +56,23 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly AuthenticationFailureHandlerInterface $failureHandler,
         private readonly OptionsStorage $optionsStorage,
         private readonly array $securedRelyingPartyIds,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
-        private readonly PublicKeyCredentialUserEntityRepository $credentialUserEntityRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
     ) {
+        if (! $this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$publicKeyCredentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
         $this->logger = new NullLogger();
     }
 
@@ -174,15 +191,27 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Invalid data'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
-            $source = $this->assertionResponseValidator->check(
-                $publicKeyCredential->getRawId(),
+
+            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                $publicKeyCredential->getRawId()
+            );
+            $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
+                'The credential ID is invalid.'
+            );
+            $publicKeyCredentialSource = $this->assertionResponseValidator->check(
+                $publicKeyCredentialSource,
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
                 $userEntity?->getId(),
                 $this->securedRelyingPartyIds
             );
-            $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle($source->getUserHandle());
+            if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
+                $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
+            }
+            $userEntity = $this->credentialUserEntityRepository->findOneByUserHandle(
+                $publicKeyCredentialSource->getUserHandle()
+            );
             $userEntity instanceof PublicKeyCredentialUserEntity || throw InvalidDataException::create(
                 $userEntity,
                 'Invalid user entity'
@@ -191,7 +220,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $userEntity,
-                $source,
+                $publicKeyCredentialSource,
                 $this->firewallConfig->getFirewallName()
             );
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
@@ -204,6 +233,12 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAttestation(Request $request): Passport
     {
         try {
+            if (! $this->credentialUserEntityRepository instanceof CanRegisterUserEntity) {
+                throw MissingFeatureException::create('Unable to register the user.');
+            }
+            if (! $this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
+                throw MissingFeatureException::create('Unable to register the credential.');
+            }
             $format = method_exists(
                 $request,
                 'getContentTypeFormat'
@@ -236,13 +271,13 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             if ($this->credentialUserEntityRepository->findOneByUsername($userEntity->getName()) !== null) {
                 throw InvalidDataException::create($userEntity, 'The username already exists');
             }
-            if ($this->credentialSourceRepository->findOneByCredentialId(
+            if ($this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $credentialSource->getPublicKeyCredentialId()
             ) !== null) {
                 throw InvalidDataException::create($credentialSource, 'The credentials already exists');
             }
             $this->credentialUserEntityRepository->saveUserEntity($userEntity);
-            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
+            $this->publicKeyCredentialSourceRepository->saveCredentialSource($credentialSource);
             $credentials = new WebauthnCredentials(
                 $response,
                 $publicKeyCredentialCreationOptions,
@@ -253,6 +288,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
             return new Passport($userBadge, $credentials, []);
         } catch (Throwable $e) {
+            if ($e instanceof MissingFeatureException) {
+                throw new HttpNotImplementedException($e->getMessage(), $e);
+            }
             throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);
         }
     }

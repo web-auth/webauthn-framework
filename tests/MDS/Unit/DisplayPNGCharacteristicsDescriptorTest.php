@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\DisplayPNGCharacteristicsDescriptor;
@@ -13,10 +15,8 @@ use Webauthn\MetadataService\Statement\DisplayPNGCharacteristicsDescriptor;
  */
 final class DisplayPNGCharacteristicsDescriptorTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider getInvalidValues
-     */
+    #[Test]
+    #[DataProvider('getInvalidValues')]
     public function validObject(
         int $width,
         int $height,
@@ -46,7 +46,7 @@ final class DisplayPNGCharacteristicsDescriptorTest extends TestCase
     /**
      * @return array<int|string>[]
      */
-    public function getInvalidValues(): iterable
+    public static function getInvalidValues(): iterable
     {
         yield [-1, 0, 0, 0, 0, 0, 0, 'Invalid width'];
         yield [0, -1, 0, 0, 0, 0, 0, 'Invalid height'];

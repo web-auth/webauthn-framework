@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Assertion;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -22,9 +24,7 @@ final class AssertionTest extends WebTestCase
 {
     use MockedRequestTrait;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionResponseCanBeLoadedAndVerified(): void
     {
         $publicKeyCredential = null;
@@ -46,9 +46,12 @@ final class AssertionTest extends WebTestCase
                     )
                 )
             );
-        $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load(
+        $publicKeyCredential = self::getContainer()->get(PublicKeyCredentialLoader::class)->load(
             '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}'
         );
+        $publicKeyCredentialSource = self::getContainer()->get(
+            PublicKeyCredentialSourceRepositoryInterface::class
+        )->findOneByCredentialId($publicKeyCredential->getRawId());
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
         static::assertSame(
@@ -62,8 +65,8 @@ final class AssertionTest extends WebTestCase
         $response = $publicKeyCredential->getResponse();
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
         static::assertNull($response->getUserHandle());
-        self::$kernel->getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
-            $publicKeyCredential->getRawId(),
+        self::getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
+            $publicKeyCredentialSource,
             $publicKeyCredential->getResponse(),
             $publicKeyCredentialRequestOptions,
             'localhost',
@@ -71,9 +74,7 @@ final class AssertionTest extends WebTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
     {
         self::bootKernel();
@@ -86,7 +87,7 @@ final class AssertionTest extends WebTestCase
             ),
         ];
         /** @var PublicKeyCredentialRequestOptionsFactory $factory */
-        $factory = self::$kernel->getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
+        $factory = self::getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
         $options = $factory->create('default', $allowedCredentials);
         static::assertNull($options->getTimeout());
         static::assertSame('localhost', $options->getRpId());

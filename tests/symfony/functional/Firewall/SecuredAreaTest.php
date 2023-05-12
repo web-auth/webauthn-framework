@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,9 +35,7 @@ final class SecuredAreaTest extends WebTestCase
         $this->storage = static::getContainer()->get(CustomSessionStorage::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aClientCannotAccessToTheResourceIfUserIsNotAuthenticated(): void
     {
         $this->client->request('GET', '/admin', [], [], [
@@ -46,9 +45,7 @@ final class SecuredAreaTest extends WebTestCase
         static::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aClientCanSubmitUsernameToGetWebauthnOptions(): void
     {
         $body = [
@@ -69,9 +66,7 @@ final class SecuredAreaTest extends WebTestCase
         static::assertArrayNotHasKey('timeout', $json);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aUserCannotBeBeAuthenticatedInAbsenceOfOptions(): void
     {
         $assertion = '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}';
@@ -83,15 +78,13 @@ final class SecuredAreaTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         static::assertSame(
-            '{"status":"error","errorMessage":"No public key credential options available for this session.","errorCode":0}',
+            '{"status":"error","errorMessage":"No public key credential options available for this session."}',
             $this->client->getResponse()
                 ->getContent()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions

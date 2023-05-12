@@ -9,6 +9,7 @@ use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
@@ -25,9 +26,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
  */
 final class FidoU2FAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -41,9 +40,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -57,9 +54,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -76,9 +71,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainAValidCertificateList(): void
     {
         $this->expectException(AttestationStatementVerificationException::class);
@@ -95,9 +88,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementContain(): void
     {
         $support = new FidoU2FAttestationStatementSupport();

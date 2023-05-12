@@ -6,6 +6,8 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Statement\BiometricAccuracyDescriptor;
 
@@ -14,10 +16,8 @@ use Webauthn\MetadataService\Statement\BiometricAccuracyDescriptor;
  */
 final class BiometricAccuracyDescriptorObjectTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider validObjectData
-     */
+    #[Test]
+    #[DataProvider('validObjectData')]
     public function validObject(
         BiometricAccuracyDescriptor $object,
         ?float $selfAttestedFAR,
@@ -35,63 +35,61 @@ final class BiometricAccuracyDescriptorObjectTest extends TestCase
         static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
     }
 
-    public function validObjectData(): array
+    public static function validObjectData(): iterable
     {
-        return [
-            [
-                new BiometricAccuracyDescriptor(125.21, null, null, null, null),
-                125.21,
-                null,
-                null,
-                null,
-                null,
-                '{"selfAttestedFRR":125.21}',
-            ],
-            [
-                new BiometricAccuracyDescriptor(125.21, 0.001, null, null, null),
-                125.21,
-                0.001,
-                null,
-                null,
-                null,
-                '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001}',
-            ],
-            [
-                new BiometricAccuracyDescriptor(125.21, 0.001, 12.3, null, null),
-                125.21,
-                0.001,
-                12.3,
-                null,
-                null,
-                '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001,"maxTemplates":12.3}',
-            ],
-            [
-                new BiometricAccuracyDescriptor(125.21, null, null, 50, null),
-                125.21,
-                null,
-                null,
-                50,
-                null,
-                '{"selfAttestedFRR":125.21,"maxRetries":50}',
-            ],
-            [
-                new BiometricAccuracyDescriptor(125.21, null, null, 50, 1),
-                125.21,
-                null,
-                null,
-                50,
-                1,
-                '{"selfAttestedFRR":125.21,"maxRetries":50,"blockSlowdown":1}',
-            ],
-            [
-                new BiometricAccuracyDescriptor(125.21, 0.001, 12.3, 50, 1),
-                125.21,
-                0.001,
-                12.3,
-                50,
-                1,
-                '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001,"maxTemplates":12.3,"maxRetries":50,"blockSlowdown":1}',
-            ],
+        yield [
+            new BiometricAccuracyDescriptor(125.21, null, null, null, null),
+            125.21,
+            null,
+            null,
+            null,
+            null,
+            '{"selfAttestedFRR":125.21}',
+        ];
+        yield [
+            new BiometricAccuracyDescriptor(125.21, 0.001, null, null, null),
+            125.21,
+            0.001,
+            null,
+            null,
+            null,
+            '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001}',
+        ];
+        yield [
+            new BiometricAccuracyDescriptor(125.21, 0.001, 12.3, null, null),
+            125.21,
+            0.001,
+            12.3,
+            null,
+            null,
+            '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001,"maxTemplates":12.3}',
+        ];
+        yield [
+            new BiometricAccuracyDescriptor(125.21, null, null, 50, null),
+            125.21,
+            null,
+            null,
+            50,
+            null,
+            '{"selfAttestedFRR":125.21,"maxRetries":50}',
+        ];
+        yield [
+            new BiometricAccuracyDescriptor(125.21, null, null, 50, 1),
+            125.21,
+            null,
+            null,
+            50,
+            1,
+            '{"selfAttestedFRR":125.21,"maxRetries":50,"blockSlowdown":1}',
+        ];
+        yield [
+            new BiometricAccuracyDescriptor(125.21, 0.001, 12.3, 50, 1),
+            125.21,
+            0.001,
+            12.3,
+            50,
+            1,
+            '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001,"maxTemplates":12.3,"maxRetries":50,"blockSlowdown":1}',
         ];
     }
 }

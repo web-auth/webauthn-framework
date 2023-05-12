@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Exception\MissingUserEntityException;
+use Webauthn\Bundle\Repository\CanRegisterUserEntity;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -18,7 +20,7 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository
     ) {
     }
 
@@ -48,8 +50,14 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
         }
 
         $existingUserEntity = $this->userEntityRepository->findOneByUsername($dto->username);
+        if ($existingUserEntity !== null) {
+            return $existingUserEntity;
+        }
 
-        return $existingUserEntity ?? PublicKeyCredentialUserEntity::create(
+        if (! $this->userEntityRepository instanceof CanRegisterUserEntity) {
+            throw MissingUserEntityException::create('Unable to find the user entity');
+        }
+        return PublicKeyCredentialUserEntity::create(
             $dto->username,
             $this->userEntityRepository->generateNextUserEntityId(),
             $dto->displayName
