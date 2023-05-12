@@ -14,6 +14,7 @@
 /jest.config.js export-ignore
 /Makefile export-ignore
 /phpstan.neon export-ignore
+/baseline-phpstan.neon export-ignore
 /phpunit.xml.dist export-ignore
 /rector.php export-ignore
 /rollup.config.js export-ignore
