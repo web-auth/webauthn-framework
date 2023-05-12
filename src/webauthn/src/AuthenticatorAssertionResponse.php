@@ -36,6 +36,6 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
             return $this->userHandle;
         }
 
-        return Base64::decode($this->userHandle, true);
+        return Base64::decode($this->userHandle);
     }
 }
