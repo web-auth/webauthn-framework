@@ -131,6 +131,7 @@ export default class extends Controller {
     _getData() {
         let data = new FormData();
         try {
+            // @ts-ignore
             data = new FormData(this.element);
         } catch (e) {
             //Nothing to do
