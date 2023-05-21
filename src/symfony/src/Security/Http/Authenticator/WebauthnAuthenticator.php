@@ -15,6 +15,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\InteractiveAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Throwable;
@@ -224,7 +225,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $this->firewallConfig->getFirewallName()
             );
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
-            return new Passport($userBadge, $credentials, []);
+            return new Passport($userBadge, $credentials, [new RememberMeBadge()]);
         } catch (Throwable $e) {
             throw new AuthenticationException($e->getMessage(), $e->getCode(), $e);
         }
@@ -286,7 +287,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $this->firewallConfig->getFirewallName()
             );
             $userBadge = new UserBadge($userEntity->getName(), $this->userProvider->loadUserByIdentifier(...));
-            return new Passport($userBadge, $credentials, []);
+            return new Passport($userBadge, $credentials, [new RememberMeBadge()]);
         } catch (Throwable $e) {
             if ($e instanceof MissingFeatureException) {
                 throw new HttpNotImplementedException($e->getMessage(), $e);

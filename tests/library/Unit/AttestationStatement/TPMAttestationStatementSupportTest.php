@@ -54,7 +54,9 @@ final class TPMAttestationStatementSupportTest extends TestCase
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
-            new PhpCertificateChainValidator(new Client(), new Psr17Factory(), SystemClock::fromSystemTimezone())
+            new PhpCertificateChainValidator(new Client(
+                new Psr17Factory()
+            ), new Psr17Factory(), SystemClock::fromSystemTimezone())
         );
         //When
         $response = $pkLoader->load($data);
