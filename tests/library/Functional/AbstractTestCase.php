@@ -141,7 +141,7 @@ abstract class AbstractTestCase extends TestCase
         ?ClientInterface $client
     ): AttestationStatementSupportManager {
         if ($client === null) {
-            $client = new Client();
+            $client = new Client(new Psr17Factory());
         }
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
@@ -193,7 +193,7 @@ abstract class AbstractTestCase extends TestCase
     private function getMetadataStatementRepository(?ClientInterface $client): MetadataStatementRepositoryInterface
     {
         if ($client === null) {
-            $client = new Client();
+            $client = new Client(new Psr17Factory());
         }
         if ($this->metadataStatementRepository === null) {
             $metadataService = new ChainedMetadataServices();
@@ -202,7 +202,7 @@ abstract class AbstractTestCase extends TestCase
             }
             foreach ($this->getDistantStatements() as $filename) {
                 $response = new Response(200, [], trim(file_get_contents($filename)));
-                $client = new Client();
+                $client = new Client(new Psr17Factory());
                 $client->addResponse($response);
 
                 $metadataService->addServices(
@@ -223,7 +223,7 @@ abstract class AbstractTestCase extends TestCase
             }
 
             //$response = new Response(200, [], trim(file_get_contents(__DIR__ . '/../../blob.jwt')));
-            //$client = new Client();
+            //$client = new Client(new Psr17Factory());
             //$client->addResponse($response);
             /*$metadataService->addServices(
                 FidoAllianceCompliantMetadataService::create(
@@ -264,7 +264,7 @@ abstract class AbstractTestCase extends TestCase
     private function getCertificateChainValidator(): CertificateChainValidator
     {
         if ($this->certificateChainValidator === null) {
-            $psr18Client = new Client();
+            $psr18Client = new Client(new Psr17Factory());
 
             $psr17Factory = new Psr17Factory();
             $this->certificateChainValidator = new PhpCertificateChainValidator(
