@@ -23,7 +23,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Webauthn\\StimulusBundle\\": "src/"
+            "Webauthn\\Stimulus\\": "src/"
         }
     },
     "conflict": {
