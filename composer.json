@@ -19,6 +19,7 @@
         "psr-4": {
             "Webauthn\\": "src/webauthn/src/",
             "Webauthn\\Bundle\\": "src/symfony/src/",
+            "Webauthn\\StimulusBundle\\": "src/",
             "Webauthn\\MetadataService\\": "src/metadata-service/src/"
         }
     },
