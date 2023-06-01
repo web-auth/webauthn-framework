@@ -17,7 +17,6 @@ monolog:
 framework:
   test: true
   secret: 'test'
-  annotations: ~
   serializer:
     enabled: true
   validation:
@@ -139,7 +138,7 @@ doctrine:
     mappings:
       App:
         is_bundle: false
-        type: annotation
+        type: attribute
         dir: '%kernel.project_dir%/'
         prefix: 'Webauthn\Tests\Bundle\Functional'
         alias: App

@@ -2,10 +2,7 @@
     "compilerOptions": {
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "lib": [
-            "dom",
-            "es2015"
-        ],
+        "lib": ["dom", "es2015"],
         "module": "es2015",
         "moduleResolution": "node",
         "noUnusedLocals": true,
@@ -14,7 +11,7 @@
         "strictPropertyInitialization": false,
         "target": "es2017",
         "removeComments": true,
-        "outDir": "dist",
+        "outDir": "types",
         "baseUrl": ".",
         "noEmit": false,
         "declaration": false,
@@ -22,12 +19,6 @@
         "allowSyntheticDefaultImports": true,
         "jsx": "react"
     },
-    "exclude": [
-        "src/*/Resources/assets/dist",
-        "node_modules"
-    ],
-    "include": [
-        "src/*/Resources/assets/src",
-        "src/*/Resources/assets/test"
-    ]
+    "exclude": ["src/*/assets/dist"],
+    "include": ["src/*/assets/src", "src/*/assets/test"]
 }

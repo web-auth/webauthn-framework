@@ -589,16 +589,6 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
-            message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticator\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-            count: 1
-            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-        -
-            message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createListeners\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-            count: 1
-            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-        -
             message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:getAssertionOptionsBuilderId\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -644,6 +634,16 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
+            message: "#^Parameter \\#4 \\$successHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
+            message: "#^Parameter \\#5 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
             message: "#^Parameter \\#5 \\$host of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string\\|null, mixed given\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -674,12 +674,22 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
+            message: "#^Parameter \\#7 \\$optionsStorageId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
             message: "#^Parameter \\#8 \\$optionsHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
             message: "#^Parameter \\#8 \\$optionsHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
+            message: "#^Parameter \\#8 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects array\\<string\\>, mixed given\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
