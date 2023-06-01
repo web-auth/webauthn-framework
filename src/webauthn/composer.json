@@ -39,6 +39,12 @@
             "Webauthn\\": "src/"
         }
     },
+    "extra": {
+        "thanks": {
+            "name": "web-auth/webauthn-framework",
+            "url": "https://github.com/web-auth/webauthn-framework"
+        }
+    },
     "suggest": {
         "psr/log-implementation": "Recommended to receive logs from the library",
         "web-token/jwt-key-mgmt": "Mandatory for the AndroidSafetyNet Attestation Statement support",
