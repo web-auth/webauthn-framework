@@ -88,7 +88,6 @@
         "web-token/jwt-signature-algorithm-eddsa": "Recommended for the AndroidSafetyNet Attestation Statement support"
     },
     "require-dev": {
-        "doctrine/annotations": "^1.13 || ^2.0",
         "doctrine/dbal": "^3.4",
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/orm": "^2.13",
@@ -106,7 +105,7 @@
         "phpunit/phpunit": "^10.1",
         "psr/log": "^3.0",
         "qossmic/deptrac-shim": "^1.0",
-        "rector/rector": "^0.16",
+        "rector/rector": "^0.17",
         "roave/security-advisories": "dev-latest",
         "symfony/asset-mapper": "^6.3",
         "symfony/browser-kit": "^6.1",

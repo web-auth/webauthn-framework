@@ -1,6 +1,6 @@
 .PHONY: mu
 mu: vendor ## Mutation tests
-	vendor/bin/infection -s --threads=$$(nproc) --min-msi=30 --min-covered-msi=50
+	vendor/bin/infection -v -s --threads=$$(nproc) --min-msi=30 --min-covered-msi=50
 
 .PHONY: tests
 tests: vendor ## Run all tests
