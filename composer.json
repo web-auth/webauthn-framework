@@ -108,6 +108,7 @@
         "qossmic/deptrac-shim": "^1.0",
         "rector/rector": "^0.16",
         "roave/security-advisories": "dev-latest",
+        "symfony/asset-mapper": "^6.3",
         "symfony/browser-kit": "^6.1",
         "symfony/filesystem": "^6.1",
         "symfony/finder": "^6.1",
