@@ -44,17 +44,24 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        private readonly PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        private readonly ?TokenBindingHandler $tokenBindingHandler,
+        private readonly null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private readonly null|TokenBindingHandler $tokenBindingHandler,
         private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        private readonly ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher = null,
+        private readonly null|Manager $algorithmManager,
+        null|EventDispatcherInterface $eventDispatcher = null,
     ) {
         if ($this->tokenBindingHandler !== null) {
             trigger_deprecation(
                 'web-auth/webauthn-symfony-bundle',
                 '4.3.0',
                 'The parameter "$tokenBindingHandler" is deprecated since 4.3.0 and will be removed in 5.0.0. Please set "null" instead.'
+            );
+        }
+        if ($this->publicKeyCredentialSourceRepository !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                'The parameter "$publicKeyCredentialSourceRepository" is deprecated since 4.6.0 and will be removed in 5.0.0. Please set "null" instead.'
             );
         }
         if ($eventDispatcher === null) {
@@ -73,11 +80,11 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     }
 
     public static function create(
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-        ?TokenBindingHandler $tokenBindingHandler,
+        null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        null|TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher = null
+        null|Manager $algorithmManager,
+        null|EventDispatcherInterface $eventDispatcher = null
     ): self {
         return new self(
             $publicKeyCredentialSourceRepository,
@@ -94,7 +101,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(
-        string $credentialId,
+        string|PublicKeyCredentialSource $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $request,
@@ -106,8 +113,20 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `check` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
+                )
+            );
+        }
+        if (is_string($credentialId)) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.6.0',
+                sprintf(
+                    'Passing a string as first to the method `check` of the class "%s" is deprecated since 4.6.0. Please inject a %s object instead.',
+                    ServerRequestInterface::class,
+                    PublicKeyCredentialSource::class
                 )
             );
         }
@@ -120,18 +139,18 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                     ->getHost(),
                 'userHandle' => $userHandle,
             ]);
-            if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
-                $this->isCredentialIdAllowed(
-                    $credentialId,
-                    $publicKeyCredentialRequestOptions->getAllowCredentials()
-                ) || throw AuthenticatorResponseVerificationException::create('The credential ID is not allowed.');
-            }
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+            $publicKeyCredentialSource = is_string(
                 $credentialId
-            );
+            ) ? $this->publicKeyCredentialSourceRepository?->findOneByCredentialId($credentialId) : $credentialId;
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
             );
+            if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
+                $this->isCredentialIdAllowed(
+                    $publicKeyCredentialSource->getPublicKeyCredentialId(),
+                    $publicKeyCredentialRequestOptions->getAllowCredentials()
+                ) || throw AuthenticatorResponseVerificationException::create('The credential ID is not allowed.');
+            }
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
             $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
             $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
@@ -259,7 +278,11 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
             }
             $publicKeyCredentialSource->setCounter($responseCounter);
-            $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
+            if (is_string(
+                $credentialId
+            ) && ($this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepository)) {
+                $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
+            }
             //All good. We can continue.
             $this->logger->info('The assertion is valid');
             $this->logger->debug('Public Key Credential Source', [
@@ -267,7 +290,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             ]);
             $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationSucceededEvent(
-                    $credentialId,
+                    null,
                     $authenticatorAssertionResponse,
                     $publicKeyCredentialRequestOptions,
                     $request,
@@ -311,7 +334,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     }
 
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(
-        string $credentialId,
+        null|string $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $request,
@@ -323,7 +346,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `createAuthenticatorAssertionResponseValidationSucceededEvent` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );
@@ -351,7 +375,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'web-auth/webauthn-lib',
                 '4.5.0',
                 sprintf(
-                    'The class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    'Passing a %s to the method `createAuthenticatorAssertionResponseValidationFailedEvent` of the class "%s" is deprecated since 4.5.0 and will be removed in 5.0.0. Please inject the host as a string instead.',
+                    ServerRequestInterface::class,
                     self::class
                 )
             );

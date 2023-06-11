@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialDescriptor;
 
@@ -13,9 +14,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
  */
 final class PublicKeyCredentialDescriptorTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed(): void
     {
         $descriptor = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);

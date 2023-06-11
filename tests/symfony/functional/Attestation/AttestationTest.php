@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
 use Cose\Algorithms;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -30,9 +31,7 @@ final class AttestationTest extends KernelTestCase
 {
     use MockedRequestTrait;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function foo(): void
     {
         self::bootKernel();
@@ -75,9 +74,7 @@ final class AttestationTest extends KernelTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationResponseCanBeLoadedAndVerified(): void
     {
         self::bootKernel();
@@ -120,9 +117,7 @@ final class AttestationTest extends KernelTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aFullCertificateChainShouldNotBeUsedForThisSelfAttestation(): void
     {
         self::getContainer()->get(MockClientCallback::class);
@@ -160,9 +155,7 @@ final class AttestationTest extends KernelTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function eddsa(): void
     {
         self::bootKernel();
@@ -194,9 +187,7 @@ final class AttestationTest extends KernelTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function certificateExpired(): void
     {
         $this->expectException(CertificateChainException::class);
@@ -234,9 +225,7 @@ final class AttestationTest extends KernelTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aPublicKeyCredentialCreationOptionsCanBeCreatedFromProfile(): void
     {
         self::bootKernel();

@@ -21,7 +21,7 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -49,7 +49,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([
             service(AttestationStatementSupportManager::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            null,
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
         ])
@@ -58,7 +58,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([
-            service(PublicKeyCredentialSourceRepository::class),
+            null,
             service(TokenBindingHandler::class)->nullOnInvalid(),
             service(ExtensionOutputCheckerHandler::class),
             service('webauthn.cose.algorithm.manager'),
@@ -125,7 +125,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialCreationOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAttestationResponseValidator::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
         ]);
     $container
         ->set(AssertionControllerFactory::class)
@@ -135,8 +135,8 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialRequestOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAssertionResponseValidator::class),
-            service(PublicKeyCredentialUserEntityRepository::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            service(PublicKeyCredentialUserEntityRepositoryInterface::class),
+            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
         ]);
 
     $container

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
 use Cose\Algorithms;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -25,9 +26,7 @@ final class PackedAttestationStatementTest extends KernelTestCase
 {
     use MockedRequestTrait;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aPackedAttestationWithSelfStatementCanBeVerified(): void
     {
         self::bootKernel();

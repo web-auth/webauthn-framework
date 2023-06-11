@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -27,10 +28,21 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
         private readonly string $profile,
     ) {
+        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
     }
 
     public function getFromRequest(
@@ -56,13 +68,13 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
                     $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
                 )
                 ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment);
-            if ($creationOptionsRequest->residentKey !== null) {
-                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
-            }
             if ($creationOptionsRequest->requireResidentKey !== null) {
                 $authenticatorSelection->setRequireResidentKey(
                     filter_var($creationOptionsRequest->requireResidentKey, FILTER_VALIDATE_BOOLEAN)
                 );
+            }
+            if ($creationOptionsRequest->residentKey !== null) {
+                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
             }
         }
         $extensions = $creationOptionsRequest->extensions;
@@ -97,9 +109,6 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         string $content
     ): PublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize($content, PublicKeyCredentialCreationOptionsRequest::class, 'json');
-        $data instanceof PublicKeyCredentialCreationOptionsRequest || throw new BadRequestHttpException(
-            'Invalid data'
-        );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];

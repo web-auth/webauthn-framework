@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -17,9 +18,7 @@ use Webauthn\PublicKeyCredentialLoader;
  */
 final class AndroidKeyAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -33,9 +32,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -49,9 +46,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementDoesNotContainTheRequiredAlgorithmParameter(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -66,9 +61,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementContainsAnEmptyCertificateList(): void
     {
         $this->expectException(AttestationStatementLoadingException::class);
@@ -88,9 +81,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         ]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aValidInputCanBeVerified(): void
     {
         // Given

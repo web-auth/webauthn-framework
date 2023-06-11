@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use ParagonIE\ConstantTime\Base64;
+use Webauthn\Util\Base64;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
@@ -36,6 +36,6 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
             return $this->userHandle;
         }
 
-        return Base64::decode($this->userHandle, true);
+        return Base64::decode($this->userHandle);
     }
 }

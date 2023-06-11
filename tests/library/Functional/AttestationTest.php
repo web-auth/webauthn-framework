@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
  */
 final class AttestationTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function aResponseCannotBeLoaded(): void
     {
         static::expectException(InvalidDataException::class);
@@ -30,9 +28,7 @@ final class AttestationTest extends AbstractTestCase
             ->load($response);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAttestationSignedWithEcDSA521ShouldBeVerified(): void
     {
         $publicKeyCredentialDescriptor = null;
@@ -43,8 +39,7 @@ final class AttestationTest extends AbstractTestCase
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $this->getAuthenticatorAttestationResponseValidator()
             ->check(
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialCreationOptions,

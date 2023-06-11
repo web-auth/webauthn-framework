@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -15,9 +16,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
  */
 final class AuthenticationExtensionsClientTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
@@ -27,9 +26,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
         static::assertSame('["value"]', json_encode($extension, JSON_THROW_ON_ERROR));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);
@@ -42,9 +39,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
         static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
         $extension = new AuthenticationExtension('name', ['value']);

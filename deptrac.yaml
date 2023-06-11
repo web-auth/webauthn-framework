@@ -33,7 +33,8 @@ parameters:
   ruleset:
     MetadataService:
       - 'Vendors'
-    UX: ~
+    UX:
+      - 'Vendors'
     Webauthn:
       - 'Vendors'
       - 'MetadataService'
@@ -41,6 +42,7 @@ parameters:
       - 'Vendors'
       - 'Webauthn'
       - 'MetadataService'
+    StimulusBundle:
   skip_violations:
     Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator:
       - Webauthn\Util\CoseSignatureFixer

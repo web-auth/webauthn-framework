@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
  */
 final class AssertionTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
@@ -53,11 +51,9 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'localhost',
@@ -66,9 +62,7 @@ final class AssertionTest extends AbstractTestCase
         static::assertSame(123, $publicKeyCredentialSource->getCounter());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
@@ -104,11 +98,9 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'localhost',
@@ -117,9 +109,7 @@ final class AssertionTest extends AbstractTestCase
         static::assertSame(148, $publicKeyCredentialSource->getCounter());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAssertionWithUserHandleCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
@@ -155,11 +145,9 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $credentialRepository->saveCredentialSource($publicKeyCredentialSource);
-        $this->getAuthenticatorAssertionResponseValidator($credentialRepository)
+        $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
-                $publicKeyCredential->getRawId(),
+                $publicKeyCredentialSource,
                 $publicKeyCredential->getResponse(),
                 $publicKeyCredentialRequestOptions,
                 'spomky-webauthn.herokuapp.com',

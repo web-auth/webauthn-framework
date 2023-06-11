@@ -3,22 +3,29 @@
     "description": "Webauthn integration for Symfony",
     "license": "MIT",
     "version": "1.0.0",
+    "main": "dist/controller.js",
+    "types": "dist/controller.d.ts",
     "symfony": {
         "controllers": {
             "webauthn": {
                 "main": "dist/controller.js",
+                "name": "web-auth/webauthn-stimulus",
                 "webpackMode": "eager",
                 "fetch": "eager",
                 "enabled": true
             }
+        },
+        "importmap": {
+            "@hotwired/stimulus": "^3.0.0",
+            "@simplewebauthn/browser": "^7.0.0"
         }
     },
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^6.0.0"
+        "@simplewebauthn/browser": "^7.0.0"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^6.0.0"
+        "@simplewebauthn/browser": "^7.0.0"
     }
 }

@@ -15,14 +15,12 @@ use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEve
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
 final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorAttestationResponseValidator
 {
     public function __construct(
         AttestationStatementSupportManager $attestationStatementSupportManager,
-        PublicKeyCredentialSourceRepository $publicKeyCredentialSource,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?EventDispatcherInterface $eventDispatcher
@@ -36,7 +34,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
                 BaseAuthenticatorAttestationResponseValidator::class
             )
         );
-        parent::__construct($attestationStatementSupportManager, $publicKeyCredentialSource, $tokenBindingHandler, $extensionOutputCheckerHandler, $eventDispatcher);
+        parent::__construct($attestationStatementSupportManager, null, $tokenBindingHandler, $extensionOutputCheckerHandler, $eventDispatcher);
     }
 
     protected function createAuthenticatorAttestationResponseValidationSucceededEvent(

@@ -37,6 +37,12 @@
             "Webauthn\\MetadataService\\": "src/"
         }
     },
+    "extra": {
+        "thanks": {
+            "name": "web-auth/webauthn-framework",
+            "url": "https://github.com/web-auth/webauthn-framework"
+        }
+    },
     "suggest": {
         "psr/clock-implementation": "As of 4.5.x, the PSR Clock implementation will replace lcobucci/clock",
         "psr/log-implementation": "Recommended to receive logs from the library",

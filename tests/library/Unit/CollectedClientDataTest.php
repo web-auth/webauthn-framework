@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\CollectedClientData;
 
@@ -13,9 +14,7 @@ use Webauthn\CollectedClientData;
  */
 final class CollectedClientDataTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anCollectedClientDataCanBeCreatedAndValueAccessed(): void
     {
         $collectedClientData = new CollectedClientData(

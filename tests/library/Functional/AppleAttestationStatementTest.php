@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use Cose\Algorithms;
 use DateTimeImmutable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -16,16 +17,13 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use Webauthn\Tests\MemoryPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
  */
 final class AppleAttestationStatementTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAppleAttestationCanBeVerified(): void
     {
         $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));
@@ -46,8 +44,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             "type": "public-key"
         }');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
-        $credentialRepository = new MemoryPublicKeyCredentialSourceRepository();
-        $this->getAuthenticatorAttestationResponseValidator($credentialRepository)
+        $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
         static::assertSame(

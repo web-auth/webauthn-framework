@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticatorSelectionCriteria;
 
@@ -13,24 +14,22 @@ use Webauthn\AuthenticatorSelectionCriteria;
  */
 final class AuthenticatorSelectionCriteriaTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
     {
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
             ->setAuthenticatorAttachment('authenticator_attachment')
             ->setResidentKey(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED)
             ->setUserVerification('user_verification')
-            ->setRequireResidentKey(true);
+            ->setRequireResidentKey(true)
+        ;
 
         static::assertSame('user_verification', $authenticatorSelectionCriteria->getUserVerification());
         static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->getAuthenticatorAttachment());
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertSame('required', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
-            // '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
         );
 
@@ -40,17 +39,14 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertSame('user_verification', $data->getUserVerification());
         static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());
-        static::assertSame('preferred', $data->getResidentKey());
+        static::assertSame('required', $data->getResidentKey());
         static::assertSame(
-            // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"preferred","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($data, JSON_THROW_ON_ERROR)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
     {
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create()
@@ -64,21 +60,19 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         static::assertTrue($authenticatorSelectionCriteria->isRequireResidentKey());
         static::assertSame('required', $authenticatorSelectionCriteria->getResidentKey());
         static::assertSame(
-            // '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
         );
 
         $data = AuthenticatorSelectionCriteria::createFromString(
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"resident_key"}'
+            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"required"}'
         );
         static::assertSame('user_verification', $data->getUserVerification());
         static::assertSame('authenticator_attachment', $data->getAuthenticatorAttachment());
         static::assertTrue($data->isRequireResidentKey());
-        static::assertSame('resident_key', $data->getResidentKey());
+        static::assertSame('required', $data->getResidentKey());
         static::assertSame(
-            // '{"requireResidentKey":false,"userVerification":"user_verification","residentKey":"resident_key","authenticatorAttachment":"authenticator_attachment"}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}',
+            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
             json_encode($data, JSON_THROW_ON_ERROR)
         );
     }

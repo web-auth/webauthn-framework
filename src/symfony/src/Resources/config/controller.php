@@ -8,11 +8,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
@@ -28,7 +28,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialCreationOptionsFactory::class),
             service(PublicKeyCredentialLoader::class),
             service(AuthenticatorAttestationResponseValidator::class),
-            service(PublicKeyCredentialSourceRepository::class),
+            service(PublicKeyCredentialSourceRepositoryInterface::class),
         ]);
     $container->set(DefaultFailureHandler::class);
     $container->set(DefaultSuccessHandler::class);

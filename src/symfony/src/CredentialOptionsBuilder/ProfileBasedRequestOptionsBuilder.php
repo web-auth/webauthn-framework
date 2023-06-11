@@ -12,7 +12,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -25,11 +26,22 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialUserEntityRepository $userEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository $credentialSourceRepository,
+        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly string $profile,
     ) {
+        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
+            trigger_deprecation(
+                'web-auth/webauthn-symfony-bundle',
+                '4.6.0',
+                sprintf(
+                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
+                    PublicKeyCredentialSourceRepositoryInterface::class,
+                    PublicKeyCredentialSourceRepository::class
+                )
+            );
+        }
     }
 
     public function getFromRequest(
@@ -81,9 +93,6 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
             [
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
-        );
-        $data instanceof ServerPublicKeyCredentialRequestOptionsRequest || throw new BadRequestHttpException(
-            'Invalid data'
         );
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {

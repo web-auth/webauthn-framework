@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -16,9 +17,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
  */
 final class PublicKeyCredentialRequestOptionsTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function anPublicKeyCredentialRequestOptionsCanBeCreatedAndValueAccessed(): void
     {
         $extensions = AuthenticationExtensionsClientInputs::create();

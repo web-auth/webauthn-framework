@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\TrustPath;
 
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
@@ -17,10 +18,9 @@ use Webauthn\TrustPath\TrustPathLoader;
 final class TrustPathTest extends TestCase
 {
     /**
-     * @test
-     *
      * @use CertificateTrustPath
      */
+    #[Test]
     public function aCertificateTrustPathCanBeCreated(): void
     {
         $tp = CertificateTrustPath::create(['cert#1']);
@@ -29,10 +29,9 @@ final class TrustPathTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @use EcdaaKeyIdTrustPath
      */
+    #[Test]
     public function anEcdaaKeyIdTrustPathCanBeCreated(): void
     {
         $tp = new EcdaaKeyIdTrustPath('id');
@@ -41,10 +40,9 @@ final class TrustPathTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @use TrustPathLoader
      */
+    #[Test]
     public function theLoaderCanLoadCustomTrustPath(): void
     {
         $trustPath = json_encode(new FooTrustPath(), JSON_THROW_ON_ERROR);
@@ -55,10 +53,9 @@ final class TrustPathTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @use TrustPathLoader
      */
+    #[Test]
     public function theLoaderCannotLoadUnsupportedTypeName(): void
     {
         $this->expectException(InvalidTrustPathException::class);
@@ -69,10 +66,9 @@ final class TrustPathTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @use TrustPathLoader
      */
+    #[Test]
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
         $this->expectException(InvalidTrustPathException::class);
@@ -85,10 +81,9 @@ final class TrustPathTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @use TrustPathLoader
      */
+    #[Test]
     public function theLoaderCanLoadNewTrustPathType(): void
     {
         $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'), JSON_THROW_ON_ERROR);

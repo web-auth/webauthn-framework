@@ -7,8 +7,8 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 use Http\Mock\Client;
 use Lcobucci\Clock\SystemClock;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -23,21 +23,17 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Unit\DummyMetadataStatementRepository;
-use Webauthn\Tests\Unit\DummyPublicKeyCredentialSourceRepository;
 
 /**
  * @internal
  */
 final class TPMAttestationStatementSupportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationStatementIsAValidECC(): void
     {
         //Given
         $metadataStatementRepository = new DummyMetadataStatementRepository();
-        $pkSourceRepository = new DummyPublicKeyCredentialSourceRepository();
         $attnManager = AttestationStatementSupportManager::create();
         $attnManager->add(TPMAttestationStatementSupport::create(SystemClock::fromSystemTimezone()));
         $attnManager->add(NoneAttestationStatementSupport::create());
@@ -52,14 +48,15 @@ final class TPMAttestationStatementSupportTest extends TestCase
         )->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
         $validator = AuthenticatorAttestationResponseValidator::create(
             $attnManager,
-            $pkSourceRepository,
+            null,
             null,
             ExtensionOutputCheckerHandler::create(),
-            new EventDispatcher()
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
-            new PhpCertificateChainValidator(new Client(), new Psr17Factory(), SystemClock::fromSystemTimezone())
+            new PhpCertificateChainValidator(new Client(
+                new Psr17Factory()
+            ), new Psr17Factory(), SystemClock::fromSystemTimezone())
         );
         //When
         $response = $pkLoader->load($data);

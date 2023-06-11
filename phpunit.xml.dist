@@ -1,59 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
     bootstrap="tests/bootstrap.php"
     colors="true"
 >
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-        <exclude>
-            <file>./src/Kernel.php</file>
-            <file>./src/Controller/SecurityController.php</file>
-        </exclude>
-    </coverage>
-
+    <coverage/>
     <testsuites>
         <testsuite name="all">
             <directory>tests/</directory>
         </testsuite>
-
-        <testsuite name="symfony">
-            <directory>tests/symfony</directory>
-        </testsuite>
-
-        <testsuite name="mds">
-            <directory>tests/MDS</directory>
-        </testsuite>
-
-        <testsuite name="framework">
-            <directory>tests/framework</directory>
-        </testsuite>
     </testsuites>
-
-    <!-- Run `composer require symfony/panther` before enabling this extension -->
-    <!--
-    <extensions>
-        <extension class="Symfony\Component\Panther\ServerExtension" />
-    </extensions>
-    -->
     <php>
         <ini name="display_errors" value="1"/>
         <ini name="error_reporting" value="-1"/>
         <server name="APP_ENV" value="test" force="true"/>
         <server name="SHELL_VERBOSITY" value="-1"/>
         <server name="SYMFONY_PHPUNIT_REMOVE" value=""/>
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
+        <server name="SYMFONY_PHPUNIT_VERSION" value="10.1"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
         <env name="APP_DEBUG" value="true"/>
         <server name="KERNEL_CLASS" value="Webauthn\Tests\Bundle\Functional\AppKernel"/>
-
         <ini name="memory_limit" value="-1"/>
     </php>
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-        <listener class="Symfony\Bridge\PhpUnit\CoverageListener"/>
-    </listeners>
+    <source>
+        <include>
+            <directory>src/</directory>
+        </include>
+    </source>
 </phpunit>

@@ -9,6 +9,7 @@ use Cose\Algorithms;
 use function count;
 use InvalidArgumentException;
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -43,9 +44,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $this->storage = static::getContainer()->get(CustomSessionStorage::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anExistingUserCanAskForOptionsUsingTheDedicatedController(): void
     {
         $this->logIn();
@@ -74,9 +73,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         static::assertSame('ok', $data['status']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withTheOptionAnExistingUserCanRegisterNewAnotherAuthenticator(): void
     {
         /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
@@ -139,9 +136,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         static::assertSame($numberOfRegisteredCredentials + 1, $newNumberOfRegisteredCredentials);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anExistingUserCanGetOptionsTestItsAuthenticators(): void
     {
         $this->logIn();

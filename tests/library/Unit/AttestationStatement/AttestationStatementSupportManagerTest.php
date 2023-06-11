@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\Exception\InvalidDataException;
@@ -13,9 +14,7 @@ use Webauthn\Exception\InvalidDataException;
  */
 final class AttestationStatementSupportManagerTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theAttestationFormatIsNotSupported(): void
     {
         $this->expectException(InvalidDataException::class);

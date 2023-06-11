@@ -38,7 +38,6 @@ use Webauthn\MetadataService\Service\ChainedMetadataServices;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\MetadataService\Service\StringMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
 use Webauthn\Tests\MockedRequestTrait;
@@ -83,13 +82,12 @@ abstract class AbstractTestCase extends TestCase
     }
 
     protected function getAuthenticatorAttestationResponseValidator(
-        PublicKeyCredentialSourceRepository $credentialRepository,
         ?ClientInterface $client = null
     ): AuthenticatorAttestationResponseValidator {
         if ($this->authenticatorAttestationResponseValidator === null) {
             $this->authenticatorAttestationResponseValidator = new AuthenticatorAttestationResponseValidator(
                 $this->getAttestationStatementSupportManager($client),
-                $credentialRepository,
+                null,
                 null,
                 new ExtensionOutputCheckerHandler()
             );
@@ -103,12 +101,11 @@ abstract class AbstractTestCase extends TestCase
         return $this->authenticatorAttestationResponseValidator;
     }
 
-    protected function getAuthenticatorAssertionResponseValidator(
-        PublicKeyCredentialSourceRepository $credentialRepository
-    ): AuthenticatorAssertionResponseValidator {
+    protected function getAuthenticatorAssertionResponseValidator(): AuthenticatorAssertionResponseValidator
+    {
         if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-                $credentialRepository,
+                null,
                 null,
                 new ExtensionOutputCheckerHandler(),
                 $this->getAlgorithmManager(),
@@ -144,7 +141,7 @@ abstract class AbstractTestCase extends TestCase
         ?ClientInterface $client
     ): AttestationStatementSupportManager {
         if ($client === null) {
-            $client = new Client();
+            $client = new Client(new Psr17Factory());
         }
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
@@ -196,7 +193,7 @@ abstract class AbstractTestCase extends TestCase
     private function getMetadataStatementRepository(?ClientInterface $client): MetadataStatementRepositoryInterface
     {
         if ($client === null) {
-            $client = new Client();
+            $client = new Client(new Psr17Factory());
         }
         if ($this->metadataStatementRepository === null) {
             $metadataService = new ChainedMetadataServices();
@@ -205,7 +202,7 @@ abstract class AbstractTestCase extends TestCase
             }
             foreach ($this->getDistantStatements() as $filename) {
                 $response = new Response(200, [], trim(file_get_contents($filename)));
-                $client = new Client();
+                $client = new Client(new Psr17Factory());
                 $client->addResponse($response);
 
                 $metadataService->addServices(
@@ -226,7 +223,7 @@ abstract class AbstractTestCase extends TestCase
             }
 
             //$response = new Response(200, [], trim(file_get_contents(__DIR__ . '/../../blob.jwt')));
-            //$client = new Client();
+            //$client = new Client(new Psr17Factory());
             //$client->addResponse($response);
             /*$metadataService->addServices(
                 FidoAllianceCompliantMetadataService::create(
@@ -267,7 +264,7 @@ abstract class AbstractTestCase extends TestCase
     private function getCertificateChainValidator(): CertificateChainValidator
     {
         if ($this->certificateChainValidator === null) {
-            $psr18Client = new Client();
+            $psr18Client = new Client(new Psr17Factory());
 
             $psr17Factory = new Psr17Factory();
             $this->certificateChainValidator = new PhpCertificateChainValidator(

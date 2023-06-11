@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -18,9 +19,7 @@ use Webauthn\Counter\CounterChecker;
  */
 final class CounterCheckerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theCounterCheckerIsCorrectlyAddedIfItExists(): void
     {
         //Given

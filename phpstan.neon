@@ -1,76 +1,7 @@
 parameters:
-    level: 8
+    level: max
     paths:
         - src
-    ignoreErrors:
-        - '#Call to function method_exists\(\) with Symfony\\Component\\HttpFoundation\\Request and .* will always evaluate to true\.#'
-        - '#Method Webauthn\\Bundle\\Security\\Storage\\OptionsStorage::get\(\) invoked with 1 parameter, 0 required\.#'
-        -
-            message: '#Class Webauthn\\CertificateChainChecker\\PhpCertificateChainChecker extends @final class Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator\.#'
-            path: src/webauthn/src/CertificateChainChecker/PhpCertificateChainChecker.php
-            count: 1
-        -
-            message: '#Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
-            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-            count: 4
-        -
-            message: '#Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension::.*\(\) has parameter \$config(s)? with no value type specified in iterable type array\.#'
-            path: src/symfony/src/DependencyInjection/WebauthnExtension.php
-            count: 1
-        -
-            message: '#Method Webauthn\\Bundle\\Security\\Authorization\\Voter\\IsUserPresentVoter::vote\(\) has parameter \$attributes with no value type specified in iterable type array\.#'
-            path: src/symfony/src/Security/Authorization/Voter/IsUserPresentVoter.php
-            count: 1
-        -
-            message: '#Method Webauthn\\Bundle\\Security\\Authorization\\Voter\\IsUserVerifiedVoter::vote\(\) has parameter \$attributes with no value type specified in iterable type array\.#'
-            path: src/symfony/src/Security/Authorization/Voter/IsUserVerifiedVoter.php
-            count: 1
-        -
-            message: '#Cannot call method (scalar|integer)Node\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null.#'
-            path: src/symfony/src/DependencyInjection/Configuration.php
-            count: 6
-        -
-            message: '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.#'
-            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-            count: 1
-        -
-            message: '#Access to deprecated property \$authenticatorSelection of class Webauthn\\Bundle\\Dto\\PublicKeyCredentialCreationOptionsRequest.*#'
-            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
-            count: 1
-        -
-            message: '#Access to deprecated property \$requireResidentKey of class Webauthn\\AuthenticatorSelectionCriteria\:\nWill be removed in 5\.0\. Please use residentKey instead#'
-            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-            count: 1
-        -
-            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
-            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-            count: 1
-        -
-            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
-            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
-            count: 1
-        -
-            message: '#Call to deprecated method setRequireResidentKey\(\) of class Webauthn\\AuthenticatorSelectionCriteria\:\nsince v4\.1\. Please use setResidentKey instead#'
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-            count: 1
-        -
-            message: '#.*ECDAA.*#'
-            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
-            count: 2
-        -
-            message: '#.*ECDAA.*#'
-            path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-            count: 2
-        -
-            message: '#Strict comparison using === between mixed and null will always evaluate to false\.#'
-            path: src/metadata-service/src/Statement/StatusReport.php
-            count: 1
-        - '#.*Binding.*#'
-        - '#Parameter \#\d+ \$.* of .* expects .*, .* given\.#'
-        - '#Property .* does not accept .*\|false\.#'
-        - '#Cannot access offset \d+ on array\|false\.#'
-        - '#Method .* should return string but returns string\|false\.#'
-        - '#Call to deprecated method getContentType\(\) of class Symfony\\Component\\HttpFoundation\\Request#'
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     checkUninitializedProperties: true
@@ -79,8 +10,4 @@ parameters:
         - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
 includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    - vendor/phpstan/phpstan-phpunit/rules.neon
-    - vendor/phpstan/phpstan-phpunit/extension.neon
-    - vendor/phpstan/phpstan-strict-rules/rules.neon
-    - vendor/ekino/phpstan-banned-code/extension.neon
+    - phpstan-baseline.neon

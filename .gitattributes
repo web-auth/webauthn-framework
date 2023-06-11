@@ -1,6 +1,7 @@
 * text=auto
 
 /.github export-ignore
+/bin export-ignore
 /tests export-ignore
 /.editorconfig export-ignore
 /.gitattributes export-ignore
@@ -14,6 +15,7 @@
 /jest.config.js export-ignore
 /Makefile export-ignore
 /phpstan.neon export-ignore
+/phpstan-baseline.neon export-ignore
 /phpunit.xml.dist export-ignore
 /rector.php export-ignore
 /rollup.config.js export-ignore

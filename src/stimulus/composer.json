@@ -21,8 +21,19 @@
     ],
     "require": {},
     "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Webauthn\\Stimulus\\": "src/"
+        }
+    },
     "conflict": {
         "symfony/flex": "<1.13"
+    },
+    "extra": {
+        "thanks": {
+            "name": "web-auth/webauthn-framework",
+            "url": "https://github.com/web-auth/webauthn-framework"
+        }
     },
     "minimum-stability": "dev"
 }

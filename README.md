@@ -8,6 +8,8 @@ Webauthn Framework
 [![Latest Unstable Version](https://poser.pugx.org/web-auth/webauthn-framework/v/unstable.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 [![License](https://poser.pugx.org/web-auth/webauthn-framework/license.png)](https://packagist.org/packages/web-auth/webauthn-framework)
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/web-auth/webauthn-framework/badge)](https://api.securityscorecards.dev/projects/github.com/web-auth/webauthn-framework)
+
 Webauthn defines an API enabling the creation and use of strong, attested, scoped, public key-based credentials by web
 applications, for the purpose of strongly authenticating users.
 
