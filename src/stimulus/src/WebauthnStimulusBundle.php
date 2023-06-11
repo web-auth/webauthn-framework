@@ -8,7 +8,7 @@ use function dirname;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-final class StimulusBundle extends Bundle
+final class WebauthnStimulusBundle extends Bundle
 {
     public function getPath(): string
     {
