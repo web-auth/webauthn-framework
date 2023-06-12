@@ -9,6 +9,7 @@ use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent as BaseAuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSource;
 
 /**
  * @final
@@ -16,7 +17,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 class AuthenticatorAssertionResponseValidationFailedEvent extends BaseAuthenticatorAssertionResponseValidationFailedEvent
 {
     public function __construct(
-        string $credentialId,
+        string|PublicKeyCredentialSource $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $request,
