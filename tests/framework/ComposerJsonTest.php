@@ -80,7 +80,7 @@ final class ComposerJsonTest extends TestCase
 
     private function getComposerDependencies(string $composerFilePath): array
     {
-        return $this->parseComposerFile($composerFilePath)['require'];
+        return $this->parseComposerFile($composerFilePath)['require'] ?? [];
     }
 
     private function getComposerPackageName(string $composerFilePath): string
