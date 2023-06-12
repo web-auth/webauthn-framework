@@ -56,7 +56,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
     }
 
     protected function createAuthenticatorAssertionResponseValidationFailedEvent(
-        string $credentialId,
+        string|PublicKeyCredentialSource $credentialId,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $request,
