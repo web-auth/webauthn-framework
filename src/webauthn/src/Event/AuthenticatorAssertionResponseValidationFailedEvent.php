@@ -8,11 +8,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSource;
 
 class AuthenticatorAssertionResponseValidationFailedEvent
 {
     public function __construct(
-        private readonly string $credentialId,
+        private readonly string|PublicKeyCredentialSource $credentialId,
         private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         public readonly ServerRequestInterface|string $host,
@@ -30,11 +31,23 @@ class AuthenticatorAssertionResponseValidationFailedEvent
                 )
             );
         }
+        if (! $this->credentialId instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.6.0',
+                'Passing a string for the argument "$credentialId" is deprecated since 4.6.0. Please set the PublicKeyCredentialSource instead.'
+            );
+        }
     }
 
     public function getCredentialId(): string
     {
-        return $this->credentialId;
+        return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId->getPublicKeyCredentialId() : $this->credentialId;
+    }
+
+    public function getCredential(): ?PublicKeyCredentialSource
+    {
+        return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId : null;
     }
 
     public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse

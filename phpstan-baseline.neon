@@ -1756,11 +1756,6 @@ parameters:
             path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$credentialId of method Webauthn\\\\AuthenticatorAssertionResponseValidator\\:\\:createAuthenticatorAssertionResponseValidationFailedEvent\\(\\) expects string, string\\|Webauthn\\\\PublicKeyCredentialSource given\\.$#"
-            count: 1
-            path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-        -
             message: "#^Parameter \\#1 \\$data of static method Cose\\\\Key\\\\Key\\:\\:create\\(\\) expects array\\<int\\|string, mixed\\>, array given\\.$#"
             count: 1
             path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
