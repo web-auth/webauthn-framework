@@ -917,6 +917,14 @@ parameters:
             path: src/symfony/src/Resources/config/services.php
 
         -
+            message: """
+                #^Class Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken implements deprecated interface Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnTokenInterface\\:
+                since 4\\.7\\.0, use \\{@see \\\\Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnTokenInterface\\} instead$#
+            """
+            count: 1
+            path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+
+        -
             message: "#^Parameter \\#1 \\$data of method Symfony\\\\Component\\\\Security\\\\Core\\\\Authentication\\\\Token\\\\AbstractToken\\:\\:__unserialize\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
@@ -948,6 +956,16 @@ parameters:
 
         -
             message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$firewallName \\(string\\) does not accept mixed\\.$#"
+            count: 1
+            path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+
+        -
+            message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isBackedUp \\(bool\\) does not accept mixed\\.$#"
+            count: 1
+            path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+
+        -
+            message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isBackupEligible \\(bool\\) does not accept mixed\\.$#"
             count: 1
             path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
