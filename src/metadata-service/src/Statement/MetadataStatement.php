@@ -132,7 +132,7 @@ class MetadataStatement implements JsonSerializable
      */
     private array $attestationCertificateKeyIdentifiers = [];
 
-    private AlternativeDescriptions $alternativeDescriptions;
+    private readonly AlternativeDescriptions $alternativeDescriptions;
 
     /**
      * @var string[]
