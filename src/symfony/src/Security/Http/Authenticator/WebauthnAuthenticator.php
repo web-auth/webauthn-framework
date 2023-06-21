@@ -140,7 +140,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $authData->getExtensions(),
             $credentialsBadge->getFirewallName(),
             $userBadge->getUser()
-                ->getRoles()
+                ->getRoles(),
+            $authData->isBackupEligible(),
+            $authData->isBackedUp(),
         );
         $token->setUser($userBadge->getUser());
         return $token;

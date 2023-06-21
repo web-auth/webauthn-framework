@@ -10,6 +10,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
+/**
+ * @deprecated since 4.7.0, use {@see \Webauthn\Bundle\Security\Authentication\Token\WebauthnTokenInterface} instead
+ */
 interface WebauthnTokenInterface extends TokenInterface
 {
     public function getCredentials(): PublicKeyCredentialDescriptor;
