@@ -69,6 +69,8 @@ final class AttestationTest extends AbstractTestCase
         );
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertFalse($authenticatorData->isUserVerified());
+        static::assertFalse($authenticatorData->isBackupEligible());
+        static::assertFalse($authenticatorData->isBackedUp());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
