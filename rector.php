@@ -19,8 +19,9 @@ return static function (RectorConfig $config): void {
     $config->import(SetList::DEAD_CODE);
     $config->import(LevelSetList::UP_TO_PHP_81);
     $config->import(SymfonyLevelSetList::UP_TO_SYMFONY_60);
-    $config->import(SymfonySetList::SYMFONY_CODE_QUALITY);
+    $config->import(SymfonySetList::SYMFONY_50_TYPES);
     $config->import(SymfonySetList::SYMFONY_52_VALIDATOR_ATTRIBUTES);
+    $config->import(SymfonySetList::SYMFONY_CODE_QUALITY);
     $config->import(SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION);
     $config->import(SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(DoctrineSetList::DOCTRINE_CODE_QUALITY);
@@ -38,6 +39,9 @@ return static function (RectorConfig $config): void {
         __DIR__ . '/tests/symfony/config/routing.php',
         RemoveUnusedPrivateMethodParameterRector::class => [
             __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
+        ],
+        ReadOnlyPropertyRector::class => [
+            __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
         ],
         ReadOnlyPropertyRector::class => [
             __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
