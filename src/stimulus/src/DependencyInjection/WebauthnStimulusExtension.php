@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * @internal
  */
-class StimulusExtension extends Extension implements PrependExtensionInterface
+class WebauthnStimulusExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container)
     {
