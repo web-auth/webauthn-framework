@@ -17,43 +17,53 @@ class default_1 extends Controller {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:request:options', { data });
-        const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
-        const respJson = await resp.response;
-        const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue);
-        const verificationResp = await this.fetch('POST', this.requestResultUrlValue, JSON.stringify(asseResp));
-        const verificationJSON = await verificationResp.response;
-        this._dispatchEvent('webauthn:request:response', { response: asseResp });
-        if (verificationJSON && verificationJSON.errorMessage === '') {
-            this._dispatchEvent('webauthn:request:success', verificationJSON);
-            if (this.requestSuccessRedirectUriValue) {
-                window.location.replace(this.requestSuccessRedirectUriValue);
+        try {
+            const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
+            const respJson = await resp.response;
+            const asseResp = await startAuthentication(respJson, this.useBrowserAutofillValue);
+            const verificationResp = await this.fetch('POST', this.requestResultUrlValue, JSON.stringify(asseResp));
+            const verificationJSON = await verificationResp.response;
+            this._dispatchEvent('webauthn:request:response', { response: asseResp });
+            if (verificationJSON && verificationJSON.errorMessage === '') {
+                this._dispatchEvent('webauthn:request:success', verificationJSON);
+                if (this.requestSuccessRedirectUriValue) {
+                    window.location.replace(this.requestSuccessRedirectUriValue);
+                }
+            }
+            else {
+                this._dispatchEvent('webauthn:request:failure', verificationJSON.errorMessage);
             }
         }
-        else {
-            this._dispatchEvent('webauthn:request:failure', verificationJSON.errorMessage);
+        catch (e) {
+            this._dispatchEvent('webauthn:request:failure', e);
         }
     }
     async signup(event) {
         event.preventDefault();
         const data = this._getData();
         this._dispatchEvent('webauthn:creation:options', { data });
-        const resp = await this.fetch('POST', this.creationOptionsUrlValue, JSON.stringify(data));
-        const respJson = await resp.response;
-        if (respJson.excludeCredentials === undefined) {
-            respJson.excludeCredentials = [];
-        }
-        const attResp = await startRegistration(respJson);
-        this._dispatchEvent('webauthn:creation:response', { response: attResp });
-        const verificationResp = await this.fetch('POST', this.creationResultUrlValue, JSON.stringify(attResp));
-        const verificationJSON = await verificationResp.response;
-        if (verificationJSON && verificationJSON.errorMessage === '') {
-            this._dispatchEvent('webauthn:creation:success', verificationJSON);
-            if (this.creationSuccessRedirectUriValue) {
-                window.location.replace(this.creationSuccessRedirectUriValue);
+        try {
+            const resp = await this.fetch('POST', this.creationOptionsUrlValue, JSON.stringify(data));
+            const respJson = await resp.response;
+            if (respJson.excludeCredentials === undefined) {
+                respJson.excludeCredentials = [];
+            }
+            const attResp = await startRegistration(respJson);
+            this._dispatchEvent('webauthn:creation:response', { response: attResp });
+            const verificationResp = await this.fetch('POST', this.creationResultUrlValue, JSON.stringify(attResp));
+            const verificationJSON = await verificationResp.response;
+            if (verificationJSON && verificationJSON.errorMessage === '') {
+                this._dispatchEvent('webauthn:creation:success', verificationJSON);
+                if (this.creationSuccessRedirectUriValue) {
+                    window.location.replace(this.creationSuccessRedirectUriValue);
+                }
+            }
+            else {
+                this._dispatchEvent('webauthn:creation:failure', verificationJSON.errorMessage);
             }
         }
-        else {
-            this._dispatchEvent('webauthn:creation:failure', verificationJSON.errorMessage);
+        catch (e) {
+            this._dispatchEvent('webauthn:request:failure', e);
         }
     }
     _dispatchEvent(name, payload) {
@@ -66,7 +76,7 @@ class default_1 extends Controller {
             xhr.responseType = "json";
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 300) {
+                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 401) {
                     resolve(xhr);
                 }
                 else {
