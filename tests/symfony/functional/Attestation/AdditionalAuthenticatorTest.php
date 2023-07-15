@@ -185,7 +185,9 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             100,
             null,
             $firewallName,
-            $user->getRoles()
+            $user->getRoles(),
+            true,
+            true
         );
         $token->setUser($user);
 

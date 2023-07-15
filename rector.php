@@ -34,11 +34,14 @@ return static function (RectorConfig $config): void {
     $config->import(PHPUnitLevelSetList::UP_TO_PHPUNIT_100);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
     $config->skip([
-        'src/symfony/src/DependencyInjection/Configuration.php',
-        'src/symfony/src/Routing/Loader.php',
-        'tests/symfony/config/routing.php',
+        __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
+        __DIR__ . '/src/symfony/src/Routing/Loader.php',
+        __DIR__ . '/tests/symfony/config/routing.php',
         RemoveUnusedPrivateMethodParameterRector::class => [
-            __DIR__ . '*/DependencyInjection/Configuration.php',
+            __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
+        ],
+        ReadOnlyPropertyRector::class => [
+            __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
         ],
         ReadOnlyPropertyRector::class => [
             __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',

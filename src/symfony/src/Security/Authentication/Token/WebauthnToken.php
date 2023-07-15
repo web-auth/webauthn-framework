@@ -30,7 +30,9 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private readonly int $signCount,
         private ?AuthenticationExtensionsClientOutputs $extensions,
         private readonly string $firewallName,
-        array $roles = []
+        array $roles = [],
+        private bool $isBackupEligible = false,
+        private bool $isBackedUp = false,
     ) {
         parent::__construct($roles);
     }
@@ -47,6 +49,8 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             json_encode($this->publicKeyCredentialOptions, JSON_THROW_ON_ERROR),
             $this->isUserPresent,
             $this->isUserVerified,
+            $this->isBackupEligible,
+            $this->isBackedUp,
             $this->reservedForFutureUse1,
             $this->reservedForFutureUse2,
             $this->signCount,
@@ -68,6 +72,8 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             $publicKeyCredentialOptions,
             $this->isUserPresent,
             $this->isUserVerified,
+            $this->isBackupEligible,
+            $this->isBackedUp,
             $this->reservedForFutureUse1,
             $this->reservedForFutureUse2,
             $this->signCount,
@@ -139,6 +145,16 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     public function getSignCount(): int
     {
         return $this->signCount;
+    }
+
+    public function isBackupEligible(): bool
+    {
+        return $this->isBackupEligible;
+    }
+
+    public function isBackedUp(): bool
+    {
+        return $this->isBackedUp;
     }
 
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs

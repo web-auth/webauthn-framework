@@ -1,0 +1,21 @@
+[files]
+extend-exclude = [
+    "tests/metadataServices/",
+    "tests/blob.jwt"
+]
+[default]
+extend-ignore-re = [
+    "'\\{\"id\":\".+\\}';",
+    "'\\[\\{\".+\"\\}\\]';",
+    "'\\{\".+\"\\}';",
+    "'\\{\".+\\}'",
+    "'eHouz_Zi7-BmByHjJ_[A-Za-z0-9_-]+'",
+    "\"attestationObject\": \"[A-Za-z0-9_-]+\",",
+    "'mMihuIx9Luks[A-Za-z0-9_-]+'",
+    "\"Exemple FIDO2 authenticator de FIDO Alliance\""
+]
+[default.extend-words]
+cose = "cose"
+[default.extend-identifiers]
+"baDesc" = "baDesc"
+"getBaDesc" = "getBaDesc"

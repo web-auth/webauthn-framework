@@ -128,6 +128,12 @@ class PublicKeyCredentialLoader implements CanLogData
             $response,
             'Invalid data. The parameter "userHandle" is invalid'
         );
+        /** @var string[] $transports */
+        $transports = $response['transports'] ?? [];
+        is_array($transports) || throw InvalidDataException::create(
+            $response,
+            'Invalid data. The parameter "transports" is invalid'
+        );
         switch (true) {
             case array_key_exists('attestationObject', $response):
                 is_string($response['attestationObject']) || throw InvalidDataException::create(
@@ -138,7 +144,7 @@ class PublicKeyCredentialLoader implements CanLogData
 
                 return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson(
                     $response['clientDataJSON']
-                ), $attestationObject);
+                ), $attestationObject, $transports);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
                 $authDataLoader = AuthenticatorDataLoader::create();
                 $authData = Base64UrlSafe::decodeNoPadding($response['authenticatorData']);

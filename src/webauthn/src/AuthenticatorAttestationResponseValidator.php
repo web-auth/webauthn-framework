@@ -263,7 +263,8 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 $attestedCredentialData,
                 $attestationObject,
                 $publicKeyCredentialCreationOptions->getUser()
-                    ->getId()
+                    ->getId(),
+                $authenticatorAttestationResponse->getTransports()
             );
             $this->logger->info('The attestation is valid');
             $this->logger->debug('Public Key Credential Source', [
@@ -471,11 +472,15 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         }
     }
 
+    /**
+     * @param string[] $transports
+     */
     private function createPublicKeyCredentialSource(
         string $credentialId,
         AttestedCredentialData $attestedCredentialData,
         AttestationObject $attestationObject,
-        string $userHandle
+        string $userHandle,
+        array $transports
     ): PublicKeyCredentialSource {
         $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
         $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
@@ -484,7 +489,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         return new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            [],
+            $transports,
             $attestationObject->getAttStmt()
                 ->getType(),
             $attestationObject->getAttStmt()
