@@ -31,8 +31,8 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private ?AuthenticationExtensionsClientOutputs $extensions,
         private readonly string $firewallName,
         array $roles = [],
-        private bool $isBackupEligible = false,
-        private bool $isBackedUp = false,
+        private readonly bool $isBackupEligible = false,
+        private readonly bool $isBackedUp = false,
     ) {
         parent::__construct($roles);
     }
