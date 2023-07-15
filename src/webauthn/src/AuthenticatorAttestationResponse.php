@@ -11,9 +11,13 @@ use Webauthn\AttestationStatement\AttestationObject;
  */
 class AuthenticatorAttestationResponse extends AuthenticatorResponse
 {
+    /**
+     * @param string[] $transports
+     */
     public function __construct(
         CollectedClientData $clientDataJSON,
-        private readonly AttestationObject $attestationObject
+        private readonly AttestationObject $attestationObject,
+        private readonly array $transports = []
     ) {
         parent::__construct($clientDataJSON);
     }
@@ -21,5 +25,13 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
     public function getAttestationObject(): AttestationObject
     {
         return $this->attestationObject;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTransports(): array
+    {
+        return $this->transports;
     }
 }
