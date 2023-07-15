@@ -5,38 +5,25 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function array_key_exists;
-use CBOR\Decoder;
-use CBOR\MapObject;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
-use function ord;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Uid\Uuid;
 use Throwable;
-use function unpack;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\Util\Base64;
 
 class PublicKeyCredentialLoader implements CanLogData
 {
-    private const FLAG_AT = 0b01000000;
-
-    private const FLAG_ED = 0b10000000;
-
-    private readonly Decoder $decoder;
-
     private LoggerInterface $logger;
 
     public function __construct(
         private readonly AttestationObjectLoader $attestationObjectLoader
     ) {
-        $this->decoder = Decoder::create();
         $this->logger = new NullLogger();
     }
 
@@ -145,7 +132,7 @@ class PublicKeyCredentialLoader implements CanLogData
             case array_key_exists('attestationObject', $response):
                 is_string($response['attestationObject']) || throw InvalidDataException::create(
                     $response,
-                    'Invalid data. The parameter "attestationObject   " is invalid'
+                    'Invalid data. The parameter "attestationObject" is invalid'
                 );
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
@@ -153,50 +140,9 @@ class PublicKeyCredentialLoader implements CanLogData
                     $response['clientDataJSON']
                 ), $attestationObject);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
+                $authDataLoader = AuthenticatorDataLoader::create();
                 $authData = Base64UrlSafe::decodeNoPadding($response['authenticatorData']);
-
-                $authDataStream = new StringStream($authData);
-                $rp_id_hash = $authDataStream->read(32);
-                $flags = $authDataStream->read(1);
-                $signCount = $authDataStream->read(4);
-                $signCount = unpack('N', $signCount);
-
-                $attestedCredentialData = null;
-                if (0 !== (ord($flags) & self::FLAG_AT)) {
-                    $aaguid = Uuid::fromBinary($authDataStream->read(16));
-                    $credentialLength = $authDataStream->read(2);
-                    $credentialLength = unpack('n', $credentialLength);
-                    $credentialId = $authDataStream->read($credentialLength[1]);
-                    $credentialPublicKey = $this->decoder->decode($authDataStream);
-                    $credentialPublicKey instanceof MapObject || throw InvalidDataException::create(
-                        $authData,
-                        'The data does not contain a valid credential public key.'
-                    );
-                    $attestedCredentialData = new AttestedCredentialData(
-                        $aaguid,
-                        $credentialId,
-                        (string) $credentialPublicKey
-                    );
-                }
-
-                $extension = null;
-                if (0 !== (ord($flags) & self::FLAG_ED)) {
-                    $extension = $this->decoder->decode($authDataStream);
-                    $extension = AuthenticationExtensionsClientOutputsLoader::load($extension);
-                }
-                $authDataStream->isEOF() || throw InvalidDataException::create(
-                    $authData,
-                    'Invalid authentication data. Presence of extra bytes.'
-                );
-                $authDataStream->close();
-                $authenticatorData = new AuthenticatorData(
-                    $authData,
-                    $rp_id_hash,
-                    $flags,
-                    $signCount[1],
-                    $attestedCredentialData,
-                    $extension
-                );
+                $authenticatorData = $authDataLoader->load($authData);
 
                 try {
                     $signature = Base64::decode($response['signature']);

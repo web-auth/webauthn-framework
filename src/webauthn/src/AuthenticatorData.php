@@ -12,17 +12,17 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
  */
 class AuthenticatorData
 {
-    private const FLAG_UP = 0b00000001;
+    final public const FLAG_UP = 0b00000001;
 
-    private const FLAG_RFU1 = 0b00000010;
+    final public const FLAG_RFU1 = 0b00000010;
 
-    private const FLAG_UV = 0b00000100;
+    final public const FLAG_UV = 0b00000100;
 
-    private const FLAG_RFU2 = 0b00111000;
+    final public const FLAG_RFU2 = 0b00111000;
 
-    private const FLAG_AT = 0b01000000;
+    final public const FLAG_AT = 0b01000000;
 
-    private const FLAG_ED = 0b10000000;
+    final public const FLAG_ED = 0b10000000;
 
     public function __construct(
         protected string $authData,

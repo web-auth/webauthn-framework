@@ -1502,11 +1502,6 @@ parameters:
             path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
 
         -
-            message: "#^Cannot access offset 1 on array\\|false\\.$#"
-            count: 3
-            path: src/webauthn/src/AttestationStatement/AttestationObjectLoader.php
-
-        -
             message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\TrustPath\\\\TrustPathLoader\\:\\:loadTrustPath\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/AttestationStatement/AttestationStatement.php
@@ -1837,6 +1832,31 @@ parameters:
             path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
 
         -
+            message: "#^Cannot access offset 1 on array\\|false\\.$#"
+            count: 2
+            path: src/webauthn/src/AuthenticatorDataLoader.php
+
+        -
+            message: "#^Parameter \\#1 \\$search of function str_replace expects array\\|string, string\\|false given\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorDataLoader.php
+
+        -
+            message: "#^Parameter \\#2 \\$callback of function array_reduce expects callable\\(string, mixed\\)\\: string, Closure\\(string, string\\)\\: non\\-empty\\-string given\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorDataLoader.php
+
+        -
+            message: "#^Parameter \\#2 \\$needle of function mb_strpos expects string, string\\|false given\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorDataLoader.php
+
+        -
+            message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|false given\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorDataLoader.php
+
+        -
             message: """
                 #^Access to deprecated property \\$requireResidentKey of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
                 Will be removed in 5\\.0\\. Please use residentKey instead$#
@@ -1889,11 +1909,6 @@ parameters:
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
-
-        -
-            message: "#^Cannot access offset 1 on array\\|false\\.$#"
-            count: 2
-            path: src/webauthn/src/PublicKeyCredentialLoader.php
 
         -
             message: "#^Parameter \\#1 \\$json of method Webauthn\\\\PublicKeyCredentialLoader\\:\\:loadArray\\(\\) expects array, mixed given\\.$#"
