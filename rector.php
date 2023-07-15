@@ -7,7 +7,7 @@ use Rector\Core\ValueObject\PhpVersion;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodParameterRector;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
-use Rector\PHPUnit\Rector\Class_\PreferPHPUnitThisCallRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
 use Rector\PHPUnit\Set\PHPUnitLevelSetList;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
@@ -39,9 +39,6 @@ return static function (RectorConfig $config): void {
         __DIR__ . '/tests/symfony/config/routing.php',
         RemoveUnusedPrivateMethodParameterRector::class => [
             __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
-        ],
-        ReadOnlyPropertyRector::class => [
-            __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
         ],
         ReadOnlyPropertyRector::class => [
             __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
