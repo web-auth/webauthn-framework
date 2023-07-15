@@ -54,7 +54,7 @@ export default class extends Controller {
         const data = this._getData();
 
         this._dispatchEvent('webauthn:request:options', {data});
-        
+
         try {
             const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
             const respJson = await resp.response;
