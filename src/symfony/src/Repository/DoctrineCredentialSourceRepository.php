@@ -6,12 +6,17 @@ namespace Webauthn\Bundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource, ServiceEntityRepositoryInterface
+/**
+ * @extends EntityRepository<PublicKeyCredentialSource>
+ */
+class DoctrineCredentialSourceRepository extends EntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource, ServiceEntityRepositoryInterface
 {
     private readonly EntityManagerInterface $manager;
 
@@ -30,6 +35,10 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
         ));
         $this->class = $class;
         $this->manager = $manager;
+
+        /** @var ClassMetadata<PublicKeyCredentialSource> $classMetadata */
+        $classMetadata = $manager->getClassMetadata($class);
+        parent::__construct($manager, $classMetadata);
     }
 
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
