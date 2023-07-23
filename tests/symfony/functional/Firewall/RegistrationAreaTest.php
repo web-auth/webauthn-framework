@@ -43,7 +43,7 @@ final class RegistrationAreaTest extends WebTestCase
     }
 
     #[Test]
-    public function aRequestWithoutUsernameCannotBeProcessed(): void
+    public function aRequestWithoutUsernameCanBeProcessed(): void
     {
         $content = [
             'displayName' => 'FOO',
@@ -56,14 +56,12 @@ final class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertResponseStatusCodeSame(401);
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('username: This value should not be blank.', $data['errorMessage']);
+        static::assertSame('ok', $data['status']);
+        static::assertResponseStatusCodeSame(200);
     }
 
     #[Test]
-    public function aRequestWithoutDisplayNameCannotBeProcessed(): void
+    public function aRequestWithoutDisplayNameCanBeProcessed(): void
     {
         $content = [
             'username' => 'foo',
@@ -76,10 +74,8 @@ final class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertResponseStatusCodeSame(401);
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
+        static::assertSame('ok', $data['status']);
+        static::assertResponseStatusCodeSame(200);
     }
 
     #[Test]
