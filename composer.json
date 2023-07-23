@@ -3,7 +3,15 @@
     "description": "FIDO2/Webauthn library for PHP and Symfony Bundle.",
     "type": "symfony-bundle",
     "license": "MIT",
-    "keywords": [],
+    "keywords": [
+        "FIDO",
+        "FIDO2",
+        "webauthn",
+        "symfony",
+        "symfony-bundle",
+        "symfony-ux",
+        "bundle"
+    ],
     "homepage": "https://github.com/web-auth/webauthn-framework",
     "authors": [
         {

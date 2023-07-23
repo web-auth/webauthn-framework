@@ -6,7 +6,10 @@
     "keywords": [
         "FIDO",
         "FIDO2",
-        "webauthn"
+        "webauthn",
+        "symfony",
+        "symfony-bundle",
+        "bundle"
     ],
     "homepage": "https://github.com/web-auth",
     "authors": [
