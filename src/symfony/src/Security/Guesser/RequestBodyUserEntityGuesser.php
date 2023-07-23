@@ -65,6 +65,12 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
         if (! $this->userEntityRepository instanceof CanRegisterUserEntity) {
             throw MissingUserEntityException::create('Unable to find the user entity');
         }
+        if ($dto->username === null || $dto->username === '') {
+            throw InvalidDataException::create($dto, 'The parameter "username" is missing or empty.');
+        }
+        if ($dto->displayName === null || $dto->displayName === '') {
+            throw InvalidDataException::create($dto, 'The parameter "displayName" is missing or empty.');
+        }
 
         return PublicKeyCredentialUserEntity::create(
             $dto->username,

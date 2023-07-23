@@ -1006,6 +1006,14 @@ parameters:
 
         -
             message: """
+                #^Call to deprecated method generateNextUserEntityId\\(\\) of class Webauthn\\\\Bundle\\\\Repository\\\\CanRegisterUserEntity\\:
+                since 4\\.7\\.0 and will be removed in 5\\.0\\.0\\. Please use Webauthn\\\\Bundle\\\\Repository\\\\CanGenerateUserEntity\\:\\:generateUserEntity\\(\\) instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/Security/Guesser/RequestBodyUserEntityGuesser.php
+
+        -
+            message: """
                 #^Call to deprecated method getContentType\\(\\) of class Symfony\\\\Component\\\\HttpFoundation\\\\Request\\:
                 since Symfony 6\\.2, use getContentTypeFormat\\(\\) instead$#
             """
