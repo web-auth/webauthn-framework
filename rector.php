@@ -27,9 +27,6 @@ return static function (RectorConfig $config): void {
     $config->import(DoctrineSetList::DOCTRINE_CODE_QUALITY);
     $config->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(PHPUnitSetList::PHPUNIT_CODE_QUALITY);
-    $config->import(PHPUnitSetList::PHPUNIT_EXCEPTION);
-    $config->import(PHPUnitSetList::REMOVE_MOCKS);
-    $config->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
     $config->import(PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(PHPUnitLevelSetList::UP_TO_PHPUNIT_100);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);

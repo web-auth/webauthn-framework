@@ -8,9 +8,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class ServerPublicKeyCredentialCreationOptionsRequest extends PublicKeyCredentialCreationOptionsRequest
 {
-    #[NotBlank]
-    public string $username = '';
+    #[NotBlank(allowNull: true)]
+    public ?string $username = null;
 
-    #[NotBlank]
-    public string $displayName = '';
+    #[NotBlank(allowNull: true)]
+    public ?string $displayName = null;
 }
