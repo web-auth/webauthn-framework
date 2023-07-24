@@ -1,5 +1,4 @@
-Webauthn Framework
-==================
+# Webauthn Framework
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Integrate/badge.svg)
 
