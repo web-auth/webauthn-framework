@@ -43,7 +43,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
 
         static::assertSame(
             '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null}',
-            json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES)
+            json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
         );
     }
 }
