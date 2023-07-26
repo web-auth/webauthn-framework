@@ -31,7 +31,7 @@
         "psr/log": "^1.0|^2.0|^3.0",
         "spomky-labs/cbor-php": "^3.0",
         "symfony/uid": "^6.1",
-        "web-auth/cose-lib": "^4.0.12",
+        "web-auth/cose-lib": "^4.2.3",
         "web-auth/metadata-service": "self.version"
     },
     "autoload": {

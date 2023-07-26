@@ -107,7 +107,7 @@ final class AuthenticatorDataLoader
         );
         $correctX = ByteStringObject::create($keyBytes);
         $correctKey = MapObject::create()
-            ->add(UnsignedIntegerObject::create(1), ByteStringObject::create('OKP'))
+            ->add(UnsignedIntegerObject::create(1), TextStringObject::create('OKP'))
             ->add(UnsignedIntegerObject::create(3), NegativeIntegerObject::create(-8))
             ->add(NegativeIntegerObject::create(-1), TextStringObject::create('Ed25519'))
             ->add(NegativeIntegerObject::create(-2), $correctX);
