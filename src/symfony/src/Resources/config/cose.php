@@ -20,6 +20,11 @@ use Cose\Algorithm\Signature\RSA\RS512;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return static function (ContainerConfigurator $container): void {
+    $deprecationData = [
+        'web-auth/webauthn-symfony-bundle',
+        '4.7.0',
+        'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.',
+    ];
     $container = $container->services()
         ->defaults()
         ->private()
@@ -34,11 +39,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(RS1::class);
     $container
         ->alias('webauthn.cose.algoritm.RS1', 'webauthn.cose.algorithm.RS1')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -46,11 +47,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(RS256::class);
     $container
         ->alias('webauthn.cose.algoritm.RS256', 'webauthn.cose.algorithm.RS256')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -58,11 +55,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(RS384::class);
     $container
         ->alias('webauthn.cose.algoritm.RS384', 'webauthn.cose.algorithm.RS384')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -70,11 +63,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(RS512::class);
     $container
         ->alias('webauthn.cose.algoritm.RS512', 'webauthn.cose.algorithm.RS512')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -82,11 +71,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(PS256::class);
     $container
         ->alias('webauthn.cose.algoritm.PS256', 'webauthn.cose.algorithm.PS256')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -94,11 +79,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(PS384::class);
     $container
         ->alias('webauthn.cose.algoritm.PS384', 'webauthn.cose.algorithm.PS384')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -106,11 +87,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(PS512::class);
     $container
         ->alias('webauthn.cose.algoritm.PS512', 'webauthn.cose.algorithm.PS512')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -118,11 +95,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(ES256K::class);
     $container
         ->alias('webauthn.cose.algoritm.ES256K', 'webauthn.cose.algorithm.ES256K')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -130,11 +103,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(ES256::class);
     $container
         ->alias('webauthn.cose.algoritm.ES256', 'webauthn.cose.algorithm.ES256')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -142,11 +111,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(ES384::class);
     $container
         ->alias('webauthn.cose.algoritm.ES384', 'webauthn.cose.algorithm.ES384')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -154,11 +119,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(ES512::class);
     $container
         ->alias('webauthn.cose.algoritm.ES512', 'webauthn.cose.algorithm.ES512')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -166,11 +127,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(Ed256::class);
     $container
         ->alias('webauthn.cose.algoritm.ED256', 'webauthn.cose.algorithm.ED256')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -178,11 +135,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(Ed512::class);
     $container
         ->alias('webauthn.cose.algoritm.ED512', 'webauthn.cose.algorithm.ED512')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 
     $container
@@ -190,10 +143,6 @@ return static function (ContainerConfigurator $container): void {
         ->class(Ed25519::class);
     $container
         ->alias('webauthn.cose.algoritm.Ed25519ph', 'webauthn.cose.algorithm.Ed25519ph')
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.7.0',
-            'The "%alias_id%" service alias is deprecated, use "%service_id%" instead.'
-        )
+        ->deprecate(...$deprecationData)
     ;
 };

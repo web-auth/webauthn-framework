@@ -40,10 +40,10 @@ export default class extends Controller {
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
-            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue ?? null,
             creationResultUrl: this.creationResultUrlValue,
             creationOptionsUrl: this.creationOptionsUrlValue,
-            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
+            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue ?? null,
         };
 
         this._dispatchEvent('webauthn:connect', { options });

@@ -7,7 +7,7 @@ namespace Webauthn\Bundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use RuntimeException;
+use InvalidArgumentException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -19,12 +19,12 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
 
     public function __construct(ManagerRegistry $registry, string $class)
     {
-        is_subclass_of($class, PublicKeyCredentialSource::class) || throw new RuntimeException(sprintf(
+        is_subclass_of($class, PublicKeyCredentialSource::class) || throw new InvalidArgumentException(sprintf(
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class
         ));
         $manager = $registry->getManagerForClass($class);
-        $manager instanceof EntityManagerInterface || throw new RuntimeException(sprintf(
+        $manager instanceof EntityManagerInterface || throw new InvalidArgumentException(sprintf(
             'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity\'s metadata.',
             $class
         ));

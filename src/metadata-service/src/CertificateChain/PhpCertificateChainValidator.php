@@ -216,16 +216,16 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
             $crlData = $response->getBody()
                 ->getContents();
             $crl = UnspecifiedType::fromDER($crlData)->asSequence();
-            count($crl) === 3 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
+            count($crl) === 3 || throw CertificateRevocationListException::create($url);
             $tbsCertList = $crl->at(0)
                 ->asSequence();
-            count($tbsCertList) >= 6 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
+            count($tbsCertList) >= 6 || throw CertificateRevocationListException::create($url);
             $list = $tbsCertList->at(5)
                 ->asSequence();
 
             return array_map(static function (UnspecifiedType $r) use ($url): string {
                 $sequence = $r->asSequence();
-                count($sequence) >= 1 || throw CertificateRevocationListException::create($url, 'Invalid CRL.');
+                count($sequence) >= 1 || throw CertificateRevocationListException::create($url);
                 return $sequence->at(0)
                     ->asInteger()
                     ->number();
