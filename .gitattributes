@@ -20,4 +20,5 @@
 /phpunit.xml.dist export-ignore
 /rector.php export-ignore
 /rollup.config.js export-ignore
+/sonar-project.properties export-ignore
 /tsconfig.json export-ignore
