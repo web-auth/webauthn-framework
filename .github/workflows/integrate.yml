@@ -5,7 +5,7 @@ name: "Integrate"
 on:
   push:
     branches:
-      - "*.x"
+      - "*.*.x"
   pull_request: null
 
 jobs:
