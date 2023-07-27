@@ -121,6 +121,7 @@ final class Configuration implements ConfigurationInterface
 
     private function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void
     {
+        $errorTemplate = 'Invalid value "%s"';
         /** @noRector Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector */
         $defaultCreationProfiles = [
             'default' => [
@@ -171,7 +172,7 @@ final class Configuration implements ConfigurationInterface
                 AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
                 AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
             ])
-            ->thenInvalid('Invalid value "%s"')
+            ->thenInvalid($errorTemplate)
             ->end()
             ->end()
             ->booleanNode('require_resident_key')
@@ -185,7 +186,7 @@ final class Configuration implements ConfigurationInterface
                 AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
                 AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             ])
-            ->thenInvalid('Invalid value "%s"')
+            ->thenInvalid($errorTemplate)
             ->end()
             ->end()
             ->scalarNode('resident_key')
@@ -197,7 +198,7 @@ final class Configuration implements ConfigurationInterface
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
                 AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
             ])
-            ->thenInvalid('Invalid value "%s"')
+            ->thenInvalid($errorTemplate)
             ->end()
             ->end()
             ->end()

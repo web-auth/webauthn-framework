@@ -16,7 +16,7 @@ final class CertificateRevocationListException extends MetadataServiceException
         parent::__construct($message, $previous);
     }
 
-    public static function create(string $url, string $message, ?Throwable $previous = null): self
+    public static function create(string $url, string $message = 'Invalid CRL.', ?Throwable $previous = null): self
     {
         return new self($url, $message, $previous);
     }

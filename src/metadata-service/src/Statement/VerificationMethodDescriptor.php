@@ -16,45 +16,58 @@ use Webauthn\MetadataService\Utils;
 class VerificationMethodDescriptor implements JsonSerializable
 {
     final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';
-    final public const USER_VERIFY_PRESENCE_INTERNAL_INT = 0x00000001 ;
+
+    final public const USER_VERIFY_PRESENCE_INTERNAL_INT = 0x00000001;
 
     final public const USER_VERIFY_FINGERPRINT_INTERNAL = 'fingerprint_internal';
-    final public const USER_VERIFY_FINGERPRINT_INTERNAL_INT = 0x00000002 ;
+
+    final public const USER_VERIFY_FINGERPRINT_INTERNAL_INT = 0x00000002;
 
     final public const USER_VERIFY_PASSCODE_INTERNAL = 'passcode_internal';
-    final public const USER_VERIFY_PASSCODE_INTERNAL_INT = 0x00000004 ;
+
+    final public const USER_VERIFY_PASSCODE_INTERNAL_INT = 0x00000004;
 
     final public const USER_VERIFY_VOICEPRINT_INTERNAL = 'voiceprint_internal';
-    final public const USER_VERIFY_VOICEPRINT_INTERNAL_INT = 0x00000008 ;
+
+    final public const USER_VERIFY_VOICEPRINT_INTERNAL_INT = 0x00000008;
 
     final public const USER_VERIFY_FACEPRINT_INTERNAL = 'faceprint_internal';
-    final public const USER_VERIFY_FACEPRINT_INTERNAL_INT = 0x00000010 ;
+
+    final public const USER_VERIFY_FACEPRINT_INTERNAL_INT = 0x00000010;
 
     final public const USER_VERIFY_LOCATION_INTERNAL = 'location_internal';
-    final public const USER_VERIFY_LOCATION_INTERNAL_INT = 0x00000020 ;
+
+    final public const USER_VERIFY_LOCATION_INTERNAL_INT = 0x00000020;
 
     final public const USER_VERIFY_EYEPRINT_INTERNAL = 'eyeprint_internal';
-    final public const USER_VERIFY_EYEPRINT_INTERNAL_INT = 0x00000040 ;
+
+    final public const USER_VERIFY_EYEPRINT_INTERNAL_INT = 0x00000040;
 
     final public const USER_VERIFY_PATTERN_INTERNAL = 'pattern_internal';
+
     final public const USER_VERIFY_PATTERN_INTERNAL_INT = 0x00000080;
 
     final public const USER_VERIFY_HANDPRINT_INTERNAL = 'handprint_internal';
-    final public const USER_VERIFY_HANDPRINT_INTERNAL_INT = 0x00000100 ;
+
+    final public const USER_VERIFY_HANDPRINT_INTERNAL_INT = 0x00000100;
 
     final public const USER_VERIFY_PASSCODE_EXTERNAL = 'passcode_external';
-    final public const USER_VERIFY_PASSCODE_EXTERNAL_INT = 0x00000800 ;
+
+    final public const USER_VERIFY_PASSCODE_EXTERNAL_INT = 0x00000800;
 
     final public const USER_VERIFY_PATTERN_EXTERNAL = 'pattern_external';
-    final public const USER_VERIFY_PATTERN_EXTERNAL_INT = 0x00001000 ;
+
+    final public const USER_VERIFY_PATTERN_EXTERNAL_INT = 0x00001000;
 
     final public const USER_VERIFY_NONE = 'none';
-    final public const USER_VERIFY_NONE_INT = 0x00000200 ;
+
+    final public const USER_VERIFY_NONE_INT = 0x00000200;
 
     final public const USER_VERIFY_ALL = 'all';
-    final public const USER_VERIFY_ALL_INT = 0x00000400 ;
 
-    final const USER_VERIFICATION_METHODS =[
+    final public const USER_VERIFY_ALL_INT = 0x00000400;
+
+    final public const USER_VERIFICATION_METHODS = [
         self::USER_VERIFY_PRESENCE_INTERNAL,
         self::USER_VERIFY_FINGERPRINT_INTERNAL,
         self::USER_VERIFY_PASSCODE_INTERNAL,
@@ -70,7 +83,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         self::USER_VERIFY_ALL,
     ];
 
-    final const USER_VERIFICATION_METHODS_INT = [
+    final public const USER_VERIFICATION_METHODS_INT = [
         self::USER_VERIFY_PRESENCE_INTERNAL_INT,
         self::USER_VERIFY_FINGERPRINT_INTERNAL_INT,
         self::USER_VERIFY_PASSCODE_INTERNAL_INT,

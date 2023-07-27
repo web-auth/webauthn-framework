@@ -144,6 +144,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
                 }
             }
         } catch (Throwable) {
+            // Nothing to do
         }
 
         $this->loaded = true;

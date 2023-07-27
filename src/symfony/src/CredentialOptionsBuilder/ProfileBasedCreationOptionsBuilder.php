@@ -6,8 +6,8 @@ namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
 use function count;
 use const FILTER_VALIDATE_BOOLEAN;
+use InvalidArgumentException;
 use function is_array;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -115,7 +115,7 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
             foreach ($errors as $error) {
                 $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
-            throw new RuntimeException(implode("\n", $messages));
+            throw new InvalidArgumentException(implode("\n", $messages));
         }
 
         return $data;

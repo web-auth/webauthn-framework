@@ -19,19 +19,24 @@ use Webauthn\MetadataService\Utils;
 class MetadataStatement implements JsonSerializable
 {
     final public const KEY_PROTECTION_SOFTWARE = 'software';
-    final public const KEY_PROTECTION_SOFTWARE_INT = 0x0001 ;
+
+    final public const KEY_PROTECTION_SOFTWARE_INT = 0x0001;
 
     final public const KEY_PROTECTION_HARDWARE = 'hardware';
-    final public const KEY_PROTECTION_HARDWARE_INT = 0x0002 ;
+
+    final public const KEY_PROTECTION_HARDWARE_INT = 0x0002;
 
     final public const KEY_PROTECTION_TEE = 'tee';
-    final public const KEY_PROTECTION_TEE_INT = 0x0004 ;
+
+    final public const KEY_PROTECTION_TEE_INT = 0x0004;
 
     final public const KEY_PROTECTION_SECURE_ELEMENT = 'secure_element';
-    final public const KEY_PROTECTION_SECURE_ELEMENT_INT = 0x0008 ;
+
+    final public const KEY_PROTECTION_SECURE_ELEMENT_INT = 0x0008;
 
     final public const KEY_PROTECTION_REMOTE_HANDLE = 'remote_handle';
-    final public const KEY_PROTECTION_REMOTE_HANDLE_INT = 0x0010 ;
+
+    final public const KEY_PROTECTION_REMOTE_HANDLE_INT = 0x0010;
 
     final public const KEY_PROTECTION_TYPES = [
         self::KEY_PROTECTION_SOFTWARE,
@@ -40,7 +45,6 @@ class MetadataStatement implements JsonSerializable
         self::KEY_PROTECTION_SECURE_ELEMENT,
         self::KEY_PROTECTION_REMOTE_HANDLE,
     ];
-
 
     final public const KEY_PROTECTION_TYPES_INT = [
         self::KEY_PROTECTION_SOFTWARE_INT,
@@ -51,13 +55,16 @@ class MetadataStatement implements JsonSerializable
     ];
 
     final public const MATCHER_PROTECTION_SOFTWARE = 'software';
-    final public const MATCHER_PROTECTION_SOFTWARE_INT = 0x0001 ;
+
+    final public const MATCHER_PROTECTION_SOFTWARE_INT = 0x0001;
 
     final public const MATCHER_PROTECTION_TEE = 'tee';
-    final public const MATCHER_PROTECTION_TEE_INT = 0x0002 ;
+
+    final public const MATCHER_PROTECTION_TEE_INT = 0x0002;
 
     final public const MATCHER_PROTECTION_ON_CHIP = 'on_chip';
-    final public const MATCHER_PROTECTION_ON_CHIP_INT = 0x0004 ;
+
+    final public const MATCHER_PROTECTION_ON_CHIP_INT = 0x0004;
 
     final public const MATCHER_PROTECTION_TYPES = [
         self::MATCHER_PROTECTION_SOFTWARE,
@@ -479,7 +486,9 @@ class MetadataStatement implements JsonSerializable
             $data['protocolFamily'],
             $data['schema'],
             array_map(static function ($upv): Version {
-                is_array($upv) || throw MetadataStatementLoadingException::create('Invalid Metadata Statement');
+                is_array($upv) || throw MetadataStatementLoadingException::create(
+                    'Invalid Metadata Statement. The parameter "upv" shall be a list of objects.'
+                );
 
                 return Version::createFromArray($upv);
             }, $data['upv']),
@@ -488,7 +497,7 @@ class MetadataStatement implements JsonSerializable
             $data['attestationTypes'],
             array_map(static function ($userVerificationDetails): VerificationMethodANDCombinations {
                 is_array($userVerificationDetails) || throw MetadataStatementLoadingException::create(
-                    'Invalid Metadata Statement'
+                    'Invalid Metadata Statement. The parameter "userVerificationDetails" shall be a list of objects.'
                 );
 
                 return VerificationMethodANDCombinations::createFromArray($userVerificationDetails);
@@ -515,7 +524,7 @@ class MetadataStatement implements JsonSerializable
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
             is_array($tcDisplayPNGCharacteristics) || throw MetadataStatementLoadingException::create(
-                'Invalid Metadata Statement'
+                'Invalid Metadata Statement. The parameter "tcDisplayPNGCharacteristics" shall be a list of objects.'
             );
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
                 is_array($tcDisplayPNGCharacteristic) || throw MetadataStatementLoadingException::create(

@@ -11,6 +11,10 @@ use function preg_replace;
 
 class CertificateToolbox
 {
+    private const PEM_HEADER = '-----BEGIN ';
+
+    private const PEM_FOOTER = '-----END ';
+
     /**
      * @param string[] $data
      *
@@ -23,21 +27,21 @@ class CertificateToolbox
 
     public static function fixPEMStructure(string $data, string $type = 'CERTIFICATE'): string
     {
-        if (str_contains($data, '-----BEGIN')) {
+        if (str_contains($data, self::PEM_HEADER)) {
             return trim($data);
         }
-        $pem = '-----BEGIN ' . $type . '-----' . PHP_EOL;
+        $pem = self::PEM_HEADER . $type . '-----' . PHP_EOL;
         $pem .= chunk_split($data, 64, PHP_EOL);
 
-        return $pem . ('-----END ' . $type . '-----' . PHP_EOL);
+        return $pem . (self::PEM_FOOTER . $type . '-----' . PHP_EOL);
     }
 
     public static function convertPEMToDER(string $data): string
     {
-        if (! str_contains($data, '-----BEGIN')) {
+        if (! str_contains($data, self::PEM_HEADER)) {
             return $data;
         }
-        $data = preg_replace('/[\-]{5}.*[\-]{5}[\r\n]*/', '', $data);
+        $data = preg_replace('/\-{5}.*\-{5}[\r\n]*/', '', $data);
         $data = preg_replace("/[\r\n]*/", '', $data);
 
         return Base64::decode(trim($data), true);
@@ -45,7 +49,7 @@ class CertificateToolbox
 
     public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string
     {
-        if (str_contains($data, '-----BEGIN')) {
+        if (str_contains($data, self::PEM_HEADER)) {
             return $data;
         }
         $der = self::unusedBytesFix($data);

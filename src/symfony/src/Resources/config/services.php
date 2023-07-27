@@ -34,6 +34,11 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 return static function (ContainerConfigurator $container): void {
+    $deprecationData = [
+        'web-auth/webauthn-symfony-bundle',
+        '4.3.0',
+        '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0',
+    ];
     $container = $container->services()
         ->defaults()
         ->private()
@@ -89,25 +94,13 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(IgnoreTokenBindingHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
     $container
         ->set(TokenBindingNotSupportedHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
     $container
         ->set(SecTokenBindingHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
 
     $container
         ->set(ThrowExceptionIfInvalid::class)

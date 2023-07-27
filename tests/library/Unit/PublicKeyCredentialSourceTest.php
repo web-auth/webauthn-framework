@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;

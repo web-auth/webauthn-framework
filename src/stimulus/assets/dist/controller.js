@@ -3,13 +3,14 @@ import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
 
 class default_1 extends Controller {
     connect() {
+        var _a, _b;
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
-            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            requestSuccessRedirectUri: (_a = this.requestSuccessRedirectUriValue) !== null && _a !== void 0 ? _a : null,
             creationResultUrl: this.creationResultUrlValue,
             creationOptionsUrl: this.creationOptionsUrlValue,
-            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
+            creationSuccessRedirectUri: (_b = this.creationSuccessRedirectUriValue) !== null && _b !== void 0 ? _b : null,
         };
         this._dispatchEvent('webauthn:connect', { options });
     }

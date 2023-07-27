@@ -16,6 +16,7 @@ class WebauthnStimulusExtension extends Extension implements PrependExtensionInt
 {
     public function load(array $configs, ContainerBuilder $container)
     {
+        // Nothing to do here. The bundle is only used to provide assets.
     }
 
     public function prepend(ContainerBuilder $container)
