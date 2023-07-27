@@ -6,7 +6,8 @@ on:
   push:
     branches:
       - "*.*.x"
-  pull_request: null
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   byte_level:
@@ -70,6 +71,8 @@ jobs:
 
       - name: "Checkout code"
         uses: "actions/checkout@v3.5.2"
+        with:
+          fetch-depth: 0
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -83,13 +86,14 @@ jobs:
       - name: "Execute tests (JS)"
         run: "make js"
 
-  #      - name: Send coverage to Coveralls
-  #        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
-  #        env:
-  #          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  #        run: |
-  #          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-  #          php ./php-coveralls.phar -v
+      - name: "Fix code coverage paths"
+        run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
+
+      - name: "SonarCloud Scan"
+        uses: "sonarsource/sonarcloud-github-action@master"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   static_analysis:
     name: "3️⃣ Static Analysis"
