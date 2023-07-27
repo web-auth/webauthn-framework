@@ -12,6 +12,7 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
+use Webauthn\Stimulus\WebauthnStimulusBundle;
 
 final class AppKernel extends Kernel
 {
@@ -36,6 +37,7 @@ final class AppKernel extends Kernel
             new MonologBundle(),
 
             new WebauthnBundle(),
+            new WebauthnStimulusBundle(),
         ];
     }
 
