@@ -41,7 +41,7 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
     {
         $this->loadData();
         $this->statement !== null || throw MetadataStatementLoadingException::create();
-        $aaguid = $this->statement->getAaguid();
+        $aaguid = $this->statement->aaguid;
         if ($aaguid === null) {
             yield from [];
         } else {
@@ -54,7 +54,7 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
         $this->loadData();
         $this->statement !== null || throw MetadataStatementLoadingException::create();
 
-        return $aaguid === $this->statement->getAaguid();
+        return $aaguid === $this->statement->aaguid;
     }
 
     public function get(string $aaguid): MetadataStatement
@@ -62,7 +62,7 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
         $this->loadData();
         $this->statement !== null || throw MetadataStatementLoadingException::create();
 
-        if ($aaguid === $this->statement->getAaguid()) {
+        if ($aaguid === $this->statement->aaguid) {
             $this->dispatcher->dispatch(MetadataStatementFound::create($this->statement));
 
             return $this->statement;

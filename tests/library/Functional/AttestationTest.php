@@ -38,34 +38,34 @@ final class AttestationTest extends AbstractTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check(
-                $publicKeyCredential->getResponse(),
+                $publicKeyCredential->response,
                 $publicKeyCredentialCreationOptions,
                 'webauthn.spomky-labs.com'
             );
-        static::assertSame(['usb'], $publicKeyCredentialSource->getTransports());
+        static::assertSame(['usb'], $publicKeyCredentialSource->transports);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(
-            $publicKeyCredentialSource->getTransports()
+            $publicKeyCredentialSource->transports
         );
         static::assertSame(
             hex2bin('4787c0563f68b2055564bef21dfb4f7953a68e89b7c70e192caec3b7ff26cce3'),
-            Base64UrlSafe::decode($publicKeyCredential->getId())
+            Base64UrlSafe::decode($publicKeyCredential->id)
         );
         static::assertSame(
             hex2bin('4787c0563f68b2055564bef21dfb4f7953a68e89b7c70e192caec3b7ff26cce3'),
-            $publicKeyCredentialDescriptor->getId()
+            $publicKeyCredentialDescriptor->id
         );
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            $publicKeyCredentialDescriptor->getType()
+            $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->getTransports());
+        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
-        $authenticatorData = $publicKeyCredential->getResponse()
-            ->getAttestationObject()
-            ->getAuthData();
+        $authenticatorData = $publicKeyCredential->response
+            ->attestationObject
+            ->authData;
         static::assertSame(
             hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'),
             $authenticatorData->getRpIdHash()

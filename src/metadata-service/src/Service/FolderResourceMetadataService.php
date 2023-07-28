@@ -54,7 +54,7 @@ final class FolderResourceMetadataService implements MetadataService
         $filename = $this->rootPath . DIRECTORY_SEPARATOR . $aaguid;
         $data = trim(file_get_contents($filename));
         $mds = MetadataStatement::createFromString($data);
-        $mds->getAaguid() !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
+        $mds->aaguid !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
 
         return $mds;
     }

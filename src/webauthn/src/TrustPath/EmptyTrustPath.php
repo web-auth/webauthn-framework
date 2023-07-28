@@ -26,6 +26,6 @@ final class EmptyTrustPath implements TrustPath
      */
     public static function createFromArray(array $data): static
     {
-        return new self();
+        return self::create();
     }
 }

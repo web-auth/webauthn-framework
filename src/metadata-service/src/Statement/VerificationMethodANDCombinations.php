@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function is_array;
 use JsonSerializable;
-use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
 /**
  * @final
@@ -14,10 +12,24 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 class VerificationMethodANDCombinations implements JsonSerializable
 {
     /**
-     * @var VerificationMethodDescriptor[]
+     * @param VerificationMethodDescriptor[] $verificationMethods
      */
-    private array $verificationMethods = [];
+    public function __construct(
+        public array $verificationMethods = []
+    ) {
+    }
 
+    /**
+     * @param VerificationMethodDescriptor[] $verificationMethods
+     */
+    public static function create(array $verificationMethods): self
+    {
+        return new self($verificationMethods);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addVerificationMethodDescriptor(VerificationMethodDescriptor $verificationMethodDescriptor): self
     {
         $this->verificationMethods[] = $verificationMethodDescriptor;
@@ -27,6 +39,7 @@ class VerificationMethodANDCombinations implements JsonSerializable
 
     /**
      * @return VerificationMethodDescriptor[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getVerificationMethods(): array
     {
@@ -38,14 +51,14 @@ class VerificationMethodANDCombinations implements JsonSerializable
      */
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-
-        foreach ($data as $datum) {
-            is_array($datum) || throw MetadataStatementLoadingException::create('Invalid data');
-            $object->addVerificationMethodDescriptor(VerificationMethodDescriptor::createFromArray($datum));
-        }
-
-        return $object;
+        return self::create(
+            array_map(
+                static fn (array $datum): VerificationMethodDescriptor => VerificationMethodDescriptor::createFromArray(
+                    $datum
+                ),
+                $data
+            )
+        );
     }
 
     /**

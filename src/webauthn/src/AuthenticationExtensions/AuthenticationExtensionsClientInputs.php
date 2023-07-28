@@ -22,17 +22,30 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
     /**
      * @var AuthenticationExtension[]
      */
-    private array $extensions = [];
+    public array $extensions = [];
 
-    public static function create(): self
+    /**
+     * @param AuthenticationExtension[] $extensions
+     */
+    public function __construct(array $extensions = [])
     {
-        return new self();
+        foreach ($extensions as $extension) {
+            $this->extensions[$extension->name] = $extension;
+        }
     }
 
+    public static function create(array $extensions = []): self
+    {
+        return new self($extensions);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function add(AuthenticationExtension ...$extensions): self
     {
         foreach ($extensions as $extension) {
-            $this->extensions[$extension->name()] = $extension;
+            $this->extensions[$extension->name] = $extension;
         }
 
         return $this;
@@ -43,12 +56,16 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     public static function createFromArray(array $json): self
     {
-        $object = new self();
-        foreach ($json as $k => $v) {
-            $object->add(AuthenticationExtension::create($k, $v));
-        }
-
-        return $object;
+        return self::create(
+            array_map(
+                static fn (string $key, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
+                    $key,
+                    $value
+                ),
+                array_keys($json),
+                $json
+            )
+        );
     }
 
     public function has(string $key): bool

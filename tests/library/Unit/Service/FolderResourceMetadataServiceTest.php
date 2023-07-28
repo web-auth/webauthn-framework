@@ -53,7 +53,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
         $mds = $service->get('9debdbfd-14dd-4e8d-877b-4a6e35ddb375');
 
         // Then
-        static::assertSame('9debdbfd-14dd-4e8d-877b-4a6e35ddb375', $mds->getAaguid());
+        static::assertSame('9debdbfd-14dd-4e8d-877b-4a6e35ddb375', $mds->aaguid);
     }
 
     #[Test]

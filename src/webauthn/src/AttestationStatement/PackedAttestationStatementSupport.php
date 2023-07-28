@@ -91,7 +91,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
 
         return match (true) {
             $trustPath instanceof CertificateTrustPath => $this->processWithCertificate(
@@ -130,7 +130,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -165,7 +165,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $attestationStatement = AttestationStatement::createSelf(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new EmptyTrustPath()
+            EmptyTrustPath::create()
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -220,7 +220,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         // id-fido-gen-ce-aaguid OID check
         if (in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true)) {
             hash_equals(
-                $attestedCredentialData->getAaguid()
+                $attestedCredentialData->aaguid
                     ->toBinary(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ) || throw AttestationStatementVerificationException::create(
@@ -235,7 +235,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AuthenticatorData $authenticatorData,
         CertificateTrustPath $trustPath
     ): bool {
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         // Check leaf certificate
         $this->checkCertificate($certificates[0], $authenticatorData);
@@ -266,11 +266,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential available'
         );
-        $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
+        $credentialPublicKey = $attestedCredentialData->credentialPublicKey;
         $credentialPublicKey !== null || throw AttestationStatementVerificationException::create(
             'No credential public key available'
         );

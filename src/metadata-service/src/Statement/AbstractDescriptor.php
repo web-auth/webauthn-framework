@@ -9,28 +9,29 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 
 abstract class AbstractDescriptor implements JsonSerializable
 {
-    private readonly ?int $maxRetries;
-
-    private readonly ?int $blockSlowdown;
-
-    public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
+    public function __construct(
+        public readonly ?int $maxRetries = null,
+        public readonly ?int $blockSlowdown = null
+    ) {
         $maxRetries >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "maxRetries" must be a positive integer'
         );
         $blockSlowdown >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "blockSlowdown" must be a positive integer'
         );
-
-        $this->maxRetries = $maxRetries;
-        $this->blockSlowdown = $blockSlowdown;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMaxRetries(): ?int
     {
         return $this->maxRetries;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getBlockSlowdown(): ?int
     {
         return $this->blockSlowdown;

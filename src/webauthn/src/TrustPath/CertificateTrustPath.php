@@ -14,7 +14,7 @@ final class CertificateTrustPath implements TrustPath
      * @param string[] $certificates
      */
     public function __construct(
-        private readonly array $certificates
+        public readonly array $certificates
     ) {
     }
 
@@ -28,6 +28,7 @@ final class CertificateTrustPath implements TrustPath
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getCertificates(): array
     {
@@ -45,7 +46,7 @@ final class CertificateTrustPath implements TrustPath
             'The trust path type is invalid. The parameter "x5c" shall contain strings.'
         );
 
-        return new self($x5c);
+        return self::create($x5c);
     }
 
     /**

@@ -146,7 +146,7 @@ abstract class AbstractTestCase extends TestCase
         $attestationStatementSupportManager = new AttestationStatementSupportManager();
         $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
         $attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport());
+        $attestationStatementSupportManager->add(AndroidKeyAttestationStatementSupport::create());
         $androidSafetyNetAttestationStatementSupport = new AndroidSafetyNetAttestationStatementSupport();
         $androidSafetyNetAttestationStatementSupport
             ->enableApiVerification($client, 'api_key', new Psr17Factory())

@@ -73,6 +73,6 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        return count($attestationStatement->getAttStmt()) === 0;
+        return count($attestationStatement->attStmt) === 0;
     }
 }

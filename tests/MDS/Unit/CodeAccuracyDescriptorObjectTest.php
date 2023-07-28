@@ -26,18 +26,18 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         ?int $blockSlowdown,
         string $expectedJson
     ): void {
-        static::assertSame($base, $object->getBase());
-        static::assertSame($minLength, $object->getMinLength());
-        static::assertSame($maxRetries, $object->getMaxRetries());
-        static::assertSame($blockSlowdown, $object->getBlockSlowdown());
+        static::assertSame($base, $object->base);
+        static::assertSame($minLength, $object->minLength);
+        static::assertSame($maxRetries, $object->maxRetries);
+        static::assertSame($blockSlowdown, $object->blockSlowdown);
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
     }
 
     public static function validObjectData(): iterable
     {
-        yield [new CodeAccuracyDescriptor(10, 4), 10, 4, null, null, '{"base":10,"minLength":4}'];
+        yield [CodeAccuracyDescriptor::create(10, 4), 10, 4, null, null, '{"base":10,"minLength":4}'];
         yield [
-            new CodeAccuracyDescriptor(10, 4, 50, 15),
+            CodeAccuracyDescriptor::create(10, 4, 50, 15),
             10,
             4,
             50,
@@ -58,7 +58,7 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        new CodeAccuracyDescriptor($base, $minLength, $maxRetries, $blockSlowdown);
+        CodeAccuracyDescriptor::create($base, $minLength, $maxRetries, $blockSlowdown);
     }
 
     public static function invalidObjectData(): iterable

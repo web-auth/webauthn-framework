@@ -50,9 +50,9 @@ final class MetadataServiceTest extends TestCase
 
         static::assertTrue($service->has('8876631b-d4a0-427f-5773-0ec71c9e0279'));
         $ms = $service->get('8876631b-d4a0-427f-5773-0ec71c9e0279');
-        static::assertSame('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->getAAguid());
-        static::assertSame('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->getDescription());
-        static::assertSame([], $ms->getAlternativeDescriptions()->all());
-        static::assertSame(3, $ms->getSchema());
+        static::assertSame('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->aaguid);
+        static::assertSame('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->description);
+        static::assertSame([], $ms->alternativeDescriptions->descriptions);
+        static::assertSame(3, $ms->schema);
     }
 }

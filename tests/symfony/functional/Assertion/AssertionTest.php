@@ -39,7 +39,7 @@ final class AssertionTest extends WebTestCase
             ->setUserVerification(
                 PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED
             )->allowCredential(
-                new PublicKeyCredentialDescriptor(
+                PublicKeyCredentialDescriptor::create(
                     PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                     Base64UrlSafe::decode(
                         'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
@@ -51,23 +51,23 @@ final class AssertionTest extends WebTestCase
         );
         $publicKeyCredentialSource = self::getContainer()->get(
             PublicKeyCredentialSourceRepositoryInterface::class
-        )->findOneByCredentialId($publicKeyCredential->getRawId());
+        )->findOneByCredentialId($publicKeyCredential->rawId);
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->type);
         static::assertSame(
             base64_decode(
                 'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
                 true
             ),
-            $descriptor->getId()
+            $descriptor->id
         );
-        static::assertSame([], $descriptor->getTransports());
-        $response = $publicKeyCredential->getResponse();
+        static::assertSame([], $descriptor->transports);
+        $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $response);
-        static::assertNull($response->getUserHandle());
+        static::assertNull($response->userHandle);
         self::getContainer()->get(AuthenticatorAssertionResponseValidator::class)->check(
             $publicKeyCredentialSource,
-            $publicKeyCredential->getResponse(),
+            $publicKeyCredential->response,
             $publicKeyCredentialRequestOptions,
             'localhost',
             'foo'
@@ -79,7 +79,7 @@ final class AssertionTest extends WebTestCase
     {
         self::bootKernel();
         $allowedCredentials = [
-            new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
                 Base64UrlSafe::decode(
                     'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
@@ -90,9 +90,9 @@ final class AssertionTest extends WebTestCase
         $factory = self::getContainer()->get(PublicKeyCredentialRequestOptionsFactory::class);
         $options = $factory->create('default', $allowedCredentials);
         static::assertNull($options->getTimeout());
-        static::assertSame('localhost', $options->getRpId());
-        static::assertSame($allowedCredentials, $options->getAllowCredentials());
-        static::assertSame('preferred', $options->getUserVerification());
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->getExtensions());
+        static::assertSame('localhost', $options->rpId);
+        static::assertSame($allowedCredentials, $options->allowCredentials);
+        static::assertSame('preferred', $options->userVerification);
+        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->extensions);
     }
 }

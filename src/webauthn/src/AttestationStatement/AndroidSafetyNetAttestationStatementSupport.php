@@ -155,7 +155,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $attestationStatement = AttestationStatement::createBasic(
             $this->name(),
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -167,7 +167,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path'

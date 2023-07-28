@@ -75,11 +75,15 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
      */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
-        foreach ($profile['extensions'] as $k => $v) {
-            $extensions->add(AuthenticationExtension::create($k, $v));
-        }
-
-        return $extensions;
+        return AuthenticationExtensionsClientInputs::create(
+            array_map(
+                static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
+                    $name,
+                    $value
+                ),
+                array_keys($profile['extensions']),
+                $profile['extensions']
+            )
+        );
     }
 }

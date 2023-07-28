@@ -60,7 +60,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
         );
         //When
         $response = $pkLoader->load($data);
-        $source = $validator->check($response->getResponse(), $options, 'webauthn.firstyear.id.au');
+        $source = $validator->check($response->response, $options, 'webauthn.firstyear.id.au');
         //Then
         static::assertSame('08987058-cadc-4b81-b6e1-30de50dcbe96', $source->getAaguid()->toRfc4122());
     }

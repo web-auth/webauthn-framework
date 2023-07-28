@@ -40,6 +40,9 @@ class AuthenticatorAssertionResponseValidationFailedEvent
         }
     }
 
+    /**
+     * @deprecated since 4.7.0 and will be removed in 5.0.0. Please use the `getCredential()` method instead
+     */
     public function getCredentialId(): string
     {
         return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId->getPublicKeyCredentialId() : $this->credentialId;

@@ -29,7 +29,7 @@ final class VerificationMethodDescriptorObjectTest extends TestCase
     public static function validObjectData(): iterable
     {
         yield [
-            new VerificationMethodDescriptor(
+            VerificationMethodDescriptor::create(
                 VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL,
                 null,
                 null,
@@ -38,11 +38,11 @@ final class VerificationMethodDescriptorObjectTest extends TestCase
             '{"userVerificationMethod":"fingerprint_internal"}',
         ];
         yield [
-            new VerificationMethodDescriptor(
+            VerificationMethodDescriptor::create(
                 VerificationMethodDescriptor::USER_VERIFY_PATTERN_EXTERNAL,
-                new CodeAccuracyDescriptor(35, 5),
-                new BiometricAccuracyDescriptor(0.12, null, null, null, null),
-                new PatternAccuracyDescriptor(50)
+                CodeAccuracyDescriptor::create(35, 5),
+                BiometricAccuracyDescriptor::create(0.12, null, null, null, null),
+                PatternAccuracyDescriptor::create(50)
             ),
             '{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"selfAttestedFRR":0.12},"paDesc":{"minComplexity":50}}',
         ];

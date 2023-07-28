@@ -24,16 +24,16 @@ class PublicKeyCredentialSource implements JsonSerializable
      * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
-        protected string $publicKeyCredentialId,
-        protected string $type,
-        protected array $transports,
-        protected string $attestationType,
-        protected TrustPath $trustPath,
-        protected AbstractUid $aaguid,
-        protected string $credentialPublicKey,
-        protected string $userHandle,
-        protected int $counter,
-        protected ?array $otherUI = null
+        public string $publicKeyCredentialId,
+        public string $type,
+        public array $transports,
+        public string $attestationType,
+        public TrustPath $trustPath,
+        public AbstractUid $aaguid,
+        public string $credentialPublicKey,
+        public string $userHandle,
+        public int $counter,
+        public ?array $otherUI = null
     ) {
     }
 
@@ -67,6 +67,9 @@ class PublicKeyCredentialSource implements JsonSerializable
         );
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getPublicKeyCredentialId(): string
     {
         return $this->publicKeyCredentialId;
@@ -74,14 +77,20 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     public function getPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor
     {
-        return new PublicKeyCredentialDescriptor($this->type, $this->publicKeyCredentialId, $this->transports);
+        return PublicKeyCredentialDescriptor::create($this->type, $this->publicKeyCredentialId, $this->transports);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAttestationType(): string
     {
         return $this->attestationType;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getTrustPath(): TrustPath
     {
         return $this->trustPath;
@@ -92,6 +101,9 @@ class PublicKeyCredentialSource implements JsonSerializable
         return new AttestedCredentialData($this->aaguid, $this->publicKeyCredentialId, $this->credentialPublicKey);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getType(): string
     {
         return $this->type;
@@ -99,32 +111,48 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getTransports(): array
     {
         return $this->transports;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaguid(): AbstractUid
     {
         return $this->aaguid;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCredentialPublicKey(): string
     {
         return $this->credentialPublicKey;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getUserHandle(): string
     {
         return $this->userHandle;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCounter(): int
     {
         return $this->counter;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setCounter(int $counter): void
     {
         $this->counter = $counter;
@@ -132,6 +160,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @return array<string, mixed>|null
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getOtherUI(): ?array
     {
@@ -140,6 +169,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @param array<string, mixed>|null $otherUI
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function setOtherUI(?array $otherUI): self
     {

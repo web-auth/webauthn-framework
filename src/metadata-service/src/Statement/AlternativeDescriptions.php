@@ -12,31 +12,33 @@ use JsonSerializable;
 class AlternativeDescriptions implements JsonSerializable
 {
     /**
-     * @var array<string, string>
+     * @param array<string, string> $descriptions
      */
-    private array $descriptions = [];
+    public function __construct(
+        public array $descriptions = []
+    ) {
+    }
 
     /**
      * @param array<string, string> $descriptions
      */
     public static function create(array $descriptions = []): self
     {
-        $object = new self();
-        foreach ($descriptions as $k => $v) {
-            $object->add($k, $v);
-        }
-
-        return $object;
+        return new self($descriptions);
     }
 
     /**
      * @return array<string, string>
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function all(): array
     {
         return $this->descriptions;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function add(string $locale, string $description): self
     {
         $this->descriptions[$locale] = $description;

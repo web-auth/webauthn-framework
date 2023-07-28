@@ -42,7 +42,7 @@ final class StringMetadataService implements MetadataService, CanDispatchEvents
     public function addStatements(MetadataStatement ...$statements): self
     {
         foreach ($statements as $statement) {
-            $aaguid = $statement->getAaguid();
+            $aaguid = $statement->aaguid;
             if ($aaguid === null) {
                 continue;
             }

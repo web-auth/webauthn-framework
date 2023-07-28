@@ -128,7 +128,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $attestationStatement = AttestationStatement::createAttCA(
             $this->name(),
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -152,7 +152,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $attestationStatement,
             'Invalid attestation hash'
         );
-        $credentialPublicKey = $authenticatorData->getAttestedCredentialData()?->getCredentialPublicKey();
+        $credentialPublicKey = $authenticatorData->attestedCredentialData?->credentialPublicKey;
         $credentialPublicKey !== null || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Not credential public key available in the attested credential data'
@@ -160,11 +160,11 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $this->checkUniquePublicKey($attestationStatement->get('parsedPubArea')['unique'], $credentialPublicKey);
 
         return match (true) {
-            $attestationStatement->getTrustPath() instanceof CertificateTrustPath => $this->processWithCertificate(
+            $attestationStatement->trustPath instanceof CertificateTrustPath => $this->processWithCertificate(
                 $attestationStatement,
                 $authenticatorData
             ),
-            $attestationStatement->getTrustPath() instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
+            $attestationStatement->trustPath instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
             default => throw InvalidAttestationStatementException::create(
                 $attestationStatement,
                 'Unsupported attestation statement'
@@ -340,7 +340,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw AttestationStatementVerificationException::create(
             'Invalid trust path'
         );
@@ -429,8 +429,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         // id-fido-gen-ce-aaguid OID check
         in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
-            $authenticatorData->getAttestedCredentialData()
-                ?->getAaguid()
+            $authenticatorData->attestedCredentialData
+                ?->aaguid
                 ->toBinary() ?? '',
             $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
         ) && throw AttestationStatementVerificationException::create(

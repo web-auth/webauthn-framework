@@ -77,7 +77,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $attestationStatement = AttestationStatement::createAnonymizationCA(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -89,7 +89,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path'
@@ -117,11 +117,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
 
         //Check that authData publicKey matches the public key in the attestation certificate
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
         );
-        $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
+        $publicKeyData = $attestedCredentialData->credentialPublicKey;
         $publicKeyData !== null || throw AttestationStatementVerificationException::create(
             'No attested public key found'
         );

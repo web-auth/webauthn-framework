@@ -168,7 +168,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                     'Invalid user handle'
                 );
             }
-            $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
+            $credentialPublicKey = $attestedCredentialData->credentialPublicKey;
             $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
                 'No public key available.'
             );
@@ -182,25 +182,23 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 'Invalid key. Presence of extra bytes.'
             );
             $stream->close();
-            $C = $authenticatorAssertionResponse->getClientDataJSON();
-            $C->getType() === 'webauthn.get' || throw AuthenticatorResponseVerificationException::create(
+            $C = $authenticatorAssertionResponse->clientDataJSON;
+            $C->type === 'webauthn.get' || throw AuthenticatorResponseVerificationException::create(
                 'The client data type is not "webauthn.get".'
             );
             hash_equals(
-                $publicKeyCredentialRequestOptions->getChallenge(),
-                $C->getChallenge()
+                $publicKeyCredentialRequestOptions->challenge,
+                $C->challenge
             ) || throw AuthenticatorResponseVerificationException::create('Invalid challenge.');
-            $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? (is_string(
-                $request
-            ) ? $request : $request->getUri()
+            $rpId = $publicKeyCredentialRequestOptions->rpId ?? (is_string($request) ? $request : $request->getUri()
                 ->getHost());
             $facetId = $this->getFacetId(
                 $rpId,
-                $publicKeyCredentialRequestOptions->getExtensions(),
-                $authenticatorAssertionResponse->getAuthenticatorData()
-                    ->getExtensions()
+                $publicKeyCredentialRequestOptions->extensions,
+                $authenticatorAssertionResponse->authenticatorData
+                    ->extensions
             );
-            $parsedRelyingPartyId = parse_url($C->getOrigin());
+            $parsedRelyingPartyId = parse_url($C->origin);
             is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
                 'Invalid origin'
             );
@@ -220,39 +218,39 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             if (! is_string($request) && $C->getTokenBinding() !== null) {
                 $this->tokenBindingHandler?->check($C->getTokenBinding(), $request);
             }
-            $rpIdHash = hash('sha256', $isU2F ? $C->getOrigin() : $facetId, true);
+            $rpIdHash = hash('sha256', $isU2F ? $C->origin : $facetId, true);
             hash_equals(
                 $rpIdHash,
-                $authenticatorAssertionResponse->getAuthenticatorData()
+                $authenticatorAssertionResponse->authenticatorData
                     ->getRpIdHash()
             ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
             if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
-                $authenticatorAssertionResponse->getAuthenticatorData()
+                $authenticatorAssertionResponse->authenticatorData
                     ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
                         'User was not present'
                     );
-                $authenticatorAssertionResponse->getAuthenticatorData()
+                $authenticatorAssertionResponse->authenticatorData
                     ->isUserVerified() || throw AuthenticatorResponseVerificationException::create(
                         'User authentication required.'
                     );
             }
-            $extensionsClientOutputs = $authenticatorAssertionResponse->getAuthenticatorData()
-                ->getExtensions();
+            $extensionsClientOutputs = $authenticatorAssertionResponse->authenticatorData
+                ->extensions;
             if ($extensionsClientOutputs !== null) {
                 $this->extensionOutputCheckerHandler->check(
-                    $publicKeyCredentialRequestOptions->getExtensions(),
+                    $publicKeyCredentialRequestOptions->extensions,
                     $extensionsClientOutputs
                 );
             }
             $getClientDataJSONHash = hash(
                 'sha256',
-                $authenticatorAssertionResponse->getClientDataJSON()
-                    ->getRawData(),
+                $authenticatorAssertionResponse->clientDataJSON
+                    ->rawData,
                 true
             );
-            $dataToVerify = $authenticatorAssertionResponse->getAuthenticatorData()
-                ->getAuthData() . $getClientDataJSONHash;
-            $signature = $authenticatorAssertionResponse->getSignature();
+            $dataToVerify = $authenticatorAssertionResponse->authenticatorData
+                ->authData . $getClientDataJSONHash;
+            $signature = $authenticatorAssertionResponse->signature;
             $credentialPublicKeyStream instanceof Normalizable || throw AuthenticatorResponseVerificationException::create(
                 'Invalid attestation object. Unexpected object.'
             );
@@ -272,7 +270,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 $signature
             ) || throw AuthenticatorResponseVerificationException::create('Invalid signature.');
             $storedCounter = $publicKeyCredentialSource->getCounter();
-            $responseCounter = $authenticatorAssertionResponse->getAuthenticatorData()
+            $responseCounter = $authenticatorAssertionResponse->authenticatorData
                 ->getSignCount();
             if ($responseCounter !== 0 || $storedCounter !== 0) {
                 $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
@@ -397,7 +395,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     private function isCredentialIdAllowed(string $credentialId, array $allowedCredentials): bool
     {
         foreach ($allowedCredentials as $allowedCredential) {
-            if (hash_equals($allowedCredential->getId(), $credentialId)) {
+            if (hash_equals($allowedCredential->id, $credentialId)) {
                 return true;
             }
         }
@@ -415,9 +413,9 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             return $rpId;
         }
         $appId = $authenticationExtensionsClientInputs->get('appid')
-            ->value();
+            ->value;
         $wasUsed = $authenticationExtensionsClientOutputs->get('appid')
-            ->value();
+            ->value;
         if (! is_string($appId) || $wasUsed !== true) {
             return $rpId;
         }

@@ -10,10 +10,13 @@ namespace Webauthn;
 abstract class AuthenticatorResponse
 {
     public function __construct(
-        private readonly CollectedClientData $clientDataJSON
+        public readonly CollectedClientData $clientDataJSON
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getClientDataJSON(): CollectedClientData
     {
         return $this->clientDataJSON;

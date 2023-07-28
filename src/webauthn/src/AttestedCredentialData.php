@@ -18,27 +18,39 @@ use Webauthn\Exception\InvalidDataException;
 class AttestedCredentialData implements JsonSerializable
 {
     public function __construct(
-        private AbstractUid $aaguid,
-        private readonly string $credentialId,
-        private readonly ?string $credentialPublicKey
+        public AbstractUid $aaguid,
+        public readonly string $credentialId,
+        public readonly ?string $credentialPublicKey
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaguid(): AbstractUid
     {
         return $this->aaguid;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setAaguid(AbstractUid $aaguid): void
     {
         $this->aaguid = $aaguid;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCredentialId(): string
     {
         return $this->credentialId;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCredentialPublicKey(): ?string
     {
         return $this->credentialPublicKey;

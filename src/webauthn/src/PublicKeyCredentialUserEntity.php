@@ -13,12 +13,12 @@ use Webauthn\Exception\InvalidDataException;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
-    protected string $id;
+    public readonly string $id;
 
     public function __construct(
         string $name,
         string $id,
-        protected string $displayName,
+        public readonly string $displayName,
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
@@ -31,11 +31,17 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return new self($name, $id, $displayName, $icon);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getDisplayName(): string
     {
         return $this->displayName;
@@ -65,7 +71,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         );
         $id = Base64::decode($json['id'], true);
 
-        return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
+        return self::create($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }
 
     /**

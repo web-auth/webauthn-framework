@@ -13,28 +13,37 @@ use Webauthn\MetadataService\Utils;
  */
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
-    private readonly int $base;
-
-    private readonly int $minLength;
-
-    public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
+    public function __construct(
+        public readonly int $base,
+        public readonly int $minLength,
+        ?int $maxRetries = null,
+        ?int $blockSlowdown = null
+    ) {
         $base >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "base" must be a positive integer'
         );
         $minLength >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "minLength" must be a positive integer'
         );
-        $this->base = $base;
-        $this->minLength = $minLength;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
+    public static function create(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null): self
+    {
+        return new self($base, $minLength, $maxRetries, $blockSlowdown);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getBase(): int
     {
         return $this->base;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMinLength(): int
     {
         return $this->minLength;
@@ -52,7 +61,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
             'The parameter "minLength" is missing'
         );
 
-        return new self(
+        return self::create(
             $data['base'],
             $data['minLength'],
             $data['maxRetries'] ?? null,

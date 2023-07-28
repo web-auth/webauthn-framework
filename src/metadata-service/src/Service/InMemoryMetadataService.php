@@ -42,7 +42,7 @@ final class InMemoryMetadataService implements MetadataService, CanDispatchEvent
     public function addStatements(MetadataStatement ...$statements): self
     {
         foreach ($statements as $statement) {
-            $aaguid = $statement->getAaguid();
+            $aaguid = $statement->aaguid;
             if ($aaguid === null) {
                 continue;
             }

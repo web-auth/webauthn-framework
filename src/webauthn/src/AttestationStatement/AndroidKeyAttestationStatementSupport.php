@@ -82,7 +82,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -97,13 +97,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path. Shall contain certificates.'
         );
 
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];
@@ -132,11 +132,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
 
         //Check that authData publicKey matches the public key in the attestation certificate
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
         );
-        $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
+        $publicKeyData = $attestedCredentialData->credentialPublicKey;
         $publicKeyData !== null || throw AttestationStatementVerificationException::create(
             'No attested public key found'
         );

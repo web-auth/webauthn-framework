@@ -21,18 +21,17 @@ final class AuthenticationExtensionsClientTest extends TestCase
     {
         $extension = new AuthenticationExtension('name', ['value']);
 
-        static::assertSame('name', $extension->name());
-        static::assertSame(['value'], $extension->value());
+        static::assertSame('name', $extension->name);
+        static::assertSame(['value'], $extension->value);
         static::assertSame('["value"]', json_encode($extension, JSON_THROW_ON_ERROR));
     }
 
     #[Test]
     public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
-        $extension = new AuthenticationExtension('name', ['value']);
-
-        $inputs = new AuthenticationExtensionsClientInputs();
-        $inputs->add($extension);
+        $inputs = AuthenticationExtensionsClientInputs::create([
+            AuthenticationExtension::create('name', ['value']),
+        ]);
 
         static::assertSame(1, $inputs->count());
         static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
@@ -42,10 +41,9 @@ final class AuthenticationExtensionsClientTest extends TestCase
     #[Test]
     public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
-        $extension = new AuthenticationExtension('name', ['value']);
-
-        $inputs = new AuthenticationExtensionsClientOutputs();
-        $inputs->add($extension);
+        $inputs = AuthenticationExtensionsClientOutputs::create([
+            AuthenticationExtension::create('name', ['value']),
+        ]);
 
         static::assertSame(1, $inputs->count());
         static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));

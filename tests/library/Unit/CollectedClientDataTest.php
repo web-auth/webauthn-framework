@@ -32,11 +32,11 @@ final class CollectedClientDataTest extends TestCase
             ]
         );
 
-        static::assertSame('raw_data', $collectedClientData->getRawData());
-        static::assertSame('origin', $collectedClientData->getOrigin());
-        static::assertTrue($collectedClientData->getCrossOrigin());
-        static::assertSame('challenge', $collectedClientData->getChallenge());
-        static::assertSame('type', $collectedClientData->getType());
+        static::assertSame('raw_data', $collectedClientData->rawData);
+        static::assertSame('origin', $collectedClientData->origin);
+        static::assertTrue($collectedClientData->crossOrigin);
+        static::assertSame('challenge', $collectedClientData->challenge);
+        static::assertSame('type', $collectedClientData->type);
         static::assertSame(
             ['type', 'origin', 'crossOrigin', 'challenge', 'extensions', 'tokenBinding'],
             $collectedClientData->all()

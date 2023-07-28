@@ -20,7 +20,7 @@ final class AuthenticatorDataTest extends TestCase
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
         $attestedCredentialData = new AttestedCredentialData(Uuid::v4(), '', null);
-        $extensions = new AuthenticationExtensionsClientOutputs();
+        $extensions = AuthenticationExtensionsClientOutputs::create();
 
         $authenticatorData = new AuthenticatorData(
             'auth_data',

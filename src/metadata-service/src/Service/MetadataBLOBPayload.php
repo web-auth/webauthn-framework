@@ -18,22 +18,24 @@ use Webauthn\MetadataService\Utils;
 class MetadataBLOBPayload implements JsonSerializable
 {
     /**
-     * @var MetadataBLOBPayloadEntry[]
-     */
-    private array $entries = [];
-
-    /**
      * @var string[]
      */
     private array $rootCertificates = [];
 
+    /**
+     * @param MetadataBLOBPayloadEntry[] $entries
+     */
     public function __construct(
-        private readonly int $no,
-        private readonly string $nextUpdate,
-        private readonly ?string $legalHeader = null
+        public readonly int $no,
+        public readonly string $nextUpdate,
+        public readonly ?string $legalHeader = null,
+        public array $entries = [],
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addEntry(MetadataBLOBPayloadEntry $entry): self
     {
         $this->entries[] = $entry;
@@ -41,16 +43,25 @@ class MetadataBLOBPayload implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getNo(): int
     {
         return $this->no;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getNextUpdate(): string
     {
         return $this->nextUpdate;
@@ -58,6 +69,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @return MetadataBLOBPayloadEntry[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getEntries(): array
     {
@@ -113,6 +125,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getRootCertificates(): array
     {
@@ -121,6 +134,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @param string[] $rootCertificates
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function setRootCertificates(array $rootCertificates): self
     {

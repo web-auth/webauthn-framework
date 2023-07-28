@@ -73,7 +73,7 @@ class PublicKeyCredentialLoader implements CanLogData
             $rawId = Base64::decode($json['rawId']);
             hash_equals($id, $rawId) || throw InvalidDataException::create($json, 'Invalid ID');
 
-            $publicKeyCredential = new PublicKeyCredential(
+            $publicKeyCredential = PublicKeyCredential::create(
                 $json['id'],
                 $json['type'],
                 $rawId,
@@ -159,12 +159,16 @@ class PublicKeyCredentialLoader implements CanLogData
                         $e
                     );
                 }
+                $userHandle = $response['userHandle'];
+                if ($userHandle !== '' && $userHandle !== null) {
+                    $userHandle = Base64::decode($userHandle);
+                }
 
                 return new AuthenticatorAssertionResponse(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
                     $signature,
-                    $response['userHandle'] ?? null
+                    $userHandle
                 );
             default:
                 throw InvalidDataException::create($response, 'Unable to create the response object');

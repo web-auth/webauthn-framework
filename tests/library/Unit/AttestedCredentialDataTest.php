@@ -24,10 +24,9 @@ final class AttestedCredentialDataTest extends TestCase
             $uuid
         ), 'credential_id', 'credential_public_key');
 
-        static::assertSame($uuid, $attestedCredentialData->getAaguid()->__toString());
-        static::assertSame($uuid, $attestedCredentialData->getAaguid()->__toString());
-        static::assertSame('credential_id', $attestedCredentialData->getCredentialId());
-        static::assertSame('credential_public_key', $attestedCredentialData->getCredentialPublicKey());
+        static::assertSame($uuid, $attestedCredentialData->aaguid->__toString());
+        static::assertSame('credential_id', $attestedCredentialData->credentialId);
+        static::assertSame('credential_public_key', $attestedCredentialData->credentialPublicKey);
         static::assertSame(
             '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
             json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES)

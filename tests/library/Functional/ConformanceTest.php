@@ -28,7 +28,7 @@ final class ConformanceTest extends AbstractTestCase
         // When
         $pkSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check(
-                $publicKeyCredential->getResponse(),
+                $publicKeyCredential->response,
                 $publicKeyCredentialCreationOptions,
                 'webauthn.spomky-labs.com'
             );

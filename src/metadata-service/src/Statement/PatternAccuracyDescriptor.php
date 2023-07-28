@@ -14,17 +14,25 @@ use Webauthn\MetadataService\Utils;
  */
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
-    private readonly int $minComplexity;
-
-    public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
-    {
+    public function __construct(
+        public readonly int $minComplexity,
+        ?int $maxRetries = null,
+        ?int $blockSlowdown = null
+    ) {
         $minComplexity >= 0 || throw MetadataStatementLoadingException::create(
             'Invalid data. The value of "minComplexity" must be a positive integer'
         );
-        $this->minComplexity = $minComplexity;
         parent::__construct($maxRetries, $blockSlowdown);
     }
 
+    public static function create(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null): self
+    {
+        return new self($minComplexity, $maxRetries, $blockSlowdown);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMinComplexity(): int
     {
         return $this->minComplexity;
@@ -47,7 +55,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
             }
         }
 
-        return new self($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
+        return self::create($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
     }
 
     /**

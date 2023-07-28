@@ -29,9 +29,9 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
      * @param string[] $transports
      */
     public function __construct(
-        protected string $type,
-        protected string $id,
-        protected array $transports = []
+        public readonly string $type,
+        public readonly string $id,
+        public readonly array $transports = []
     ) {
     }
 
@@ -43,11 +43,17 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         return new self($type, $id, $transports);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getType(): string
     {
         return $this->type;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getId(): string
     {
         return $this->id;
@@ -55,6 +61,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getTransports(): array
     {
@@ -81,7 +88,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
         $id = Base64UrlSafe::decodeNoPadding($json['id']);
 
-        return new self($json['type'], $id, $json['transports'] ?? []);
+        return self::create($json['type'], $id, $json['transports'] ?? []);
     }
 
     /**

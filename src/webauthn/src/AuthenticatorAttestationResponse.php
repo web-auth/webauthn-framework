@@ -16,18 +16,23 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
      */
     public function __construct(
         CollectedClientData $clientDataJSON,
-        private readonly AttestationObject $attestationObject,
-        private readonly array $transports = []
+        public readonly AttestationObject $attestationObject,
+        public readonly array $transports = []
     ) {
         parent::__construct($clientDataJSON);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAttestationObject(): AttestationObject
     {
         return $this->attestationObject;
     }
 
     /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     *
      * @return string[]
      */
     public function getTransports(): array

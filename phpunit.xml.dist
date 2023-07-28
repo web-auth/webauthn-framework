@@ -5,7 +5,7 @@
     bootstrap="tests/bootstrap.php"
     colors="true"
 >
-    <coverage/>
+    <coverage />
     <testsuites>
         <testsuite name="all">
             <directory>tests/</directory>
@@ -26,6 +26,7 @@
     <source>
         <include>
             <directory>src/</directory>
+            <directory>src/symfony/src/Resources/config</directory>
         </include>
         <exclude>
             <file>src/symfony/src/Controller/DummyController.php</file>

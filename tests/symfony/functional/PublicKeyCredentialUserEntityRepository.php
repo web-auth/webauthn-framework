@@ -55,19 +55,14 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         if (! $userEntity instanceof User) {
-            $userEntity = new User(
-                $userEntity->getName(),
-                $userEntity->getId(),
-                $userEntity->getDisplayName(),
-                $userEntity->getIcon()
-            );
+            $userEntity = new User($userEntity->name, $userEntity->id, $userEntity->displayName, $userEntity->icon);
         }
 
-        $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userEntity->getId()));
+        $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userEntity->id));
         $item->set($userEntity);
         $this->cacheItemPool->save($item);
 
-        $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($userEntity->getName()));
+        $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($userEntity->name));
         $item->set($userEntity);
         $this->cacheItemPool->save($item);
     }

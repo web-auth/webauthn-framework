@@ -9,7 +9,7 @@ use function class_implements;
 use function in_array;
 use Webauthn\Exception\InvalidTrustPathException;
 
-abstract class TrustPathLoader
+final class TrustPathLoader
 {
     /**
      * @param mixed[] $data
