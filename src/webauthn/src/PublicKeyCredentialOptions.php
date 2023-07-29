@@ -50,7 +50,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     public function addExtensions(array $extensions): static
     {
         foreach ($extensions as $extension) {
-            $this->addExtension($extension);
+            $this->extensions[$extension->name] = $extension;
         }
 
         return $this;

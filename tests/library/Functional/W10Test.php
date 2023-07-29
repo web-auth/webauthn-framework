@@ -133,6 +133,6 @@ final class W10Test extends AbstractTestCase
                 'webauthn.spomky-labs.com',
                 'ee13d4f1-4863-47dd-a407-097cb49ac822'
             );
-        static::assertSame(4, $publicKeyCredentialSource->getCounter());
+        static::assertSame(4, $publicKeyCredentialSource->counter);
     }
 }

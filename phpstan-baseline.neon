@@ -1261,22 +1261,22 @@ parameters:
             path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$rpId of method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:setRpId\\(\\) expects string\\|null, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-        -
-            message: "#^Parameter \\#1 \\$timeout of method Webauthn\\\\PublicKeyCredentialOptions\\:\\:setTimeout\\(\\) expects int\\|null, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-        -
-            message: "#^Parameter \\#1 \\$userVerification of method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:setUserVerification\\(\\) expects string\\|null, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-        -
             message: "#^Parameter \\#3 \\.\\.\\.\\$arrays of function array_map expects array, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+        -
+            message: "#^Property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout \\(int\\<1, max\\>\\|null\\) does not accept mixed\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+        -
+            message: "#^Property Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:\\$rpId \\(string\\|null\\) does not accept mixed\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+        -
+            message: "#^Property Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:\\$userVerification \\(string\\|null\\) does not accept mixed\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
@@ -1697,7 +1697,7 @@ parameters:
 
         -
             message: "#^Cannot access offset string on Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\.$#"
-            count: 1
+            count: 2
             path: src/webauthn/src/PublicKeyCredentialOptions.php
 
         -

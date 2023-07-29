@@ -172,7 +172,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             $attestationStatement,
             'Invalid trust path'
         );
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
         $firstCertificate = current($certificates);
         is_string($firstCertificate) || throw InvalidAttestationStatementException::create(
             $attestationStatement,
@@ -222,7 +222,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             'Invalid attestation object. "nonce" is missing.'
         );
         $payload['nonce'] === base64_encode(
-            hash('sha256', $authenticatorData->getAuthData() . $clientDataJSONHash, true)
+            hash('sha256', $authenticatorData->authData . $clientDataJSONHash, true)
         ) || throw AttestationStatementVerificationException::create('Invalid attestation object. Invalid nonce');
         array_key_exists('ctsProfileMatch', $payload) || throw AttestationStatementVerificationException::create(
             'Invalid attestation object. "ctsProfileMatch" is missing.'
@@ -255,7 +255,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function validateSignature(JWS $jws, CertificateTrustPath $trustPath): void
     {
-        $jwk = JWKFactory::createFromCertificate($trustPath->getCertificates()[0]);
+        $jwk = JWKFactory::createFromCertificate($trustPath->certificates[0]);
         $isValid = $this->jwsVerifier?->verifyWithKey($jws, $jwk, 0);
         $isValid === true || throw AttestationStatementVerificationException::create('Invalid response signature');
     }

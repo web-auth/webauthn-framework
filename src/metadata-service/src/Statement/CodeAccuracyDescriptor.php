@@ -77,8 +77,8 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
         $data = [
             'base' => $this->base,
             'minLength' => $this->minLength,
-            'maxRetries' => $this->getMaxRetries(),
-            'blockSlowdown' => $this->getBlockSlowdown(),
+            'maxRetries' => $this->maxRetries,
+            'blockSlowdown' => $this->blockSlowdown,
         ];
 
         return Utils::filterNullValues($data);

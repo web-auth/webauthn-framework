@@ -25,7 +25,7 @@ final class TrustPathTest extends TestCase
     {
         $tp = CertificateTrustPath::create(['cert#1']);
 
-        static::assertSame(['cert#1'], $tp->getCertificates());
+        static::assertSame(['cert#1'], $tp->certificates);
     }
 
     /**

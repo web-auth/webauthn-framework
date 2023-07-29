@@ -137,10 +137,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
             foreach ($data['entries'] as $datum) {
                 $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
 
-                $mds = $entry->getMetadataStatement();
-                if ($mds !== null && $entry->getAaguid() !== null) {
-                    $this->statements[$entry->getAaguid()] = $mds;
-                    $this->statusReports[$entry->getAaguid()] = $entry->getStatusReports();
+                $mds = $entry->metadataStatement;
+                if ($mds !== null && $entry->aaguid !== null) {
+                    $this->statements[$entry->aaguid] = $mds;
+                    $this->statusReports[$entry->aaguid] = $entry->statusReports;
                 }
             }
         } catch (Throwable) {

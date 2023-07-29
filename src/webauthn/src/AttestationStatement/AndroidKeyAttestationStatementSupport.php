@@ -105,7 +105,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $leaf = $certificates[0];
         $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
-        $signedData = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $signedData = $authenticatorData->authData . $clientDataJSONHash;
         $alg = $attestationStatement->get('alg');
 
         return openssl_verify(

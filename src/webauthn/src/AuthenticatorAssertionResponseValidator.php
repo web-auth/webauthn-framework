@@ -145,15 +145,15 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
             );
-            if (count($publicKeyCredentialRequestOptions->getAllowCredentials()) !== 0) {
+            if (count($publicKeyCredentialRequestOptions->allowCredentials) !== 0) {
                 $this->isCredentialIdAllowed(
-                    $publicKeyCredentialSource->getPublicKeyCredentialId(),
-                    $publicKeyCredentialRequestOptions->getAllowCredentials()
+                    $publicKeyCredentialSource->publicKeyCredentialId,
+                    $publicKeyCredentialRequestOptions->allowCredentials
                 ) || throw AuthenticatorResponseVerificationException::create('The credential ID is not allowed.');
             }
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
-            $credentialUserHandle = $publicKeyCredentialSource->getUserHandle();
-            $responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
+            $credentialUserHandle = $publicKeyCredentialSource->userHandle;
+            $responseUserHandle = $authenticatorAssertionResponse->userHandle;
             if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
                 $credentialUserHandle === $userHandle || throw AuthenticatorResponseVerificationException::create(
                     'Invalid user handle'
@@ -222,9 +222,9 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             hash_equals(
                 $rpIdHash,
                 $authenticatorAssertionResponse->authenticatorData
-                    ->getRpIdHash()
+                    ->rpIdHash
             ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
-            if ($publicKeyCredentialRequestOptions->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+            if ($publicKeyCredentialRequestOptions->userVerification === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 $authenticatorAssertionResponse->authenticatorData
                     ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
                         'User was not present'
@@ -269,13 +269,13 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 $coseKey,
                 $signature
             ) || throw AuthenticatorResponseVerificationException::create('Invalid signature.');
-            $storedCounter = $publicKeyCredentialSource->getCounter();
+            $storedCounter = $publicKeyCredentialSource->counter;
             $responseCounter = $authenticatorAssertionResponse->authenticatorData
-                ->getSignCount();
+                ->signCount;
             if ($responseCounter !== 0 || $storedCounter !== 0) {
                 $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
             }
-            $publicKeyCredentialSource->setCounter($responseCounter);
+            $publicKeyCredentialSource->counter = $responseCounter;
             if (is_string(
                 $credentialId
             ) && ($this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepository)) {

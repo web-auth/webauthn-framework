@@ -84,7 +84,7 @@ final class AttestationResponseController
                 $this->securedRelyingPartyIds
             );
             if ($this->credentialSourceRepository->findOneByCredentialId(
-                $credentialSource->getPublicKeyCredentialId()
+                $credentialSource->publicKeyCredentialId
             ) !== null) {
                 throw new BadRequestHttpException('The credentials already exists');
             }

@@ -140,7 +140,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $attToBeSigned = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $attToBeSigned = $authenticatorData->authData . $clientDataJSONHash;
         $attToBeSignedHash = hash(
             Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')),
             $attToBeSigned,
@@ -345,7 +345,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             'Invalid trust path'
         );
 
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         // Check certificate CA chain and returns the Attestation Certificate
         $this->checkCertificate($certificates[0], $authenticatorData);

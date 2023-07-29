@@ -204,7 +204,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 $attestationObject->authData
                     ->rpIdHash
             ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
-            if ($publicKeyCredentialCreationOptions->getAuthenticatorSelection()?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+            if ($publicKeyCredentialCreationOptions->authenticatorSelection?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 $attestationObject->authData
                     ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
                         'User was not present'
@@ -224,7 +224,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
             }
             $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->attStmt
-                ->getFmt();
+                ->fmt;
             $this->attestationStatementSupportManager->has(
                 $fmt
             ) || throw AuthenticatorResponseVerificationException::create(
@@ -241,7 +241,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                     'There is no attested credential data.'
                 );
             $attestedCredentialData = $attestationObject->authData
-                ->getAttestedCredentialData();
+                ->attestedCredentialData;
             $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
                 'There is no attested credential data.'
             );
@@ -257,9 +257,8 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 $credentialId,
                 $attestedCredentialData,
                 $attestationObject,
-                $publicKeyCredentialCreationOptions->getUser()
-                    ->getId(),
-                $authenticatorAttestationResponse->getTransports()
+                $publicKeyCredentialCreationOptions->user->id,
+                $authenticatorAttestationResponse->transports
             );
             $this->logger->info('The attestation is valid');
             $this->logger->debug('Public Key Credential Source', [
@@ -425,11 +424,11 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         // We check the certificate chain (if any)
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
         // Check Attestation Type is allowed
-        if (count($metadataStatement->getAttestationTypes()) !== 0) {
+        if (count($metadataStatement->attestationTypes) !== 0) {
             $type = $this->getAttestationType($attestationStatement);
             in_array(
                 $type,
-                $metadataStatement->getAttestationTypes(),
+                $metadataStatement->attestationTypes,
                 true
             ) || throw AuthenticatorResponseVerificationException::create(
                 sprintf(

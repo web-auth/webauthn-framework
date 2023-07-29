@@ -120,9 +120,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         /** @var AuthenticatorAttestationResponse|AuthenticatorAssertionResponse $response */
         $response = $credentialsBadge->getAuthenticatorResponse();
         if ($response instanceof AuthenticatorAssertionResponse) {
-            $authData = $response->getAuthenticatorData();
+            $authData = $response->authenticatorData;
         } else {
-            $authData = $response->getAttestationObject()
+            $authData = $response->attestationObject
                 ->authData;
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
@@ -136,8 +136,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $authData->isUserVerified(),
             $authData->getReservedForFutureUse1(),
             $authData->getReservedForFutureUse2(),
-            $authData->getSignCount(),
-            $authData->getExtensions(),
+            $authData->signCount,
+            $authData->extensions,
             $credentialsBadge->getFirewallName(),
             $userBadge->getUser()
                 ->getRoles(),
@@ -206,7 +206,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
-                $userEntity?->getId(),
+                $userEntity?->id,
                 $this->securedRelyingPartyIds
             );
             if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {

@@ -45,7 +45,8 @@ final class TPMAttestationStatementSupportTest extends TestCase
             PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
             base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
             [PublicKeyCredentialParameters::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, 0)]
-        )->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
+        );
+        $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $validator = AuthenticatorAttestationResponseValidator::create(
             $attnManager,
             null,
@@ -62,6 +63,6 @@ final class TPMAttestationStatementSupportTest extends TestCase
         $response = $pkLoader->load($data);
         $source = $validator->check($response->response, $options, 'webauthn.firstyear.id.au');
         //Then
-        static::assertSame('08987058-cadc-4b81-b6e1-30de50dcbe96', $source->getAaguid()->toRfc4122());
+        static::assertSame('08987058-cadc-4b81-b6e1-30de50dcbe96', $source->aaguid->toRfc4122());
     }
 }

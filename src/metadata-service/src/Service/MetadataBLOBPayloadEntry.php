@@ -193,11 +193,11 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             $data['rogueListHash'] ?? null
         );
         foreach ($data['statusReports'] as $statusReport) {
-            $object->addStatusReports(StatusReport::createFromArray($statusReport));
+            $object->statusReports[] = StatusReport::createFromArray($statusReport);
         }
         if (array_key_exists('biometricStatusReport', $data)) {
             foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
-                $object->addBiometricStatusReports(BiometricStatusReport::createFromArray($biometricStatusReport));
+                $object->biometricStatusReports[] = BiometricStatusReport::createFromArray($biometricStatusReport);
             }
         }
 

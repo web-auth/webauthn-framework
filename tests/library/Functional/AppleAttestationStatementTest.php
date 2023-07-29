@@ -36,7 +36,8 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             ),
             base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
             [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
-        )->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
+        );
+        $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load('{
             "id": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
@@ -72,14 +73,14 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->type);
         static::assertSame(
             hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'),
-            $authenticatorData->getRpIdHash()
+            $authenticatorData->rpIdHash
         );
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertSame(0, $authenticatorData->getSignCount());
+        static::assertSame(0, $authenticatorData->signCount);
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
         $this->clock->set(new DateTimeImmutable());

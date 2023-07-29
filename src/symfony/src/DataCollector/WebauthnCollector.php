@@ -182,7 +182,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [
             'user_handle' => $cloner->cloneVar($event->getUserHandle()),
-            'credential_id' => $cloner->cloneVar($event->getCredentialId()),
+            'credential_id' => $cloner->cloneVar($event->getCredential()?->publicKeyCredentialId),
             'assertion_response' => $cloner->cloneVar($event->getAuthenticatorAssertionResponse()),
             'options' => $cloner->cloneVar($event->getPublicKeyCredentialRequestOptions()),
             'options_json' => json_encode(

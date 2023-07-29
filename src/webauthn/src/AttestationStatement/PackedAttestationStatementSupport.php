@@ -212,7 +212,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'The Basic Constraints extension must have the CA component set to false'
         );
 
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential available'
         );
@@ -245,7 +245,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         // Verification of the signature
-        $signedData = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $signedData = $authenticatorData->authData . $clientDataJSONHash;
         $result = openssl_verify(
             $signedData,
             $attestationStatement->get('sig'),
@@ -291,7 +291,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'The algorithm of the attestation statement and the key are not identical.'
         );
 
-        $dataToVerify = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $dataToVerify = $authenticatorData->authData . $clientDataJSONHash;
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         if (! $algorithm instanceof Signature) {
             throw InvalidDataException::create($algorithm, 'Invalid algorithm');

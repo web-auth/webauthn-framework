@@ -95,7 +95,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
             'Invalid trust path'
         );
 
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];
@@ -166,7 +166,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
         $extension = $certDetails['extensions']['1.2.840.113635.100.8.2'];
 
-        $nonceToHash = $authenticatorData->getAuthData() . $clientDataHash;
+        $nonceToHash = $authenticatorData->authData . $clientDataHash;
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object

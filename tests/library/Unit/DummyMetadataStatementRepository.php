@@ -22,7 +22,7 @@ final class DummyMetadataStatementRepository implements MetadataStatementReposit
         }
 
         return $this->loadWindowsHelloMDS()
-            ->getMetadataStatement();
+            ->metadataStatement;
     }
 
     public function findStatusReportsByAAGUID(string $aaguid): array
@@ -32,7 +32,7 @@ final class DummyMetadataStatementRepository implements MetadataStatementReposit
         }
 
         return $this->loadWindowsHelloMDS()
-            ->getStatusReports();
+            ->statusReports;
     }
 
     private function loadWindowsHelloMDS(): MetadataBLOBPayloadEntry

@@ -68,7 +68,7 @@ final class AttestationTest extends AbstractTestCase
             ->authData;
         static::assertSame(
             hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'),
-            $authenticatorData->getRpIdHash()
+            $authenticatorData->rpIdHash
         );
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertFalse($authenticatorData->isUserVerified());
@@ -77,8 +77,8 @@ final class AttestationTest extends AbstractTestCase
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertSame(149, $authenticatorData->getSignCount());
-        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
+        static::assertSame(149, $authenticatorData->signCount);
+        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
     }
 }

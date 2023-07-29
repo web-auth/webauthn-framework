@@ -22,7 +22,7 @@ final class AttestationStatementTest extends TestCase
         $attestationStatement = AttestationStatement::createNone('fmt', [
             'bar' => 'FOO',
         ], EmptyTrustPath::create());
-        static::assertSame('fmt', $attestationStatement->getFmt());
+        static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
         ], $attestationStatement->attStmt);
@@ -39,7 +39,7 @@ final class AttestationStatementTest extends TestCase
         $attestationStatement = AttestationStatement::createEcdaa('fmt', [
             'bar' => 'FOO',
         ], new EcdaaKeyIdTrustPath('key_id'));
-        static::assertSame('fmt', $attestationStatement->getFmt());
+        static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
         ], $attestationStatement->attStmt);
@@ -56,7 +56,7 @@ final class AttestationStatementTest extends TestCase
         $attestationStatement = AttestationStatement::createBasic('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create(['key_id']));
-        static::assertSame('fmt', $attestationStatement->getFmt());
+        static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
         ], $attestationStatement->attStmt);
@@ -73,7 +73,7 @@ final class AttestationStatementTest extends TestCase
         $attestationStatement = AttestationStatement::createAttCA('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create(['key_id']));
-        static::assertSame('fmt', $attestationStatement->getFmt());
+        static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
         ], $attestationStatement->attStmt);
@@ -90,7 +90,7 @@ final class AttestationStatementTest extends TestCase
         $attestationStatement = AttestationStatement::createSelf('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create([]));
-        static::assertSame('fmt', $attestationStatement->getFmt());
+        static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
         ], $attestationStatement->attStmt);

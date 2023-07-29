@@ -45,9 +45,9 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         $data = PublicKeyCredentialCreationOptions::createFromString(
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"attestation":"direct"}'
         );
-        static::assertSame('challenge', $data->getChallenge());
-        static::assertSame('direct', $data->getAttestation());
-        static::assertSame(1000, $data->getTimeout());
+        static::assertSame('challenge', $data->challenge);
+        static::assertSame('direct', $data->attestation);
+        static::assertSame(1000, $data->timeout);
         static::assertSame(
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
             json_encode($data, JSON_THROW_ON_ERROR)
@@ -62,10 +62,9 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
 
         $credentialParameters = new PublicKeyCredentialParameters('type', -100);
 
-        $options = PublicKeyCredentialCreationOptions
-            ::create($rp, $user, 'challenge', [$credentialParameters])
-                ->setTimeout(1000)
-                ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT);
+        $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge', [$credentialParameters]);
+        $options->timeout = 1000;
+        $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT;
 
         $json = json_encode($options, JSON_THROW_ON_ERROR);
         static::assertSame(
@@ -74,6 +73,6 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
             $json
         );
         $data = PublicKeyCredentialCreationOptions::createFromString($json);
-        static::assertSame([], $data->getExcludeCredentials());
+        static::assertSame([], $data->excludeCredentials);
     }
 }

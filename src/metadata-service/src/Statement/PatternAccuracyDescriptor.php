@@ -65,8 +65,8 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
     {
         $data = [
             'minComplexity' => $this->minComplexity,
-            'maxRetries' => $this->getMaxRetries(),
-            'blockSlowdown' => $this->getBlockSlowdown(),
+            'maxRetries' => $this->maxRetries,
+            'blockSlowdown' => $this->blockSlowdown,
         ];
 
         return Utils::filterNullValues($data);

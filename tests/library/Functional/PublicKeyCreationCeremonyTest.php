@@ -25,8 +25,8 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
         $source = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
 
-        static::assertSame(hex2bin($keyId), $source->getPublicKeyCredentialId());
-        static::assertSame($type, $source->getAttestationType());
+        static::assertSame(hex2bin($keyId), $source->publicKeyCredentialId);
+        static::assertSame($type, $source->attestationType);
     }
 
     public static function getPublicKeyCredentialCreationOptions(): iterable

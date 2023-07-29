@@ -53,13 +53,12 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
         ));
         $profile = $this->profiles[$key];
 
-        $options = PublicKeyCredentialRequestOptions
-            ::create(random_bytes($profile['challenge_length']))
-                ->setRpId($profile['rp_id'])
-                ->setUserVerification($userVerification ?? $profile['user_verification'])
-                ->allowCredentials(...$allowCredentials)
-                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout']);
+        $options = PublicKeyCredentialRequestOptions::create(random_bytes($profile['challenge_length']));
+        $options->rpId = $profile['rp_id'];
+        $options->userVerification = $userVerification ?? $profile['user_verification'];
+        $options->allowCredentials = $allowCredentials;
+        $options->timeout = $profile['timeout'];
+        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
         $this->eventDispatcher->dispatch(PublicKeyCredentialRequestOptionsCreatedEvent::create($options));
 
         return $options;

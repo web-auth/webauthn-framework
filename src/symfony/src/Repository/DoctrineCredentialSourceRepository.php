@@ -45,7 +45,7 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
         return $qb->select('c')
             ->from($this->getClass(), 'c')
             ->where('c.userHandle = :userHandle')
-            ->setParameter(':userHandle', $publicKeyCredentialUserEntity->getId())
+            ->setParameter(':userHandle', $publicKeyCredentialUserEntity->id)
             ->getQuery()
             ->execute();
     }

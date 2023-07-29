@@ -26,15 +26,15 @@ final class ThrowExceptionIfInvalid implements CounterChecker, CanLogData
     public function check(PublicKeyCredentialSource $publicKeyCredentialSource, int $currentCounter): void
     {
         try {
-            $currentCounter > $publicKeyCredentialSource->getCounter() || throw CounterException::create(
+            $currentCounter > $publicKeyCredentialSource->counter || throw CounterException::create(
                 $currentCounter,
-                $publicKeyCredentialSource->getCounter(),
+                $publicKeyCredentialSource->counter,
                 'Invalid counter.'
             );
         } catch (Throwable $throwable) {
             $this->logger->error('The counter is invalid', [
                 'current' => $currentCounter,
-                'new' => $publicKeyCredentialSource->getCounter(),
+                'new' => $publicKeyCredentialSource->counter,
             ]);
             throw $throwable;
         }

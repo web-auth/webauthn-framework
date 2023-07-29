@@ -13,12 +13,12 @@ use Webauthn\PublicKeyCredentialSource;
 class AuthenticatorAssertionResponseValidationFailedEvent
 {
     public function __construct(
-        private readonly string|PublicKeyCredentialSource $credentialId,
-        private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        public readonly string|PublicKeyCredentialSource $credentialId,
+        public readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        public readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         public readonly ServerRequestInterface|string $host,
-        private readonly ?string $userHandle,
-        private readonly Throwable $throwable
+        public readonly ?string $userHandle,
+        public readonly Throwable $throwable
     ) {
         if ($host instanceof ServerRequestInterface) {
             trigger_deprecation(
@@ -45,7 +45,7 @@ class AuthenticatorAssertionResponseValidationFailedEvent
      */
     public function getCredentialId(): string
     {
-        return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId->getPublicKeyCredentialId() : $this->credentialId;
+        return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId->publicKeyCredentialId : $this->credentialId;
     }
 
     public function getCredential(): ?PublicKeyCredentialSource

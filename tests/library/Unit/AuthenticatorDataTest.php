@@ -31,16 +31,16 @@ final class AuthenticatorDataTest extends TestCase
             $extensions
         );
 
-        static::assertSame('auth_data', $authenticatorData->getAuthData());
-        static::assertSame('rp_id_hash', $authenticatorData->getRpIdHash());
+        static::assertSame('auth_data', $authenticatorData->authData);
+        static::assertSame('rp_id_hash', $authenticatorData->rpIdHash);
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertFalse($authenticatorData->isUserVerified());
-        static::assertSame(100, $authenticatorData->getSignCount());
+        static::assertSame(100, $authenticatorData->signCount);
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
-        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
+        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
-        static::assertNull($authenticatorData->getExtensions());
+        static::assertSame(0, $authenticatorData->extensions->count());
     }
 }

@@ -99,7 +99,7 @@ class MetadataBLOBPayload implements JsonSerializable
         );
         $object = new self($data['no'], $data['nextUpdate'], $data['legalHeader'] ?? null);
         foreach ($data['entries'] as $entry) {
-            $object->addEntry(MetadataBLOBPayloadEntry::createFromArray($entry));
+            $object->entries[] = MetadataBLOBPayloadEntry::createFromArray($entry);
         }
 
         return $object;

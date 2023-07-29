@@ -70,7 +70,7 @@ final class AssertionResponseController
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
-                $userEntity?->getId(),
+                $userEntity?->id,
                 $this->securedRelyingPartyIds
             );
             return $this->successHandler->onSuccess($request);

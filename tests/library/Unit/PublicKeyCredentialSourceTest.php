@@ -24,7 +24,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
         $json = json_decode($data, true);
         $source = PublicKeyCredentialSource::createFromArray($json);
 
-        static::assertSame('publicKeyCredentialId', $source->getPublicKeyCredentialId());
+        static::assertSame('publicKeyCredentialId', $source->publicKeyCredentialId);
     }
 
     #[Test]

@@ -33,7 +33,7 @@ final class ConformanceTest extends AbstractTestCase
                 'webauthn.spomky-labs.com'
             );
         //Then
-        static::assertSame('80f53d1e-852e-43ed-bb3f-d02f1322e5af', $pkSource->getAaguid()->toRfc4122());
+        static::assertSame('80f53d1e-852e-43ed-bb3f-d02f1322e5af', $pkSource->aaguid->toRfc4122());
     }
 
     public static function responsesWithLink(): iterable
