@@ -159,7 +159,7 @@ class PublicKeyCredentialLoader implements CanLogData
                         $e
                     );
                 }
-                $userHandle = $response['userHandle'];
+                $userHandle = $response['userHandle'] ?? null;
                 if ($userHandle !== '' && $userHandle !== null) {
                     $userHandle = Base64::decode($userHandle);
                 }
