@@ -1,19 +1,6 @@
 parameters:
   env(DATABASE_URL): ''
 
-monolog:
-  handlers:
-    main:
-      type: stream
-      path: "%kernel.logs_dir%/%kernel.environment%.log"
-      level: debug
-      channels: [ "!event", "!webauthn" ]
-    webauthn:
-      type: stream
-      path: "%kernel.logs_dir%/webauthn.log"
-      level: error
-      channels: [ "webauthn" ]
-
 framework:
   test: true
   secret: 'test'
@@ -45,11 +32,6 @@ services:
 
   Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository:
     autowire: true
-
-  Webauthn\Tests\Bundle\Functional\Logger:
-    arguments: [ '@logger' ]
-    tags:
-      - { name: 'monolog.logger', channel: 'webauthn' }
 
   Webauthn\Tests\Bundle\Functional\UserProvider:
     autowire: true
@@ -144,10 +126,6 @@ doctrine:
         alias: App
 
 webauthn:
-  #http_client: ~
-  #request_factory: ~
-  #http_message_factory: ~
-  logger: 'Webauthn\Tests\Bundle\Functional\Logger'
   credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
   user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
   android_safetynet:
