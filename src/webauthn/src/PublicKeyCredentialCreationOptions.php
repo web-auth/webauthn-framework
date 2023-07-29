@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Exception\InvalidDataException;
+use Webauthn\Util\Base64;
 use function array_key_exists;
 use function count;
 use function in_array;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\Exception\InvalidDataException;
-use Webauthn\Util\Base64;
 
 final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {

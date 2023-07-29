@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Algorithms;
@@ -12,19 +11,13 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
-use function count;
 use DateTimeImmutable;
 use DateTimeZone;
-use function in_array;
-use function is_array;
-use function is_int;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
-use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
@@ -37,6 +30,13 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function is_int;
+use function openssl_verify;
+use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

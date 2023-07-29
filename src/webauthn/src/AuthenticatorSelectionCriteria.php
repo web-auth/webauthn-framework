@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use JsonSerializable;
+use Webauthn\Exception\InvalidDataException;
 use function is_bool;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
-use JsonSerializable;
-use Webauthn\Exception\InvalidDataException;
 
 class AuthenticatorSelectionCriteria implements JsonSerializable
 {

@@ -27,9 +27,6 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
         $this->throwException();

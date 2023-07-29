@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function count;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use function count;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialDescriptor implements JsonSerializable
 {

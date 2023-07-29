@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
-use function array_key_exists;
-use function assert;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
@@ -36,6 +34,8 @@ use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use function array_key_exists;
+use function assert;
 
 final class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {

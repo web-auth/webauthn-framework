@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\Version;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
 
 /**
  * @internal

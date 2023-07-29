@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
 use ArrayIterator;
-use function count;
-use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
+use function array_key_exists;
+use function count;
+use const COUNT_NORMAL;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function is_array;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use function is_array;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {

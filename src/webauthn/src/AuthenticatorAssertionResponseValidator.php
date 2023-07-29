@@ -9,11 +9,6 @@ use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
-use function count;
-use function in_array;
-use function is_array;
-use function is_string;
-use function parse_url;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -32,6 +27,11 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\Util\CoseSignatureFixer;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
+use function parse_url;
 
 class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatchEvents
 {

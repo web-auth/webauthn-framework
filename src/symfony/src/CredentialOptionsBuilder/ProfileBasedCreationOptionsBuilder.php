@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
-use function count;
-use const FILTER_VALIDATE_BOOLEAN;
 use InvalidArgumentException;
-use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -22,6 +19,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function count;
+use function is_array;
+use const FILTER_VALIDATE_BOOLEAN;
 
 final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCreationOptionsBuilder
 {

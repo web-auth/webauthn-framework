@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Uid\AbstractUid;
@@ -13,6 +12,7 @@ use Throwable;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
+use function array_key_exists;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -200,7 +200,7 @@ class PublicKeyCredentialSource implements JsonSerializable
         $uuid = Uuid::fromString($data['aaguid']);
 
         try {
-            return new self(
+            return self::create(
                 Base64UrlSafe::decodeNoPadding($data['publicKeyCredentialId']),
                 $data['type'],
                 $data['transports'],

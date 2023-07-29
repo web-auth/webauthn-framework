@@ -13,9 +13,6 @@ final class AttestationStatementSupportCompilerPass implements CompilerPassInter
 {
     public const TAG = 'webauthn_attestation_statement_support';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(AttestationStatementSupportManager::class)) {

@@ -14,9 +14,6 @@ use Webauthn\MetadataService\StatusReportRepository;
 
 final class MetadataStatementSupportCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasAlias(MetadataStatementRepository::class)

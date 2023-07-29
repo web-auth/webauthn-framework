@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {

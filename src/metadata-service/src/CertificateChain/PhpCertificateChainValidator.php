@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use function count;
 use DateTimeZone;
-use function in_array;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
-use function parse_url;
-use const PHP_EOL;
-use const PHP_URL_SCHEME;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
@@ -30,6 +25,11 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\MetadataService\Exception\CertificateRevocationListException;
 use Webauthn\MetadataService\Exception\InvalidCertificateException;
+use function count;
+use function in_array;
+use function parse_url;
+use const PHP_EOL;
+use const PHP_URL_SCHEME;
 
 /**
  * @final

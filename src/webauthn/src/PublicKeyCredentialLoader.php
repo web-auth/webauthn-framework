@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function is_array;
-use function is_string;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -16,6 +12,10 @@ use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\Util\Base64;
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialLoader implements CanLogData
 {

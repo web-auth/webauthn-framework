@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use function in_array;
 use ParagonIE\ConstantTime\Base64;
-use const PHP_EOL;
+use function in_array;
 use function preg_replace;
+use const PHP_EOL;
 
 class CertificateToolbox
 {

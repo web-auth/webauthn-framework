@@ -38,9 +38,6 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
         $this->manager->flush();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
         $qb = $this->manager->createQueryBuilder();

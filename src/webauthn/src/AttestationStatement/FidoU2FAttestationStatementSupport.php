@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
-use function count;
-use function is_array;
-use const OPENSSL_ALGO_SHA256;
-use function openssl_pkey_get_public;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticatorData;
@@ -25,6 +19,12 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function openssl_pkey_get_public;
+use function openssl_verify;
+use const OPENSSL_ALGO_SHA256;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

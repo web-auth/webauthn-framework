@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function ord;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use function ord;
 
 /**
  * @final

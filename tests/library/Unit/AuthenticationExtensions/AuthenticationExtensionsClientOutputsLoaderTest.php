@@ -8,12 +8,12 @@ use CBOR\ByteStringObject;
 use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\AuthenticationExtensionException;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

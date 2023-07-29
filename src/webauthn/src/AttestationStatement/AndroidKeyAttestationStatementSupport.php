@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use function count;
-use function is_array;
-use function openssl_pkey_get_public;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
@@ -29,6 +24,11 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function openssl_pkey_get_public;
+use function openssl_verify;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -58,7 +58,6 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     /**
-     * {@inheritDoc}
      * @param array<string, mixed> $attestation
      */
     public function load(array $attestation): AttestationStatement
@@ -89,9 +88,6 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         return $attestationStatement;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isValid(
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DataCollector;
 
-use const JSON_PRETTY_PRINT;
-use const JSON_THROW_ON_ERROR;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +17,8 @@ use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEve
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
+use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 class WebauthnCollector extends DataCollector implements EventSubscriberInterface
 {
@@ -83,8 +83,6 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @return array<string, string|array{0: string, 1: int}|list<array{0: string, 1?: int}>>
      */
     public static function getSubscribedEvents(): array

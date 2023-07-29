@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function array_key_exists;
-use function is_array;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use const JSON_THROW_ON_ERROR;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use function sprintf;
 use Throwable;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
@@ -27,6 +23,10 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
+use function array_key_exists;
+use function is_array;
+use function sprintf;
+use const JSON_THROW_ON_ERROR;
 
 final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {

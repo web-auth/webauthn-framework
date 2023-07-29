@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
-use function array_key_exists;
-use function in_array;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use function in_array;
 
 /**
  * @deprecated Since 4.3.0 and will be removed in 5.0.0

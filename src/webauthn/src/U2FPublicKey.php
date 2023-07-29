@@ -12,7 +12,10 @@ use CBOR\UnsignedIntegerObject;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 
-class U2FPublicKey
+/**
+ * @internal
+ */
+final class U2FPublicKey
 {
     public static function isU2FKey(string $publicKey): bool
     {

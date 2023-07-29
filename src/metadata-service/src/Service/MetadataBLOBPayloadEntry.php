@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function array_key_exists;
-use function count;
-use function is_array;
-use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function is_string;
 
 /**
  * @final

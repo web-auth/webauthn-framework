@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function is_string;
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use function is_string;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data

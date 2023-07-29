@@ -12,9 +12,6 @@ final class CoseAlgorithmCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webauthn_cose_algorithm';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition('webauthn.cose.algorithm.manager')) {

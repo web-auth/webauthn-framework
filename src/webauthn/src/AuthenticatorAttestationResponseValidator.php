@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function count;
-use function in_array;
-use function is_array;
-use function is_string;
-use function parse_url;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -36,6 +30,12 @@ use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
+use function parse_url;
 
 class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispatchEvents
 {
@@ -481,7 +481,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
             'Not credential public key available in the attested credential data'
         );
-        return new PublicKeyCredentialSource(
+        return PublicKeyCredentialSource::create(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transports,

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use const JSON_THROW_ON_ERROR;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Service\MetadataBLOBPayloadEntry;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\StatusReportRepository;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

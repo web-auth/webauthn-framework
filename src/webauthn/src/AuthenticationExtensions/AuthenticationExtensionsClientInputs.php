@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
-use function array_key_exists;
 use ArrayIterator;
-use function count;
-use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 use Webauthn\Exception\AuthenticationExtensionException;
+use function array_key_exists;
+use function count;
+use const COUNT_NORMAL;
 
 /**
  * @implements IteratorAggregate<AuthenticationExtension>

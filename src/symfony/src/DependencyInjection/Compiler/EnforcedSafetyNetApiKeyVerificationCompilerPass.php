@@ -11,9 +11,6 @@ use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 
 final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(AndroidSafetyNetAttestationStatementSupport::class)

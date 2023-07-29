@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use const JSON_THROW_ON_ERROR;
 use Stringable;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
