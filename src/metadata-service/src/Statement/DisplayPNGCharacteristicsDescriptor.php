@@ -4,44 +4,28 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
 
 /**
  * @final
  */
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
-    private readonly int $width;
-
-    private readonly int $height;
-
-    private readonly int $bitDepth;
-
-    private readonly int $colorType;
-
-    private readonly int $compression;
-
-    private readonly int $filter;
-
-    private readonly int $interlace;
-
     /**
-     * @var RgbPaletteEntry[]
+     * @param RgbPaletteEntry[] $width
      */
-    private array $plte = [];
-
     public function __construct(
-        int $width,
-        int $height,
-        int $bitDepth,
-        int $colorType,
-        int $compression,
-        int $filter,
-        int $interlace
+        public readonly int $width,
+        public readonly int $height,
+        public readonly int $bitDepth,
+        public readonly int $colorType,
+        public readonly int $compression,
+        public readonly int $filter,
+        public readonly int $interlace,
+        public array $plte,
     ) {
         $width >= 0 || throw MetadataStatementLoadingException::create('Invalid width');
         $height >= 0 || throw MetadataStatementLoadingException::create('Invalid height');
@@ -56,16 +40,27 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         ($interlace >= 0 && $interlace <= 254) || throw MetadataStatementLoadingException::create(
             'Invalid interlace'
         );
-
-        $this->width = $width;
-        $this->height = $height;
-        $this->bitDepth = $bitDepth;
-        $this->colorType = $colorType;
-        $this->compression = $compression;
-        $this->filter = $filter;
-        $this->interlace = $interlace;
     }
 
+    /**
+     * @param RgbPaletteEntry[] $plte
+     */
+    public static function create(
+        int $width,
+        int $height,
+        int $bitDepth,
+        int $colorType,
+        int $compression,
+        int $filter,
+        int $interlace,
+        array $plte
+    ): self {
+        return new self($width, $height, $bitDepth, $colorType, $compression, $filter, $interlace, $plte);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addPalettes(RgbPaletteEntry ...$rgbPaletteEntries): self
     {
         foreach ($rgbPaletteEntries as $rgbPaletteEntry) {
@@ -75,36 +70,57 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getWidth(): int
     {
         return $this->width;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getHeight(): int
     {
         return $this->height;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getBitDepth(): int
     {
         return $this->bitDepth;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getColorType(): int
     {
         return $this->colorType;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCompression(): int
     {
         return $this->compression;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getFilter(): int
     {
         return $this->filter;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getInterlace(): int
     {
         return $this->interlace;
@@ -112,6 +128,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @return RgbPaletteEntry[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getPaletteEntries(): array
     {
@@ -139,24 +156,16 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
                 $key
             ));
         }
-        $object = new self(
+        return self::create(
             $data['width'],
             $data['height'],
             $data['bitDepth'],
             $data['colorType'],
             $data['compression'],
             $data['filter'],
-            $data['interlace']
+            $data['interlace'],
+            array_map(static fn (array $item) => RgbPaletteEntry::createFromArray($item), $data['plte'] ?? [])
         );
-        if (isset($data['plte'])) {
-            $plte = $data['plte'];
-            is_array($plte) || throw MetadataStatementLoadingException::create('Invalid "plte" parameter');
-            foreach ($plte as $item) {
-                $object->addPalettes(RgbPaletteEntry::createFromArray($item));
-            }
-        }
-
-        return $object;
     }
 
     /**

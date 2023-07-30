@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use const DIRECTORY_SEPARATOR;
-use function file_get_contents;
 use InvalidArgumentException;
-use function is_array;
-use function sprintf;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use function file_get_contents;
+use function is_array;
+use function sprintf;
+use const DIRECTORY_SEPARATOR;
 
 final class FolderResourceMetadataService implements MetadataService
 {
@@ -54,7 +54,7 @@ final class FolderResourceMetadataService implements MetadataService
         $filename = $this->rootPath . DIRECTORY_SEPARATOR . $aaguid;
         $data = trim(file_get_contents($filename));
         $mds = MetadataStatement::createFromString($data);
-        $mds->getAaguid() !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
+        $mds->aaguid !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
 
         return $mds;
     }

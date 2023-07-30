@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function array_key_exists;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use function array_key_exists;
 
 final class InMemoryMetadataService implements MetadataService, CanDispatchEvents
 {
@@ -42,7 +42,7 @@ final class InMemoryMetadataService implements MetadataService, CanDispatchEvent
     public function addStatements(MetadataStatement ...$statements): self
     {
         foreach ($statements as $statement) {
-            $aaguid = $statement->getAaguid();
+            $aaguid = $statement->aaguid;
             if ($aaguid === null) {
                 continue;
             }

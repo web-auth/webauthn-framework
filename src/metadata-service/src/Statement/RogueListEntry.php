@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
+use function array_key_exists;
+use function is_string;
 
 /**
  * @final
@@ -15,16 +15,27 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 class RogueListEntry implements JsonSerializable
 {
     public function __construct(
-        private readonly string $sk,
-        private readonly string $date
+        public readonly string $sk,
+        public readonly string $date
     ) {
     }
 
+    public static function create(string $sk, string $date): self
+    {
+        return new self($sk, $date);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getSk(): string
     {
         return $this->sk;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getDate(): ?string
     {
         return $this->date;
@@ -42,7 +53,7 @@ class RogueListEntry implements JsonSerializable
         );
         is_string($data['date']) || throw MetadataStatementLoadingException::create('The key "date" is invalid');
 
-        return new self($data['sk'], $data['date']);
+        return self::create($data['sk'], $data['date']);
     }
 
     /**

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\EmptyTrustPath;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 /**
  * @internal
@@ -24,7 +24,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
         $json = json_decode($data, true);
         $source = PublicKeyCredentialSource::createFromArray($json);
 
-        static::assertSame('publicKeyCredentialId', $source->getPublicKeyCredentialId());
+        static::assertSame('publicKeyCredentialId', $source->publicKeyCredentialId);
     }
 
     #[Test]

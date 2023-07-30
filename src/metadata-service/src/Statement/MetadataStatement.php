@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_array;
-use function is_string;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @final
@@ -165,55 +165,55 @@ class MetadataStatement implements JsonSerializable
 
     final public const ATTESTATION_ANONCA = 'anonca';
 
-    private ?string $legalHeader = null;
+    public ?string $legalHeader = null;
 
-    private ?string $aaid = null;
+    public ?string $aaid = null;
 
-    private ?string $aaguid = null;
-
-    /**
-     * @var string[]
-     */
-    private array $attestationCertificateKeyIdentifiers = [];
-
-    private AlternativeDescriptions $alternativeDescriptions;
+    public ?string $aaguid = null;
 
     /**
      * @var string[]
      */
-    private array $keyProtection = [];
+    public array $attestationCertificateKeyIdentifiers = [];
 
-    private ?bool $isKeyRestricted = null;
-
-    private ?bool $isFreshUserVerificationRequired = null;
-
-    private ?int $cryptoStrength = null;
+    public AlternativeDescriptions $alternativeDescriptions;
 
     /**
      * @var string[]
      */
-    private array $attachmentHint = [];
+    public array $keyProtection = [];
 
-    private ?string $tcDisplayContentType = null;
+    public ?bool $isKeyRestricted = null;
+
+    public ?bool $isFreshUserVerificationRequired = null;
+
+    public ?int $cryptoStrength = null;
+
+    /**
+     * @var string[]
+     */
+    public array $attachmentHint = [];
+
+    public ?string $tcDisplayContentType = null;
 
     /**
      * @var DisplayPNGCharacteristicsDescriptor[]
      */
-    private array $tcDisplayPNGCharacteristics = [];
+    public array $tcDisplayPNGCharacteristics = [];
 
     /**
      * @var EcdaaTrustAnchor[]
      */
-    private array $ecdaaTrustAnchors = [];
+    public array $ecdaaTrustAnchors = [];
 
-    private ?string $icon = null;
+    public ?string $icon = null;
 
     /**
      * @var ExtensionDescriptor[]
      */
-    private array $supportedExtensions = [];
+    public array $supportedExtensions = [];
 
-    private null|AuthenticatorGetInfo $authenticatorGetInfo = null;
+    public null|AuthenticatorGetInfo $authenticatorGetInfo = null;
 
     /**
      * @param Version[] $upv
@@ -226,40 +226,79 @@ class MetadataStatement implements JsonSerializable
      * @param string[] $attestationRootCertificates
      */
     public function __construct(
-        private readonly string $description,
-        private readonly int $authenticatorVersion,
-        private readonly string $protocolFamily,
-        private readonly int $schema,
-        private readonly array $upv,
-        private readonly array $authenticationAlgorithms,
-        private readonly array $publicKeyAlgAndEncodings,
-        private readonly array $attestationTypes,
-        private readonly array $userVerificationDetails,
-        private readonly array $matcherProtection,
-        private readonly array $tcDisplay,
-        private readonly array $attestationRootCertificates,
+        public readonly string $description,
+        public readonly int $authenticatorVersion,
+        public readonly string $protocolFamily,
+        public readonly int $schema,
+        public readonly array $upv,
+        public readonly array $authenticationAlgorithms,
+        public readonly array $publicKeyAlgAndEncodings,
+        public readonly array $attestationTypes,
+        public readonly array $userVerificationDetails,
+        public readonly array $matcherProtection,
+        public readonly array $tcDisplay,
+        public readonly array $attestationRootCertificates,
     ) {
-        $this->alternativeDescriptions = new AlternativeDescriptions();
-        $this->authenticatorGetInfo = new AuthenticatorGetInfo();
+        $this->alternativeDescriptions = AlternativeDescriptions::create();
+        $this->authenticatorGetInfo = AuthenticatorGetInfo::create();
+    }
+
+    public static function create(
+        string $description,
+        int $authenticatorVersion,
+        string $protocolFamily,
+        int $schema,
+        array $upv,
+        array $authenticationAlgorithms,
+        array $publicKeyAlgAndEncodings,
+        array $attestationTypes,
+        array $userVerificationDetails,
+        array $matcherProtection,
+        array $tcDisplay,
+        array $attestationRootCertificates
+    ): self {
+        return new self(
+            $description,
+            $authenticatorVersion,
+            $protocolFamily,
+            $schema,
+            $upv,
+            $authenticationAlgorithms,
+            $publicKeyAlgAndEncodings,
+            $attestationTypes,
+            $userVerificationDetails,
+            $matcherProtection,
+            $tcDisplay,
+            $attestationRootCertificates
+        );
     }
 
     public static function createFromString(string $statement): self
     {
-        $data = json_decode($statement, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($statement, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getLegalHeader(): ?string
     {
         return $this->legalHeader;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaid(): ?string
     {
         return $this->aaid;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaguid(): ?string
     {
         return $this->aaguid;
@@ -270,11 +309,17 @@ class MetadataStatement implements JsonSerializable
         return $this->isKeyRestricted;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function isFreshUserVerificationRequired(): ?bool
     {
         return $this->isFreshUserVerificationRequired;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthenticatorGetInfo(): AuthenticatorGetInfo|null
     {
         return $this->authenticatorGetInfo;
@@ -282,27 +327,40 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAlternativeDescriptions(): AlternativeDescriptions
     {
         return $this->alternativeDescriptions;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthenticatorVersion(): int
     {
         return $this->authenticatorVersion;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getProtocolFamily(): string
     {
         return $this->protocolFamily;
@@ -310,12 +368,16 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return Version[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getUpv(): array
     {
         return $this->upv;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getSchema(): ?int
     {
         return $this->schema;
@@ -323,6 +385,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAuthenticationAlgorithms(): array
     {
@@ -331,6 +394,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getPublicKeyAlgAndEncodings(): array
     {
@@ -339,6 +403,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAttestationTypes(): array
     {
@@ -347,6 +412,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return VerificationMethodANDCombinations[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getUserVerificationDetails(): array
     {
@@ -355,6 +421,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getKeyProtection(): array
     {
@@ -363,12 +430,16 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getMatcherProtection(): array
     {
         return $this->matcherProtection;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCryptoStrength(): ?int
     {
         return $this->cryptoStrength;
@@ -376,6 +447,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAttachmentHint(): array
     {
@@ -384,12 +456,16 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getTcDisplay(): array
     {
         return $this->tcDisplay;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getTcDisplayContentType(): ?string
     {
         return $this->tcDisplayContentType;
@@ -397,6 +473,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return DisplayPNGCharacteristicsDescriptor[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getTcDisplayPNGCharacteristics(): array
     {
@@ -405,6 +482,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAttestationRootCertificates(): array
     {
@@ -421,6 +499,9 @@ class MetadataStatement implements JsonSerializable
         return $this->ecdaaTrustAnchors;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getIcon(): ?string
     {
         return $this->icon;
@@ -428,6 +509,7 @@ class MetadataStatement implements JsonSerializable
 
     /**
      * @return ExtensionDescriptor[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getSupportedExtensions(): array
     {
@@ -480,7 +562,7 @@ class MetadataStatement implements JsonSerializable
             }
         }
 
-        $object = new self(
+        $object = self::create(
             $data['description'],
             $data['authenticatorVersion'],
             $data['protocolFamily'],

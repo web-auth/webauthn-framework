@@ -9,6 +9,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
@@ -28,9 +29,6 @@ final class Configuration implements ConfigurationInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);
@@ -73,14 +71,13 @@ final class Configuration implements ConfigurationInterface
                 ->info('PSR-14 Event Dispatcher service.')
             ->end()
             ->scalarNode('request_factory')
-            ->cannotBeEmpty()
-            ->defaultValue('webauthn.request_factory.default')
+            ->defaultNull()
             ->info('PSR-17 Request Factory.')
             ->end()
             ->scalarNode('http_client')
             ->cannotBeEmpty()
             ->defaultValue('webauthn.http_client.default')
-            ->info('A PSR-18 HTTP client.')
+            ->info('A Symfony HTTP client.')
             ->end()
             ->scalarNode('logger')
             ->defaultValue('webauthn.logger.default')
@@ -428,29 +425,33 @@ final class Configuration implements ConfigurationInterface
     {
         $rootNode->children()
             ->arrayNode('android_safetynet')
-            ->addDefaultsIfNotSet()
-            ->info('Additional configuration options for the Android SafetyNet attestation.')
-            ->children()
-            ->integerNode('leeway')
-            ->defaultValue(0)
-            ->min(0)
-            ->info(
-                'Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.'
-            )
+                ->addDefaultsIfNotSet()
+                ->info('Additional configuration options for the Android SafetyNet attestation.')
+                ->children()
+                    ->integerNode('leeway')
+                        ->defaultValue(0)
+                        ->min(0)
+                        ->info(
+                            'Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.'
+                        )
+                    ->end()
+                    ->integerNode('max_age')
+                        ->min(0)
+                        ->defaultValue(60000)
+                        ->info('Maximum age of the response (in millisecond)')
+                    ->end()
+                    ->scalarNode('api_key')
+                        ->defaultNull()
+                        ->info(
+                            'If set, the application will verify the statements using Google API. See https://console.cloud.google.com/apis/library to get it.'
+                        )
+                    ->end()
+                    ->scalarNode('http_client')
+                        ->defaultValue(HttpClientInterface::class)
+                        ->info('Symfony client to use to send the request to Google API.')
+                    ->end()
+                ->end()
             ->end()
-            ->integerNode('max_age')
-            ->min(0)
-            ->defaultValue(60000)
-            ->info('Maximum age of the response (in millisecond)')
-            ->end()
-            ->scalarNode('api_key')
-            ->defaultNull()
-            ->info(
-                'If set, the application will verify the statements using Google API. See https://console.cloud.google.com/apis/library to get it.'
-            )
-            ->end()
-            ->end()
-            ->end()
-            ->end();
+        ->end();
     }
 }

@@ -11,11 +11,11 @@ use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\TextStringObject;
 use CBOR\UnsignedIntegerObject;
-use function chr;
-use function ord;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\InvalidDataException;
+use function chr;
+use function ord;
 
 final class AuthenticatorDataLoader
 {

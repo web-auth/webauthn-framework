@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
-use function count;
-use const FILTER_VALIDATE_BOOLEAN;
 use InvalidArgumentException;
-use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -22,6 +19,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function count;
+use function is_array;
+use const FILTER_VALIDATE_BOOLEAN;
 
 final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCreationOptionsBuilder
 {
@@ -63,19 +63,18 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         if (is_array($authenticatorSelectionData)) {
             $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
         } elseif ($creationOptionsRequest->userVerification !== null || $creationOptionsRequest->residentKey !== null || $creationOptionsRequest->authenticatorAttachment !== null) {
-            $authenticatorSelection = AuthenticatorSelectionCriteria::create()
-                ->setUserVerification(
-                    $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-                )
-                ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment);
-            if ($creationOptionsRequest->requireResidentKey !== null) {
-                $authenticatorSelection->setRequireResidentKey(
-                    filter_var($creationOptionsRequest->requireResidentKey, FILTER_VALIDATE_BOOLEAN)
-                );
-            }
-            if ($creationOptionsRequest->residentKey !== null) {
-                $authenticatorSelection->setResidentKey($creationOptionsRequest->residentKey);
-            }
+            $residentKey = $creationOptionsRequest->residentKey ?? null;
+            $requireResidentKey = $creationOptionsRequest->requireResidentKey !== null ? filter_var(
+                $creationOptionsRequest->requireResidentKey,
+                FILTER_VALIDATE_BOOLEAN
+            ) : null;
+
+            $authenticatorSelection = AuthenticatorSelectionCriteria::create(
+                $creationOptionsRequest->authenticatorAttachment,
+                $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                $residentKey,
+                $requireResidentKey
+            );
         }
         $extensions = $creationOptionsRequest->extensions;
         if (is_array($extensions)) {

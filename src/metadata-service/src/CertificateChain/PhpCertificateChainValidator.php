@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use function count;
 use DateTimeZone;
-use function in_array;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
-use function parse_url;
-use const PHP_EOL;
-use const PHP_URL_SCHEME;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
@@ -21,6 +16,7 @@ use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 use Webauthn\MetadataService\Event\BeforeCertificateChainValidation;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -30,6 +26,11 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\MetadataService\Exception\CertificateRevocationListException;
 use Webauthn\MetadataService\Exception\InvalidCertificateException;
+use function count;
+use function in_array;
+use function parse_url;
+use const PHP_EOL;
+use const PHP_URL_SCHEME;
 
 /**
  * @final
@@ -43,8 +44,8 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
+        private readonly ClientInterface|HttpClientInterface $client,
+        private readonly ?RequestFactoryInterface $requestFactory = null,
         null|Clock|ClockInterface $clock = null,
         private readonly bool $allowFailures = true
     ) {
@@ -56,8 +57,23 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
             );
             $clock = new SystemClock(new DateTimeZone('UTC'));
         }
+        if ($requestFactory !== null && ! $client instanceof HttpClientInterface) {
+            trigger_deprecation(
+                'web-auth/metadata-service',
+                '4.7.0',
+                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$client" argument.'
+            );
+        }
         $this->clock = $clock;
         $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public static function create(
+        HttpClientInterface $client,
+        null|Clock|ClockInterface $clock = null,
+        bool $allowFailures = true
+    ): self {
+        return new self($client, null, $clock, $allowFailures);
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
@@ -208,13 +224,12 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
     private function retrieveRevokedSerialNumbers(string $url): array
     {
         try {
-            $request = $this->requestFactory->createRequest('GET', $url);
-            $response = $this->client->sendRequest($request);
-            if ($response->getStatusCode() !== 200) {
-                throw CertificateRevocationListException::create($url, 'Failed to download the CRL');
+            if ($this->client instanceof HttpClientInterface) {
+                $crlData = $this->client->request('GET', $url)
+                    ->getContent();
+            } else {
+                $crlData = $this->sendPsrRequest($url);
             }
-            $crlData = $response->getBody()
-                ->getContents();
             $crl = UnspecifiedType::fromDER($crlData)->asSequence();
             count($crl) === 3 || throw CertificateRevocationListException::create($url);
             $tbsCertList = $crl->at(0)
@@ -267,5 +282,17 @@ class PhpCertificateChainValidator implements CertificateChainValidator, CanDisp
                 $e
             );
         }
+    }
+
+    private function sendPsrRequest(string $url): string
+    {
+        $request = $this->requestFactory->createRequest('GET', $url);
+        $response = $this->client->sendRequest($request);
+        if ($response->getStatusCode() !== 200) {
+            throw CertificateRevocationListException::create($url, 'Failed to download the CRL');
+        }
+
+        return $response->getBody()
+            ->getContents();
     }
 }

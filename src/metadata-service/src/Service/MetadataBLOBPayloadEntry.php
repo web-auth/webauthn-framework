@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function array_key_exists;
-use function count;
-use function is_array;
-use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function is_string;
 
 /**
  * @final
@@ -23,29 +23,29 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     /**
      * @var string[]
      */
-    private array $attestationCertificateKeyIdentifiers = [];
+    public array $attestationCertificateKeyIdentifiers = [];
 
     /**
      * @var BiometricStatusReport[]
      */
-    private array $biometricStatusReports = [];
+    public array $biometricStatusReports = [];
 
     /**
      * @var StatusReport[]
      */
-    private array $statusReports = [];
+    public array $statusReports = [];
 
     /**
      * @param string[] $attestationCertificateKeyIdentifiers
      */
     public function __construct(
-        private readonly ?string $aaid,
-        private readonly ?string $aaguid,
+        public readonly ?string $aaid,
+        public readonly ?string $aaguid,
         array $attestationCertificateKeyIdentifiers,
-        private readonly ?MetadataStatement $metadataStatement,
-        private readonly string $timeOfLastStatusChange,
-        private readonly ?string $rogueListURL,
-        private readonly ?string $rogueListHash
+        public readonly ?MetadataStatement $metadataStatement,
+        public readonly string $timeOfLastStatusChange,
+        public readonly ?string $rogueListURL,
+        public readonly ?string $rogueListHash
     ) {
         if ($aaid !== null && $aaguid !== null) {
             throw MetadataStatementLoadingException::create('Authenticators cannot support both AAID and AAGUID');
@@ -69,11 +69,17 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaid(): ?string
     {
         return $this->aaid;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAaguid(): ?string
     {
         return $this->aaguid;
@@ -81,17 +87,24 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAttestationCertificateKeyIdentifiers(): array
     {
         return $this->attestationCertificateKeyIdentifiers;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMetadataStatement(): ?MetadataStatement
     {
         return $this->metadataStatement;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addBiometricStatusReports(BiometricStatusReport ...$biometricStatusReports): self
     {
         foreach ($biometricStatusReports as $biometricStatusReport) {
@@ -103,12 +116,16 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @return BiometricStatusReport[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getBiometricStatusReports(): array
     {
         return $this->biometricStatusReports;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addStatusReports(StatusReport ...$statusReports): self
     {
         foreach ($statusReports as $statusReport) {
@@ -120,22 +137,32 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @return StatusReport[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getStatusReports(): array
     {
         return $this->statusReports;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getTimeOfLastStatusChange(): string
     {
         return $this->timeOfLastStatusChange;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRogueListURL(): string|null
     {
         return $this->rogueListURL;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRogueListHash(): string|null
     {
         return $this->rogueListHash;
@@ -166,11 +193,11 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             $data['rogueListHash'] ?? null
         );
         foreach ($data['statusReports'] as $statusReport) {
-            $object->addStatusReports(StatusReport::createFromArray($statusReport));
+            $object->statusReports[] = StatusReport::createFromArray($statusReport);
         }
         if (array_key_exists('biometricStatusReport', $data)) {
             foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
-                $object->addBiometricStatusReports(BiometricStatusReport::createFromArray($biometricStatusReport));
+                $object->biometricStatusReports[] = BiometricStatusReport::createFromArray($biometricStatusReport);
             }
         }
 

@@ -9,8 +9,8 @@ use JsonSerializable;
 class AuthenticationExtension implements JsonSerializable
 {
     public function __construct(
-        private readonly string $name,
-        private readonly mixed $value
+        public readonly string $name,
+        public readonly mixed $value
     ) {
     }
 
@@ -19,11 +19,17 @@ class AuthenticationExtension implements JsonSerializable
         return new self($name, $value);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function name(): string
     {
         return $this->name;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function value(): mixed
     {
         return $this->value;

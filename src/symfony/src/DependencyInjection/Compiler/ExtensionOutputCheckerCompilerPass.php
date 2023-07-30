@@ -13,9 +13,6 @@ final class ExtensionOutputCheckerCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webauthn_extension_output_checker';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(ExtensionOutputCheckerHandler::class)) {

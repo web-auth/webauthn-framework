@@ -48,18 +48,18 @@ final class AssertionResponseController
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
-            $response = $publicKeyCredential->getResponse();
+            $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAssertionResponse || throw new BadRequestHttpException(
                 'Invalid response'
             );
-            $data = $this->optionsStorage->get($response->getClientDataJSON()->getChallenge());
+            $data = $this->optionsStorage->get($response->clientDataJSON->challenge);
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw new BadRequestHttpException(
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository === null ? $publicKeyCredential->getRawId() : $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
-                $publicKeyCredential->getRawId()
+            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository === null ? $publicKeyCredential->rawId : $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                $publicKeyCredential->rawId
             );
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
@@ -70,7 +70,7 @@ final class AssertionResponseController
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
-                $userEntity?->getId(),
+                $userEntity?->id,
                 $this->securedRelyingPartyIds
             );
             return $this->successHandler->onSuccess($request);

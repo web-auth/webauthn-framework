@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
-use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
@@ -13,12 +12,10 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
+use const JSON_THROW_ON_ERROR;
 
 class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(
         private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,

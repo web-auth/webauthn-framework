@@ -19,13 +19,13 @@ final class AttestationObjectTest extends TestCase
     #[Test]
     public function anAttestationObjectCanBeCreated(): void
     {
-        $attestationStatement = new AttestationStatement('', [], '', new EmptyTrustPath());
+        $attestationStatement = new AttestationStatement('', [], '', emptyTrustPath::create());
         $authenticatorData = new AuthenticatorData('', '', '', 0, null, null);
 
         $object = new AttestationObject('rawAttestationObject', $attestationStatement, $authenticatorData);
 
-        static::assertSame('rawAttestationObject', $object->getRawAttestationObject());
-        static::assertInstanceOf(AttestationStatement::class, $object->getAttStmt());
-        static::assertInstanceOf(AuthenticatorData::class, $object->getAuthData());
+        static::assertSame('rawAttestationObject', $object->rawAttestationObject);
+        static::assertInstanceOf(AttestationStatement::class, $object->attStmt);
+        static::assertInstanceOf(AuthenticatorData::class, $object->authData);
     }
 }

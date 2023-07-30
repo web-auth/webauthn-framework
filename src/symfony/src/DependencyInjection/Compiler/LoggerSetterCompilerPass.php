@@ -12,9 +12,6 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webauthn_can_log_data';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasAlias('webauthn.logger')) {

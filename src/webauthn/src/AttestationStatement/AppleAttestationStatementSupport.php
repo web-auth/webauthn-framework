@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use function count;
-use function is_array;
-use function openssl_pkey_get_public;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -24,6 +20,10 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function openssl_pkey_get_public;
 
 final class AppleAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -77,7 +77,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $attestationStatement = AttestationStatement::createAnonymizationCA(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -89,13 +89,13 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path'
         );
 
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];
@@ -117,11 +117,11 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
 
         //Check that authData publicKey matches the public key in the attestation certificate
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
         );
-        $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
+        $publicKeyData = $attestedCredentialData->credentialPublicKey;
         $publicKeyData !== null || throw AttestationStatementVerificationException::create(
             'No attested public key found'
         );
@@ -166,7 +166,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         );
         $extension = $certDetails['extensions']['1.2.840.113635.100.8.2'];
 
-        $nonceToHash = $authenticatorData->getAuthData() . $clientDataHash;
+        $nonceToHash = $authenticatorData->authData . $clientDataHash;
         $nonce = hash('sha256', $nonceToHash);
 
         //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object

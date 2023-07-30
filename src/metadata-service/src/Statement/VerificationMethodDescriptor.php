@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_array;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function is_array;
 
 /**
  * @final
@@ -99,20 +99,29 @@ class VerificationMethodDescriptor implements JsonSerializable
         self::USER_VERIFY_ALL_INT,
     ];
 
-    private readonly string $userVerificationMethod;
-
     public function __construct(
-        string $userVerificationMethod,
-        private readonly ?CodeAccuracyDescriptor $caDesc = null,
-        private readonly ?BiometricAccuracyDescriptor $baDesc = null,
-        private readonly ?PatternAccuracyDescriptor $paDesc = null
+        public readonly string $userVerificationMethod,
+        public readonly ?CodeAccuracyDescriptor $caDesc = null,
+        public readonly ?BiometricAccuracyDescriptor $baDesc = null,
+        public readonly ?PatternAccuracyDescriptor $paDesc = null
     ) {
         $userVerificationMethod >= 0 || throw MetadataStatementLoadingException::create(
             'The parameter "userVerificationMethod" is invalid'
         );
-        $this->userVerificationMethod = $userVerificationMethod;
     }
 
+    public static function create(
+        string $userVerificationMethod,
+        ?CodeAccuracyDescriptor $caDesc = null,
+        ?BiometricAccuracyDescriptor $baDesc = null,
+        ?PatternAccuracyDescriptor $paDesc = null
+    ): self {
+        return new self($userVerificationMethod, $caDesc, $baDesc, $paDesc);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getUserVerificationMethod(): string
     {
         return $this->userVerificationMethod;
@@ -183,16 +192,25 @@ class VerificationMethodDescriptor implements JsonSerializable
         return $this->userVerificationMethod === self::USER_VERIFY_ALL;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCaDesc(): ?CodeAccuracyDescriptor
     {
         return $this->caDesc;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getBaDesc(): ?BiometricAccuracyDescriptor
     {
         return $this->baDesc;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getPaDesc(): ?PatternAccuracyDescriptor
     {
         return $this->paDesc;
@@ -224,7 +242,7 @@ class VerificationMethodDescriptor implements JsonSerializable
         $baDesc = isset($data['baDesc']) ? BiometricAccuracyDescriptor::createFromArray($data['baDesc']) : null;
         $paDesc = isset($data['paDesc']) ? PatternAccuracyDescriptor::createFromArray($data['paDesc']) : null;
 
-        return new self($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
+        return self::create($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
     }
 
     /**

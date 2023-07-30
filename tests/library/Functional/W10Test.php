@@ -37,38 +37,38 @@ final class W10Test extends AbstractTestCase
         );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($publicKeyCredentialData);
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
-            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, $host);
+            ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
-        static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->getId()));
-        static::assertSame($credentialId, $publicKeyCredentialDescriptor->getId());
+        static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->id));
+        static::assertSame($credentialId, $publicKeyCredentialDescriptor->id);
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            $publicKeyCredentialDescriptor->getType()
+            $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->getTransports());
+        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
-        $authenticatorData = $publicKeyCredential->getResponse()
-            ->getAttestationObject()
-            ->getAuthData();
-        static::assertSame($rpIdHash, $authenticatorData->getRpIdHash());
+        $authenticatorData = $publicKeyCredential->response
+            ->attestationObject
+            ->authData;
+        static::assertSame($rpIdHash, $authenticatorData->rpIdHash);
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertSame($signCount, $authenticatorData->getSignCount());
-        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
+        static::assertSame($signCount, $authenticatorData->signCount);
+        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
-        if ($publicKeyCredentialCreationOptions->getAttestation() === null || $publicKeyCredentialCreationOptions->getAttestation() === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
+        if ($publicKeyCredentialCreationOptions->attestation === null || $publicKeyCredentialCreationOptions->attestation === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
             static::assertSame(
                 '00000000-0000-0000-0000-000000000000',
-                $publicKeyCredentialSource->getAaguid()
+                $publicKeyCredentialSource->aaguid
                     ->__toString()
             );
-            static::assertSame('none', $publicKeyCredentialSource->getAttestationType());
-            static::assertInstanceOf(EmptyTrustPath::class, $publicKeyCredentialSource->getTrustPath());
+            static::assertSame('none', $publicKeyCredentialSource->attestationType);
+            static::assertInstanceOf(EmptyTrustPath::class, $publicKeyCredentialSource->trustPath);
         }
     }
 
@@ -114,7 +114,7 @@ final class W10Test extends AbstractTestCase
             ->load(
                 '{"id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x-18","type":"public-key","rawId":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=","response":{"authenticatorData":"lgTqgoJOmKStoUtEYtDXOo7EaRMNqRsZMHRZIp90o1kFAAAABA","clientDataJSON":"ew0KCSJ0eXBlIiA6ICJ3ZWJhdXRobi5nZXQiLA0KCSJjaGFsbGVuZ2UiIDogInctQmVhVVRaWm5ZTXp2VUI1R1dVcGlUMVdZT25yOWlDR1V0NWlyVWlVa28iLA0KCSJvcmlnaW4iIDogImh0dHBzOi8vd2ViYXV0aG4uc3BvbWt5LWxhYnMuY29tIiwNCgkidG9rZW5CaW5kaW5nIiA6IA0KCXsNCgkJInN0YXR1cyIgOiAic3VwcG9ydGVkIg0KCX0NCn0","signature":"lV7pKH+0rVaaWC5ZoQIMSW1EjeIELfUTKcplaSW65I8rH7U38qVoTYyvxQiZwtQsqKgXOMQYJ6n1JV+is3yi8wOjxkkmR/bLPPssLz7Za1ooSAJ+R1JKTYsmsozpTmouCVtBN4Il92Zrhy9sOD3pVUjHUJaXaEsV2dReqEamwt9+VLQiD0fJwYrqiyWETEybGqJSj7p2Zb0BVOcevlPCj3tX84DreZMW7lkYE6PyuJCmi7eR/kKq2N+ohvH6H3aHloQ+kgSb2L2gJn1hjs5Z3JxMvrwmnj0Vx1J2AMWrQyuBeBblJN3UP3Wbk16e+8Bq8HC9W6JG9qgqTyR1wJx0Yw==","userHandle":"ZWUxM2Q0ZjEtNDg2My00N2RkLWE0MDctMDk3Y2I0OWFjODIy"}}'
             );
-        static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->getResponse());
+        static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->response);
         $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
             base64_decode('6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x+18=', true),
             'ee13d4f1-4863-47dd-a407-097cb49ac822',
@@ -128,11 +128,11 @@ final class W10Test extends AbstractTestCase
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
-                $publicKeyCredential->getResponse(),
+                $publicKeyCredential->response,
                 $publicKeyCredentialRequestOptions,
                 'webauthn.spomky-labs.com',
                 'ee13d4f1-4863-47dd-a407-097cb49ac822'
             );
-        static::assertSame(4, $publicKeyCredentialSource->getCounter());
+        static::assertSame(4, $publicKeyCredentialSource->counter);
     }
 }

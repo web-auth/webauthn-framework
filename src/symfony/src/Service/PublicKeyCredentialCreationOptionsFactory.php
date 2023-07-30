@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use function array_key_exists;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -18,6 +17,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function array_key_exists;
 
 final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {
@@ -70,14 +70,14 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 $userEntity,
                 random_bytes($profile['challenge_length']),
                 $this->createCredentialParameters($profile)
-            )
-                ->excludeCredentials(...$excludeCredentials)
-                ->setAuthenticatorSelection(
-                    $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria($profile)
-                )
-                ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
-                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout']);
+            );
+        $options->excludeCredentials = $excludeCredentials;
+        $options->authenticatorSelection = $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
+            $profile
+        );
+        $options->attestation = $attestationConveyance ?? $profile['attestation_conveyance'];
+        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
+        $options->timeout = $profile['timeout'];
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;
@@ -88,12 +88,16 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
-        foreach ($profile['extensions'] as $k => $v) {
-            $extensions->add(AuthenticationExtension::create($k, $v));
-        }
-
-        return $extensions;
+        return AuthenticationExtensionsClientInputs::create(
+            array_map(
+                static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
+                    $name,
+                    $value
+                ),
+                array_keys($profile['extensions']),
+                $profile['extensions']
+            )
+        );
     }
 
     /**
@@ -101,11 +105,12 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
-        return AuthenticatorSelectionCriteria::create()
-            ->setAuthenticatorAttachment($profile['authenticator_selection_criteria']['attachment_mode'])
-            ->setUserVerification($profile['authenticator_selection_criteria']['user_verification'])
-            ->setRequireResidentKey($profile['authenticator_selection_criteria']['require_resident_key'])
-            ->setResidentKey($profile['authenticator_selection_criteria']['resident_key']);
+        return AuthenticatorSelectionCriteria::create(
+            $profile['authenticator_selection_criteria']['authenticator_attachment'],
+            $profile['authenticator_selection_criteria']['user_verification'],
+            $profile['authenticator_selection_criteria']['resident_key'],
+            $profile['authenticator_selection_criteria']['require_resident_key'],
+        );
     }
 
     /**
@@ -113,7 +118,11 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
-        return new PublicKeyCredentialRpEntity($profile['rp']['name'], $profile['rp']['id'], $profile['rp']['icon']);
+        return PublicKeyCredentialRpEntity::create(
+            $profile['rp']['name'],
+            $profile['rp']['id'],
+            $profile['rp']['icon']
+        );
     }
 
     /**

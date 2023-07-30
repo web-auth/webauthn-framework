@@ -12,11 +12,20 @@ use CBOR\UnsignedIntegerObject;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 
-class U2FPublicKey
+/**
+ * @internal
+ */
+final class U2FPublicKey
 {
+    private const U2F_KEY_PREFIX = "\x04";
+
+    private const U2F_KEY_LENGTH = 65;
+
+    private const U2F_KEY_PART_SIZE = 32;
+
     public static function isU2FKey(string $publicKey): bool
     {
-        return $publicKey[0] === "\x04" && mb_strlen($publicKey, '8bit') === 65;
+        return $publicKey[0] === self::U2F_KEY_PREFIX && mb_strlen($publicKey, '8bit') === self::U2F_KEY_LENGTH;
     }
 
     public static function convertToCoseKey(string $publicKey): string
@@ -36,11 +45,11 @@ class U2FPublicKey
             ),
             MapItem::create(
                 NegativeIntegerObject::create(Ec2Key::DATA_X),
-                ByteStringObject::create(mb_substr($publicKey, 1, 32, '8bit'))
+                ByteStringObject::create(mb_substr($publicKey, 1, self::U2F_KEY_PART_SIZE, '8bit'))
             ),
             MapItem::create(
                 NegativeIntegerObject::create(Ec2Key::DATA_Y),
-                ByteStringObject::create(mb_substr($publicKey, 33, null, '8bit'))
+                ByteStringObject::create(mb_substr($publicKey, 1 + self::U2F_KEY_PART_SIZE, null, '8bit'))
             ),
         ])->__toString();
     }

@@ -28,7 +28,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
             AttestationStatement::TYPE_NONE,
-            new EmptyTrustPath(),
+            EmptyTrustPath::create(),
             Uuid::fromBinary(base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true)),
             base64_decode(
                 'pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=',
@@ -53,7 +53,7 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
         $item = $this->cacheItemPool->getItem(
-            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialUserEntity->getId())
+            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialUserEntity->id)
         );
         if (! $item->isHit()) {
             return [];
@@ -70,13 +70,13 @@ final class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSo
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $item = $this->cacheItemPool->getItem(
-            'pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->getPublicKeyCredentialId())
+            'pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->publicKeyCredentialId)
         );
         $item->set($publicKeyCredentialSource);
         $this->cacheItemPool->save($item);
 
         $item = $this->cacheItemPool->getItem(
-            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->getUserHandle())
+            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->userHandle)
         );
         $pks = [];
         if ($item->isHit()) {

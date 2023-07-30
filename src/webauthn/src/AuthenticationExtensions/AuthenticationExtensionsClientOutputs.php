@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
-use function array_key_exists;
 use ArrayIterator;
-use function count;
-use const COUNT_NORMAL;
 use Countable;
 use Iterator;
 use IteratorAggregate;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
 use Webauthn\Exception\AuthenticationExtensionException;
+use function array_key_exists;
+use function count;
+use const COUNT_NORMAL;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @implements IteratorAggregate<AuthenticationExtension>
@@ -23,23 +23,39 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     /**
      * @var AuthenticationExtension[]
      */
-    private array $extensions = [];
+    public array $extensions = [];
 
-    public static function create(): self
+    /**
+     * @param AuthenticationExtension[] $extensions
+     */
+    public function __construct(array $extensions = [])
     {
-        return new self();
+        foreach ($extensions as $extension) {
+            $this->extensions[$extension->name] = $extension;
+        }
     }
 
+    /**
+     * @param AuthenticationExtension[] $extensions
+     */
+    public static function create(array $extensions = []): self
+    {
+        return new self($extensions);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function add(AuthenticationExtension ...$extensions): void
     {
         foreach ($extensions as $extension) {
-            $this->extensions[$extension->name()] = $extension;
+            $this->extensions[$extension->name] = $extension;
         }
     }
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }
@@ -49,12 +65,16 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     public static function createFromArray(array $json): self
     {
-        $object = new self();
-        foreach ($json as $k => $v) {
-            $object->add(AuthenticationExtension::create($k, $v));
-        }
-
-        return $object;
+        return self::create(
+            array_map(
+                static fn (string $key, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
+                    $key,
+                    $value
+                ),
+                array_keys($json),
+                $json
+            )
+        );
     }
 
     public function has(string $key): bool

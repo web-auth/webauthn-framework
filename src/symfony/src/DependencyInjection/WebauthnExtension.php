@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
-use function array_key_exists;
 use Cose\Algorithm\Algorithm;
-use function count;
-use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -50,6 +47,9 @@ use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use function array_key_exists;
+use function count;
+use function is_array;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
@@ -58,9 +58,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAlias(): string
     {
         return $this->alias;
@@ -88,7 +85,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->setAlias('webauthn.event_dispatcher', $config['event_dispatcher']);
         $container->setAlias('webauthn.clock', $config['clock']);
-        $container->setAlias('webauthn.request_factory', $config['request_factory']);
+        if ($config['request_factory'] !== null) {
+            $container->setAlias('webauthn.request_factory', $config['request_factory']);
+        }
         $container->setAlias('webauthn.http_client', $config['http_client']);
         $container->setAlias('webauthn.logger', $config['logger']);
 
@@ -124,9 +123,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         return new Configuration($this->alias);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function prepend(ContainerBuilder $container): void
     {
         if (! $container->hasParameter('kernel.bundles')) {
@@ -299,6 +295,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadAndroidSafetyNet(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
         //Android SafetyNet
+        $container->setAlias('webauthn.android_safetynet.http_client', $config['http_client']);
         $container->setParameter('webauthn.android_safetynet.leeway', $config['leeway']);
         $container->setParameter('webauthn.android_safetynet.max_age', $config['max_age']);
         $container->setParameter('webauthn.android_safetynet.api_key', $config['api_key']);

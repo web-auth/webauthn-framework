@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use function array_key_exists;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -14,6 +13,7 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use function array_key_exists;
 
 final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvents
 {
@@ -53,13 +53,12 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
         ));
         $profile = $this->profiles[$key];
 
-        $options = PublicKeyCredentialRequestOptions
-            ::create(random_bytes($profile['challenge_length']))
-                ->setRpId($profile['rp_id'])
-                ->setUserVerification($userVerification ?? $profile['user_verification'])
-                ->allowCredentials(...$allowCredentials)
-                ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout']);
+        $options = PublicKeyCredentialRequestOptions::create(random_bytes($profile['challenge_length']));
+        $options->rpId = $profile['rp_id'];
+        $options->userVerification = $userVerification ?? $profile['user_verification'];
+        $options->allowCredentials = $allowCredentials;
+        $options->timeout = $profile['timeout'];
+        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
         $this->eventDispatcher->dispatch(PublicKeyCredentialRequestOptionsCreatedEvent::create($options));
 
         return $options;
@@ -75,11 +74,15 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
      */
     private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
     {
-        $extensions = new AuthenticationExtensionsClientInputs();
-        foreach ($profile['extensions'] as $k => $v) {
-            $extensions->add(AuthenticationExtension::create($k, $v));
-        }
-
-        return $extensions;
+        return AuthenticationExtensionsClientInputs::create(
+            array_map(
+                static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
+                    $name,
+                    $value
+                ),
+                array_keys($profile['extensions']),
+                $profile['extensions']
+            )
+        );
     }
 }

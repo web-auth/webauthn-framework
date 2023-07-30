@@ -10,16 +10,22 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    protected ?int $timeout = null;
+    /**
+     * @var positive-int|null
+     */
+    public ?int $timeout = null;
 
-    protected AuthenticationExtensionsClientInputs $extensions;
+    public AuthenticationExtensionsClientInputs $extensions;
 
     public function __construct(
-        protected string $challenge
+        public readonly string $challenge
     ) {
-        $this->extensions = new AuthenticationExtensionsClientInputs();
+        $this->extensions = AuthenticationExtensionsClientInputs::create();
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setTimeout(?int $timeout): static
     {
         $this->timeout = $timeout;
@@ -27,25 +33,32 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addExtension(AuthenticationExtension $extension): static
     {
-        $this->extensions->add($extension);
+        $this->extensions[$extension->name] = $extension;
 
         return $this;
     }
 
     /**
      * @param AuthenticationExtension[] $extensions
+     * @deprecated since 4.7.0. No replacement. Please use the property directly.
      */
     public function addExtensions(array $extensions): static
     {
         foreach ($extensions as $extension) {
-            $this->addExtension($extension);
+            $this->extensions[$extension->name] = $extension;
         }
 
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
     {
         $this->extensions = $extensions;
@@ -53,16 +66,25 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getChallenge(): string
     {
         return $this->challenge;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getTimeout(): ?int
     {
         return $this->timeout;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;

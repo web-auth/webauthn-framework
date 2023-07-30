@@ -15,9 +15,6 @@ final class UserProvider implements UserProviderInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
         $user = $this->userRepository->findOneByUsername($identifier);
@@ -33,9 +30,6 @@ final class UserProvider implements UserProviderInterface
         return $this->loadUserByIdentifier($user->getUserIdentifier());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supportsClass($class): bool
     {
         return $class === User::class || is_subclass_of($class, User::class);

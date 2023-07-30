@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
 use ArrayIterator;
-use function count;
-use const COUNT_NORMAL;
 use Countable;
-use function is_array;
 use Iterator;
 use IteratorAggregate;
-use const JSON_THROW_ON_ERROR;
 use JsonSerializable;
+use function array_key_exists;
+use function count;
+use const COUNT_NORMAL;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
@@ -21,25 +20,45 @@ use JsonSerializable;
 class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
-     * @var PublicKeyCredentialDescriptor[]
+     * @param PublicKeyCredentialDescriptor[] $publicKeyCredentialDescriptors
      */
-    private array $publicKeyCredentialDescriptors = [];
+    public function __construct(
+        public array $publicKeyCredentialDescriptors = []
+    ) {
+    }
 
+    /**
+     * @param PublicKeyCredentialDescriptor[] $publicKeyCredentialDescriptors
+     */
+    public static function create(array $publicKeyCredentialDescriptors): self
+    {
+        return new self($publicKeyCredentialDescriptors);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function add(PublicKeyCredentialDescriptor ...$publicKeyCredentialDescriptors): void
     {
         foreach ($publicKeyCredentialDescriptors as $publicKeyCredentialDescriptor) {
-            $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->getId()] = $publicKeyCredentialDescriptor;
+            $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->id] = $publicKeyCredentialDescriptor;
         }
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function has(string $id): bool
     {
         return array_key_exists($id, $this->publicKeyCredentialDescriptors);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function remove(string $id): void
     {
-        if (! $this->has($id)) {
+        if (! array_key_exists($id, $this->publicKeyCredentialDescriptors)) {
             return;
         }
 
@@ -72,7 +91,7 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }
@@ -82,14 +101,13 @@ class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Count
      */
     public static function createFromArray(array $json): self
     {
-        $collection = new self();
-        foreach ($json as $item) {
-            if (! is_array($item)) {
-                continue;
-            }
-            $collection->add(PublicKeyCredentialDescriptor::createFromArray($item));
-        }
-
-        return $collection;
+        return self::create(
+            array_map(
+                static fn (array $item): PublicKeyCredentialDescriptor => PublicKeyCredentialDescriptor::createFromArray(
+                    $item
+                ),
+                $json
+            )
+        );
     }
 }

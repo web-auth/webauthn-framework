@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function is_array;
-use function is_string;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -16,6 +12,10 @@ use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\Util\Base64;
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialLoader implements CanLogData
 {
@@ -73,7 +73,7 @@ class PublicKeyCredentialLoader implements CanLogData
             $rawId = Base64::decode($json['rawId']);
             hash_equals($id, $rawId) || throw InvalidDataException::create($json, 'Invalid ID');
 
-            $publicKeyCredential = new PublicKeyCredential(
+            $publicKeyCredential = PublicKeyCredential::create(
                 $json['id'],
                 $json['type'],
                 $rawId,
@@ -99,7 +99,7 @@ class PublicKeyCredentialLoader implements CanLogData
             'data' => $data,
         ]);
         try {
-            $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $json = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {
@@ -159,12 +159,16 @@ class PublicKeyCredentialLoader implements CanLogData
                         $e
                     );
                 }
+                $userHandle = $response['userHandle'] ?? null;
+                if ($userHandle !== '' && $userHandle !== null) {
+                    $userHandle = Base64::decode($userHandle);
+                }
 
                 return new AuthenticatorAssertionResponse(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
                     $signature,
-                    $response['userHandle'] ?? null
+                    $userHandle
                 );
             default:
                 throw InvalidDataException::create($response, 'Unable to create the response object');

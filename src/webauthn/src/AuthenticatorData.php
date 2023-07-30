@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function ord;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use function ord;
 
 /**
+ * @final
  * @see https://www.w3.org/TR/webauthn/#sec-authenticator-data
  * @see https://www.w3.org/TR/webauthn/#flags
  */
@@ -33,20 +34,26 @@ class AuthenticatorData
     final public const FLAG_ED = 0b10000000;
 
     public function __construct(
-        protected string $authData,
-        protected string $rpIdHash,
-        protected string $flags,
-        protected int $signCount,
-        protected ?AttestedCredentialData $attestedCredentialData,
-        protected ?AuthenticationExtensionsClientOutputs $extensions
+        public readonly string $authData,
+        public readonly string $rpIdHash,
+        public readonly string $flags,
+        public readonly int $signCount,
+        public readonly ?AttestedCredentialData $attestedCredentialData,
+        public readonly ?AuthenticationExtensionsClientOutputs $extensions
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthData(): string
     {
         return $this->authData;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRpIdHash(): string
     {
         return $this->rpIdHash;
@@ -92,16 +99,25 @@ class AuthenticatorData
         return ord($this->flags) & self::FLAG_RFU2;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getSignCount(): int
     {
         return $this->signCount;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAttestedCredentialData(): ?AttestedCredentialData
     {
         return $this->attestedCredentialData;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {
         return $this->extensions !== null && $this->hasExtensions() ? $this->extensions : null;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\TokenBinding;
 
-use function count;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\Exception\InvalidDataException;
+use function count;
 
 /**
  * @deprecated Since 4.3.0 and will be removed in 5.0.0

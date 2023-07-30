@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
 
 class AttestationStatementSupportManager
 {

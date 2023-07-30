@@ -26,7 +26,7 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->getName();
+        return $this->name;
     }
 
     public function eraseCredentials(): void

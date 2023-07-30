@@ -12,9 +12,6 @@ use Webauthn\Counter\CounterChecker;
 
 final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (

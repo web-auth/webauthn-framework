@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use CBOR\Stream;
+use Webauthn\Exception\InvalidDataException;
 use function fclose;
 use function fopen;
 use function fread;
 use function fwrite;
 use function rewind;
-use Webauthn\Exception\InvalidDataException;
 
 final class StringStream implements Stream
 {

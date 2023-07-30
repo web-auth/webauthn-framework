@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
 use Cose\Key\Key;
-use function count;
-use function in_array;
-use function is_array;
-use function is_string;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -32,6 +26,12 @@ use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\Util\CoseSignatureFixer;
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
+use function openssl_verify;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -91,7 +91,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
 
         return match (true) {
             $trustPath instanceof CertificateTrustPath => $this->processWithCertificate(
@@ -130,7 +130,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -165,7 +165,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $attestationStatement = AttestationStatement::createSelf(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new EmptyTrustPath()
+            EmptyTrustPath::create()
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -212,7 +212,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'The Basic Constraints extension must have the CA component set to false'
         );
 
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential available'
         );
@@ -220,7 +220,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         // id-fido-gen-ce-aaguid OID check
         if (in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true)) {
             hash_equals(
-                $attestedCredentialData->getAaguid()
+                $attestedCredentialData->aaguid
                     ->toBinary(),
                 $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
             ) || throw AttestationStatementVerificationException::create(
@@ -235,7 +235,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AuthenticatorData $authenticatorData,
         CertificateTrustPath $trustPath
     ): bool {
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         // Check leaf certificate
         $this->checkCertificate($certificates[0], $authenticatorData);
@@ -245,7 +245,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         // Verification of the signature
-        $signedData = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $signedData = $authenticatorData->authData . $clientDataJSONHash;
         $result = openssl_verify(
             $signedData,
             $attestationStatement->get('sig'),
@@ -266,11 +266,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential available'
         );
-        $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
+        $credentialPublicKey = $attestedCredentialData->credentialPublicKey;
         $credentialPublicKey !== null || throw AttestationStatementVerificationException::create(
             'No credential public key available'
         );
@@ -291,7 +291,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'The algorithm of the attestation statement and the key are not identical.'
         );
 
-        $dataToVerify = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $dataToVerify = $authenticatorData->authData . $clientDataJSONHash;
         $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
         if (! $algorithm instanceof Signature) {
             throw InvalidDataException::create($algorithm, 'Invalid algorithm');

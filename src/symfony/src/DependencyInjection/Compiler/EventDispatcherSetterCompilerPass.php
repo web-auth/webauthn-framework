@@ -12,9 +12,6 @@ final class EventDispatcherSetterCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webauthn_can_dispatch_events';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasAlias('webauthn.event_dispatcher')) {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
-use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
+use const JSON_UNESCAPED_SLASHES;
 
 /**
  * @internal
@@ -25,17 +25,17 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         ?int $blockSlowdown,
         string $expectedJson
     ): void {
-        static::assertSame($minComplexity, $object->getMinComplexity());
-        static::assertSame($maxRetries, $object->getMaxRetries());
-        static::assertSame($blockSlowdown, $object->getBlockSlowdown());
+        static::assertSame($minComplexity, $object->minComplexity);
+        static::assertSame($maxRetries, $object->maxRetries);
+        static::assertSame($blockSlowdown, $object->blockSlowdown);
         static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
     }
 
     public static function validObjectData(): iterable
     {
-        yield [new PatternAccuracyDescriptor(10), 10, null, null, '{"minComplexity":10}'];
+        yield [PatternAccuracyDescriptor::create(10), 10, null, null, '{"minComplexity":10}'];
         yield [
-            new PatternAccuracyDescriptor(10, 50, 15),
+            PatternAccuracyDescriptor::create(10, 50, 15),
             10,
             50,
             15,
@@ -54,7 +54,7 @@ final class PatternAccuracyDescriptorObjectTest extends TestCase
         $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        new PatternAccuracyDescriptor($minComplexity, $maxRetries, $blockSlowdown);
+        PatternAccuracyDescriptor::create($minComplexity, $maxRetries, $blockSlowdown);
     }
 
     public static function invalidObjectData(): iterable

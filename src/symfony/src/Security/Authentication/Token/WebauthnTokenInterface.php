@@ -11,7 +11,7 @@ use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * @deprecated since 4.7.0, use {@see \Webauthn\Bundle\Security\Authentication\Token\WebauthnTokenInterface} instead
+ * @deprecated since 4.7.0, use {@see WebauthnTokenInterface} instead
  */
 interface WebauthnTokenInterface extends TokenInterface
 {
