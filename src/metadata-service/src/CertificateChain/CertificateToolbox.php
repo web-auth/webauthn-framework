@@ -9,7 +9,6 @@ use function preg_replace;
 use const PHP_EOL;
 
 /**
- * @internal
  * @final
  */
 class CertificateToolbox

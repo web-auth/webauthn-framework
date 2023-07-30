@@ -120,7 +120,6 @@
         "symfony/filesystem": "^6.1",
         "symfony/finder": "^6.1",
         "symfony/monolog-bundle": "^3.8",
-        "symfony/phpunit-bridge": "^6.1",
         "symfony/var-dumper": "^6.1",
         "symfony/yaml": "^6.1",
         "symplify/easy-coding-standard": "^12.0",
