@@ -225,7 +225,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         AuthenticatorData $authenticatorData
     ): void {
         $payload !== null || throw AttestationStatementVerificationException::create('Invalid attestation object');
-        $payload = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+        $payload = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
         array_key_exists('nonce', $payload) || throw AttestationStatementVerificationException::create(
             'Invalid attestation object. "nonce" is missing.'
         );
@@ -283,7 +283,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         } else {
             $responseBody = $this->validateUsingGoogleApiWithPsrClient($requestBody, $uri);
         }
-        $responseBodyJson = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+        $responseBodyJson = json_decode($responseBody, true, flags: JSON_THROW_ON_ERROR);
         array_key_exists(
             'isValidSignature',
             $responseBodyJson

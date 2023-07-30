@@ -99,7 +99,7 @@ class PublicKeyCredentialLoader implements CanLogData
             'data' => $data,
         ]);
         try {
-            $json = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $json = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
             return $this->loadArray($json);
         } catch (Throwable $throwable) {

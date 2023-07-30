@@ -49,7 +49,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
         is_array($data) || throw InvalidDataException::create($data, 'Invalid data');
 
         return self::createFromArray($data);

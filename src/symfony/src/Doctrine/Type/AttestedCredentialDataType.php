@@ -25,7 +25,7 @@ final class AttestedCredentialDataType extends Type
         if ($value === null || $value instanceof AttestedCredentialData) {
             return $value;
         }
-        $json = json_decode((string) $value, true, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode((string) $value, true, flags: JSON_THROW_ON_ERROR);
 
         return AttestedCredentialData::createFromArray($json);
     }

@@ -275,7 +275,7 @@ class MetadataStatement implements JsonSerializable
 
     public static function createFromString(string $statement): self
     {
-        $data = json_decode($statement, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($statement, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }

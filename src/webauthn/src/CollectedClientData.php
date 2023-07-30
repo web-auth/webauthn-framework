@@ -81,7 +81,7 @@ class CollectedClientData
     public static function createFormJson(string $data): self
     {
         $rawData = Base64UrlSafe::decodeNoPadding($data);
-        $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode($rawData, true, flags: JSON_THROW_ON_ERROR);
 
         return new self($rawData, $json);
     }

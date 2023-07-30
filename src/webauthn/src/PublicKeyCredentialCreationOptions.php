@@ -179,7 +179,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public static function createFromString(string $data): static
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }

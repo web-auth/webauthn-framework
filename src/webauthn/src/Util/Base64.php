@@ -18,7 +18,7 @@ abstract class Base64
         }
 
         try {
-            return \ParagonIE\ConstantTime\Base64::decode($data, true);
+            return \ParagonIE\ConstantTime\Base64::decode($data);
         } catch (Throwable $e) {
             throw InvalidDataException::create($data, 'Invalid data submitted', $e);
         }

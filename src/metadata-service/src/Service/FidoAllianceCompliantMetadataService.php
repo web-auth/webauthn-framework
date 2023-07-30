@@ -139,7 +139,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         $jwtCertificates = [];
         try {
             $payload = $this->getJwsPayload($content, $jwtCertificates);
-            $data = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
             $this->validateCertificates(...$jwtCertificates);
 
             foreach ($data['entries'] as $datum) {
