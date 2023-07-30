@@ -204,7 +204,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 $attestationObject->authData
                     ->rpIdHash
             ) || throw AuthenticatorResponseVerificationException::create('rpId hash mismatch.');
-            if ($publicKeyCredentialCreationOptions->authenticatorSelection?->getUserVerification() === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
+            if ($publicKeyCredentialCreationOptions->authenticatorSelection?->userVerification === AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED) {
                 $attestationObject->authData
                     ->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
                         'User was not present'

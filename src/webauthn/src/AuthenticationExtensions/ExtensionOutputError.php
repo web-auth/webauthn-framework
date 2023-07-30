@@ -10,7 +10,7 @@ use Throwable;
 class ExtensionOutputError extends Exception
 {
     public function __construct(
-        private readonly AuthenticationExtension $authenticationExtension,
+        public readonly AuthenticationExtension $authenticationExtension,
         string $message = '',
         int $code = 0,
         Throwable $previous = null
@@ -18,6 +18,9 @@ class ExtensionOutputError extends Exception
         parent::__construct($message, $code, $previous);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthenticationExtension(): AuthenticationExtension
     {
         return $this->authenticationExtension;

@@ -6,6 +6,11 @@ parameters:
             path: src/metadata-service/src/CertificateChain/CertificateToolbox.php
 
         -
+            message: "#^Parameter \\#2 \\$array of function array_map expects array, iterable\\<string\\> given\\.$#"
+            count: 1
+            path: src/metadata-service/src/CertificateChain/CertificateToolbox.php
+
+        -
             message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
             count: 1
             path: src/metadata-service/src/CertificateChain/CertificateToolbox.php
@@ -588,14 +593,6 @@ parameters:
             message: """
                 #^Call to deprecated method getContentType\\(\\) of class Symfony\\\\Component\\\\HttpFoundation\\\\Request\\:
                 since Symfony 6\\.2, use getContentTypeFormat\\(\\) instead$#
-            """
-            count: 1
-            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
-
-        -
-            message: """
-                #^Call to deprecated method setRequireResidentKey\\(\\) of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
-                since v4\\.1\\. Please use setResidentKey instead$#
             """
             count: 1
             path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
@@ -1335,20 +1332,12 @@ parameters:
             path: src/symfony/src/Service/AuthenticatorAttestationResponseValidator.php
 
         -
-            message: """
-                #^Call to deprecated method setRequireResidentKey\\(\\) of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
-                since v4\\.1\\. Please use setResidentKey instead$#
-            """
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-        -
-            message: "#^Cannot access offset 'attachment_mode' on mixed\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-        -
             message: "#^Cannot access offset 'attestation…' on mixed\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^Cannot access offset 'authenticator…' on mixed\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
@@ -1398,7 +1387,7 @@ parameters:
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$authenticatorAttachment of method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:setAuthenticatorAttachment\\(\\) expects string\\|null, mixed given\\.$#"
+            message: "#^Parameter \\#1 \\$authenticatorAttachment of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
@@ -1438,21 +1427,6 @@ parameters:
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$requireResidentKey of method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:setRequireResidentKey\\(\\) expects bool, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-        -
-            message: "#^Parameter \\#1 \\$residentKey of method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:setResidentKey\\(\\) expects string\\|null, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-        -
-            message: "#^Parameter \\#1 \\$userVerification of method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:setUserVerification\\(\\) expects string, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-        -
             message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
@@ -1463,12 +1437,27 @@ parameters:
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
         -
+            message: "#^Parameter \\#2 \\$userVerification of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
             message: "#^Parameter \\#3 \\$icon of static method Webauthn\\\\PublicKeyCredentialRpEntity\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
         -
+            message: "#^Parameter \\#3 \\$residentKey of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
             message: "#^Parameter \\#3 \\.\\.\\.\\$arrays of function array_map expects array, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^Parameter \\#4 \\$requireResidentKey of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
@@ -2035,16 +2024,13 @@ parameters:
         -
             message: """
                 #^Access to deprecated property \\$requireResidentKey of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
-                Will be removed in 5\\.0\\. Please use residentKey instead$#
+                Will be removed in 5\\.0\\. Please use residentKey instead\\*$#
             """
             count: 2
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
 
         -
-            message: """
-                #^Call to deprecated method setRequireResidentKey\\(\\) of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
-                since v4\\.1\\. Please use setResidentKey instead$#
-            """
+            message: "#^Method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:isRequireResidentKey\\(\\) should return bool but returns bool\\|null\\.$#"
             count: 1
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
 
@@ -2057,6 +2043,11 @@ parameters:
             message: "#^Class Webauthn\\\\CertificateChainChecker\\\\PhpCertificateChainChecker extends @final class Webauthn\\\\MetadataService\\\\CertificateChain\\\\PhpCertificateChainValidator\\.$#"
             count: 1
             path: src/webauthn/src/CertificateChainChecker/PhpCertificateChainChecker.php
+
+        -
+            message: "#^Class Webauthn\\\\CertificateToolbox extends @final class Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\.$#"
+            count: 1
+            path: src/webauthn/src/CertificateToolbox.php
 
         -
             message: """
