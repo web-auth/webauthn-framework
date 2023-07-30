@@ -85,7 +85,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
         $container->setAlias('webauthn.event_dispatcher', $config['event_dispatcher']);
         $container->setAlias('webauthn.clock', $config['clock']);
-        $container->setAlias('webauthn.request_factory', $config['request_factory']);
+        if ($config['request_factory'] !== null) {
+            $container->setAlias('webauthn.request_factory', $config['request_factory']);
+        }
         $container->setAlias('webauthn.http_client', $config['http_client']);
         $container->setAlias('webauthn.logger', $config['logger']);
 
@@ -293,6 +295,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadAndroidSafetyNet(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
         //Android SafetyNet
+        $container->setAlias('webauthn.android_safetynet.http_client', $config['http_client']);
         $container->setParameter('webauthn.android_safetynet.leeway', $config['leeway']);
         $container->setParameter('webauthn.android_safetynet.max_age', $config['max_age']);
         $container->setParameter('webauthn.android_safetynet.api_key', $config['api_key']);

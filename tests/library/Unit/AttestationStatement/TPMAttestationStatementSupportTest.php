@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
-use Http\Mock\Client;
 use Lcobucci\Clock\SystemClock;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -55,9 +54,7 @@ final class TPMAttestationStatementSupportTest extends TestCase
         )->enableMetadataStatementSupport(
             $metadataStatementRepository,
             $metadataStatementRepository,
-            new PhpCertificateChainValidator(new Client(
-                new Psr17Factory()
-            ), new Psr17Factory(), SystemClock::fromSystemTimezone())
+            PhpCertificateChainValidator::create(new MockHttpClient(), SystemClock::fromSystemTimezone())
         );
         //When
         $response = $pkLoader->load($data);

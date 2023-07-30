@@ -11,6 +11,16 @@ parameters:
             path: src/metadata-service/src/CertificateChain/CertificateToolbox.php
 
         -
+            message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:sendRequest\\(\\)\\.$#"
+            count: 1
+            path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
+
+        -
+            message: "#^Cannot call method createRequest\\(\\) on Psr\\\\Http\\\\Message\\\\RequestFactoryInterface\\|null\\.$#"
+            count: 1
+            path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
+
+        -
             message: "#^Parameter \\#1 \\$untrustedCertificates of static method Webauthn\\\\MetadataService\\\\Exception\\\\CertificateChainException\\:\\:create\\(\\) expects array\\<string\\>, array\\<SpomkyLabs\\\\Pki\\\\X509\\\\Certificate\\\\Certificate\\> given\\.$#"
             count: 2
             path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
@@ -19,6 +29,21 @@ parameters:
             message: "#^Parameter \\#2 \\$trustedCertificates of static method Webauthn\\\\MetadataService\\\\Exception\\\\CertificateChainException\\:\\:create\\(\\) expects array\\<string\\>, array\\<int, SpomkyLabs\\\\Pki\\\\X509\\\\Certificate\\\\Certificate\\> given\\.$#"
             count: 2
             path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
+
+        -
+            message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:request\\(\\)\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/DistantResourceMetadataService.php
+
+        -
+            message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:sendRequest\\(\\)\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/DistantResourceMetadataService.php
+
+        -
+            message: "#^Cannot call method createRequest\\(\\) on Psr\\\\Http\\\\Message\\\\RequestFactoryInterface\\|null\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/DistantResourceMetadataService.php
 
         -
             message: "#^Parameter \\#5 \\$additionalHeaderParameters of class Webauthn\\\\MetadataService\\\\Service\\\\DistantResourceMetadataService constructor expects array\\<string, string\\>, array\\<string, mixed\\> given\\.$#"
@@ -31,7 +56,22 @@ parameters:
             path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
 
         -
+            message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:request\\(\\)\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
+
+        -
+            message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:sendRequest\\(\\)\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
+
+        -
             message: "#^Cannot access offset 'entries' on mixed\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
+
+        -
+            message: "#^Cannot call method createRequest\\(\\) on Psr\\\\Http\\\\Message\\\\RequestFactoryInterface\\|null\\.$#"
             count: 1
             path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
 
@@ -41,7 +81,12 @@ parameters:
             path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
 
         -
-            message: "#^Parameter \\#2 \\$value of method Psr\\\\Http\\\\Message\\\\MessageInterface\\:\\:withHeader\\(\\) expects array\\<string\\>\\|string, mixed given\\.$#"
+            message: "#^Parameter \\#2 \\$headerParameters of method Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:sendPsrRequest\\(\\) expects array\\<string, string\\>, array\\<string, mixed\\> given\\.$#"
+            count: 1
+            path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
+
+        -
+            message: "#^Parameter \\#2 \\$headerParameters of method Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:sendSymfonyRequest\\(\\) expects array\\<string, string\\>, array\\<string, mixed\\> given\\.$#"
             count: 1
             path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
 
@@ -865,6 +910,11 @@ parameters:
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
         -
+            message: "#^Parameter \\#2 \\$id of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:setAlias\\(\\) expects string\\|Symfony\\\\Component\\\\DependencyInjection\\\\Alias, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+        -
             message: "#^Parameter \\#2 \\$value of method Symfony\\\\Component\\\\DependencyInjection\\\\Container\\:\\:setParameter\\(\\) expects array\\|bool\\|float\\|int\\|string\\|UnitEnum\\|null, mixed given\\.$#"
             count: 3
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
@@ -1549,6 +1599,21 @@ parameters:
 
         -
             message: "#^Cannot access offset 'response'\\|'ver' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php
+
+        -
+            message: "#^Cannot call method createRequest\\(\\) on Psr\\\\Http\\\\Message\\\\RequestFactoryInterface\\|null\\.$#"
+            count: 1
+            path: src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php
+
+        -
+            message: "#^Cannot call method request\\(\\) on Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\|null\\.$#"
+            count: 1
+            path: src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php
+
+        -
+            message: "#^Cannot call method sendRequest\\(\\) on Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\|null\\.$#"
             count: 1
             path: src/webauthn/src/AttestationStatement/AndroidSafetyNetAttestationStatementSupport.php
 

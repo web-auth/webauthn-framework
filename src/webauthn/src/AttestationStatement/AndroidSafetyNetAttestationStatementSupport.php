@@ -24,6 +24,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
@@ -45,7 +46,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 {
     private ?string $apiKey = null;
 
-    private ?ClientInterface $client = null;
+    private null|ClientInterface|HttpClientInterface $client = null;
 
     private readonly CompactSerializer $jwsSerializer;
 
@@ -87,13 +88,20 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     }
 
     public function enableApiVerification(
-        ClientInterface $client,
+        ClientInterface|HttpClientInterface $client,
         string $apiKey,
-        RequestFactoryInterface $requestFactory
+        ?RequestFactoryInterface $requestFactory = null
     ): self {
         $this->apiKey = $apiKey;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
+        if ($requestFactory !== null && ! $client instanceof HttpClientInterface) {
+            trigger_deprecation(
+                'web-auth/metadata-service',
+                '4.7.0',
+                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$client" argument.'
+            );
+        }
 
         return $this;
     }
@@ -262,7 +270,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 
     private function validateUsingGoogleApi(AttestationStatement $attestationStatement): void
     {
-        if ($this->client === null || $this->apiKey === null || $this->requestFactory === null) {
+        if ($this->client === null || $this->apiKey === null) {
             return;
         }
         $uri = sprintf(
@@ -270,14 +278,11 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             urlencode($this->apiKey)
         );
         $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-        $request = $this->requestFactory->createRequest('POST', $uri);
-        $request = $request->withHeader('content-type', 'application/json');
-        $request->getBody()
-            ->write($requestBody);
-
-        $response = $this->client->sendRequest($request);
-        $this->checkGoogleApiResponse($response);
-        $responseBody = $this->getResponseBody($response);
+        if ($this->client instanceof HttpClientInterface) {
+            $responseBody = $this->validateUsingGoogleApiWithSymfonyClient($requestBody, $uri);
+        } else {
+            $responseBody = $this->validateUsingGoogleApiWithPsrClient($requestBody, $uri);
+        }
         $responseBodyJson = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
         array_key_exists(
             'isValidSignature',
@@ -303,24 +308,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         } while (true);
 
         return $responseBody;
-    }
-
-    private function checkGoogleApiResponse(ResponseInterface $response): void
-    {
-        $response->getStatusCode() === 200 || throw AttestationStatementVerificationException::create(
-            'Request did not succeeded'
-        );
-        $response->hasHeader('content-type') || throw AttestationStatementVerificationException::create(
-            'Unrecognized response'
-        );
-
-        foreach ($response->getHeader('content-type') as $header) {
-            if (mb_strpos($header, 'application/json') === 0) {
-                return;
-            }
-        }
-
-        throw AttestationStatementVerificationException::create('Unrecognized response');
     }
 
     /**
@@ -354,5 +341,35 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         }
         $algorithmManager = new AlgorithmManager($algorithms);
         $this->jwsVerifier = new JWSVerifier($algorithmManager);
+    }
+
+    private function validateUsingGoogleApiWithSymfonyClient(string $requestBody, string $uri): string
+    {
+        $response = $this->client->request('POST', $uri, [
+            'headers' => [
+                'content-type' => 'application/json',
+            ],
+            'body' => $requestBody,
+        ]);
+        $response->getStatusCode() === 200 || throw AttestationStatementVerificationException::create(
+            'Request did not succeeded'
+        );
+
+        return $response->getContent();
+    }
+
+    private function validateUsingGoogleApiWithPsrClient(string $requestBody, string $uri): string
+    {
+        $request = $this->requestFactory->createRequest('POST', $uri);
+        $request = $request->withHeader('content-type', 'application/json');
+        $request->getBody()
+            ->write($requestBody);
+
+        $response = $this->client->sendRequest($request);
+        $response->getStatusCode() === 200 || throw AttestationStatementVerificationException::create(
+            'Request did not succeeded'
+        );
+
+        return $this->getResponseBody($response);
     }
 }

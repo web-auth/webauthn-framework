@@ -19,6 +19,7 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
@@ -196,7 +197,7 @@ abstract class AbstractTestCase extends TestCase
             $client = new Client(new Psr17Factory());
         }
         if ($this->metadataStatementRepository === null) {
-            $metadataService = new ChainedMetadataServices();
+            $metadataService = ChainedMetadataServices::create();
             foreach ($this->getSingleStatements() as $filename) {
                 $metadataService->addServices(LocalResourceMetadataService::create($filename));
             }
@@ -264,12 +265,8 @@ abstract class AbstractTestCase extends TestCase
     private function getCertificateChainValidator(): CertificateChainValidator
     {
         if ($this->certificateChainValidator === null) {
-            $psr18Client = new Client(new Psr17Factory());
-
-            $psr17Factory = new Psr17Factory();
-            $this->certificateChainValidator = new PhpCertificateChainValidator(
-                $psr18Client,
-                $psr17Factory,
+            $this->certificateChainValidator = PhpCertificateChainValidator::create(
+                new MockHttpClient(),
                 $this->clock
             );
         }

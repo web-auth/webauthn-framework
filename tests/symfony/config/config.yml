@@ -130,6 +130,7 @@ webauthn:
   user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
   android_safetynet:
     max_age: 99999999999
+    api_key: 'test'
   controllers:
     enabled: true
     creation:

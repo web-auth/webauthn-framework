@@ -33,5 +33,9 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(PhpCertificateChainValidator::class)
-        ->args([service('webauthn.http_client'), service('webauthn.request_factory'), service('webauthn.clock')]);
+        ->args(
+            [service('webauthn.http_client'), service('webauthn.request_factory')->nullOnInvalid(), service(
+                'webauthn.clock'
+            )]
+        );
 };

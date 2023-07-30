@@ -17,16 +17,20 @@ final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerP
             || ! $container->hasAlias('webauthn.android_safetynet.http_client')
             || ! $container->hasParameter('webauthn.android_safetynet.api_key')
             || $container->getParameter('webauthn.android_safetynet.api_key') === null
-            || ! $container->hasAlias('webauthn.android_safetynet.request_factory')
         ) {
             return;
+        }
+
+        $requestFactoryReference = null;
+        if ($container->hasAlias('webauthn.android_safetynet.request_factory')) {
+            $requestFactoryReference = new Reference('webauthn.android_safetynet.request_factory');
         }
 
         $definition = $container->getDefinition(AndroidSafetyNetAttestationStatementSupport::class);
         $definition->addMethodCall('enableApiVerification', [
             new Reference('webauthn.android_safetynet.http_client'),
             $container->getParameter('webauthn.android_safetynet.api_key'),
-            new Reference('webauthn.android_safetynet.request_factory'),
+            $requestFactoryReference,
         ]);
     }
 }
