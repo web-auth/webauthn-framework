@@ -46,7 +46,7 @@ jobs:
       - name: "Check source code for syntax errors"
         run: "composer exec -- parallel-lint src/ tests/"
 
-  unit_tests:
+  php_tests:
     name: "2️⃣ Unit and functional tests"
     needs:
       - "byte_level"
@@ -85,9 +85,6 @@ jobs:
       - name: "Execute tests (PHP)"
         run: "make ci-cc"
 
-      - name: "Execute tests (JS)"
-        run: "make js"
-
       - name: "Fix code coverage paths"
         run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
 
@@ -96,6 +93,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  js_tests:
+    name: "2️⃣ JS tests"
+    needs:
+      - "byte_level"
+      - "syntax_errors"
+    strategy:
+      matrix:
+        operating-system:
+          - "ubuntu-latest"
+        php-version:
+          - "8.2"
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+      - name: "Set up PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
+          coverage: "xdebug"
+
+      - name: "Checkout code"
+        uses: "actions/checkout@v3.5.2"
+        with:
+          fetch-depth: 0
+
+      - name: "Install dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+          composer-options: "--optimize-autoloader"
+
+      - name: "Execute tests (JS)"
+        run: "make js"
 
   static_analysis:
     name: "3️⃣ Static Analysis"
