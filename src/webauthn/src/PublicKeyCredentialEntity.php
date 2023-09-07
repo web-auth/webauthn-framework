@@ -9,16 +9,22 @@ use JsonSerializable;
 abstract class PublicKeyCredentialEntity implements JsonSerializable
 {
     public function __construct(
-        protected string $name,
-        protected ?string $icon
+        public readonly string $name,
+        public readonly ?string $icon
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getIcon(): ?string
     {
         return $this->icon;

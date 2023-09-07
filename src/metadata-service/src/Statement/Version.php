@@ -4,38 +4,44 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_int;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function is_int;
 
 /**
  * @final
  */
 class Version implements JsonSerializable
 {
-    private readonly ?int $major;
-
-    private readonly ?int $minor;
-
-    public function __construct(?int $major, ?int $minor)
-    {
+    public function __construct(
+        public readonly ?int $major,
+        public readonly ?int $minor
+    ) {
         if ($major === null && $minor === null) {
             throw MetadataStatementLoadingException::create('Invalid data. Must contain at least one item');
         }
         $major >= 0 || throw MetadataStatementLoadingException::create('Invalid argument "major"');
         $minor >= 0 || throw MetadataStatementLoadingException::create('Invalid argument "minor"');
-
-        $this->major = $major;
-        $this->minor = $minor;
     }
 
+    public static function create(?int $major, ?int $minor): self
+    {
+        return new self($major, $minor);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMajor(): ?int
     {
         return $this->major;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMinor(): ?int
     {
         return $this->minor;
@@ -55,7 +61,7 @@ class Version implements JsonSerializable
             }
         }
 
-        return new self($data['major'] ?? null, $data['minor'] ?? null);
+        return self::create($data['major'] ?? null, $data['minor'] ?? null);
     }
 
     /**

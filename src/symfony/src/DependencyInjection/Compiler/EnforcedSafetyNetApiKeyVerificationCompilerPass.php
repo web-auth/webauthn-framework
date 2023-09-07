@@ -11,25 +11,26 @@ use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 
 final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(AndroidSafetyNetAttestationStatementSupport::class)
             || ! $container->hasAlias('webauthn.android_safetynet.http_client')
             || ! $container->hasParameter('webauthn.android_safetynet.api_key')
             || $container->getParameter('webauthn.android_safetynet.api_key') === null
-            || ! $container->hasAlias('webauthn.android_safetynet.request_factory')
         ) {
             return;
+        }
+
+        $requestFactoryReference = null;
+        if ($container->hasAlias('webauthn.android_safetynet.request_factory')) {
+            $requestFactoryReference = new Reference('webauthn.android_safetynet.request_factory');
         }
 
         $definition = $container->getDefinition(AndroidSafetyNetAttestationStatementSupport::class);
         $definition->addMethodCall('enableApiVerification', [
             new Reference('webauthn.android_safetynet.http_client'),
             $container->getParameter('webauthn.android_safetynet.api_key'),
-            new Reference('webauthn.android_safetynet.request_factory'),
+            $requestFactoryReference,
         ]);
     }
 }

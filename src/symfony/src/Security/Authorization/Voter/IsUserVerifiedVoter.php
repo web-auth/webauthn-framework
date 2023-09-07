@@ -12,9 +12,6 @@ final class IsUserVerifiedVoter implements VoterInterface
 {
     public const IS_USER_VERIFIED = 'IS_USER_VERIFIED';
 
-    /**
-     * {@inheritdoc}
-     */
     public function vote(TokenInterface $token, mixed $subject, array $attributes): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;

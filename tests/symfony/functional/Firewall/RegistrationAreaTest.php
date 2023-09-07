@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
-use function base64_decode;
 use Cose\Algorithms;
-use function json_decode;
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -23,6 +19,10 @@ use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Tests\Bundle\Functional\User;
+use function base64_decode;
+use function json_decode;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -43,7 +43,7 @@ final class RegistrationAreaTest extends WebTestCase
     }
 
     #[Test]
-    public function aRequestWithoutUsernameCannotBeProcessed(): void
+    public function aRequestWithoutUsernameCanBeProcessed(): void
     {
         $content = [
             'displayName' => 'FOO',
@@ -56,14 +56,12 @@ final class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertResponseStatusCodeSame(401);
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('username: This value should not be blank.', $data['errorMessage']);
+        static::assertSame('ok', $data['status']);
+        static::assertResponseStatusCodeSame(200);
     }
 
     #[Test]
-    public function aRequestWithoutDisplayNameCannotBeProcessed(): void
+    public function aRequestWithoutDisplayNameCanBeProcessed(): void
     {
         $content = [
             'username' => 'foo',
@@ -76,10 +74,8 @@ final class RegistrationAreaTest extends WebTestCase
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('status', $data);
-        static::assertSame('error', $data['status']);
-        static::assertResponseStatusCodeSame(401);
-        static::assertArrayHasKey('errorMessage', $data);
-        static::assertSame('displayName: This value should not be blank.', $data['errorMessage']);
+        static::assertSame('ok', $data['status']);
+        static::assertResponseStatusCodeSame(200);
     }
 
     #[Test]
@@ -243,12 +239,12 @@ final class RegistrationAreaTest extends WebTestCase
     #[Test]
     public function aValidRegistrationResultRequestIsCorrectlyManaged(): void
     {
-        $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
+        $publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::create('test@foo.com', random_bytes(
             64
         ), 'Test PublicKeyCredentialUserEntity');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 $publicKeyCredentialUserEntity,
                 base64_decode(
                     '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',

@@ -12,9 +12,6 @@ final class IsUserPresentVoter implements VoterInterface
 {
     public const IS_USER_PRESENT = 'IS_USER_PRESENT';
 
-    /**
-     * {@inheritdoc}
-     */
     public function vote(TokenInterface $token, mixed $subject, array $attributes): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;

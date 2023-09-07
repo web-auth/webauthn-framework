@@ -4,40 +4,40 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\Exception\InvalidDataException;
+use Webauthn\TokenBinding\TokenBinding;
 use function array_key_exists;
 use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use Webauthn\Exception\InvalidDataException;
-use Webauthn\TokenBinding\TokenBinding;
 
 class CollectedClientData
 {
     /**
      * @var mixed[]
      */
-    private readonly array $data;
+    public readonly array $data;
 
-    private readonly string $type;
+    public readonly string $type;
 
-    private readonly string $challenge;
+    public readonly string $challenge;
 
-    private readonly string $origin;
+    public readonly string $origin;
 
-    private readonly bool $crossOrigin;
+    public readonly bool $crossOrigin;
 
     /**
      * @var mixed[]|null
      * @deprecated Since 4.3.0 and will be removed in 5.0.0
      */
-    private readonly ?array $tokenBinding;
+    public readonly ?array $tokenBinding;
 
     /**
      * @param mixed[] $data
      */
     public function __construct(
-        private readonly string $rawData,
+        public readonly string $rawData,
         array $data
     ) {
         $type = $data['type'] ?? '';
@@ -81,26 +81,38 @@ class CollectedClientData
     public static function createFormJson(string $data): self
     {
         $rawData = Base64UrlSafe::decodeNoPadding($data);
-        $json = json_decode($rawData, true, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode($rawData, true, flags: JSON_THROW_ON_ERROR);
 
         return new self($rawData, $json);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getType(): string
     {
         return $this->type;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getChallenge(): string
     {
         return $this->challenge;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getOrigin(): string
     {
         return $this->origin;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCrossOrigin(): bool
     {
         return $this->crossOrigin;
@@ -114,6 +126,9 @@ class CollectedClientData
         return $this->tokenBinding === null ? null : TokenBinding::createFormArray($this->tokenBinding);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRawData(): string
     {
         return $this->rawData;

@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use Psr\Cache\CacheItemPoolInterface;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -27,6 +25,8 @@ use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\PublicKeyCredentialLoader;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()

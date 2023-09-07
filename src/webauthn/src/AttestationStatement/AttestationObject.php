@@ -9,40 +9,58 @@ use Webauthn\MetadataService\Statement\MetadataStatement;
 
 class AttestationObject
 {
-    private ?MetadataStatement $metadataStatement = null;
+    public ?MetadataStatement $metadataStatement = null;
 
     public function __construct(
-        private readonly string $rawAttestationObject,
-        private AttestationStatement $attStmt,
-        private readonly AuthenticatorData $authData
+        public readonly string $rawAttestationObject,
+        public AttestationStatement $attStmt,
+        public readonly AuthenticatorData $authData
     ) {
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRawAttestationObject(): string
     {
         return $this->rawAttestationObject;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAttStmt(): AttestationStatement
     {
         return $this->attStmt;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setAttStmt(AttestationStatement $attStmt): void
     {
         $this->attStmt = $attStmt;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthData(): AuthenticatorData
     {
         return $this->authData;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getMetadataStatement(): ?MetadataStatement
     {
         return $this->metadataStatement;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setMetadataStatement(MetadataStatement $metadataStatement): self
     {
         $this->metadataStatement = $metadataStatement;

@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Key\Ec2Key;
-use function count;
-use function is_array;
-use const OPENSSL_ALGO_SHA256;
-use function openssl_pkey_get_public;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use Webauthn\AuthenticatorData;
@@ -25,6 +19,12 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function openssl_pkey_get_public;
+use function openssl_verify;
+use const OPENSSL_ALGO_SHA256;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -85,7 +85,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -97,31 +97,28 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $authenticatorData->getAttestedCredentialData()
-            ?->getAaguid()
+        $authenticatorData->attestedCredentialData
+            ?->aaguid
             ->__toString() === '00000000-0000-0000-0000-000000000000' || throw InvalidAttestationStatementException::create(
                 $attestationStatement,
                 'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
             );
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path'
         );
         $dataToVerify = "\0";
-        $dataToVerify .= $authenticatorData->getRpIdHash();
+        $dataToVerify .= $authenticatorData->rpIdHash;
         $dataToVerify .= $clientDataJSONHash;
-        $dataToVerify .= $authenticatorData->getAttestedCredentialData()
-            ->getCredentialId();
-        $dataToVerify .= $this->extractPublicKey(
-            $authenticatorData->getAttestedCredentialData()
-                ->getCredentialPublicKey()
-        );
+        $dataToVerify .= $authenticatorData->attestedCredentialData
+            ->credentialId;
+        $dataToVerify .= $this->extractPublicKey($authenticatorData->attestedCredentialData ->credentialPublicKey);
 
         return openssl_verify(
             $dataToVerify,
             $attestationStatement->get('sig'),
-            $trustPath->getCertificates()[0],
+            $trustPath->certificates[0],
             OPENSSL_ALGO_SHA256
         ) === 1;
     }

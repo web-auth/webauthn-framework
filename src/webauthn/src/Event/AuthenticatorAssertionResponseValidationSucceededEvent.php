@@ -41,7 +41,7 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
 
     public function getCredentialId(): string
     {
-        return $this->publicKeyCredentialSource->getPublicKeyCredentialId();
+        return $this->publicKeyCredentialSource->publicKeyCredentialId;
     }
 
     public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse

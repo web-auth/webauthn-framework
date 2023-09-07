@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function file_get_contents;
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -13,6 +12,7 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use function file_get_contents;
 
 final class LocalResourceMetadataService implements MetadataService, CanDispatchEvents
 {
@@ -40,10 +40,8 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
     public function list(): iterable
     {
         $this->loadData();
-        $this->statement !== null || throw MetadataStatementLoadingException::create(
-            'Unable to load the metadata statement'
-        );
-        $aaguid = $this->statement->getAaguid();
+        $this->statement !== null || throw MetadataStatementLoadingException::create();
+        $aaguid = $this->statement->aaguid;
         if ($aaguid === null) {
             yield from [];
         } else {
@@ -54,21 +52,17 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
     public function has(string $aaguid): bool
     {
         $this->loadData();
-        $this->statement !== null || throw MetadataStatementLoadingException::create(
-            'Unable to load the metadata statement'
-        );
+        $this->statement !== null || throw MetadataStatementLoadingException::create();
 
-        return $aaguid === $this->statement->getAaguid();
+        return $aaguid === $this->statement->aaguid;
     }
 
     public function get(string $aaguid): MetadataStatement
     {
         $this->loadData();
-        $this->statement !== null || throw MetadataStatementLoadingException::create(
-            'Unable to load the metadata statement'
-        );
+        $this->statement !== null || throw MetadataStatementLoadingException::create();
 
-        if ($aaguid === $this->statement->getAaguid()) {
+        if ($aaguid === $this->statement->aaguid) {
             $this->dispatcher->dispatch(MetadataStatementFound::create($this->statement));
 
             return $this->statement;

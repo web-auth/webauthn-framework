@@ -9,7 +9,7 @@ tests: vendor ## Run all tests
 
 .PHONY: cc
 cc: vendor ## Show test coverage rates (HTML)
-	vendor/bin/phpunit --coverage-html ./build
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html ./build
 
 .PHONY: cs
 cs: vendor ## Fix all files using defined ECS rules
@@ -40,7 +40,7 @@ ci-mu: vendor ## Mutation tests (for CI/CD only)
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
-	vendor/bin/phpunit --coverage-text
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
 
 .PHONY: ci-cs
 ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)

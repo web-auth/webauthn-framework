@@ -7,14 +7,13 @@ namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 use CBOR\ByteStringObject;
 use CBOR\MapItem;
 use CBOR\MapObject;
-use CBOR\NegativeIntegerObject;
 use CBOR\OtherObject\TrueObject;
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\AuthenticationExtensionException;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -39,16 +38,6 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         $this->expectException(AuthenticationExtensionException::class);
         $this->expectExceptionMessage('Invalid extension object');
         $cbor = new ByteStringObject('loc');
-
-        AuthenticationExtensionsClientOutputsLoader::load($cbor);
-    }
-
-    #[Test]
-    public function theMapKeyIsNotAString(): void
-    {
-        $this->expectException(AuthenticationExtensionException::class);
-        $this->expectExceptionMessage('Invalid extension key');
-        $cbor = new MapObject([new MapItem(NegativeIntegerObject::create(-100), new TrueObject())]);
 
         AuthenticationExtensionsClientOutputsLoader::load($cbor);
     }

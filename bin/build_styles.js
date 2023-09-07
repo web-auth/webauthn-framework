@@ -22,7 +22,7 @@ glob(pattern, function (err, files) {
         const pkg = JSON.parse(fs.readFileSync(file, 'utf-8'));
 
         // Get the css source
-        const cssSourceRelative = pkg.config && pkg.config.css_source;
+        const cssSourceRelative = pkg.config?.css_source;
 
         if (!cssSourceRelative) {
             return;

@@ -11,50 +11,88 @@ use JsonSerializable;
  */
 class BiometricStatusReport implements JsonSerializable
 {
-    private ?int $certLevel = null;
+    private function __construct(
+        public readonly ?int $certLevel,
+        public readonly ?int $modality,
+        public readonly ?string $effectiveDate,
+        public readonly ?string $certificationDescriptor,
+        public readonly ?string $certificateNumber,
+        public readonly ?string $certificationPolicyVersion,
+        public readonly ?string $certificationRequirementsVersion,
+    ) {
+    }
 
-    private ?int $modality = null;
+    public static function create(
+        ?int $certLevel,
+        ?int $modality,
+        ?string $effectiveDate,
+        ?string $certificationDescriptor,
+        ?string $certificateNumber,
+        ?string $certificationPolicyVersion,
+        ?string $certificationRequirementsVersion,
+    ): self {
+        return new self(
+            $certLevel,
+            $modality,
+            $effectiveDate,
+            $certificationDescriptor,
+            $certificateNumber,
+            $certificationPolicyVersion,
+            $certificationRequirementsVersion,
+        );
+    }
 
-    private ?string $effectiveDate = null;
-
-    private ?string $certificationDescriptor = null;
-
-    private ?string $certificateNumber = null;
-
-    private ?string $certificationPolicyVersion = null;
-
-    private ?string $certificationRequirementsVersion = null;
-
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertLevel(): int|null
     {
         return $this->certLevel;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getModality(): int|null
     {
         return $this->modality;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
@@ -65,16 +103,15 @@ class BiometricStatusReport implements JsonSerializable
      */
     public static function createFromArray(array $data): self
     {
-        $object = new self();
-        $object->certLevel = $data['certLevel'] ?? null;
-        $object->modality = $data['modality'] ?? null;
-        $object->effectiveDate = $data['effectiveDate'] ?? null;
-        $object->certificationDescriptor = $data['certificationDescriptor'] ?? null;
-        $object->certificateNumber = $data['certificateNumber'] ?? null;
-        $object->certificationPolicyVersion = $data['certificationPolicyVersion'] ?? null;
-        $object->certificationRequirementsVersion = $data['certificationRequirementsVersion'] ?? null;
-
-        return $object;
+        return self::create(
+            $data['certLevel'] ?? null,
+            $data['modality'] ?? null,
+            $data['effectiveDate'] ?? null,
+            $data['certificationDescriptor'] ?? null,
+            $data['certificateNumber'] ?? null,
+            $data['certificationPolicyVersion'] ?? null,
+            $data['certificationRequirementsVersion'] ?? null,
+        );
     }
 
     /**

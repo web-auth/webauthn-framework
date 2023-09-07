@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\TrustPath;
 
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -25,7 +25,7 @@ final class TrustPathTest extends TestCase
     {
         $tp = CertificateTrustPath::create(['cert#1']);
 
-        static::assertSame(['cert#1'], $tp->getCertificates());
+        static::assertSame(['cert#1'], $tp->certificates);
     }
 
     /**

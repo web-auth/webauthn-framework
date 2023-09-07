@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
     bootstrap="tests/bootstrap.php"
     colors="true"
+    cacheDirectory=".phpunit.cache"
 >
-    <coverage/>
+    <coverage />
     <testsuites>
         <testsuite name="all">
             <directory>tests/</directory>
@@ -26,6 +27,13 @@
     <source>
         <include>
             <directory>src/</directory>
+            <directory>src/symfony/src/Resources/config</directory>
         </include>
+        <exclude>
+            <file>src/symfony/src/Controller/DummyController.php</file>
+            <file>src/symfony/src/Controller/DummyControllerFactory.php</file>
+            <file>src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php</file>
+            <file>src/symfony/src/Repository/DummyPublicKeyCredentialUserEntityRepository.php</file>
+        </exclude>
     </source>
 </phpunit>

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function count;
-use function is_array;
-use function is_string;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -14,6 +11,9 @@ use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\TrustPath\EmptyTrustPath;
+use function count;
+use function is_array;
+use function is_string;
 
 final class NoneAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -73,6 +73,6 @@ final class NoneAttestationStatementSupport implements AttestationStatementSuppo
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        return count($attestationStatement->getAttStmt()) === 0;
+        return count($attestationStatement->attStmt) === 0;
     }
 }

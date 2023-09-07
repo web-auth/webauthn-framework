@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function is_array;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\InvalidDataException;
+use function array_key_exists;
+use function is_array;
+use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {
-    protected string $id;
+    public readonly string $id;
 
     public function __construct(
         string $name,
         string $id,
-        protected string $displayName,
+        public readonly string $displayName,
         ?string $icon = null
     ) {
         parent::__construct($name, $icon);
@@ -31,11 +31,17 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         return new self($name, $id, $displayName, $icon);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getDisplayName(): string
     {
         return $this->displayName;
@@ -43,7 +49,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     public static function createFromString(string $data): self
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
         is_array($data) || throw InvalidDataException::create($data, 'Invalid data');
 
         return self::createFromArray($data);
@@ -65,7 +71,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
         );
         $id = Base64::decode($json['id'], true);
 
-        return new self($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
+        return self::create($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }
 
     /**

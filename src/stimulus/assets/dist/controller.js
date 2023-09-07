@@ -3,13 +3,14 @@ import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
 
 class default_1 extends Controller {
     connect() {
+        var _a, _b;
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
-            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            requestSuccessRedirectUri: (_a = this.requestSuccessRedirectUriValue) !== null && _a !== void 0 ? _a : null,
             creationResultUrl: this.creationResultUrlValue,
             creationOptionsUrl: this.creationOptionsUrlValue,
-            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
+            creationSuccessRedirectUri: (_b = this.creationSuccessRedirectUriValue) !== null && _b !== void 0 ? _b : null,
         };
         this._dispatchEvent('webauthn:connect', { options });
     }
@@ -63,7 +64,7 @@ class default_1 extends Controller {
         return new Promise(function (resolve, reject) {
             const xhr = new XMLHttpRequest();
             xhr.open(method, url);
-            xhr.responseType = "json";
+            xhr.responseType = 'json';
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -72,14 +73,14 @@ class default_1 extends Controller {
                 else {
                     reject({
                         status: xhr.status,
-                        statusText: xhr.statusText
+                        statusText: xhr.statusText,
                     });
                 }
             };
             xhr.onerror = function () {
                 reject({
                     status: xhr.status,
-                    statusText: xhr.statusText
+                    statusText: xhr.statusText,
                 });
             };
             xhr.send(body);
@@ -94,7 +95,7 @@ class default_1 extends Controller {
         }
         function removeEmpty(obj) {
             return Object.entries(obj)
-                .filter(([_, v]) => (v !== null && v !== ''))
+                .filter(([, v]) => v !== null && v !== '')
                 .reduce((acc, [k, v]) => (Object.assign(Object.assign({}, acc), { [k]: v === Object(v) ? removeEmpty(v) : v })), {});
         }
         return removeEmpty({

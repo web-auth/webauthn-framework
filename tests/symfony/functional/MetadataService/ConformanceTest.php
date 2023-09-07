@@ -43,28 +43,18 @@ final class ConformanceTest extends KernelTestCase
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
         $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load($result);
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        $response = $publicKeyCredential->getResponse();
-        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->getType());
+        $response = $publicKeyCredential->response;
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->type);
         static::assertSame(
             hex2bin('f1c4209548809dceb78663b2b9dc9c5bbc5d689a07fa93d5951ca0e5797b6983'),
-            $descriptor->getId()
+            $descriptor->id
         );
-        static::assertSame([], $descriptor->getTransports());
+        static::assertSame([], $descriptor->transports);
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertSame(
-            AttestationStatement::TYPE_BASIC,
-            $response->getAttestationObject()
-                ->getAttStmt()
-                ->getType()
-        );
-        static::assertInstanceOf(
-            CertificateTrustPath::class,
-            $response->getAttestationObject()
-                ->getAttStmt()
-                ->getTrustPath()
-        );
+        static::assertSame(AttestationStatement::TYPE_BASIC, $response->attestationObject ->attStmt ->type);
+        static::assertInstanceOf(CertificateTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
-            $publicKeyCredential->getResponse(),
+            $publicKeyCredential->response,
             $publicKeyCredentialCreationOptions,
             'webauthn.spomky-labs.com'
         );

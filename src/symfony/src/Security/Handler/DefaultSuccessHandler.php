@@ -18,8 +18,9 @@ final class DefaultSuccessHandler implements SuccessHandler, AuthenticationSucce
             'status' => 'ok',
             'errorMessage' => '',
         ];
+        $statusCode = $request->getMethod() === Request::METHOD_POST ? Response::HTTP_CREATED : Response::HTTP_OK;
 
-        return new JsonResponse($data, JsonResponse::HTTP_OK);
+        return new JsonResponse($data, $statusCode);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response

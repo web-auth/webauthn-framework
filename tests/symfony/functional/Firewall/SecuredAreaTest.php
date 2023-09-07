@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -16,6 +15,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -87,17 +87,20 @@ final class SecuredAreaTest extends WebTestCase
     #[Test]
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions
-            ::create(base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true))
-                ->setTimeout(60000)
-                ->setRpId('localhost')
-                ->setUserVerification(PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED)
-                ->allowCredential(new PublicKeyCredentialDescriptor(
-                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                    Base64UrlSafe::decode(
-                        'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
-                    )
-                ));
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
+            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true)
+        );
+        $publicKeyCredentialRequestOptions->timeout = 60000;
+        $publicKeyCredentialRequestOptions->rpId = 'localhost';
+        $publicKeyCredentialRequestOptions->userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
+        $publicKeyCredentialRequestOptions->allowCredentials = [
+            PublicKeyCredentialDescriptor::create(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                Base64UrlSafe::decode(
+                    'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
+                )
+            ),
+        ];
 
         $this->storage->store(Item::create(
             $publicKeyCredentialRequestOptions,

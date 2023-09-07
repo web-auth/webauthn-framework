@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
-use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
@@ -13,12 +12,10 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
+use const JSON_THROW_ON_ERROR;
 
 class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(
         private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private PublicKeyCredentialOptions $publicKeyCredentialOptions,
@@ -30,7 +27,9 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private readonly int $signCount,
         private ?AuthenticationExtensionsClientOutputs $extensions,
         private readonly string $firewallName,
-        array $roles = []
+        array $roles = [],
+        private readonly bool $isBackupEligible = false,
+        private readonly bool $isBackedUp = false,
     ) {
         parent::__construct($roles);
     }
@@ -47,6 +46,8 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             json_encode($this->publicKeyCredentialOptions, JSON_THROW_ON_ERROR),
             $this->isUserPresent,
             $this->isUserVerified,
+            $this->isBackupEligible,
+            $this->isBackedUp,
             $this->reservedForFutureUse1,
             $this->reservedForFutureUse2,
             $this->signCount,
@@ -68,6 +69,8 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             $publicKeyCredentialOptions,
             $this->isUserPresent,
             $this->isUserVerified,
+            $this->isBackupEligible,
+            $this->isBackedUp,
             $this->reservedForFutureUse1,
             $this->reservedForFutureUse2,
             $this->signCount,
@@ -139,6 +142,16 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     public function getSignCount(): int
     {
         return $this->signCount;
+    }
+
+    public function isBackupEligible(): bool
+    {
+        return $this->isBackupEligible;
+    }
+
+    public function isBackedUp(): bool
+    {
+        return $this->isBackedUp;
     }
 
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs

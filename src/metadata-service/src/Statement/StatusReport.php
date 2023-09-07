@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function in_array;
-use function is_string;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
+use function array_key_exists;
+use function in_array;
+use function is_string;
 
 /**
  * @final
@@ -19,23 +19,41 @@ class StatusReport implements JsonSerializable
     /**
      * @see AuthenticatorStatus
      */
-    private readonly string $status;
-
     public function __construct(
-        string $status,
-        private readonly ?string $effectiveDate,
-        private readonly ?string $certificate,
-        private readonly ?string $url,
-        private readonly ?string $certificationDescriptor,
-        private readonly ?string $certificateNumber,
-        private readonly ?string $certificationPolicyVersion,
-        private readonly ?string $certificationRequirementsVersion
+        public readonly string $status,
+        public readonly ?string $effectiveDate,
+        public readonly ?string $certificate,
+        public readonly ?string $url,
+        public readonly ?string $certificationDescriptor,
+        public readonly ?string $certificateNumber,
+        public readonly ?string $certificationPolicyVersion,
+        public readonly ?string $certificationRequirementsVersion
     ) {
-        in_array($status, AuthenticatorStatus::list(), true) || throw MetadataStatementLoadingException::create(
+        in_array($status, AuthenticatorStatus::STATUSES, true) || throw MetadataStatementLoadingException::create(
             'The value of the key "status" is not acceptable'
         );
+    }
 
-        $this->status = $status;
+    public static function create(
+        string $status,
+        ?string $effectiveDate,
+        ?string $certificate,
+        ?string $url,
+        ?string $certificationDescriptor,
+        ?string $certificateNumber,
+        ?string $certificationPolicyVersion,
+        ?string $certificationRequirementsVersion
+    ): self {
+        return new self(
+            $status,
+            $effectiveDate,
+            $certificate,
+            $url,
+            $certificationDescriptor,
+            $certificateNumber,
+            $certificationPolicyVersion,
+            $certificationRequirementsVersion
+        );
     }
 
     public function isCompromised(): bool
@@ -48,41 +66,65 @@ class StatusReport implements JsonSerializable
         ], true);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getEffectiveDate(): ?string
     {
         return $this->effectiveDate;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificate(): ?string
     {
         return $this->certificate;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationDescriptor(): ?string
     {
         return $this->certificationDescriptor;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationPolicyVersion(): ?string
     {
         return $this->certificationPolicyVersion;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getCertificationRequirementsVersion(): ?string
     {
         return $this->certificationRequirementsVersion;
@@ -115,7 +157,7 @@ class StatusReport implements JsonSerializable
             }
         }
 
-        return new self(
+        return self::create(
             $data['status'],
             $data['effectiveDate'] ?? null,
             $data['certificate'] ?? null,

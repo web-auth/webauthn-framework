@@ -6,12 +6,13 @@ namespace Webauthn\Tests\Bundle\Functional;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\Ulid;
+use Webauthn\Bundle\Repository\CanGenerateUserEntity;
 use Webauthn\Bundle\Repository\CanRegisterUserEntity;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepositoryInterface, CanRegisterUserEntity
+final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepositoryInterface, CanRegisterUserEntity, CanGenerateUserEntity
 {
     public function __construct(
         private readonly CacheItemPoolInterface $cacheItemPool
@@ -48,26 +49,30 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
 
     public function generateNextUserEntityId(): string
     {
-        return Uuid::v4()->__toString();
+        return Ulid::generate();
     }
 
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         if (! $userEntity instanceof User) {
-            $userEntity = new User(
-                $userEntity->getName(),
-                $userEntity->getId(),
-                $userEntity->getDisplayName(),
-                $userEntity->getIcon()
-            );
+            $userEntity = new User($userEntity->name, $userEntity->id, $userEntity->displayName, $userEntity->icon);
         }
 
-        $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userEntity->getId()));
+        $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userEntity->id));
         $item->set($userEntity);
         $this->cacheItemPool->save($item);
 
-        $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($userEntity->getName()));
+        $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($userEntity->name));
         $item->set($userEntity);
         $this->cacheItemPool->save($item);
+    }
+
+    public function generateUserEntity(?string $username, ?string $displayName): PublicKeyCredentialUserEntity
+    {
+        $username ??= Base64UrlSafe::encodeUnpadded(random_bytes(32));
+        $displayName ??= $username;
+        $id = Ulid::generate();
+
+        return new User($username, $id, $displayName);
     }
 }

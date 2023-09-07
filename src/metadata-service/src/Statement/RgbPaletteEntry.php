@@ -4,42 +4,50 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use function array_key_exists;
-use function is_int;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
+use function array_key_exists;
+use function is_int;
 
 /**
  * @final
  */
 class RgbPaletteEntry implements JsonSerializable
 {
-    private readonly int $r;
-
-    private readonly int $g;
-
-    private readonly int $b;
-
-    public function __construct(int $r, int $g, int $b)
-    {
+    public function __construct(
+        public readonly int $r,
+        public readonly int $g,
+        public readonly int $b,
+    ) {
         ($r >= 0 && $r <= 255) || throw MetadataStatementLoadingException::create('The key "r" is invalid');
         ($g >= 0 && $g <= 255) || throw MetadataStatementLoadingException::create('The key "g" is invalid');
         ($b >= 0 && $b <= 255) || throw MetadataStatementLoadingException::create('The key "b" is invalid');
-        $this->r = $r;
-        $this->g = $g;
-        $this->b = $b;
     }
 
+    public static function create(int $r, int $g, int $b): self
+    {
+        return new self($r, $g, $b);
+    }
+
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getR(): int
     {
         return $this->r;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getG(): int
     {
         return $this->g;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getB(): int
     {
         return $this->b;
@@ -60,7 +68,7 @@ class RgbPaletteEntry implements JsonSerializable
             );
         }
 
-        return new self($data['r'], $data['g'], $data['b']);
+        return self::create($data['r'], $data['g'], $data['b']);
     }
 
     /**

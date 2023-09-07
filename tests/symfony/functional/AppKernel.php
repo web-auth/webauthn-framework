@@ -12,20 +12,15 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
+use Webauthn\Stimulus\WebauthnStimulusBundle;
 
 final class AppKernel extends Kernel
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(string $environment)
     {
         parent::__construct($environment, true);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function registerBundles(): iterable
     {
         return [
@@ -36,12 +31,10 @@ final class AppKernel extends Kernel
             new MonologBundle(),
 
             new WebauthnBundle(),
+            new WebauthnStimulusBundle(),
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/../config/config.yml');

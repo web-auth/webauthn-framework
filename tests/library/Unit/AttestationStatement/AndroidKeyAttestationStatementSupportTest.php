@@ -23,7 +23,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport();
+        $support = AndroidKeyAttestationStatementSupport::create();
 
         static::assertSame('android-key', $support->name());
         static::assertFalse($support->load([
@@ -37,7 +37,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport();
+        $support = AndroidKeyAttestationStatementSupport::create();
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -51,7 +51,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
     {
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "alg" is missing.');
-        $support = new AndroidKeyAttestationStatementSupport();
+        $support = AndroidKeyAttestationStatementSupport::create();
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -68,7 +68,7 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         $this->expectExceptionMessage(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
-        $support = new AndroidKeyAttestationStatementSupport();
+        $support = AndroidKeyAttestationStatementSupport::create();
 
         static::assertSame('android-key', $support->name());
         static::assertFalse($support->load([
@@ -92,16 +92,16 @@ final class AndroidKeyAttestationStatementSupportTest extends TestCase
         $loader = PublicKeyCredentialLoader::create(AttestationObjectLoader::create($manager));
         $publicKeyCredential = $loader->load($input);
         /** @var AuthenticatorAttestationResponse $response */
-        $response = $publicKeyCredential->getResponse();
-        $clientDataJSONHash = hash('sha256', $response->getClientDataJSON()->getRawData(), true);
+        $response = $publicKeyCredential->response;
+        $clientDataJSONHash = hash('sha256', $response->clientDataJSON->rawData, true);
 
         //When
         $result = $support->isValid(
             $clientDataJSONHash,
-            $response->getAttestationObject()
-                ->getAttStmt(),
-            $response->getAttestationObject()
-                ->getAuthData()
+            $response->attestationObject
+                ->attStmt,
+            $response->attestationObject
+                ->authData
         );
 
         // Then

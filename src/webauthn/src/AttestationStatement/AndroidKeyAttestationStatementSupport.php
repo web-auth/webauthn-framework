@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use function count;
-use function is_array;
-use function openssl_pkey_get_public;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
@@ -29,6 +24,11 @@ use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function openssl_pkey_get_public;
+use function openssl_verify;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -58,7 +58,6 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     }
 
     /**
-     * {@inheritDoc}
      * @param array<string, mixed> $attestation
      */
     public function load(array $attestation): AttestationStatement
@@ -82,34 +81,31 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $attestationStatement = AttestationStatement::createBasic(
             $attestation['fmt'],
             $attestation['attStmt'],
-            new CertificateTrustPath($certificates)
+            CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
         return $attestationStatement;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isValid(
         string $clientDataJSONHash,
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
     ): bool {
-        $trustPath = $attestationStatement->getTrustPath();
+        $trustPath = $attestationStatement->trustPath;
         $trustPath instanceof CertificateTrustPath || throw InvalidAttestationStatementException::create(
             $attestationStatement,
             'Invalid trust path. Shall contain certificates.'
         );
 
-        $certificates = $trustPath->getCertificates();
+        $certificates = $trustPath->certificates;
 
         //Decode leaf attestation certificate
         $leaf = $certificates[0];
         $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
-        $signedData = $authenticatorData->getAuthData() . $clientDataJSONHash;
+        $signedData = $authenticatorData->authData . $clientDataJSONHash;
         $alg = $attestationStatement->get('alg');
 
         return openssl_verify(
@@ -132,11 +128,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
 
         //Check that authData publicKey matches the public key in the attestation certificate
-        $attestedCredentialData = $authenticatorData->getAttestedCredentialData();
+        $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
         );
-        $publicKeyData = $attestedCredentialData->getCredentialPublicKey();
+        $publicKeyData = $attestedCredentialData->credentialPublicKey;
         $publicKeyData !== null || throw AttestationStatementVerificationException::create(
             'No attested public key found'
         );

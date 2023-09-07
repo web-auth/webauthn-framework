@@ -12,10 +12,11 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * @internal
  */
-class StimulusExtension extends Extension implements PrependExtensionInterface
+class WebauthnStimulusExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container)
     {
+        // Nothing to do here. The bundle is only used to provide assets.
     }
 
     public function prepend(ContainerBuilder $container)

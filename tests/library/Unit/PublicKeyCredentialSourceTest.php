@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\EmptyTrustPath;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 /**
  * @internal
@@ -23,7 +24,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
         $json = json_decode($data, true);
         $source = PublicKeyCredentialSource::createFromArray($json);
 
-        static::assertSame('publicKeyCredentialId', $source->getPublicKeyCredentialId());
+        static::assertSame('publicKeyCredentialId', $source->publicKeyCredentialId);
     }
 
     #[Test]
@@ -43,7 +44,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
 
         static::assertSame(
             '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null}',
-            json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES)
+            json_encode($tokenBinding, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
         );
     }
 }

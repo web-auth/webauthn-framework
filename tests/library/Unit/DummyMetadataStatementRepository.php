@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
-use const JSON_THROW_ON_ERROR;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Service\MetadataBLOBPayloadEntry;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\StatusReportRepository;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -22,7 +22,7 @@ final class DummyMetadataStatementRepository implements MetadataStatementReposit
         }
 
         return $this->loadWindowsHelloMDS()
-            ->getMetadataStatement();
+            ->metadataStatement;
     }
 
     public function findStatusReportsByAAGUID(string $aaguid): array
@@ -32,7 +32,7 @@ final class DummyMetadataStatementRepository implements MetadataStatementReposit
         }
 
         return $this->loadWindowsHelloMDS()
-            ->getStatusReports();
+            ->statusReports;
     }
 
     private function loadWindowsHelloMDS(): MetadataBLOBPayloadEntry

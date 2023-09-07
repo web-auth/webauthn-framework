@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function array_key_exists;
-use function count;
-use function in_array;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
+use function array_key_exists;
+use function count;
+use function in_array;
+use const JSON_THROW_ON_ERROR;
 
 final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
@@ -21,20 +21,23 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    private ?string $rpId = null;
+    public ?string $rpId = null;
 
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private array $allowCredentials = [];
+    public array $allowCredentials = [];
 
-    private ?string $userVerification = null;
+    public ?string $userVerification = null;
 
     public static function create(string $challenge): self
     {
         return new self($challenge);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setRpId(?string $rpId): self
     {
         $this->rpId = $rpId;
@@ -42,6 +45,9 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function allowCredential(PublicKeyCredentialDescriptor $allowCredential): self
     {
         $this->allowCredentials[] = $allowCredential;
@@ -49,15 +55,21 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. No replacement. Please use the property directly.
+     */
     public function allowCredentials(PublicKeyCredentialDescriptor ...$allowCredentials): self
     {
         foreach ($allowCredentials as $allowCredential) {
-            $this->allowCredential($allowCredential);
+            $this->allowCredentials[] = $allowCredential;
         }
 
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setUserVerification(?string $userVerification): self
     {
         if ($userVerification === null) {
@@ -75,6 +87,9 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRpId(): ?string
     {
         return $this->rpId;
@@ -82,12 +97,16 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @return PublicKeyCredentialDescriptor[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getAllowCredentials(): array
     {
         return $this->allowCredentials;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getUserVerification(): ?string
     {
         return $this->userVerification;
@@ -95,7 +114,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     public static function createFromString(string $data): static
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }
@@ -118,16 +137,16 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
         $challenge = Base64::decode($json['challenge']);
 
-        return self::create($challenge)
-            ->setRpId($json['rpId'] ?? null)
-            ->allowCredentials(...$allowCredentials)
-            ->setUserVerification($json['userVerification'] ?? null)
-            ->setTimeout($json['timeout'] ?? null)
-            ->setExtensions(
-                isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
-                    $json['extensions']
-                ) : new AuthenticationExtensionsClientInputs()
-            );
+        $object = self::create($challenge);
+        $object->rpId = $json['rpId'] ?? null;
+        $object->allowCredentials = $allowCredentials;
+        $object->userVerification = $json['userVerification'] ?? null;
+        $object->timeout = $json['timeout'] ?? null;
+        $object->extensions = isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
+            $json['extensions']
+        ) : AuthenticationExtensionsClientInputs::create();
+
+        return $object;
     }
 
     /**

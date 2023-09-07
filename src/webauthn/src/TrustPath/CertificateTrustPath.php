@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
+use Webauthn\Exception\InvalidTrustPathException;
 use function array_key_exists;
 use function is_array;
-use Webauthn\Exception\InvalidTrustPathException;
 
 final class CertificateTrustPath implements TrustPath
 {
@@ -14,7 +14,7 @@ final class CertificateTrustPath implements TrustPath
      * @param string[] $certificates
      */
     public function __construct(
-        private readonly array $certificates
+        public readonly array $certificates
     ) {
     }
 
@@ -28,15 +28,13 @@ final class CertificateTrustPath implements TrustPath
 
     /**
      * @return string[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getCertificates(): array
     {
         return $this->certificates;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function createFromArray(array $data): static
     {
         array_key_exists('x5c', $data) || throw InvalidTrustPathException::create('The trust path type is invalid');
@@ -45,7 +43,7 @@ final class CertificateTrustPath implements TrustPath
             'The trust path type is invalid. The parameter "x5c" shall contain strings.'
         );
 
-        return new self($x5c);
+        return self::create($x5c);
     }
 
     /**

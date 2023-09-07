@@ -5,8 +5,9 @@ name: "Integrate"
 on:
   push:
     branches:
-      - "*.x"
-  pull_request: null
+      - "*.*.x"
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   byte_level:
@@ -31,7 +32,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           coverage: "none"
 
       - name: "Checkout code"
@@ -45,7 +46,7 @@ jobs:
       - name: "Check source code for syntax errors"
         run: "composer exec -- parallel-lint src/ tests/"
 
-  unit_tests:
+  php_tests:
     name: "2️⃣ Unit and functional tests"
     needs:
       - "byte_level"
@@ -56,6 +57,8 @@ jobs:
           - "ubuntu-latest"
         php-version:
           - "8.1"
+          - "8.2"
+          - "8.3"
         dependencies:
           - "lowest"
           - "highest"
@@ -70,6 +73,8 @@ jobs:
 
       - name: "Checkout code"
         uses: "actions/checkout@v3.5.2"
+        with:
+          fetch-depth: 0
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -80,16 +85,48 @@ jobs:
       - name: "Execute tests (PHP)"
         run: "make ci-cc"
 
+      - name: "Fix code coverage paths"
+        run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
+
+      - name: "SonarCloud Scan"
+        uses: "sonarsource/sonarcloud-github-action@master"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  js_tests:
+    name: "2️⃣ JS tests"
+    needs:
+      - "byte_level"
+      - "syntax_errors"
+    strategy:
+      matrix:
+        operating-system:
+          - "ubuntu-latest"
+        php-version:
+          - "8.2"
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+      - name: "Set up PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
+          coverage: "xdebug"
+
+      - name: "Checkout code"
+        uses: "actions/checkout@v3.5.2"
+        with:
+          fetch-depth: 0
+
+      - name: "Install dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+          composer-options: "--optimize-autoloader"
+
       - name: "Execute tests (JS)"
         run: "make js"
-
-  #      - name: Send coverage to Coveralls
-  #        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
-  #        env:
-  #          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  #        run: |
-  #          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-  #          php ./php-coveralls.phar -v
 
   static_analysis:
     name: "3️⃣ Static Analysis"
@@ -101,7 +138,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
@@ -133,7 +170,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
@@ -166,7 +203,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
@@ -195,7 +232,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
@@ -226,7 +263,7 @@ jobs:
 
       - name: "Check exported files"
         run: |
-          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json,link,package.json"
+          EXPECTED="LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json,link,package.json"
           CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
           echo "CURRENT =${CURRENT}"
           echo "EXPECTED=${EXPECTED}"

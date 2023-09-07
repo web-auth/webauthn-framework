@@ -3,13 +3,12 @@
 declare(strict_types=1);
 
 use Lcobucci\Clock\SystemClock;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -32,8 +31,14 @@ use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\SecTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
+    $deprecationData = [
+        'web-auth/webauthn-symfony-bundle',
+        '4.3.0',
+        '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0',
+    ];
     $container = $container->services()
         ->defaults()
         ->private()
@@ -89,25 +94,13 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(IgnoreTokenBindingHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
     $container
         ->set(TokenBindingNotSupportedHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
     $container
         ->set(SecTokenBindingHandler::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.3.0',
-            '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0'
-        );
+        ->deprecate(...$deprecationData);
 
     $container
         ->set(ThrowExceptionIfInvalid::class)
@@ -154,7 +147,7 @@ return static function (ContainerConfigurator $container): void {
         ->class(NullLogger::class);
 
     $container
-        ->alias('webauthn.http_client.default', ClientInterface::class);
+        ->alias('webauthn.http_client.default', HttpClientInterface::class);
 
     $container
         ->alias('webauthn.request_factory.default', RequestFactoryInterface::class);

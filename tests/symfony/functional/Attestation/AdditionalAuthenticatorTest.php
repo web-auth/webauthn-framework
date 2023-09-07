@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
-use function base64_decode;
 use Cose\Algorithms;
-use function count;
 use InvalidArgumentException;
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -25,6 +22,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\User;
+use function base64_decode;
+use function count;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -82,12 +82,12 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             ->get(PublicKeyCredentialSourceRepository::class);
         $this->logIn();
 
-        $publicKeyCredentialUserEntity = new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(
+        $publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::create('test@foo.com', random_bytes(
             64
         ), 'Test PublicKeyCredentialUserEntity');
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions
             ::create(
-                new PublicKeyCredentialRpEntity('My Application'),
+                PublicKeyCredentialRpEntity::create('My Application'),
                 $publicKeyCredentialUserEntity,
                 base64_decode(
                     '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
@@ -98,14 +98,14 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
         $this->storage->store(Item::create(
             $publicKeyCredentialCreationOptions,
-            $publicKeyCredentialCreationOptions->getUser()
+            $publicKeyCredentialCreationOptions->user
         ));
         $publicKeyCredentialSourceRepository->removeCredentialWithId(
             'mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK'
         );
 
         $numberOfRegisteredCredentials = count(
-            $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
+            $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->user)
         );
         $body = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
         $this->client->request(
@@ -131,7 +131,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         static::assertSame('ok', $data['status']);
 
         $newNumberOfRegisteredCredentials = count(
-            $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->getUser())
+            $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->user)
         );
         static::assertSame($numberOfRegisteredCredentials + 1, $newNumberOfRegisteredCredentials);
     }
@@ -162,12 +162,12 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
         $user = new User(
-            $publicKeyCredentialCreationOptions->getUser()
-                ->getName(),
-            $publicKeyCredentialCreationOptions->getUser()
-                ->getId(),
-            $publicKeyCredentialCreationOptions->getUser()
-                ->getDisplayName(),
+            $publicKeyCredentialCreationOptions->user
+                ->name,
+            $publicKeyCredentialCreationOptions->user
+                ->id,
+            $publicKeyCredentialCreationOptions->user
+                ->displayName,
             null,
             ['ROLE_ADMIN', 'ROLE_USER']
         );
@@ -177,7 +177,10 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $token = new WebauthnToken(
             $user,
             $publicKeyCredentialCreationOptions,
-            new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, '0123456789'),
+            PublicKeyCredentialDescriptor::create(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                '0123456789'
+            ),
             true,
             false,
             0,
@@ -185,7 +188,9 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             100,
             null,
             $firewallName,
-            $user->getRoles()
+            $user->getRoles(),
+            true,
+            true
         );
         $token->setUser($user);
 

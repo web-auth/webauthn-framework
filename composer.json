@@ -3,7 +3,15 @@
     "description": "FIDO2/Webauthn library for PHP and Symfony Bundle.",
     "type": "symfony-bundle",
     "license": "MIT",
-    "keywords": [],
+    "keywords": [
+        "FIDO",
+        "FIDO2",
+        "webauthn",
+        "symfony",
+        "symfony-bundle",
+        "symfony-ux",
+        "bundle"
+    ],
     "homepage": "https://github.com/web-auth/webauthn-framework",
     "authors": [
         {
@@ -61,7 +69,7 @@
         "symfony/serializer": "^6.1",
         "symfony/uid": "^6.1",
         "symfony/validator": "^6.1",
-        "web-auth/cose-lib": "^4.0.12",
+        "web-auth/cose-lib": "^4.2.3",
         "web-token/jwt-signature": "^3.1"
     },
     "replace": {
@@ -103,19 +111,18 @@
         "phpstan/phpstan-phpunit": "^1.1",
         "phpstan/phpstan-strict-rules": "^1.4",
         "phpunit/phpunit": "^10.1",
-        "psr/log": "^3.0",
         "qossmic/deptrac-shim": "^1.0",
         "rector/rector": "^0.17",
         "roave/security-advisories": "dev-latest",
+        "symfony/asset": "^6.3",
         "symfony/asset-mapper": "^6.3",
         "symfony/browser-kit": "^6.1",
         "symfony/filesystem": "^6.1",
         "symfony/finder": "^6.1",
         "symfony/monolog-bundle": "^3.8",
-        "symfony/phpunit-bridge": "^6.1",
         "symfony/var-dumper": "^6.1",
         "symfony/yaml": "^6.1",
-        "symplify/easy-coding-standard": "^11.1",
+        "symplify/easy-coding-standard": "^12.0",
         "web-token/jwt-key-mgmt": "^3.1",
         "web-token/jwt-signature-algorithm-ecdsa": "^3.1",
         "web-token/jwt-signature-algorithm-eddsa": "^3.1",

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\Exception\InvalidDataException;
+use Webauthn\Util\Base64;
 use function array_key_exists;
 use function count;
 use function in_array;
 use function is_array;
 use const JSON_THROW_ON_ERROR;
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\Exception\InvalidDataException;
-use Webauthn\Util\Base64;
 
 final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {
@@ -27,20 +27,20 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     /**
      * @var PublicKeyCredentialDescriptor[]
      */
-    private array $excludeCredentials = [];
+    public array $excludeCredentials = [];
 
-    private ?AuthenticatorSelectionCriteria $authenticatorSelection = null;
+    public ?AuthenticatorSelectionCriteria $authenticatorSelection = null;
 
-    private ?string $attestation = null;
+    public ?string $attestation = null;
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      */
     public function __construct(
-        private readonly PublicKeyCredentialRpEntity $rp,
-        private readonly PublicKeyCredentialUserEntity $user,
+        public readonly PublicKeyCredentialRpEntity $rp,
+        public readonly PublicKeyCredentialUserEntity $user,
         string $challenge,
-        private array $pubKeyCredParams
+        public array $pubKeyCredParams
     ) {
         parent::__construct($challenge);
     }
@@ -57,6 +57,9 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return new self($rp, $user, $challenge, $pubKeyCredParams);
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function addPubKeyCredParam(PublicKeyCredentialParameters $pubKeyCredParam): self
     {
         $this->pubKeyCredParams[] = $pubKeyCredParam;
@@ -64,15 +67,21 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. No replacement. Please use the property directly.
+     */
     public function addPubKeyCredParams(PublicKeyCredentialParameters ...$pubKeyCredParams): self
     {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
-            $this->addPubKeyCredParam($pubKeyCredParam);
+            $this->pubKeyCredParams[] = $pubKeyCredParam;
         }
 
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function excludeCredential(PublicKeyCredentialDescriptor $excludeCredential): self
     {
         $this->excludeCredentials[] = $excludeCredential;
@@ -80,15 +89,21 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. No replacement. Please use the property directly.
+     */
     public function excludeCredentials(PublicKeyCredentialDescriptor ...$excludeCredentials): self
     {
         foreach ($excludeCredentials as $excludeCredential) {
-            $this->excludeCredential($excludeCredential);
+            $this->excludeCredentials[] = $excludeCredential;
         }
 
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setAuthenticatorSelection(?AuthenticatorSelectionCriteria $authenticatorSelection): self
     {
         $this->authenticatorSelection = $authenticatorSelection;
@@ -96,6 +111,9 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function setAttestation(string $attestation): self
     {
         in_array($attestation, [
@@ -109,11 +127,17 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         return $this;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getRp(): PublicKeyCredentialRpEntity
     {
         return $this->rp;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getUser(): PublicKeyCredentialUserEntity
     {
         return $this->user;
@@ -121,6 +145,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     /**
      * @return PublicKeyCredentialParameters[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getPubKeyCredParams(): array
     {
@@ -129,17 +154,24 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     /**
      * @return PublicKeyCredentialDescriptor[]
+     * @deprecated since 4.7.0. Please use the property directly.
      */
     public function getExcludeCredentials(): array
     {
         return $this->excludeCredentials;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAuthenticatorSelection(): ?AuthenticatorSelectionCriteria
     {
         return $this->authenticatorSelection;
     }
 
+    /**
+     * @deprecated since 4.7.0. Please use the property directly.
+     */
     public function getAttestation(): ?string
     {
         return $this->attestation;
@@ -147,7 +179,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
     public static function createFromString(string $data): static
     {
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
         return self::createFromArray($data);
     }
@@ -192,26 +224,26 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
 
         $challenge = Base64::decode($json['challenge']);
 
-        return self
+        $options = self
             ::create(
                 PublicKeyCredentialRpEntity::createFromArray($json['rp']),
                 PublicKeyCredentialUserEntity::createFromArray($json['user']),
                 $challenge,
                 $pubKeyCredParams
-            )
-                ->setTimeout($json['timeout'] ?? null)
-                ->excludeCredentials(...$excludeCredentials)
-                ->setAuthenticatorSelection(
-                    isset($json['authenticatorSelection']) ? AuthenticatorSelectionCriteria::createFromArray(
-                        $json['authenticatorSelection']
-                    ) : null
-                )
-                ->setAttestation($json['attestation'] ?? null)
-                ->setExtensions(
+            );
+        $options->timeout = $json['timeout'] ?? null;
+        $options->excludeCredentials = $excludeCredentials;
+        $options->authenticatorSelection = isset($json['authenticatorSelection']) ? AuthenticatorSelectionCriteria::createFromArray(
+            $json['authenticatorSelection']
+        ) : null
+        ;
+        $options->attestation = $json['attestation'] ?? null;
+        $options->extensions =
                     isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
                         $json['extensions']
-                    ) : new AuthenticationExtensionsClientInputs()
-                );
+                    ) : AuthenticationExtensionsClientInputs::create()
+        ;
+        return $options;
     }
 
     /**

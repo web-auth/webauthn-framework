@@ -8,8 +8,10 @@ use Throwable;
 
 final class MetadataStatementLoadingException extends MetadataStatementException
 {
-    public static function create(string $message, ?Throwable $previous = null): self
-    {
+    public static function create(
+        string $message = 'Unable to load the metadata statement',
+        ?Throwable $previous = null
+    ): self {
         return new self($message, $previous);
     }
 }

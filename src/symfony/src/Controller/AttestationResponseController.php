@@ -64,11 +64,11 @@ final class AttestationResponseController
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
-            $response = $publicKeyCredential->getResponse();
+            $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
                 'Invalid response'
             );
-            $storedData = $this->optionStorage->get($response->getClientDataJSON()->getChallenge());
+            $storedData = $this->optionStorage->get($response->clientDataJSON->challenge);
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new BadRequestHttpException(
                 'Unable to find the public key credential creation options'
@@ -84,7 +84,7 @@ final class AttestationResponseController
                 $this->securedRelyingPartyIds
             );
             if ($this->credentialSourceRepository->findOneByCredentialId(
-                $credentialSource->getPublicKeyCredentialId()
+                $credentialSource->publicKeyCredentialId
             ) !== null) {
                 throw new BadRequestHttpException('The credentials already exists');
             }

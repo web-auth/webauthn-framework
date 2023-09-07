@@ -1,24 +1,24 @@
 'use strict';
 
-import {Controller} from '@hotwired/stimulus';
-import {startAuthentication, startRegistration} from '@simplewebauthn/browser';
+import { Controller } from '@hotwired/stimulus';
+import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 
 export default class extends Controller {
     static values = {
-        requestResultUrl: {type: String, default: '/request'},
-        requestOptionsUrl: {type: String, default: '/request/options'},
+        requestResultUrl: { type: String, default: '/request' },
+        requestOptionsUrl: { type: String, default: '/request/options' },
         requestSuccessRedirectUri: String,
-        creationResultUrl: {type: String, default: '/creation'},
-        creationOptionsUrl: {type: String, default: '/creation/options'},
+        creationResultUrl: { type: String, default: '/creation' },
+        creationOptionsUrl: { type: String, default: '/creation/options' },
         creationSuccessRedirectUri: String,
-        usernameField: {type: String, default: 'username'},
-        displayNameField: {type: String, default: 'displayName'},
-        attestationField: {type: String, default: 'attestation'},
-        userVerificationField: {type: String, default: 'userVerification'},
-        residentKeyField: {type: String, default: 'residentKey'},
-        requireResidentKeyField: {type: String, default: 'requireResidentKey'},
-        authenticatorAttachmentField: {type: String, default: 'authenticatorAttachment'},
-        useBrowserAutofill: {type: Boolean, default: false},
+        usernameField: { type: String, default: 'username' },
+        displayNameField: { type: String, default: 'displayName' },
+        attestationField: { type: String, default: 'attestation' },
+        userVerificationField: { type: String, default: 'userVerification' },
+        residentKeyField: { type: String, default: 'residentKey' },
+        requireResidentKeyField: { type: String, default: 'requireResidentKey' },
+        authenticatorAttachmentField: { type: String, default: 'authenticatorAttachment' },
+        useBrowserAutofill: { type: Boolean, default: false },
     };
 
     declare readonly requestResultUrlValue: string;
@@ -40,20 +40,20 @@ export default class extends Controller {
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
-            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue || null,
+            requestSuccessRedirectUri: this.requestSuccessRedirectUriValue ?? null,
             creationResultUrl: this.creationResultUrlValue,
             creationOptionsUrl: this.creationOptionsUrlValue,
-            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue || null,
+            creationSuccessRedirectUri: this.creationSuccessRedirectUriValue ?? null,
         };
 
-        this._dispatchEvent('webauthn:connect', {options});
+        this._dispatchEvent('webauthn:connect', { options });
     }
 
     async signin(event: Event): Promise<void> {
         event.preventDefault();
         const data = this._getData();
 
-        this._dispatchEvent('webauthn:request:options', {data});
+        this._dispatchEvent('webauthn:request:options', { data });
 
         const resp = await this.fetch('POST', this.requestOptionsUrlValue, JSON.stringify(data));
         const respJson = await resp.response;
@@ -61,7 +61,7 @@ export default class extends Controller {
 
         const verificationResp = await this.fetch('POST', this.requestResultUrlValue, JSON.stringify(asseResp));
         const verificationJSON = await verificationResp.response;
-        this._dispatchEvent('webauthn:request:response', {response: asseResp});
+        this._dispatchEvent('webauthn:request:response', { response: asseResp });
 
         if (verificationJSON && verificationJSON.errorMessage === '') {
             this._dispatchEvent('webauthn:request:success', verificationJSON);
@@ -76,7 +76,7 @@ export default class extends Controller {
     async signup(event: Event): Promise<void> {
         event.preventDefault();
         const data = this._getData();
-        this._dispatchEvent('webauthn:creation:options', {data});
+        this._dispatchEvent('webauthn:creation:options', { data });
         const resp = await this.fetch('POST', this.creationOptionsUrlValue, JSON.stringify(data));
 
         const respJson = await resp.response;
@@ -84,7 +84,7 @@ export default class extends Controller {
             respJson.excludeCredentials = [];
         }
         const attResp = await startRegistration(respJson);
-        this._dispatchEvent('webauthn:creation:response', {response: attResp});
+        this._dispatchEvent('webauthn:creation:response', { response: attResp });
         const verificationResp = await this.fetch('POST', this.creationResultUrlValue, JSON.stringify(attResp));
 
         const verificationJSON = await verificationResp.response;
@@ -99,29 +99,29 @@ export default class extends Controller {
     }
 
     _dispatchEvent(name: string, payload: any): void {
-        this.element.dispatchEvent(new CustomEvent(name, {detail: payload, bubbles: true}));
+        this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
     }
 
     fetch(method: string, url: string, body: string): Promise<XMLHttpRequest> {
         return new Promise(function (resolve, reject) {
             const xhr = new XMLHttpRequest();
             xhr.open(method, url);
-            xhr.responseType = "json";
-            xhr.setRequestHeader('Content-Type', 'application/json')
+            xhr.responseType = 'json';
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     resolve(xhr);
                 } else {
                     reject({
                         status: xhr.status,
-                        statusText: xhr.statusText
+                        statusText: xhr.statusText,
                     });
                 }
             };
             xhr.onerror = function () {
                 reject({
                     status: xhr.status,
-                    statusText: xhr.statusText
+                    statusText: xhr.statusText,
                 });
             };
             xhr.send(body);
@@ -137,13 +137,10 @@ export default class extends Controller {
             //Nothing to do
         }
 
-        function removeEmpty(obj: Object): any {
+        function removeEmpty(obj: object): any {
             return Object.entries(obj)
-                .filter(([_, v]) => (v !== null && v !== ''))
-                .reduce(
-                    (acc, [k, v]) => ({...acc, [k]: v === Object(v) ? removeEmpty(v) : v}),
-                    {}
-                );
+                .filter(([, v]) => v !== null && v !== '')
+                .reduce((acc, [k, v]) => ({ ...acc, [k]: v === Object(v) ? removeEmpty(v) : v }), {});
         }
 
         return removeEmpty({

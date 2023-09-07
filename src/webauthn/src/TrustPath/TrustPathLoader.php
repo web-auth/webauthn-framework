@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\TrustPath;
 
+use Webauthn\Exception\InvalidTrustPathException;
 use function array_key_exists;
 use function class_implements;
 use function in_array;
-use Webauthn\Exception\InvalidTrustPathException;
 
-abstract class TrustPathLoader
+final class TrustPathLoader
 {
     /**
      * @param mixed[] $data

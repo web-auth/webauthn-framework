@@ -28,11 +28,16 @@ final class AppleAttestationStatementTest extends AbstractTestCase
     {
         $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            new PublicKeyCredentialRpEntity('My Application'),
-            new PublicKeyCredentialUserEntity('test@foo.com', random_bytes(64), 'Test PublicKeyCredentialUserEntity'),
+            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialUserEntity::create(
+                'test@foo.com',
+                random_bytes(64),
+                'Test PublicKeyCredentialUserEntity'
+            ),
             base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
             [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
-        )->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
+        );
+        $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load('{
             "id": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
@@ -43,40 +48,40 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             },
             "type": "public-key"
         }');
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->getResponse());
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
-            ->check($publicKeyCredential->getResponse(), $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
+            ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
         static::assertSame(
             base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true),
-            Base64UrlSafe::decode($publicKeyCredential->getId())
+            Base64UrlSafe::decode($publicKeyCredential->id)
         );
-        static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredentialDescriptor->getId());
+        static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredentialDescriptor->id);
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            $publicKeyCredentialDescriptor->getType()
+            $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->getTransports());
+        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
-        $authenticatorData = $publicKeyCredential->getResponse()
-            ->getAttestationObject()
+        $authenticatorData = $publicKeyCredential->response
+            ->attestationObject
             ->getAuthData();
         /** @var AttestationStatement $attestationStatement */
-        $attestationStatement = $publicKeyCredential->getResponse()
-            ->getAttestationObject()
+        $attestationStatement = $publicKeyCredential->response
+            ->attestationObject
             ->getAttStmt();
-        static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->getType());
+        static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->type);
         static::assertSame(
             hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'),
-            $authenticatorData->getRpIdHash()
+            $authenticatorData->rpIdHash
         );
         static::assertTrue($authenticatorData->isUserPresent());
         static::assertTrue($authenticatorData->isUserVerified());
         static::assertTrue($authenticatorData->hasAttestedCredentialData());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
         static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
-        static::assertSame(0, $authenticatorData->getSignCount());
-        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->getAttestedCredentialData());
+        static::assertSame(0, $authenticatorData->signCount);
+        static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
         $this->clock->set(new DateTimeImmutable());
     }
