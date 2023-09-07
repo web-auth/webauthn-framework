@@ -213,10 +213,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             'aaid' => $this->aaid,
             'aaguid' => $this->aaguid,
             'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
-            'statusReports' => array_map(
-                static fn (StatusReport $object): array => $object->jsonSerialize(),
-                $this->statusReports
-            ),
+            'statusReports' => $this->statusReports,
             'timeOfLastStatusChange' => $this->timeOfLastStatusChange,
             'rogueListURL' => $this->rogueListURL,
             'rogueListHash' => $this->rogueListHash,

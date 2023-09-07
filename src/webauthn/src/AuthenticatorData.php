@@ -43,6 +43,17 @@ class AuthenticatorData
     ) {
     }
 
+    public static function create(
+        string $authData,
+        string $rpIdHash,
+        string $flags,
+        int $signCount,
+        ?AttestedCredentialData $attestedCredentialData = null,
+        ?AuthenticationExtensionsClientOutputs $extensions = null
+    ): self {
+        return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
+    }
+
     /**
      * @deprecated since 4.7.0. Please use the property directly.
      */

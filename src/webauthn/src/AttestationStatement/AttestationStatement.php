@@ -10,6 +10,9 @@ use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 use function array_key_exists;
 
+/**
+ * @final
+ */
 class AttestationStatement implements JsonSerializable
 {
     final public const TYPE_NONE = 'none';
@@ -169,7 +172,7 @@ class AttestationStatement implements JsonSerializable
         return [
             'fmt' => $this->fmt,
             'attStmt' => $this->attStmt,
-            'trustPath' => $this->trustPath->jsonSerialize(),
+            'trustPath' => $this->trustPath,
             'type' => $this->type,
         ];
     }

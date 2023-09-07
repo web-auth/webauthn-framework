@@ -38,7 +38,7 @@ final class PackedAttestationStatementTest extends KernelTestCase
                 'Test PublicKeyCredentialUserEntity'
             ),
             base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
-            [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = self::$kernel->getContainer()->get(PublicKeyCredentialLoader::class)->load(

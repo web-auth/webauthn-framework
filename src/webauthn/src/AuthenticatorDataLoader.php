@@ -51,7 +51,7 @@ final class AuthenticatorDataLoader
                 $authData,
                 'The data does not contain a valid credential public key.'
             );
-            $attestedCredentialData = new AttestedCredentialData(
+            $attestedCredentialData = AttestedCredentialData::create(
                 $aaguid,
                 $credentialId,
                 (string) $credentialPublicKey
@@ -69,7 +69,7 @@ final class AuthenticatorDataLoader
         );
         $authDataStream->close();
 
-        return new AuthenticatorData(
+        return AuthenticatorData::create(
             $authData,
             $rp_id_hash,
             $flags,

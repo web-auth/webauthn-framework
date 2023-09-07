@@ -62,13 +62,10 @@ class VerificationMethodANDCombinations implements JsonSerializable
     }
 
     /**
-     * @return array<array<mixed>>
+     * @return array<VerificationMethodDescriptor>
      */
     public function jsonSerialize(): array
     {
-        return array_map(
-            static fn (VerificationMethodDescriptor $object): array => $object->jsonSerialize(),
-            $this->verificationMethods
-        );
+        return $this->verificationMethods;
     }
 }

@@ -132,7 +132,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createCredentialParameters(array $profile): array
     {
-        $callback = static fn ($alg): PublicKeyCredentialParameters => new PublicKeyCredentialParameters(
+        $callback = static fn ($alg): PublicKeyCredentialParameters => PublicKeyCredentialParameters::create(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $alg
         );

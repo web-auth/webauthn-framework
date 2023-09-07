@@ -15,6 +15,7 @@ use function count;
 use const COUNT_NORMAL;
 
 /**
+ * @final
  * @implements IteratorAggregate<AuthenticationExtension>
  */
 class AuthenticationExtensionsClientInputs implements JsonSerializable, Countable, IteratorAggregate
@@ -88,10 +89,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     public function jsonSerialize(): array
     {
-        return array_map(
-            static fn (AuthenticationExtension $object): mixed => $object->jsonSerialize(),
-            $this->extensions
-        );
+        return $this->extensions;
     }
 
     /**

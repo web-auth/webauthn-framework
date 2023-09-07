@@ -13,6 +13,7 @@ use function array_key_exists;
 use function is_string;
 
 /**
+ * @final
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
  */
 class AttestedCredentialData implements JsonSerializable
@@ -22,6 +23,14 @@ class AttestedCredentialData implements JsonSerializable
         public readonly string $credentialId,
         public readonly ?string $credentialPublicKey
     ) {
+    }
+
+    public static function create(
+        AbstractUid $aaguid,
+        string $credentialId,
+        ?string $credentialPublicKey = null
+    ): self {
+        return new self($aaguid, $credentialId, $credentialPublicKey);
     }
 
     /**
@@ -92,7 +101,7 @@ class AttestedCredentialData implements JsonSerializable
             $credentialPublicKey = Base64::decode($json['credentialPublicKey'], true);
         }
 
-        return new self($uuid, $credentialId, $credentialPublicKey);
+        return self::create($uuid, $credentialId, $credentialPublicKey);
     }
 
     /**

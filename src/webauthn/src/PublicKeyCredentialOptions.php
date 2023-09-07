@@ -4,27 +4,32 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use InvalidArgumentException;
 use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    /**
-     * @var positive-int|null
-     */
-    public ?int $timeout = null;
-
     public AuthenticationExtensionsClientInputs $extensions;
 
+    /**
+     * @param positive-int|null $timeout
+     * @protected
+     */
     public function __construct(
-        public readonly string $challenge
+        public readonly string $challenge,
+        /** @readonly  */
+        public null|int $timeout = null,
+        /** @readonly  */
+        null|AuthenticationExtensionsClientInputs $extensions = null,
     ) {
-        $this->extensions = AuthenticationExtensionsClientInputs::create();
+        ($this->timeout === null || $this->timeout > 0) || throw new InvalidArgumentException('Invalid timeout');
+        $this->extensions = $extensions ?? AuthenticationExtensionsClientInputs::create();
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
+     * @deprecated since 4.7.0. Please use the {self::create} instead.
      */
     public function setTimeout(?int $timeout): static
     {
@@ -34,7 +39,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
+     * @deprecated since 4.7.0. Please use the {self::create} instead.
      */
     public function addExtension(AuthenticationExtension $extension): static
     {
@@ -45,7 +50,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @param AuthenticationExtension[] $extensions
-     * @deprecated since 4.7.0. No replacement. Please use the property directly.
+     * @deprecated since 4.7.0. No replacement. Please use the {self::create} instead.
      */
     public function addExtensions(array $extensions): static
     {
@@ -57,7 +62,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
+     * @deprecated since 4.7.0. Please use the {self::create} instead.
      */
     public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
     {

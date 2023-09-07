@@ -662,21 +662,12 @@ class MetadataStatement implements JsonSerializable
             'attachmentHint' => $this->attachmentHint,
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
-            'tcDisplayPNGCharacteristics' => array_map(
-                static fn (DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
-                $this->tcDisplayPNGCharacteristics
-            ),
+            'tcDisplayPNGCharacteristics' => $this->tcDisplayPNGCharacteristics,
             'attestationRootCertificates' => CertificateToolbox::fixPEMStructures($this->attestationRootCertificates),
-            'ecdaaTrustAnchors' => array_map(
-                static fn (EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
-                $this->ecdaaTrustAnchors
-            ),
+            'ecdaaTrustAnchors' => $this->ecdaaTrustAnchors,
             'icon' => $this->icon,
             'authenticatorGetInfo' => $this->authenticatorGetInfo,
-            'supportedExtensions' => array_map(
-                static fn (ExtensionDescriptor $object): array => $object->jsonSerialize(),
-                $this->supportedExtensions
-            ),
+            'supportedExtensions' => $this->supportedExtensions,
         ];
 
         return Utils::filterNullValues($data);

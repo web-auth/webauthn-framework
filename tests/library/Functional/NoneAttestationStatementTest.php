@@ -31,7 +31,7 @@ final class NoneAttestationStatementTest extends AbstractTestCase
                 '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
                 true
             ),
-            [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(

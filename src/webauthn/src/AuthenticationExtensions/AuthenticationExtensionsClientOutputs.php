@@ -16,6 +16,7 @@ use const COUNT_NORMAL;
 use const JSON_THROW_ON_ERROR;
 
 /**
+ * @final
  * @implements IteratorAggregate<AuthenticationExtension>
  */
 class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countable, IteratorAggregate
@@ -97,10 +98,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     public function jsonSerialize(): array
     {
-        return array_map(
-            static fn (AuthenticationExtension $object): mixed => $object->jsonSerialize(),
-            $this->extensions
-        );
+        return $this->extensions;
     }
 
     /**

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+
 use Rector\Core\ValueObject\PhpVersion;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodParameterRector;
 use Rector\Doctrine\Set\DoctrineSetList;
@@ -29,7 +30,7 @@ return static function (RectorConfig $config): void {
     $config->import(PHPUnitSetList::PHPUNIT_CODE_QUALITY);
     $config->import(PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(PHPUnitLevelSetList::UP_TO_PHPUNIT_100);
-    $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
+    $config->paths([__DIR__ . '/src', __DIR__ . '/tests', __DIR__ . '/ecs.php', __DIR__ . '/rector.php']);
     $config->skip([
         __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
         __DIR__ . '/src/symfony/src/Routing/Loader.php',
@@ -37,11 +38,9 @@ return static function (RectorConfig $config): void {
         RemoveUnusedPrivateMethodParameterRector::class => [
             __DIR__ . '/src/symfony/src/DependencyInjection/Configuration.php',
         ],
-        ReadOnlyPropertyRector::class => [
-            __DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php',
-        ],
+        ReadOnlyPropertyRector::class => [__DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php'],
+        PreferPHPUnitThisCallRector::class,
     ]);
-    $config->services()->remove(PreferPHPUnitThisCallRector::class);
     $config->phpVersion(PhpVersion::PHP_81);
     $config->parallel();
     $config->importNames();

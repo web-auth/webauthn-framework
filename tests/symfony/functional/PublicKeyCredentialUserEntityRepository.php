@@ -17,8 +17,8 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function __construct(
         private readonly CacheItemPoolInterface $cacheItemPool
     ) {
-        $this->saveUserEntity(new User('admin', 'foo', 'Foo BAR (-_-)', null, ['ROLE_ADMIN', 'ROLE_USER']));
-        $this->saveUserEntity(new User(
+        $this->saveUserEntity(User::create('admin', 'foo', 'Foo BAR (-_-)', null, ['ROLE_ADMIN', 'ROLE_USER']));
+        $this->saveUserEntity(User::create(
             'XY5nn3p_6olTLjoB2Jbb',
             '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
             'Bennie Moneypenny',
@@ -55,7 +55,7 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         if (! $userEntity instanceof User) {
-            $userEntity = new User($userEntity->name, $userEntity->id, $userEntity->displayName, $userEntity->icon);
+            $userEntity = User::create($userEntity->name, $userEntity->id, $userEntity->displayName, $userEntity->icon);
         }
 
         $item = $this->cacheItemPool->getItem('user-id' . Base64UrlSafe::encodeUnpadded($userEntity->id));
@@ -73,6 +73,6 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         $displayName ??= $username;
         $id = Ulid::generate();
 
-        return new User($username, $id, $displayName);
+        return User::create($username, $id, $displayName);
     }
 }

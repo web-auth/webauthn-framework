@@ -957,9 +957,29 @@ parameters:
             path: src/symfony/src/Doctrine/Type/Base64BinaryDataType.php
 
         -
-            message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromString\\(\\) expects string, mixed given\\.$#"
+            message: "#^@readonly property Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:\\$publicKeyCredentialDescriptors is already assigned\\.$#"
             count: 1
-            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollectionType.php
+            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:\\$publicKeyCredentialDescriptors is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:jsonSerialize\\(\\) should return array\\<array\\<string, mixed\\>\\> but returns array\\<string, Webauthn\\\\PublicKeyCredentialDescriptor\\>\\.$#"
+            count: 1
+            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: Webauthn\\\\PublicKeyCredentialDescriptor given\\.$#"
+            count: 1
+            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
 
         -
             message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromString\\(\\) expects string, mixed given\\.$#"
@@ -985,6 +1005,11 @@ parameters:
             message: "#^Method Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository\\:\\:findOneByCredentialId\\(\\) should return Webauthn\\\\PublicKeyCredentialSource\\|null but returns mixed\\.$#"
             count: 1
             path: src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
+
+        -
+            message: "#^Class Webauthn\\\\Bundle\\\\Repository\\\\PublicKeyCredentialSourceRepository extends generic class Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository but does not specify its types\\: T$#"
+            count: 1
+            path: src/symfony/src/Repository/PublicKeyCredentialSourceRepository.php
 
         -
             message: "#^Fetching class constant class of deprecated class Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
@@ -1026,7 +1051,7 @@ parameters:
         -
             message: """
                 #^Class Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken implements deprecated interface Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnTokenInterface\\:
-                since 4\\.7\\.0, use \\{@see WebauthnTokenInterface\\} instead$#
+                since 4\\.7\\.0, use \\{@see WebauthnToken\\} instead$#
             """
             count: 1
             path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
@@ -1332,6 +1357,26 @@ parameters:
             path: src/symfony/src/Service/AuthenticatorAttestationResponseValidator.php
 
         -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$attestation is assigned outside of its declaring class\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$authenticatorSelection is assigned outside of its declaring class\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$excludeCredentials is assigned outside of its declaring class\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout is assigned outside of its declaring class\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
             message: "#^Cannot access offset 'attestation…' on mixed\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
@@ -1470,6 +1515,11 @@ parameters:
             message: "#^Property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout \\(int\\<1, max\\>\\|null\\) does not accept mixed\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout is assigned outside of its declaring class\\.$#"
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
         -
             message: "#^Cannot access offset 'challenge_length' on mixed\\.$#"
@@ -2022,6 +2072,21 @@ parameters:
             path: src/webauthn/src/AuthenticatorDataLoader.php
 
         -
+            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$authenticatorAttachment is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$residentKey is assigned outside of the constructor\\.$#"
+            count: 2
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$userVerification is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+
+        -
             message: """
                 #^Access to deprecated property \\$requireResidentKey of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
                 Will be removed in 5\\.0\\. Please use residentKey instead\\*$#
@@ -2058,9 +2123,24 @@ parameters:
             path: src/webauthn/src/CollectedClientData.php
 
         -
-            message: "#^Parameter \\#2 \\$data of class Webauthn\\\\CollectedClientData constructor expects array, mixed given\\.$#"
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$attestation is assigned outside of the constructor\\.$#"
             count: 1
-            path: src/webauthn/src/CollectedClientData.php
+            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$authenticatorSelection is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$excludeCredentials is assigned outside of the constructor\\.$#"
+            count: 2
+            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$pubKeyCredParams is assigned outside of the constructor\\.$#"
+            count: 2
+            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
 
         -
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
@@ -2071,6 +2151,21 @@ parameters:
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialDescriptor.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:\\$publicKeyCredentialDescriptors is already assigned\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:\\$publicKeyCredentialDescriptors is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
+
+        -
+            message: "#^Method Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:jsonSerialize\\(\\) should return array\\<array\\<string, mixed\\>\\> but returns array\\<string, Webauthn\\\\PublicKeyCredentialDescriptor\\>\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
 
         -
             message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: Webauthn\\\\PublicKeyCredentialDescriptor given\\.$#"
@@ -2086,6 +2181,11 @@ parameters:
             message: "#^Parameter \\#1 \\$json of method Webauthn\\\\PublicKeyCredentialLoader\\:\\:loadArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialLoader.php
+
+        -
+            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout is assigned outside of the constructor\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialOptions.php
 
         -
             message: "#^Cannot access offset string on Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\.$#"

@@ -11,6 +11,9 @@ use const JSON_THROW_ON_ERROR;
 
 class PublicKeyCredentialParameters implements JsonSerializable
 {
+    /**
+     * @private
+     */
     public function __construct(
         public readonly string $type,
         public readonly int $alg
@@ -20,6 +23,11 @@ class PublicKeyCredentialParameters implements JsonSerializable
     public static function create(string $type, int $alg): self
     {
         return new self($type, $alg);
+    }
+
+    public static function createPk(int $alg): self
+    {
+        return self::create(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $alg);
     }
 
     /**
@@ -59,7 +67,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
             'Invalid input. "alg" is missing.'
         );
 
-        return new self($json['type'], $json['alg']);
+        return self::create($json['type'], $json['alg']);
     }
 
     /**
