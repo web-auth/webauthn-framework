@@ -13,9 +13,6 @@ use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
-/**
- * @final
- */
 class MetadataStatement implements JsonSerializable
 {
     final public const KEY_PROTECTION_SOFTWARE = 'software';

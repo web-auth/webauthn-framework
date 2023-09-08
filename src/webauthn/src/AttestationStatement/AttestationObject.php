@@ -7,9 +7,6 @@ namespace Webauthn\AttestationStatement;
 use Webauthn\AuthenticatorData;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 
-/**
- * @final
- */
 class AttestationObject
 {
     public ?MetadataStatement $metadataStatement = null;

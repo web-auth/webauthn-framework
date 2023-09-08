@@ -10,9 +10,6 @@ use Webauthn\MetadataService\Utils;
 use function array_key_exists;
 use function is_int;
 
-/**
- * @final
- */
 class Version implements JsonSerializable
 {
     public function __construct(

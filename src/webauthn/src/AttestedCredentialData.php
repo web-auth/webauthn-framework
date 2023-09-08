@@ -13,7 +13,6 @@ use function array_key_exists;
 use function is_string;
 
 /**
- * @final
  * @see https://www.w3.org/TR/webauthn/#sec-attested-credential-data
  */
 class AttestedCredentialData implements JsonSerializable

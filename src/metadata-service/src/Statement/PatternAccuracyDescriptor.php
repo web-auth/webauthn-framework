@@ -9,9 +9,6 @@ use Webauthn\MetadataService\Utils;
 use function array_key_exists;
 use function is_int;
 
-/**
- * @final
- */
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
     public function __construct(

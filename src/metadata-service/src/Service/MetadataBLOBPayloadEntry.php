@@ -15,9 +15,6 @@ use function count;
 use function is_array;
 use function is_string;
 
-/**
- * @final
- */
 class MetadataBLOBPayloadEntry implements JsonSerializable
 {
     /**

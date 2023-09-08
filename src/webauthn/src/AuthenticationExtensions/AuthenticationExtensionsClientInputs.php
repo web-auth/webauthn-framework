@@ -15,7 +15,6 @@ use function count;
 use const COUNT_NORMAL;
 
 /**
- * @final
  * @implements IteratorAggregate<AuthenticationExtension>
  */
 class AuthenticationExtensionsClientInputs implements JsonSerializable, Countable, IteratorAggregate

@@ -8,9 +8,6 @@ use ParagonIE\ConstantTime\Base64;
 use function preg_replace;
 use const PHP_EOL;
 
-/**
- * @final
- */
 class CertificateToolbox
 {
     private const PEM_HEADER = '-----BEGIN ';

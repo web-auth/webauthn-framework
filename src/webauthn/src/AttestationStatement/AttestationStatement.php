@@ -10,9 +10,6 @@ use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 use function array_key_exists;
 
-/**
- * @final
- */
 class AttestationStatement implements JsonSerializable
 {
     final public const TYPE_NONE = 'none';

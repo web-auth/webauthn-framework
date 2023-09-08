@@ -8,7 +8,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use function ord;
 
 /**
- * @final
  * @see https://www.w3.org/TR/webauthn/#sec-authenticator-data
  * @see https://www.w3.org/TR/webauthn/#flags
  */

@@ -10,9 +10,6 @@ use Webauthn\MetadataService\Utils;
 use function array_key_exists;
 use function is_array;
 
-/**
- * @final
- */
 class VerificationMethodDescriptor implements JsonSerializable
 {
     final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';

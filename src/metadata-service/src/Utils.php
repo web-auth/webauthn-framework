@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService;
 
 /**
  * @internal
- * @final
  */
 abstract class Utils
 {
