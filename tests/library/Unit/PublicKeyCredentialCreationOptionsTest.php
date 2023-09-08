@@ -25,7 +25,7 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
 
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
-        $credentialParameters = new PublicKeyCredentialParameters('type', -100);
+        $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
         $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge', [$credentialParameters]);
         $options->excludeCredentials = [$credential];
@@ -60,7 +60,7 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
 
-        $credentialParameters = new PublicKeyCredentialParameters('type', -100);
+        $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
         $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge', [$credentialParameters]);
         $options->timeout = 1000;

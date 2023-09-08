@@ -142,7 +142,7 @@ class PublicKeyCredentialLoader implements CanLogData
                 );
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
-                return new AuthenticatorAttestationResponse(CollectedClientData::createFormJson(
+                return AuthenticatorAttestationResponse::create(CollectedClientData::createFormJson(
                     $response['clientDataJSON']
                 ), $attestationObject, $transports);
             case array_key_exists('authenticatorData', $response) && array_key_exists('signature', $response):
@@ -164,7 +164,7 @@ class PublicKeyCredentialLoader implements CanLogData
                     $userHandle = Base64::decode($userHandle);
                 }
 
-                return new AuthenticatorAssertionResponse(
+                return AuthenticatorAssertionResponse::create(
                     CollectedClientData::createFormJson($response['clientDataJSON']),
                     $authenticatorData,
                     $signature,

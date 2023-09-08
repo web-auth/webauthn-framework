@@ -20,7 +20,7 @@ final class AttestedCredentialDataTest extends TestCase
     #[DataProvider('dataAAGUID')]
     public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
     {
-        $attestedCredentialData = new AttestedCredentialData(Uuid::fromString(
+        $attestedCredentialData = AttestedCredentialData::create(Uuid::fromString(
             $uuid
         ), 'credential_id', 'credential_public_key');
 

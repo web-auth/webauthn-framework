@@ -10,9 +10,6 @@ use Webauthn\MetadataService\Utils;
 use function array_key_exists;
 use function is_array;
 
-/**
- * @final
- */
 class VerificationMethodDescriptor implements JsonSerializable
 {
     final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';
@@ -252,9 +249,9 @@ class VerificationMethodDescriptor implements JsonSerializable
     {
         $data = [
             'userVerificationMethod' => $this->userVerificationMethod,
-            'caDesc' => $this->caDesc?->jsonSerialize(),
-            'baDesc' => $this->baDesc?->jsonSerialize(),
-            'paDesc' => $this->paDesc?->jsonSerialize(),
+            'caDesc' => $this->caDesc,
+            'baDesc' => $this->baDesc,
+            'paDesc' => $this->paDesc,
         ];
 
         return Utils::filterNullValues($data);

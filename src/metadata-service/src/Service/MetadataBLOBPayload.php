@@ -12,9 +12,6 @@ use function is_array;
 use function is_int;
 use function is_string;
 
-/**
- * @final
- */
 class MetadataBLOBPayload implements JsonSerializable
 {
     /**
@@ -114,10 +111,7 @@ class MetadataBLOBPayload implements JsonSerializable
             'legalHeader' => $this->legalHeader,
             'nextUpdate' => $this->nextUpdate,
             'no' => $this->no,
-            'entries' => array_map(
-                static fn (MetadataBLOBPayloadEntry $object): array => $object->jsonSerialize(),
-                $this->entries
-            ),
+            'entries' => $this->entries,
         ];
 
         return Utils::filterNullValues($data);

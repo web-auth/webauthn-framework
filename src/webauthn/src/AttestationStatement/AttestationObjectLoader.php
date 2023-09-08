@@ -92,7 +92,7 @@ class AttestationObjectLoader implements CanDispatchEvents, CanLogData
             $authDataLoader = AuthenticatorDataLoader::create();
             $authenticatorData = $authDataLoader->load($authData);
 
-            $attestationObject = new AttestationObject($data, $attestationStatement, $authenticatorData);
+            $attestationObject = AttestationObject::create($data, $attestationStatement, $authenticatorData);
             $this->logger->info('Attestation Object loaded');
             $this->logger->debug('Attestation Object', [
                 'ed' => $attestationObject,

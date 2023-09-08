@@ -10,9 +10,6 @@ use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent as Bas
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
-/**
- * @final
- */
 class AuthenticatorAssertionResponseValidationSucceededEvent extends BaseAuthenticatorAssertionResponseValidationSucceededEvent
 {
     public function __construct(

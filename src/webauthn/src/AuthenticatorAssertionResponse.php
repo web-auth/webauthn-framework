@@ -18,6 +18,15 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         parent::__construct($clientDataJSON);
     }
 
+    public static function create(
+        CollectedClientData $clientDataJSON,
+        AuthenticatorData $authenticatorData,
+        string $signature,
+        ?string $userHandle = null
+    ): self {
+        return new self($clientDataJSON, $authenticatorData, $signature, $userHandle);
+    }
+
     /**
      * @deprecated since 4.7.0. Please use the property directly.
      */

@@ -15,24 +15,57 @@ use const JSON_THROW_ON_ERROR;
 
 final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 {
+    public const USER_VERIFICATION_REQUIREMENT_DEFAULT = null;
+
     public const USER_VERIFICATION_REQUIREMENT_REQUIRED = 'required';
 
     public const USER_VERIFICATION_REQUIREMENT_PREFERRED = 'preferred';
 
     public const USER_VERIFICATION_REQUIREMENT_DISCOURAGED = 'discouraged';
 
-    public ?string $rpId = null;
+    public const USER_VERIFICATION_REQUIREMENTS = [
+        self::USER_VERIFICATION_REQUIREMENT_DEFAULT,
+        self::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+        self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+        self::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+    ];
 
     /**
-     * @var PublicKeyCredentialDescriptor[]
+     * @private
+     * @param PublicKeyCredentialDescriptor[] $allowCredentials
      */
-    public array $allowCredentials = [];
+    public function __construct(
+        string $challenge,
+        public null|string $rpId = null,
+        public array $allowCredentials = [],
+        public null|string $userVerification = null,
+        null|int $timeout = null,
+        null|AuthenticationExtensionsClientInputs $extensions = null,
+    ) {
+        in_array($userVerification, self::USER_VERIFICATION_REQUIREMENTS, true) || throw InvalidDataException::create(
+            $userVerification,
+            'Invalid user verification requirement'
+        );
+        parent::__construct(
+            $challenge,
+            $timeout,
+            $extensions
+        );
+    }
 
-    public ?string $userVerification = null;
-
-    public static function create(string $challenge): self
-    {
-        return new self($challenge);
+    /**
+     * @param PublicKeyCredentialDescriptor[] $allowCredentials
+     * @param positive-int $timeout
+     */
+    public static function create(
+        string $challenge,
+        null|string $rpId = null,
+        array $allowCredentials = [],
+        null|string $userVerification = null,
+        null|int $timeout = null,
+        null|AuthenticationExtensionsClientInputs $extensions = null,
+    ): self {
+        return new self($challenge, $rpId, $allowCredentials, $userVerification, $timeout, $extensions);
     }
 
     /**
@@ -136,17 +169,18 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         }
 
         $challenge = Base64::decode($json['challenge']);
-
-        $object = self::create($challenge);
-        $object->rpId = $json['rpId'] ?? null;
-        $object->allowCredentials = $allowCredentials;
-        $object->userVerification = $json['userVerification'] ?? null;
-        $object->timeout = $json['timeout'] ?? null;
-        $object->extensions = isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
+        $extensions = isset($json['extensions']) ? AuthenticationExtensionsClientInputs::createFromArray(
             $json['extensions']
         ) : AuthenticationExtensionsClientInputs::create();
 
-        return $object;
+        return self::create(
+            $challenge,
+            $json['rpId'] ?? null,
+            $allowCredentials,
+            $json['userVerification'] ?? null,
+            $json['timeout'] ?? null,
+            $extensions
+        );
     }
 
     /**
@@ -167,14 +201,11 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         }
 
         if (count($this->allowCredentials) !== 0) {
-            $json['allowCredentials'] = array_map(
-                static fn (PublicKeyCredentialDescriptor $object): array => $object->jsonSerialize(),
-                $this->allowCredentials
-            );
+            $json['allowCredentials'] = $this->allowCredentials;
         }
 
         if ($this->extensions->count() !== 0) {
-            $json['extensions'] = $this->extensions->jsonSerialize();
+            $json['extensions'] = $this->extensions;
         }
 
         if ($this->timeout !== null) {

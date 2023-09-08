@@ -76,7 +76,7 @@ abstract class AbstractTestCase extends TestCase
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
         if ($this->publicKeyCredentialLoader === null) {
-            $this->publicKeyCredentialLoader = new PublicKeyCredentialLoader($this->getAttestationObjectLoader());
+            $this->publicKeyCredentialLoader = PublicKeyCredentialLoader::create($this->getAttestationObjectLoader());
         }
 
         return $this->publicKeyCredentialLoader;

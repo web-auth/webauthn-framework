@@ -19,6 +19,16 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
         parent::__construct($name, $id, $displayName, $icon);
     }
 
+    public static function create(
+        string $name,
+        string $id,
+        string $displayName,
+        ?string $icon = null,
+        array $roles = []
+    ): self {
+        return new self($name, $id, $displayName, $icon, $roles);
+    }
+
     public function getRoles(): array
     {
         return array_unique($this->roles + ['ROLE_USER']);

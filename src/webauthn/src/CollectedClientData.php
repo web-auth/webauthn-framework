@@ -78,12 +78,21 @@ class CollectedClientData
         $this->data = $data;
     }
 
+    /**
+     * @param mixed[] $data
+     */
+    public static function create(string $rawData, array $data): self
+    {
+        return new self($rawData, $data);
+    }
+
     public static function createFormJson(string $data): self
     {
         $rawData = Base64UrlSafe::decodeNoPadding($data);
         $json = json_decode($rawData, true, flags: JSON_THROW_ON_ERROR);
+        is_array($json) || throw InvalidDataException::create($data, 'Invalid JSON data.');
 
-        return new self($rawData, $json);
+        return self::create($rawData, $json);
     }
 
     /**

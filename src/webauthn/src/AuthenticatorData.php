@@ -8,7 +8,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use function ord;
 
 /**
- * @final
  * @see https://www.w3.org/TR/webauthn/#sec-authenticator-data
  * @see https://www.w3.org/TR/webauthn/#flags
  */
@@ -41,6 +40,17 @@ class AuthenticatorData
         public readonly ?AttestedCredentialData $attestedCredentialData,
         public readonly ?AuthenticationExtensionsClientOutputs $extensions
     ) {
+    }
+
+    public static function create(
+        string $authData,
+        string $rpIdHash,
+        string $flags,
+        int $signCount,
+        ?AttestedCredentialData $attestedCredentialData = null,
+        ?AuthenticationExtensionsClientOutputs $extensions = null
+    ): self {
+        return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
     }
 
     /**

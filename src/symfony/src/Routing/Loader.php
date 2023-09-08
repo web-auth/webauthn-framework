@@ -8,9 +8,6 @@ use Symfony\Component\Config\Loader\Loader as SymfonyLoader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-/**
- * @final
- */
 class Loader extends SymfonyLoader
 {
     private readonly RouteCollection $routes;

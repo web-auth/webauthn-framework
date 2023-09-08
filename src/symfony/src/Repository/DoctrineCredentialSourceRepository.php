@@ -17,6 +17,9 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
 
     private readonly string $class;
 
+    /**
+     * @param class-string $class The class name of the entity this repository manages
+     */
     public function __construct(ManagerRegistry $registry, string $class)
     {
         is_subclass_of($class, PublicKeyCredentialSource::class) || throw new InvalidArgumentException(sprintf(

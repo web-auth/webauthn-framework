@@ -7,9 +7,6 @@ namespace Webauthn\Bundle\Event;
 use Symfony\Contracts\EventDispatcher\Event;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
-/**
- * @final
- */
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
     public function __construct(
