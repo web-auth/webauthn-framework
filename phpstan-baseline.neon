@@ -2105,16 +2105,6 @@ parameters:
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
 
         -
-            message: "#^Class Webauthn\\\\CertificateChainChecker\\\\PhpCertificateChainChecker extends @final class Webauthn\\\\MetadataService\\\\CertificateChain\\\\PhpCertificateChainValidator\\.$#"
-            count: 1
-            path: src/webauthn/src/CertificateChainChecker/PhpCertificateChainChecker.php
-
-        -
-            message: "#^Class Webauthn\\\\CertificateToolbox extends @final class Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\.$#"
-            count: 1
-            path: src/webauthn/src/CertificateToolbox.php
-
-        -
             message: """
                 #^Access to deprecated property \\$tokenBinding of class Webauthn\\\\CollectedClientData\\:
                 Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
