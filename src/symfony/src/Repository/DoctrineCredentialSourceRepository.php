@@ -11,9 +11,6 @@ use InvalidArgumentException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-/**
- * @template T of object
- */
 class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource, ServiceEntityRepositoryInterface
 {
     private readonly EntityManagerInterface $manager;
@@ -21,7 +18,7 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
     private readonly string $class;
 
     /**
-     * @param class-string<T> $class The class name of the entity this repository manages
+     * @param class-string $class The class name of the entity this repository manages
      */
     public function __construct(ManagerRegistry $registry, string $class)
     {
