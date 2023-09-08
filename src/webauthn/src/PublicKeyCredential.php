@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Stringable;
+use const E_USER_DEPRECATED;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -21,9 +22,12 @@ class PublicKeyCredential extends Credential implements Stringable
         parent::__construct($id, $type);
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use the PublicKeyCredentialDescriptor ({self::getPublicKeyCredentialDescriptor}) instead.
+     */
     public function __toString(): string
     {
-        return json_encode($this, JSON_THROW_ON_ERROR);
+        return json_encode($this->getPublicKeyCredentialDescriptor(), JSON_THROW_ON_ERROR);
     }
 
     public static function create(string $id, string $type, string $rawId, AuthenticatorResponse $response): self
@@ -50,8 +54,24 @@ class PublicKeyCredential extends Credential implements Stringable
     /**
      * @param string[] $transport
      */
-    public function getPublicKeyCredentialDescriptor(array $transport = []): PublicKeyCredentialDescriptor
+    public function getPublicKeyCredentialDescriptor(null|array $transport = null): PublicKeyCredentialDescriptor
     {
+        if ($transport !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '4.8.0',
+                'The parameter "$transport" is deprecated and will be removed in 5.0.0.'
+            );
+            @trigger_error(
+                sprintf(
+                    'The $transport argument of %s() is deprecated since 4.8.0 and will be removed in 5.0.0.',
+                    __METHOD__
+                ),
+                E_USER_DEPRECATED
+            );
+        }
+        $transport ??= $this->response instanceof AuthenticatorAttestationResponse ? $this->response->transports : [];
+
         return PublicKeyCredentialDescriptor::create($this->type, $this->rawId, $transport);
     }
 }

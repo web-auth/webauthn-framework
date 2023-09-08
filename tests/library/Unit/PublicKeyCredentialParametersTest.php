@@ -17,7 +17,7 @@ final class PublicKeyCredentialParametersTest extends TestCase
     #[Test]
     public function anPublicKeyCredentialParametersCanBeCreatedAndValueAccessed(): void
     {
-        $parameters = new PublicKeyCredentialParameters('type', 100);
+        $parameters = PublicKeyCredentialParameters::create('type', 100);
 
         static::assertSame('type', $parameters->type);
         static::assertSame(100, $parameters->alg);

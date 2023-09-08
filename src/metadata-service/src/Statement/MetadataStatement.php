@@ -13,9 +13,6 @@ use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
-/**
- * @final
- */
 class MetadataStatement implements JsonSerializable
 {
     final public const KEY_PROTECTION_SOFTWARE = 'software';
@@ -662,21 +659,12 @@ class MetadataStatement implements JsonSerializable
             'attachmentHint' => $this->attachmentHint,
             'tcDisplay' => $this->tcDisplay,
             'tcDisplayContentType' => $this->tcDisplayContentType,
-            'tcDisplayPNGCharacteristics' => array_map(
-                static fn (DisplayPNGCharacteristicsDescriptor $object): array => $object->jsonSerialize(),
-                $this->tcDisplayPNGCharacteristics
-            ),
+            'tcDisplayPNGCharacteristics' => $this->tcDisplayPNGCharacteristics,
             'attestationRootCertificates' => CertificateToolbox::fixPEMStructures($this->attestationRootCertificates),
-            'ecdaaTrustAnchors' => array_map(
-                static fn (EcdaaTrustAnchor $object): array => $object->jsonSerialize(),
-                $this->ecdaaTrustAnchors
-            ),
+            'ecdaaTrustAnchors' => $this->ecdaaTrustAnchors,
             'icon' => $this->icon,
             'authenticatorGetInfo' => $this->authenticatorGetInfo,
-            'supportedExtensions' => array_map(
-                static fn (ExtensionDescriptor $object): array => $object->jsonSerialize(),
-                $this->supportedExtensions
-            ),
+            'supportedExtensions' => $this->supportedExtensions,
         ];
 
         return Utils::filterNullValues($data);

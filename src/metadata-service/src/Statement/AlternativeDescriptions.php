@@ -6,9 +6,6 @@ namespace Webauthn\MetadataService\Statement;
 
 use JsonSerializable;
 
-/**
- * @final
- */
 class AlternativeDescriptions implements JsonSerializable
 {
     /**

@@ -11,9 +11,6 @@ use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent as BaseAu
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
-/**
- * @final
- */
 class AuthenticatorAssertionResponseValidationFailedEvent extends BaseAuthenticatorAssertionResponseValidationFailedEvent
 {
     public function __construct(

@@ -17,7 +17,7 @@ final class CollectedClientDataTest extends TestCase
     #[Test]
     public function anCollectedClientDataCanBeCreatedAndValueAccessed(): void
     {
-        $collectedClientData = new CollectedClientData(
+        $collectedClientData = CollectedClientData::create(
             'raw_data',
             [
                 'type' => 'type',

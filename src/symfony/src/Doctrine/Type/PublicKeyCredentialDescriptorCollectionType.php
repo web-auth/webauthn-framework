@@ -6,7 +6,8 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Webauthn\PublicKeyCredentialDescriptorCollection;
+use InvalidArgumentException;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 
 final class PublicKeyCredentialDescriptorCollectionType extends Type
@@ -27,6 +28,11 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
         if ($value === null || $value instanceof PublicKeyCredentialDescriptorCollection) {
             return $value;
         }
+        is_string($value) || throw new InvalidArgumentException(sprintf(
+            'Invalid type. Expected "%s", got "%s" instead.',
+            'string',
+            get_debug_type($value)
+        ));
 
         return PublicKeyCredentialDescriptorCollection::createFromString($value);
     }

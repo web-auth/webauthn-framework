@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn;
+namespace Webauthn\Bundle\Doctrine\Type;
 
 use ArrayIterator;
 use Countable;
@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Webauthn\PublicKeyCredentialDescriptor;
 use function array_key_exists;
 use function count;
 use const COUNT_NORMAL;
@@ -17,9 +18,9 @@ use const JSON_THROW_ON_ERROR;
 
 /**
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
- * @deprecated since 4.8.0 and will be removed in 5.0.0.
+ * @internal
  */
-class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
+final class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
      * @var array<string, PublicKeyCredentialDescriptor>

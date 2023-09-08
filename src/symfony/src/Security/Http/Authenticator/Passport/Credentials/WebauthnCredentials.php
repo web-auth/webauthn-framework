@@ -10,9 +10,6 @@ use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-/**
- * @final
- */
 class WebauthnCredentials implements CredentialsInterface
 {
     public function __construct(

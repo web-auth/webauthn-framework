@@ -9,9 +9,6 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Utils;
 use function array_key_exists;
 
-/**
- * @final
- */
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
     /**

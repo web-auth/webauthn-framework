@@ -19,10 +19,10 @@ final class AuthenticatorDataTest extends TestCase
     #[Test]
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
-        $attestedCredentialData = new AttestedCredentialData(Uuid::v4(), '', null);
+        $attestedCredentialData = AttestedCredentialData::create(Uuid::v4(), '', null);
         $extensions = AuthenticationExtensionsClientOutputs::create();
 
-        $authenticatorData = new AuthenticatorData(
+        $authenticatorData = AuthenticatorData::create(
             'auth_data',
             'rp_id_hash',
             'A',

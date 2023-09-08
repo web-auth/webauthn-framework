@@ -20,14 +20,19 @@ use function array_key_exists;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
+     * @private
      * @param string[] $transports
      * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
+        /** @readonly  */
         public string $publicKeyCredentialId,
+        /** @readonly  */
         public string $type,
         public array $transports,
+        /** @readonly  */
         public string $attestationType,
+        /** @readonly  */
         public TrustPath $trustPath,
         public AbstractUid $aaguid,
         public string $credentialPublicKey,
@@ -98,7 +103,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     public function getAttestedCredentialData(): AttestedCredentialData
     {
-        return new AttestedCredentialData($this->aaguid, $this->publicKeyCredentialId, $this->credentialPublicKey);
+        return AttestedCredentialData::create($this->aaguid, $this->publicKeyCredentialId, $this->credentialPublicKey);
     }
 
     /**
@@ -227,7 +232,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             'type' => $this->type,
             'transports' => $this->transports,
             'attestationType' => $this->attestationType,
-            'trustPath' => $this->trustPath->jsonSerialize(),
+            'trustPath' => $this->trustPath,
             'aaguid' => $this->aaguid->__toString(),
             'credentialPublicKey' => Base64UrlSafe::encodeUnpadded($this->credentialPublicKey),
             'userHandle' => Base64UrlSafe::encodeUnpadded($this->userHandle),

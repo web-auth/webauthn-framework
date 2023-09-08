@@ -9,9 +9,6 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use function array_key_exists;
 use function is_string;
 
-/**
- * @final
- */
 class RogueListEntry implements JsonSerializable
 {
     public function __construct(
