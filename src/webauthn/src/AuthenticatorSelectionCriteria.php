@@ -180,26 +180,29 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public static function createFromArray(array $json): self
     {
         $authenticatorAttachment = $json['authenticatorAttachment'] ?? null;
-        $requireResidentKey = $json['requireResidentKey'] ?? false;
+        $requireResidentKey = $json['requireResidentKey'] ?? null;
         $userVerification = $json['userVerification'] ?? self::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $residentKey = $json['residentKey'] ?? self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
+        $residentKey = $json['residentKey'] ?? null;
 
         $authenticatorAttachment === null || is_string($authenticatorAttachment) || throw InvalidDataException::create(
             $json,
             'Invalid "authenticatorAttachment" value'
         );
-        is_bool($requireResidentKey) || throw InvalidDataException::create(
+        ($requireResidentKey === null || is_bool($requireResidentKey)) || throw InvalidDataException::create(
             $json,
             'Invalid "requireResidentKey" value'
         );
         is_string($userVerification) || throw InvalidDataException::create($json, 'Invalid "userVerification" value');
-        is_string($residentKey) || throw InvalidDataException::create($json, 'Invalid "residentKey" value');
+        ($residentKey === null || is_string($residentKey)) || throw InvalidDataException::create(
+            $json,
+            'Invalid "residentKey" value'
+        );
 
         return self::create(
             $authenticatorAttachment ?? null,
             $userVerification,
-            $json['residentKey'],
-            $json['requireResidentKey'],
+            $residentKey,
+            $requireResidentKey,
         );
     }
 
