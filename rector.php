@@ -15,6 +15,7 @@ use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
+use Rector\Symfony\Symfony42\Rector\New_\StringToArrayArgumentProcessRector;
 
 return static function (RectorConfig $config): void {
     $config->import(SetList::DEAD_CODE);
@@ -40,6 +41,7 @@ return static function (RectorConfig $config): void {
         ],
         ReadOnlyPropertyRector::class => [__DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php'],
         PreferPHPUnitThisCallRector::class,
+        StringToArrayArgumentProcessRector::class => [__DIR__ . '/tests'],
     ]);
     $config->phpVersion(PhpVersion::PHP_81);
     $config->parallel();
