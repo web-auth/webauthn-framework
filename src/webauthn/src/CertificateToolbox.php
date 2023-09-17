@@ -8,6 +8,7 @@ use Webauthn\MetadataService\CertificateChain\CertificateToolbox as BaseCertific
 
 /**
  * @deprecated since v4.1. Please use Webauthn\MetadataService\CertificateChainChecker\PhpCertificateChainValidator instead
+ * @infection-ignore-all
  */
 class CertificateToolbox extends BaseCertificateToolbox
 {

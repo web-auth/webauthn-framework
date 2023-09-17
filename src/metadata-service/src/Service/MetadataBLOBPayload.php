@@ -6,7 +6,7 @@ namespace Webauthn\MetadataService\Service;
 
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 use function is_array;
 use function is_int;
@@ -14,6 +14,8 @@ use function is_string;
 
 class MetadataBLOBPayload implements JsonSerializable
 {
+    use ValueFilter;
+
     /**
      * @var string[]
      */
@@ -32,6 +34,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function addEntry(MetadataBLOBPayloadEntry $entry): self
     {
@@ -42,6 +45,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getLegalHeader(): ?string
     {
@@ -50,6 +54,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getNo(): int
     {
@@ -58,6 +63,7 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getNextUpdate(): string
     {
@@ -67,6 +73,7 @@ class MetadataBLOBPayload implements JsonSerializable
     /**
      * @return MetadataBLOBPayloadEntry[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getEntries(): array
     {
@@ -75,10 +82,12 @@ class MetadataBLOBPayload implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
-        $data = Utils::filterNullValues($data);
+        $data = self::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
             array_key_exists($key, $data) || throw MetadataStatementLoadingException::create(sprintf(
                 'Invalid data. The parameter "%s" is missing',
@@ -114,12 +123,13 @@ class MetadataBLOBPayload implements JsonSerializable
             'entries' => $this->entries,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 
     /**
      * @return string[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRootCertificates(): array
     {
@@ -129,6 +139,7 @@ class MetadataBLOBPayload implements JsonSerializable
     /**
      * @param string[] $rootCertificates
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setRootCertificates(array $rootCertificates): self
     {

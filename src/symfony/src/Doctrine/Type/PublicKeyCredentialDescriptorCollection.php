@@ -54,6 +54,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function add(PublicKeyCredentialDescriptor ...$publicKeyCredentialDescriptors): void
     {
@@ -64,6 +65,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function has(string $id): bool
     {
@@ -72,6 +74,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
 
     /**
      * @deprecated since 4.7.0. No replacement.
+     * @infection-ignore-all
      */
     public function remove(string $id): void
     {

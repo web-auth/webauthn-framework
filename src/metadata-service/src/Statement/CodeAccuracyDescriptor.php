@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Webauthn\MetadataService\Statement;
 
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
+    use ValueFilter;
+
     public function __construct(
         public readonly int $base,
         public readonly int $minLength,
@@ -32,6 +34,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getBase(): int
     {
@@ -40,6 +43,7 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getMinLength(): int
     {
@@ -48,6 +52,8 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
@@ -78,6 +84,6 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
             'blockSlowdown' => $this->blockSlowdown,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 }

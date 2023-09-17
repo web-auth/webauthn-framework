@@ -21,6 +21,10 @@ final class EmptyTrustPath implements TrustPath
         ];
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     public static function createFromArray(array $data): static
     {
         return self::create();

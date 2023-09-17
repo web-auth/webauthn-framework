@@ -55,6 +55,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAuthData(): string
     {
@@ -63,6 +64,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRpIdHash(): string
     {
@@ -111,6 +113,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getSignCount(): int
     {
@@ -119,6 +122,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAttestedCredentialData(): ?AttestedCredentialData
     {
@@ -127,6 +131,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {

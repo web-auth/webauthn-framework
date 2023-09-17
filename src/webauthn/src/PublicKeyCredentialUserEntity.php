@@ -33,6 +33,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getId(): string
     {
@@ -41,12 +42,17 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getDisplayName(): string
     {
         return $this->displayName;
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
@@ -57,6 +63,8 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): self
     {

@@ -63,6 +63,7 @@ final class AuthenticatorStatus
     /**
      * @return string[]
      * @deprecated since 4.7.0. Please use the constant STATUSES instead.
+     * @infection-ignore-all
      */
     public static function list(): array
     {

@@ -24,6 +24,7 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getId(): ?string
     {
@@ -32,6 +33,8 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): self
     {

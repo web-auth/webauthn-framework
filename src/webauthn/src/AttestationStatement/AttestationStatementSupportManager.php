@@ -21,7 +21,10 @@ class AttestationStatementSupportManager
         }
     }
 
-    public static function create(): self
+    /**
+     * @param AttestationStatementSupport[] $attestationStatementSupports
+     */
+    public static function create(array $attestationStatementSupports = []): self
     {
         return new self();
     }

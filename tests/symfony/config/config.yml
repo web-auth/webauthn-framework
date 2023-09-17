@@ -55,6 +55,7 @@ services:
       - 'webauthn.mds_service'
     arguments:
       - '%kernel.project_dir%/tests/metadataStatements'
+      - '@mds-serializer'
 
     #  fido_alliance_official:
     #    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
