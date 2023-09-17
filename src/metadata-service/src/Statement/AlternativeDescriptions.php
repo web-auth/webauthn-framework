@@ -27,6 +27,7 @@ class AlternativeDescriptions implements JsonSerializable
     /**
      * @return array<string, string>
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function all(): array
     {
@@ -35,6 +36,7 @@ class AlternativeDescriptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function add(string $locale, string $description): self
     {

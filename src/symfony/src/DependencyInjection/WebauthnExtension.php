@@ -104,7 +104,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
         $this->loadAndroidSafetyNet($container, $loader, $config['android_safetynet']);
         $this->loadMetadataServices($container, $loader, $config['metadata']);
-        $this->loadControllersSupport($container, $loader, $config['controllers']);
+        $this->loadControllersSupport($container, $config['controllers']);
 
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
@@ -137,6 +137,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             return;
         }
         $config = current($configs);
+        if (! is_array($config)) {
+            return;
+        }
         if (! isset($config['dbal'])) {
             $config['dbal'] = [];
         }
@@ -157,13 +160,12 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     /**
      * @param mixed[] $config
      */
-    private function loadControllersSupport(ContainerBuilder $container, FileLoader $loader, array $config): void
+    private function loadControllersSupport(ContainerBuilder $container, array $config): void
     {
         if ($config['enabled'] === false) {
             return;
         }
 
-        $loader->load('controller.php');
         $this->loadCreationControllersSupport($container, $config['creation'] ?? []);
         $this->loadRequestControllersSupport($container, $config['request'] ?? []);
     }

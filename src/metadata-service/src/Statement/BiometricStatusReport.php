@@ -41,6 +41,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCertLevel(): int|null
     {
@@ -49,6 +50,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getModality(): int|null
     {
@@ -57,6 +59,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getEffectiveDate(): ?string
     {
@@ -65,6 +68,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCertificationDescriptor(): ?string
     {
@@ -73,6 +77,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCertificateNumber(): ?string
     {
@@ -81,6 +86,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCertificationPolicyVersion(): ?string
     {
@@ -89,6 +95,7 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCertificationRequirementsVersion(): ?string
     {
@@ -97,6 +104,8 @@ class BiometricStatusReport implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {

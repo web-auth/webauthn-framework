@@ -30,6 +30,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setTimeout(?int $timeout): static
     {
@@ -40,6 +41,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function addExtension(AuthenticationExtension $extension): static
     {
@@ -51,6 +53,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
     /**
      * @param AuthenticationExtension[] $extensions
      * @deprecated since 4.7.0. No replacement. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function addExtensions(array $extensions): static
     {
@@ -63,6 +66,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
     {
@@ -73,6 +77,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getChallenge(): string
     {
@@ -81,6 +86,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTimeout(): ?int
     {
@@ -89,16 +95,23 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getExtensions(): AuthenticationExtensionsClientInputs
     {
         return $this->extensions;
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     abstract public static function createFromString(string $data): static;
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     abstract public static function createFromArray(array $json): static;
 }

@@ -9,6 +9,7 @@ use function array_key_exists;
 
 /**
  * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.
+ * @infection-ignore-all
  */
 final class EcdaaKeyIdTrustPath implements TrustPath
 {

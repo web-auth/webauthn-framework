@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
@@ -57,28 +58,35 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         $content = $request->getContent();
 
         $excludedCredentials = $this->getCredentials($userEntity);
-        $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-        $authenticatorSelectionData = $creationOptionsRequest->authenticatorSelection;
+        $optionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
+        $authenticatorSelectionData = $optionsRequest->authenticatorSelection;
         $authenticatorSelection = null;
         if (is_array($authenticatorSelectionData)) {
             $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
-        } elseif ($creationOptionsRequest->userVerification !== null || $creationOptionsRequest->residentKey !== null || $creationOptionsRequest->authenticatorAttachment !== null) {
-            $residentKey = $creationOptionsRequest->residentKey ?? null;
-            $requireResidentKey = $creationOptionsRequest->requireResidentKey !== null ? filter_var(
-                $creationOptionsRequest->requireResidentKey,
+        } elseif ($optionsRequest->userVerification !== null || $optionsRequest->residentKey !== null || $optionsRequest->authenticatorAttachment !== null) {
+            $residentKey = $optionsRequest->residentKey ?? null;
+            $requireResidentKey = $optionsRequest->requireResidentKey !== null ? filter_var(
+                $optionsRequest->requireResidentKey,
                 FILTER_VALIDATE_BOOLEAN
             ) : null;
 
             $authenticatorSelection = AuthenticatorSelectionCriteria::create(
-                $creationOptionsRequest->authenticatorAttachment,
-                $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                $optionsRequest->authenticatorAttachment,
+                $optionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
                 $residentKey,
                 $requireResidentKey
             );
         }
-        $extensions = $creationOptionsRequest->extensions;
-        if (is_array($extensions)) {
-            $extensions = AuthenticationExtensionsClientInputs::createFromArray($extensions);
+        $extensions = null;
+        if (is_array($optionsRequest->extensions)) {
+            $extensions = AuthenticationExtensionsClientInputs::create(array_map(
+                static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
+                    $name,
+                    $data
+                ),
+                array_keys($optionsRequest->extensions),
+                $optionsRequest->extensions
+            ));
         }
 
         return $this->publicKeyCredentialCreationOptionsFactory->create(
@@ -86,7 +94,7 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
             $userEntity,
             $excludedCredentials,
             $authenticatorSelection,
-            $creationOptionsRequest->attestation,
+            $optionsRequest->attestation,
             $extensions
         );
     }

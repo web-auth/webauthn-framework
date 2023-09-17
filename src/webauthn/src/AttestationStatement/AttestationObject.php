@@ -28,6 +28,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRawAttestationObject(): string
     {
@@ -36,6 +37,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAttStmt(): AttestationStatement
     {
@@ -44,6 +46,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setAttStmt(AttestationStatement $attStmt): void
     {
@@ -52,6 +55,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAuthData(): AuthenticatorData
     {
@@ -60,6 +64,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getMetadataStatement(): ?MetadataStatement
     {
@@ -68,6 +73,7 @@ class AttestationObject
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setMetadataStatement(MetadataStatement $metadataStatement): self
     {

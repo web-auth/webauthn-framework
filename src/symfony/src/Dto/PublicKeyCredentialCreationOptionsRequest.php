@@ -15,6 +15,7 @@ class PublicKeyCredentialCreationOptionsRequest
      * @var array<mixed>|null
      *
      * @deprecated Use $userVerification, $residentKey and $authenticatorAttachment
+     * @infection-ignore-all
      */
     public ?array $authenticatorSelection = null;
 
