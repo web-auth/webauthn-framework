@@ -16,6 +16,7 @@ abstract class AuthenticatorResponse
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getClientDataJSON(): CollectedClientData
     {

@@ -9,8 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @internal Helper class for WebauthnFactory only
- *
- * @final
  */
 class WebauthnServicesFactory
 {

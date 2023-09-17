@@ -37,7 +37,7 @@ final class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
                 'kmns43CWVswbMovrKPkgd1lEpc6LZdfk0UQ/nuZbp00jW5C61PEW1dNaptZ0GkrIK9WRtaAXWkndIEEBgNICRw',
                 true
             ),
-            [new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()

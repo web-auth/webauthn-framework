@@ -9,43 +9,31 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 use function count;
 use function is_array;
 use function is_string;
 
-/**
- * @final
- */
 class MetadataBLOBPayloadEntry implements JsonSerializable
 {
-    /**
-     * @var string[]
-     */
-    public array $attestationCertificateKeyIdentifiers = [];
+    use ValueFilter;
 
     /**
-     * @var BiometricStatusReport[]
-     */
-    public array $biometricStatusReports = [];
-
-    /**
-     * @var StatusReport[]
-     */
-    public array $statusReports = [];
-
-    /**
+     * @param StatusReport[] $statusReports
+     * @param BiometricStatusReport[] $biometricStatusReports
      * @param string[] $attestationCertificateKeyIdentifiers
      */
     public function __construct(
-        public readonly ?string $aaid,
-        public readonly ?string $aaguid,
-        array $attestationCertificateKeyIdentifiers,
-        public readonly ?MetadataStatement $metadataStatement,
         public readonly string $timeOfLastStatusChange,
-        public readonly ?string $rogueListURL,
-        public readonly ?string $rogueListHash
+        public array $statusReports,
+        public readonly ?string $aaid = null,
+        public readonly ?string $aaguid = null,
+        public array $attestationCertificateKeyIdentifiers = [],
+        public readonly ?MetadataStatement $metadataStatement = null,
+        public readonly ?string $rogueListURL = null,
+        public readonly ?string $rogueListHash = null,
+        public array $biometricStatusReports = []
     ) {
         if ($aaid !== null && $aaguid !== null) {
             throw MetadataStatementLoadingException::create('Authenticators cannot support both AAID and AAGUID');
@@ -71,6 +59,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAaid(): ?string
     {
@@ -79,6 +68,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAaguid(): ?string
     {
@@ -88,6 +78,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     /**
      * @return string[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAttestationCertificateKeyIdentifiers(): array
     {
@@ -96,6 +87,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getMetadataStatement(): ?MetadataStatement
     {
@@ -104,6 +96,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function addBiometricStatusReports(BiometricStatusReport ...$biometricStatusReports): self
     {
@@ -117,6 +110,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     /**
      * @return BiometricStatusReport[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getBiometricStatusReports(): array
     {
@@ -125,6 +119,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function addStatusReports(StatusReport ...$statusReports): self
     {
@@ -138,6 +133,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
     /**
      * @return StatusReport[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getStatusReports(): array
     {
@@ -146,6 +142,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTimeOfLastStatusChange(): string
     {
@@ -154,6 +151,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRogueListURL(): string|null
     {
@@ -162,6 +160,7 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRogueListHash(): string|null
     {
@@ -170,10 +169,12 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
-        $data = Utils::filterNullValues($data);
+        $data = self::filterNullValues($data);
         array_key_exists('timeOfLastStatusChange', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "timeOfLastStatusChange" is missing'
         );
@@ -183,25 +184,26 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
         is_array($data['statusReports']) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'
         );
-        $object = new self(
+
+        return new self(
+            $data['timeOfLastStatusChange'],
+            array_map(
+                static fn (array $statusReport) => StatusReport::createFromArray($statusReport),
+                $data['statusReports']
+            ),
             $data['aaid'] ?? null,
             $data['aaguid'] ?? null,
             $data['attestationCertificateKeyIdentifiers'] ?? [],
             isset($data['metadataStatement']) ? MetadataStatement::createFromArray($data['metadataStatement']) : null,
-            $data['timeOfLastStatusChange'],
             $data['rogueListURL'] ?? null,
-            $data['rogueListHash'] ?? null
+            $data['rogueListHash'] ?? null,
+            array_map(
+                static fn (array $biometricStatusReport) => BiometricStatusReport::createFromArray(
+                    $biometricStatusReport
+                ),
+                $data['biometricStatusReports'] ?? []
+            )
         );
-        foreach ($data['statusReports'] as $statusReport) {
-            $object->statusReports[] = StatusReport::createFromArray($statusReport);
-        }
-        if (array_key_exists('biometricStatusReport', $data)) {
-            foreach ($data['biometricStatusReport'] as $biometricStatusReport) {
-                $object->biometricStatusReports[] = BiometricStatusReport::createFromArray($biometricStatusReport);
-            }
-        }
-
-        return $object;
     }
 
     /**
@@ -213,15 +215,12 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
             'aaid' => $this->aaid,
             'aaguid' => $this->aaguid,
             'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
-            'statusReports' => array_map(
-                static fn (StatusReport $object): array => $object->jsonSerialize(),
-                $this->statusReports
-            ),
+            'statusReports' => $this->statusReports,
             'timeOfLastStatusChange' => $this->timeOfLastStatusChange,
             'rogueListURL' => $this->rogueListURL,
             'rogueListHash' => $this->rogueListHash,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 }

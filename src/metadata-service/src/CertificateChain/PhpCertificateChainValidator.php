@@ -32,9 +32,6 @@ use function parse_url;
 use const PHP_EOL;
 use const PHP_URL_SCHEME;
 
-/**
- * @final
- */
 class PhpCertificateChainValidator implements CertificateChainValidator, CanDispatchEvents
 {
     private const MAX_VALIDATION_LENGTH = 5;

@@ -25,6 +25,14 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
     final public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
+    final public const AUTHENTICATOR_TRANSPORTS = [
+        self::AUTHENTICATOR_TRANSPORT_USB,
+        self::AUTHENTICATOR_TRANSPORT_NFC,
+        self::AUTHENTICATOR_TRANSPORT_BLE,
+        self::AUTHENTICATOR_TRANSPORT_CABLE,
+        self::AUTHENTICATOR_TRANSPORT_INTERNAL,
+    ];
+
     /**
      * @param string[] $transports
      */
@@ -45,6 +53,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getType(): string
     {
@@ -53,6 +62,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getId(): string
     {
@@ -62,6 +72,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @return string[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTransports(): array
     {

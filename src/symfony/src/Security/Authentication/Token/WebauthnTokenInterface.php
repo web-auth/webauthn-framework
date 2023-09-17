@@ -11,7 +11,8 @@ use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * @deprecated since 4.7.0, use {@see WebauthnTokenInterface} instead
+ * @deprecated since 4.7.0, use {@see WebauthnToken} instead
+ * @infection-ignore-all
  */
 interface WebauthnTokenInterface extends TokenInterface
 {

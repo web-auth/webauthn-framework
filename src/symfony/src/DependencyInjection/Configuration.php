@@ -160,8 +160,31 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->arrayNode('authenticator_selection_criteria')
             ->addDefaultsIfNotSet()
+            ->beforeNormalization()
+            ->ifArray()
+            ->then(function (array $v): array {
+                if (isset($v['attachment_mode'])) {
+                    $v['authenticator_attachment'] = $v['attachment_mode'];
+                    unset($v['attachment_mode']);
+                }
+
+                return $v;
+            })
+            ->end()
             ->children()
             ->scalarNode('attachment_mode')
+            ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.7.0', 'Use "authenticator_attachment" instead')
+            ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            ])
+            ->thenInvalid($errorTemplate)
+            ->end()
+            ->end()
+            ->scalarNode('authenticator_attachment')
             ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
             ->validate()
             ->ifNotInArray([

@@ -9,9 +9,6 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use function array_key_exists;
 use function is_string;
 
-/**
- * @final
- */
 class RogueListEntry implements JsonSerializable
 {
     public function __construct(
@@ -27,6 +24,7 @@ class RogueListEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getSk(): string
     {
@@ -35,6 +33,7 @@ class RogueListEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getDate(): ?string
     {
@@ -43,6 +42,8 @@ class RogueListEntry implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {

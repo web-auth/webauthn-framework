@@ -5,6 +5,7 @@
     bootstrap="tests/bootstrap.php"
     colors="true"
     cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerWarnings="true"
 >
     <coverage />
     <testsuites>

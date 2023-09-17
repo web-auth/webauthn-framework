@@ -30,7 +30,7 @@ final class PublicKeyCredentialSourceTest extends TestCase
     #[Test]
     public function objectSerialization(): void
     {
-        $tokenBinding = new PublicKeyCredentialSource(
+        $tokenBinding = PublicKeyCredentialSource::create(
             'publicKeyCredentialId',
             'type',
             ['transport1', 'transport2'],

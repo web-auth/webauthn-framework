@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 
-/**
- * @final
- */
 class BiometricAccuracyDescriptor extends AbstractDescriptor
 {
+    use ValueFilter;
+
     public function __construct(
         public readonly ?float $selfAttestedFRR,
         public readonly ?float $selfAttestedFAR,
@@ -57,6 +56,7 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
      */
     public static function createFromArray(array $data): self
     {
@@ -82,6 +82,6 @@ class BiometricAccuracyDescriptor extends AbstractDescriptor
             'blockSlowdown' => $this->blockSlowdown,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 }

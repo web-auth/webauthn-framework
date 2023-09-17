@@ -17,64 +17,60 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
     #[Test]
     public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
     {
+        // Given
+        $expectedJson = '{"requireResidentKey":false,"userVerification":"required","residentKey":"preferred","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
-            'authenticator_attachment',
-            'user_verification',
-            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
-            true
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
+            false
         );
 
-        static::assertSame('user_verification', $authenticatorSelectionCriteria->userVerification);
-        static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->authenticatorAttachment);
-        static::assertTrue($authenticatorSelectionCriteria->requireResidentKey);
-        static::assertSame('required', $authenticatorSelectionCriteria->residentKey);
-        static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
-            json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
-        );
+        //When
+        $data = AuthenticatorSelectionCriteria::createFromString($expectedJson);
 
-        $data = AuthenticatorSelectionCriteria::createFromString(
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment"}'
-        );
-        static::assertSame('user_verification', $data->userVerification);
-        static::assertSame('authenticator_attachment', $data->authenticatorAttachment);
-        static::assertTrue($data->requireResidentKey);
-        static::assertSame('required', $data->residentKey);
+        //Then
         static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
-            json_encode($data, JSON_THROW_ON_ERROR)
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            $data->userVerification
         );
+        static::assertSame(
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            $data->authenticatorAttachment
+        );
+        static::assertFalse($data->requireResidentKey);
+        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED, $data->residentKey);
+        static::assertSame($expectedJson, json_encode($data, JSON_THROW_ON_ERROR));
+        static::assertSame($expectedJson, json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR));
     }
 
     #[Test]
     public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
     {
+        // Given
+        $expectedJson = '{"requireResidentKey":true,"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
-            'authenticator_attachment',
-            'user_verification',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
             true
         );
 
-        static::assertSame('user_verification', $authenticatorSelectionCriteria->userVerification);
-        static::assertSame('authenticator_attachment', $authenticatorSelectionCriteria->authenticatorAttachment);
-        static::assertTrue($authenticatorSelectionCriteria->requireResidentKey);
-        static::assertSame('required', $authenticatorSelectionCriteria->residentKey);
-        static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
-            json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR)
-        );
+        //When
+        $data = AuthenticatorSelectionCriteria::createFromString($expectedJson);
 
-        $data = AuthenticatorSelectionCriteria::createFromString(
-            '{"requireResidentKey":true,"userVerification":"user_verification","authenticatorAttachment":"authenticator_attachment","residentKey":"required"}'
-        );
-        static::assertSame('user_verification', $data->userVerification);
-        static::assertSame('authenticator_attachment', $data->authenticatorAttachment);
-        static::assertTrue($data->requireResidentKey);
-        static::assertSame('required', $data->residentKey);
+        //Then
         static::assertSame(
-            '{"requireResidentKey":true,"userVerification":"user_verification","residentKey":"required","authenticatorAttachment":"authenticator_attachment"}',
-            json_encode($data, JSON_THROW_ON_ERROR)
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            $data->userVerification
         );
+        static::assertSame(
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            $data->authenticatorAttachment
+        );
+        static::assertTrue($data->requireResidentKey);
+        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $data->residentKey);
+        static::assertSame($expectedJson, json_encode($data, JSON_THROW_ON_ERROR));
+        static::assertSame($expectedJson, json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR));
     }
 }

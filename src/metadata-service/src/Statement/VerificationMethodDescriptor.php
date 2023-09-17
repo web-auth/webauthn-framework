@@ -6,15 +6,14 @@ namespace Webauthn\MetadataService\Statement;
 
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 use function is_array;
 
-/**
- * @final
- */
 class VerificationMethodDescriptor implements JsonSerializable
 {
+    use ValueFilter;
+
     final public const USER_VERIFY_PRESENCE_INTERNAL = 'presence_internal';
 
     final public const USER_VERIFY_PRESENCE_INTERNAL_INT = 0x00000001;
@@ -121,6 +120,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getUserVerificationMethod(): string
     {
@@ -194,6 +194,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCaDesc(): ?CodeAccuracyDescriptor
     {
@@ -202,6 +203,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getBaDesc(): ?BiometricAccuracyDescriptor
     {
@@ -210,6 +212,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getPaDesc(): ?PatternAccuracyDescriptor
     {
@@ -218,10 +221,12 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
-        $data = Utils::filterNullValues($data);
+        $data = self::filterNullValues($data);
         if (isset($data['userVerification']) && ! isset($data['userVerificationMethod'])) {
             $data['userVerificationMethod'] = $data['userVerification'];
             unset($data['userVerification']);
@@ -252,11 +257,11 @@ class VerificationMethodDescriptor implements JsonSerializable
     {
         $data = [
             'userVerificationMethod' => $this->userVerificationMethod,
-            'caDesc' => $this->caDesc?->jsonSerialize(),
-            'baDesc' => $this->baDesc?->jsonSerialize(),
-            'paDesc' => $this->paDesc?->jsonSerialize(),
+            'caDesc' => $this->caDesc,
+            'baDesc' => $this->baDesc,
+            'paDesc' => $this->paDesc,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 }

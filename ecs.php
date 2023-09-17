@@ -87,14 +87,9 @@ return static function (ECSConfig $config): void {
         'import_functions' => true,
     ]);
     $config->skip([
-        MethodChainingIndentationFixer::class => [
-            __DIR__ . '*/DependencyInjection/Configuration.php',
-        ],
+        MethodChainingIndentationFixer::class => [__DIR__ . '*/DependencyInjection/Configuration.php'],
     ]);
 
     $config->parallel();
-    $config->paths([
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ]);
+    $config->paths([__DIR__ . '/src', __DIR__ . '/tests', __DIR__ . '/ecs.php', __DIR__ . '/rector.php']);
 };

@@ -55,6 +55,7 @@ services:
       - 'webauthn.mds_service'
     arguments:
       - '%kernel.project_dir%/tests/metadataStatements'
+      - '@mds-serializer'
 
     #  fido_alliance_official:
     #    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
@@ -164,7 +165,7 @@ webauthn:
         icon: null
       challenge_length: 32
       authenticator_selection_criteria:
-        attachment_mode: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
+        authenticator_attachment: !php/const Webauthn\AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
         require_resident_key: false
         user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
         resident_key: !php/const Webauthn\AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED

@@ -8,7 +8,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use function ord;
 
 /**
- * @final
  * @see https://www.w3.org/TR/webauthn/#sec-authenticator-data
  * @see https://www.w3.org/TR/webauthn/#flags
  */
@@ -43,8 +42,20 @@ class AuthenticatorData
     ) {
     }
 
+    public static function create(
+        string $authData,
+        string $rpIdHash,
+        string $flags,
+        int $signCount,
+        ?AttestedCredentialData $attestedCredentialData = null,
+        ?AuthenticationExtensionsClientOutputs $extensions = null
+    ): self {
+        return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
+    }
+
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAuthData(): string
     {
@@ -53,6 +64,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRpIdHash(): string
     {
@@ -101,6 +113,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getSignCount(): int
     {
@@ -109,6 +122,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAttestedCredentialData(): ?AttestedCredentialData
     {
@@ -117,6 +131,7 @@ class AuthenticatorData
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getExtensions(): ?AuthenticationExtensionsClientOutputs
     {

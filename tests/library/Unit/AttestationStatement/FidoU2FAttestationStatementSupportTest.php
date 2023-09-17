@@ -93,7 +93,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
     {
         $support = new FidoU2FAttestationStatementSupport();
 
-        $attestationStatement = new AttestationStatement(
+        $attestationStatement = AttestationStatement::create(
             'foo',
             [
                 'sig' => 'FOO',
@@ -111,7 +111,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
             ])
         );
 
-        $attestedCredentialData = new AttestedCredentialData(
+        $attestedCredentialData = AttestedCredentialData::create(
             Uuid::fromString('00000000-0000-0000-0000-000000000000'),
             'CREDENTIAL_ID',
             (string) (new MapObject([
@@ -124,7 +124,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
             ]))
         );
 
-        $authenticatorData = new AuthenticatorData('', 'FOO', '', 0, $attestedCredentialData, null);
+        $authenticatorData = AuthenticatorData::create('', 'FOO', '', 0, $attestedCredentialData, null);
 
         static::assertSame('fido-u2f', $support->name());
         static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));

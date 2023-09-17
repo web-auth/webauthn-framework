@@ -34,6 +34,9 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
         }
     }
 
+    /**
+     * @param AuthenticationExtension[] $extensions
+     */
     public static function create(array $extensions = []): self
     {
         return new self($extensions);
@@ -41,6 +44,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function add(AuthenticationExtension ...$extensions): self
     {
@@ -53,6 +57,8 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
 
     /**
      * @param array<string, mixed> $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): self
     {
@@ -88,10 +94,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     public function jsonSerialize(): array
     {
-        return array_map(
-            static fn (AuthenticationExtension $object): mixed => $object->jsonSerialize(),
-            $this->extensions
-        );
+        return $this->extensions;
     }
 
     /**

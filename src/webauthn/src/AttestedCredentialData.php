@@ -24,8 +24,17 @@ class AttestedCredentialData implements JsonSerializable
     ) {
     }
 
+    public static function create(
+        AbstractUid $aaguid,
+        string $credentialId,
+        ?string $credentialPublicKey = null
+    ): self {
+        return new self($aaguid, $credentialId, $credentialPublicKey);
+    }
+
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAaguid(): AbstractUid
     {
@@ -34,6 +43,7 @@ class AttestedCredentialData implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setAaguid(AbstractUid $aaguid): void
     {
@@ -42,6 +52,7 @@ class AttestedCredentialData implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCredentialId(): string
     {
@@ -50,6 +61,7 @@ class AttestedCredentialData implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCredentialPublicKey(): ?string
     {
@@ -92,7 +104,7 @@ class AttestedCredentialData implements JsonSerializable
             $credentialPublicKey = Base64::decode($json['credentialPublicKey'], true);
         }
 
-        return new self($uuid, $credentialId, $credentialPublicKey);
+        return self::create($uuid, $credentialId, $credentialPublicKey);
     }
 
     /**

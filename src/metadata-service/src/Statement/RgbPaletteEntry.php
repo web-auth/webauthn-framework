@@ -9,9 +9,6 @@ use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use function array_key_exists;
 use function is_int;
 
-/**
- * @final
- */
 class RgbPaletteEntry implements JsonSerializable
 {
     public function __construct(
@@ -31,6 +28,7 @@ class RgbPaletteEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getR(): int
     {
@@ -39,6 +37,7 @@ class RgbPaletteEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getG(): int
     {
@@ -47,6 +46,7 @@ class RgbPaletteEntry implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getB(): int
     {
@@ -55,6 +55,8 @@ class RgbPaletteEntry implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
