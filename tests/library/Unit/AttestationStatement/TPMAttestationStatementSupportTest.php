@@ -17,7 +17,6 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Unit\DummyMetadataStatementRepository;
@@ -42,7 +41,6 @@ final class TPMAttestationStatementSupportTest extends TestCase
             PublicKeyCredentialRpEntity::create('https://webauthn.firstyear.id.au'),
             PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
             base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
-            [PublicKeyCredentialParameters::createPk(0)]
         );
         $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $validator = AuthenticatorAttestationResponseValidator::create(
