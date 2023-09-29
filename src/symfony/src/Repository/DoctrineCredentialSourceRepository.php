@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource, ServiceEntityRepositoryInterface
+/**
+ * @template T of PublicKeyCredentialSource
+ * @template-extends  ServiceEntityRepository<T>
+ */
+class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
-    private readonly EntityManagerInterface $manager;
-
     private readonly string $class;
 
     /**
-     * @param class-string $class The class name of the entity this repository manages
+     * @param class-string<T> $class
      */
     public function __construct(ManagerRegistry $registry, string $class)
     {
@@ -26,27 +27,23 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
             'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
             $class
         ));
-        $manager = $registry->getManagerForClass($class);
-        $manager instanceof EntityManagerInterface || throw new InvalidArgumentException(sprintf(
-            'Could not find the entity manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this entity\'s metadata.',
-            $class
-        ));
         $this->class = $class;
-        $this->manager = $manager;
+        parent::__construct($registry, $class);
     }
 
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->manager->persist($publicKeyCredentialSource);
-        $this->manager->flush();
+        $this->getEntityManager()
+            ->persist($publicKeyCredentialSource);
+        $this->getEntityManager()
+            ->flush();
     }
 
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
-        $qb = $this->manager->createQueryBuilder();
-
-        return $qb->select('c')
-            ->from($this->getClass(), 'c')
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c')
             ->where('c.userHandle = :userHandle')
             ->setParameter(':userHandle', $publicKeyCredentialUserEntity->id)
             ->getQuery()
@@ -55,10 +52,9 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
 
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
-        $qb = $this->manager->createQueryBuilder();
-
-        return $qb->select('c')
-            ->from($this->getClass(), 'c')
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c')
             ->where('c.publicKeyCredentialId = :publicKeyCredentialId')
             ->setParameter(':publicKeyCredentialId', base64_encode($publicKeyCredentialId))
             ->setMaxResults(1)
@@ -66,13 +62,11 @@ class DoctrineCredentialSourceRepository implements PublicKeyCredentialSourceRep
             ->getOneOrNullResult();
     }
 
+    /**
+     * @deprecated since 4.7.2 and will be removed in 5.0.0
+     */
     protected function getClass(): string
     {
         return $this->class;
-    }
-
-    protected function getEntityManager(): EntityManagerInterface
-    {
-        return $this->manager;
     }
 }
