@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
@@ -12,7 +11,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -35,7 +33,6 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 '32urRB1LDfyfYeU9myCPfrhrvNoVI27//+PWWYVxAISpIm3GqgX+jNudPgvOZy96UPNvEkCWCArW0jtpQZFGAg==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
@@ -92,7 +89,6 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 'Test PublicKeyCredentialUserEntity'
             ),
             base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()

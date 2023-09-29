@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use DateTimeImmutable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,7 +13,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -35,7 +33,6 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 'Test PublicKeyCredentialUserEntity'
             ),
             base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
@@ -12,7 +11,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -37,7 +35,6 @@ final class AndroidSafetyNetAttestationStatementTest extends AbstractTestCase
                 'kmns43CWVswbMovrKPkgd1lEpc6LZdfk0UQ/nuZbp00jW5C61PEW1dNaptZ0GkrIK9WRtaAXWkndIEEBgNICRw',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
