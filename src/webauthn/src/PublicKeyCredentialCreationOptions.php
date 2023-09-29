@@ -75,7 +75,6 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     }
 
     /**
-     * @private
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      * @param positive-int $timeout
