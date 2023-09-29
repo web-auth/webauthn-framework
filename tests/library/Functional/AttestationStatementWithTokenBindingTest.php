@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
@@ -12,7 +11,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -35,7 +33,6 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
                 'SkehMoAkGv+cqmuiEqpOgGhswj5oDa9kIPxgG1IihzkxPe4LNfP8bUyFiNn/MXBlqiOY6IpHFZl1XfIM07kRZw==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()

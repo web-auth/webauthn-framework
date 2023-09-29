@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -31,7 +29,6 @@ final class NoneAttestationStatementTest extends AbstractTestCase
                 '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(

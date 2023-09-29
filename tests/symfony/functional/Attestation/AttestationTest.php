@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
-use Cose\Algorithms;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -16,7 +15,6 @@ use Webauthn\MetadataService\Exception\CertificateChainException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
@@ -47,7 +45,6 @@ final class AttestationTest extends KernelTestCase
                 '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         /** @var SerializerInterface $serializer */
         $serializer = self::getContainer()->get('webauthn-serializer');
@@ -93,7 +90,6 @@ final class AttestationTest extends KernelTestCase
                 '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         /** @var SerializerInterface $serializer */
         $serializer = self::getContainer()->get('webauthn-serializer');

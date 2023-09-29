@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use Cose\Algorithms;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
@@ -31,7 +29,6 @@ final class Fido2AttestationStatementTest extends AbstractTestCase
                 'pGRaBff9zpaw3CDAsggpOMRonJaqMXYjkvIGTPt3rHH+53RCW7LQ9l4NmGcv8dNZSNLDrvQDKaSNhFjviggcZA==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
         );
         $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
