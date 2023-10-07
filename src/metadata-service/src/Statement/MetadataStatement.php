@@ -682,6 +682,7 @@ class MetadataStatement implements JsonSerializable
             'alternativeDescriptions' => $this->alternativeDescriptions,
             'authenticatorVersion' => $this->authenticatorVersion,
             'protocolFamily' => $this->protocolFamily,
+            'schema' => $this->schema,
             'upv' => $this->upv,
             'authenticationAlgorithms' => $this->authenticationAlgorithms,
             'publicKeyAlgAndEncodings' => $this->publicKeyAlgAndEncodings,
