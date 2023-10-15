@@ -16,7 +16,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
-    private readonly string $class;
+    protected readonly string $class;
 
     /**
      * @param class-string<T> $class
@@ -43,6 +43,7 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
     {
         return $this->getEntityManager()
             ->createQueryBuilder()
+            ->from($this->class, 'c')
             ->select('c')
             ->where('c.userHandle = :userHandle')
             ->setParameter(':userHandle', $publicKeyCredentialUserEntity->id)
@@ -54,6 +55,7 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
     {
         return $this->getEntityManager()
             ->createQueryBuilder()
+            ->from($this->class, 'c')
             ->select('c')
             ->where('c.publicKeyCredentialId = :publicKeyCredentialId')
             ->setParameter(':publicKeyCredentialId', base64_encode($publicKeyCredentialId))
@@ -63,7 +65,7 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
     }
 
     /**
-     * @deprecated since 4.7.2 and will be removed in 5.0.0
+     * @deprecated since 4.7.2 and will be removed in 5.0.0. Please use the property instead.
      */
     protected function getClass(): string
     {
