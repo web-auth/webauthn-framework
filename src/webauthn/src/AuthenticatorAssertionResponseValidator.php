@@ -139,9 +139,17 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                     ->getHost(),
                 'userHandle' => $userHandle,
             ]);
-            $publicKeyCredentialSource = is_string(
-                $credentialId
-            ) ? $this->publicKeyCredentialSourceRepository?->findOneByCredentialId($credentialId) : $credentialId;
+            $publicKeyCredentialSource = null;
+            if ($credentialId instanceof PublicKeyCredentialSource) {
+                $publicKeyCredentialSource = $credentialId;
+            } else {
+                $this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepository || throw AuthenticatorResponseVerificationException::create(
+                    'The parameter "$publicKeyCredentialSourceRepository" is required.'
+                );
+                $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+                    $credentialId
+                );
+            }
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(
                 'The credential ID is invalid.'
             );
