@@ -42,6 +42,7 @@ class AuthenticatorAttestationResponseValidationFailedEvent
 
     /**
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use the `host` property instead
+     * @infection-ignore-all
      */
     public function getRequest(): ServerRequestInterface|string
     {

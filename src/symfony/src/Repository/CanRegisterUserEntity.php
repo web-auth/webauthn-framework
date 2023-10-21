@@ -10,6 +10,7 @@ interface CanRegisterUserEntity
 {
     /**
      * @deprecated since 4.7.0 and will be removed in 5.0.0. Please use Webauthn\Bundle\Repository\CanGenerateUserEntity::generateUserEntity() instead.
+     * @infection-ignore-all
      */
     public function generateNextUserEntityId(): string;
 

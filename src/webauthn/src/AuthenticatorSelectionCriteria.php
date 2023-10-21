@@ -42,6 +42,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated Please use AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE instead
+     * @infection-ignore-all
      */
     final public const RESIDENT_KEY_REQUIREMENT_NONE = null;
 
@@ -93,6 +94,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setAuthenticatorAttachment(?string $authenticatorAttachment): self
     {
@@ -103,6 +105,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since v4.1. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setRequireResidentKey(bool $requireResidentKey): self
     {
@@ -116,6 +119,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setUserVerification(string $userVerification): self
     {
@@ -126,6 +130,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the {self::create} instead.
+     * @infection-ignore-all
      */
     public function setResidentKey(null|string $residentKey): self
     {
@@ -137,6 +142,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAuthenticatorAttachment(): ?string
     {
@@ -145,6 +151,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated Will be removed in 5.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function isRequireResidentKey(): bool
     {
@@ -153,6 +160,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getUserVerification(): string
     {
@@ -161,12 +169,17 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getResidentKey(): null|string
     {
         return $this->residentKey;
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
@@ -176,6 +189,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): self
     {

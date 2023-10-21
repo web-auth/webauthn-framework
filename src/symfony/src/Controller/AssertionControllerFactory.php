@@ -46,6 +46,7 @@ final class AssertionControllerFactory implements CanLogData
 
     /**
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createRequestController instead.
+     * @infection-ignore-all
      */
     public function createAssertionRequestController(
         string $profile,
@@ -83,6 +84,7 @@ final class AssertionControllerFactory implements CanLogData
     /**
      * @param string[] $securedRelyingPartyIds
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
+     * @infection-ignore-all
      */
     public function createAssertionResponseController(
         OptionsStorage $optionStorage,

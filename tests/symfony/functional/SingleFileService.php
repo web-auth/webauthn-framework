@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Bundle\Functional;
 
 use InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use function array_key_exists;
@@ -15,10 +16,11 @@ final class SingleFileService implements MetadataService
     /**
      * @var array<string, MetadataStatement>
      */
-    private array $statements;
+    private array $statements = [];
 
     public function __construct(
-        private readonly string $rootPath
+        private readonly string $rootPath,
+        private readonly SerializerInterface $serializer,
     ) {
     }
 
@@ -51,7 +53,7 @@ final class SingleFileService implements MetadataService
     {
         foreach ($this->getFilenames() as $filename) {
             $data = trim(file_get_contents($filename));
-            $mds = MetadataStatement::createFromString($data);
+            $mds = $this->serializer->deserialize($data, MetadataStatement::class, 'json');
             if ($mds->aaguid === null) {
                 continue;
             }

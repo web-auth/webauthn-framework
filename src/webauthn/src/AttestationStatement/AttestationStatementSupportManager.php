@@ -10,11 +10,21 @@ use function array_key_exists;
 class AttestationStatementSupportManager
 {
     /**
-     * @var AttestationStatementSupport[]
+     * @param AttestationStatementSupport[] $attestationStatementSupports
      */
-    private array $attestationStatementSupports = [];
+    public function __construct(
+        private array $attestationStatementSupports = []
+    ) {
+        $this->add(new NoneAttestationStatementSupport());
+        foreach ($attestationStatementSupports as $attestationStatementSupport) {
+            $this->add($attestationStatementSupport);
+        }
+    }
 
-    public static function create(): self
+    /**
+     * @param AttestationStatementSupport[] $attestationStatementSupports
+     */
+    public static function create(array $attestationStatementSupports = []): self
     {
         return new self();
     }

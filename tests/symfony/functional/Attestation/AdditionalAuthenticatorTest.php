@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -158,9 +159,14 @@ final class AdditionalAuthenticatorTest extends WebTestCase
 
     private function logIn(): void
     {
+        /** @var SerializerInterface $serializer */
+        $serializer = static::getContainer()->get('webauthn-serializer');
         $options = '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"EhNVt3T8V12FJvSAc50nhKnZ-MEc-kf84xepDcGyN1g","attestation":"direct","user":{"name":"XY5nn3p_6olTLjoB2Jbb","id":"OTI5ZmJhMmYtMjM2MS00YmM2LWE5MTctYmI3NmFhMTRjN2Y5","displayName":"Bennie Moneypenny"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}';
-        /** @var PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions */
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
+        $publicKeyCredentialCreationOptions = $serializer->deserialize(
+            $options,
+            PublicKeyCredentialCreationOptions::class,
+            'json'
+        );
         $user = User::create(
             $publicKeyCredentialCreationOptions->user
                 ->name,

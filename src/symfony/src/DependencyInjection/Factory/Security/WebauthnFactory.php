@@ -34,6 +34,7 @@ use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use function array_key_exists;
 use function assert;
 
@@ -77,21 +78,25 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     /**
      * @deprecated This constant is not used anymore and will be removed in 5.0
+     * @infection-ignore-all
      */
     public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
 
     /**
      * @deprecated This constant is not used anymore and will be removed in 5.0
+     * @infection-ignore-all
      */
     public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
 
     /**
      * @deprecated This constant is not used anymore and will be removed in 5.0
+     * @infection-ignore-all
      */
     public const SUCCESS_HANDLER_ID_PREFIX = 'security.authentication.success_handler.webauthn.';
 
     /**
      * @deprecated This constant is not used anymore and will be removed in 5.0
+     * @infection-ignore-all
      */
     public const FAILURE_HANDLER_ID_PREFIX = 'security.authentication.failure_handler.webauthn.';
 
@@ -469,6 +474,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
+                new Reference(WebauthnSerializerFactory::class),
             ]);
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 
@@ -492,6 +498,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                 $config['profile'],
+                new Reference(WebauthnSerializerFactory::class),
             ]);
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 

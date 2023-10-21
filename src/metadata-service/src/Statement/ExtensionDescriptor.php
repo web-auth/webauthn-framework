@@ -6,11 +6,13 @@ namespace Webauthn\MetadataService\Statement;
 
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 
 class ExtensionDescriptor implements JsonSerializable
 {
+    use ValueFilter;
+
     public function __construct(
         public readonly string $id,
         public readonly ?int $tag,
@@ -35,6 +37,7 @@ class ExtensionDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getId(): string
     {
@@ -43,6 +46,7 @@ class ExtensionDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTag(): ?int
     {
@@ -51,6 +55,7 @@ class ExtensionDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getData(): ?string
     {
@@ -59,6 +64,7 @@ class ExtensionDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function isFailIfUnknown(): bool
     {
@@ -67,10 +73,12 @@ class ExtensionDescriptor implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
-        $data = Utils::filterNullValues($data);
+        $data = self::filterNullValues($data);
         array_key_exists('id', $data) || throw MetadataStatementLoadingException::create(
             'Invalid data. The parameter "id" is missing'
         );
@@ -93,6 +101,6 @@ class ExtensionDescriptor implements JsonSerializable
             'fail_if_unknown' => $this->failIfUnknown,
         ];
 
-        return Utils::filterNullValues($result);
+        return self::filterNullValues($result);
     }
 }

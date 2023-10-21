@@ -9,6 +9,7 @@ use Webauthn\Exception\InvalidDataException;
 
 /**
  * @deprecated Since 4.3.0 and will be removed in 5.0.0
+ * @infection-ignore-all
  */
 final class TokenBindingNotSupportedHandler implements TokenBindingHandler
 {

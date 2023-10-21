@@ -24,6 +24,7 @@ class PublicKeyCredential extends Credential implements Stringable
 
     /**
      * @deprecated since 4.8.0. Please use the PublicKeyCredentialDescriptor ({self::getPublicKeyCredentialDescriptor}) instead.
+     * @infection-ignore-all
      */
     public function __toString(): string
     {
@@ -37,6 +38,7 @@ class PublicKeyCredential extends Credential implements Stringable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRawId(): string
     {
@@ -45,6 +47,7 @@ class PublicKeyCredential extends Credential implements Stringable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getResponse(): AuthenticatorResponse
     {
