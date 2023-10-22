@@ -18,6 +18,9 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
+use function gettype;
+use function is_int;
+use function is_string;
 
 final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {
@@ -64,6 +67,19 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         ));
         $profile = $this->profiles[$key];
 
+        $timeout = $profile['timeout'] ?? null;
+        $timeout === null || (is_int($timeout) && $timeout > 1) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid timeout value. Expected a positive integer greater than 0, got "%s".',
+            $key,
+            gettype($timeout)
+        ));
+        $attestation = $attestationConveyance ?? $profile['attestation_conveyance'] ?? null;
+        $attestation === null || is_string($attestation) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid attestation_conveyance value. Expected a string or null, got "%s".',
+            $key,
+            gettype($attestation)
+        ));
+
         $options = PublicKeyCredentialCreationOptions
             ::create(
                 $this->createRpEntity($profile),
@@ -73,9 +89,9 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 authenticatorSelection: $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
                     $profile
                 ),
-                attestation: $attestationConveyance ?? $profile['attestation_conveyance'],
+                attestation: $attestation,
                 excludeCredentials: $excludeCredentials,
-                timeout: $profile['timeout'],
+                timeout: $timeout,
                 extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
             );
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));

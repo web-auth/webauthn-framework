@@ -19,9 +19,6 @@ final class TrustPathDenormalizer implements DenormalizerInterface, Denormalizer
 
     private const ALREADY_CALLED = 'TRUST_PATH_PREPROCESS_ALREADY_CALLED';
 
-    /**
-     * @param array<string, mixed> $context
-     */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
         if ($this->denormalizer === null) {
@@ -47,9 +44,6 @@ final class TrustPathDenormalizer implements DenormalizerInterface, Denormalizer
         return $this->denormalizer->denormalize($data, $className, $format, $context);
     }
 
-    /**
-     * @param array<string, mixed> $context
-     */
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         if ($context[self::ALREADY_CALLED] ?? false) {
