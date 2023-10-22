@@ -22,7 +22,12 @@ final class ConformanceTest extends AbstractTestCase
     public function validAttestationResponseWithLinkShouldSucceed(string $options, string $response): void
     {
         //Given
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
+        $serializer = $this->getSerializer();
+        $publicKeyCredentialCreationOptions = $serializer->deserialize(
+            $options,
+            PublicKeyCredentialCreationOptions::class,
+            'json'
+        );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
         // When

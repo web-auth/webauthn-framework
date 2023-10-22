@@ -69,15 +69,15 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 $this->createRpEntity($profile),
                 $userEntity,
                 random_bytes($profile['challenge_length']),
-                $this->createCredentialParameters($profile)
+                $this->createCredentialParameters($profile),
+                authenticatorSelection: $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
+                    $profile
+                ),
+                attestation: $attestationConveyance ?? $profile['attestation_conveyance'],
+                excludeCredentials: $excludeCredentials,
+                timeout: $profile['timeout'],
+                extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
             );
-        $options->excludeCredentials = $excludeCredentials;
-        $options->authenticatorSelection = $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
-            $profile
-        );
-        $options->attestation = $attestationConveyance ?? $profile['attestation_conveyance'];
-        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
-        $options->timeout = $profile['timeout'];
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;

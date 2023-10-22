@@ -48,6 +48,7 @@ final class WebauthnSerializerFactory
             new PublicKeyCredentialOptionsDenormalizer(),
             new PublicKeyCredentialSourceDenormalizer(),
             new PublicKeyCredentialUserEntityDenormalizer(),
+            new TrustPathDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
             new ObjectNormalizer(

@@ -53,7 +53,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $compression,
         int $filter,
         int $interlace,
-        array $plte
+        array $plte = []
     ): self {
         return new self($width, $height, $bitDepth, $colorType, $compression, $filter, $interlace, $plte);
     }
