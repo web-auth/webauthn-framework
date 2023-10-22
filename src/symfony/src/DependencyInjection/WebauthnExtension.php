@@ -125,18 +125,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
     public function prepend(ContainerBuilder $container): void
     {
-        if (! $container->hasParameter('kernel.bundles')) {
-            return;
-        }
-        $bundles = $container->getParameter('kernel.bundles');
-        if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
-            return;
-        }
-        $configs = $container->getExtensionConfig('doctrine');
-        if (count($configs) === 0) {
-            return;
-        }
-        $config = current($configs);
+        $config = $this->getDoctrineBundleConfiguration($container);
         if (! is_array($config)) {
             return;
         }
@@ -155,6 +144,20 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             'trust_path' => DbalType\TrustPathDataType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);
+    }
+
+    private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
+    {
+        if (! $container->hasParameter('kernel.bundles')) {
+            return null;
+        }
+        $bundles = $container->getParameter('kernel.bundles');
+        if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
+            return null;
+        }
+        $configs = $container->getExtensionConfig('doctrine');
+
+        return count($configs) === 0 ? null : current($configs);
     }
 
     /**

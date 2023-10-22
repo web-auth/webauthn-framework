@@ -982,11 +982,6 @@ parameters:
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
         -
-            message: "#^Cannot access offset 'types' on mixed\\.$#"
-            count: 2
-            path: src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-        -
             message: "#^Cannot access offset 'user_entity_guesser' on mixed\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
@@ -1014,6 +1009,11 @@ parameters:
 
         -
             message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:\\:getConfiguration\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+        -
+            message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:\\:getDoctrineBundleConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
