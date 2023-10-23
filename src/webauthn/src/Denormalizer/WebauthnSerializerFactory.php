@@ -18,6 +18,10 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
 final class WebauthnSerializerFactory
 {
+    private const PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
+
+    private const PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
+
     public function __construct(
         private readonly AttestationStatementSupportManager $attestationStatementSupportManager
     ) {
@@ -48,6 +52,7 @@ final class WebauthnSerializerFactory
             new PublicKeyCredentialOptionsDenormalizer(),
             new PublicKeyCredentialSourceDenormalizer(),
             new PublicKeyCredentialUserEntityDenormalizer(),
+            new TrustPathDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
             new ObjectNormalizer(
@@ -67,14 +72,14 @@ final class WebauthnSerializerFactory
     private static function getRequiredSerializerClasses(): array
     {
         return [
-            UidNormalizer::class => 'symfony/serializer',
-            ArrayDenormalizer::class => 'symfony/serializer',
-            ObjectNormalizer::class => 'symfony/serializer',
-            PropertyInfoExtractor::class => 'symfony/serializer',
-            PhpDocExtractor::class => 'phpdocumentor/reflection-docblock',
-            ReflectionExtractor::class => 'symfony/serializer',
-            JsonEncoder::class => 'symfony/serializer',
-            Serializer::class => 'symfony/serializer',
+            UidNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            ArrayDenormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            ObjectNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            PropertyInfoExtractor::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            PhpDocExtractor::class => self::PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK,
+            ReflectionExtractor::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            JsonEncoder::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            Serializer::class => self::PACKAGE_SYMFONY_SERIALIZER,
         ];
     }
 }

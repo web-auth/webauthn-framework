@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Uid\Uuid;
-use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
@@ -61,11 +60,11 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
                 $authData,
                 'The data does not contain a valid credential public key.'
             );
-            $attestedCredentialData = new AttestedCredentialData(
-                $aaguid,
-                $credentialId,
-                (string) $credentialPublicKey
-            );
+            $attestedCredentialData = [
+                'aaguid' => $aaguid,
+                'credentialId' => $credentialId,
+                'credentialPublicKey' => (string) $credentialPublicKey,
+            ];
         }
         $extension = null;
         if (0 !== (ord($flags) & AuthenticatorData::FLAG_ED)) {
