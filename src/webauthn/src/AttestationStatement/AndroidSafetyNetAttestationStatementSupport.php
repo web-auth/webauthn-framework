@@ -131,8 +131,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     public function load(array $attestation): AttestationStatement
     {
         array_key_exists('attStmt', $attestation) || throw AttestationStatementLoadingException::create(
-            $attestation,
-            'Invalid attestation object'
+            $attestation
         );
         foreach (['ver', 'response'] as $key) {
             array_key_exists($key, $attestation['attStmt']) || throw AttestationStatementLoadingException::create(

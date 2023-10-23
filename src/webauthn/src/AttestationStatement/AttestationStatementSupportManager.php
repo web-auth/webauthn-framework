@@ -26,7 +26,7 @@ class AttestationStatementSupportManager
      */
     public static function create(array $attestationStatementSupports = []): self
     {
-        return new self();
+        return new self($attestationStatementSupports);
     }
 
     public function add(AttestationStatementSupport $attestationStatementSupport): void
