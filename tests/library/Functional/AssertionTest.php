@@ -22,19 +22,20 @@ final class AssertionTest extends AbstractTestCase
     public function anAssertionCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
-            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true)
+            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
+            rpId: 'localhost',
+            allowCredentials: [
+                PublicKeyCredentialDescriptor::create(
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    Base64UrlSafe::decode(
+                        'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w',
+                        true
+                    )
+                ),
+            ],
+            userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            timeout: 60000,
         );
-        $publicKeyCredentialRequestOptions->timeout = 60000;
-        $publicKeyCredentialRequestOptions->rpId = 'localhost';
-        $publicKeyCredentialRequestOptions->userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $publicKeyCredentialRequestOptions->allowCredentials = [
-            PublicKeyCredentialDescriptor::create(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                Base64UrlSafe::decode(
-                    'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w'
-                )
-            ),
-        ];
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(
                 '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}'
@@ -68,20 +69,20 @@ final class AssertionTest extends AbstractTestCase
     public function anAssertionWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
-            base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true)
+            base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true),
+            rpId: 'webauthn.morselli.fr',
+            allowCredentials: [
+                PublicKeyCredentialDescriptor::create(
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    base64_decode(
+                        '+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==',
+                        true
+                    )
+                ),
+            ],
+            userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            timeout: 60000,
         );
-        $publicKeyCredentialRequestOptions->timeout = 60000;
-        $publicKeyCredentialRequestOptions->rpId = 'webauthn.morselli.fr';
-        $publicKeyCredentialRequestOptions->userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $publicKeyCredentialRequestOptions->allowCredentials = [
-            PublicKeyCredentialDescriptor::create(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                base64_decode(
-                    '+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==',
-                    true
-                )
-            ),
-        ];
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(
                 '{"id":"-uZVS9-4JgjAYI49YhdzTgHmbn638-ZNSvC0UtHkWTVS-CtTjnaSbqtzdzijByOAvEAsh-TaQJAr43FRj-dYag","type":"public-key","rawId":"+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==","response":{"authenticatorData":"ytRu25lhUyPmYiS9_oq8XVnMLSBjAp3j6bJCBIkJQ7YFAAAAlA","clientDataJSON":"ew0KCSJ0eXBlIiA6ICJ3ZWJhdXRobi5nZXQiLA0KCSJjaGFsbGVuZ2UiIDogIjVyQ0gxVFp6bGhXbjF1eDVReUVGU1psbW9ZaUtKbTg0Rkh4Slp1MVprNHMiLA0KCSJvcmlnaW4iIDogImh0dHBzOi8vd2ViYXV0aG4ubW9yc2VsbGkuZnIiLA0KCSJ0b2tlbkJpbmRpbmciIDogDQoJew0KCQkic3RhdHVzIiA6ICJzdXBwb3J0ZWQiDQoJfQ0KfQ","signature":"MEUCIQCqFeffY4MT0dI95aS4zMiKjEb33zA/xGy3k9LTWjhgXgIgT39F2NoCc7UNLOy9N6Xf6bC4E3j056ZGGrbXcLY4F/A=","userHandle":null}}'
@@ -115,20 +116,20 @@ final class AssertionTest extends AbstractTestCase
     public function anAssertionWithUserHandleCanBeVerified(): void
     {
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
-            base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true)
+            base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true),
+            rpId: 'spomky-webauthn.herokuapp.com',
+            allowCredentials: [
+                PublicKeyCredentialDescriptor::create(
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    base64_decode(
+                        'ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov',
+                        true
+                    )
+                ),
+            ],
+            userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            timeout: 60000,
         );
-        $publicKeyCredentialRequestOptions->timeout = 60000;
-        $publicKeyCredentialRequestOptions->rpId = 'spomky-webauthn.herokuapp.com';
-        $publicKeyCredentialRequestOptions->userVerification = PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED;
-        $publicKeyCredentialRequestOptions->allowCredentials = [
-            PublicKeyCredentialDescriptor::create(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                base64_decode(
-                    'ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov',
-                    true
-                )
-            ),
-        ];
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(
                 '{"id":"ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj_uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty_LiInWWJlov","type":"public-key","rawId":"ADqYfFWXiscOCOPCd9OLiBtSGhletNPKlSOELS0Nuwj/uCzf9s3trLUK9ockO8xa8jBAYdKixLZYOAezy0FJiV1bnTCty/LiInWWJlov","response":{"authenticatorData":"tIXbbgSILsWHHbR0Fjkl96X4ROZYLvVtOopBWCQoAqpFXFBJyQAAAAAAAAAAAAAAAAAAAAAATgA6mHxVl4rHDgjjwnfTi4gbUhoZXrTTypUjhC0tDbsI_7gs3_bN7ay1CvaHJDvMWvIwQGHSosS2WDgHs8tBSYldW50wrcvy4iJ1liZaL6UBAgMmIAEhWCAIpUDJSoLScguLRDKBEc32v682i6RPjy6SFZnFTBj2QSJYIG8DS0CpphjyFyZB9xyCTrKDsr_S5iX5hhidWLRdP_7B","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJ3S2xXN1MzRUVOSGxjRjJOZ1loZFVKZlJKZUN2QXZsYmstTWxsdnhvMEhBIiwib3JpZ2luIjoiaHR0cHM6Ly9zcG9ta3ktd2ViYXV0aG4uaGVyb2t1YXBwLmNvbSIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEQCIBnVPX8inAXIxXAsMdF6nW6nZJa36G1O+G9JXiauenxBAiBU4MQoRWxiXGn0TcKTkRJafZ58KLqeCJiB2VFAplwPJA==","userHandle":"YWJmYzhmZGYtMDdmNi00NWE5LWFiZWMtZmExOTIyNzViMjc2"}}'

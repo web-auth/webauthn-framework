@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
@@ -67,6 +68,8 @@ abstract class AbstractTestCase extends TestCase
 
     private ?StatusReportRepository $statusReportRepository = null;
 
+    private null|SerializerInterface $webauthnSerializer = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -79,7 +82,7 @@ abstract class AbstractTestCase extends TestCase
         if ($this->publicKeyCredentialLoader === null) {
             $this->publicKeyCredentialLoader = PublicKeyCredentialLoader::create(
                 $this->getAttestationObjectLoader(),
-                (new WebauthnSerializerFactory($this->getAttestationStatementSupportManager(null)))->create()
+                $this->getSerializer()
             );
         }
 
@@ -140,6 +143,17 @@ abstract class AbstractTestCase extends TestCase
         }
 
         return $urls;
+    }
+
+    protected function getSerializer(): SerializerInterface
+    {
+        if ($this->webauthnSerializer === null) {
+            $this->webauthnSerializer = (new WebauthnSerializerFactory($this->getAttestationStatementSupportManager(
+                null
+            )))->create();
+        }
+
+        return $this->webauthnSerializer;
     }
 
     private function getAttestationStatementSupportManager(

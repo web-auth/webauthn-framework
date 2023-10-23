@@ -37,8 +37,8 @@ class AuthenticatorData
         public readonly string $rpIdHash,
         public readonly string $flags,
         public readonly int $signCount,
-        public readonly ?AttestedCredentialData $attestedCredentialData,
-        public readonly ?AuthenticationExtensionsClientOutputs $extensions
+        public readonly null|AttestedCredentialData $attestedCredentialData,
+        public readonly null|AuthenticationExtensionsClientOutputs $extensions
     ) {
     }
 
@@ -47,8 +47,8 @@ class AuthenticatorData
         string $rpIdHash,
         string $flags,
         int $signCount,
-        ?AttestedCredentialData $attestedCredentialData = null,
-        ?AuthenticationExtensionsClientOutputs $extensions = null
+        null|AttestedCredentialData $attestedCredentialData = null,
+        null|AuthenticationExtensionsClientOutputs $extensions = null
     ): self {
         return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
     }
