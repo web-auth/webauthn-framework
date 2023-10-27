@@ -37,8 +37,8 @@ final class PackedAttestationStatementTest extends KernelTestCase
                 'Test PublicKeyCredentialUserEntity'
             ),
             base64_decode('oFUGhUevQHX7J6o4OFau5PbncCATaHwjHDLLzCTpiyw=', true),
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         );
-        $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         /** @var SerializerInterface $serializer */
         $serializer = self::getContainer()->get('webauthn-serializer');
         $publicKeyCredential = $serializer->deserialize(

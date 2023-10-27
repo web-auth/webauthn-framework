@@ -15,6 +15,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
@@ -33,8 +34,8 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 'Test PublicKeyCredentialUserEntity'
             ),
             base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         );
-        $publicKeyCredentialCreationOptions->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load('{
             "id": "J4lAqPXhefDrUD7oh5LQMbBH5TE",

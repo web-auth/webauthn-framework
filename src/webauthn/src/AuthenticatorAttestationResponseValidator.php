@@ -13,8 +13,7 @@ use Throwable;
 use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
@@ -498,8 +497,8 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
 
     private function getFacetId(
         string $rpId,
-        AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs,
-        ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs
+        AuthenticationExtensions $authenticationExtensionsClientInputs,
+        null|AuthenticationExtensions $authenticationExtensionsClientOutputs
     ): string {
         if ($authenticationExtensionsClientOutputs === null || ! $authenticationExtensionsClientInputs->has(
             'appid'

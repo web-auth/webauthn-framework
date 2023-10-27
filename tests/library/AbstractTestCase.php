@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Tests\Functional;
+namespace Webauthn\Tests;
 
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
@@ -42,8 +42,8 @@ use Webauthn\MetadataService\Service\JsonMetadataService;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\Tests\Bundle\Functional\MockClock;
-use Webauthn\Tests\MockedPublicKeyCredentialSourceTrait;
-use Webauthn\Tests\MockedRequestTrait;
+use Webauthn\Tests\Functional\MetadataStatementRepository;
+use Webauthn\Tests\Functional\StatusReportRepository;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -80,10 +80,7 @@ abstract class AbstractTestCase extends TestCase
     protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
     {
         if ($this->publicKeyCredentialLoader === null) {
-            $this->publicKeyCredentialLoader = PublicKeyCredentialLoader::create(
-                $this->getAttestationObjectLoader(),
-                $this->getSerializer()
-            );
+            $this->publicKeyCredentialLoader = PublicKeyCredentialLoader::create(null, $this->getSerializer());
         }
 
         return $this->publicKeyCredentialLoader;
@@ -198,17 +195,6 @@ abstract class AbstractTestCase extends TestCase
         return $this->algorithmManager;
     }
 
-    private function getAttestationObjectLoader(): AttestationObjectLoader
-    {
-        if ($this->attestationObjectLoader === null) {
-            $this->attestationObjectLoader = new AttestationObjectLoader(
-                $this->getAttestationStatementSupportManager(null)
-            );
-        }
-
-        return $this->attestationObjectLoader;
-    }
-
     private function getMetadataStatementRepository(?ClientInterface $client): MetadataStatementRepositoryInterface
     {
         if ($client === null) {
@@ -243,7 +229,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../../metadataStatements');
+            ->in(__DIR__ . '/../metadataStatements');
 
         foreach ($finder->files()->name('*.json') as $file) {
             yield $file->getRealPath();
@@ -254,7 +240,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../../metadataServices');
+            ->in(__DIR__ . '/../metadataServices');
 
         foreach ($finder->files() as $file) {
             yield $file->getRealPath();

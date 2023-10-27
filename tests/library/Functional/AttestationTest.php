@@ -13,6 +13,7 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal

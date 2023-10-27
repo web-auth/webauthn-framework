@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
@@ -33,6 +34,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @private
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
+     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      */
     public function __construct(
         string $challenge,
@@ -40,7 +42,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         public array $allowCredentials = [],
         public null|string $userVerification = null,
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|array|AuthenticationExtensions $extensions = null,
     ) {
         in_array($userVerification, self::USER_VERIFICATION_REQUIREMENTS, true) || throw InvalidDataException::create(
             $userVerification,
@@ -56,6 +58,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param positive-int $timeout
+     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      */
     public static function create(
         string $challenge,
@@ -63,7 +66,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         array $allowCredentials = [],
         null|string $userVerification = null,
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|array|AuthenticationExtensions $extensions = null,
     ): self {
         return new self($challenge, $rpId, $allowCredentials, $userVerification, $timeout, $extensions);
     }

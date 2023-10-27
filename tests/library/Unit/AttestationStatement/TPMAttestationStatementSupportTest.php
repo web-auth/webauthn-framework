@@ -41,8 +41,8 @@ final class TPMAttestationStatementSupportTest extends TestCase
             PublicKeyCredentialRpEntity::create('https://webauthn.firstyear.id.au'),
             PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
             base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         );
-        $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
         $validator = AuthenticatorAttestationResponseValidator::create(
             $attnManager,
             null,

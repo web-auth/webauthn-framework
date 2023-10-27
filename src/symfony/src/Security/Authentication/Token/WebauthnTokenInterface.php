@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -34,7 +34,7 @@ interface WebauthnTokenInterface extends TokenInterface
 
     public function getSignCount(): int;
 
-    public function getExtensions(): ?AuthenticationExtensionsClientOutputs;
+    public function getExtensions(): ?AuthenticationExtensions;
 
     public function getFirewallName(): string;
 }

@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Service;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -47,8 +48,8 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     public function create(
         string $key,
         array $allowCredentials,
-        ?string $userVerification = null,
-        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+        null|string $userVerification = null,
+        null|AuthenticationExtensions $authenticationExtensionsClientInputs = null
     ): PublicKeyCredentialRequestOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
@@ -95,7 +96,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     /**
      * @param mixed[] $profile
      */
-    private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
+    private function createExtensions(array $profile): AuthenticationExtensions
     {
         return AuthenticationExtensionsClientInputs::create(
             array_map(

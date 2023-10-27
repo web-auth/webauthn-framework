@@ -42,7 +42,7 @@ final class WebauthnSerializerFactory
         $denormalizers = [
             new AttestationObjectDenormalizer(),
             new AttestationStatementDenormalizer($this->attestationStatementSupportManager),
-            new AuthenticationExtensionsClientInputsDenormalizer(),
+            new AuthenticationExtensionsDenormalizer(),
             new AuthenticatorAssertionResponseDenormalizer(),
             new AuthenticatorAttestationResponseDenormalizer(),
             new AuthenticatorDataDenormalizer(),

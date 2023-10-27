@@ -196,35 +196,20 @@ class MetadataStatement implements JsonSerializable
         public readonly array $tcDisplay,
         public readonly array $attestationRootCertificates,
         public readonly ?AlternativeDescriptions $alternativeDescriptions = null,
-        /** @readonly  */
         public ?string $legalHeader = null,
-        /** @readonly  */
         public ?string $aaid = null,
-        /** @readonly  */
         public ?string $aaguid = null,
-        /** @readonly  */
         public array $attestationCertificateKeyIdentifiers = [],
-        /** @readonly  */
         public array $keyProtection = [],
-        /** @readonly  */
         public ?bool $isKeyRestricted = null,
-        /** @readonly  */
         public ?bool $isFreshUserVerificationRequired = null,
-        /** @readonly  */
         public ?int $cryptoStrength = null,
-        /** @readonly  */
         public array $attachmentHint = [],
-        /** @readonly  */
         public ?string $tcDisplayContentType = null,
-        /** @readonly  */
         public array $tcDisplayPNGCharacteristics = [],
-        /** @readonly  */
         public array $ecdaaTrustAnchors = [],
-        /** @readonly  */
         public ?string $icon = null,
-        /** @readonly  */
         public array $supportedExtensions = [],
-        /** @readonly  */
         ?AuthenticatorGetInfo $authenticatorGetInfo = null,
     ) {
         $this->authenticatorGetInfo = $authenticatorGetInfo ?? AuthenticatorGetInfo::create($attestationTypes);
