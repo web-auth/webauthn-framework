@@ -7,25 +7,31 @@ namespace Webauthn;
 use InvalidArgumentException;
 use JsonSerializable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 
 abstract class PublicKeyCredentialOptions implements JsonSerializable
 {
-    public AuthenticationExtensionsClientInputs $extensions;
+    public AuthenticationExtensions $extensions;
 
     /**
      * @param positive-int|null $timeout
+     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      * @protected
      */
     public function __construct(
         public readonly string $challenge,
-        /** @readonly  */
         public null|int $timeout = null,
-        /** @readonly  */
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|array|AuthenticationExtensions $extensions = null,
     ) {
         ($this->timeout === null || $this->timeout > 0) || throw new InvalidArgumentException('Invalid timeout');
-        $this->extensions = $extensions ?? AuthenticationExtensionsClientInputs::create();
+        if ($extensions === null) {
+            $this->extensions = AuthenticationExtensionsClientInputs::create();
+        } elseif ($extensions instanceof AuthenticationExtensions) {
+            $this->extensions = $extensions;
+        } else {
+            $this->extensions = AuthenticationExtensions::create($extensions);
+        }
     }
 
     /**
@@ -68,7 +74,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
      * @deprecated since 4.7.0. Please use the {self::create} instead.
      * @infection-ignore-all
      */
-    public function setExtensions(AuthenticationExtensionsClientInputs $extensions): static
+    public function setExtensions(AuthenticationExtensions $extensions): static
     {
         $this->extensions = $extensions;
 
@@ -97,7 +103,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
      * @deprecated since 4.7.0. Please use the property directly.
      * @infection-ignore-all
      */
-    public function getExtensions(): AuthenticationExtensionsClientInputs
+    public function getExtensions(): AuthenticationExtensions
     {
         return $this->extensions;
     }

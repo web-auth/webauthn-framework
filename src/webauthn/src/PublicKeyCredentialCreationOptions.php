@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use InvalidArgumentException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
@@ -39,22 +40,18 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      * @private
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
-     * @param positive-int $timeout
+     * @param null|positive-int $timeout
      */
     public function __construct(
         public readonly PublicKeyCredentialRpEntity $rp,
         public readonly PublicKeyCredentialUserEntity $user,
         string $challenge,
-        /** @readonly  */
         public array $pubKeyCredParams = [],
-        /** @readonly  */
         public null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
-        /** @readonly  */
         public null|string $attestation = null,
-        /** @readonly  */
         public array $excludeCredentials = [],
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|AuthenticationExtensions $extensions = null,
     ) {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
             $pubKeyCredParam instanceof PublicKeyCredentialParameters || throw new InvalidArgumentException(
@@ -77,21 +74,18 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
-     * @param positive-int $timeout
+     * @param null|positive-int $timeout
      */
     public static function create(
         PublicKeyCredentialRpEntity $rp,
         PublicKeyCredentialUserEntity $user,
         string $challenge,
         array $pubKeyCredParams = [],
-        /** @readonly  */
         null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
-        /** @readonly  */
         null|string $attestation = null,
-        /** @readonly  */
         array $excludeCredentials = [],
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|AuthenticationExtensions $extensions = null,
     ): self {
         return new self(
             $rp,

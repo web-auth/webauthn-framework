@@ -176,11 +176,6 @@ parameters:
             path: src/metadata-service/src/Service/MetadataBLOBPayloadEntry.php
 
         -
-            message: "#^@readonly property Webauthn\\\\MetadataService\\\\Statement\\\\AuthenticatorGetInfo\\:\\:\\$info is assigned outside of the constructor\\.$#"
-            count: 1
-            path: src/metadata-service/src/Statement/AuthenticatorGetInfo.php
-
-        -
             message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\AuthenticatorGetInfo\\:\\:jsonSerialize\\(\\) should return array\\<string\\> but returns array\\<int\\|string, mixed\\>\\.$#"
             count: 1
             path: src/metadata-service/src/Statement/AuthenticatorGetInfo.php
@@ -719,6 +714,14 @@ parameters:
             path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
 
         -
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+        -
             message: "#^Fetching class constant class of deprecated class Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
             count: 1
             path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
@@ -738,6 +741,14 @@ parameters:
 
         -
             message: "#^Call to function method_exists\\(\\) with Symfony\\\\Component\\\\HttpFoundation\\\\Request and 'getContentTypeFormat' will always evaluate to true\\.$#"
+            count: 1
+            path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+        -
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
             count: 1
             path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
@@ -1178,7 +1189,7 @@ parameters:
             path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
         -
-            message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$extensions \\(Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientOutputs\\|null\\) does not accept mixed\\.$#"
+            message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$extensions \\(Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null\\) does not accept mixed\\.$#"
             count: 1
             path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
@@ -1468,6 +1479,14 @@ parameters:
             path: src/symfony/src/Service/AuthenticatorAttestationResponseValidator.php
 
         -
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
             message: "#^Cannot access offset 'attestation…' on mixed\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
@@ -1596,6 +1615,14 @@ parameters:
             message: "#^Parameter \\#4 \\$requireResidentKey of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
             count: 1
             path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+        -
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
         -
             message: "#^Cannot access offset 'challenge_length' on mixed\\.$#"
@@ -1999,19 +2026,37 @@ parameters:
             path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
         -
-            message: "#^@readonly property Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientOutputs\\:\\:\\$extensions is assigned outside of the constructor\\.$#"
+            message: "#^@readonly property Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:\\$extensions is assigned outside of the constructor\\.$#"
+            count: 3
+            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
+
+        -
+            message: "#^Class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions implements generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+            count: 1
+            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
+
+        -
+            message: "#^Parameter \\#1 \\$key of function array_key_exists expects int\\|string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
+
+        -
+            message: "#^Class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs extends @final class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\.$#"
+            count: 1
+            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientInputs.php
+
+        -
+            message: "#^Class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientOutputs extends @final class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\.$#"
             count: 1
             path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputs.php
 
         -
-            message: "#^@readonly property cannot have a default value\\.$#"
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
             count: 1
-            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputs.php
-
-        -
-            message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientOutputs\\:\\:createFromArray\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
-            count: 1
-            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputs.php
+            path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputsLoader.php
 
         -
             message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed, int\\|string\\)\\: mixed\\)\\|null, Closure\\(mixed, string\\)\\: Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension given\\.$#"
@@ -2133,21 +2178,6 @@ parameters:
             path: src/webauthn/src/AuthenticatorDataLoader.php
 
         -
-            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$authenticatorAttachment is assigned outside of the constructor\\.$#"
-            count: 1
-            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-
-        -
-            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$residentKey is assigned outside of the constructor\\.$#"
-            count: 2
-            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-
-        -
-            message: "#^@readonly property Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:\\$userVerification is assigned outside of the constructor\\.$#"
-            count: 1
-            path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-
-        -
             message: """
                 #^Access to deprecated property \\$requireResidentKey of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
                 Will be removed in 5\\.0\\. Please use residentKey instead\\*$#
@@ -2219,14 +2249,40 @@ parameters:
             path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
         -
-            message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsClientInputsDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
             count: 1
-            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsClientInputsDenormalizer.php
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
         -
-            message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsClientInputsDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            message: "#^Cannot access offset string on mixed\\.$#"
             count: 1
-            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsClientInputsDenormalizer.php
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+        -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
+            count: 2
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+        -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientOutputs\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
+            count: 2
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+        -
+            message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+        -
+            message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
         -
             message: "#^Cannot access offset 'authenticatorData' on mixed\\.$#"
@@ -2384,6 +2440,26 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
 
         -
+            message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'allowCredentials'\\|'excludeCredentials' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'id' on mixed\\.$#"
+            count: 2
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset mixed on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
             message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialOptionsDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
@@ -2394,8 +2470,13 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
         -
-            message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
             count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            count: 2
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
         -
@@ -2449,26 +2530,6 @@ parameters:
             path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
         -
-            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$attestation is assigned outside of the constructor\\.$#"
-            count: 1
-            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
-
-        -
-            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$authenticatorSelection is assigned outside of the constructor\\.$#"
-            count: 1
-            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
-
-        -
-            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$excludeCredentials is assigned outside of the constructor\\.$#"
-            count: 2
-            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
-
-        -
-            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:\\$pubKeyCredParams is assigned outside of the constructor\\.$#"
-            count: 2
-            path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
-
-        -
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
@@ -2512,18 +2573,26 @@ parameters:
             path: src/webauthn/src/PublicKeyCredentialLoader.php
 
         -
+            message: "#^Cannot call method load\\(\\) on Webauthn\\\\AttestationStatement\\\\AttestationObjectLoader\\|null\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialLoader.php
+
+        -
             message: "#^Parameter \\#1 \\$json of method Webauthn\\\\PublicKeyCredentialLoader\\:\\:loadArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialLoader.php
 
         -
-            message: "#^@readonly property Webauthn\\\\PublicKeyCredentialOptions\\:\\:\\$timeout is assigned outside of the constructor\\.$#"
+            message: """
+                #^Call to method create\\(\\) of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:
+                since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
+            """
             count: 1
             path: src/webauthn/src/PublicKeyCredentialOptions.php
 
         -
-            message: "#^Cannot access offset string on Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\.$#"
-            count: 2
+            message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<int\\|string, mixed\\> given\\.$#"
+            count: 1
             path: src/webauthn/src/PublicKeyCredentialOptions.php
 
         -

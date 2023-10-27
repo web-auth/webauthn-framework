@@ -12,6 +12,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
@@ -162,9 +163,12 @@ final class AssertionTest extends AbstractTestCase
     #[Test]
     public function aPreviouslyFixedKeyCanBeVerified(): void
     {
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString(
-            '{"rp": {"name": "Tuleap","id": "tuleap-web.tuleap-aio-dev.docker"},"user": {"name": "admin","id": "MTAx","displayName": "Site Administrator"},"challenge": "sNZel5OhIwA5vR4wdVkwiGHR6QEnNhYOqi97OHQrc2A","pubKeyCredParams": [{"type": "public-key","alg": -8},{"type": "public-key","alg": -7},{"type": "public-key","alg": -257}],"attestation": "none"}'
-        );
+        $publicKeyCredentialCreationOptions = $this->getSerializer()
+            ->deserialize(
+                '{"rp": {"name": "Tuleap","id": "tuleap-web.tuleap-aio-dev.docker"},"user": {"name": "admin","id": "MTAx","displayName": "Site Administrator"},"challenge": "sNZel5OhIwA5vR4wdVkwiGHR6QEnNhYOqi97OHQrc2A","pubKeyCredParams": [{"type": "public-key","alg": -8},{"type": "public-key","alg": -7},{"type": "public-key","alg": -257}],"attestation": "none"}',
+                PublicKeyCredentialCreationOptions::class,
+                'json'
+            );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(
                 '{"clientExtensionResults": {},"id": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ","rawId": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ","response": {"attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBBxawLfvD1MyjfrwvZRZlmxIhDbnhAYq58TqWkGOOpv2oRQAAAAEvwFefgRNH6rEWu1qNuSAqAIDfWK8kRjeOYijFa4ZnulmMO4FbmfU8Ax4b57R2t-FrILM6y41oIbc8fjeL455spPSOpj5sAUIRSHUkIIBNI9r03lAhTDBKVRA709vlfX_Jcmdj2rsZh-bcu9HhiTr4cqPgykGPpxtU5nKgtlC13aUMRTulJNxtNkEQtCU4MZKVtKMBY09LUAMnIGdFZDI1NTE5IZggGC0YVhiMGPEYGxjCGD8DFBiuGMAYLhhjCRjKGKYY3xhSGBgYnhhnGKEYIQwYPBjeGG0YwRidGIcY8Rjs","clientDataJSON": "eyJjaGFsbGVuZ2UiOiJzTlplbDVPaEl3QTV2UjR3ZFZrd2lHSFI2UUVuTmhZT3FpOTdPSFFyYzJBIiwib3JpZ2luIjoiaHR0cHM6Ly90dWxlYXAtd2ViLnR1bGVhcC1haW8tZGV2LmRvY2tlciIsInR5cGUiOiJ3ZWJhdXRobi5jcmVhdGUifQ"},"type": "public-key"}'
@@ -173,9 +177,12 @@ final class AssertionTest extends AbstractTestCase
         $source = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
 
-        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::createFromString(
-            '{"challenge": "2MSn916xPaaOcp86sSYBVsqYzROi4Y8H7Brl_8D5Drc","allowCredentials": [{"type": "public-key","id": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ"}]}'
-        );
+        $publicKeyCredentialRequestOptions = $this->getSerializer()
+            ->deserialize(
+                '{"challenge": "2MSn916xPaaOcp86sSYBVsqYzROi4Y8H7Brl_8D5Drc","allowCredentials": [{"type": "public-key","id": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ"}]}',
+                PublicKeyCredentialRequestOptions::class,
+                'json'
+            );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load(
                 '{"id": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ","rawId": "31ivJEY3jmIoxWuGZ7pZjDuBW5n1PAMeG-e0drfhayCzOsuNaCG3PH43i-OebKT0jqY-bAFCEUh1JCCATSPa9N5QIUwwSlUQO9Pb5X1_yXJnY9q7GYfm3LvR4Yk6-HKj4MpBj6cbVOZyoLZQtd2lDEU7pSTcbTZBELQlODGSlbQ","response": {"authenticatorData": "FrAt-8PUzKN-vC9lFmWbEiENueEBirnxOpaQY46m_agFAAAAAg","clientDataJSON": "eyJjaGFsbGVuZ2UiOiIyTVNuOTE2eFBhYU9jcDg2c1NZQlZzcVl6Uk9pNFk4SDdCcmxfOEQ1RHJjIiwib3JpZ2luIjoiaHR0cHM6Ly90dWxlYXAtd2ViLnR1bGVhcC1haW8tZGV2LmRvY2tlciIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature": "eK5Yk9G8LjEsaEbK9Qq9Ovcx_Nf9xbRU5EURdMsiqJSQMpSCMHhcOBwfhPxx_zuPfYPxv_mRPgtPrX0vNQ3YAg"},"type": "public-key","clientExtensionResults": {}}'

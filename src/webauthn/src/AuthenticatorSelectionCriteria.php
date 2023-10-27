@@ -60,11 +60,8 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     ];
 
     public function __construct(
-        /** @readonly  */
         public null|string $authenticatorAttachment = null,
-        /** @readonly  */
         public string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-        /** @readonly  */
         public null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED,
         /** @deprecated Will be removed in 5.0. Please use residentKey instead**/
         public null|bool $requireResidentKey = false,

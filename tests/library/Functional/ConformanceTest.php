@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
