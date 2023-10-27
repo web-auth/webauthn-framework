@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Tests\AbstractTestCase;
 use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
  */
-final class AuthenticatorSelectionCriteriaTest extends TestCase
+final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
 {
     #[Test]
     public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
@@ -27,7 +27,8 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         );
 
         //When
-        $data = AuthenticatorSelectionCriteria::createFromString($expectedJson);
+        $data = $this->getSerializer()
+            ->deserialize($expectedJson, AuthenticatorSelectionCriteria::class, 'json');
 
         //Then
         static::assertSame(
@@ -57,7 +58,8 @@ final class AuthenticatorSelectionCriteriaTest extends TestCase
         );
 
         //When
-        $data = AuthenticatorSelectionCriteria::createFromString($expectedJson);
+        $data = $this->getSerializer()
+            ->deserialize($expectedJson, AuthenticatorSelectionCriteria::class, 'json');
 
         //Then
         static::assertSame(

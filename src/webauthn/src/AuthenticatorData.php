@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use function ord;
 
 /**
@@ -38,7 +38,7 @@ class AuthenticatorData
         public readonly string $flags,
         public readonly int $signCount,
         public readonly null|AttestedCredentialData $attestedCredentialData,
-        public readonly null|AuthenticationExtensionsClientOutputs $extensions
+        public readonly null|AuthenticationExtensions $extensions
     ) {
     }
 
@@ -48,7 +48,7 @@ class AuthenticatorData
         string $flags,
         int $signCount,
         null|AttestedCredentialData $attestedCredentialData = null,
-        null|AuthenticationExtensionsClientOutputs $extensions = null
+        null|AuthenticationExtensions $extensions = null
     ): self {
         return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
     }
@@ -133,7 +133,7 @@ class AuthenticatorData
      * @deprecated since 4.7.0. Please use the property directly.
      * @infection-ignore-all
      */
-    public function getExtensions(): ?AuthenticationExtensionsClientOutputs
+    public function getExtensions(): ?AuthenticationExtensions
     {
         return $this->extensions !== null && $this->hasExtensions() ? $this->extensions : null;
     }

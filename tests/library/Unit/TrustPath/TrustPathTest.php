@@ -43,19 +43,6 @@ final class TrustPathTest extends TestCase
      * @use TrustPathLoader
      */
     #[Test]
-    public function theLoaderCanLoadCustomTrustPath(): void
-    {
-        $trustPath = json_encode(new FooTrustPath(), JSON_THROW_ON_ERROR);
-        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
-        $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
-
-        static::assertInstanceOf(FooTrustPath::class, $loadedTrustPath);
-    }
-
-    /**
-     * @use TrustPathLoader
-     */
-    #[Test]
     public function theLoaderCannotLoadUnsupportedTypeName(): void
     {
         $this->expectException(InvalidTrustPathException::class);

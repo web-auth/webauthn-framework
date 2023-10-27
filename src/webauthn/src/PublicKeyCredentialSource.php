@@ -25,14 +25,10 @@ class PublicKeyCredentialSource implements JsonSerializable
      * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
-        /** @readonly  */
         public string $publicKeyCredentialId,
-        /** @readonly  */
         public string $type,
         public array $transports,
-        /** @readonly  */
         public string $attestationType,
-        /** @readonly  */
         public TrustPath $trustPath,
         public AbstractUid $aaguid,
         public string $credentialPublicKey,

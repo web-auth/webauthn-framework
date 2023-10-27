@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -23,7 +23,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         private readonly int $reservedForFutureUse1,
         private readonly int $reservedForFutureUse2,
         private readonly int $signCount,
-        private readonly ?AuthenticationExtensionsClientOutputs $extensions,
+        private readonly null|AuthenticationExtensions $extensions,
         private readonly string $firewallName,
         array $roles = [],
         private readonly bool $isBackupEligible = false,
@@ -133,7 +133,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         return $this->isBackedUp;
     }
 
-    public function getExtensions(): ?AuthenticationExtensionsClientOutputs
+    public function getExtensions(): ?AuthenticationExtensions
     {
         return $this->extensions;
     }

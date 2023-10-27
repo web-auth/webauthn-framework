@@ -8,23 +8,36 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use function in_array;
+use function is_string;
 
-final class AuthenticationExtensionsClientInputsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
+final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
 
-    private const ALREADY_CALLED = 'AUTHENTICATION_EXTENSIONS_CLIENT_INPUTS_PREPROCESS_ALREADY_CALLED';
+    private const ALREADY_CALLED = 'AUTHENTICATION_EXTENSIONS_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
         if ($this->denormalizer === null) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
         }
+        foreach ($data as $key => $value) {
+            if (! is_string($key)) {
+                continue;
+            }
+            $data[$key] = AuthenticationExtension::create($key, $value);
+        }
 
         $context[self::ALREADY_CALLED] = true;
 
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return $this->denormalizer->denormalize([
+            'extensions' => $data,
+        ], $type, $format, $context);
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
@@ -33,7 +46,15 @@ final class AuthenticationExtensionsClientInputsDenormalizer implements Denormal
             return false;
         }
 
-        return $type === AuthenticationExtensionsClientInputs::class;
+        return in_array(
+            $type,
+            [
+                AuthenticationExtensions::class,
+                AuthenticationExtensionsClientOutputs::class,
+                AuthenticationExtensionsClientInputs::class,
+            ],
+            true
+        );
     }
 
     /**
@@ -42,7 +63,9 @@ final class AuthenticationExtensionsClientInputsDenormalizer implements Denormal
     public function getSupportedTypes(?string $format): array
     {
         return [
+            AuthenticationExtensions::class => false,
             AuthenticationExtensionsClientInputs::class => false,
+            AuthenticationExtensionsClientOutputs::class => false,
         ];
     }
 }
