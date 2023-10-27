@@ -28,7 +28,7 @@ use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Denormalizer\AttestationStatementDenormalizer;
-use Webauthn\Denormalizer\AuthenticationExtensionsClientInputsDenormalizer;
+use Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorDataDenormalizer;
@@ -172,7 +172,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AttestationStatementDenormalizer::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;
-    $container->set(AuthenticationExtensionsClientInputsDenormalizer::class);
+    $container->set(AuthenticationExtensionsDenormalizer::class);
     $container->set(AuthenticatorAssertionResponseDenormalizer::class);
     $container->set(AuthenticatorAttestationResponseDenormalizer::class);
     $container->set(AuthenticatorDataDenormalizer::class);

@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\AbstractTestCase;
 use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
  */
-final class PublicKeyCredentialCreationOptionsTest extends TestCase
+final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
 {
     #[Test]
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
@@ -27,10 +27,15 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
-        $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge', [$credentialParameters]);
-        $options->excludeCredentials = [$credential];
-        $options->timeout = 1000;
-        $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
+        $options = PublicKeyCredentialCreationOptions::create(
+            $rp,
+            $user,
+            'challenge',
+            [$credentialParameters],
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
+            excludeCredentials: [$credential],
+            timeout: 1000
+        );
 
         static::assertSame('challenge', $options->challenge);
         static::assertSame([$credential], $options->excludeCredentials);
@@ -42,9 +47,12 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
             json_encode($options, JSON_THROW_ON_ERROR)
         );
 
-        $data = PublicKeyCredentialCreationOptions::createFromString(
-            '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"attestation":"direct"}'
-        );
+        $data = $this->getSerializer()
+            ->deserialize(
+                '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
+                PublicKeyCredentialCreationOptions::class,
+                'json'
+            );
         static::assertSame('challenge', $data->challenge);
         static::assertSame('direct', $data->attestation);
         static::assertSame(1000, $data->timeout);
@@ -62,9 +70,14 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
 
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
-        $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge', [$credentialParameters]);
-        $options->timeout = 1000;
-        $options->attestation = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT;
+        $options = PublicKeyCredentialCreationOptions::create(
+            $rp,
+            $user,
+            'challenge',
+            [$credentialParameters],
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
+            timeout: 1000
+        );
 
         $json = json_encode($options, JSON_THROW_ON_ERROR);
         static::assertSame(
@@ -72,7 +85,9 @@ final class PublicKeyCredentialCreationOptionsTest extends TestCase
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"indirect"}',
             $json
         );
-        $data = PublicKeyCredentialCreationOptions::createFromString($json);
+
+        $data = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
         static::assertSame([], $data->excludeCredentials);
     }
 }

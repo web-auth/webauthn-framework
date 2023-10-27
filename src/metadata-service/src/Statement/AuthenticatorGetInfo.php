@@ -12,7 +12,6 @@ class AuthenticatorGetInfo implements JsonSerializable
      * @param array<string|int, mixed> $info
      */
     public function __construct(
-        /** @readonly */
         public array $info = []
     ) {
     }

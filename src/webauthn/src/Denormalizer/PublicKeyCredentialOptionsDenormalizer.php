@@ -25,13 +25,12 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         if ($this->denormalizer === null) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
         }
-        if (! array_key_exists('challenge', $data)) {
-            return $data;
+        if (array_key_exists('challenge', $data)) {
+            $data['challenge'] = Base64UrlSafe::decodeNoPadding($data['challenge']);
         }
 
-        $data['challenge'] = Base64UrlSafe::decodeNoPadding($data['challenge']);
         foreach (['allowCredentials', 'excludeCredentials'] as $key) {
-            if (array_key_exists('allowCredentials', $data)) {
+            if (array_key_exists($key, $data)) {
                 foreach ($data[$key] ?? [] as $item => $allowCredential) {
                     $data[$key][$item]['id'] = Base64UrlSafe::decodeNoPadding($allowCredential['id']);
                 }

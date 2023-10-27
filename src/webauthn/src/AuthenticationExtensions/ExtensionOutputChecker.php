@@ -6,8 +6,5 @@ namespace Webauthn\AuthenticationExtensions;
 
 interface ExtensionOutputChecker
 {
-    public function check(
-        AuthenticationExtensionsClientInputs $inputs,
-        AuthenticationExtensionsClientOutputs $outputs
-    ): void;
+    public function check(AuthenticationExtensions $inputs, AuthenticationExtensions $outputs): void;
 }

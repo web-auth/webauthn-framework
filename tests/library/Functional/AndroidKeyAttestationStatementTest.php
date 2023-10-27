@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use PHPUnit\Framework\Attributes\Test;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
