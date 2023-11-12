@@ -104,7 +104,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
         $this->loadAndroidSafetyNet($container, $loader, $config['android_safetynet']);
         $this->loadMetadataServices($container, $loader, $config['metadata']);
-        $this->loadControllersSupport($container, $loader, $config['controllers']);
+        $this->loadControllersSupport($container, $config['controllers']);
 
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
@@ -125,18 +125,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
 
     public function prepend(ContainerBuilder $container): void
     {
-        if (! $container->hasParameter('kernel.bundles')) {
+        $config = $this->getDoctrineBundleConfiguration($container);
+        if (! is_array($config)) {
             return;
         }
-        $bundles = $container->getParameter('kernel.bundles');
-        if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
-            return;
-        }
-        $configs = $container->getExtensionConfig('doctrine');
-        if (count($configs) === 0) {
-            return;
-        }
-        $config = current($configs);
         if (! isset($config['dbal'])) {
             $config['dbal'] = [];
         }
@@ -154,16 +146,29 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->prependExtensionConfig('doctrine', $config);
     }
 
+    private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
+    {
+        if (! $container->hasParameter('kernel.bundles')) {
+            return null;
+        }
+        $bundles = $container->getParameter('kernel.bundles');
+        if (! is_array($bundles) || ! array_key_exists('DoctrineBundle', $bundles)) {
+            return null;
+        }
+        $configs = $container->getExtensionConfig('doctrine');
+
+        return count($configs) === 0 ? null : current($configs);
+    }
+
     /**
      * @param mixed[] $config
      */
-    private function loadControllersSupport(ContainerBuilder $container, FileLoader $loader, array $config): void
+    private function loadControllersSupport(ContainerBuilder $container, array $config): void
     {
         if ($config['enabled'] === false) {
             return;
         }
 
-        $loader->load('controller.php');
         $this->loadCreationControllersSupport($container, $config['creation'] ?? []);
         $this->loadRequestControllersSupport($container, $config['request'] ?? []);
     }

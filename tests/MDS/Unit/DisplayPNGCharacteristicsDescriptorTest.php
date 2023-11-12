@@ -32,15 +32,15 @@ final class DisplayPNGCharacteristicsDescriptorTest extends TestCase
         static::expectExceptionMessage($message);
 
         //When
-        DisplayPNGCharacteristicsDescriptor::createFromArray([
-            'width' => $width,
-            'height' => $height,
-            'bitDepth' => $bitDepth,
-            'colorType' => $colorType,
-            'compression' => $compression,
-            'filter' => $filter,
-            'interlace' => $interlace,
-        ]);
+        DisplayPNGCharacteristicsDescriptor::create(
+            width: $width,
+            height: $height,
+            bitDepth: $bitDepth,
+            colorType: $colorType,
+            compression: $compression,
+            filter: $filter,
+            interlace: $interlace,
+        );
     }
 
     /**

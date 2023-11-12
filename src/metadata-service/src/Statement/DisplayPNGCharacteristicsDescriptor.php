@@ -6,13 +6,15 @@ namespace Webauthn\MetadataService\Statement;
 
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
-use Webauthn\MetadataService\Utils;
+use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 
 class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 {
+    use ValueFilter;
+
     /**
-     * @param RgbPaletteEntry[] $width
+     * @param RgbPaletteEntry[] $plte
      */
     public function __construct(
         public readonly int $width,
@@ -22,7 +24,8 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         public readonly int $compression,
         public readonly int $filter,
         public readonly int $interlace,
-        public array $plte,
+        /** @readonly */
+        public array $plte = [],
     ) {
         $width >= 0 || throw MetadataStatementLoadingException::create('Invalid width');
         $height >= 0 || throw MetadataStatementLoadingException::create('Invalid height');
@@ -50,13 +53,14 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         int $compression,
         int $filter,
         int $interlace,
-        array $plte
+        array $plte = []
     ): self {
         return new self($width, $height, $bitDepth, $colorType, $compression, $filter, $interlace, $plte);
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
+     * @deprecated since 4.7.0. Please use {self::create} directly.
+     * @infection-ignore-all
      */
     public function addPalettes(RgbPaletteEntry ...$rgbPaletteEntries): self
     {
@@ -69,6 +73,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getWidth(): int
     {
@@ -77,6 +82,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getHeight(): int
     {
@@ -85,6 +91,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getBitDepth(): int
     {
@@ -93,6 +100,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getColorType(): int
     {
@@ -101,6 +109,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCompression(): int
     {
@@ -109,6 +118,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getFilter(): int
     {
@@ -117,6 +127,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getInterlace(): int
     {
@@ -126,6 +137,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     /**
      * @return RgbPaletteEntry[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getPaletteEntries(): array
     {
@@ -134,10 +146,12 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data
+     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {
-        $data = Utils::filterNullValues($data);
+        $data = self::filterNullValues($data);
         foreach ([
             'width',
             'compression',
@@ -181,6 +195,6 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
             'plte' => $this->plte,
         ];
 
-        return Utils::filterNullValues($data);
+        return self::filterNullValues($data);
     }
 }

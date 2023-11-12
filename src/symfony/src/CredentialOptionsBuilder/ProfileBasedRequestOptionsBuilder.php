@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
@@ -20,6 +21,7 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
+use function is_array;
 
 final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequestOptionsBuilder
 {
@@ -54,18 +56,26 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         ) ? $request->getContentTypeFormat() : $request->getContentType();
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
-        $creationOptionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-        $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
-            $creationOptionsRequest->extensions
-        ) : null;
-        $userEntity = $creationOptionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
-            $creationOptionsRequest->username
+        $optionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
+        $extensions = null;
+        if (is_array($optionsRequest->extensions)) {
+            $extensions = AuthenticationExtensionsClientInputs::create(array_map(
+                static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
+                    $name,
+                    $data
+                ),
+                array_keys($optionsRequest->extensions),
+                $optionsRequest->extensions
+            ));
+        }
+        $userEntity = $optionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
+            $optionsRequest->username
         );
         $allowedCredentials = $userEntity === null ? [] : $this->getCredentials($userEntity);
         return $this->publicKeyCredentialRequestOptionsFactory->create(
             $this->profile,
             $allowedCredentials,
-            $creationOptionsRequest->userVerification,
+            $optionsRequest->userVerification,
             $extensions
         );
     }

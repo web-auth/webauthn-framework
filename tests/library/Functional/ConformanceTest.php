@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
@@ -22,7 +23,12 @@ final class ConformanceTest extends AbstractTestCase
     public function validAttestationResponseWithLinkShouldSucceed(string $options, string $response): void
     {
         //Given
-        $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::createFromString($options);
+        $serializer = $this->getSerializer();
+        $publicKeyCredentialCreationOptions = $serializer->deserialize(
+            $options,
+            PublicKeyCredentialCreationOptions::class,
+            'json'
+        );
         $publicKeyCredential = $this->getPublicKeyCredentialLoader()
             ->load($response);
         // When

@@ -32,6 +32,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getType(): string
     {
@@ -40,12 +41,17 @@ class PublicKeyCredentialParameters implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAlg(): int
     {
         return $this->alg;
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
@@ -55,6 +61,8 @@ class PublicKeyCredentialParameters implements JsonSerializable
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): self
     {

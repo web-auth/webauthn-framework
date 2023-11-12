@@ -12,6 +12,10 @@ use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use function array_key_exists;
 
+/**
+ * @deprecated since 4.8.0 and will be removed in 5.0.0. Please use Webauthn\MetadataService\Service\JsonMetadataService instead.
+ * @infection-ignore-all
+ */
 final class StringMetadataService implements MetadataService, CanDispatchEvents
 {
     /**

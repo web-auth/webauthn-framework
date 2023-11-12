@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Service;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
@@ -18,6 +19,9 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
+use function gettype;
+use function is_int;
+use function is_string;
 
 final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {
@@ -54,9 +58,9 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         string $key,
         PublicKeyCredentialUserEntity $userEntity,
         array $excludeCredentials = [],
-        ?AuthenticatorSelectionCriteria $authenticatorSelection = null,
-        ?string $attestationConveyance = null,
-        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+        null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
+        null|string $attestationConveyance = null,
+        null|AuthenticationExtensions $authenticationExtensionsClientInputs = null
     ): PublicKeyCredentialCreationOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
@@ -64,20 +68,33 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         ));
         $profile = $this->profiles[$key];
 
+        $timeout = $profile['timeout'] ?? null;
+        $timeout === null || (is_int($timeout) && $timeout > 1) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid timeout value. Expected a positive integer greater than 0, got "%s".',
+            $key,
+            gettype($timeout)
+        ));
+        $attestation = $attestationConveyance ?? $profile['attestation_conveyance'] ?? null;
+        $attestation === null || is_string($attestation) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid attestation_conveyance value. Expected a string or null, got "%s".',
+            $key,
+            gettype($attestation)
+        ));
+
         $options = PublicKeyCredentialCreationOptions
             ::create(
                 $this->createRpEntity($profile),
                 $userEntity,
                 random_bytes($profile['challenge_length']),
-                $this->createCredentialParameters($profile)
+                $this->createCredentialParameters($profile),
+                authenticatorSelection: $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
+                    $profile
+                ),
+                attestation: $attestation,
+                excludeCredentials: $excludeCredentials,
+                timeout: $timeout,
+                extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
             );
-        $options->excludeCredentials = $excludeCredentials;
-        $options->authenticatorSelection = $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
-            $profile
-        );
-        $options->attestation = $attestationConveyance ?? $profile['attestation_conveyance'];
-        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
-        $options->timeout = $profile['timeout'];
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;
@@ -86,7 +103,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     /**
      * @param mixed[] $profile
      */
-    private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
+    private function createExtensions(array $profile): AuthenticationExtensions
     {
         return AuthenticationExtensionsClientInputs::create(
             array_map(

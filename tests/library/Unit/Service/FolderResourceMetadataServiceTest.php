@@ -18,7 +18,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
     public function theListIsCorrect(): void
     {
         // Given
-        $service = new FolderResourceMetadataService(__DIR__ . '/../../mds////');
+        $service = FolderResourceMetadataService::create(__DIR__ . '/../../mds////');
 
         // When
         $list = [...$service->list()];
@@ -34,7 +34,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
     public function theAAGUIDIsSupported(): void
     {
         // Given
-        $service = new FolderResourceMetadataService(__DIR__ . '/../../mds');
+        $service = FolderResourceMetadataService::create(__DIR__ . '/../../mds');
 
         // When
         $isValid = $service->has('9debdbfd-14dd-4e8d-877b-000000000000');
@@ -47,7 +47,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
     public function theMetadataStatementIsRead(): void
     {
         // Given
-        $service = new FolderResourceMetadataService(__DIR__ . '/../../mds');
+        $service = FolderResourceMetadataService::create(__DIR__ . '/../../mds');
 
         // When
         $mds = $service->get('9debdbfd-14dd-4e8d-877b-4a6e35ddb375');
@@ -64,7 +64,7 @@ final class FolderResourceMetadataServiceTest extends TestCase
         static::expectExceptionMessage('Syntax error');
 
         // Given
-        $service = new FolderResourceMetadataService(__DIR__ . '/../../mds');
+        $service = FolderResourceMetadataService::create(__DIR__ . '/../../mds');
 
         // When
         $service->get('9debdbfd-14dd-4e8d-877b-000000000000');

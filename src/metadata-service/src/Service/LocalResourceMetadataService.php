@@ -6,6 +6,8 @@ namespace Webauthn\MetadataService\Service;
 
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -20,21 +22,28 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
 
     private EventDispatcherInterface $dispatcher;
 
+    private readonly ?SerializerInterface $serializer;
+
     public function __construct(
         private readonly string $filename,
         private readonly bool $isBase64Encoded = false,
+        ?SerializerInterface $serializer = null,
     ) {
+        $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
+    }
+
+    public static function create(
+        string $filename,
+        bool $isBase64Encoded = false,
+        ?SerializerInterface $serializer = null
+    ): self {
+        return new self($filename, $isBase64Encoded, $serializer);
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->dispatcher = $eventDispatcher;
-    }
-
-    public static function create(string $filename, bool $isBase64Encoded = false): self
-    {
-        return new self($filename, $isBase64Encoded);
     }
 
     public function list(): iterable
@@ -81,6 +90,10 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
         if ($this->isBase64Encoded) {
             $content = Base64::decode($content, true);
         }
-        $this->statement = MetadataStatement::createFromString($content);
+        if ($this->serializer !== null) {
+            $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
+        } else {
+            $this->statement = MetadataStatement::createFromString($content);
+        }
     }
 }

@@ -34,6 +34,7 @@ final class AttestationControllerFactory
 
     /**
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
+     * @infection-ignore-all
      */
     public function createAttestationRequestController(
         UserEntityGuesser $userEntityGuesser,
@@ -77,6 +78,7 @@ final class AttestationControllerFactory
     /**
      * @param string[] $securedRelyingPartyIds
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
+     * @infection-ignore-all
      */
     public function createAttestationResponseController(
         OptionsStorage $optionStorage,

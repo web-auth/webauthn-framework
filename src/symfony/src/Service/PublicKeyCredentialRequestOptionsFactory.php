@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Service;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -14,6 +15,9 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use function array_key_exists;
+use function gettype;
+use function is_int;
+use function is_string;
 
 final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvents
 {
@@ -44,21 +48,41 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     public function create(
         string $key,
         array $allowCredentials,
-        ?string $userVerification = null,
-        ?AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs = null
+        null|string $userVerification = null,
+        null|AuthenticationExtensions $authenticationExtensionsClientInputs = null
     ): PublicKeyCredentialRequestOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
             $key
         ));
         $profile = $this->profiles[$key];
+        $rpId = $profile['rp_id'] ?? null;
+        $rpId === null || is_string($rpId) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid rp_id value. Expected a string or null, got "%s".',
+            $key,
+            gettype($rpId)
+        ));
+        $timeout = $profile['timeout'] ?? null;
+        $timeout === null || (is_int($timeout) && $timeout > 1) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid timeout value. Expected a positive integer greater than 0, got "%s".',
+            $key,
+            gettype($timeout)
+        ));
+        $userVerification ??= $profile['user_verification'] ?? null;
+        $userVerification === null || is_string($userVerification) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" has an invalid attestation_conveyance value. Expected a string or null, got "%s".',
+            $key,
+            gettype($userVerification)
+        ));
 
-        $options = PublicKeyCredentialRequestOptions::create(random_bytes($profile['challenge_length']));
-        $options->rpId = $profile['rp_id'];
-        $options->userVerification = $userVerification ?? $profile['user_verification'];
-        $options->allowCredentials = $allowCredentials;
-        $options->timeout = $profile['timeout'];
-        $options->extensions = $authenticationExtensionsClientInputs ?? $this->createExtensions($profile);
+        $options = PublicKeyCredentialRequestOptions::create(
+            random_bytes($profile['challenge_length']),
+            rpId: $rpId,
+            allowCredentials: $allowCredentials,
+            userVerification: $userVerification,
+            timeout: $timeout,
+            extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
+        );
         $this->eventDispatcher->dispatch(PublicKeyCredentialRequestOptionsCreatedEvent::create($options));
 
         return $options;
@@ -72,7 +96,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     /**
      * @param mixed[] $profile
      */
-    private function createExtensions(array $profile): AuthenticationExtensionsClientInputs
+    private function createExtensions(array $profile): AuthenticationExtensions
     {
         return AuthenticationExtensionsClientInputs::create(
             array_map(

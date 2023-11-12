@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
@@ -33,6 +34,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @private
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
+     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      */
     public function __construct(
         string $challenge,
@@ -40,7 +42,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         public array $allowCredentials = [],
         public null|string $userVerification = null,
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|array|AuthenticationExtensions $extensions = null,
     ) {
         in_array($userVerification, self::USER_VERIFICATION_REQUIREMENTS, true) || throw InvalidDataException::create(
             $userVerification,
@@ -56,6 +58,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param positive-int $timeout
+     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      */
     public static function create(
         string $challenge,
@@ -63,13 +66,14 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         array $allowCredentials = [],
         null|string $userVerification = null,
         null|int $timeout = null,
-        null|AuthenticationExtensionsClientInputs $extensions = null,
+        null|array|AuthenticationExtensions $extensions = null,
     ): self {
         return new self($challenge, $rpId, $allowCredentials, $userVerification, $timeout, $extensions);
     }
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setRpId(?string $rpId): self
     {
@@ -80,6 +84,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function allowCredential(PublicKeyCredentialDescriptor $allowCredential): self
     {
@@ -90,6 +95,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @deprecated since 4.7.0. No replacement. Please use the property directly.
+     * @infection-ignore-all
      */
     public function allowCredentials(PublicKeyCredentialDescriptor ...$allowCredentials): self
     {
@@ -102,6 +108,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setUserVerification(?string $userVerification): self
     {
@@ -122,6 +129,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getRpId(): ?string
     {
@@ -131,6 +139,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @return PublicKeyCredentialDescriptor[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAllowCredentials(): array
     {
@@ -139,12 +148,17 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getUserVerification(): ?string
     {
         return $this->userVerification;
     }
 
+    /**
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
+     */
     public static function createFromString(string $data): static
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
@@ -154,6 +168,8 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @param mixed[] $json
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $json): static
     {

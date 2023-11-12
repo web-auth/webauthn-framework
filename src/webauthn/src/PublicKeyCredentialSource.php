@@ -25,14 +25,10 @@ class PublicKeyCredentialSource implements JsonSerializable
      * @param array<string, mixed>|null $otherUI
      */
     public function __construct(
-        /** @readonly  */
         public string $publicKeyCredentialId,
-        /** @readonly  */
         public string $type,
         public array $transports,
-        /** @readonly  */
         public string $attestationType,
-        /** @readonly  */
         public TrustPath $trustPath,
         public AbstractUid $aaguid,
         public string $credentialPublicKey,
@@ -74,6 +70,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getPublicKeyCredentialId(): string
     {
@@ -87,6 +84,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAttestationType(): string
     {
@@ -95,6 +93,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTrustPath(): TrustPath
     {
@@ -108,6 +107,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getType(): string
     {
@@ -117,6 +117,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @return string[]
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getTransports(): array
     {
@@ -125,6 +126,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getAaguid(): AbstractUid
     {
@@ -133,6 +135,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCredentialPublicKey(): string
     {
@@ -141,6 +144,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getUserHandle(): string
     {
@@ -149,6 +153,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getCounter(): int
     {
@@ -157,6 +162,7 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setCounter(int $counter): void
     {
@@ -166,6 +172,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @return array<string, mixed>|null
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function getOtherUI(): ?array
     {
@@ -175,6 +182,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     /**
      * @param array<string, mixed>|null $otherUI
      * @deprecated since 4.7.0. Please use the property directly.
+     * @infection-ignore-all
      */
     public function setOtherUI(?array $otherUI): self
     {
@@ -185,6 +193,8 @@ class PublicKeyCredentialSource implements JsonSerializable
 
     /**
      * @param mixed[] $data
+     * @deprecated since 4.8.0. Please use {Webauthn\Denormalizer\WebauthnSerializerFactory} for converting the object.
+     * @infection-ignore-all
      */
     public static function createFromArray(array $data): self
     {

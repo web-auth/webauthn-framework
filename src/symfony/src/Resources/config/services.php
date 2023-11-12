@@ -22,9 +22,25 @@ use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Routing\Loader;
+use Webauthn\Bundle\Service\DefaultFailureHandler;
+use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Denormalizer\AttestationStatementDenormalizer;
+use Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer;
+use Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer;
+use Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer;
+use Webauthn\Denormalizer\AuthenticatorDataDenormalizer;
+use Webauthn\Denormalizer\AuthenticatorResponseDenormalizer;
+use Webauthn\Denormalizer\CollectedClientDataDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
+use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\MetadataService\Denormalizer\ExtensionDescriptorDenormalizer;
+use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
@@ -71,7 +87,7 @@ return static function (ContainerConfigurator $container): void {
         ->public();
     $container
         ->set(PublicKeyCredentialLoader::class)
-        ->args([service(AttestationObjectLoader::class)])
+        ->args([service(AttestationObjectLoader::class), service('webauthn-serializer')])
         ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
@@ -151,4 +167,36 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->alias('webauthn.request_factory.default', RequestFactoryInterface::class);
+
+    $container->set(ExtensionDescriptorDenormalizer::class);
+    $container->set(AttestationStatementDenormalizer::class)
+        ->args([service(AttestationStatementSupportManager::class)])
+    ;
+    $container->set(AuthenticationExtensionsDenormalizer::class);
+    $container->set(AuthenticatorAssertionResponseDenormalizer::class);
+    $container->set(AuthenticatorAttestationResponseDenormalizer::class);
+    $container->set(AuthenticatorDataDenormalizer::class);
+    $container->set(AuthenticatorResponseDenormalizer::class);
+    $container->set(CollectedClientDataDenormalizer::class);
+    $container->set(PublicKeyCredentialDenormalizer::class);
+    $container->set(PublicKeyCredentialOptionsDenormalizer::class);
+    $container->set(PublicKeyCredentialSourceDenormalizer::class);
+    $container->set(PublicKeyCredentialUserEntityDenormalizer::class);
+    $container->set(WebauthnSerializerFactory::class)
+        ->args([service(AttestationStatementSupportManager::class)])
+    ;
+    $container->set(MetadataStatementSerializerFactory::class);
+    $container->set('webauthn-serializer')
+        ->class(SerializerInterface::class)
+        ->factory([service(WebauthnSerializerFactory::class), 'create'])
+        ->public()
+    ;
+    $container->set('mds-serializer')
+        ->class(SerializerInterface::class)
+        ->factory([service(MetadataStatementSerializerFactory::class), 'create'])
+        ->public()
+    ;
+
+    $container->set(DefaultFailureHandler::class);
+    $container->set(DefaultSuccessHandler::class);
 };

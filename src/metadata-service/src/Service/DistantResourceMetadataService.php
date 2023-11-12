@@ -8,7 +8,9 @@ use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -23,6 +25,8 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
 
     private EventDispatcherInterface $dispatcher;
 
+    private readonly ?SerializerInterface $serializer;
+
     /**
      * @param array<string, string> $additionalHeaderParameters
      */
@@ -32,6 +36,7 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
         private readonly string $uri,
         private readonly bool $isBase64Encoded = false,
         private readonly array $additionalHeaderParameters = [],
+        ?SerializerInterface $serializer = null,
     ) {
         if ($requestFactory !== null && ! $httpClient instanceof HttpClientInterface) {
             trigger_deprecation(
@@ -40,6 +45,7 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
                 'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$httpClient" argument.'
             );
         }
+        $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
     }
 
@@ -56,9 +62,10 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
         ClientInterface|HttpClientInterface $httpClient,
         string $uri,
         bool $isBase64Encoded = false,
-        array $additionalHeaderParameters = []
+        array $additionalHeaderParameters = [],
+        ?SerializerInterface $serializer = null
     ): self {
-        return new self($requestFactory, $httpClient, $uri, $isBase64Encoded, $additionalHeaderParameters);
+        return new self($requestFactory, $httpClient, $uri, $isBase64Encoded, $additionalHeaderParameters, $serializer);
     }
 
     public function list(): iterable
@@ -105,6 +112,11 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
         if ($this->isBase64Encoded) {
             $content = Base64::decode($content, true);
         }
+        if ($this->serializer !== null) {
+            $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
+            return;
+        }
+
         $this->statement = MetadataStatement::createFromString($content);
     }
 

@@ -37,6 +37,7 @@ class CertificateToolbox
 
     /**
      * @deprecated since 4.7.0 and will be removed in 5.0.0. No replacement as not used internally.
+     * @infection-ignore-all
      */
     public static function convertPEMToDER(string $data): string
     {

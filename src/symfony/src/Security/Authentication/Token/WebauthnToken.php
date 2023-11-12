@@ -5,27 +5,25 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
-use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
-use const JSON_THROW_ON_ERROR;
 
 class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
 {
     public function __construct(
-        private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        private PublicKeyCredentialOptions $publicKeyCredentialOptions,
-        private PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
+        private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
+        private readonly PublicKeyCredentialOptions $publicKeyCredentialOptions,
+        private readonly PublicKeyCredentialDescriptor $publicKeyCredentialDescriptor,
         private readonly bool $isUserPresent,
         private readonly bool $isUserVerified,
         private readonly int $reservedForFutureUse1,
         private readonly int $reservedForFutureUse2,
         private readonly int $signCount,
-        private ?AuthenticationExtensionsClientOutputs $extensions,
+        private readonly null|AuthenticationExtensions $extensions,
         private readonly string $firewallName,
         array $roles = [],
         private readonly bool $isBackupEligible = false,
@@ -40,10 +38,9 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     public function __serialize(): array
     {
         return [
-            json_encode($this->publicKeyCredentialUserEntity, JSON_THROW_ON_ERROR),
-            json_encode($this->publicKeyCredentialDescriptor, JSON_THROW_ON_ERROR),
-            $this->publicKeyCredentialOptions::class,
-            json_encode($this->publicKeyCredentialOptions, JSON_THROW_ON_ERROR),
+            $this->publicKeyCredentialUserEntity,
+            $this->publicKeyCredentialDescriptor,
+            $this->publicKeyCredentialOptions,
             $this->isUserPresent,
             $this->isUserVerified,
             $this->isBackupEligible,
@@ -58,15 +55,14 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
     }
 
     /**
-     * @param array<mixed> $serialized
+     * @param array<mixed> $data
      */
-    public function __unserialize(array $serialized): void
+    public function __unserialize(array $data): void
     {
         [
-            $publicKeyCredentialUserEntity,
-            $publicKeyCredentialDescriptor,
-            $publicKeyCredentialOptionsClass,
-            $publicKeyCredentialOptions,
+            $this->publicKeyCredentialUserEntity,
+            $this->publicKeyCredentialDescriptor,
+            $this->publicKeyCredentialOptions,
             $this->isUserPresent,
             $this->isUserVerified,
             $this->isBackupEligible,
@@ -74,28 +70,11 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             $this->reservedForFutureUse1,
             $this->reservedForFutureUse2,
             $this->signCount,
-            $extensions,
+            $this->extensions,
             $this->firewallName,
             $parentData
-        ] = $serialized;
-        is_subclass_of(
-            $publicKeyCredentialOptionsClass,
-            PublicKeyCredentialOptions::class
-        ) || throw InvalidDataException::create($serialized, 'Invalid PublicKeyCredentialOptions class');
-        $this->publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::createFromString(
-            $publicKeyCredentialUserEntity
-        );
-        $this->publicKeyCredentialDescriptor = PublicKeyCredentialDescriptor::createFromString(
-            $publicKeyCredentialDescriptor
-        );
-        $this->publicKeyCredentialOptions = $publicKeyCredentialOptionsClass::createFromString(
-            $publicKeyCredentialOptions
-        );
+        ] = $data;
 
-        $this->extensions = null;
-        if ($extensions !== null) {
-            $this->extensions = AuthenticationExtensionsClientOutputs::createFromString($extensions);
-        }
         parent::__unserialize($parentData);
     }
 
@@ -154,7 +133,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
         return $this->isBackedUp;
     }
 
-    public function getExtensions(): ?AuthenticationExtensionsClientOutputs
+    public function getExtensions(): ?AuthenticationExtensions
     {
         return $this->extensions;
     }

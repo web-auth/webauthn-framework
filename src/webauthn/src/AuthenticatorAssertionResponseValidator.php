@@ -14,8 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
@@ -412,8 +411,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
 
     private function getFacetId(
         string $rpId,
-        AuthenticationExtensionsClientInputs $authenticationExtensionsClientInputs,
-        ?AuthenticationExtensionsClientOutputs $authenticationExtensionsClientOutputs
+        AuthenticationExtensions $authenticationExtensionsClientInputs,
+        null|AuthenticationExtensions $authenticationExtensionsClientOutputs
     ): string {
         if ($authenticationExtensionsClientOutputs === null || ! $authenticationExtensionsClientInputs->has(
             'appid'

@@ -13,10 +13,12 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
+use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\MetadataStatementFound;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -45,6 +47,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
 
     private EventDispatcherInterface $dispatcher;
 
+    private readonly ?SerializerInterface $serializer;
+
     /**
      * @param array<string, mixed> $additionalHeaderParameters
      */
@@ -55,6 +59,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         private readonly array $additionalHeaderParameters = [],
         private readonly ?CertificateChainValidator $certificateChainValidator = null,
         private readonly ?string $rootCertificateUri = null,
+        ?SerializerInterface $serializer = null,
     ) {
         if ($requestFactory !== null && ! $httpClient instanceof HttpClientInterface) {
             trigger_deprecation(
@@ -63,6 +68,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
                 'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$httpClient" argument.'
             );
         }
+        $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
     }
 
@@ -81,6 +87,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         array $additionalHeaderParameters = [],
         ?CertificateChainValidator $certificateChainValidator = null,
         ?string $rootCertificateUri = null,
+        ?SerializerInterface $serializer = null,
     ): self {
         return new self(
             $requestFactory,
@@ -88,7 +95,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
             $uri,
             $additionalHeaderParameters,
             $certificateChainValidator,
-            $rootCertificateUri
+            $rootCertificateUri,
+            $serializer,
         );
     }
 
@@ -139,8 +147,20 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         $jwtCertificates = [];
         try {
             $payload = $this->getJwsPayload($content, $jwtCertificates);
-            $data = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
             $this->validateCertificates(...$jwtCertificates);
+            if ($this->serializer !== null) {
+                $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, 'json');
+                foreach ($blob->entries as $entry) {
+                    $mds = $entry->metadataStatement;
+                    if ($mds !== null && $entry->aaguid !== null) {
+                        $this->statements[$entry->aaguid] = $mds;
+                        $this->statusReports[$entry->aaguid] = $entry->statusReports;
+                    }
+                }
+                $this->loaded = true;
+                return;
+            }
+            $data = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
 
             foreach ($data['entries'] as $datum) {
                 $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
