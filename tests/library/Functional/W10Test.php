@@ -16,6 +16,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\Tests\AbstractTestCase;
+use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
@@ -31,7 +32,10 @@ final class W10Test extends AbstractTestCase
         string $credentialId,
         string $host,
         string $rpIdHash,
-        int $signCount
+        int $signCount,
+        string $aaguid,
+        string $attestationType,
+        string $trustPath,
     ): void {
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize($publicKeyCredentialCreationOptionsData, PublicKeyCredentialCreationOptions::class, 'json');
@@ -40,14 +44,14 @@ final class W10Test extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->id));
         static::assertSame($credentialId, $publicKeyCredentialDescriptor->id);
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
@@ -62,13 +66,9 @@ final class W10Test extends AbstractTestCase
         static::assertInstanceOf(AttestedCredentialData::class, $authenticatorData->attestedCredentialData);
         static::assertFalse($authenticatorData->hasExtensions());
         if ($publicKeyCredentialCreationOptions->attestation === null || $publicKeyCredentialCreationOptions->attestation === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
-            static::assertSame(
-                '00000000-0000-0000-0000-000000000000',
-                $publicKeyCredentialSource->aaguid
-                    ->__toString()
-            );
-            static::assertSame('none', $publicKeyCredentialSource->attestationType);
-            static::assertInstanceOf(EmptyTrustPath::class, $publicKeyCredentialSource->trustPath);
+            static::assertSame($aaguid, $publicKeyCredentialSource->aaguid ->__toString());
+            static::assertSame($attestationType, $publicKeyCredentialSource->attestationType);
+            static::assertInstanceOf($trustPath, $publicKeyCredentialSource->trustPath);
         }
     }
 
@@ -80,7 +80,11 @@ final class W10Test extends AbstractTestCase
                 true
             ), 'webauthn.spomky-labs.com', hex2bin(
                 '9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'
-            ), 0,
+            ),
+            0,
+            '00000000-0000-0000-0000-000000000000',
+            'none',
+            EmptyTrustPath::class,
         ];
         yield [
             '{"rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-46},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"8zaIzbt6jRK-dgL-QbWeuo2jkIeRC4OB89z7ZbKbucY","attestation":"none","user":{"name":"11","id":"N2Q3ZTQ2ZTktMzI5Yy00YzE0LWI5MWYtMDYyMWYyOTIyYWQ4","displayName":"ee1"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}',
@@ -91,6 +95,9 @@ final class W10Test extends AbstractTestCase
             'webauthn.spomky-labs.com',
             hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'),
             390,
+            'f8a011f3-8c0a-4d15-8006-17111f9edc7d',
+            'basic',
+            CertificateTrustPath::class,
         ];
         yield [
             '{"rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-46},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"33Hr5HpypBGbGvb2KNbyXft2z12eKUXPP9nYubuQwe0","attestation":"none","user":{"name":"55","id":"ZDZhOGNhMTAtNDhhZC00YmY1LTkyYWItZmYzOTlmNDZjY2Ew","displayName":"555"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred"},"timeout":60000}',
@@ -101,6 +108,9 @@ final class W10Test extends AbstractTestCase
             'webauthn.spomky-labs.com',
             hex2bin('9604ea82824e98a4ada14b4462d0d73a8ec469130da91b19307459229f74a359'),
             133,
+            'fa2b99dc-9e39-4257-8f92-4a30d23c4118',
+            'basic',
+            CertificateTrustPath::class,
         ];
     }
 

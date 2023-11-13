@@ -39,11 +39,15 @@ final class PublicKeyCredentialSourceTest extends AbstractTestCase
             Uuid::fromString('02ffd35d-7f0c-46b5-9eae-851ee4807b25'),
             'publicKey',
             'userHandle',
-            123_456_789
+            123_456_789,
+            null,
+            true,
+            true,
+            false
         );
 
         static::assertSame(
-            '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null}',
+            '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":{"type":"Webauthn\\\\TrustPath\\\\EmptyTrustPath"},"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"otherUI":null,"backupEligible":true,"backupStatus":true,"uvInitialized":false}',
             json_encode($source, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
         );
     }

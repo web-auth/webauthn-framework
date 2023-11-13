@@ -46,7 +46,7 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'webauthn.morselli.fr');
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode(
                 '+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==',
@@ -65,7 +65,7 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject

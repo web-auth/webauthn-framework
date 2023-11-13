@@ -13,17 +13,22 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator as BaseAuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
+use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
+/**
+ * @deprecated since 4.3.0. The class is deprecated and will be removed in 5.0.0. Please use "Webauthn\AuthenticatorAssertionResponseValidator" instead.
+ */
 final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAssertionResponseValidator
 {
     public function __construct(
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
         ?Manager $algorithmManager,
-        ?EventDispatcherInterface $eventDispatcher
+        ?EventDispatcherInterface $eventDispatcher,
+        null|CeremonyStepManager $ceremonyStepManager = null
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -34,7 +39,7 @@ final class AuthenticatorAssertionResponseValidator extends BaseAuthenticatorAss
                 BaseAuthenticatorAssertionResponseValidator::class
             )
         );
-        parent::__construct(null, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher);
+        parent::__construct(null, $tokenBindingHandler, $extensionOutputCheckerHandler, $algorithmManager, $eventDispatcher, $ceremonyStepManager);
     }
 
     protected function createAuthenticatorAssertionResponseValidationSucceededEvent(

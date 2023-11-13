@@ -848,6 +848,16 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
+            message: "#^Parameter \\#3 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnServicesFactory\\:\\:createAuthenticatorAssertionResponseValidator\\(\\) expects array\\<string\\>, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
+            message: "#^Parameter \\#3 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnServicesFactory\\:\\:createAuthenticatorAttestationResponseValidator\\(\\) expects array\\<string\\>, mixed given\\.$#"
+            count: 1
+            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+        -
             message: "#^Parameter \\#4 \\$method of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createResponseControllerAndRoute\\(\\) expects string, mixed given\\.$#"
             count: 2
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -918,11 +928,6 @@ parameters:
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
         -
-            message: "#^Parameter \\#8 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects array\\<string\\>, mixed given\\.$#"
-            count: 1
-            path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-        -
             message: "#^Parameter \\#9 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
             count: 1
             path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -984,7 +989,7 @@ parameters:
 
         -
             message: "#^Cannot access offset 'secured_rp_ids' on mixed\\.$#"
-            count: 3
+            count: 2
             path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
         -
@@ -1054,7 +1059,7 @@ parameters:
             path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
 
         -
-            message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AAGUIDDataType\\:\\:convertToPHPValue\\(\\) should return Symfony\\\\Component\\\\Uid\\\\AbstractUid\\|null but returns mixed\\.$#"
+            message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AAGUIDDataType\\:\\:convertToPHPValue\\(\\) should return Symfony\\\\Component\\\\Uid\\\\Uuid\\|null but returns mixed\\.$#"
             count: 1
             path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
 
@@ -1157,14 +1162,6 @@ parameters:
                 Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
             """
             count: 1
-            path: src/symfony/src/Resources/config/services.php
-
-        -
-            message: """
-                #^Fetching class constant class of deprecated class Webauthn\\\\TokenBinding\\\\TokenBindingHandler\\:
-                Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
-            """
-            count: 2
             path: src/symfony/src/Resources/config/services.php
 
         -
@@ -1456,27 +1453,6 @@ parameters:
             message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:isRegistrationEnabled\\(\\) should return bool but returns mixed\\.$#"
             count: 1
             path: src/symfony/src/Security/WebauthnFirewallConfig.php
-
-        -
-            message: "#^Parameter \\#1 \\$credentialId of class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent constructor expects string, string\\|null given\\.$#"
-            count: 1
-            path: src/symfony/src/Service/AuthenticatorAssertionResponseValidator.php
-
-        -
-            message: """
-                #^Parameter \\$tokenBindingHandler of method Webauthn\\\\Bundle\\\\Service\\\\AuthenticatorAssertionResponseValidator\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\TokenBinding\\\\TokenBindingHandler\\:
-                Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
-            """
-            count: 1
-            path: src/symfony/src/Service/AuthenticatorAssertionResponseValidator.php
-
-        -
-            message: """
-                #^Parameter \\$tokenBindingHandler of method Webauthn\\\\Bundle\\\\Service\\\\AuthenticatorAttestationResponseValidator\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\TokenBinding\\\\TokenBindingHandler\\:
-                Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
-            """
-            count: 1
-            path: src/symfony/src/Service/AuthenticatorAttestationResponseValidator.php
 
         -
             message: """
@@ -2064,19 +2040,6 @@ parameters:
             path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputsLoader.php
 
         -
-            message: """
-                #^Call to deprecated method getTokenBinding\\(\\) of class Webauthn\\\\CollectedClientData\\:
-                Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
-            """
-            count: 2
-            path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$data of static method Cose\\\\Key\\\\Key\\:\\:create\\(\\) expects array\\<int\\|string, mixed\\>, array given\\.$#"
-            count: 1
-            path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-        -
             message: "#^Parameter \\$publicKeyCredentialSourceRepository of method Webauthn\\\\AuthenticatorAssertionResponseValidator\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
             count: 1
             path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
@@ -2101,30 +2064,6 @@ parameters:
             """
             count: 1
             path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-        -
-            message: """
-                #^Call to deprecated method getTokenBinding\\(\\) of class Webauthn\\\\CollectedClientData\\:
-                Since 4\\.3\\.0 and will be removed in 5\\.0\\.0$#
-            """
-            count: 2
-            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
-
-        -
-            message: """
-                #^Fetching deprecated class constant ATTESTATION_ECDAA of class Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:
-                since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
-            """
-            count: 1
-            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
-
-        -
-            message: """
-                #^Fetching deprecated class constant TYPE_ECDAA of class Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:
-                since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
-            """
-            count: 1
-            path: src/webauthn/src/AuthenticatorAttestationResponseValidator.php
 
         -
             message: "#^Parameter \\$publicKeyCredentialSourceRepository of method Webauthn\\\\AuthenticatorAttestationResponseValidator\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
@@ -2194,6 +2133,22 @@ parameters:
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
+
+        -
+            message: """
+                #^Fetching deprecated class constant ATTESTATION_ECDAA of class Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:
+                since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
+            """
+            count: 1
+            path: src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
+
+        -
+            message: """
+                #^Fetching deprecated class constant TYPE_ECDAA of class Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:
+                since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
+            """
+            count: 1
+            path: src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
 
         -
             message: """
@@ -2632,6 +2587,16 @@ parameters:
 
         -
             message: "#^Parameter \\#10 \\$otherUI of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects array\\<string, mixed\\>\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialSource.php
+
+        -
+            message: "#^Parameter \\#11 \\$backupEligible of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/PublicKeyCredentialSource.php
+
+        -
+            message: "#^Parameter \\#12 \\$backupStatus of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialSource.php
 

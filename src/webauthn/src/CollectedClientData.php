@@ -25,6 +25,8 @@ class CollectedClientData
 
     public readonly string $origin;
 
+    public readonly null|string $topOrigin;
+
     public readonly bool $crossOrigin;
 
     /**
@@ -67,6 +69,7 @@ class CollectedClientData
         );
         $this->origin = $origin;
 
+        $this->topOrigin = $data['topOrigin'] ?? null;
         $this->crossOrigin = $data['crossOrigin'] ?? false;
 
         $tokenBinding = $data['tokenBinding'] ?? null;

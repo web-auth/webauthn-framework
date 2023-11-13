@@ -4,7 +4,7 @@ mu: vendor ## Mutation tests
 
 .PHONY: tests
 tests: vendor ## Run all tests
-	vendor/bin/phpunit  --color
+	bin/phpunit  --color
 	yarn test
 
 .PHONY: cc
@@ -14,18 +14,6 @@ cc: vendor ## Show test coverage rates (HTML)
 .PHONY: cs
 cs: vendor ## Fix all files using defined ECS rules
 	vendor/bin/ecs check --fix
-
-.PHONY: tu
-tu: vendor ## Run only unit tests
-	vendor/bin/phpunit --color --group Unit
-
-.PHONY: ti
-ti: vendor ## Run only integration tests
-	vendor/bin/phpunit --color --group Integration
-
-.PHONY: tf
-tf: vendor ## Run only functional tests
-	vendor/bin/phpunit --color --group Functional
 
 .PHONY: st
 st: vendor ## Run static analyse

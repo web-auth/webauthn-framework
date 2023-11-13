@@ -76,36 +76,30 @@ final class AttestationControllerFactory
     }
 
     /**
-     * @param string[] $securedRelyingPartyIds
      * @deprecated since 4.5.0 and will be removed in 5.0.0. Please use createResponseController instead.
      * @infection-ignore-all
      */
     public function createAttestationResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
-        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array $securedRelyingPartyIds
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AttestationResponseController {
-        return $this->createResponseController(
-            $optionStorage,
-            $successHandler,
-            $failureHandler,
-            $securedRelyingPartyIds
-        );
+        return $this->createResponseController($optionStorage, $successHandler, $failureHandler);
     }
 
     /**
-     * @param string[] $securedRelyingPartyIds
+     * @param null|string[] $securedRelyingPartyIds
      */
     public function createResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array $securedRelyingPartyIds
+        null|array $securedRelyingPartyIds = null,
+        null|AuthenticatorAttestationResponseValidator $attestationResponseValidator = null,
     ): AttestationResponseController {
         return new AttestationResponseController(
             $this->publicKeyCredentialLoader,
-            $this->attestationResponseValidator,
+            $attestationResponseValidator ?? $this->attestationResponseValidator,
             $this->publicKeyCredentialSourceRepository,
             $optionStorage,
             $successHandler,
