@@ -43,7 +43,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode(
                 'xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==',
@@ -62,7 +62,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response->attestationObject->authData;
         static::assertSame(
@@ -103,7 +103,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 $publicKeyCredentialCreationOptions,
                 'spomky-webauthn.herokuapp.com'
             );
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode(
                 'AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve',
@@ -122,7 +122,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
@@ -159,9 +159,9 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             ->check(
                 $publicKeyCredential->response,
                 $publicKeyCredentialCreationOptions,
-                'spomky-webauthn.herokuapp.com'
+                'webauthn.spomky-labs.com'
             );
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true),
             Base64UrlSafe::decode($publicKeyCredential->id)
@@ -174,7 +174,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject

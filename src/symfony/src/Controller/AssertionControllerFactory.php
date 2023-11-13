@@ -32,7 +32,7 @@ final class AssertionControllerFactory implements CanLogData
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
-        private readonly AuthenticatorAssertionResponseValidator $attestationResponseValidator,
+        private readonly AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $publicKeyCredentialUserEntityRepository,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
@@ -101,17 +101,18 @@ final class AssertionControllerFactory implements CanLogData
     }
 
     /**
-     * @param string[] $securedRelyingPartyIds
+     * @param null|string[] $securedRelyingPartyIds
      */
     public function createResponseController(
         OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        array $securedRelyingPartyIds
+        null|array $securedRelyingPartyIds = null,
+        null|AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null,
     ): AssertionResponseController {
         return new AssertionResponseController(
             $this->publicKeyCredentialLoader,
-            $this->attestationResponseValidator,
+            $authenticatorAssertionResponseValidator ?? $this->authenticatorAssertionResponseValidator,
             $this->logger,
             $optionStorage,
             $successHandler,

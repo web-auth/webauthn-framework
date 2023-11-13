@@ -6,23 +6,22 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 
 final class AAGUIDDataType extends Type
 {
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if (! $value instanceof AbstractUid) {
+        if (! $value instanceof Uuid) {
             return $value;
         }
 
         return $value->__toString();
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?AbstractUid
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?Uuid
     {
-        if ($value instanceof AbstractUid || mb_strlen((string) $value, '8bit') !== 36) {
+        if ($value instanceof Uuid || mb_strlen((string) $value, '8bit') !== 36) {
             return $value;
         }
 

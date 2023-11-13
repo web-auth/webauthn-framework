@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\CeremonyStepManagerFactoryCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
@@ -35,6 +36,11 @@ final class WebauthnBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
+        $container->addCompilerPass(
+            new CeremonyStepManagerFactoryCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
         $container->addCompilerPass(
             new EventDispatcherSetterCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,

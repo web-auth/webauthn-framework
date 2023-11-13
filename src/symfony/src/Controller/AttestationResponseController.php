@@ -27,7 +27,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class AttestationResponseController
 {
     /**
-     * @param string[] $securedRelyingPartyIds
+     * @param null|string[] $securedRelyingPartyIds
      */
     public function __construct(
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -36,7 +36,7 @@ final class AttestationResponseController
         private readonly OptionsStorage $optionStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly array $securedRelyingPartyIds,
+        private readonly null|array $securedRelyingPartyIds = null,
     ) {
         if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
             trigger_deprecation(

@@ -6,7 +6,6 @@ namespace Webauthn;
 
 use JsonSerializable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\Exception\InvalidDataException;
@@ -30,11 +29,14 @@ class PublicKeyCredentialSource implements JsonSerializable
         public array $transports,
         public string $attestationType,
         public TrustPath $trustPath,
-        public AbstractUid $aaguid,
+        public Uuid $aaguid,
         public string $credentialPublicKey,
         public string $userHandle,
         public int $counter,
-        public ?array $otherUI = null
+        public ?array $otherUI = null,
+        public ?bool $backupEligible = null,
+        public ?bool $backupStatus = null,
+        public ?bool $uvInitialized = null,
     ) {
     }
 
@@ -48,11 +50,14 @@ class PublicKeyCredentialSource implements JsonSerializable
         array $transports,
         string $attestationType,
         TrustPath $trustPath,
-        AbstractUid $aaguid,
+        Uuid $aaguid,
         string $credentialPublicKey,
         string $userHandle,
         int $counter,
-        ?array $otherUI = null
+        ?array $otherUI = null,
+        ?bool $backupEligible = null,
+        ?bool $backupStatus = null,
+        ?bool $uvInitialized = null,
     ): self {
         return new self(
             $publicKeyCredentialId,
@@ -64,7 +69,10 @@ class PublicKeyCredentialSource implements JsonSerializable
             $credentialPublicKey,
             $userHandle,
             $counter,
-            $otherUI
+            $otherUI,
+            $backupEligible,
+            $backupStatus,
+            $uvInitialized
         );
     }
 
@@ -128,7 +136,7 @@ class PublicKeyCredentialSource implements JsonSerializable
      * @deprecated since 4.7.0. Please use the property directly.
      * @infection-ignore-all
      */
-    public function getAaguid(): AbstractUid
+    public function getAaguid(): Uuid
     {
         return $this->aaguid;
     }
@@ -225,7 +233,9 @@ class PublicKeyCredentialSource implements JsonSerializable
                 Base64UrlSafe::decodeNoPadding($data['credentialPublicKey']),
                 Base64UrlSafe::decodeNoPadding($data['userHandle']),
                 $data['counter'],
-                $data['otherUI'] ?? null
+                $data['otherUI'] ?? null,
+                $data['backupEligible'] ?? null,
+                $data['backupStatus'] ?? null,
             );
         } catch (Throwable $throwable) {
             throw InvalidDataException::create($data, 'Unable to load the data', $throwable);
@@ -248,6 +258,9 @@ class PublicKeyCredentialSource implements JsonSerializable
             'userHandle' => Base64UrlSafe::encodeUnpadded($this->userHandle),
             'counter' => $this->counter,
             'otherUI' => $this->otherUI,
+            'backupEligible' => $this->backupEligible,
+            'backupStatus' => $this->backupStatus,
+            'uvInitialized' => $this->uvInitialized,
         ];
     }
 }

@@ -53,9 +53,7 @@ final class AttestationTest extends AbstractTestCase
         // Then
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         static::assertSame(['usb'], $publicKeyCredentialSource->transports);
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(
-            $publicKeyCredentialSource->transports
-        );
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             hex2bin('4787c0563f68b2055564bef21dfb4f7953a68e89b7c70e192caec3b7ff26cce3'),
             Base64UrlSafe::decode($publicKeyCredential->id)

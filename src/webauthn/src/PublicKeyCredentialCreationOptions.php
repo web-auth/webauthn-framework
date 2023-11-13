@@ -46,17 +46,11 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         public readonly PublicKeyCredentialRpEntity $rp,
         public readonly PublicKeyCredentialUserEntity $user,
         string $challenge,
-        /** @readonly  */
         public array $pubKeyCredParams = [],
-        /** @readonly  */
         public null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
-        /** @readonly  */
         public null|string $attestation = null,
-        /** @readonly  */
         public array $excludeCredentials = [],
-        /** @readonly  */
         null|int $timeout = null,
-        /** @readonly  */
         null|AuthenticationExtensions $extensions = null,
     ) {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {

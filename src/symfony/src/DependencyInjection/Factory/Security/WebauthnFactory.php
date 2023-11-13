@@ -74,6 +74,12 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const FIREWALL_CONFIG_ID_PREFIX = 'security.firewall_config.webauthn.';
 
+    public const AUTHENTICATOR_ATTESTATION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_attestation_response_validator.webauthn.';
+
+    public const AUTHENTICATOR_ASSERTION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_assertion_response_validator.webauthn.';
+
+    public const CEREMONY_STEP_MANAGER_ID_PREFIX = 'security.ceremony_step_manager.webauthn.';
+
     public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
     /**
@@ -226,6 +232,16 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $userProviderId
     ): string|array {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
+        $authenticatorAssertionResponseValidatorId = $this->servicesFactory->createAuthenticatorAssertionResponseValidator(
+            $container,
+            $firewallName,
+            $config['secured_rp_ids']
+        );
+        $authenticatorAttestationResponseValidatorId = $this->servicesFactory->createAuthenticatorAttestationResponseValidator(
+            $container,
+            $firewallName,
+            $config['secured_rp_ids']
+        );
 
         $this->createAssertionControllersAndRoutes($container, $firewallName, $config);
         $this->createAttestationControllersAndRoutes($container, $firewallName, $config);
@@ -238,7 +254,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             $config['failure_handler'],
             $firewallConfigId,
             $config['options_storage'],
-            $config['secured_rp_ids']
+            $authenticatorAssertionResponseValidatorId,
+            $authenticatorAttestationResponseValidatorId
         );
     }
 
@@ -252,9 +269,6 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         return [];
     }
 
-    /**
-     * @param string[] $securedRpIds
-     */
     private function createAuthenticatorService(
         ContainerBuilder $container,
         string $firewallName,
@@ -263,7 +277,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         string $failureHandlerId,
         string $firewallConfigId,
         string $optionsStorageId,
-        array $securedRpIds
+        string $authenticatorAssertionResponseValidatorId,
+        string $authenticatorAttestationResponseValidatorId
     ): string {
         $authenticatorId = self::AUTHENTICATOR_ID_PREFIX . $firewallName;
         $container
@@ -273,7 +288,8 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
             ->replaceArgument(2, new Reference($successHandlerId))
             ->replaceArgument(3, new Reference($failureHandlerId))
             ->replaceArgument(4, new Reference($optionsStorageId))
-            ->replaceArgument(5, $securedRpIds)
+            ->replaceArgument(8, new Reference($authenticatorAssertionResponseValidatorId))
+            ->replaceArgument(9, new Reference($authenticatorAttestationResponseValidatorId))
             ->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
 
         return $authenticatorId;

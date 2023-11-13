@@ -12,18 +12,23 @@ use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator as BaseAuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
+use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TokenBinding\TokenBindingHandler;
 
+/**
+ * @deprecated since 4.3.0. The class is deprecated and will be removed in 5.0.0. Please use "Webauthn\BaseAuthenticatorAttestationResponseValidator" instead.
+ */
 final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorAttestationResponseValidator
 {
     public function __construct(
         AttestationStatementSupportManager $attestationStatementSupportManager,
         ?TokenBindingHandler $tokenBindingHandler,
         ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
-        ?EventDispatcherInterface $eventDispatcher
+        ?EventDispatcherInterface $eventDispatcher,
+        null|CeremonyStepManager $ceremonyStepManager = null
     ) {
         trigger_deprecation(
             'web-auth/webauthn-symfony-bundle',
@@ -34,7 +39,7 @@ final class AuthenticatorAttestationResponseValidator extends BaseAuthenticatorA
                 BaseAuthenticatorAttestationResponseValidator::class
             )
         );
-        parent::__construct($attestationStatementSupportManager, null, $tokenBindingHandler, $extensionOutputCheckerHandler, $eventDispatcher);
+        parent::__construct($attestationStatementSupportManager, null, $tokenBindingHandler, $extensionOutputCheckerHandler, $eventDispatcher, $ceremonyStepManager);
     }
 
     protected function createAuthenticatorAttestationResponseValidationSucceededEvent(

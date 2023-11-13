@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use Webauthn\AttestationStatement\AttestationObject;
+
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
  */
@@ -13,7 +15,8 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         CollectedClientData $clientDataJSON,
         public readonly AuthenticatorData $authenticatorData,
         public readonly string $signature,
-        public readonly ?string $userHandle
+        public readonly ?string $userHandle,
+        public readonly null|AttestationObject $attestationObject = null,
     ) {
         parent::__construct($clientDataJSON);
     }
@@ -22,18 +25,10 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         CollectedClientData $clientDataJSON,
         AuthenticatorData $authenticatorData,
         string $signature,
-        ?string $userHandle = null
+        ?string $userHandle = null,
+        null|AttestationObject $attestationObject = null,
     ): self {
-        return new self($clientDataJSON, $authenticatorData, $signature, $userHandle);
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getAuthenticatorData(): AuthenticatorData
-    {
-        return $this->authenticatorData;
+        return new self($clientDataJSON, $authenticatorData, $signature, $userHandle, $attestationObject);
     }
 
     /**

@@ -24,7 +24,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 final class AssertionResponseController
 {
     /**
-     * @param string[] $securedRelyingPartyIds
+     * @param null|string[] $securedRelyingPartyIds
      */
     public function __construct(
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -33,7 +33,7 @@ final class AssertionResponseController
         private readonly OptionsStorage $optionsStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly array $securedRelyingPartyIds,
+        private readonly null|array $securedRelyingPartyIds = null,
         private readonly ?PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository = null
     ) {
     }
