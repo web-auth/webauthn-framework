@@ -42,7 +42,3 @@ parameters:
       - 'Vendors'
       - 'Webauthn'
       - 'MetadataService'
-  skip_violations:
-    Webauthn\Bundle\Service\AuthenticatorAssertionResponseValidator:
-      - Webauthn\Util\CoseSignatureFixer
-      - Webauthn\U2FPublicKey
