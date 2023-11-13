@@ -28,8 +28,6 @@ final class EnforcedSafetyNetApiKeyVerificationCompilerPassTest extends Abstract
         $this->container->setAlias('webauthn.android_safetynet.http_client', 'http_client');
 
         $this->setParameter('webauthn.android_safetynet.api_key', 'api_key');
-        $this->setDefinition('request_factory', new Definition());
-        $this->container->setAlias('webauthn.android_safetynet.request_factory', 'request_factory');
 
         //When
         $this->compile();
@@ -38,11 +36,7 @@ final class EnforcedSafetyNetApiKeyVerificationCompilerPassTest extends Abstract
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             AndroidSafetyNetAttestationStatementSupport::class,
             'enableApiVerification',
-            [
-                new Reference('webauthn.android_safetynet.http_client'),
-                'api_key',
-                new Reference('webauthn.android_safetynet.request_factory'),
-            ]
+            [new Reference('webauthn.android_safetynet.http_client'), 'api_key', null]
         );
     }
 

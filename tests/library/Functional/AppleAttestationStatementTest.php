@@ -49,7 +49,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
-        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor(['usb']);
+        $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true),
             Base64UrlSafe::decode($publicKeyCredential->id)
@@ -59,7 +59,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $publicKeyCredentialDescriptor->type
         );
-        static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
+        static::assertSame([], $publicKeyCredentialDescriptor->transports);
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject

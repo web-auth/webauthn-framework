@@ -116,13 +116,12 @@ class PublicKeyCredentialLoader implements CanLogData
             'data' => $data,
         ]);
         try {
-            if ($this->serializer === null) {
-                $json = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
-
-                return $this->loadArray($json);
+            if ($this->serializer !== null) {
+                return $this->serializer->deserialize($data, PublicKeyCredential::class, 'json');
             }
+            $json = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
-            return $this->serializer->deserialize($data, PublicKeyCredential::class, 'json');
+            return $this->loadArray($json);
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
@@ -155,20 +154,11 @@ class PublicKeyCredentialLoader implements CanLogData
             $response,
             'Invalid data. The parameter "transports" is invalid'
         );
+        if ($this->serializer !== null) {
+            return $this->serializer->deserialize($response, AuthenticatorResponse::class, 'json');
+        }
         switch (true) {
-            case array_key_exists('attestationObject', $response):
-                is_string($response['attestationObject']) || throw InvalidDataException::create(
-                    $response,
-                    'Invalid data. The parameter "attestationObject" is invalid'
-                );
-                if ($this->serializer !== null) {
-                    return $this->serializer->deserialize(
-                        $response,
-                        AuthenticatorAttestationResponse::class,
-                        'json'
-                    );
-                }
-
+            case ! array_key_exists('authenticatorData', $response) && ! array_key_exists('signature', $response):
                 $attestationObject = $this->attestationObjectLoader->load($response['attestationObject']);
 
                 return AuthenticatorAttestationResponse::create(CollectedClientData::createFormJson(

@@ -27,7 +27,7 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
         }
 
         switch (true) {
-            case array_key_exists('attestationObject', $data):
+            case ! array_key_exists('authenticatorData', $data) && ! array_key_exists('signature', $data):
                 $context[self::ALREADY_CALLED] = true;
                 return $this->denormalizer->denormalize(
                     $data,

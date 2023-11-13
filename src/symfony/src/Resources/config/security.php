@@ -7,8 +7,6 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
@@ -41,20 +39,30 @@ return static function (ContainerConfigurator $container): void {
     $container->set(CacheStorage::class)->args([service(CacheItemPoolInterface::class)]);
     $container->set(DefaultCreationOptionsHandler::class);
     $container->set(DefaultRequestOptionsHandler::class);
-    $container->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)->abstract()->args(
-        [abstract_arg('Firewall config'), abstract_arg('User provider'), abstract_arg('Success handler'), abstract_arg(
-            'Failure handler'
-        ), abstract_arg('Options Storage'), abstract_arg('Secured Relying Party IDs'), service(
-            PublicKeyCredentialSourceRepositoryInterface::class
-        ), service(
-            PublicKeyCredentialUserEntityRepositoryInterface::class
-        ), service(PublicKeyCredentialLoader::class), service(
-            AuthenticatorAssertionResponseValidator::class
-        ), service(AuthenticatorAttestationResponseValidator::class), ]
-    );
-    $container->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)->abstract()
-        ->args([[], // Firewall settings
-            abstract_arg('Firewall name'), service('security.http_utils'), ]);
+    $container
+        ->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)
+        ->abstract()
+        ->args([
+            abstract_arg('Firewall config'),
+            abstract_arg('User provider'),
+            abstract_arg('Success handler'),
+            abstract_arg('Failure handler'),
+            abstract_arg('Options Storage'),
+            service(PublicKeyCredentialSourceRepositoryInterface::class),
+            service(PublicKeyCredentialUserEntityRepositoryInterface::class),
+            service(PublicKeyCredentialLoader::class),
+            abstract_arg('Authenticator Assertion Response Validator'),
+            abstract_arg(
+                'Authenticator Attestation Response Validator'
+            ), //service(AuthenticatorAttestationResponseValidator::class)
+        ]);
+    $container
+        ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)
+        ->abstract()
+        ->args([
+            [], // Firewall settings
+            abstract_arg('Firewall name'), service('security.http_utils'),
+        ]);
     $container->set(CurrentUserEntityGuesser::class)->args(
         [service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepositoryInterface::class)]
     );

@@ -47,16 +47,12 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 {
     private LoggerInterface $logger;
 
-    /**
-     * @param string[] $securedRelyingPartyIds
-     */
     public function __construct(
         private readonly WebauthnFirewallConfig $firewallConfig,
         private readonly UserProviderInterface $userProvider,
         private readonly AuthenticationSuccessHandlerInterface $successHandler,
         private readonly AuthenticationFailureHandlerInterface $failureHandler,
         private readonly OptionsStorage $optionsStorage,
-        private readonly array $securedRelyingPartyIds,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
         private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
@@ -206,8 +202,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 $response,
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
-                $userEntity?->id,
-                $this->securedRelyingPartyIds
+                $userEntity?->id
             );
             if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
                 $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
@@ -268,8 +263,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $credentialSource = $this->attestationResponseValidator->check(
                 $response,
                 $publicKeyCredentialCreationOptions,
-                $request->getHost(),
-                $this->securedRelyingPartyIds
+                $request->getHost()
             );
             if ($this->credentialUserEntityRepository->findOneByUsername($userEntity->name) !== null) {
                 throw InvalidDataException::create($userEntity, 'The username already exists');

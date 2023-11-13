@@ -98,12 +98,24 @@ final class Configuration implements ConfigurationInterface
             ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
             ->info('This handler will check the token binding header from the request. By default, it is ignored.')
             ->end()
+            ->arrayNode('secured_rp_ids')
+            ->treatFalseLike(null)
+            ->treatTrueLike(null)
+            ->treatNullLike(null)
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()
+            ->end()
+            ->end()
             ->scalarNode('counter_checker')
             ->defaultValue(ThrowExceptionIfInvalid::class)
             ->cannotBeEmpty()
             ->info(
                 'This service will check if the counter is valid. By default it throws an exception (recommended).'
             )
+            ->end()
+            ->scalarNode('top_origin_validator')
+            ->defaultNull()
+            ->info('For cross origin (e.g. iframe), this service will be in charge of verifying the top origin.')
             ->end()
             ->end();
 

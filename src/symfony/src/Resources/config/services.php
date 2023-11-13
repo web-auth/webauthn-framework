@@ -26,6 +26,8 @@ use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\CeremonyStep\CeremonyStepManager;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Denormalizer\AttestationStatementDenormalizer;
 use Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer;
@@ -45,8 +47,8 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\SecTokenBindingHandler;
-use Webauthn\TokenBinding\TokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
@@ -67,35 +69,43 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $container
+        ->set(CeremonyStepManagerFactory::class)
+    ;
+
+    $container
+        ->set('webauthn.ceremony_step_manager.creation')
+        ->class(CeremonyStepManager::class)
+        ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
+        ->args([param('webauthn.secured_relying_party_ids')])
+    ;
+
+    $container
+        ->set('webauthn.ceremony_step_manager.request')
+        ->class(CeremonyStepManager::class)
+        ->factory([service(CeremonyStepManagerFactory::class), 'requestCeremony'])
+        ->args([param('webauthn.secured_relying_party_ids')])
+    ;
+
+    $container
         ->set(AuthenticatorAttestationResponseValidator::class)
-        ->args([
-            service(AttestationStatementSupportManager::class),
-            null,
-            service(TokenBindingHandler::class)->nullOnInvalid(),
-            service(ExtensionOutputCheckerHandler::class),
-        ])
+        ->args([null, null, null, null, null, service('webauthn.ceremony_step_manager.creation')])
         ->public();
     $container
         ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
-        ->args([
-            null,
-            service(TokenBindingHandler::class)->nullOnInvalid(),
-            service(ExtensionOutputCheckerHandler::class),
-            service('webauthn.cose.algorithm.manager'),
-        ])
+        ->args([null, null, null, null, null, service('webauthn.ceremony_step_manager.request')])
         ->public();
     $container
         ->set(PublicKeyCredentialLoader::class)
-        ->args([service(AttestationObjectLoader::class), service('webauthn-serializer')])
+        ->args([null, service('webauthn-serializer')])
         ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
-        ->args(['%webauthn.creation_profiles%'])
+        ->args([param('webauthn.creation_profiles')])
         ->public();
     $container
         ->set(PublicKeyCredentialRequestOptionsFactory::class)
-        ->args(['%webauthn.request_profiles%'])
+        ->args([param('webauthn.request_profiles')])
         ->public();
 
     $container

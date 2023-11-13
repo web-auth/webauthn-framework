@@ -175,7 +175,11 @@ final class AssertionTest extends AbstractTestCase
             );
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $source = $this->getAuthenticatorAttestationResponseValidator()
-            ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
+            ->check(
+                $publicKeyCredential->response,
+                $publicKeyCredentialCreationOptions,
+                'tuleap-web.tuleap-aio-dev.docker'
+            );
 
         $publicKeyCredentialRequestOptions = $this->getSerializer()
             ->deserialize(
