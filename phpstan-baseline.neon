@@ -2723,11 +2723,6 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
 
         -
-            message: "#^Call to static method create\\(\\) on an unknown class InvalidDataException\\.$#"
-            count: 1
-            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
-
-        -
             message: "#^Cannot access offset 'aaguid' on mixed\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
