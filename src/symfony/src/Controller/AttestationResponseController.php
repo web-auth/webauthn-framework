@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -19,6 +20,7 @@ use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -30,7 +32,7 @@ final class AttestationResponseController
      * @param null|string[] $securedRelyingPartyIds
      */
     public function __construct(
-        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly SerializerInterface|PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly OptionsStorage $optionStorage,
@@ -49,6 +51,13 @@ final class AttestationResponseController
                 )
             );
         }
+        if ($this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader) {
+            trigger_deprecation(
+                'web-auth/webauthn-bundle',
+                '4.8.0',
+                'The argument "$publicKeyCredentialLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please inject a Symfony Serializer instead.'
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
@@ -63,7 +72,9 @@ final class AttestationResponseController
             ) ? $request->getContentTypeFormat() : $request->getContentType();
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
+                $content
+            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
                 'Invalid response'

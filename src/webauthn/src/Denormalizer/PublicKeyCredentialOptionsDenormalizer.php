@@ -9,16 +9,20 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
+use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialRpEntity;
+use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
 use function in_array;
 
 final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'PUBLIC_KEY_CREDENTIAL_OPTIONS_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
@@ -36,17 +40,69 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 }
             }
         }
-        $context[self::ALREADY_CALLED] = true;
-
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        if ($type === PublicKeyCredentialCreationOptions::class) {
+            return PublicKeyCredentialCreationOptions::create(
+                $this->denormalizer->denormalize($data['rp'], PublicKeyCredentialRpEntity::class, $format, $context),
+                $this->denormalizer->denormalize(
+                    $data['user'],
+                    PublicKeyCredentialUserEntity::class,
+                    $format,
+                    $context
+                ),
+                $data['challenge'],
+                ! isset($data['pubKeyCredParams']) ? [] : $this->denormalizer->denormalize(
+                    $data['pubKeyCredParams'],
+                    PublicKeyCredentialParameters::class . '[]',
+                    $format,
+                    $context
+                ),
+                ! isset($data['authenticatorSelection']) ? null : $this->denormalizer->denormalize(
+                    $data['authenticatorSelection'],
+                    AuthenticatorSelectionCriteria::class,
+                    $format,
+                    $context
+                ),
+                $data['attestation'] ?? null,
+                ! isset($data['excludeCredentials']) ? [] : $this->denormalizer->denormalize(
+                    $data['excludeCredentials'],
+                    PublicKeyCredentialDescriptor::class . '[]',
+                    $format,
+                    $context
+                ),
+                $data['timeout'] ?? null,
+                ! isset($data['extensions']) ? null : $this->denormalizer->denormalize(
+                    $data['extensions'],
+                    AuthenticationExtensions::class,
+                    $format,
+                    $context
+                ),
+            );
+        }
+        if ($type === PublicKeyCredentialRequestOptions::class) {
+            return PublicKeyCredentialRequestOptions::create(
+                $data['challenge'],
+                $data['rpId'] ?? null,
+                ! isset($data['allowCredentials']) ? [] : $this->denormalizer->denormalize(
+                    $data['allowCredentials'],
+                    PublicKeyCredentialDescriptor::class . '[]',
+                    $format,
+                    $context
+                ),
+                $data['userVerification'] ?? null,
+                $data['timeout'] ?? null,
+                ! isset($data['extensions']) ? null : $this->denormalizer->denormalize(
+                    $data['extensions'],
+                    AuthenticationExtensions::class,
+                    $format,
+                    $context
+                ),
+            );
+        }
+        throw new BadMethodCallException('Unsupported type');
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return in_array(
             $type,
             [PublicKeyCredentialCreationOptions::class, PublicKeyCredentialRequestOptions::class],
@@ -60,8 +116,8 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
     public function getSupportedTypes(?string $format): array
     {
         return [
-            PublicKeyCredentialCreationOptions::class => false,
-            PublicKeyCredentialRequestOptions::class => false,
+            PublicKeyCredentialCreationOptions::class => true,
+            PublicKeyCredentialRequestOptions::class => true,
         ];
     }
 }

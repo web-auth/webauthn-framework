@@ -27,7 +27,7 @@ final class ConformanceTest extends KernelTestCase
     {
         // Given
         /** @var SerializerInterface $serializer */
-        $serializer = self::getContainer()->get('webauthn-serializer');
+        $serializer = self::getContainer()->get(SerializerInterface::class);
 
         $callback = self::getContainer()->get(MockClientCallback::class);
         $callback->addResponses([

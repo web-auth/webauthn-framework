@@ -8,15 +8,16 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Uid\Uuid;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialSource;
+use Webauthn\TrustPath\TrustPath;
 use Webauthn\Util\Base64;
 use function array_key_exists;
 
 final class PublicKeyCredentialSourceDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'PUBLIC_KEY_CREDENTIAL_SOURCE_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
@@ -25,22 +26,29 @@ final class PublicKeyCredentialSourceDenormalizer implements DenormalizerInterfa
         }
         $keys = ['publicKeyCredentialId', 'credentialPublicKey', 'userHandle'];
         foreach ($keys as $key) {
-            if (! array_key_exists($key, $data)) {
-                return $data;
-            }
+            array_key_exists($key, $data) || throw InvalidDataException::create($data, 'Missing ' . $key);
             $data[$key] = Base64::decode($data[$key]);
         }
-        $context[self::ALREADY_CALLED] = true;
 
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return PublicKeyCredentialSource::create(
+            $data['publicKeyCredentialId'],
+            $data['type'],
+            $data['transports'],
+            $data['attestationType'],
+            $this->denormalizer->denormalize($data['trustPath'], TrustPath::class, $format, $context),
+            Uuid::fromString($data['aaguid']),
+            $data['credentialPublicKey'],
+            $data['userHandle'],
+            $data['counter'],
+            $data['otherUI'] ?? null,
+            $data['backupEligible'] ?? null,
+            $data['backupStatus'] ?? null,
+            $data['uvInitialized'] ?? null,
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === PublicKeyCredentialSource::class;
     }
 
@@ -50,7 +58,7 @@ final class PublicKeyCredentialSourceDenormalizer implements DenormalizerInterfa
     public function getSupportedTypes(?string $format): array
     {
         return [
-            PublicKeyCredentialSource::class => false,
+            PublicKeyCredentialSource::class => true,
         ];
     }
 }

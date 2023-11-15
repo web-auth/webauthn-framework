@@ -31,11 +31,18 @@ final class AssertionControllerFactory implements CanLogData
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
-        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly null|PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $publicKeyCredentialUserEntityRepository,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
+        if ($this->publicKeyCredentialLoader !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-bundle',
+                '4.8.0',
+                'The argument "$publicKeyCredentialLoader" is deprecated since 4.5.0 and will be removed in 5.0.0. Please set null instead; the serializer will be used instead.'
+            );
+        }
         $this->logger = new NullLogger();
     }
 
@@ -111,7 +118,7 @@ final class AssertionControllerFactory implements CanLogData
         null|AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null,
     ): AssertionResponseController {
         return new AssertionResponseController(
-            $this->publicKeyCredentialLoader,
+            $this->publicKeyCredentialLoader ?? $this->serializer,
             $authenticatorAssertionResponseValidator ?? $this->authenticatorAssertionResponseValidator,
             $this->logger,
             $optionStorage,

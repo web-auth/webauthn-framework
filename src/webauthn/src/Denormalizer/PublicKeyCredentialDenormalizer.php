@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Webauthn\AuthenticatorResponse;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\Util\Base64;
@@ -17,8 +18,6 @@ use function array_key_exists;
 final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'PUBLIC_KEY_CREDENTIAL_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
@@ -33,17 +32,16 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         hash_equals($id, $rawId) || throw InvalidDataException::create($data, 'Invalid ID');
         $data['rawId'] = $rawId;
 
-        $context[self::ALREADY_CALLED] = true;
-
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return PublicKeyCredential::create(
+            $data['id'],
+            $data['type'],
+            $data['rawId'],
+            $this->denormalizer->denormalize($data['response'], AuthenticatorResponse::class, $format, $context),
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === PublicKeyCredential::class;
     }
 
@@ -53,7 +51,7 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
     public function getSupportedTypes(?string $format): array
     {
         return [
-            PublicKeyCredential::class => false,
+            PublicKeyCredential::class => true,
         ];
     }
 }

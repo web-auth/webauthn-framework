@@ -18,42 +18,29 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
 {
     use DenormalizerAwareTrait;
 
-    private const ALREADY_CALLED = 'AUTHENTICATOR_RESPONSE_PREPROCESS_ALREADY_CALLED';
-
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
         if ($this->denormalizer === null) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
         }
 
-        switch (true) {
-            case ! array_key_exists('authenticatorData', $data) && ! array_key_exists('signature', $data):
-                $context[self::ALREADY_CALLED] = true;
-                return $this->denormalizer->denormalize(
-                    $data,
-                    AuthenticatorAttestationResponse::class,
-                    $format,
-                    $context
-                );
-            case array_key_exists('authenticatorData', $data) && array_key_exists('signature', $data):
-                $context[self::ALREADY_CALLED] = true;
-                return $this->denormalizer->denormalize(
-                    $data,
-                    AuthenticatorAssertionResponse::class,
-                    $format,
-                    $context
-                );
-            default:
-                throw InvalidDataException::create($data, 'Unable to create the response object');
-        }
+        $realType = match (true) {
+            ! array_key_exists('authenticatorData', $data) && ! array_key_exists(
+                'signature',
+                $data
+            ) => AuthenticatorAttestationResponse::class,
+            array_key_exists('authenticatorData', $data) && array_key_exists(
+                'signature',
+                $data
+            ) => AuthenticatorAssertionResponse::class,
+            default => throw InvalidDataException::create($data, 'Unable to create the response object'),
+        };
+
+        return $this->denormalizer->denormalize($data, $realType, $format, $context);
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === AuthenticatorResponse::class;
     }
 
@@ -63,7 +50,7 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AuthenticatorResponse::class => false,
+            AuthenticatorResponse::class => true,
         ];
     }
 }

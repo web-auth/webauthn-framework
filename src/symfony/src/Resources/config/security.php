@@ -22,7 +22,6 @@ use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
 use Webauthn\Bundle\Security\Storage\CacheStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Security\WebauthnFirewallConfig;
-use Webauthn\PublicKeyCredentialLoader;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -50,7 +49,7 @@ return static function (ContainerConfigurator $container): void {
             abstract_arg('Options Storage'),
             service(PublicKeyCredentialSourceRepositoryInterface::class),
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
-            service(PublicKeyCredentialLoader::class),
+            service(SerializerInterface::class),
             abstract_arg('Authenticator Assertion Response Validator'),
             abstract_arg(
                 'Authenticator Attestation Response Validator'

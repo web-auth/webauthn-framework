@@ -16,6 +16,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Uid\Uuid;
+use Webauthn\AttestedCredentialData;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
@@ -26,8 +28,6 @@ use function ord;
 final class AuthenticatorDataDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'AUTHENTICATOR_DATA_PREPROCESS_ALREADY_CALLED';
 
     private readonly Decoder $decoder;
 
@@ -60,11 +60,11 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
                 $authData,
                 'The data does not contain a valid credential public key.'
             );
-            $attestedCredentialData = [
-                'aaguid' => $aaguid,
-                'credentialId' => $credentialId,
-                'credentialPublicKey' => (string) $credentialPublicKey,
-            ];
+            $attestedCredentialData = AttestedCredentialData::create(
+                $aaguid,
+                $credentialId,
+                (string) $credentialPublicKey,
+            );
         }
         $extension = null;
         if (0 !== (ord($flags) & AuthenticatorData::FLAG_ED)) {
@@ -76,25 +76,24 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
             'Invalid authentication data. Presence of extra bytes.'
         );
         $authDataStream->close();
-        $data = [
-            'authData' => $authData,
-            'rpIdHash' => $rp_id_hash,
-            'flags' => $flags,
-            'signCount' => $signCount[1],
-            'attestedCredentialData' => $attestedCredentialData,
-            'extensions' => $extension,
-        ];
-        $context[self::ALREADY_CALLED] = true;
 
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return AuthenticatorData::create(
+            $authData,
+            $rp_id_hash,
+            $flags,
+            $signCount[1],
+            $attestedCredentialData,
+            $extension === null ? null : $this->denormalizer->denormalize(
+                $extension,
+                AuthenticationExtensions::class,
+                $format,
+                $context
+            ),
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === AuthenticatorData::class;
     }
 
@@ -104,7 +103,7 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AuthenticatorData::class => false,
+            AuthenticatorData::class => true,
         ];
     }
 
