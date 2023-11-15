@@ -624,6 +624,14 @@ parameters:
             path: src/symfony/src/Controller/AssertionControllerFactory.php
 
         -
+            message: """
+                #^Parameter \\$publicKeyCredentialLoader of method Webauthn\\\\Bundle\\\\Controller\\\\AssertionControllerFactory\\:\\:__construct\\(\\) has typehint with deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
+            count: 1
+            path: src/symfony/src/Controller/AssertionControllerFactory.php
+
+        -
             message: "#^Parameter \\$publicKeyCredentialSourceRepository of method Webauthn\\\\Bundle\\\\Controller\\\\AssertionControllerFactory\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
             count: 1
             path: src/symfony/src/Controller/AssertionControllerFactory.php
@@ -645,6 +653,22 @@ parameters:
             message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Storage\\\\OptionsStorage\\:\\:get\\(\\) invoked with 1 parameter, 0 required\\.$#"
             count: 1
             path: src/symfony/src/Controller/AssertionResponseController.php
+
+        -
+            message: """
+                #^Parameter \\$publicKeyCredentialLoader of method Webauthn\\\\Bundle\\\\Controller\\\\AssertionResponseController\\:\\:__construct\\(\\) has typehint with deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
+            count: 1
+            path: src/symfony/src/Controller/AssertionResponseController.php
+
+        -
+            message: """
+                #^Parameter \\$publicKeyCredentialLoader of method Webauthn\\\\Bundle\\\\Controller\\\\AttestationControllerFactory\\:\\:__construct\\(\\) has typehint with deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
+            count: 1
+            path: src/symfony/src/Controller/AttestationControllerFactory.php
 
         -
             message: "#^Parameter \\$publicKeyCredentialSourceRepository of method Webauthn\\\\Bundle\\\\Controller\\\\AttestationControllerFactory\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
@@ -681,6 +705,14 @@ parameters:
 
         -
             message: "#^Parameter \\$credentialSourceRepository of method Webauthn\\\\Bundle\\\\Controller\\\\AttestationResponseController\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
+            count: 1
+            path: src/symfony/src/Controller/AttestationResponseController.php
+
+        -
+            message: """
+                #^Parameter \\$publicKeyCredentialLoader of method Webauthn\\\\Bundle\\\\Controller\\\\AttestationResponseController\\:\\:__construct\\(\\) has typehint with deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
             count: 1
             path: src/symfony/src/Controller/AttestationResponseController.php
 
@@ -1144,6 +1176,14 @@ parameters:
             path: src/symfony/src/Repository/PublicKeyCredentialSourceRepository.php
 
         -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
+            count: 1
+            path: src/symfony/src/Resources/config/services.php
+
+        -
             message: "#^Fetching class constant class of deprecated class Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
             count: 2
             path: src/symfony/src/Resources/config/services.php
@@ -1297,6 +1337,14 @@ parameters:
         -
             message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Storage\\\\OptionsStorage\\:\\:get\\(\\) invoked with 1 parameter, 0 required\\.$#"
             count: 2
+            path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+        -
+            message: """
+                #^Parameter \\$publicKeyCredentialLoader of method Webauthn\\\\Bundle\\\\Security\\\\Http\\\\Authenticator\\\\WebauthnAuthenticator\\:\\:__construct\\(\\) has typehint with deprecated class Webauthn\\\\PublicKeyCredentialLoader\\:
+                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use the Symfony serializer instead$#
+            """
+            count: 1
             path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
         -
@@ -2179,6 +2227,21 @@ parameters:
             path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$rawAttestationObject of static method Webauthn\\\\AttestationStatement\\\\AttestationObject\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationObject\\:\\:create\\(\\) expects Webauthn\\\\AttestationStatement\\\\AttestationStatement, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$authData of static method Webauthn\\\\AttestationStatement\\\\AttestationObject\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorData, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
+
+        -
             message: "#^Cannot access offset 'fmt' on mixed\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
@@ -2240,23 +2303,33 @@ parameters:
             path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'attestationObject' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
             message: "#^Cannot access offset 'authenticatorData' on mixed\\.$#"
-            count: 2
+            count: 3
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
         -
             message: "#^Cannot access offset 'clientDataJSON' on mixed\\.$#"
-            count: 2
+            count: 3
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
         -
             message: "#^Cannot access offset 'signature' on mixed\\.$#"
-            count: 2
+            count: 3
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
         -
             message: "#^Cannot access offset 'userHandle' on mixed\\.$#"
-            count: 2
+            count: 3
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
         -
@@ -2266,6 +2339,11 @@ parameters:
 
         -
             message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticatorAssertionResponseDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#1 \\$clientDataJSON of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects Webauthn\\\\CollectedClientData, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
@@ -2280,13 +2358,38 @@ parameters:
             path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
         -
+            message: "#^Parameter \\#2 \\$authenticatorData of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorData, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$signature of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#4 \\$userHandle of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#5 \\$attestationObject of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects Webauthn\\\\AttestationStatement\\\\AttestationObject\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+        -
             message: "#^Cannot access offset 'attestationObject' on mixed\\.$#"
             count: 2
             path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
         -
             message: "#^Cannot access offset 'clientDataJSON' on mixed\\.$#"
-            count: 2
+            count: 3
+            path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'transports' on mixed\\.$#"
+            count: 1
             path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
         -
@@ -2300,12 +2403,27 @@ parameters:
             path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$clientDataJSON of static method Webauthn\\\\AuthenticatorAttestationResponse\\:\\:create\\(\\) expects Webauthn\\\\CollectedClientData, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
+
+        -
             message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\Util\\\\Base64\\:\\:decode\\(\\) expects string, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
         -
             message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$attestationObject of static method Webauthn\\\\AuthenticatorAttestationResponse\\:\\:create\\(\\) expects Webauthn\\\\AttestationStatement\\\\AttestationObject, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$transports of static method Webauthn\\\\AuthenticatorAttestationResponse\\:\\:create\\(\\) expects array\\<string\\>, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
@@ -2350,6 +2468,11 @@ parameters:
             path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
         -
+            message: "#^Parameter \\#6 \\$extensions of static method Webauthn\\\\AuthenticatorData\\:\\:create\\(\\) expects Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
+
+        -
             message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticatorResponseDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
@@ -2380,6 +2503,16 @@ parameters:
             path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$rawData of static method Webauthn\\\\CollectedClientData\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$data of static method Webauthn\\\\CollectedClientData\\:\\:create\\(\\) expects array, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
+
+        -
             message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
@@ -2395,7 +2528,17 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
 
         -
+            message: "#^Parameter \\#4 \\$response of static method Webauthn\\\\PublicKeyCredential\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorResponse, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
+
+        -
             message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'allowCredentials' on mixed\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
@@ -2405,8 +2548,63 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
         -
+            message: "#^Cannot access offset 'attestation' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'authenticatorSelect…' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'challenge' on mixed\\.$#"
+            count: 2
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'excludeCredentials' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'extensions' on mixed\\.$#"
+            count: 2
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
             message: "#^Cannot access offset 'id' on mixed\\.$#"
             count: 2
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'pubKeyCredParams' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'rp' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'rpId' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'timeout' on mixed\\.$#"
+            count: 2
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'user' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'userVerification' on mixed\\.$#"
+            count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
         -
@@ -2425,7 +2623,17 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$challenge of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
             message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#1 \\$rp of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects Webauthn\\\\PublicKeyCredentialRpEntity, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
@@ -2433,6 +2641,156 @@ parameters:
             message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
             count: 2
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$rpId of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$user of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects Webauthn\\\\PublicKeyCredentialUserEntity, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$allowCredentials of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects array\\<Webauthn\\\\PublicKeyCredentialDescriptor\\>, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$challenge of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#4 \\$pubKeyCredParams of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects array\\<Webauthn\\\\PublicKeyCredentialParameters\\>, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#4 \\$userVerification of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#5 \\$authenticatorSelection of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorSelectionCriteria\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#5 \\$timeout of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects int\\<1, max\\>\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#6 \\$attestation of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#6 \\$extensions of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects array\\<int\\|string, mixed\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#7 \\$excludeCredentials of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects array\\<Webauthn\\\\PublicKeyCredentialDescriptor\\>, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#8 \\$timeout of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects int\\<1, max\\>\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Parameter \\#9 \\$extensions of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+        -
+            message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialParametersDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
+
+        -
+            message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialParametersDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
+
+        -
+            message: "#^Call to static method create\\(\\) on an unknown class InvalidDataException\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'aaguid' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'attestationType' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'backupEligible' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'backupStatus' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'counter' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'credentialPublicKey' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'otherUI' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'publicKeyCredential…' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'transports' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'trustPath' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'type' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'userHandle' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Cannot access offset 'uvInitialized' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
         -
             message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialSourceDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
@@ -2450,7 +2808,72 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
         -
+            message: "#^Parameter \\#1 \\$publicKeyCredentialId of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#1 \\$uuid of static method Symfony\\\\Component\\\\Uid\\\\Uuid\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#10 \\$otherUI of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects array\\<string, mixed\\>\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#11 \\$backupEligible of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#12 \\$backupStatus of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#13 \\$uvInitialized of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
             message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$type of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#3 \\$transports of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects array\\<string\\>, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#4 \\$attestationType of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#5 \\$trustPath of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects Webauthn\\\\TrustPath\\\\TrustPath, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#7 \\$credentialPublicKey of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#8 \\$userHandle of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+        -
+            message: "#^Parameter \\#9 \\$counter of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects int, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
@@ -2518,14 +2941,6 @@ parameters:
             message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
             count: 1
             path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
-
-        -
-            message: """
-                #^Call to deprecated method loadArray\\(\\) of class Webauthn\\\\PublicKeyCredentialLoader\\:
-                since 4\\.8\\.0 and will be removed in 5\\.0\\.0\\. Please use \\{self\\:\\:load\\} instead$#
-            """
-            count: 1
-            path: src/webauthn/src/PublicKeyCredentialLoader.php
 
         -
             message: "#^Cannot call method load\\(\\) on Webauthn\\\\AttestationStatement\\\\AttestationObjectLoader\\|null\\.$#"
