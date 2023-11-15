@@ -36,7 +36,6 @@ use Webauthn\MetadataService\MetadataStatementRepository as MetadataStatementRep
 use Webauthn\MetadataService\Service\ChainedMetadataServices;
 use Webauthn\MetadataService\Service\JsonMetadataService;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
-use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\Functional\MetadataStatementRepository;
 use Webauthn\Tests\Functional\StatusReportRepository;
@@ -49,8 +48,6 @@ abstract class AbstractTestCase extends TestCase
     protected MockClock $clock;
 
     protected MockHttpClient $client;
-
-    private ?PublicKeyCredentialLoader $publicKeyCredentialLoader = null;
 
     private ?AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator = null;
 
@@ -74,15 +71,6 @@ abstract class AbstractTestCase extends TestCase
 
         $this->clock = new MockClock();
         $this->client = new MockHttpClient();
-    }
-
-    protected function getPublicKeyCredentialLoader(): PublicKeyCredentialLoader
-    {
-        if ($this->publicKeyCredentialLoader === null) {
-            $this->publicKeyCredentialLoader = PublicKeyCredentialLoader::create(null, $this->getSerializer());
-        }
-
-        return $this->publicKeyCredentialLoader;
     }
 
     protected function getAuthenticatorAttestationResponseValidator(): AuthenticatorAttestationResponseValidator

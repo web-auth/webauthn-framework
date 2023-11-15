@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Functional;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\Tests\AbstractTestCase;
 
@@ -26,8 +27,8 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
     ): void {
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize($options, PublicKeyCredentialCreationOptions::class, 'json');
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()
-            ->load($response);
+        $publicKeyCredential = $this->getSerializer()
+            ->deserialize($response, PublicKeyCredential::class, 'json');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $source = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);

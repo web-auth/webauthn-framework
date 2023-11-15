@@ -19,7 +19,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
 use Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
-use Webauthn\PublicKeyCredentialLoader;
 
 /**
  * @internal
@@ -58,7 +57,6 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
         yield [WebauthnAuthenticator::class];
         yield [AuthenticatorAssertionResponseValidator::class];
         yield [AuthenticatorAttestationResponseValidator::class];
-        yield [PublicKeyCredentialLoader::class];
         yield [AttestationObjectLoader::class];
         yield [ThrowExceptionIfInvalid::class];
     }

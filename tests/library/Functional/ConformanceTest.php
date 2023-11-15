@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Functional;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\Tests\AbstractTestCase;
 
@@ -29,8 +30,8 @@ final class ConformanceTest extends AbstractTestCase
             PublicKeyCredentialCreationOptions::class,
             'json'
         );
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()
-            ->load($response);
+        $publicKeyCredential = $this->getSerializer()
+            ->deserialize($response, PublicKeyCredential::class, 'json');
         // When
         $pkSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check(
