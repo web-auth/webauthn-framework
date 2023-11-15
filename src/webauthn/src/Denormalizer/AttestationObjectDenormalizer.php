@@ -11,14 +11,14 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\AttestationStatement\AttestationObject;
+use Webauthn\AttestationStatement\AttestationStatement;
+use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\StringStream;
 
 final class AttestationObjectDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'ATTESTATION_OBJECT_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
@@ -38,23 +38,20 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
             'Invalid attestation object. Presence of extra bytes.'
         );
         $stream->close();
+        $authData = $attestationObject['authData'] ?? throw InvalidDataException::create(
+            $attestationObject,
+            'Invalid attestation object. Missing "authData" field.'
+        );
 
-        $data = [
-            'rawAttestationObject' => $data,
-            'attStmt' => $attestationObject,
-            'authData' => $attestationObject['authData'],
-        ];
-        $context[self::ALREADY_CALLED] = true;
-
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return AttestationObject::create(
+            $data,
+            $this->denormalizer->denormalize($attestationObject, AttestationStatement::class, $format, $context),
+            $this->denormalizer->denormalize($authData, AuthenticatorData::class, $format, $context),
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === AttestationObject::class;
     }
 
@@ -64,7 +61,7 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AttestationObject::class => false,
+            AttestationObject::class => true,
         ];
     }
 }

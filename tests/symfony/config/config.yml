@@ -55,7 +55,7 @@ services:
       - 'webauthn.mds_service'
     arguments:
       - '%kernel.project_dir%/tests/metadataStatements'
-      - '@mds-serializer'
+      - '@serializer'
 
     #  fido_alliance_official:
     #    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
@@ -97,6 +97,7 @@ doctrine:
 
     url: '%env(resolve:DATABASE_URL)%'
   orm:
+    enable_lazy_ghost_objects: true
     auto_generate_proxy_classes: true
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
     auto_mapping: true

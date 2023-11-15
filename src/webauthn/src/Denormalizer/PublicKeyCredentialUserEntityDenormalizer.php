@@ -16,8 +16,6 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
 {
     use DenormalizerAwareTrait;
 
-    private const ALREADY_CALLED = 'PUBLIC_KEY_CREDENTIAL_USER_ENTITY_PREPROCESS_ALREADY_CALLED';
-
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
         if ($this->denormalizer === null) {
@@ -27,17 +25,17 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
             return $data;
         }
         $data['id'] = Base64::decode($data['id']);
-        $context[self::ALREADY_CALLED] = true;
 
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return PublicKeyCredentialUserEntity::create(
+            $data['name'],
+            $data['id'],
+            $data['displayName'],
+            $data['icon'] ?? null
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === PublicKeyCredentialUserEntity::class;
     }
 
@@ -47,7 +45,7 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
     public function getSupportedTypes(?string $format): array
     {
         return [
-            PublicKeyCredentialUserEntity::class => false,
+            PublicKeyCredentialUserEntity::class => true,
         ];
     }
 }

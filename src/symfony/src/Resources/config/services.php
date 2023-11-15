@@ -29,6 +29,7 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Denormalizer\AttestationObjectDenormalizer;
 use Webauthn\Denormalizer\AttestationStatementDenormalizer;
 use Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer;
@@ -97,7 +98,12 @@ return static function (ContainerConfigurator $container): void {
         ->public();
     $container
         ->set(PublicKeyCredentialLoader::class)
-        ->args([null, service('webauthn-serializer')])
+        ->deprecate(
+            'web-auth/webauthn-symfony-bundle',
+            '4.8.0',
+            '%service_id% is deprecated since 4.8.0 and will be removed in 5.0.0',
+        )
+        ->args([null, service(SerializerInterface::class)])
         ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
@@ -142,7 +148,7 @@ return static function (ContainerConfigurator $container): void {
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialCreationOptionsFactory::class),
-            service(PublicKeyCredentialLoader::class),
+            null,
             service(AuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
         ]);
@@ -152,7 +158,7 @@ return static function (ContainerConfigurator $container): void {
             service(SerializerInterface::class),
             service(ValidatorInterface::class),
             service(PublicKeyCredentialRequestOptionsFactory::class),
-            service(PublicKeyCredentialLoader::class),
+            null,
             service(AuthenticatorAssertionResponseValidator::class),
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
             service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
@@ -179,6 +185,7 @@ return static function (ContainerConfigurator $container): void {
         ->alias('webauthn.request_factory.default', RequestFactoryInterface::class);
 
     $container->set(ExtensionDescriptorDenormalizer::class);
+    $container->set(AttestationObjectDenormalizer::class);
     $container->set(AttestationStatementDenormalizer::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;
@@ -196,17 +203,6 @@ return static function (ContainerConfigurator $container): void {
         ->args([service(AttestationStatementSupportManager::class)])
     ;
     $container->set(MetadataStatementSerializerFactory::class);
-    $container->set('webauthn-serializer')
-        ->class(SerializerInterface::class)
-        ->factory([service(WebauthnSerializerFactory::class), 'create'])
-        ->public()
-    ;
-    $container->set('mds-serializer')
-        ->class(SerializerInterface::class)
-        ->factory([service(MetadataStatementSerializerFactory::class), 'create'])
-        ->public()
-    ;
-
     $container->set(DefaultFailureHandler::class);
     $container->set(DefaultSuccessHandler::class);
 };

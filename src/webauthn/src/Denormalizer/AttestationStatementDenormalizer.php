@@ -33,7 +33,7 @@ final class AttestationStatementDenormalizer implements DenormalizerInterface
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AttestationStatement::class => false,
+            AttestationStatement::class => true,
         ];
     }
 }

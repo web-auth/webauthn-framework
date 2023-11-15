@@ -19,6 +19,9 @@ use function is_array;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
+/**
+ * @deprecated since 4.8.0 and will be removed in 5.0.0. Please use the Symfony serializer instead
+ */
 class PublicKeyCredentialLoader implements CanLogData
 {
     private LoggerInterface $logger;
