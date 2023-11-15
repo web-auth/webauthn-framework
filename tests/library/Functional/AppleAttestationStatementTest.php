@@ -11,6 +11,7 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRpEntity;
@@ -36,8 +37,9 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             base64_decode('h5xSyIRMx2IQPr1mQk6GD98XSQOBHgMHVpJIkMV9Nkc=', true),
             attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         );
-        $publicKeyCredential = $this->getPublicKeyCredentialLoader()
-            ->load('{
+        $publicKeyCredential = $this->getSerializer()
+            ->deserialize(
+                '{
             "id": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
             "rawId": "J4lAqPXhefDrUD7oh5LQMbBH5TE",
             "response": {
@@ -45,7 +47,10 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiaDV4U3lJUk14MklRUHIxbVFrNkdEOThYU1FPQkhnTUhWcEpJa01WOU5rYyIsIm9yaWdpbiI6Imh0dHBzOi8vZGV2LmRvbnRuZWVkYS5wdyJ9"
             },
             "type": "public-key"
-        }');
+        }',
+                PublicKeyCredential::class,
+                'json'
+            );
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
