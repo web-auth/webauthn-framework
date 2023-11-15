@@ -188,11 +188,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
                 $content
-            ) : $this->publicKeyCredentialLoader->deserialize(
-                $content,
-                PublicKeyCredential::class,
-                'json'
-            );
+            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAssertionResponse || throw InvalidDataException::create(
                 $response,
@@ -260,11 +256,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             $content = $request->getContent();
             $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
                 $content
-            ) : $this->publicKeyCredentialLoader->deserialize(
-                $content,
-                PublicKeyCredential::class,
-                'json'
-            );
+            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw InvalidDataException::create(
                 $response,
