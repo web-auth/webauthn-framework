@@ -19,8 +19,6 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
 {
     use DenormalizerAwareTrait;
 
-    private const ALREADY_CALLED = 'AUTHENTICATION_EXTENSIONS_PREPROCESS_ALREADY_CALLED';
-
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
         if ($this->denormalizer === null) {
@@ -33,19 +31,11 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
             $data[$key] = AuthenticationExtension::create($key, $value);
         }
 
-        $context[self::ALREADY_CALLED] = true;
-
-        return $this->denormalizer->denormalize([
-            'extensions' => $data,
-        ], $type, $format, $context);
+        return AuthenticationExtensions::create($data);
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return in_array(
             $type,
             [
@@ -63,9 +53,9 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AuthenticationExtensions::class => false,
-            AuthenticationExtensionsClientInputs::class => false,
-            AuthenticationExtensionsClientOutputs::class => false,
+            AuthenticationExtensions::class => true,
+            AuthenticationExtensionsClientInputs::class => true,
+            AuthenticationExtensionsClientOutputs::class => true,
         ];
     }
 }

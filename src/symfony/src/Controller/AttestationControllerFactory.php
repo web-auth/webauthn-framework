@@ -26,10 +26,17 @@ final class AttestationControllerFactory
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
-        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly null|PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
+        if ($this->publicKeyCredentialLoader !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-bundle',
+                '4.8.0',
+                'The argument "$publicKeyCredentialLoader" is deprecated since 4.5.0 and will be removed in 5.0.0. Please set null instead; the serializer will be used instead.'
+            );
+        }
     }
 
     /**
@@ -98,7 +105,7 @@ final class AttestationControllerFactory
         null|AuthenticatorAttestationResponseValidator $attestationResponseValidator = null,
     ): AttestationResponseController {
         return new AttestationResponseController(
-            $this->publicKeyCredentialLoader,
+            $this->publicKeyCredentialLoader ?? $this->serializer,
             $attestationResponseValidator ?? $this->attestationResponseValidator,
             $this->publicKeyCredentialSourceRepository,
             $optionStorage,

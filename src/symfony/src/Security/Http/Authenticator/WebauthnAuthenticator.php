@@ -18,6 +18,7 @@ use Symfony\Component\Security\Http\Authenticator\InteractiveAuthenticatorInterf
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -37,6 +38,7 @@ use Webauthn\Bundle\Security\WebauthnFirewallConfig;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -55,7 +57,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly OptionsStorage $optionsStorage,
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
-        private readonly PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly PublicKeyCredentialLoader|SerializerInterface $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
     ) {
@@ -68,6 +70,13 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                     PublicKeyCredentialSourceRepositoryInterface::class,
                     PublicKeyCredentialSourceRepository::class
                 )
+            );
+        }
+        if ($this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader) {
+            trigger_deprecation(
+                'web-auth/webauthn-bundle',
+                '4.8.0',
+                'The argument "$publicKeyCredentialLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please inject a Symfony Serializer instead.'
             );
         }
         $this->logger = new NullLogger();
@@ -177,7 +186,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             ) ? $request->getContentTypeFormat() : $request->getContentType();
             $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
+                $content
+            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAssertionResponse || throw InvalidDataException::create(
                 $response,
@@ -243,7 +254,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             ) ? $request->getContentTypeFormat() : $request->getContentType();
             $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader->load($content);
+            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
+                $content
+            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw InvalidDataException::create(
                 $response,

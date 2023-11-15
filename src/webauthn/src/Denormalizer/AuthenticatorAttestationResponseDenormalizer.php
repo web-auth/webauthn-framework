@@ -9,14 +9,14 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\CollectedClientData;
 use Webauthn\Util\Base64;
 
 final class AuthenticatorAttestationResponseDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
-
-    private const ALREADY_CALLED = 'AUTHENTICATOR_ATTESTATIONN_RESPONSE_PREPROCESS_ALREADY_CALLED';
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
@@ -27,17 +27,28 @@ final class AuthenticatorAttestationResponseDenormalizer implements Denormalizer
         $data['clientDataJSON'] = Base64UrlSafe::decodeNoPadding($data['clientDataJSON']);
         $data['attestationObject'] = Base64::decode($data['attestationObject']);
 
-        $context[self::ALREADY_CALLED] = true;
+        $clientDataJSON = $this->denormalizer->denormalize(
+            $data['clientDataJSON'],
+            CollectedClientData::class,
+            $format,
+            $context
+        );
+        $attestationObject = $this->denormalizer->denormalize(
+            $data['attestationObject'],
+            AttestationObject::class,
+            $format,
+            $context
+        );
 
-        return $this->denormalizer->denormalize($data, $type, $format, $context);
+        return AuthenticatorAttestationResponse::create(
+            $clientDataJSON,
+            $attestationObject,
+            $data['transports'] ?? [],
+        );
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        if ($context[self::ALREADY_CALLED] ?? false) {
-            return false;
-        }
-
         return $type === AuthenticatorAttestationResponse::class;
     }
 
@@ -47,7 +58,7 @@ final class AuthenticatorAttestationResponseDenormalizer implements Denormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AuthenticatorAttestationResponse::class => false,
+            AuthenticatorAttestationResponse::class => true,
         ];
     }
 }
