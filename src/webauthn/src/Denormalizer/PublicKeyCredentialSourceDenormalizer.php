@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use InvalidDataException;
 use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Uid\Uuid;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\Util\Base64;
