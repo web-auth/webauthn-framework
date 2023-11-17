@@ -80,7 +80,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
 
         $this->requireResidentKey = $requireResidentKey ?? $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
         $requireResidentKey = $requireResidentKey === true ? self::RESIDENT_KEY_REQUIREMENT_REQUIRED : self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
-        $this->residentKey = $residentKey !== null ? $residentKey : $requireResidentKey;
+        $this->residentKey = $residentKey ?? $requireResidentKey;
     }
 
     public static function create(
