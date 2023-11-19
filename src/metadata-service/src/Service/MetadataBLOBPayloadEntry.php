@@ -54,7 +54,6 @@ class MetadataBLOBPayloadEntry implements JsonSerializable
                 'Invalid attestation certificate identifier. Shall be a list of strings'
             );
         }
-        $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
     }
 
     /**

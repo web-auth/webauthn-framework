@@ -33,7 +33,7 @@ final class Fido2AttestationStatementTest extends AbstractTestCase
                 'pGRaBff9zpaw3CDAsggpOMRonJaqMXYjkvIGTPt3rHH+53RCW7LQ9l4NmGcv8dNZSNLDrvQDKaSNhFjviggcZA==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)],
+            [PublicKeyCredentialParameters::createPk(Algorithms::COSE_ALGORITHM_ES256)],
             attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
         );
         $publicKeyCredential = $this->getSerializer()

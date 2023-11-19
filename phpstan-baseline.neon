@@ -795,6 +795,54 @@ parameters:
             path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
         -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
+            message: """
+                #^Fetching class constant class of deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
+            message: """
+                #^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAssertionResponseValidationFailed\\(\\) has typehint with deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
+            message: """
+                #^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAssertionResponseValidationSucceeded\\(\\) has typehint with deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
+            message: """
+                #^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAttestationResponseValidationSucceeded\\(\\) has typehint with deprecated class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\:
+                since 4\\.3\\.0, use \\{@link \\\\Webauthn\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\} instead\\.$#
+            """
+            count: 1
+            path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+        -
             message: "#^Cannot call method integerNode\\(\\) on Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeParentInterface\\|null\\.$#"
             count: 2
             path: src/symfony/src/DependencyInjection/Configuration.php
@@ -2169,7 +2217,7 @@ parameters:
                 #^Access to deprecated property \\$requireResidentKey of class Webauthn\\\\AuthenticatorSelectionCriteria\\:
                 Will be removed in 5\\.0\\. Please use residentKey instead\\*$#
             """
-            count: 2
+            count: 3
             path: src/webauthn/src/AuthenticatorSelectionCriteria.php
 
         -
@@ -2888,6 +2936,19 @@ parameters:
             path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
         -
+            message: "#^Cannot access offset 'type' on mixed\\.$#"
+            count: 1
+            path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+        -
+            message: """
+                #^Instantiation of deprecated class Webauthn\\\\TrustPath\\\\EcdaaKeyIdTrustPath\\:
+                since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
+            """
+            count: 1
+            path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+        -
             message: "#^Method Webauthn\\\\Denormalizer\\\\TrustPathDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
@@ -2898,8 +2959,13 @@ parameters:
             path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
         -
-            message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            message: "#^Parameter \\#1 \\$ecdaaKeyId of class Webauthn\\\\TrustPath\\\\EcdaaKeyIdTrustPath constructor expects string, array given\\.$#"
             count: 1
+            path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+        -
+            message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+            count: 2
             path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
         -

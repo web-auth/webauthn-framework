@@ -12,12 +12,12 @@ use Webauthn\PublicKeyCredentialSource;
 class AuthenticatorAssertionResponseValidationSucceededEvent
 {
     public function __construct(
-        private readonly null|string $credentialId,
-        private readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
-        private readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
+        public readonly null|string $credentialId,
+        public readonly AuthenticatorAssertionResponse $authenticatorAssertionResponse,
+        public readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         public readonly ServerRequestInterface|string $host,
-        private readonly ?string $userHandle,
-        private readonly PublicKeyCredentialSource $publicKeyCredentialSource
+        public readonly ?string $userHandle,
+        public readonly PublicKeyCredentialSource $publicKeyCredentialSource
     ) {
         if ($host instanceof ServerRequestInterface) {
             trigger_deprecation(
@@ -39,16 +39,25 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         }
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getCredentialId(): string
     {
         return $this->publicKeyCredentialSource->publicKeyCredentialId;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse
     {
         return $this->authenticatorAssertionResponse;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
     {
         return $this->publicKeyCredentialRequestOptions;
@@ -63,11 +72,17 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         return $this->host;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getUserHandle(): ?string
     {
         return $this->userHandle;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
     {
         return $this->publicKeyCredentialSource;

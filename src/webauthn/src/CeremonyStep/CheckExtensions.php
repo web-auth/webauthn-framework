@@ -14,7 +14,7 @@ use Webauthn\PublicKeyCredentialSource;
 final class CheckExtensions implements CeremonyStep
 {
     public function __construct(
-        private readonly ExtensionOutputCheckerHandler            $extensionOutputCheckerHandler,
+        private readonly ExtensionOutputCheckerHandler $extensionOutputCheckerHandler,
     ) {
     }
 

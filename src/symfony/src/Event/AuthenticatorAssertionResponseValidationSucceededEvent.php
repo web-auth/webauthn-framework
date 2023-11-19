@@ -10,6 +10,9 @@ use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent as Bas
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
+/**
+ * @deprecated since 4.3.0, use {@link \Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent} instead.
+ */
 class AuthenticatorAssertionResponseValidationSucceededEvent extends BaseAuthenticatorAssertionResponseValidationSucceededEvent
 {
     public function __construct(

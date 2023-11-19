@@ -6,30 +6,22 @@ namespace Webauthn\Denormalizer;
 
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\Exception\InvalidTrustPathException;
+use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
+use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\TrustPath\TrustPath;
 use function array_key_exists;
-use function in_array;
 
 final class TrustPathDenormalizer implements DenormalizerInterface
 {
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
-        array_key_exists('type', $data) || throw InvalidTrustPathException::create('The trust path type is missing');
-        $className = $data['type'];
-        if (class_exists($className) !== true) {
-            throw InvalidTrustPathException::create(
-                sprintf('The trust path type "%s" is not supported', $data['type'])
-            );
-        }
-
-        $implements = class_implements($className);
-        if (! in_array(TrustPath::class, $implements, true)) {
-            throw InvalidTrustPathException::create(
-                sprintf('The trust path type "%s" is not supported', $data['type'])
-            );
-        }
-
-        return $className::createFromArray($data);
+        return match (true) {
+            array_key_exists('ecdaaKeyId', $data) => new EcdaaKeyIdTrustPath($data),
+            array_key_exists('x5c', $data) => CertificateTrustPath::create($data),
+            $data === [], isset($data['type']) && $data['type'] === EmptyTrustPath::class => EmptyTrustPath::create(),
+            default => throw new InvalidTrustPathException('Unsupported trust path type'),
+        };
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool

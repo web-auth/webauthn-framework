@@ -37,7 +37,7 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
                 'SkehMoAkGv+cqmuiEqpOgGhswj5oDa9kIPxgG1IihzkxPe4LNfP8bUyFiNn/MXBlqiOY6IpHFZl1XfIM07kRZw==',
                 true
             ),
-            [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)],
+            [PublicKeyCredentialParameters::createPk(Algorithms::COSE_ALGORITHM_ES256)],
             attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
         );
         $publicKeyCredential = $this->getSerializer()

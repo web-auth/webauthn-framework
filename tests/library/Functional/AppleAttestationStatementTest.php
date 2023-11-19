@@ -68,11 +68,11 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
-            ->getAuthData();
+            ->authData;
         /** @var AttestationStatement $attestationStatement */
         $attestationStatement = $publicKeyCredential->response
             ->attestationObject
-            ->getAttStmt();
+            ->attStmt;
         static::assertSame(AttestationStatement::TYPE_ANONCA, $attestationStatement->type);
         static::assertSame(
             hex2bin('3ddc4710e9c088b229dba89d563220bb39f7229aff465b0a656b1afb9a8af8a0'),

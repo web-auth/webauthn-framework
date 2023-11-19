@@ -6,11 +6,9 @@ namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\Bundle\Security\Storage\Item;
-use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -22,23 +20,13 @@ use const JSON_THROW_ON_ERROR;
  */
 final class SecuredAreaTest extends WebTestCase
 {
-    private KernelBrowser $client;
-
-    private OptionsStorage $storage;
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient([], [
-            'HTTPS' => 'on',
-        ]);
-
-        $this->storage = static::getContainer()->get(CustomSessionStorage::class);
-    }
-
     #[Test]
     public function aClientCannotAccessToTheResourceIfUserIsNotAuthenticated(): void
     {
-        $this->client->request('GET', '/admin', [], [], [
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request('GET', '/admin', [], [], [
             'HTTPS' => 'on',
         ]);
 
@@ -51,14 +39,17 @@ final class SecuredAreaTest extends WebTestCase
         $body = [
             'username' => 'admin',
         ];
-        $this->client->request('POST', '/api/login/options', [], [], [
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request('POST', '/api/login/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
             'HTTPS' => 'on',
         ], json_encode($body, JSON_THROW_ON_ERROR));
 
         static::assertResponseIsSuccessful();
-        $json = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         static::assertArrayHasKey('challenge', $json);
         static::assertArrayHasKey('rpId', $json);
         static::assertArrayHasKey('userVerification', $json);
@@ -71,7 +62,10 @@ final class SecuredAreaTest extends WebTestCase
     {
         $assertion = '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}';
 
-        $this->client->request('POST', '/api/login', [], [], [
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request('POST', '/api/login', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], $assertion);
@@ -79,7 +73,7 @@ final class SecuredAreaTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         static::assertSame(
             '{"status":"error","errorMessage":"No public key credential options available for this session."}',
-            $this->client->getResponse()
+            $client->getResponse()
                 ->getContent()
         );
     }
@@ -87,6 +81,9 @@ final class SecuredAreaTest extends WebTestCase
     #[Test]
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
             base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true)
         );
@@ -102,14 +99,15 @@ final class SecuredAreaTest extends WebTestCase
             ),
         ];
 
-        $this->storage->store(Item::create(
+        $storage = static::getContainer()->get(CustomSessionStorage::class);
+        $storage->store(Item::create(
             $publicKeyCredentialRequestOptions,
             PublicKeyCredentialUserEntity::create('admin', 'foo', 'Foo BAR (-_-)')
         ));
 
         $assertion = '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}';
 
-        $this->client->request('POST', '/api/login', [], [], [
+        $client->request('POST', '/api/login', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'localhost',
         ], $assertion);
@@ -117,14 +115,14 @@ final class SecuredAreaTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertSame(
             '{"status":"ok","errorMessage":"","userIdentifier":"admin"}',
-            $this->client->getResponse()
+            $client->getResponse()
                 ->getContent()
         );
-        static::assertTrue($this->client->getRequest()->getSession()->has('_security_main'));
+        static::assertTrue($client->getRequest()->getSession()->has('_security_main'));
 
-        $this->client->request('GET', '/admin');
+        $client->request('GET', '/admin');
 
-        static::assertSame('["Hello admin"]', $this->client->getResponse()->getContent());
+        static::assertSame('["Hello admin"]', $client->getResponse()->getContent());
         static::assertResponseIsSuccessful();
     }
 }
