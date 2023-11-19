@@ -10,6 +10,9 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent as BaseAuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
 
+/**
+ * @deprecated since 4.3.0, use {@link \Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent} instead.
+ */
 class AuthenticatorAttestationResponseValidationFailedEvent extends BaseAuthenticatorAttestationResponseValidationFailedEvent
 {
     public function __construct(

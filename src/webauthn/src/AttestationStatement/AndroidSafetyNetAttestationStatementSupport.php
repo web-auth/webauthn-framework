@@ -91,9 +91,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->dispatcher = $eventDispatcher;
     }
 
-    public static function create(): self
+    public static function create(null|ClockInterface $clock = null): self
     {
-        return new self();
+        return new self($clock);
     }
 
     public function enableApiVerification(

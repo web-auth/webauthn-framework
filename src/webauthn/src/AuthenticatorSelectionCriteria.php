@@ -62,9 +62,9 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public function __construct(
         public null|string $authenticatorAttachment = null,
         public string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-        public null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED,
+        public null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
         /** @deprecated Will be removed in 5.0. Please use residentKey instead**/
-        public null|bool $requireResidentKey = false,
+        public null|bool $requireResidentKey = null,
     ) {
         in_array($authenticatorAttachment, self::AUTHENTICATOR_ATTACHMENTS, true) || throw new InvalidArgumentException(
             'Invalid authenticator attachment'
@@ -75,17 +75,22 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
         in_array($residentKey, self::RESIDENT_KEY_REQUIREMENTS, true) || throw new InvalidArgumentException(
             'Invalid resident key'
         );
-
-        $this->requireResidentKey = $requireResidentKey ?? $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
-        $requireResidentKey = $requireResidentKey === true ? self::RESIDENT_KEY_REQUIREMENT_REQUIRED : self::RESIDENT_KEY_REQUIREMENT_PREFERRED;
-        $this->residentKey = $residentKey ?? $requireResidentKey;
+        if ($requireResidentKey === true && $residentKey !== null && $residentKey !== self::RESIDENT_KEY_REQUIREMENT_REQUIRED) {
+            throw new InvalidArgumentException(
+                'Invalid resident key requirement. Resident key is required but requireResidentKey is false'
+            );
+        }
+        if ($this->residentKey === null && $this->requireResidentKey === true) {
+            $this->residentKey = self::RESIDENT_KEY_REQUIREMENT_REQUIRED;
+        }
+        $this->requireResidentKey = $requireResidentKey ?? ($residentKey === null ? null : $residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED);
     }
 
     public static function create(
         ?string $authenticatorAttachment = null,
         string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-        null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_PREFERRED,
-        null|bool $requireResidentKey = false
+        null|string $residentKey = self::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
+        null|bool $requireResidentKey = null
     ): self {
         return new self($authenticatorAttachment, $userVerification, $residentKey, $requireResidentKey);
     }
@@ -228,9 +233,12 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
             'requireResidentKey' => $this->requireResidentKey,
             'userVerification' => $this->userVerification,
             'residentKey' => $this->residentKey,
+            'authenticatorAttachment' => $this->authenticatorAttachment,
         ];
-        if ($this->authenticatorAttachment !== null) {
-            $json['authenticatorAttachment'] = $this->authenticatorAttachment;
+        foreach ($json as $key => $value) {
+            if ($value === null) {
+                unset($json[$key]);
+            }
         }
 
         return $json;

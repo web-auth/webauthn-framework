@@ -33,10 +33,10 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
 
     public function __construct(
         private readonly null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null,
-        private readonly null|TokenBindingHandler                 $tokenBindingHandler = null,
-        null|ExtensionOutputCheckerHandler            $extensionOutputCheckerHandler = null,
-        null|Manager                             $algorithmManager = null,
-        null|EventDispatcherInterface                             $eventDispatcher = null,
+        private readonly null|TokenBindingHandler $tokenBindingHandler = null,
+        null|ExtensionOutputCheckerHandler $extensionOutputCheckerHandler = null,
+        null|Manager $algorithmManager = null,
+        null|EventDispatcherInterface $eventDispatcher = null,
         private null|CeremonyStepManager $ceremonyStepManager = null
     ) {
         if ($this->publicKeyCredentialSourceRepository !== null) {
@@ -180,6 +180,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
         try {
             $this->logger->info('Checking the authenticator assertion response', [
                 'credentialId' => $credentialId,
+                'publicKeyCredentialSource' => $publicKeyCredentialSource,
                 'authenticatorAssertionResponse' => $authenticatorAssertionResponse,
                 'publicKeyCredentialRequestOptions' => $publicKeyCredentialRequestOptions,
                 'host' => $host,
@@ -233,7 +234,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             ]);
             $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationFailedEvent(
-                    $credentialId,
+                    $publicKeyCredentialSource,
                     $authenticatorAssertionResponse,
                     $publicKeyCredentialRequestOptions,
                     $host,
@@ -294,7 +295,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     }
 
     protected function createAuthenticatorAssertionResponseValidationFailedEvent(
-        string|PublicKeyCredentialSource $credentialId,
+        string|PublicKeyCredentialSource $publicKeyCredentialSource,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         ServerRequestInterface|string $host,
@@ -313,7 +314,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             );
         }
         return new AuthenticatorAssertionResponseValidationFailedEvent(
-            $credentialId,
+            $publicKeyCredentialSource,
             $authenticatorAssertionResponse,
             $publicKeyCredentialRequestOptions,
             $host,
