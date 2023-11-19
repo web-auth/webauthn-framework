@@ -19,7 +19,7 @@ class WebauthnStimulusExtension extends Extension implements PrependExtensionInt
         // Nothing to do here. The bundle is only used to provide assets.
     }
 
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if (! $this->isAssetMapperAvailable($container)) {
             return;
