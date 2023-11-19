@@ -88,7 +88,7 @@ final class WebauthnBundle extends Bundle
         ];
         if (class_exists(DoctrineOrmMappingsPass::class)) {
             $container->addCompilerPass(
-                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, []),
+                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], false, [], true),
                 PassConfig::TYPE_BEFORE_OPTIMIZATION,
                 0
             );
