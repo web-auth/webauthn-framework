@@ -18,12 +18,11 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
     public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
     {
         // Given
-        $expectedJson = '{"requireResidentKey":false,"userVerification":"required","residentKey":"preferred","authenticatorAttachment":"platform"}';
+        $expectedJson = '{"userVerification":"required","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
-            false
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE
         );
 
         //When
@@ -39,8 +38,8 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             $data->authenticatorAttachment
         );
-        static::assertFalse($data->requireResidentKey);
-        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED, $data->residentKey);
+        static::assertNull($data->requireResidentKey);
+        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE, $data->residentKey);
         static::assertSame($expectedJson, json_encode($data, JSON_THROW_ON_ERROR));
         static::assertSame($expectedJson, json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR));
     }

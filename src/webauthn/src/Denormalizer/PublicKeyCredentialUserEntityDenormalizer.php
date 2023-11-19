@@ -16,7 +16,7 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
 {
     use DenormalizerAwareTrait;
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
         if ($this->denormalizer === null) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');

@@ -10,7 +10,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
 {
     public function __construct(
-        private readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
+        public readonly PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions
     ) {
     }
 
@@ -19,6 +19,9 @@ class PublicKeyCredentialCreationOptionsCreatedEvent extends Event
         return new self($publicKeyCredentialCreationOptions);
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getPublicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
         return $this->publicKeyCredentialCreationOptions;

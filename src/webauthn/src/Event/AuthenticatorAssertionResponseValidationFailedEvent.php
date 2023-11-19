@@ -54,6 +54,9 @@ class AuthenticatorAssertionResponseValidationFailedEvent
         return $this->credentialId instanceof PublicKeyCredentialSource ? $this->credentialId : null;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getAuthenticatorAssertionResponse(): AuthenticatorAssertionResponse
     {
         return $this->authenticatorAssertionResponse;
@@ -73,11 +76,17 @@ class AuthenticatorAssertionResponseValidationFailedEvent
         return $this->host;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getUserHandle(): ?string
     {
         return $this->userHandle;
     }
 
+    /**
+     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
+     */
     public function getThrowable(): Throwable
     {
         return $this->throwable;

@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 use Webauthn\Bundle\Security\Storage\Item;
-use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -35,28 +34,18 @@ use const JSON_THROW_ON_ERROR;
  */
 final class AdditionalAuthenticatorTest extends WebTestCase
 {
-    private KernelBrowser $client;
-
-    private OptionsStorage $storage;
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient([], [
-            'HTTPS' => 'on',
-        ]);
-
-        $this->storage = static::getContainer()->get(CustomSessionStorage::class);
-    }
-
     #[Test]
     public function anExistingUserCanAskForOptionsUsingTheDedicatedController(): void
     {
-        $this->logIn();
-        $this->client->request(Request::METHOD_POST, '/devices/add/options', [], [], [
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $this->logIn($client);
+        $client->request(Request::METHOD_POST, '/devices/add/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode([], JSON_THROW_ON_ERROR));
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertResponseIsSuccessful();
@@ -96,7 +85,10 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $publicKeyCredentialSourceRepository = self::$kernel
             ->getContainer()
             ->get(PublicKeyCredentialSourceRepository::class);
-        $this->logIn();
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $this->logIn($client);
 
         $publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::create('test@foo.com', random_bytes(
             64
@@ -109,10 +101,11 @@ final class AdditionalAuthenticatorTest extends WebTestCase
                     '9WqgpRIYvGMCUYiFT20o1U7hSD193k11zu4tKP7wRcrE26zs1zc4LHyPinvPGS86wu6bDvpwbt8Xp2bQ3VBRSQ==',
                     true
                 ),
-                [PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256)]
+                [PublicKeyCredentialParameters::createPk(Algorithms::COSE_ALGORITHM_ES256)]
             );
 
-        $this->storage->store(Item::create(
+        $storage = static::getContainer()->get(CustomSessionStorage::class);
+        $storage->store(Item::create(
             $publicKeyCredentialCreationOptions,
             $publicKeyCredentialCreationOptions->user
         ));
@@ -124,7 +117,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             $publicKeyCredentialSourceRepository->findAllForUserEntity($publicKeyCredentialCreationOptions->user)
         );
         $body = '{"id":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB_MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1-RIuTF9DUtEJZEEK","type":"public-key","rawId":"mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK","response":{"clientDataJSON":"eyJjaGFsbGVuZ2UiOiI5V3FncFJJWXZHTUNVWWlGVDIwbzFVN2hTRDE5M2sxMXp1NHRLUDd3UmNyRTI2enMxemM0TEh5UGludlBHUzg2d3U2YkR2cHdidDhYcDJiUTNWQlJTUSIsImNsaWVudEV4dGVuc2lvbnMiOnt9LCJoYXNoQWxnb3JpdGhtIjoiU0hBLTI1NiIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0","attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjkSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJjIobiMfS7pLMMQTjIzBw3+hADjTsu6nVoWkEO3TrVYkdnFQfzDW2cVEYtnL4ErykiC295iEnvZTzRvbGIKI7mOYjYp2DoOoUVcZptFbLLjRtqZtfkSLkxfQ1LRCWRBCqUBAgMmIAEhWCAcPxwKyHADVjTgTsat4R/Jax6PWte50A8ZasMm4w6RxCJYILt0FCiGwC6rBrh3ySNy0yiUjZpNGAhW+aM9YYyYnUTJ"}}';
-        $this->client->request(
+        $client->request(
             Request::METHOD_POST,
             '/devices/add',
             [],
@@ -135,7 +128,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             ],
             $body
         );
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertResponseStatusCodeSame(201);
@@ -155,12 +148,15 @@ final class AdditionalAuthenticatorTest extends WebTestCase
     #[Test]
     public function anExistingUserCanGetOptionsTestItsAuthenticators(): void
     {
-        $this->logIn();
-        $this->client->request(Request::METHOD_POST, '/devices/test/options', [], [], [
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $this->logIn($client);
+        $client->request(Request::METHOD_POST, '/devices/test/options', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_HOST' => 'test.com',
         ], json_encode([], JSON_THROW_ON_ERROR));
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         static::assertResponseIsSuccessful();
@@ -172,7 +168,7 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         static::assertSame('ok', $data['status']);
     }
 
-    private function logIn(): void
+    private function logIn(KernelBrowser $client): void
     {
         /** @var SerializerInterface $serializer */
         $serializer = static::getContainer()->get(SerializerInterface::class);
@@ -231,13 +227,13 @@ final class AdditionalAuthenticatorTest extends WebTestCase
         $domains = array_unique(
             array_map(
                 static fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '',
-                $this->client->getCookieJar()
+                $client->getCookieJar()
                     ->all()
             )
         ) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
-            $this->client->getCookieJar()
+            $client->getCookieJar()
                 ->set($cookie);
         }
     }
