@@ -63,7 +63,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         return $this->alias;
     }
 
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
         $config = $processor->processConfiguration(
