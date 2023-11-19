@@ -33,10 +33,10 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
 
     public function __construct(
         private readonly null|PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository = null,
-        private readonly null|TokenBindingHandler                 $tokenBindingHandler = null,
-        null|ExtensionOutputCheckerHandler            $extensionOutputCheckerHandler = null,
-        null|Manager                             $algorithmManager = null,
-        null|EventDispatcherInterface                             $eventDispatcher = null,
+        private readonly null|TokenBindingHandler $tokenBindingHandler = null,
+        null|ExtensionOutputCheckerHandler $extensionOutputCheckerHandler = null,
+        null|Manager $algorithmManager = null,
+        null|EventDispatcherInterface $eventDispatcher = null,
         private null|CeremonyStepManager $ceremonyStepManager = null
     ) {
         if ($this->publicKeyCredentialSourceRepository !== null) {

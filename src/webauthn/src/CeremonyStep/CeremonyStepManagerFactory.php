@@ -80,8 +80,8 @@ final class CeremonyStepManagerFactory
 
     public function enableMetadataStatementSupport(
         MetadataStatementRepository $metadataStatementRepository,
-        StatusReportRepository      $statusReportRepository,
-        CertificateChainValidator   $certificateChainValidator
+        StatusReportRepository $statusReportRepository,
+        CertificateChainValidator $certificateChainValidator
     ): void {
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->statusReportRepository = $statusReportRepository;

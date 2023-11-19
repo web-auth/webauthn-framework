@@ -81,13 +81,12 @@ final class AdditionalAuthenticatorTest extends WebTestCase
     #[Depends('thePublicKeyCredentialDataCanBeLoaded')]
     public function withTheOptionAnExistingUserCanRegisterNewAnotherAuthenticator(): void
     {
-        /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
-        $publicKeyCredentialSourceRepository = self::$kernel
-            ->getContainer()
-            ->get(PublicKeyCredentialSourceRepository::class);
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
+        /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
+        $publicKeyCredentialSourceRepository = $client->getContainer()
+            ->get(PublicKeyCredentialSourceRepository::class);
         $this->logIn($client);
 
         $publicKeyCredentialUserEntity = PublicKeyCredentialUserEntity::create('test@foo.com', random_bytes(
