@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
-use ParagonIE\ConstantTime\Base64;
-use function preg_replace;
 use const PHP_EOL;
 
 class CertificateToolbox
@@ -33,21 +31,6 @@ class CertificateToolbox
         $pem .= chunk_split($data, 64, PHP_EOL);
 
         return $pem . (self::PEM_FOOTER . $type . '-----' . PHP_EOL);
-    }
-
-    /**
-     * @deprecated since 4.7.0 and will be removed in 5.0.0. No replacement as not used internally.
-     * @infection-ignore-all
-     */
-    public static function convertPEMToDER(string $data): string
-    {
-        if (! str_contains($data, self::PEM_HEADER)) {
-            return $data;
-        }
-        $data = preg_replace('/\-{5}.*\-{5}[\r\n]*/', '', $data);
-        $data = preg_replace("/[\r\n]*/", '', $data);
-
-        return Base64::decode(trim($data), true);
     }
 
     public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string

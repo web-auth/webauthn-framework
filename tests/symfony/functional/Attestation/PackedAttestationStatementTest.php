@@ -28,7 +28,6 @@ final class PackedAttestationStatementTest extends KernelTestCase
     #[Test]
     public function aPackedAttestationWithSelfStatementCanBeVerified(): void
     {
-        self::bootKernel();
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
             PublicKeyCredentialRpEntity::create('My Application'),
             PublicKeyCredentialUserEntity::create(

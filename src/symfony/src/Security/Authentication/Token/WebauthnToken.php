@@ -12,7 +12,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
+class WebauthnToken extends AbstractToken
 {
     public function __construct(
         private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,

@@ -8,9 +8,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
-use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -26,17 +24,6 @@ final class TrustPathTest extends TestCase
         $tp = CertificateTrustPath::create(['cert#1']);
 
         static::assertSame(['cert#1'], $tp->certificates);
-    }
-
-    /**
-     * @use EcdaaKeyIdTrustPath
-     */
-    #[Test]
-    public function anEcdaaKeyIdTrustPathCanBeCreated(): void
-    {
-        $tp = new EcdaaKeyIdTrustPath('id');
-
-        static::assertSame('id', $tp->getEcdaaKeyId());
     }
 
     /**
@@ -65,19 +52,5 @@ final class TrustPathTest extends TestCase
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);
-    }
-
-    /**
-     * @use TrustPathLoader
-     */
-    #[Test]
-    public function theLoaderCanLoadNewTrustPathType(): void
-    {
-        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'), JSON_THROW_ON_ERROR);
-        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
-        $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
-
-        static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
     }
 }

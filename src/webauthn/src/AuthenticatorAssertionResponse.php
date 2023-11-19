@@ -30,22 +30,4 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
     ): self {
         return new self($clientDataJSON, $authenticatorData, $signature, $userHandle, $attestationObject);
     }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getSignature(): string
-    {
-        return $this->signature;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getUserHandle(): ?string
-    {
-        return $this->userHandle;
-    }
 }

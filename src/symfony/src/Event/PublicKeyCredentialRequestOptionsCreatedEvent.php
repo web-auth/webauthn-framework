@@ -18,12 +18,4 @@ class PublicKeyCredentialRequestOptionsCreatedEvent extends Event
     {
         return new self($publicKeyCredentialRequestOptions);
     }
-
-    /**
-     * @deprecated since 4.8.0. Will be removed in 5.0.0. Please use the property instead.
-     */
-    public function getPublicKeyCredentialRequestOptions(): PublicKeyCredentialRequestOptions
-    {
-        return $this->publicKeyCredentialRequestOptions;
-    }
 }

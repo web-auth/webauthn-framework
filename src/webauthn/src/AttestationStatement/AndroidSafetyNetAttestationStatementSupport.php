@@ -62,15 +62,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        private readonly null|ClockInterface $clock = null
+        private readonly ClockInterface $clock
     ) {
-        if ($this->clock === null) {
-            trigger_deprecation(
-                'web-auth/webauthn-lib',
-                '4.8.0',
-                'The parameter "$clock" will be required in 5.0.0. Please set a clock instance.'
-            );
-        }
         if (! class_exists(RS256::class)) {
             throw UnsupportedFeatureException::create(
                 'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?'
@@ -91,26 +84,15 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $this->dispatcher = $eventDispatcher;
     }
 
-    public static function create(null|ClockInterface $clock = null): self
+    public static function create(ClockInterface $clock): self
     {
         return new self($clock);
     }
 
-    public function enableApiVerification(
-        ClientInterface|HttpClientInterface $client,
-        string $apiKey,
-        ?RequestFactoryInterface $requestFactory = null
-    ): self {
+    public function enableApiVerification(HttpClientInterface $client, string $apiKey): self
+    {
         $this->apiKey = $apiKey;
         $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        if ($requestFactory !== null && ! $client instanceof HttpClientInterface) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.7.0',
-                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$client" argument.'
-            );
-        }
 
         return $this;
     }

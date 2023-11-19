@@ -37,7 +37,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerP
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -50,8 +49,6 @@ use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
-use Webauthn\PublicKeyCredentialSourceRepository;
-use Webauthn\TokenBinding\TokenBindingHandler;
 use function array_key_exists;
 use function count;
 use function is_array;
@@ -100,14 +97,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.http_client', $config['http_client']);
         $container->setAlias('webauthn.logger', $config['logger']);
 
-        $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialSourceRepositoryInterface::class, $config['credential_repository']);
-        $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepositoryInterface::class, $config['user_repository']);
 
-        if ($config['token_binding_support_handler'] !== null) {
-            $container->setAlias(TokenBindingHandler::class, $config['token_binding_support_handler']);
-        }
         $container->setAlias(CounterChecker::class, $config['counter_checker']);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
@@ -236,14 +228,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $name
             );
             $attestationResponseValidator = new Definition(AuthenticatorAttestationResponseValidator::class);
-            $attestationResponseValidator->setArguments([
-                null,
-                null,
-                null,
-                null,
-                null,
-                new Reference($creationCeremonyStepManagerId),
-            ]);
+            $attestationResponseValidator->setArguments([new Reference($creationCeremonyStepManagerId)]);
             $container->setDefinition($attestationResponseValidatorId, $attestationResponseValidator);
 
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
@@ -255,7 +240,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($creationConfig['options_storage']),
                 new Reference($creationConfig['success_handler']),
                 new Reference($creationConfig['failure_handler']),
-                null,
                 new Reference($attestationResponseValidatorId),
             ]);
             $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
@@ -322,14 +306,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 $name
             );
             $assertionResponseValidator = new Definition(AuthenticatorAssertionResponseValidator::class);
-            $assertionResponseValidator->setArguments([
-                null,
-                null,
-                null,
-                null,
-                null,
-                new Reference($requestCeremonyStepManagerId),
-            ]);
+            $assertionResponseValidator->setArguments([new Reference($requestCeremonyStepManagerId)]);
             $container->setDefinition($assertionResponseValidatorId, $assertionResponseValidator);
 
             $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);
@@ -341,7 +318,6 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($requestConfig['options_storage']),
                 new Reference($requestConfig['success_handler']),
                 new Reference($requestConfig['failure_handler']),
-                null,
                 new Reference($assertionResponseValidatorId),
             ]);
             $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [

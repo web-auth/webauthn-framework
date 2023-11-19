@@ -10,7 +10,7 @@ use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\AuthenticationExtensionException;
 use const JSON_THROW_ON_ERROR;
@@ -27,7 +27,7 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
         $extensions = AuthenticationExtensionsClientOutputsLoader::load($cbor);
 
-        static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
+        static::assertInstanceOf(AuthenticationExtensions::class, $extensions);
         static::assertCount(1, $extensions);
         static::assertSame('{"loc":true}', json_encode($extensions, JSON_THROW_ON_ERROR));
     }

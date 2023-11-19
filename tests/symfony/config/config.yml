@@ -4,12 +4,17 @@ parameters:
 framework:
   test: true
   secret: 'test'
+  handle_all_throwables: true
   serializer:
     enabled: true
   validation:
     enabled: true
+    email_validation_mode: html5
   session:
     storage_factory_id: 'session.storage.factory.mock_file'
+    save_path: "session.handler.native_file"
+    cookie_samesite: "lax"
+    cookie_secure: "auto"
   fragments: ~
   http_method_override: true
   http_client:
@@ -17,6 +22,11 @@ framework:
   router:
     utf8: true
     resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
+  uid:
+    default_uuid_version: 7
+    time_based_uuid_version: 7
+  php_errors:
+    log: true
 
 services:
   _defaults:
@@ -85,7 +95,6 @@ services:
     arguments:
       - '@Webauthn\MetadataService\Service\ChainedMetadataServices'
 
-
 doctrine:
   dbal:
     driver: 'pdo_mysql'
@@ -97,6 +106,7 @@ doctrine:
 
     url: '%env(resolve:DATABASE_URL)%'
   orm:
+    enable_lazy_ghost_objects: true
     auto_generate_proxy_classes: true
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
     auto_mapping: true

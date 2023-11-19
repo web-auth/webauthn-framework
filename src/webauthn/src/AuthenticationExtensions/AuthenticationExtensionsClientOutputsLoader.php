@@ -14,7 +14,7 @@ abstract class AuthenticationExtensionsClientOutputsLoader
     {
         $object instanceof MapObject || throw AuthenticationExtensionException::create('Invalid extension object');
         $data = $object->normalize();
-        return AuthenticationExtensionsClientOutputs::create(
+        return AuthenticationExtensions::create(
             array_map(
                 fn (mixed $value, string $key) => AuthenticationExtension::create($key, $value),
                 $data,

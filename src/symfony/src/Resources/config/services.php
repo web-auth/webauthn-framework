@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-use Lcobucci\Clock\SystemClock;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -20,7 +19,7 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
+use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
@@ -44,20 +43,10 @@ use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\MetadataService\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
-use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
-use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
-use Webauthn\TokenBinding\SecTokenBindingHandler;
-use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
-    $deprecationData = [
-        'web-auth/webauthn-symfony-bundle',
-        '4.3.0',
-        '%service_id% is deprecated since 4.3.0 and will be removed in 5.0.0',
-    ];
     $container = $container->services()
         ->defaults()
         ->private()
@@ -65,8 +54,7 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set('webauthn.clock.default')
-        ->class(SystemClock::class)
-        ->factory([SystemClock::class, 'fromSystemTimezone'])
+        ->class(NativeClock::class)
     ;
 
     $container
@@ -89,21 +77,12 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(AuthenticatorAttestationResponseValidator::class)
-        ->args([null, null, null, null, null, service('webauthn.ceremony_step_manager.creation')])
+        ->args([service('webauthn.ceremony_step_manager.creation')])
         ->public();
     $container
         ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
-        ->args([null, null, null, null, null, service('webauthn.ceremony_step_manager.request')])
-        ->public();
-    $container
-        ->set(PublicKeyCredentialLoader::class)
-        ->deprecate(
-            'web-auth/webauthn-symfony-bundle',
-            '4.8.0',
-            '%service_id% is deprecated since 4.8.0 and will be removed in 5.0.0',
-        )
-        ->args([null, service(SerializerInterface::class)])
+        ->args([service('webauthn.ceremony_step_manager.request')])
         ->public();
     $container
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
@@ -125,16 +104,6 @@ return static function (ContainerConfigurator $container): void {
         ->set(NoneAttestationStatementSupport::class);
 
     $container
-        ->set(IgnoreTokenBindingHandler::class)
-        ->deprecate(...$deprecationData);
-    $container
-        ->set(TokenBindingNotSupportedHandler::class)
-        ->deprecate(...$deprecationData);
-    $container
-        ->set(SecTokenBindingHandler::class)
-        ->deprecate(...$deprecationData);
-
-    $container
         ->set(ThrowExceptionIfInvalid::class)
         ->autowire(false);
 
@@ -146,22 +115,15 @@ return static function (ContainerConfigurator $container): void {
         ->set(AttestationControllerFactory::class)
         ->args([
             service(SerializerInterface::class),
-            service(ValidatorInterface::class),
-            service(PublicKeyCredentialCreationOptionsFactory::class),
-            null,
             service(AuthenticatorAttestationResponseValidator::class),
-            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
+            service(PublicKeyCredentialSourceRepositoryInterface::class),
         ]);
     $container
         ->set(AssertionControllerFactory::class)
         ->args([
             service(SerializerInterface::class),
-            service(ValidatorInterface::class),
-            service(PublicKeyCredentialRequestOptionsFactory::class),
-            null,
             service(AuthenticatorAssertionResponseValidator::class),
-            service(PublicKeyCredentialUserEntityRepositoryInterface::class),
-            service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
+            service(PublicKeyCredentialSourceRepositoryInterface::class),
         ]);
 
     $container
@@ -188,7 +150,8 @@ return static function (ContainerConfigurator $container): void {
         ->set(ExtensionDescriptorDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(AttestationObjectDenormalizer::class)
         ->tag('serializer.normalizer', [
@@ -196,60 +159,71 @@ return static function (ContainerConfigurator $container): void {
         ]);
     $container
         ->set(AttestationStatementDenormalizer::class)
-        ->args([service(AttestationStatementSupportManager::class)])
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+        ->args([service(AttestationStatementSupportManager::class)])
+    ;
     $container
         ->set(AuthenticationExtensionsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(AuthenticatorAssertionResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(AuthenticatorAttestationResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(AuthenticatorDataDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(AuthenticatorResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(CollectedClientDataDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(PublicKeyCredentialDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(PublicKeyCredentialOptionsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(PublicKeyCredentialSourceDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container
         ->set(PublicKeyCredentialUserEntityDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
-        ]);
+        ])
+    ;
     $container->set(WebauthnSerializerFactory::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;

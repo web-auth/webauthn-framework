@@ -14,13 +14,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webauthn\Bundle\DependencyInjection\Compiler\AttestationStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CeremonyStepManagerFactoryCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\CoseAlgorithmCompilerPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerificationCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
@@ -64,16 +62,6 @@ final class WebauthnBundle extends Bundle
             0
         );
         $container->addCompilerPass(new LoggerSetterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
-        $container->addCompilerPass(
-            new CounterCheckerSetterCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
-        $container->addCompilerPass(
-            new MetadataStatementSupportCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
 
         $this->registerMappings($container);
 
@@ -94,7 +82,7 @@ final class WebauthnBundle extends Bundle
         ];
         if (class_exists(DoctrineOrmMappingsPass::class)) {
             $container->addCompilerPass(
-                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], false, [], true),
+                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], false, []),
                 PassConfig::TYPE_BEFORE_OPTIMIZATION,
                 0
             );

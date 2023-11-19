@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
@@ -18,7 +18,6 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 use function is_array;
@@ -29,37 +28,23 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly string $profile,
     ) {
-        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.6.0',
-                sprintf(
-                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
-                    PublicKeyCredentialSourceRepositoryInterface::class,
-                    PublicKeyCredentialSourceRepository::class
-                )
-            );
-        }
     }
 
     public function getFromRequest(
         Request $request,
         ?PublicKeyCredentialUserEntity &$userEntity = null
     ): PublicKeyCredentialRequestOptions {
-        $format = method_exists(
-            $request,
-            'getContentTypeFormat'
-        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format = $request->getContentTypeFormat();
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
         $optionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
         $extensions = null;
         if (is_array($optionsRequest->extensions)) {
-            $extensions = AuthenticationExtensionsClientInputs::create(array_map(
+            $extensions = AuthenticationExtensions::create(array_map(
                 static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
                     $name,
                     $data

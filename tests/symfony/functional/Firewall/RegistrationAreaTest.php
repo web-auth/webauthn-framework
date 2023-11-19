@@ -33,6 +33,7 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'displayName' => 'FOO',
         ];
+
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);

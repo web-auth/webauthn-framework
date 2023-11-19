@@ -51,34 +51,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         return new self($type, $id, $transports);
     }
 
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string[]
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getTransports(): array
-    {
-        return $this->transports;
-    }
-
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);

@@ -11,8 +11,6 @@ use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
@@ -29,7 +27,6 @@ use Webauthn\MetadataService\Statement\StatusReport;
 use function array_key_exists;
 use function is_array;
 use function sprintf;
-use const JSON_THROW_ON_ERROR;
 
 final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {
@@ -47,27 +44,19 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
 
     private EventDispatcherInterface $dispatcher;
 
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     /**
      * @param array<string, mixed> $additionalHeaderParameters
      */
     public function __construct(
-        private readonly ?RequestFactoryInterface $requestFactory,
-        private readonly ClientInterface|HttpClientInterface $httpClient,
+        private readonly HttpClientInterface $httpClient,
         private readonly string $uri,
         private readonly array $additionalHeaderParameters = [],
         private readonly ?CertificateChainValidator $certificateChainValidator = null,
         private readonly ?string $rootCertificateUri = null,
         ?SerializerInterface $serializer = null,
     ) {
-        if ($requestFactory !== null && ! $httpClient instanceof HttpClientInterface) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.7.0',
-                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$httpClient" argument.'
-            );
-        }
         $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
     }
@@ -81,8 +70,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
      * @param array<string, mixed> $additionalHeaderParameters
      */
     public static function create(
-        ?RequestFactoryInterface $requestFactory,
-        ClientInterface|HttpClientInterface $httpClient,
+        HttpClientInterface $httpClient,
         string $uri,
         array $additionalHeaderParameters = [],
         ?CertificateChainValidator $certificateChainValidator = null,
@@ -90,7 +78,6 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         ?SerializerInterface $serializer = null,
     ): self {
         return new self(
-            $requestFactory,
             $httpClient,
             $uri,
             $additionalHeaderParameters,
@@ -148,34 +135,18 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         try {
             $payload = $this->getJwsPayload($content, $jwtCertificates);
             $this->validateCertificates(...$jwtCertificates);
-            if ($this->serializer !== null) {
-                $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, 'json');
-                foreach ($blob->entries as $entry) {
-                    $mds = $entry->metadataStatement;
-                    if ($mds !== null && $entry->aaguid !== null) {
-                        $this->statements[$entry->aaguid] = $mds;
-                        $this->statusReports[$entry->aaguid] = $entry->statusReports;
-                    }
-                }
-                $this->loaded = true;
-                return;
-            }
-            $data = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
-
-            foreach ($data['entries'] as $datum) {
-                $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
-
+            $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, 'json');
+            foreach ($blob->entries as $entry) {
                 $mds = $entry->metadataStatement;
                 if ($mds !== null && $entry->aaguid !== null) {
                     $this->statements[$entry->aaguid] = $mds;
                     $this->statusReports[$entry->aaguid] = $entry->statusReports;
                 }
             }
+            $this->loaded = true;
         } catch (Throwable) {
             // Nothing to do
         }
-
-        $this->loaded = true;
     }
 
     /**
@@ -183,11 +154,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
      */
     private function fetch(string $uri, array $headerParameters): string
     {
-        if ($this->httpClient instanceof HttpClientInterface) {
-            $content = $this->sendSymfonyRequest($uri, $headerParameters);
-        } else {
-            $content = $this->sendPsrRequest($uri, $headerParameters);
-        }
+        $content = $this->sendSymfonyRequest($uri, $headerParameters);
         $content !== '' || throw MetadataStatementLoadingException::create(
             'Unable to contact the server. The response has no content'
         );
@@ -243,26 +210,6 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         $untrustedCertificates = CertificateToolbox::fixPEMStructures($untrustedCertificates);
         $rootCertificate = CertificateToolbox::convertDERToPEM($this->fetch($this->rootCertificateUri, []));
         $this->certificateChainValidator->check($untrustedCertificates, [$rootCertificate]);
-    }
-
-    /**
-     * @param array<string, string> $headerParameters
-     */
-    private function sendPsrRequest(string $uri, array $headerParameters): string
-    {
-        $request = $this->requestFactory->createRequest('GET', $uri);
-        foreach ($headerParameters as $k => $v) {
-            $request = $request->withHeader($k, $v);
-        }
-        $response = $this->httpClient->sendRequest($request);
-        $response->getStatusCode() === 200 || throw MetadataStatementLoadingException::create(sprintf(
-            'Unable to contact the server. Response code is %d',
-            $response->getStatusCode()
-        ));
-        $response->getBody()
-            ->rewind();
-        return $response->getBody()
-            ->getContents();
     }
 
     /**

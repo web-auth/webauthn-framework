@@ -53,24 +53,6 @@ class AuthenticatorData
         return new self($authData, $rpIdHash, $flags, $signCount, $attestedCredentialData, $extensions);
     }
 
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getAuthData(): string
-    {
-        return $this->authData;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getRpIdHash(): string
-    {
-        return $this->rpIdHash;
-    }
-
     public function isUserPresent(): bool
     {
         return 0 !== (ord($this->flags) & self::FLAG_UP);
@@ -109,32 +91,5 @@ class AuthenticatorData
     public function getReservedForFutureUse2(): int
     {
         return ord($this->flags) & self::FLAG_RFU2;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getSignCount(): int
-    {
-        return $this->signCount;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getAttestedCredentialData(): ?AttestedCredentialData
-    {
-        return $this->attestedCredentialData;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getExtensions(): ?AuthenticationExtensions
-    {
-        return $this->extensions !== null && $this->hasExtensions() ? $this->extensions : null;
     }
 }

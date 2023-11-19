@@ -11,14 +11,6 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 class PublicKeyCredentialCreationOptionsRequest
 {
-    /**
-     * @var array<mixed>|null
-     *
-     * @deprecated Use $userVerification, $residentKey and $authenticatorAttachment
-     * @infection-ignore-all
-     */
-    public ?array $authenticatorSelection = null;
-
     #[NotBlank(allowNull: true)]
     #[Choice(choices: [
         PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,

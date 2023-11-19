@@ -40,9 +40,7 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface, CanLogData
@@ -50,35 +48,17 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private LoggerInterface $logger;
 
     public function __construct(
-        private readonly WebauthnFirewallConfig $firewallConfig,
-        private readonly UserProviderInterface $userProvider,
-        private readonly AuthenticationSuccessHandlerInterface $successHandler,
-        private readonly AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
+        private readonly WebauthnFirewallConfig                           $firewallConfig,
+        private readonly UserProviderInterface                            $userProvider,
+        private readonly AuthenticationSuccessHandlerInterface            $successHandler,
+        private readonly AuthenticationFailureHandlerInterface            $failureHandler,
+        private readonly OptionsStorage                                   $optionsStorage,
+        private readonly PublicKeyCredentialSourceRepositoryInterface     $publicKeyCredentialSourceRepository,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
-        private readonly PublicKeyCredentialLoader|SerializerInterface $publicKeyCredentialLoader,
-        private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
+        private readonly SerializerInterface                              $serializer,
+        private readonly AuthenticatorAssertionResponseValidator          $assertionResponseValidator,
+        private readonly AuthenticatorAttestationResponseValidator        $attestationResponseValidator
     ) {
-        if (! $this->publicKeyCredentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.6.0',
-                sprintf(
-                    'Since 4.6.0, the parameter "$publicKeyCredentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
-                    PublicKeyCredentialSourceRepositoryInterface::class,
-                    PublicKeyCredentialSourceRepository::class
-                )
-            );
-        }
-        if ($this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader) {
-            trigger_deprecation(
-                'web-auth/webauthn-bundle',
-                '4.8.0',
-                'The argument "$publicKeyCredentialLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please inject a Symfony Serializer instead.'
-            );
-        }
         $this->logger = new NullLogger();
     }
 
@@ -180,15 +160,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
     private function processWithAssertion(Request $request): Passport
     {
         try {
-            $format = method_exists(
-                $request,
-                'getContentTypeFormat'
-            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format = $request->getContentTypeFormat();
             $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
-                $content
-            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
+            $publicKeyCredential = $this->serializer->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAssertionResponse || throw InvalidDataException::create(
                 $response,
@@ -248,15 +223,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
             if (! $this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
                 throw MissingFeatureException::create('Unable to register the credential.');
             }
-            $format = method_exists(
-                $request,
-                'getContentTypeFormat'
-            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format = $request->getContentTypeFormat();
             $format === 'json' || throw InvalidDataException::create($format, 'Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
-                $content
-            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
+            $publicKeyCredential = $this->serializer->deserialize($content, PublicKeyCredential::class, 'json');
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw InvalidDataException::create(
                 $response,

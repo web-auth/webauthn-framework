@@ -12,9 +12,6 @@ use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
 use DateTimeImmutable;
-use DateTimeZone;
-use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -23,13 +20,11 @@ use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
-use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
-use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use function array_key_exists;
 use function count;
 use function in_array;
@@ -40,21 +35,11 @@ use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
-    private readonly Clock|ClockInterface $clock;
-
     private EventDispatcherInterface $dispatcher;
 
-    public function __construct(null|Clock|ClockInterface $clock = null)
-    {
-        if ($clock === null) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.5.0',
-                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
-            );
-            $clock = new SystemClock(new DateTimeZone('UTC'));
-        }
-        $this->clock = $clock;
+    public function __construct(
+        private readonly ClockInterface $clock
+    ) {
         $this->dispatcher = new NullEventDispatcher();
     }
 
@@ -63,7 +48,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $this->dispatcher = $eventDispatcher;
     }
 
-    public static function create(null|Clock|ClockInterface $clock = null): self
+    public static function create(ClockInterface $clock): self
     {
         return new self($clock);
     }
@@ -164,7 +149,6 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 $attestationStatement,
                 $authenticatorData
             ),
-            $attestationStatement->trustPath instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
             default => throw InvalidAttestationStatementException::create(
                 $attestationStatement,
                 'Unsupported attestation statement'
@@ -436,10 +420,5 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         ) && throw AttestationStatementVerificationException::create(
             'The value of the "aaguid" does not match with the certificate'
         );
-    }
-
-    private function processWithECDAA(): never
-    {
-        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 }

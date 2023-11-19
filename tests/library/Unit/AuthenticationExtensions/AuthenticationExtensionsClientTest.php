@@ -7,8 +7,7 @@ namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -29,9 +28,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
     #[Test]
     public function theAuthenticationExtensionsClientInputsCanManageExtensions(): void
     {
-        $inputs = AuthenticationExtensionsClientInputs::create([
-            AuthenticationExtension::create('name', ['value']),
-        ]);
+        $inputs = AuthenticationExtensions::create([AuthenticationExtension::create('name', ['value'])]);
 
         static::assertSame(1, $inputs->count());
         static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
@@ -41,9 +38,7 @@ final class AuthenticationExtensionsClientTest extends TestCase
     #[Test]
     public function theAuthenticationExtensionsClientOutputsCanManageExtensions(): void
     {
-        $inputs = AuthenticationExtensionsClientOutputs::create([
-            AuthenticationExtension::create('name', ['value']),
-        ]);
+        $inputs = AuthenticationExtensions::create([AuthenticationExtension::create('name', ['value'])]);
 
         static::assertSame(1, $inputs->count());
         static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));

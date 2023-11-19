@@ -59,14 +59,4 @@ final class AuthenticatorStatus
         self::FIDO_CERTIFIED_L4,
         self::FIDO_CERTIFIED_L5,
     ];
-
-    /**
-     * @return string[]
-     * @deprecated since 4.7.0. Please use the constant STATUSES instead.
-     * @infection-ignore-all
-     */
-    public static function list(): array
-    {
-        return self::STATUSES;
-    }
 }

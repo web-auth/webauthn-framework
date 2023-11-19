@@ -22,7 +22,7 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
         );
 
         //When
@@ -53,7 +53,6 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
-            true
         );
 
         //When

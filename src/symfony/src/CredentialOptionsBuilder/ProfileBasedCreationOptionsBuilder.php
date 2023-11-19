@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
@@ -18,68 +18,43 @@ use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 use function is_array;
-use const FILTER_VALIDATE_BOOLEAN;
 
 final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCreationOptionsBuilder
 {
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
         private readonly string $profile,
     ) {
-        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.6.0',
-                sprintf(
-                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
-                    PublicKeyCredentialSourceRepositoryInterface::class,
-                    PublicKeyCredentialSourceRepository::class
-                )
-            );
-        }
     }
 
     public function getFromRequest(
         Request $request,
         PublicKeyCredentialUserEntity $userEntity
     ): PublicKeyCredentialCreationOptions {
-        $format = method_exists(
-            $request,
-            'getContentTypeFormat'
-        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format = $request->getContentTypeFormat();
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
 
         $excludedCredentials = $this->getCredentials($userEntity);
         $optionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-        $authenticatorSelectionData = $optionsRequest->authenticatorSelection;
         $authenticatorSelection = null;
-        if (is_array($authenticatorSelectionData)) {
-            $authenticatorSelection = AuthenticatorSelectionCriteria::createFromArray($authenticatorSelectionData);
-        } elseif ($optionsRequest->userVerification !== null || $optionsRequest->residentKey !== null || $optionsRequest->authenticatorAttachment !== null) {
+        if ($optionsRequest->userVerification !== null || $optionsRequest->residentKey !== null || $optionsRequest->authenticatorAttachment !== null) {
             $residentKey = $optionsRequest->residentKey ?? null;
-            $requireResidentKey = $optionsRequest->requireResidentKey !== null ? filter_var(
-                $optionsRequest->requireResidentKey,
-                FILTER_VALIDATE_BOOLEAN
-            ) : null;
-
             $authenticatorSelection = AuthenticatorSelectionCriteria::create(
                 $optionsRequest->authenticatorAttachment,
                 $optionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-                $residentKey,
-                $requireResidentKey
+                $residentKey
             );
         }
         $extensions = null;
         if (is_array($optionsRequest->extensions)) {
-            $extensions = AuthenticationExtensionsClientInputs::create(array_map(
+            $extensions = AuthenticationExtensions::create(array_map(
                 static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
                     $name,
                     $data

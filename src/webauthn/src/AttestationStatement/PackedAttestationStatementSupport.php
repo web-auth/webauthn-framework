@@ -17,13 +17,11 @@ use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\Exception\InvalidDataException;
-use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
-use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\Util\CoseSignatureFixer;
 use function array_key_exists;
@@ -100,7 +98,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
                 $authenticatorData,
                 $trustPath
             ),
-            $trustPath instanceof EcdaaKeyIdTrustPath => $this->processWithECDAA(),
             $trustPath instanceof EmptyTrustPath => $this->processWithSelfAttestation(
                 $clientDataJSONHash,
                 $attestationStatement,
@@ -131,26 +128,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             $attestation['fmt'],
             $attestation['attStmt'],
             CertificateTrustPath::create($certificates)
-        );
-        $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
-
-        return $attestationStatement;
-    }
-
-    /**
-     * @param array<string, mixed> $attestation
-     */
-    private function loadEcdaaType(array $attestation): AttestationStatement
-    {
-        $ecdaaKeyId = $attestation['attStmt']['ecdaaKeyId'];
-        is_string($ecdaaKeyId) || throw AttestationStatementVerificationException::create(
-            'The attestation statement value "ecdaaKeyId" is invalid.'
-        );
-
-        $attestationStatement = AttestationStatement::createEcdaa(
-            $attestation['fmt'],
-            $attestation['attStmt'],
-            new EcdaaKeyIdTrustPath($attestation['ecdaaKeyId'])
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
@@ -254,11 +231,6 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
 
         return $result === 1;
-    }
-
-    private function processWithECDAA(): never
-    {
-        throw UnsupportedFeatureException::create('ECDAA not supported');
     }
 
     private function processWithSelfAttestation(

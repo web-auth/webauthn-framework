@@ -85,7 +85,8 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             'HTTPS' => 'on',
         ]);
         /** @var PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository */
-        $publicKeyCredentialSourceRepository = $client->getContainer()
+        $publicKeyCredentialSourceRepository = $client
+            ->getContainer()
             ->get(PublicKeyCredentialSourceRepository::class);
         $this->logIn($client);
 

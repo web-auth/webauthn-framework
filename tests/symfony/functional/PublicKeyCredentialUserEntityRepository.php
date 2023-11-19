@@ -47,11 +47,6 @@ final class PublicKeyCredentialUserEntityRepository implements PublicKeyCredenti
         return $item->get();
     }
 
-    public function generateNextUserEntityId(): string
-    {
-        return Ulid::generate();
-    }
-
     public function saveUserEntity(PublicKeyCredentialUserEntity $userEntity): void
     {
         if (! $userEntity instanceof User) {

@@ -56,7 +56,7 @@ class WebauthnServicesFactory
                 $authenticatorAssertionResponseValidatorId,
                 new Definition(AuthenticatorAssertionResponseValidator::class)
             )
-            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)]);
+            ->setArguments([new Reference($ceremonyStepManagerId)]);
 
         return $authenticatorAssertionResponseValidatorId;
     }
@@ -82,7 +82,7 @@ class WebauthnServicesFactory
                 $authenticatorAttestationResponseValidatorId,
                 new Definition(AuthenticatorAttestationResponseValidator::class)
             )
-            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)]);
+            ->setArguments([new Reference($ceremonyStepManagerId)]);
 
         return $authenticatorAttestationResponseValidatorId;
     }

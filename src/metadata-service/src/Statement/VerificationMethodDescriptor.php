@@ -7,8 +7,6 @@ namespace Webauthn\MetadataService\Statement;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
-use function array_key_exists;
-use function is_array;
 
 class VerificationMethodDescriptor implements JsonSerializable
 {
@@ -118,15 +116,6 @@ class VerificationMethodDescriptor implements JsonSerializable
         return new self($userVerificationMethod, $caDesc, $baDesc, $paDesc);
     }
 
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getUserVerificationMethod(): string
-    {
-        return $this->userVerificationMethod;
-    }
-
     public function userPresence(): bool
     {
         return $this->userVerificationMethod === self::USER_VERIFY_PRESENCE_INTERNAL;
@@ -190,64 +179,6 @@ class VerificationMethodDescriptor implements JsonSerializable
     public function all(): bool
     {
         return $this->userVerificationMethod === self::USER_VERIFY_ALL;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCaDesc(): ?CodeAccuracyDescriptor
-    {
-        return $this->caDesc;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getBaDesc(): ?BiometricAccuracyDescriptor
-    {
-        return $this->baDesc;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getPaDesc(): ?PatternAccuracyDescriptor
-    {
-        return $this->paDesc;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
-     * @infection-ignore-all
-     */
-    public static function createFromArray(array $data): self
-    {
-        $data = self::filterNullValues($data);
-        if (isset($data['userVerification']) && ! isset($data['userVerificationMethod'])) {
-            $data['userVerificationMethod'] = $data['userVerification'];
-            unset($data['userVerification']);
-        }
-        array_key_exists('userVerificationMethod', $data) || throw MetadataStatementLoadingException::create(
-            'The parameters "userVerificationMethod" is missing'
-        );
-
-        foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
-            if (isset($data[$key])) {
-                is_array($data[$key]) || throw MetadataStatementLoadingException::create(
-                    sprintf('Invalid parameter "%s"', $key)
-                );
-            }
-        }
-
-        $caDesc = isset($data['caDesc']) ? CodeAccuracyDescriptor::createFromArray($data['caDesc']) : null;
-        $baDesc = isset($data['baDesc']) ? BiometricAccuracyDescriptor::createFromArray($data['baDesc']) : null;
-        $paDesc = isset($data['paDesc']) ? PatternAccuracyDescriptor::createFromArray($data['paDesc']) : null;
-
-        return self::create($data['userVerificationMethod'], $caDesc, $baDesc, $paDesc);
     }
 
     /**

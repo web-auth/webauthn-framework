@@ -111,7 +111,7 @@ abstract class AbstractTestCase extends TestCase
     {
         if ($this->authenticatorAssertionResponseValidator === null) {
             $this->authenticatorAssertionResponseValidator = AuthenticatorAssertionResponseValidator::create(
-                ceremonyStepManager: $this->getCeremonyStepManagerFactory()
+                $this->getCeremonyStepManagerFactory()
                     ->requestCeremony()
             );
         }
