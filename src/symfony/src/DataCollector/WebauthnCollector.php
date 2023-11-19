@@ -143,7 +143,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
                 $event->publicKeyCredentialCreationOptions,
                 JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
             ),
-            'exception' => $cloner->cloneVar($event->getThrowable()),
+            'exception' => $cloner->cloneVar($event->throwable),
         ];
     }
 
