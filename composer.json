@@ -134,6 +134,5 @@
             "name": "web-auth/webauthn-framework",
             "url": "https://github.com/web-auth/webauthn-framework"
         }
-    },
-    "minimum-stability": "beta"
+    }
 }
