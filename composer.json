@@ -61,7 +61,7 @@
         "symfony/deprecation-contracts": "^3.2",
         "symfony/framework-bundle": "^6.1",
         "symfony/http-client": "^6.1",
-        "symfony/psr-http-message-bridge": "^2.1",
+        "symfony/psr-http-message-bridge": "^2.1 || ^6.0",
         "symfony/security-bundle": "^6.1",
         "symfony/security-core": "^6.1",
         "symfony/security-http": "^6.1",
