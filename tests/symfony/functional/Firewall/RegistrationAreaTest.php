@@ -76,11 +76,9 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => [
-                'authenticatorAttachment' => 'cross-platform',
-                'userVerification' => 'required',
-                'requireResidentKey' => true,
-            ],
+            'authenticatorAttachment' => 'cross-platform',
+            'userVerification' => 'required',
+            'residentKey' => 'required',
             'attestation' => 'indirect',
         ];
         $client = static::createClient([], [
@@ -154,11 +152,9 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => [
-                'authenticatorAttachment' => 'platform',
-                'userVerification' => 'required',
-                'requireResidentKey' => true,
-            ],
+            'authenticatorAttachment' => 'platform',
+            'userVerification' => 'required',
+            'residentKey' => 'required',
             'extensions' => [
                 'loc' => true,
                 'def' => '123',

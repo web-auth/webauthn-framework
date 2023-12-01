@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\MetadataService\Unit;
 
+use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -25,14 +26,25 @@ final class BiometricAccuracyDescriptorObjectTest extends TestCase
         ?float $maxTemplates,
         ?int $maxRetries,
         ?int $blockSlowdown,
-        string $expectedJson
+        string $expected
     ): void {
+        // Given
+        // Passed as arguments
+
+        // When
+        try {
+            $result = json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        } catch (JsonException) {
+            static::fail('JSON encoding failed');
+        }
+
+        // Then
         static::assertSame($selfAttestedFAR, $object->selfAttestedFRR);
         static::assertSame($selfAttestedFRR, $object->selfAttestedFAR);
         static::assertSame($maxTemplates, $object->maxTemplates);
         static::assertSame($maxRetries, $object->maxRetries);
         static::assertSame($blockSlowdown, $object->blockSlowdown);
-        static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
+        static::assertSame($expected, $result);
     }
 
     public static function validObjectData(): iterable

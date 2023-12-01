@@ -20,21 +20,23 @@ final class AttestedCredentialDataTest extends TestCase
     #[DataProvider('dataAAGUID')]
     public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
     {
-        $attestedCredentialData = AttestedCredentialData::create(Uuid::fromString(
-            $uuid
-        ), 'credential_id', 'credential_public_key');
+        // Given
+        $attestedCredentialData = AttestedCredentialData::create(
+            Uuid::fromString($uuid),
+            'credential_id',
+            'credential_public_key'
+        );
 
+        // Then
         static::assertSame($uuid, $attestedCredentialData->aaguid->__toString());
         static::assertSame('credential_id', $attestedCredentialData->credentialId);
         static::assertSame('credential_public_key', $attestedCredentialData->credentialPublicKey);
         static::assertSame(
-            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
+            sprintf(
+                '{"aaguid":"%s","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
+                $uuid
+            ),
             json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES)
-        );
-
-        json_decode(
-            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
-            true
         );
     }
 
