@@ -66,7 +66,7 @@
         "symfony/security-core": "^6.1",
         "symfony/security-http": "^6.1",
         "symfony/serializer": "^6.1",
-        "symfony/uid": "^6.1",
+        "symfony/uid": "^6.1 || ^7.0",
         "symfony/validator": "^6.1",
         "web-auth/cose-lib": "^4.2.3",
         "web-token/jwt-signature": "^3.1"
