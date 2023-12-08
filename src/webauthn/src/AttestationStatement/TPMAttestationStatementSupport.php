@@ -182,17 +182,17 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $key = Key::create($publicKey->normalize());
 
         switch ($key->type()) {
-            case Key::TYPE_OKP:
+            case Key::TYPE_OKP :
                 $uniqueFromKey = (new OkpKey($key->getData()))->x();
                 break;
-            case Key::TYPE_EC2:
+            case Key::TYPE_EC2 :
                 $ec2Key = new Ec2Key($key->getData());
                 $uniqueFromKey = "\x04" . $ec2Key->x() . $ec2Key->y();
                 break;
-            case Key::TYPE_RSA:
+            case Key::TYPE_RSA :
                 $uniqueFromKey = (new RsaKey($key->getData()))->n();
                 break;
-            default:
+            default :
                 throw AttestationStatementVerificationException::create('Invalid or unsupported key type.');
         }
 
@@ -306,16 +306,16 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
     private function getUnique(string $type, StringStream $stream): string
     {
         switch (bin2hex($type)) {
-            case '0001':
+            case '0001' :
                 $uniqueLength = unpack('n', $stream->read(2))[1];
                 return $stream->read($uniqueLength);
-            case '0023':
+            case '0023' :
                 $xLen = unpack('n', $stream->read(2))[1];
                 $x = $stream->read($xLen);
                 $yLen = unpack('n', $stream->read(2))[1];
                 $y = $stream->read($yLen);
                 return "\04" . $x . $y;
-            default:
+            default :
                 throw AttestationStatementVerificationException::create('Unsupported type');
         }
     }

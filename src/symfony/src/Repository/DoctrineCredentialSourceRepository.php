@@ -37,6 +37,8 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->persist($publicKeyCredentialSource);
         $this->getEntityManager()
             ->flush();
+        $this->getEntityManager()
+            ->clear();
     }
 
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
