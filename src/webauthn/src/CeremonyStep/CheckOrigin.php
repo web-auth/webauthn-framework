@@ -34,7 +34,7 @@ final class CheckOrigin implements CeremonyStep
     ): void {
         $authData = $authenticatorResponse instanceof AuthenticatorAssertionResponse ? $authenticatorResponse->authenticatorData : $authenticatorResponse->attestationObject->authData;
         $C = $authenticatorResponse->clientDataJSON;
-        $rpId = $publicKeyCredentialOptions->rpId ?? $host;
+        $rpId = $publicKeyCredentialOptions->rpId ?? $publicKeyCredentialOptions->rp->id ?? $host;
         $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData->extensions);
         $parsedRelyingPartyId = parse_url($C->origin);
         is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
