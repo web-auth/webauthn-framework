@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\InvalidDataException;
 use function array_key_exists;
@@ -69,7 +68,7 @@ class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
             $json,
             'Invalid input. "displayName" is missing.'
         );
-        $id = Base64::decode($json['id'], true);
+        $id = Base64UrlSafe::decodeNoPadding($json['id']);
 
         return self::create($json['name'], $id, $json['displayName'], $json['icon'] ?? null);
     }

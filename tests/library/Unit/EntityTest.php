@@ -16,7 +16,7 @@ use const JSON_THROW_ON_ERROR;
 final class EntityTest extends TestCase
 {
     #[Test]
-    public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
+    public function aPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
     {
         $user = PublicKeyCredentialUserEntity::create('name', 'id', 'display_name', 'icon');
 
@@ -27,6 +27,23 @@ final class EntityTest extends TestCase
         static::assertSame(
             '{"name":"name","icon":"icon","id":"aWQ","displayName":"display_name"}',
             json_encode($user, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[Test]
+    public function aPublicKeyCredentialUserEntityCanBeCreatedAEncodedAndDecoded(): void
+    {
+        $ue = new PublicKeyCredentialUserEntity('test test', "\0\1\2\xff", 'TEST TEST');
+        $ue2 = PublicKeyCredentialUserEntity::createFromString(json_encode($ue));
+
+        static::assertSame('test test', $ue2->name);
+        static::assertSame('TEST TEST', $ue2->displayName);
+        static::assertNull($ue2->icon);
+        static::assertSame("\0\1\2\xff", $ue2->id);
+        static::assertSame(json_encode($ue), json_encode($ue2, JSON_THROW_ON_ERROR));
+        static::assertSame(
+            '{"name":"test test","id":"AAEC_w","displayName":"TEST TEST"}',
+            json_encode($ue, JSON_THROW_ON_ERROR)
         );
     }
 
