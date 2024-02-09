@@ -97,7 +97,7 @@
     "require-dev": {
         "doctrine/dbal": "^3.4",
         "doctrine/doctrine-bundle": "^2.7",
-        "doctrine/orm": "^2.13",
+        "doctrine/orm": "^2.13 || ^3.0",
         "ekino/phpstan-banned-code": "^1.0",
         "infection/infection": "^0.27",
         "matthiasnoback/symfony-dependency-injection-test": "^4.3|^5.0",
