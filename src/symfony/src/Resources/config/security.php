@@ -58,10 +58,7 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)
         ->abstract()
-        ->args([
-            [], // Firewall settings
-            abstract_arg('Firewall name'), service('security.http_utils'),
-        ]);
+        ->args([[], abstract_arg('Firewall name'), service('security.http_utils')]);
     $container->set(CurrentUserEntityGuesser::class)->args(
         [service(TokenStorageInterface::class), service(PublicKeyCredentialUserEntityRepositoryInterface::class)]
     );
