@@ -71,14 +71,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
                 'The parameter "$clock" will be required in 5.0.0. Please set a clock instance.'
             );
         }
-        if (! class_exists(RS256::class)) {
+        if (! class_exists(RS256::class) || ! class_exists(JWKFactory::class)) {
             throw UnsupportedFeatureException::create(
-                'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-signature-algorithm-rsa?'
-            );
-        }
-        if (! class_exists(JWKFactory::class)) {
-            throw UnsupportedFeatureException::create(
-                'The class Jose\Component\KeyManagement\JWKFactory is missing. Did you forget to install the package web-token/jwt-key-mgmt?'
+                'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-library?'
             );
         }
         $this->jwsSerializer = new CompactSerializer();

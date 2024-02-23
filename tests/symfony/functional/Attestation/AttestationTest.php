@@ -55,13 +55,6 @@ final class AttestationTest extends KernelTestCase
         );
         $descriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $descriptor->type);
-        /*static::assertSame(
-            base64_decode(
-                'mMihuIx9LukswxBOMjMHDf6EAONOy7qdWhaQQ7dOtViR2cVB/MNbZxURi2cvgSvKSILb3mISe9lPNG9sYgojuY5iNinYOg6hRVxmm0VssuNG2pm1+RIuTF9DUtEJZEEK',
-                true
-            ),
-            $descriptor->id
-        );*/
         static::assertSame([], $descriptor->transports);
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);

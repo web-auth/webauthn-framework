@@ -16,6 +16,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
+    /**
+     * @var class-string
+     */
     protected readonly string $class;
 
     /**

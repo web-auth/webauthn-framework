@@ -8,7 +8,11 @@ framework:
     enabled: true
   validation:
     enabled: true
+    email_validation_mode: html5
   session:
+    cookie_secure: auto
+    cookie_samesite: lax
+    handler_id: ~
     storage_factory_id: 'session.storage.factory.mock_file'
   fragments: ~
   http_method_override: true
@@ -17,6 +21,12 @@ framework:
   router:
     utf8: true
     resource: "%kernel.project_dir%/tests/symfony/config/routing.php"
+  handle_all_throwables: true
+  php_errors:
+    log: true
+  uid:
+    default_uuid_version: 7
+    time_based_uuid_version: 7
 
 services:
   _defaults:
@@ -97,6 +107,7 @@ doctrine:
 
     url: '%env(resolve:DATABASE_URL)%'
   orm:
+    enable_lazy_ghost_objects: true
     auto_generate_proxy_classes: true
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
     auto_mapping: true

@@ -31,7 +31,7 @@ final class CheckRelyingPartyIdIdHash implements CeremonyStep
             'No public key available.'
         );
         $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
-        $rpId = $publicKeyCredentialOptions->rpId ?? $host;
+        $rpId = $publicKeyCredentialOptions->rpId ?? $publicKeyCredentialOptions->rp->id ?? $host;
         $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData ->extensions);
         $rpIdHash = hash('sha256', $isU2F ? $C->origin : $facetId, true);
         hash_equals(

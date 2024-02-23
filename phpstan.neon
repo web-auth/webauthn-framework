@@ -1,13 +1,13 @@
 parameters:
-    level: max
-    paths:
-        - src
-    checkMissingIterableValueType: true
-    checkGenericClassInNonGenericObjectType: true
-    checkUninitializedProperties: true
-    treatPhpDocTypesAsCertain: false
-    scanFiles:
-        - vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
+	level: max
+	paths:
+		- src
+	checkMissingIterableValueType: true
+	checkGenericClassInNonGenericObjectType: true
+	checkUninitializedProperties: true
+	treatPhpDocTypesAsCertain: false
+	scanFiles:
+		- vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
 includes:
-    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
-    - phpstan-baseline.neon
+	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- phpstan-baseline.neon
