@@ -76,36 +76,3 @@ final class CheckOrigin implements CeremonyStep
         return $appId;
     }
 }
-
-/*
-$rpId = $publicKeyCredentialCreationOptions->rp
-    ->id ?? (is_string($request) ? $request : $request->getUri()->getHost());
-$facetId = $this->getFacetId(
-    $rpId,
-    $publicKeyCredentialCreationOptions->extensions,
-    $authenticatorAttestationResponse->attestationObject
-        ->authData
-        ->extensions
-);
-$parsedRelyingPartyId = parse_url($C->origin);
-is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
-    sprintf('The origin URI "%s" is not valid', $C->origin)
-);
-array_key_exists(
-    'scheme',
-    $parsedRelyingPartyId
-) || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
-$clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-$clientDataRpId !== '' || throw AuthenticatorResponseVerificationException::create('Invalid origin rpId.');
-$rpIdLength = mb_strlen($facetId);
-mb_substr(
-    '.' . $clientDataRpId,
-    -($rpIdLength + 1)
-) === '.' . $facetId || throw AuthenticatorResponseVerificationException::create('rpId mismatch.');
-if (! in_array($facetId, $securedRelyingPartyId, true)) {
-    $scheme = $parsedRelyingPartyId['scheme'];
-    $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
-        'Invalid scheme. HTTPS required.'
-    );
-}
- */
