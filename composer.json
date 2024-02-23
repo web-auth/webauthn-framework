@@ -93,7 +93,7 @@
     "require-dev": {
         "doctrine/dbal": "^3.4",
         "doctrine/doctrine-bundle": "^2.11",
-        "doctrine/orm": "^2.14",
+        "doctrine/orm": "^2.14 || ^3.0",
         "doctrine/persistence": "^3.1",
         "ekino/phpstan-banned-code": "^1.0",
         "infection/infection": "^0.27",
