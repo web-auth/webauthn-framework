@@ -45,9 +45,9 @@ class CertificateToolbox
             return $data;
         }
         $data = preg_replace('/\-{5}.*\-{5}[\r\n]*/', '', $data);
-        $data = preg_replace("/[\r\n]*/", '', $data);
+        $data = preg_replace("/[\r\n]*/", '', (string) $data);
 
-        return Base64::decode(trim($data), true);
+        return Base64::decode(trim((string) $data), true);
     }
 
     public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string
