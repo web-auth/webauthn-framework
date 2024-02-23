@@ -17,7 +17,7 @@ final class ExtensionDescriptorDenormalizer implements DenormalizerInterface, De
 
     private const ALREADY_CALLED = 'EXTENSION_DESCRIPTOR_PREPROCESS_ALREADY_CALLED';
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
         if ($this->denormalizer === null) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
