@@ -46,6 +46,21 @@ parameters:
 			path: src/metadata-service/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:request\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Psr18HttpClient.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:withOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Psr18HttpClient.php
+
+		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Psr18HttpClient.php
+
+		-
 			message: "#^Call to an undefined method Psr\\\\Http\\\\Client\\\\ClientInterface\\|Symfony\\\\Contracts\\\\HttpClient\\\\HttpClientInterface\\:\\:request\\(\\)\\.$#"
 			count: 1
 			path: src/metadata-service/src/Service/DistantResourceMetadataService.php
