@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
+use JsonException;
 use LogicException;
 use Psr\Http\Client\ClientInterface as Psr18ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface as Psr17RequestFactoryInterface;
@@ -12,6 +13,8 @@ use Psr\Http\Message\StreamFactoryInterface as Psr17StreamFactoryInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
+use function is_array;
+use const JSON_ERROR_NONE;
 use const PHP_QUERY_RFC3986;
 
 class Psr18HttpClient implements HttpClientInterface
@@ -70,6 +73,9 @@ class Psr18HttpClient implements HttpClientInterface
         $status = $response->getStatusCode();
 
         return new class($status, $headers, $content) implements ResponseInterface {
+            /**
+             * @param array<array-key, string[]> $headers
+             */
             public function __construct(
                 private readonly int $status,
                 private readonly array $headers,
@@ -82,6 +88,9 @@ class Psr18HttpClient implements HttpClientInterface
                 return $this->status;
             }
 
+            /**
+             * @return array<array-key, string[]>
+             */
             public function getHeaders(bool $throw = true): array
             {
                 return $this->headers;
@@ -92,9 +101,17 @@ class Psr18HttpClient implements HttpClientInterface
                 return $this->content;
             }
 
+            /**
+             * @return array<array-key, mixed>
+             */
             public function toArray(bool $throw = true): array
             {
-                return json_decode($this->content, true);
+                $result = json_decode($this->content, true);
+                if (! is_array($result) || json_last_error() !== JSON_ERROR_NONE) {
+                    throw new JsonException('Failed to decode JSON response: ' . json_last_error_msg());
+                }
+
+                return $result;
             }
 
             public function cancel(): void
