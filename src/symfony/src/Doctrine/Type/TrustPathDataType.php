@@ -8,17 +8,22 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
+use function is_array;
+use function is_string;
 use const JSON_THROW_ON_ERROR;
 
 final class TrustPathDataType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if ($value === null || is_string($value)) {
             return $value;
         }
+        if ($value instanceof TrustPath) {
+            return json_encode($value, JSON_THROW_ON_ERROR);
+        }
 
-        return json_encode($value, JSON_THROW_ON_ERROR);
+        return null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?TrustPath
@@ -26,7 +31,13 @@ final class TrustPathDataType extends Type
         if ($value === null || $value instanceof TrustPath) {
             return $value;
         }
-        $json = json_decode((string) $value, true, flags: JSON_THROW_ON_ERROR);
+        if (! is_string($value)) {
+            return null;
+        }
+        $json = json_decode($value, true, flags: JSON_THROW_ON_ERROR);
+        if (! is_array($json)) {
+            return null;
+        }
 
         return TrustPathLoader::loadTrustPath($json);
     }

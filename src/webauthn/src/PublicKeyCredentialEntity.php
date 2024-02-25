@@ -15,24 +15,6 @@ abstract class PublicKeyCredentialEntity implements JsonSerializable
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getIcon(): ?string
-    {
-        return $this->icon;
-    }
-
-    /**
      * @return mixed[]
      */
     public function jsonSerialize(): array

@@ -8,9 +8,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
-final class IsUserVerifiedVoter implements VoterInterface
+final readonly class IsUserVerifiedVoter implements VoterInterface
 {
-    public const IS_USER_VERIFIED = 'IS_USER_VERIFIED';
+    public const string IS_USER_VERIFIED = 'IS_USER_VERIFIED';
 
     public function vote(TokenInterface $token, mixed $subject, array $attributes): int
     {

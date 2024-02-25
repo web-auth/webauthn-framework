@@ -23,7 +23,7 @@ final class JsonMetadataService implements MetadataService, CanDispatchEvents
 
     private EventDispatcherInterface $dispatcher;
 
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     /**
      * @param string[] $statements
@@ -65,11 +65,7 @@ final class JsonMetadataService implements MetadataService, CanDispatchEvents
 
     private function addStatement(string $statement): void
     {
-        if ($this->serializer === null) {
-            $mds = MetadataStatement::createFromString($statement);
-        } else {
-            $mds = $this->serializer->deserialize($statement, MetadataStatement::class, 'json');
-        }
+        $mds = $this->serializer->deserialize($statement, MetadataStatement::class, 'json');
         if ($mds->aaguid === null) {
             return;
         }

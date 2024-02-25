@@ -8,6 +8,14 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	scanFiles:
 		- vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
+#	todo_by:
+#		ticket:
+#			enabled: true
+#			tracker: github
+#			github:
+#				defaultOwner: spomky
+#				defaultRepo: web-auth/webauthn-framework
+#				credentials: %env.GH_TOKEN%
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 	- phpstan-baseline.neon

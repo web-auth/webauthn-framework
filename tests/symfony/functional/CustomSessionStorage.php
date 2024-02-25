@@ -17,7 +17,7 @@ final class CustomSessionStorage implements OptionsStorage
         $this->item = $item;
     }
 
-    public function get(): Item
+    public function get(string $challenge): Item
     {
         if ($this->item === null) {
             throw new LogicException('No public key credential options available for this session.');

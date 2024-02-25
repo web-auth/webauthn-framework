@@ -6,8 +6,6 @@ namespace Webauthn\MetadataService\Statement;
 
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
-use function array_key_exists;
-use function is_int;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {
@@ -30,38 +28,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getMinComplexity(): int
-    {
-        return $this->minComplexity;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
-     * @infection-ignore-all
-     */
-    public static function createFromArray(array $data): self
-    {
-        $data = self::filterNullValues($data);
-        array_key_exists('minComplexity', $data) || throw MetadataStatementLoadingException::create(
-            'The key "minComplexity" is missing'
-        );
-        foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
-            if (array_key_exists($key, $data)) {
-                is_int($data[$key]) || throw MetadataStatementLoadingException::create(
-                    sprintf('Invalid data. The value of "%s" must be a positive integer', $key)
-                );
-            }
-        }
-
-        return self::create($data['minComplexity'], $data['maxRetries'] ?? null, $data['blockSlowdown'] ?? null);
-    }
-
-    /**
-     * @return array<string, int|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

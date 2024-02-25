@@ -22,16 +22,13 @@ use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
-use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -47,38 +44,27 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
 {
     private ?string $apiKey = null;
 
-    private null|ClientInterface|HttpClientInterface $client = null;
+    private null|HttpClientInterface $client = null;
 
     private readonly CompactSerializer $jwsSerializer;
 
     private ?JWSVerifier $jwsVerifier = null;
 
-    private ?RequestFactoryInterface $requestFactory = null;
-
     private int $leeway = 0;
 
     private int $maxAge = 60000;
 
+    private readonly ClockInterface $clock;
+
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        private readonly null|ClockInterface $clock = null
+        null|ClockInterface $clock = null
     ) {
-        if ($this->clock === null) {
-            trigger_deprecation(
-                'web-auth/webauthn-lib',
-                '4.8.0',
-                'The parameter "$clock" will be required in 5.0.0. Please set a clock instance.'
-            );
-        }
-        if (! class_exists(RS256::class) || ! class_exists(JWKFactory::class)) {
-            throw UnsupportedFeatureException::create(
-                'The algorithm RS256 is missing. Did you forget to install the package web-token/jwt-library?'
-            );
-        }
+        $this->clock = $clock ?? new NativeClock();
         $this->jwsSerializer = new CompactSerializer();
-        $this->initJwsVerifier();
         $this->dispatcher = new NullEventDispatcher();
+        $this->initJwsVerifier();
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
@@ -91,21 +77,10 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         return new self($clock);
     }
 
-    public function enableApiVerification(
-        ClientInterface|HttpClientInterface $client,
-        string $apiKey,
-        ?RequestFactoryInterface $requestFactory = null
-    ): self {
+    public function enableApiVerification(HttpClientInterface $client, string $apiKey): self
+    {
         $this->apiKey = $apiKey;
         $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        if ($requestFactory !== null && ! $client instanceof HttpClientInterface) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.7.0',
-                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$client" argument.'
-            );
-        }
 
         return $this;
     }
@@ -282,11 +257,7 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
             urlencode($this->apiKey)
         );
         $requestBody = sprintf('{"signedAttestation":"%s"}', $attestationStatement->get('response'));
-        if ($this->client instanceof HttpClientInterface) {
-            $responseBody = $this->validateUsingGoogleApiWithSymfonyClient($requestBody, $uri);
-        } else {
-            $responseBody = $this->validateUsingGoogleApiWithPsrClient($requestBody, $uri);
-        }
+        $responseBody = $this->validateUsingGoogleApiWithSymfonyClient($requestBody, $uri);
         $responseBodyJson = json_decode($responseBody, true, flags: JSON_THROW_ON_ERROR);
         array_key_exists(
             'isValidSignature',
@@ -295,23 +266,6 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         $responseBodyJson['isValidSignature'] === true || throw AttestationStatementVerificationException::create(
             'Invalid response.'
         );
-    }
-
-    private function getResponseBody(ResponseInterface $response): string
-    {
-        $responseBody = '';
-        $response->getBody()
-            ->rewind();
-        do {
-            $tmp = $response->getBody()
-                ->read(1024);
-            if ($tmp === '') {
-                break;
-            }
-            $responseBody .= $tmp;
-        } while (true);
-
-        return $responseBody;
     }
 
     /**
@@ -360,20 +314,5 @@ final class AndroidSafetyNetAttestationStatementSupport implements AttestationSt
         );
 
         return $response->getContent();
-    }
-
-    private function validateUsingGoogleApiWithPsrClient(string $requestBody, string $uri): string
-    {
-        $request = $this->requestFactory->createRequest('POST', $uri);
-        $request = $request->withHeader('content-type', 'application/json');
-        $request->getBody()
-            ->write($requestBody);
-
-        $response = $this->client->sendRequest($request);
-        $response->getStatusCode() === 200 || throw AttestationStatementVerificationException::create(
-            'Request did not succeeded'
-        );
-
-        return $this->getResponseBody($response);
     }
 }

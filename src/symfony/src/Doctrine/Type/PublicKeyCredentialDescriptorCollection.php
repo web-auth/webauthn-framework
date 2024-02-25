@@ -11,8 +11,9 @@ use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 use Webauthn\PublicKeyCredentialDescriptor;
-use function array_key_exists;
+use function assert;
 use function count;
+use function is_array;
 use const COUNT_NORMAL;
 use const JSON_THROW_ON_ERROR;
 
@@ -20,28 +21,27 @@ use const JSON_THROW_ON_ERROR;
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
  * @internal
  */
-final class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
+final readonly class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
      * @var array<string, PublicKeyCredentialDescriptor>
-     * @readonly
      */
     public array $publicKeyCredentialDescriptors;
 
     /**
-     * @private
      * @param PublicKeyCredentialDescriptor[] $pkCredentialDescriptors
      */
     public function __construct(
         array $pkCredentialDescriptors = []
     ) {
-        $this->publicKeyCredentialDescriptors = [];
+        $result = [];
         foreach ($pkCredentialDescriptors as $pkCredentialDescriptor) {
             $pkCredentialDescriptor instanceof PublicKeyCredentialDescriptor || throw new InvalidArgumentException(
                 'Expected only instances of ' . PublicKeyCredentialDescriptor::class
             );
-            $this->publicKeyCredentialDescriptors[$pkCredentialDescriptor->id] = $pkCredentialDescriptor;
+            $result[$pkCredentialDescriptor->id] = $pkCredentialDescriptor;
         }
+        $this->publicKeyCredentialDescriptors = $result;
     }
 
     /**
@@ -50,39 +50,6 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public static function create(array $publicKeyCredentialDescriptors): self
     {
         return new self($publicKeyCredentialDescriptors);
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the {self::create} instead.
-     * @infection-ignore-all
-     */
-    public function add(PublicKeyCredentialDescriptor ...$publicKeyCredentialDescriptors): void
-    {
-        foreach ($publicKeyCredentialDescriptors as $publicKeyCredentialDescriptor) {
-            $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->id] = $publicKeyCredentialDescriptor;
-        }
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function has(string $id): bool
-    {
-        return array_key_exists($id, $this->publicKeyCredentialDescriptors);
-    }
-
-    /**
-     * @deprecated since 4.7.0. No replacement.
-     * @infection-ignore-all
-     */
-    public function remove(string $id): void
-    {
-        if (! array_key_exists($id, $this->publicKeyCredentialDescriptors)) {
-            return;
-        }
-
-        unset($this->publicKeyCredentialDescriptors[$id]);
     }
 
     /**
@@ -99,7 +66,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     }
 
     /**
-     * @return array<string, mixed>[]
+     * @return array<string, PublicKeyCredentialDescriptor>
      */
     public function jsonSerialize(): array
     {
@@ -109,6 +76,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($data), 'Invalid data. Expected an array of PublicKeyCredentialDescriptor');
 
         return self::createFromArray($data);
     }
@@ -120,9 +88,10 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     {
         return self::create(
             array_map(
-                static fn (array $item): PublicKeyCredentialDescriptor => PublicKeyCredentialDescriptor::createFromArray(
-                    $item
-                ),
+                static function (mixed $item): PublicKeyCredentialDescriptor {
+                    assert(is_array($item), 'Invalid data. Expected an array of PublicKeyCredentialDescriptor');
+                    return PublicKeyCredentialDescriptor::createFromArray($item);
+                },
                 $json
             )
         );

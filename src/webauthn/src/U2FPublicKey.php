@@ -15,13 +15,13 @@ use Cose\Key\Ec2Key;
 /**
  * @internal
  */
-final class U2FPublicKey
+final readonly class U2FPublicKey
 {
-    private const U2F_KEY_PREFIX = "\x04";
+    private const string U2F_KEY_PREFIX = "\x04";
 
-    private const U2F_KEY_LENGTH = 65;
+    private const int U2F_KEY_LENGTH = 65;
 
-    private const U2F_KEY_PART_SIZE = 32;
+    private const int U2F_KEY_PART_SIZE = 32;
 
     public static function isU2FKey(string $publicKey): bool
     {

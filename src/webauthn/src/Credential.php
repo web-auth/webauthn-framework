@@ -14,22 +14,4 @@ abstract class Credential
         public readonly string $type
     ) {
     }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
 }

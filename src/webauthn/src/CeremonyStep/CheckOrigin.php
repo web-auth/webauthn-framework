@@ -15,13 +15,13 @@ use function in_array;
 use function is_array;
 use function is_string;
 
-final class CheckOrigin implements CeremonyStep
+final readonly class CheckOrigin implements CeremonyStep
 {
     /**
      * @param string[] $securedRelyingPartyId
      */
     public function __construct(
-        private readonly array $securedRelyingPartyId
+        private array $securedRelyingPartyId
     ) {
     }
 
@@ -58,15 +58,15 @@ final class CheckOrigin implements CeremonyStep
 
     private function getFacetId(
         string $rpId,
-        AuthenticationExtensions $authenticationExtensionsClientInputs,
+        AuthenticationExtensions $AuthenticationExtensions,
         null|AuthenticationExtensions $authenticationExtensionsClientOutputs
     ): string {
-        if ($authenticationExtensionsClientOutputs === null || ! $authenticationExtensionsClientInputs->has(
+        if ($authenticationExtensionsClientOutputs === null || ! $AuthenticationExtensions->has(
             'appid'
         ) || ! $authenticationExtensionsClientOutputs->has('appid')) {
             return $rpId;
         }
-        $appId = $authenticationExtensionsClientInputs->get('appid')
+        $appId = $AuthenticationExtensions->get('appid')
             ->value;
         $wasUsed = $authenticationExtensionsClientOutputs->get('appid')
             ->value;

@@ -20,7 +20,6 @@ use Webauthn\Bundle\DependencyInjection\Compiler\EnforcedSafetyNetApiKeyVerifica
 use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
-use Webauthn\Bundle\DependencyInjection\Compiler\MetadataStatementSupportCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
@@ -66,11 +65,6 @@ final class WebauthnBundle extends Bundle
         $container->addCompilerPass(new LoggerSetterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
         $container->addCompilerPass(
             new CounterCheckerSetterCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
-        $container->addCompilerPass(
-            new MetadataStatementSupportCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );

@@ -16,7 +16,6 @@ export default class extends Controller {
         attestationField: { type: String, default: 'attestation' },
         userVerificationField: { type: String, default: 'userVerification' },
         residentKeyField: { type: String, default: 'residentKey' },
-        requireResidentKeyField: { type: String, default: 'requireResidentKey' },
         authenticatorAttachmentField: { type: String, default: 'authenticatorAttachment' },
         useBrowserAutofill: { type: Boolean, default: false },
     };
@@ -32,7 +31,6 @@ export default class extends Controller {
     declare readonly attestationFieldValue: string;
     declare readonly userVerificationFieldValue: string;
     declare readonly residentKeyFieldValue: string;
-    declare readonly requireResidentKeyFieldValue: string;
     declare readonly authenticatorAttachmentFieldValue: string;
     declare readonly useBrowserAutofillValue: boolean;
 
@@ -149,7 +147,6 @@ export default class extends Controller {
             attestation: data.get(this.attestationFieldValue),
             userVerification: data.get(this.userVerificationFieldValue),
             residentKey: data.get(this.residentKeyFieldValue),
-            requireResidentKey: data.get(this.requireResidentKeyFieldValue),
             authenticatorAttachment: data.get(this.authenticatorAttachmentFieldValue),
         });
     }

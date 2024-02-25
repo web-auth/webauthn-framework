@@ -8,7 +8,7 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Serializer\SerializerInterface;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
@@ -98,6 +98,6 @@ final class AssertionTest extends WebTestCase
         static::assertSame('localhost', $options->rpId);
         static::assertSame($allowedCredentials, $options->allowCredentials);
         static::assertSame('preferred', $options->userVerification);
-        static::assertInstanceOf(AuthenticationExtensionsClientInputs::class, $options->extensions);
+        static::assertInstanceOf(AuthenticationExtensions::class, $options->extensions);
     }
 }

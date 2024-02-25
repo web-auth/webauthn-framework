@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorData;
 
 /**
@@ -20,7 +20,7 @@ final class AuthenticatorDataTest extends TestCase
     public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
     {
         $attestedCredentialData = AttestedCredentialData::create(Uuid::v4(), '', null);
-        $extensions = AuthenticationExtensionsClientOutputs::create();
+        $extensions = AuthenticationExtensions::create();
 
         $authenticatorData = AuthenticatorData::create(
             'auth_data',

@@ -9,9 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 
-final class ExtensionOutputCheckerCompilerPass implements CompilerPassInterface
+final readonly class ExtensionOutputCheckerCompilerPass implements CompilerPassInterface
 {
-    public const TAG = 'webauthn_extension_output_checker';
+    public const string TAG = 'webauthn_extension_output_checker';
 
     public function process(ContainerBuilder $container): void
     {

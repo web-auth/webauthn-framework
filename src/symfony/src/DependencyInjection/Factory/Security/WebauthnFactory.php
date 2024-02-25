@@ -38,78 +38,54 @@ use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use function array_key_exists;
 use function assert;
 
-final class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
+final readonly class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {
-    public const AUTHENTICATION_PROVIDER_KEY = 'webauthn';
+    public const string AUTHENTICATION_PROVIDER_KEY = 'webauthn';
 
-    public const AUTHENTICATOR_ID_PREFIX = 'security.authenticator.webauthn.';
+    public const string AUTHENTICATOR_ID_PREFIX = 'security.authenticator.webauthn.';
 
-    public const AUTHENTICATOR_DEFINITION_ID = 'webauthn.security.authenticator';
+    public const string AUTHENTICATOR_DEFINITION_ID = 'webauthn.security.authenticator';
 
-    public const DEFAULT_SESSION_STORAGE_SERVICE = SessionStorage::class;
+    public const string DEFAULT_SESSION_STORAGE_SERVICE = SessionStorage::class;
 
-    public const DEFAULT_SUCCESS_HANDLER_SERVICE = DefaultSuccessHandler::class;
+    public const string DEFAULT_SUCCESS_HANDLER_SERVICE = DefaultSuccessHandler::class;
 
-    public const DEFAULT_FAILURE_HANDLER_SERVICE = DefaultFailureHandler::class;
+    public const string DEFAULT_FAILURE_HANDLER_SERVICE = DefaultFailureHandler::class;
 
-    public const DEFAULT_LOGIN_OPTIONS_METHOD = Request::METHOD_POST;
+    public const string DEFAULT_LOGIN_OPTIONS_METHOD = Request::METHOD_POST;
 
-    public const DEFAULT_LOGIN_OPTIONS_PATH = '/login/options';
+    public const string DEFAULT_LOGIN_OPTIONS_PATH = '/login/options';
 
-    public const DEFAULT_LOGIN_RESULT_METHOD = Request::METHOD_POST;
+    public const string DEFAULT_LOGIN_RESULT_METHOD = Request::METHOD_POST;
 
-    public const DEFAULT_LOGIN_RESULT_PATH = '/login';
+    public const string DEFAULT_LOGIN_RESULT_PATH = '/login';
 
-    public const DEFAULT_REQUEST_OPTIONS_HANDLER_SERVICE = DefaultRequestOptionsHandler::class;
+    public const string DEFAULT_REQUEST_OPTIONS_HANDLER_SERVICE = DefaultRequestOptionsHandler::class;
 
-    public const DEFAULT_REGISTER_OPTIONS_METHOD = Request::METHOD_POST;
+    public const string DEFAULT_REGISTER_OPTIONS_METHOD = Request::METHOD_POST;
 
-    public const DEFAULT_REGISTER_OPTIONS_PATH = '/register/options';
+    public const string DEFAULT_REGISTER_OPTIONS_PATH = '/register/options';
 
-    public const DEFAULT_REGISTER_RESULT_METHOD = Request::METHOD_POST;
+    public const string DEFAULT_REGISTER_RESULT_METHOD = Request::METHOD_POST;
 
-    public const DEFAULT_REGISTER_RESULT_PATH = '/register';
+    public const string DEFAULT_REGISTER_RESULT_PATH = '/register';
 
-    public const DEFAULT_CREATION_OPTIONS_HANDLER_SERVICE = DefaultCreationOptionsHandler::class;
+    public const string DEFAULT_CREATION_OPTIONS_HANDLER_SERVICE = DefaultCreationOptionsHandler::class;
 
-    public const FIREWALL_CONFIG_ID_PREFIX = 'security.firewall_config.webauthn.';
+    public const string FIREWALL_CONFIG_ID_PREFIX = 'security.firewall_config.webauthn.';
 
-    public const AUTHENTICATOR_ATTESTATION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_attestation_response_validator.webauthn.';
+    public const string AUTHENTICATOR_ATTESTATION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_attestation_response_validator.webauthn.';
 
-    public const AUTHENTICATOR_ASSERTION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_assertion_response_validator.webauthn.';
+    public const string AUTHENTICATOR_ASSERTION_RESPONSE_VALIDATOR_ID_PREFIX = 'security.authenticator_assertion_response_validator.webauthn.';
 
-    public const CEREMONY_STEP_MANAGER_ID_PREFIX = 'security.ceremony_step_manager.webauthn.';
+    public const string CEREMONY_STEP_MANAGER_ID_PREFIX = 'security.ceremony_step_manager.webauthn.';
 
-    public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
+    public const string FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const SUCCESS_HANDLER_ID_PREFIX = 'security.authentication.success_handler.webauthn.';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const FAILURE_HANDLER_ID_PREFIX = 'security.authentication.failure_handler.webauthn.';
-
-    private const PRIORITY = 0;
+    private const int PRIORITY = 0;
 
     public function __construct(
-        private readonly WebauthnServicesFactory $servicesFactory
+        private WebauthnServicesFactory $servicesFactory
     ) {
     }
 
@@ -223,14 +199,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     /**
      * Creates the authenticator service(s) for the provided configuration.
      *
-     * @return string|string[] The authenticator service ID(s) to be used by the firewall
+     * @return string The authenticator service ID to be used by the firewall
      */
     public function createAuthenticator(
         ContainerBuilder $container,
         string $firewallName,
         array $config,
         string $userProviderId
-    ): string|array {
+    ): string {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
         $authenticatorAssertionResponseValidatorId = $this->servicesFactory->createAuthenticatorAssertionResponseValidator(
             $container,
@@ -262,6 +238,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     /**
      * Creates the firewall listener services for the provided configuration.
      *
+     * @param array<array-key, mixed> $config
      * @return string[] The listener service IDs to be used by the firewall
      */
     public function createListeners(ContainerBuilder $container, string $firewallName, array $config): array
@@ -296,7 +273,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
@@ -330,7 +307,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAttestationControllersAndRoutes(
         ContainerBuilder $container,
@@ -472,6 +449,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $container->setDefinition($controllerId, $controller);
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
@@ -497,6 +477,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         return $optionsBuilderId;
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,

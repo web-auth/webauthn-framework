@@ -11,8 +11,10 @@ use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function assert;
+use function is_array;
 
-class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
+class WebauthnToken extends AbstractToken
 {
     public function __construct(
         private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
@@ -74,6 +76,7 @@ class WebauthnToken extends AbstractToken implements WebauthnTokenInterface
             $this->firewallName,
             $parentData
         ] = $data;
+        assert(is_array($parentData), 'Invalid data');
 
         parent::__unserialize($parentData);
     }

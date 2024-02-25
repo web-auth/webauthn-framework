@@ -8,9 +8,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
-use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
+use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -23,61 +22,54 @@ final class TrustPathTest extends TestCase
     #[Test]
     public function aCertificateTrustPathCanBeCreated(): void
     {
+        //When
         $tp = CertificateTrustPath::create(['cert#1']);
 
+        //Then
         static::assertSame(['cert#1'], $tp->certificates);
     }
 
     /**
-     * @use EcdaaKeyIdTrustPath
-     */
-    #[Test]
-    public function anEcdaaKeyIdTrustPathCanBeCreated(): void
-    {
-        $tp = new EcdaaKeyIdTrustPath('id');
-
-        static::assertSame('id', $tp->getEcdaaKeyId());
-    }
-
-    /**
      * @use TrustPathLoader
      */
     #[Test]
-    public function theLoaderCannotLoadUnsupportedTypeName(): void
+    public function canLoadCertificateTrustPath(): void
     {
-        $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage('The trust path type "foo" is not supported');
-        TrustPathLoader::loadTrustPath([
-            'type' => 'foo',
+        //When
+        $trustPath = TrustPathLoader::loadTrustPath([
+            'x5c' => ['foo'],
         ]);
+
+        //Then
+        static::assertInstanceOf(CertificateTrustPath::class, $trustPath);
     }
 
     /**
      * @use TrustPathLoader
      */
     #[Test]
-    public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
+    public function canLoadEmptyTrustPath(): void
     {
+        //When
+        $trustPath = TrustPathLoader::loadTrustPath([]);
+
+        //Then
+        static::assertInstanceOf(EmptyTrustPath::class, $trustPath);
+    }
+
+    /**
+     * @use TrustPathLoader
+     */
+    #[Test]
+    public function cannotLoadUnknownTrustPath(): void
+    {
+        //Then
         $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage(
-            'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
-        );
+        $this->expectExceptionMessage('Invalid trust path');
+
+        //When
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);
-    }
-
-    /**
-     * @use TrustPathLoader
-     */
-    #[Test]
-    public function theLoaderCanLoadNewTrustPathType(): void
-    {
-        $trustPath = json_encode(new EcdaaKeyIdTrustPath('key_id'), JSON_THROW_ON_ERROR);
-        $data = json_decode($trustPath, true, 512, JSON_THROW_ON_ERROR);
-        $loadedTrustPath = TrustPathLoader::loadTrustPath($data);
-
-        static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $loadedTrustPath);
-        static::assertSame('key_id', $loadedTrustPath->getEcdaaKeyId());
     }
 }

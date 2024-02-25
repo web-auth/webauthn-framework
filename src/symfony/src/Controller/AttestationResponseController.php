@@ -22,42 +22,18 @@ use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final class AttestationResponseController
 {
-    /**
-     * @param null|string[] $securedRelyingPartyIds
-     */
     public function __construct(
-        private readonly SerializerInterface|PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly SerializerInterface $publicKeyCredentialLoader,
         private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private readonly PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly OptionsStorage $optionStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly null|array $securedRelyingPartyIds = null,
     ) {
-        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.6.0',
-                sprintf(
-                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
-                    PublicKeyCredentialSourceRepositoryInterface::class,
-                    PublicKeyCredentialSourceRepository::class
-                )
-            );
-        }
-        if ($this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader) {
-            trigger_deprecation(
-                'web-auth/webauthn-bundle',
-                '4.8.0',
-                'The argument "$publicKeyCredentialLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please inject a Symfony Serializer instead.'
-            );
-        }
     }
 
     public function __invoke(Request $request): Response
@@ -66,15 +42,14 @@ final class AttestationResponseController
             if (! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
                 throw MissingFeatureException::create('Unable to register the credential.');
             }
-            $format = method_exists(
-                $request,
-                'getContentTypeFormat'
-            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format = $request->getContentTypeFormat();
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
-            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
-                $content
-            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
+            $publicKeyCredential = $this->publicKeyCredentialLoader->deserialize(
+                $content,
+                PublicKeyCredential::class,
+                'json'
+            );
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
                 'Invalid response'
@@ -92,7 +67,6 @@ final class AttestationResponseController
                 $response,
                 $publicKeyCredentialCreationOptions,
                 $request->getHost(),
-                $this->securedRelyingPartyIds
             );
             if ($this->credentialSourceRepository->findOneByCredentialId(
                 $credentialSource->publicKeyCredentialId
@@ -102,10 +76,10 @@ final class AttestationResponseController
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
-            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
             if ($throwable instanceof MissingFeatureException) {
-                $exception = new HttpNotImplementedException($throwable->getMessage(), $throwable);
+                throw new HttpNotImplementedException($throwable->getMessage(), $throwable);
             }
+            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure($request, $exception);
             }

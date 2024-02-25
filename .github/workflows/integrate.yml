@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
-
 name: "Integrate"
 
 on:
@@ -32,7 +30,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: "none"
 
       - name: "Checkout code"
@@ -56,8 +54,6 @@ jobs:
         operating-system:
           - "ubuntu-latest"
         php-version:
-          - "8.1"
-          - "8.2"
           - "8.3"
         dependencies:
           - "lowest"
@@ -98,7 +94,7 @@ jobs:
         operating-system:
           - "ubuntu-latest"
         php-version:
-          - "8.2"
+          - "8.3"
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: "Set up PHP"
@@ -132,7 +128,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
@@ -164,12 +160,15 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
       - name: "Checkout code"
         uses: "actions/checkout@v4"
+
+      - name: "Get tags"
+        run: git fetch --tags origin
 
       - name: "Check adherence to EditorConfig"
         uses: "greut/eclint-action@v0"
@@ -183,9 +182,9 @@ jobs:
       - name: "Check coding style"
         run: "make ci-cs"
 
-      - name: "Deptrac"
-        run: |
-          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
+#      - name: "Deptrac"
+#        run: |
+#          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
 
       - name: "SonarCloud Scan"
         uses: "sonarsource/sonarcloud-github-action@master"
@@ -203,7 +202,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 

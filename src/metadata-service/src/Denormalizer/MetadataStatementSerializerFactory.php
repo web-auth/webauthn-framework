@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Denormalizer;
 
+use RuntimeException;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
@@ -14,17 +15,21 @@ use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class MetadataStatementSerializerFactory
+final readonly class MetadataStatementSerializerFactory
 {
-    private const PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
+    private const string PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
 
-    private const PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
+    private const string PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
 
-    public static function create(): ?SerializerInterface
+    public static function create(): SerializerInterface
     {
         foreach (self::getRequiredSerializerClasses() as $class => $package) {
             if (! class_exists($class)) {
-                return null;
+                throw new RuntimeException(sprintf(
+                    'The class %s is required. Please install the package %s.',
+                    $class,
+                    $package
+                ));
             }
         }
 

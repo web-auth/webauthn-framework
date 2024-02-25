@@ -7,8 +7,6 @@ namespace Webauthn\MetadataService\Statement;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
-use function array_key_exists;
-use function is_int;
 
 class Version implements JsonSerializable
 {
@@ -31,44 +29,7 @@ class Version implements JsonSerializable
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getMajor(): ?int
-    {
-        return $this->major;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getMinor(): ?int
-    {
-        return $this->minor;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
-     * @infection-ignore-all
-     */
-    public static function createFromArray(array $data): self
-    {
-        $data = self::filterNullValues($data);
-        foreach (['major', 'minor'] as $key) {
-            if (array_key_exists($key, $data)) {
-                is_int($data[$key]) || throw MetadataStatementLoadingException::create(
-                    sprintf('Invalid value for key "%s"', $key)
-                );
-            }
-        }
-
-        return self::create($data['major'] ?? null, $data['minor'] ?? null);
-    }
-
-    /**
-     * @return array<string, int|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

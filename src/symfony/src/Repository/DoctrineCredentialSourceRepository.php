@@ -42,36 +42,20 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->flush();
     }
 
+    /**
+     * @return array<T>
+     */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
-        return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->from($this->class, 'c')
-            ->select('c')
-            ->where('c.userHandle = :userHandle')
-            ->setParameter(':userHandle', $publicKeyCredentialUserEntity->id)
-            ->getQuery()
-            ->execute();
+        return $this->findBy([
+            'userHandle' => $publicKeyCredentialUserEntity->id,
+        ]);
     }
 
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
-        return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->from($this->class, 'c')
-            ->select('c')
-            ->where('c.publicKeyCredentialId = :publicKeyCredentialId')
-            ->setParameter(':publicKeyCredentialId', base64_encode($publicKeyCredentialId))
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    /**
-     * @deprecated since 4.7.2 and will be removed in 5.0.0. Please use the property instead.
-     */
-    protected function getClass(): string
-    {
-        return $this->class;
+        return $this->findOneBy([
+            'publicKeyCredentialId' => base64_encode($publicKeyCredentialId),
+        ]);
     }
 }

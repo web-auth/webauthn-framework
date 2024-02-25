@@ -72,7 +72,6 @@ services:
     #    tags:
     #      - 'webauthn.mds_service'
     #    arguments:
-    #      - '@Psr\Http\Message\RequestFactoryInterface'
     #      - '@Psr\Http\Client\ClientInterface'
     #      - 'https://fidoalliance.co.nz/blob.jwt'
     #      - [ ]
