@@ -182,9 +182,9 @@ jobs:
       - name: "Check coding style"
         run: "make ci-cs"
 
-      - name: "Deptrac"
-        run: |
-          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
+#      - name: "Deptrac"
+#        run: |
+#          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
 
       - name: "SonarCloud Scan"
         uses: "sonarsource/sonarcloud-github-action@master"

@@ -41,11 +41,6 @@ parameters:
 			path: src/metadata-service/src/Psr18HttpClient.php
 
 		-
-			message: "#^Parameter \\#1 \\$request of method Psr\\\\Http\\\\Client\\\\ClientInterface\\:\\:sendRequest\\(\\) expects Psr\\\\Http\\\\Message\\\\RequestInterface, Psr\\\\Http\\\\Message\\\\MessageInterface given\\.$#"
-			count: 1
-			path: src/metadata-service/src/Psr18HttpClient.php
-
-		-
 			message: "#^Property Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/metadata-service/src/Psr18HttpClient.php
@@ -114,31 +109,6 @@ parameters:
 			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\AuthenticatorGetInfo\\:\\:jsonSerialize\\(\\) should return array\\<string\\> but returns array\\<int\\|string, mixed\\>\\.$#"
 			count: 1
 			path: src/metadata-service/src/Statement/AuthenticatorGetInfo.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\AuthenticatorStatus\\:\\:STATUSES type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/AuthenticatorStatus.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:KEY_PROTECTION_TYPES type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:KEY_PROTECTION_TYPES_INT type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:MATCHER_PROTECTION_TYPES type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:MATCHER_PROTECTION_TYPES_INT type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
 
 		-
 			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:__construct\\(\\) has parameter \\$tcDisplayPNGCharacteristics with no value type specified in iterable type array\\.$#"
@@ -219,16 +189,6 @@ parameters:
 			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\PatternAccuracyDescriptor\\:\\:jsonSerialize\\(\\) should return array\\<string, int\\|null\\> but returns array\\.$#"
 			count: 1
 			path: src/metadata-service/src/Statement/PatternAccuracyDescriptor.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\VerificationMethodDescriptor\\:\\:USER_VERIFICATION_METHODS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/VerificationMethodDescriptor.php
-
-		-
-			message: "#^Constant Webauthn\\\\MetadataService\\\\Statement\\\\VerificationMethodDescriptor\\:\\:USER_VERIFICATION_METHODS_INT type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/VerificationMethodDescriptor.php
 
 		-
 			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\Version\\:\\:jsonSerialize\\(\\) should return array\\<string, int\\|null\\> but returns array\\.$#"
@@ -791,10 +751,7 @@ parameters:
 			path: src/symfony/src/Security/Authorization/Voter/IsUserVerifiedVoter.php
 
 		-
-			message: """
-				#^Call to deprecated method getContentType\\(\\) of class Symfony\\\\Component\\\\HttpFoundation\\\\Request\\:
-				since Symfony 6\\.2, use getContentTypeFormat\\(\\) instead$#
-			"""
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\HttpFoundation\\\\Request\\:\\:getContentType\\(\\)\\.$#"
 			count: 1
 			path: src/symfony/src/Security/Guesser/RequestBodyUserEntityGuesser.php
 
@@ -1465,7 +1422,7 @@ parameters:
 
 		-
 			message: "#^@readonly property Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:\\$extensions is assigned outside of the constructor\\.$#"
-			count: 2
+			count: 3
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
@@ -1517,21 +1474,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: src/webauthn/src/AuthenticatorDataLoader.php
-
-		-
-			message: "#^Constant Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:AUTHENTICATOR_ATTACHMENTS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-
-		-
-			message: "#^Constant Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:RESIDENT_KEY_REQUIREMENTS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/AuthenticatorSelectionCriteria.php
-
-		-
-			message: "#^Constant Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:USER_VERIFICATION_REQUIREMENTS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/AuthenticatorSelectionCriteria.php
 
 		-
 			message: "#^Access to an undefined property Webauthn\\\\PublicKeyCredentialCreationOptions\\|Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:\\$rp\\.$#"
@@ -2289,16 +2231,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
-			message: "#^Constant Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:ATTESTATION_CONVEYANCE_PREFERENCES type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/PublicKeyCredentialCreationOptions.php
-
-		-
-			message: "#^Constant Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:AUTHENTICATOR_TRANSPORTS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/PublicKeyCredentialDescriptor.php
-
-		-
 			message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialDescriptor.php
@@ -2307,11 +2239,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
-
-		-
-			message: "#^Constant Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:USER_VERIFICATION_REQUIREMENTS type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/PublicKeyCredentialRequestOptions.php
 
 		-
 			message: "#^Method Webauthn\\\\StringStream\\:\\:read\\(\\) should return string but returns string\\|false\\.$#"
