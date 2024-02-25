@@ -2264,3 +2264,8 @@ parameters:
 			message: "#^Property Webauthn\\\\StringStream\\:\\:\\$data \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
 			path: src/webauthn/src/StringStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$certificates of static method Webauthn\\\\TrustPath\\\\CertificateTrustPath\\:\\:create\\(\\) expects array\\<string\\>, array given\\.$#"
+			count: 1
+			path: src/webauthn/src/TrustPath/TrustPathLoader.php
