@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 
 /**
@@ -21,8 +22,10 @@ final class TrustPathTest extends TestCase
     #[Test]
     public function aCertificateTrustPathCanBeCreated(): void
     {
+        //When
         $tp = CertificateTrustPath::create(['cert#1']);
 
+        //Then
         static::assertSame(['cert#1'], $tp->certificates);
     }
 
@@ -30,25 +33,41 @@ final class TrustPathTest extends TestCase
      * @use TrustPathLoader
      */
     #[Test]
-    public function theLoaderCannotLoadUnsupportedTypeName(): void
+    public function canLoadCertificateTrustPath(): void
     {
-        $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage('The trust path type "foo" is not supported');
-        TrustPathLoader::loadTrustPath([
-            'type' => 'foo',
+        //When
+        $trustPath = TrustPathLoader::loadTrustPath([
+            'x5c' => ['foo'],
         ]);
+
+        //Then
+        static::assertInstanceOf(CertificateTrustPath::class, $trustPath);
     }
 
     /**
      * @use TrustPathLoader
      */
     #[Test]
-    public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
+    public function canLoadEmptyTrustPath(): void
     {
+        //When
+        $trustPath = TrustPathLoader::loadTrustPath([]);
+
+        //Then
+        static::assertInstanceOf(EmptyTrustPath::class, $trustPath);
+    }
+
+    /**
+     * @use TrustPathLoader
+     */
+    #[Test]
+    public function cannotLoadUnknownTrustPath(): void
+    {
+        //Then
         $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage(
-            'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
-        );
+        $this->expectExceptionMessage('Invalid trust path');
+
+        //When
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);

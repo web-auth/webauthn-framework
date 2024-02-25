@@ -89,16 +89,6 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     }
 
     /**
-     * @return StatusReport[]
-     */
-    public function getStatusReports(string $aaguid): iterable
-    {
-        $this->loadData();
-
-        return $this->statusReports[$aaguid] ?? [];
-    }
-
-    /**
      * @return string[]
      */
     public function list(): iterable
@@ -123,6 +113,16 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         $this->dispatcher->dispatch(MetadataStatementFound::create($mds));
 
         return $mds;
+    }
+
+    /**
+     * @return StatusReport[]
+     */
+    public function getStatusReports(string $aaguid): iterable
+    {
+        $this->loadData();
+
+        return $this->statusReports[$aaguid] ?? [];
     }
 
     private function loadData(): void
