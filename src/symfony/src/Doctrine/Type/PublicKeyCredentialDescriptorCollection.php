@@ -28,7 +28,6 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public array $publicKeyCredentialDescriptors;
 
     /**
-     * @private
      * @param PublicKeyCredentialDescriptor[] $pkCredentialDescriptors
      */
     public function __construct(
@@ -65,7 +64,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     }
 
     /**
-     * @return array<string, mixed>[]
+     * @return array<string, PublicKeyCredentialDescriptor>
      */
     public function jsonSerialize(): array
     {

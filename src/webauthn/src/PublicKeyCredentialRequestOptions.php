@@ -28,7 +28,6 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     ];
 
     /**
-     * @private
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
      */
@@ -54,7 +53,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param positive-int $timeout
-     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtensions> $extensions
      */
     public static function create(
         string $challenge,

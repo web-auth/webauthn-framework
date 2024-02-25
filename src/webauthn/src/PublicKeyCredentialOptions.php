@@ -14,7 +14,7 @@ abstract class PublicKeyCredentialOptions implements JsonSerializable
 
     /**
      * @param positive-int|null $timeout
-     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtensions> $extensions
      * @protected
      */
     public function __construct(

@@ -6,14 +6,11 @@ namespace Webauthn;
 
 use JsonSerializable;
 
-class PublicKeyCredentialParameters implements JsonSerializable
+readonly class PublicKeyCredentialParameters implements JsonSerializable
 {
-    /**
-     * @private
-     */
     public function __construct(
-        public readonly string $type,
-        public readonly int $alg
+        public string $type,
+        public int    $alg
     ) {
     }
 

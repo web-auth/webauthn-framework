@@ -45,7 +45,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
 
     private EventDispatcherInterface $dispatcher;
 
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     /**
      * @param array<string, mixed> $additionalHeaderParameters
@@ -56,7 +56,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         private readonly array $additionalHeaderParameters = [],
         private readonly ?CertificateChainValidator $certificateChainValidator = null,
         private readonly ?string $rootCertificateUri = null,
-        ?SerializerInterface $serializer = null,
+        SerializerInterface $serializer = null,
     ) {
         $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
@@ -136,23 +136,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         try {
             $payload = $this->getJwsPayload($content, $jwtCertificates);
             $this->validateCertificates(...$jwtCertificates);
-            if ($this->serializer !== null) {
-                $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, 'json');
-                foreach ($blob->entries as $entry) {
-                    $mds = $entry->metadataStatement;
-                    if ($mds !== null && $entry->aaguid !== null) {
-                        $this->statements[$entry->aaguid] = $mds;
-                        $this->statusReports[$entry->aaguid] = $entry->statusReports;
-                    }
-                }
-                $this->loaded = true;
-                return;
-            }
-            $data = json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
-
-            foreach ($data['entries'] as $datum) {
-                $entry = MetadataBLOBPayloadEntry::createFromArray($datum);
-
+            $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, 'json');
+            foreach ($blob->entries as $entry) {
                 $mds = $entry->metadataStatement;
                 if ($mds !== null && $entry->aaguid !== null) {
                     $this->statements[$entry->aaguid] = $mds;
@@ -161,9 +146,9 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
             }
         } catch (Throwable) {
             // Nothing to do
+        } finally {
+            $this->loaded = true;
         }
-
-        $this->loaded = true;
     }
 
     /**

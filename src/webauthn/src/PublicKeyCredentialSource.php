@@ -15,7 +15,6 @@ use Webauthn\TrustPath\TrustPath;
 class PublicKeyCredentialSource implements JsonSerializable
 {
     /**
-     * @private
      * @param string[] $transports
      * @param array<string, mixed>|null $otherUI
      */

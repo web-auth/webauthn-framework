@@ -61,17 +61,17 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     /**
      * @param mixed[] $json
      */
-    public static function createFromArray(array $json): self
+    public static function createFromArray(array $data): self
     {
-        array_key_exists('type', $json) || throw InvalidDataException::create(
-            $json,
+        array_key_exists('type', $data) || throw InvalidDataException::create(
+            $data,
             'Invalid input. "type" is missing.'
         );
-        array_key_exists('id', $json) || throw InvalidDataException::create($json, 'Invalid input. "id" is missing.');
+        array_key_exists('id', $data) || throw InvalidDataException::create($data, 'Invalid input. "id" is missing.');
 
-        $id = Base64UrlSafe::decodeNoPadding($json['id']);
+        $id = Base64UrlSafe::decodeNoPadding($data['id']);
 
-        return self::create($json['type'], $id, $json['transports'] ?? []);
+        return self::create($data['type'], $id, $data['transports'] ?? []);
     }
 
     /**

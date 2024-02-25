@@ -22,7 +22,7 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
 
     private EventDispatcherInterface $dispatcher;
 
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     public function __construct(
         private readonly string $filename,
@@ -90,10 +90,6 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
         if ($this->isBase64Encoded) {
             $content = Base64::decode($content, true);
         }
-        if ($this->serializer !== null) {
-            $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
-        } else {
-            $this->statement = MetadataStatement::createFromString($content);
-        }
+        $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
     }
 }

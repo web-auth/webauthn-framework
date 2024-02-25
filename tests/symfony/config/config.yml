@@ -119,7 +119,6 @@ doctrine:
         alias: App
 
 webauthn:
-  clock: 'Psr\Clock\ClockInterface'
   credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
   user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
   android_safetynet:

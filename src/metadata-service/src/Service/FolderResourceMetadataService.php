@@ -16,7 +16,7 @@ use const DIRECTORY_SEPARATOR;
 
 final class FolderResourceMetadataService implements MetadataService
 {
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     public function __construct(
         private string $rootPath,
@@ -63,12 +63,7 @@ final class FolderResourceMetadataService implements MetadataService
         ));
         $filename = $this->rootPath . DIRECTORY_SEPARATOR . $aaguid;
         $data = trim(file_get_contents($filename));
-        if ($this->serializer !== null) {
-            $mds = $this->serializer->deserialize($data, MetadataStatement::class, 'json');
-        } else {
-            $mds = MetadataStatement::createFromString($data);
-        }
-
+        $mds = $this->serializer->deserialize($data, MetadataStatement::class, 'json');
         $mds->aaguid !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
 
         return $mds;

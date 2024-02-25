@@ -1446,11 +1446,6 @@ parameters:
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientOutputsLoader.php
 
 		-
-			message: "#^Parameter \\#1 \\$credentialSource of class Webauthn\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent constructor expects Webauthn\\\\PublicKeyCredentialSource, string\\|Webauthn\\\\PublicKeyCredentialSource given\\.$#"
-			count: 1
-			path: src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-		-
 			message: "#^Cannot access offset 1 on array\\|false\\.$#"
 			count: 2
 			path: src/webauthn/src/AuthenticatorDataLoader.php
@@ -1991,7 +1986,7 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#6 \\$extensions of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects array\\<int\\|string, mixed\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#6 \\$extensions of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
@@ -2236,34 +2231,14 @@ parameters:
 			path: src/webauthn/src/PublicKeyCredentialDescriptor.php
 
 		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<int\\|string, mixed\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\> given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
 
 		-
-			message: "#^Method Webauthn\\\\StringStream\\:\\:read\\(\\) should return string but returns string\\|false\\.$#"
+			message: "#^Parameter \\#3 \\$extensions of method Webauthn\\\\PublicKeyCredentialOptions\\:\\:__construct\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, array\\<int\\|string, mixed\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null given\\.$#"
 			count: 1
-			path: src/webauthn/src/StringStream.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: src/webauthn/src/StringStream.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function rewind expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: src/webauthn/src/StringStream.php
-
-		-
-			message: "#^Parameter \\#1 \\$string of function mb_strlen expects string, string\\|false given\\.$#"
-			count: 2
-			path: src/webauthn/src/StringStream.php
-
-		-
-			message: "#^Property Webauthn\\\\StringStream\\:\\:\\$data \\(resource\\) does not accept resource\\|false\\.$#"
-			count: 1
-			path: src/webauthn/src/StringStream.php
+			path: src/webauthn/src/PublicKeyCredentialRequestOptions.php
 
 		-
 			message: "#^Parameter \\#1 \\$certificates of static method Webauthn\\\\TrustPath\\\\CertificateTrustPath\\:\\:create\\(\\) expects array\\<string\\>, array given\\.$#"

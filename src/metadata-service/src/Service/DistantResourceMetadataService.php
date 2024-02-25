@@ -23,7 +23,7 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
 
     private EventDispatcherInterface $dispatcher;
 
-    private readonly ?SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
 
     /**
      * @param array<string, string> $additionalHeaderParameters
@@ -101,12 +101,7 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
         if ($this->isBase64Encoded) {
             $content = Base64::decode($content, true);
         }
-        if ($this->serializer !== null) {
-            $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
-            return;
-        }
-
-        $this->statement = MetadataStatement::createFromString($content);
+        $this->statement = $this->serializer->deserialize($content, MetadataStatement::class, 'json');
     }
 
     private function fetch(): string
