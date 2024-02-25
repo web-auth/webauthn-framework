@@ -89,6 +89,16 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     }
 
     /**
+     * @return StatusReport[]
+     */
+    public function getStatusReports(string $aaguid): iterable
+    {
+        $this->loadData();
+
+        return $this->statusReports[$aaguid] ?? [];
+    }
+
+    /**
      * @return string[]
      */
     public function list(): iterable
