@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
-
 name: "Integrate"
 
 on:
@@ -170,6 +168,9 @@ jobs:
 
       - name: "Checkout code"
         uses: "actions/checkout@v4"
+
+      - name: "Get tags"
+        run: git fetch --tags origin
 
       - name: "Check adherence to EditorConfig"
         uses: "greut/eclint-action@v0"

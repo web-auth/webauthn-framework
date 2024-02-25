@@ -66,12 +66,4 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->getQuery()
             ->getOneOrNullResult();
     }
-
-    /**
-     * @deprecated since 4.7.2 and will be removed in 5.0.0. Please use the property instead.
-     */
-    protected function getClass(): string
-    {
-        return $this->class;
-    }
 }

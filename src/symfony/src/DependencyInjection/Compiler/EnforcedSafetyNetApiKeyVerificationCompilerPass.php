@@ -22,9 +22,6 @@ final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerP
         }
 
         $requestFactoryReference = null;
-        if ($container->hasAlias('webauthn.android_safetynet.request_factory')) {
-            $requestFactoryReference = new Reference('webauthn.android_safetynet.request_factory');
-        }
 
         $definition = $container->getDefinition(AndroidSafetyNetAttestationStatementSupport::class);
         $definition->addMethodCall('enableApiVerification', [

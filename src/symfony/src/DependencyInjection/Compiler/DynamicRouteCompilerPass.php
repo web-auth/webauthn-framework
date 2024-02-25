@@ -10,9 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webauthn\Bundle\Routing\Loader;
 use function array_key_exists;
 
-final class DynamicRouteCompilerPass implements CompilerPassInterface
+final readonly class DynamicRouteCompilerPass implements CompilerPassInterface
 {
-    public const TAG = 'webauthn_controller';
+    public const string TAG = 'webauthn_controller';
 
     public function process(ContainerBuilder $container): void
     {

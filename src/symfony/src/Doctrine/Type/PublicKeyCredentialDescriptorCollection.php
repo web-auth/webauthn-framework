@@ -11,7 +11,6 @@ use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 use Webauthn\PublicKeyCredentialDescriptor;
-use function array_key_exists;
 use function count;
 use const COUNT_NORMAL;
 use const JSON_THROW_ON_ERROR;
@@ -50,39 +49,6 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public static function create(array $publicKeyCredentialDescriptors): self
     {
         return new self($publicKeyCredentialDescriptors);
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the {self::create} instead.
-     * @infection-ignore-all
-     */
-    public function add(PublicKeyCredentialDescriptor ...$publicKeyCredentialDescriptors): void
-    {
-        foreach ($publicKeyCredentialDescriptors as $publicKeyCredentialDescriptor) {
-            $this->publicKeyCredentialDescriptors[$publicKeyCredentialDescriptor->id] = $publicKeyCredentialDescriptor;
-        }
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function has(string $id): bool
-    {
-        return array_key_exists($id, $this->publicKeyCredentialDescriptors);
-    }
-
-    /**
-     * @deprecated since 4.7.0. No replacement.
-     * @infection-ignore-all
-     */
-    public function remove(string $id): void
-    {
-        if (! array_key_exists($id, $this->publicKeyCredentialDescriptors)) {
-            return;
-        }
-
-        unset($this->publicKeyCredentialDescriptors[$id]);
     }
 
     /**

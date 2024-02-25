@@ -12,12 +12,10 @@ use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
 use DateTimeImmutable;
-use DateTimeZone;
-use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Clock\NativeClock;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
@@ -40,21 +38,13 @@ use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
-    private readonly Clock|ClockInterface $clock;
-
     private EventDispatcherInterface $dispatcher;
+    private readonly ClockInterface $clock;
 
-    public function __construct(null|Clock|ClockInterface $clock = null)
-    {
-        if ($clock === null) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.5.0',
-                'The parameter "$clock" will become mandatory in 5.0.0. Please set a valid PSR Clock implementation instead of "null".'
-            );
-            $clock = new SystemClock(new DateTimeZone('UTC'));
-        }
-        $this->clock = $clock;
+    public function __construct(
+        null|ClockInterface $clock = null
+    ) {
+        $this->clock = $clock ?? new NativeClock();
         $this->dispatcher = new NullEventDispatcher();
     }
 
@@ -63,7 +53,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $this->dispatcher = $eventDispatcher;
     }
 
-    public static function create(null|Clock|ClockInterface $clock = null): self
+    public static function create(null|ClockInterface $clock = null): self
     {
         return new self($clock);
     }

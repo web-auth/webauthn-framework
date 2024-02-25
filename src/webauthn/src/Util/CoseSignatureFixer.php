@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Util;
 
-use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\ECDSA\ECSignature;
 use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES256K;
@@ -19,13 +18,13 @@ use Cose\Algorithm\Signature\Signature;
  *
  * @see https://www.w3.org/TR/webauthn/#signature-attestation-types
  */
-abstract class CoseSignatureFixer
+final readonly class CoseSignatureFixer
 {
-    private const ES256_SIGNATURE_LENGTH = 64;
+    private const int ES256_SIGNATURE_LENGTH = 64;
 
-    private const ES384_SIGNATURE_LENGTH = 96;
+    private const int ES384_SIGNATURE_LENGTH = 96;
 
-    private const ES512_SIGNATURE_LENGTH = 132;
+    private const int ES512_SIGNATURE_LENGTH = 132;
 
     public static function fix(string $signature, Signature $algorithm): string
     {

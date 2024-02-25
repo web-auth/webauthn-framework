@@ -10,8 +10,8 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\DependencyInjection\Compiler\CounterCheckerSetterCompilerPass;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Counter\CounterChecker;
 
 /**
@@ -23,7 +23,7 @@ final class CounterCheckerSetterCompilerPassTest extends AbstractCompilerPassTes
     public function theCounterCheckerIsCorrectlyAddedIfItExists(): void
     {
         //Given
-        $this->setDefinition(AuthenticatorAssertionResponseValidator::class, new Definition());
+        $this->setDefinition(CeremonyStepManagerFactory::class, new Definition());
 
         $this->setDefinition('counter_checker', new Definition());
         $this->container->setAlias(CounterChecker::class, 'counter_checker');
@@ -33,7 +33,7 @@ final class CounterCheckerSetterCompilerPassTest extends AbstractCompilerPassTes
 
         //Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            AuthenticatorAssertionResponseValidator::class,
+            CeremonyStepManagerFactory::class,
             'setCounterChecker',
             [new Reference(CounterChecker::class)]
         );

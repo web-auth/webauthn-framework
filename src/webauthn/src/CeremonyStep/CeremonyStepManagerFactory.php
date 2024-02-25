@@ -98,10 +98,7 @@ final class CeremonyStepManagerFactory
         $this->topOriginValidator = $topOriginValidator;
     }
 
-    /**
-     * @param null|string[] $securedRelyingPartyId
-     */
-    public function creationCeremony(null|array $securedRelyingPartyId = null): CeremonyStepManager
+    public function creationCeremony(): CeremonyStepManager
     {
         $metadataStatementChecker = new CheckMetadataStatement();
         if ($this->certificateChainValidator !== null) {
@@ -119,7 +116,7 @@ final class CeremonyStepManagerFactory
         return new CeremonyStepManager([
             new CheckClientDataCollectorType(),
             new CheckChallenge(),
-            new CheckOrigin($this->securedRelyingPartyId ?? $securedRelyingPartyId ?? []),
+            new CheckOrigin($this->securedRelyingPartyId ?? []),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
@@ -134,10 +131,7 @@ final class CeremonyStepManagerFactory
         ]);
     }
 
-    /**
-     * @param null|string[] $securedRelyingPartyId
-     */
-    public function requestCeremony(null|array $securedRelyingPartyId = null): CeremonyStepManager
+    public function requestCeremony(): CeremonyStepManager
     {
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion */
         return new CeremonyStepManager([
@@ -145,7 +139,7 @@ final class CeremonyStepManagerFactory
             new CheckUserHandle(),
             new CheckClientDataCollectorType(),
             new CheckChallenge(),
-            new CheckOrigin($this->securedRelyingPartyId ?? $securedRelyingPartyId ?? []),
+            new CheckOrigin($this->securedRelyingPartyId ?? []),
             new CheckTopOrigin(null),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),

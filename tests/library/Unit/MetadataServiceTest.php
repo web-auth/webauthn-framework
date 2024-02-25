@@ -24,7 +24,7 @@ final class MetadataServiceTest extends TestCase
         $client = new MockHttpClient();
         $client->setResponseFactory($response);
 
-        $service = FidoAllianceCompliantMetadataService::create(null, $client, 'https://fidoalliance.co.nz');
+        $service = FidoAllianceCompliantMetadataService::create($client, 'https://fidoalliance.co.nz');
         $aaguids = $service->list();
         foreach ($aaguids as $aaguid) {
             static::assertTrue($service->has($aaguid));
@@ -41,7 +41,6 @@ final class MetadataServiceTest extends TestCase
 
         //When
         $service = DistantResourceMetadataService::create(
-            null,
             $client,
             'https://raw.githubusercontent.com/solokeys/solo/2.1.0/metadata/Solo-FIDO2-CTAP2-Authenticator.json'
         );

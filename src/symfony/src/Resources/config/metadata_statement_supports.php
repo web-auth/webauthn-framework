@@ -21,7 +21,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AppleAttestationStatementSupport::class);
     $container
         ->set(TPMAttestationStatementSupport::class)
-        ->args([service('webauthn.clock') ->nullOnInvalid()])
+        ->args([service('webauthn.clock')])
     ;
     $container
         ->set(FidoU2FAttestationStatementSupport::class);
@@ -33,9 +33,5 @@ return static function (ContainerConfigurator $container): void {
 
     $container
         ->set(PhpCertificateChainValidator::class)
-        ->args(
-            [service('webauthn.http_client'), service('webauthn.request_factory')->nullOnInvalid(), service(
-                'webauthn.clock'
-            )]
-        );
+        ->args([service('webauthn.http_client'), service('webauthn.clock')]);
 };

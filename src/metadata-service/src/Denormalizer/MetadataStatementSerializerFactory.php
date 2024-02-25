@@ -14,11 +14,11 @@ use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class MetadataStatementSerializerFactory
+final readonly class MetadataStatementSerializerFactory
 {
-    private const PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
+    private const string PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
 
-    private const PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
+    private const string PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
 
     public static function create(): ?SerializerInterface
     {

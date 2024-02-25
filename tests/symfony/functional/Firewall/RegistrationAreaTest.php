@@ -75,11 +75,9 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => [
-                'authenticatorAttachment' => 'cross-platform',
-                'userVerification' => 'required',
-                'requireResidentKey' => true,
-            ],
+            'authenticatorAttachment' => 'cross-platform',
+            'userVerification' => 'required',
+            'residentKey' => 'required',
             'attestation' => 'indirect',
         ];
         $client = static::createClient([], [
@@ -103,7 +101,6 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'requireResidentKey' => true,
             'userVerification' => 'required',
             'residentKey' => 'required',
             'authenticatorAttachment' => 'cross-platform',
@@ -116,9 +113,8 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => [
-                'requireResidentKey' => true,
-            ],
+            'userVerification' => 'preferred',
+            'residentKey' => 'required',
         ];
         $client = static::createClient([], [
             'HTTPS' => 'on',
@@ -141,7 +137,6 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'requireResidentKey' => true,
             'userVerification' => 'preferred',
             'residentKey' => 'required',
         ], $data['authenticatorSelection']);
@@ -153,11 +148,9 @@ final class RegistrationAreaTest extends WebTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'authenticatorSelection' => [
-                'authenticatorAttachment' => 'platform',
-                'userVerification' => 'required',
-                'requireResidentKey' => true,
-            ],
+            'userVerification' => 'required',
+            'residentKey' => 'required',
+            'authenticatorAttachment' => 'platform',
             'extensions' => [
                 'loc' => true,
                 'def' => '123',
@@ -188,7 +181,6 @@ final class RegistrationAreaTest extends WebTestCase
 
         static::assertArrayHasKey('authenticatorSelection', $data);
         static::assertSame([
-            'requireResidentKey' => true,
             'userVerification' => 'required',
             'residentKey' => 'required',
             'authenticatorAttachment' => 'platform',

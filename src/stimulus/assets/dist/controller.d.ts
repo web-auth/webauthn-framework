@@ -39,10 +39,6 @@ export default class extends Controller {
             type: StringConstructor;
             default: string;
         };
-        requireResidentKeyField: {
-            type: StringConstructor;
-            default: string;
-        };
         authenticatorAttachmentField: {
             type: StringConstructor;
             default: string;
@@ -63,7 +59,6 @@ export default class extends Controller {
     readonly attestationFieldValue: string;
     readonly userVerificationFieldValue: string;
     readonly residentKeyFieldValue: string;
-    readonly requireResidentKeyFieldValue: string;
     readonly authenticatorAttachmentFieldValue: string;
     readonly useBrowserAutofillValue: boolean;
     connect(): void;

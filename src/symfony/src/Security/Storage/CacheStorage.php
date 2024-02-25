@@ -7,12 +7,12 @@ namespace Webauthn\Bundle\Security\Storage;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-final class CacheStorage implements OptionsStorage
+final readonly class CacheStorage implements OptionsStorage
 {
-    private const CACHE_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
+    private const string CACHE_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
     public function __construct(
-        private readonly CacheItemPoolInterface $cache
+        private CacheItemPoolInterface $cache
     ) {
     }
 

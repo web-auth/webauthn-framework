@@ -6,8 +6,6 @@ namespace Webauthn\MetadataService\Service;
 
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
@@ -31,20 +29,12 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
      * @param array<string, string> $additionalHeaderParameters
      */
     public function __construct(
-        private readonly ?RequestFactoryInterface $requestFactory,
-        private readonly ClientInterface|HttpClientInterface $httpClient,
+        private readonly HttpClientInterface $httpClient,
         private readonly string $uri,
         private readonly bool $isBase64Encoded = false,
         private readonly array $additionalHeaderParameters = [],
         ?SerializerInterface $serializer = null,
     ) {
-        if ($requestFactory !== null && ! $httpClient instanceof HttpClientInterface) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.7.0',
-                'The parameter "$requestFactory" will be removed in 5.0.0. Please set it to null and set an Symfony\Contracts\HttpClient\HttpClientInterface as "$httpClient" argument.'
-            );
-        }
         $this->serializer = $serializer ?? MetadataStatementSerializerFactory::create();
         $this->dispatcher = new NullEventDispatcher();
     }
@@ -58,14 +48,13 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
      * @param array<string, mixed> $additionalHeaderParameters
      */
     public static function create(
-        ?RequestFactoryInterface $requestFactory,
-        ClientInterface|HttpClientInterface $httpClient,
+        HttpClientInterface $httpClient,
         string $uri,
         bool $isBase64Encoded = false,
         array $additionalHeaderParameters = [],
         ?SerializerInterface $serializer = null
     ): self {
-        return new self($requestFactory, $httpClient, $uri, $isBase64Encoded, $additionalHeaderParameters, $serializer);
+        return new self($httpClient, $uri, $isBase64Encoded, $additionalHeaderParameters, $serializer);
     }
 
     public function list(): iterable
@@ -122,38 +111,6 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
 
     private function fetch(): string
     {
-        if ($this->httpClient instanceof HttpClientInterface) {
-            $content = $this->sendSymfonyRequest();
-        } else {
-            $content = $this->sendPsrRequest();
-        }
-        $content !== '' || throw MetadataStatementLoadingException::create(
-            'Unable to contact the server. The response has no content'
-        );
-
-        return $content;
-    }
-
-    private function sendPsrRequest(): string
-    {
-        $request = $this->requestFactory->createRequest('GET', $this->uri);
-        foreach ($this->additionalHeaderParameters as $k => $v) {
-            $request = $request->withHeader($k, $v);
-        }
-        $response = $this->httpClient->sendRequest($request);
-        $response->getStatusCode() === 200 || throw MetadataStatementLoadingException::create(sprintf(
-            'Unable to contact the server. Response code is %d',
-            $response->getStatusCode()
-        ));
-        $response->getBody()
-            ->rewind();
-
-        return $response->getBody()
-            ->getContents();
-    }
-
-    private function sendSymfonyRequest(): string
-    {
         $response = $this->httpClient->request('GET', $this->uri, [
             'headers' => $this->additionalHeaderParameters,
         ]);
@@ -162,6 +119,11 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
             $response->getStatusCode()
         ));
 
-        return $response->getContent();
+        $content = $response->getContent();
+        $content !== '' || throw MetadataStatementLoadingException::create(
+            'Unable to contact the server. The response has no content'
+        );
+
+        return $content;
     }
 }

@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\TrustPath\CertificateTrustPath;
-use Webauthn\TrustPath\EcdaaKeyIdTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
@@ -31,23 +30,6 @@ final class AttestationStatementTest extends TestCase
         static::assertSame('FOO', $attestationStatement->get('bar'));
         static::assertInstanceOf(EmptyTrustPath::class, $attestationStatement->trustPath);
         static::assertSame('none', $attestationStatement->type);
-    }
-
-    #[Test]
-    public function anAttestationStatementOfEcdaaTypeReturnsTheExpectedProperties(): void
-    {
-        $attestationStatement = AttestationStatement::createEcdaa('fmt', [
-            'bar' => 'FOO',
-        ], new EcdaaKeyIdTrustPath('key_id'));
-        static::assertSame('fmt', $attestationStatement->fmt);
-        static::assertSame([
-            'bar' => 'FOO',
-        ], $attestationStatement->attStmt);
-        static::assertTrue($attestationStatement->has('bar'));
-        static::assertFalse($attestationStatement->has('foo'));
-        static::assertSame('FOO', $attestationStatement->get('bar'));
-        static::assertInstanceOf(EcdaaKeyIdTrustPath::class, $attestationStatement->trustPath);
-        static::assertSame('ecdaa', $attestationStatement->type);
     }
 
     #[Test]

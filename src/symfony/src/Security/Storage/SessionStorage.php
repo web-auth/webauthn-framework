@@ -11,12 +11,12 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
 use function is_array;
 
-final class SessionStorage implements OptionsStorage
+final readonly class SessionStorage implements OptionsStorage
 {
-    private const SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
+    private const string SESSION_PARAMETER = 'WEBAUTHN_PUBLIC_KEY_OPTIONS';
 
     public function __construct(
-        private readonly RequestStack $requestStack
+        private RequestStack $requestStack
     ) {
     }
 

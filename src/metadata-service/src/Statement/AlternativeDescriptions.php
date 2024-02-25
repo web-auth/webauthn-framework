@@ -26,27 +26,6 @@ class AlternativeDescriptions implements JsonSerializable
 
     /**
      * @return array<string, string>
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function all(): array
-    {
-        return $this->descriptions;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function add(string $locale, string $description): self
-    {
-        $this->descriptions[$locale] = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return array<string, string>
      */
     public function jsonSerialize(): array
     {

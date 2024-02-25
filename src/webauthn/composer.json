@@ -20,17 +20,15 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
         "paragonie/constant_time_encoding": "^2.6",
         "psr/event-dispatcher": "^1.0",
-        "psr/http-client": "^1.0",
-        "psr/http-factory": "^1.0",
         "psr/log": "^1.0|^2.0|^3.0",
         "spomky-labs/cbor-php": "^3.0",
-        "symfony/uid": "^6.1|^7.0",
+        "symfony/uid": "^7.0",
         "web-auth/cose-lib": "^4.2.3",
         "web-auth/metadata-service": "self.version"
     },
@@ -47,7 +45,6 @@
     },
     "suggest": {
         "psr/log-implementation": "Recommended to receive logs from the library",
-        "web-token/jwt-library": "Mandatory for the AndroidSafetyNet Attestation Statement support",
         "symfony/event-dispatcher": "Recommended to use dispatched events"
     }
 }

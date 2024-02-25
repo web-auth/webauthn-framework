@@ -29,42 +29,6 @@ class AttestedCredentialData implements JsonSerializable
     }
 
     /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getAaguid(): Uuid
-    {
-        return $this->aaguid;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function setAaguid(Uuid $aaguid): void
-    {
-        $this->aaguid = $aaguid;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCredentialId(): string
-    {
-        return $this->credentialId;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCredentialPublicKey(): ?string
-    {
-        return $this->credentialPublicKey;
-    }
-
-    /**
      * @param mixed[] $json
      */
     public static function createFromArray(array $json): self

@@ -10,24 +10,23 @@ use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Exception\AuthenticationExtensionException;
 use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
  */
-final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
+final class AuthenticationExtensionsLoaderTest extends TestCase
 {
     #[Test]
     public function theExtensionsCanBeLoaded(): void
     {
         $cbor = new MapObject([new MapItem(new ByteStringObject('loc'), new TrueObject())]);
 
-        $extensions = AuthenticationExtensionsClientOutputsLoader::load($cbor);
+        $extensions = AuthenticationExtensionsLoader::load($cbor);
 
-        static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
+        static::assertInstanceOf(AuthenticationExtensions::class, $extensions);
         static::assertCount(1, $extensions);
         static::assertSame('{"loc":true}', json_encode($extensions, JSON_THROW_ON_ERROR));
     }
@@ -39,6 +38,6 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
         $this->expectExceptionMessage('Invalid extension object');
         $cbor = new ByteStringObject('loc');
 
-        AuthenticationExtensionsClientOutputsLoader::load($cbor);
+        AuthenticationExtensionsLoader::load($cbor);
     }
 }

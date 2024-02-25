@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;
@@ -28,18 +27,8 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
      */
     public function __construct(
         private readonly array $profiles,
-        ?EventDispatcherInterface $eventDispatcher = null
     ) {
-        if ($eventDispatcher === null) {
-            $this->eventDispatcher = new NullEventDispatcher();
-        } else {
-            $this->eventDispatcher = $eventDispatcher;
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.5.0',
-                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
-            );
-        }
+        $this->eventDispatcher = new NullEventDispatcher();
     }
 
     /**
@@ -49,7 +38,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
         string $key,
         array $allowCredentials,
         null|string $userVerification = null,
-        null|AuthenticationExtensions $authenticationExtensionsClientInputs = null
+        null|AuthenticationExtensions $AuthenticationExtensions = null
     ): PublicKeyCredentialRequestOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
@@ -81,7 +70,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
             allowCredentials: $allowCredentials,
             userVerification: $userVerification,
             timeout: $timeout,
-            extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
+            extensions: $AuthenticationExtensions ?? $this->createExtensions($profile)
         );
         $this->eventDispatcher->dispatch(PublicKeyCredentialRequestOptionsCreatedEvent::create($options));
 
@@ -98,7 +87,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {
-        return AuthenticationExtensionsClientInputs::create(
+        return AuthenticationExtensions::create(
             array_map(
                 static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
                     $name,

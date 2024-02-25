@@ -148,7 +148,6 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
             AttestationStatement::TYPE_BASIC => MetadataStatement::ATTESTATION_BASIC_FULL,
             AttestationStatement::TYPE_SELF => MetadataStatement::ATTESTATION_BASIC_SURROGATE,
             AttestationStatement::TYPE_ATTCA => MetadataStatement::ATTESTATION_ATTCA,
-            AttestationStatement::TYPE_ECDAA => MetadataStatement::ATTESTATION_ECDAA,
             AttestationStatement::TYPE_ANONCA => MetadataStatement::ATTESTATION_ANONCA,
             default => throw AuthenticatorResponseVerificationException::create('Invalid attestation type'),
         };

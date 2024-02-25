@@ -6,7 +6,6 @@ namespace Webauthn\MetadataService\Statement;
 
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
-use function array_key_exists;
 
 class CodeAccuracyDescriptor extends AbstractDescriptor
 {
@@ -30,46 +29,6 @@ class CodeAccuracyDescriptor extends AbstractDescriptor
     public static function create(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null): self
     {
         return new self($base, $minLength, $maxRetries, $blockSlowdown);
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getBase(): int
-    {
-        return $this->base;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getMinLength(): int
-    {
-        return $this->minLength;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
-     * @infection-ignore-all
-     */
-    public static function createFromArray(array $data): self
-    {
-        array_key_exists('base', $data) || throw MetadataStatementLoadingException::create(
-            'The parameter "base" is missing'
-        );
-        array_key_exists('minLength', $data) || throw MetadataStatementLoadingException::create(
-            'The parameter "minLength" is missing'
-        );
-
-        return self::create(
-            $data['base'],
-            $data['minLength'],
-            $data['maxRetries'] ?? null,
-            $data['blockSlowdown'] ?? null
-        );
     }
 
     /**

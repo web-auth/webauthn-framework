@@ -19,6 +19,7 @@ final class OptionsBuilderParameterTest extends AbstractExtensionTestCase
     {
         // When
         $this->load([
+            'clock' => 'system',
             'controllers' => [
                 'creation' => [
                     'creation_111' => [
@@ -67,6 +68,7 @@ final class OptionsBuilderParameterTest extends AbstractExtensionTestCase
     {
         // When
         $this->load([
+            'clock' => 'system',
             'controllers' => [
                 'creation' => [
                     'creation_111' => [

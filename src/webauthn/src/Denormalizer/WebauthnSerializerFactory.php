@@ -16,14 +16,14 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
-final class WebauthnSerializerFactory
+final readonly class WebauthnSerializerFactory
 {
-    private const PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
+    private const string PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
 
-    private const PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
+    private const string PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
 
     public function __construct(
-        private readonly AttestationStatementSupportManager $attestationStatementSupportManager
+        private AttestationStatementSupportManager $attestationStatementSupportManager
     ) {
     }
 

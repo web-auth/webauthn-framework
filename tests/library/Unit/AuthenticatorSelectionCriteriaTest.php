@@ -38,7 +38,6 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             $data->authenticatorAttachment
         );
-        static::assertNull($data->requireResidentKey);
         static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE, $data->residentKey);
         static::assertSame($expectedJson, json_encode($data, JSON_THROW_ON_ERROR));
         static::assertSame($expectedJson, json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR));
@@ -48,12 +47,11 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
     public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
     {
         // Given
-        $expectedJson = '{"requireResidentKey":true,"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
+        $expectedJson = '{"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
-            true
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
         );
 
         //When
@@ -69,7 +67,6 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             $data->authenticatorAttachment
         );
-        static::assertTrue($data->requireResidentKey);
         static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $data->residentKey);
         static::assertSame($expectedJson, json_encode($data, JSON_THROW_ON_ERROR));
         static::assertSame($expectedJson, json_encode($authenticatorSelectionCriteria, JSON_THROW_ON_ERROR));

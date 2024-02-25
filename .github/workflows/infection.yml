@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
-
 name: "Integrate"
 
 on:
@@ -10,9 +8,6 @@ on:
 jobs:
   mutation_testing:
     name: "5️⃣ Mutation Testing"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Set up PHP"

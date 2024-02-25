@@ -20,46 +20,33 @@ use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredential;
-use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
 final class AssertionResponseController
 {
-    /**
-     * @param null|string[] $securedRelyingPartyIds
-     */
     public function __construct(
-        private readonly SerializerInterface|PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private readonly SerializerInterface $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private readonly LoggerInterface $logger,
         private readonly OptionsStorage $optionsStorage,
         private readonly SuccessHandler $successHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly null|array $securedRelyingPartyIds = null,
         private readonly ?PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository = null
     ) {
-        if ($this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader) {
-            trigger_deprecation(
-                'web-auth/webauthn-bundle',
-                '4.8.0',
-                'The argument "$publicKeyCredentialLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please inject a Symfony Serializer instead.'
-            );
-        }
     }
 
     public function __invoke(Request $request): Response
     {
         try {
-            $format = method_exists(
-                $request,
-                'getContentTypeFormat'
-            ) ? $request->getContentTypeFormat() : $request->getContentType();
+            $format = $request->getContentTypeFormat();
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
             $content = $request->getContent();
 
-            $publicKeyCredential = $this->publicKeyCredentialLoader instanceof PublicKeyCredentialLoader ? $this->publicKeyCredentialLoader->load(
-                $content
-            ) : $this->publicKeyCredentialLoader->deserialize($content, PublicKeyCredential::class, 'json');
+            $publicKeyCredential = $this->publicKeyCredentialLoader->deserialize(
+                $content,
+                PublicKeyCredential::class,
+                'json'
+            );
             $response = $publicKeyCredential->response;
             $response instanceof AuthenticatorAssertionResponse || throw new BadRequestHttpException(
                 'Invalid response'
@@ -83,7 +70,6 @@ final class AssertionResponseController
                 $publicKeyCredentialRequestOptions,
                 $request->getHost(),
                 $userEntity?->id,
-                $this->securedRelyingPartyIds
             );
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {

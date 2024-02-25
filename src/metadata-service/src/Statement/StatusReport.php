@@ -7,9 +7,7 @@ namespace Webauthn\MetadataService\Statement;
 use JsonSerializable;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
-use function array_key_exists;
 use function in_array;
-use function is_string;
 
 class StatusReport implements JsonSerializable
 {
@@ -63,119 +61,6 @@ class StatusReport implements JsonSerializable
             AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE,
             AuthenticatorStatus::USER_VERIFICATION_BYPASS,
         ], true);
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getEffectiveDate(): ?string
-    {
-        return $this->effectiveDate;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCertificate(): ?string
-    {
-        return $this->certificate;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCertificationDescriptor(): ?string
-    {
-        return $this->certificationDescriptor;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCertificateNumber(): ?string
-    {
-        return $this->certificateNumber;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCertificationPolicyVersion(): ?string
-    {
-        return $this->certificationPolicyVersion;
-    }
-
-    /**
-     * @deprecated since 4.7.0. Please use the property directly.
-     * @infection-ignore-all
-     */
-    public function getCertificationRequirementsVersion(): ?string
-    {
-        return $this->certificationRequirementsVersion;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @deprecated since 4.7.0. Please use the symfony/serializer for converting the object.
-     * @infection-ignore-all
-     */
-    public static function createFromArray(array $data): self
-    {
-        $data = self::filterNullValues($data);
-        array_key_exists('status', $data) || throw MetadataStatementLoadingException::create(
-            'The key "status" is missing'
-        );
-        foreach ([
-            'effectiveDate',
-            'certificate',
-            'url',
-            'certificationDescriptor',
-            'certificateNumber',
-            'certificationPolicyVersion',
-            'certificationRequirementsVersion',
-        ] as $key) {
-            if (isset($data[$key])) {
-                $value = $data[$key];
-                $value === null || is_string($value) || throw MetadataStatementLoadingException::create(sprintf(
-                    'The value of the key "%s" is invalid',
-                    $key
-                ));
-            }
-        }
-
-        return self::create(
-            $data['status'],
-            $data['effectiveDate'] ?? null,
-            $data['certificate'] ?? null,
-            $data['url'] ?? null,
-            $data['certificationDescriptor'] ?? null,
-            $data['certificateNumber'] ?? null,
-            $data['certificationPolicyVersion'] ?? null,
-            $data['certificationRequirementsVersion'] ?? null
-        );
     }
 
     /**

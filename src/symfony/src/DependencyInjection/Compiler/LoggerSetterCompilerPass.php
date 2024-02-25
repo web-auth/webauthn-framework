@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-final class LoggerSetterCompilerPass implements CompilerPassInterface
+final readonly class LoggerSetterCompilerPass implements CompilerPassInterface
 {
-    public const TAG = 'webauthn_can_log_data';
+    public const string TAG = 'webauthn_can_log_data';
 
     public function process(ContainerBuilder $container): void
     {

@@ -7,7 +7,7 @@ namespace Webauthn\Bundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Webauthn\AuthenticatorAssertionResponseValidator;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Counter\CounterChecker;
 
 final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
@@ -16,12 +16,12 @@ final class CounterCheckerSetterCompilerPass implements CompilerPassInterface
     {
         if (
             ! $container->hasAlias(CounterChecker::class)
-            || ! $container->hasDefinition(AuthenticatorAssertionResponseValidator::class)
+            || ! $container->hasDefinition(CeremonyStepManagerFactory::class)
         ) {
             return;
         }
 
-        $definition = $container->getDefinition(AuthenticatorAssertionResponseValidator::class);
+        $definition = $container->getDefinition(CeremonyStepManagerFactory::class);
         $definition->addMethodCall('setCounterChecker', [new Reference(CounterChecker::class)]);
     }
 }

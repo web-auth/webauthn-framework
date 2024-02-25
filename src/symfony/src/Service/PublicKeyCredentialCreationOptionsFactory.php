@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -32,18 +31,8 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     public function __construct(
         private readonly array $profiles,
-        ?EventDispatcherInterface $eventDispatcher = null
     ) {
-        if ($eventDispatcher === null) {
-            $this->eventDispatcher = new NullEventDispatcher();
-        } else {
-            $this->eventDispatcher = $eventDispatcher;
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.5.0',
-                'The parameter "$eventDispatcher" is deprecated since 4.5.0 will be removed in 5.0.0. Please use `setEventDispatcher` instead.'
-            );
-        }
+        $this->eventDispatcher = new NullEventDispatcher();
     }
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
@@ -60,7 +49,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         array $excludeCredentials = [],
         null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
         null|string $attestationConveyance = null,
-        null|AuthenticationExtensions $authenticationExtensionsClientInputs = null
+        null|AuthenticationExtensions $AuthenticationExtensions = null
     ): PublicKeyCredentialCreationOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
@@ -93,7 +82,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 attestation: $attestation,
                 excludeCredentials: $excludeCredentials,
                 timeout: $timeout,
-                extensions: $authenticationExtensionsClientInputs ?? $this->createExtensions($profile)
+                extensions: $AuthenticationExtensions ?? $this->createExtensions($profile)
             );
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
@@ -105,7 +94,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {
-        return AuthenticationExtensionsClientInputs::create(
+        return AuthenticationExtensions::create(
             array_map(
                 static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create(
                     $name,
@@ -126,7 +115,6 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
             $profile['authenticator_selection_criteria']['authenticator_attachment'],
             $profile['authenticator_selection_criteria']['user_verification'],
             $profile['authenticator_selection_criteria']['resident_key'],
-            $profile['authenticator_selection_criteria']['require_resident_key'],
         );
     }
 
