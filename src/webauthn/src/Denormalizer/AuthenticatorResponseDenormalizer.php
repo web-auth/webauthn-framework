@@ -25,7 +25,7 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
         }
 
         $realType = match (true) {
-            ! array_key_exists('authenticatorData', $data) && ! array_key_exists(
+            array_key_exists('attestationObject', $data) && ! array_key_exists(
                 'signature',
                 $data
             ) => AuthenticatorAttestationResponse::class,
