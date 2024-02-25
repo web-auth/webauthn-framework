@@ -14,6 +14,7 @@ use Webauthn\MetadataService\Event\NullEventDispatcher;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use function assert;
 use function file_get_contents;
 
 final class LocalResourceMetadataService implements MetadataService, CanDispatchEvents
@@ -87,6 +88,7 @@ final class LocalResourceMetadataService implements MetadataService, CanDispatch
         }
 
         $content = file_get_contents($this->filename);
+        assert($content !== false, 'The file could not be read');
         if ($this->isBase64Encoded) {
             $content = Base64::decode($content, true);
         }

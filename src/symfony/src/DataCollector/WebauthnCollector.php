@@ -11,12 +11,12 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Throwable;
-use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationFailedEvent;
-use Webauthn\Bundle\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
-use Webauthn\Bundle\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialCreationOptionsCreatedEvent;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
+use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 
@@ -165,7 +165,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationSucceeded[] = [
             'user_handle' => $cloner->cloneVar($event->userHandle),
-            'credential_id' => $cloner->cloneVar($event->credentialId),
+            'credential_id' => $cloner->cloneVar($event->publicKeyCredentialSource->publicKeyCredentialId),
             'assertion_response' => $cloner->cloneVar($event->authenticatorAssertionResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialRequestOptions),
             'options_json' => json_encode(
@@ -182,7 +182,7 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->authenticatorAssertionResponseValidationFailed[] = [
             'user_handle' => $cloner->cloneVar($event->userHandle),
-            'credential_id' => $cloner->cloneVar($event->getCredential()?->publicKeyCredentialId),
+            'credential_id' => $cloner->cloneVar($event->credentialSource->publicKeyCredentialId),
             'assertion_response' => $cloner->cloneVar($event->authenticatorAssertionResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialRequestOptions),
             'options_json' => json_encode(

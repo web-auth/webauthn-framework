@@ -47,7 +47,7 @@ final readonly class CertificateToolbox
      *
      * @return string[]
      */
-    public static function convertAllDERToPEM(iterable $data, string $type = 'CERTIFICATE'): array
+    public static function convertAllDERToPEM(array $data, string $type = 'CERTIFICATE'): array
     {
         return array_map(static fn ($d): string => self::convertDERToPEM($d, $type), $data);
     }

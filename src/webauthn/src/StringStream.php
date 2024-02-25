@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use CBOR\Stream;
 use Webauthn\Exception\InvalidDataException;
+use function assert;
 use function fclose;
 use function fopen;
 use function fread;

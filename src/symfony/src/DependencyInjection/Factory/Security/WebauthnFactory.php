@@ -199,14 +199,14 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     /**
      * Creates the authenticator service(s) for the provided configuration.
      *
-     * @return string|string[] The authenticator service ID(s) to be used by the firewall
+     * @return string The authenticator service ID to be used by the firewall
      */
     public function createAuthenticator(
         ContainerBuilder $container,
         string $firewallName,
         array $config,
         string $userProviderId
-    ): string|array {
+    ): string {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
         $authenticatorAssertionResponseValidatorId = $this->servicesFactory->createAuthenticatorAssertionResponseValidator(
             $container,
@@ -238,6 +238,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     /**
      * Creates the firewall listener services for the provided configuration.
      *
+     * @param array<array-key, mixed> $config
      * @return string[] The listener service IDs to be used by the firewall
      */
     public function createListeners(ContainerBuilder $container, string $firewallName, array $config): array
@@ -272,7 +273,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
@@ -306,7 +307,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAttestationControllersAndRoutes(
         ContainerBuilder $container,
@@ -448,6 +449,9 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         $container->setDefinition($controllerId, $controller);
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
@@ -473,6 +477,9 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         return $optionsBuilderId;
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,

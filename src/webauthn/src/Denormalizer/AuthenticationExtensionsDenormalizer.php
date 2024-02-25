@@ -10,7 +10,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
-use function in_array;
 use function is_string;
 
 final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface

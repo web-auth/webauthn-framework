@@ -29,7 +29,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
-     * @param null|AuthenticationExtensions|array<string|int, mixed|AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, mixed|AuthenticationExtensions> $extensions
      */
     public function __construct(
         string $challenge,

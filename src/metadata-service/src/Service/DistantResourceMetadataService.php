@@ -45,7 +45,7 @@ final class DistantResourceMetadataService implements MetadataService, CanDispat
     }
 
     /**
-     * @param array<string, mixed> $additionalHeaderParameters
+     * @param array<string, string> $additionalHeaderParameters
      */
     public static function create(
         HttpClientInterface $httpClient,

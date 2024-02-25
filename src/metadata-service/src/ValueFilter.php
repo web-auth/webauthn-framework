@@ -10,9 +10,9 @@ namespace Webauthn\MetadataService;
 trait ValueFilter
 {
     /**
-     * @param array<mixed> $data
+     * @param array<array-key, mixed|null> $data
      *
-     * @return array<mixed>
+     * @return array<array-key, mixed>
      */
     private static function filterNullValues(array $data): array
     {

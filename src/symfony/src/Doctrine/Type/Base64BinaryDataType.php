@@ -14,7 +14,7 @@ final class Base64BinaryDataType extends Type
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if (! is_string($value)) {
-            return $value;
+            return null;
         }
 
         return Base64::encode($value);
@@ -22,11 +22,11 @@ final class Base64BinaryDataType extends Type
 
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
-            return $value;
+        if (is_string($value)) {
+            return Base64::decode($value, true);
         }
 
-        return Base64::decode($value, true);
+        return null;
     }
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string

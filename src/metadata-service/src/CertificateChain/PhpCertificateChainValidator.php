@@ -91,22 +91,22 @@ final class PhpCertificateChainValidator implements CertificateChainValidator, C
      */
     private function validateChain(array $untrustedCertificates, string $trustedCertificate): bool
     {
-        $untrustedCertificates = array_map(
+        $untrustedCertificateObjects = array_map(
             static fn (string $cert): Certificate => Certificate::fromPEM(PEM::fromString($cert)),
             array_reverse($untrustedCertificates)
         );
-        $trustedCertificate = Certificate::fromPEM(PEM::fromString($trustedCertificate));
+        $trustedCertificateObject = Certificate::fromPEM(PEM::fromString($trustedCertificate));
 
         // The trust path and the authenticator certificate are the same
         if (count(
-            $untrustedCertificates
-        ) === 1 && $untrustedCertificates[0]->toPEM()->string() === $trustedCertificate->toPEM()->string()) {
+            $untrustedCertificateObjects
+        ) === 1 && $untrustedCertificateObjects[0]->toPEM()->string() === $trustedCertificateObject->toPEM()->string()) {
             return true;
         }
         $uniqueCertificates = array_map(
             static fn (Certificate $cert): string => $cert->toPEM()
                 ->string(),
-            [...$untrustedCertificates, $trustedCertificate]
+            [...$untrustedCertificateObjects, $trustedCertificateObject]
         );
         count(array_unique($uniqueCertificates)) === count(
             $uniqueCertificates
@@ -116,11 +116,11 @@ final class PhpCertificateChainValidator implements CertificateChainValidator, C
             'Invalid certificate chain with duplicated certificates.'
         );
 
-        if (! $this->validateCertificates($trustedCertificate, ...$untrustedCertificates)) {
+        if (! $this->validateCertificates($trustedCertificateObject, ...$untrustedCertificateObjects)) {
             return false;
         }
 
-        $certificates = [$trustedCertificate, ...$untrustedCertificates];
+        $certificates = [$trustedCertificateObject, ...$untrustedCertificateObjects];
         $numCerts = count($certificates);
         for ($i = 1; $i < $numCerts; $i++) {
             if ($this->isRevoked($certificates[$i])) {

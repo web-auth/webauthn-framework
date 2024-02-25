@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use function assert;
 use function file_get_contents;
 use function is_array;
 use function sprintf;
@@ -62,7 +63,9 @@ final class FolderResourceMetadataService implements MetadataService
             $aaguid
         ));
         $filename = $this->rootPath . DIRECTORY_SEPARATOR . $aaguid;
-        $data = trim(file_get_contents($filename));
+        $content = file_get_contents($filename);
+        assert($content !== false, 'The file exists and is readable.');
+        $data = trim($content);
         $mds = $this->serializer->deserialize($data, MetadataStatement::class, 'json');
         $mds->aaguid !== null || throw MetadataStatementLoadingException::create('Invalid Metadata Statement.');
 

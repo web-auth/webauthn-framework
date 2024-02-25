@@ -169,6 +169,7 @@ class MetadataStatement implements JsonSerializable
      * @param string[] $keyProtection
      * @param string[] $attachmentHint
      * @param ExtensionDescriptor[] $supportedExtensions
+     * @param DisplayPNGCharacteristicsDescriptor[] $tcDisplayPNGCharacteristics
      */
     public function __construct(
         public readonly string $description,
@@ -202,6 +203,22 @@ class MetadataStatement implements JsonSerializable
         $this->authenticatorGetInfo = $authenticatorGetInfo ?? AuthenticatorGetInfo::create($attestationTypes);
     }
 
+    /**
+     * @param Version[] $upv
+     * @param string[] $authenticationAlgorithms
+     * @param string[] $publicKeyAlgAndEncodings
+     * @param string[] $attestationTypes
+     * @param VerificationMethodANDCombinations[] $userVerificationDetails
+     * @param string[] $matcherProtection
+     * @param string[] $tcDisplay
+     * @param string[] $attestationRootCertificates
+     * @param string[] $attestationCertificateKeyIdentifiers
+     * @param string[] $keyProtection
+     * @param string[] $attachmentHint
+     * @param ExtensionDescriptor[] $supportedExtensions
+     * @param DisplayPNGCharacteristicsDescriptor[] $tcDisplayPNGCharacteristics
+     * @param string[] $alternativeDescriptions
+     */
     public static function create(
         string $description,
         int $authenticatorVersion,

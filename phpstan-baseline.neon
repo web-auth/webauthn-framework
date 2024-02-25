@@ -1,32 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, iterable\\<string\\> given\\.$#"
-			count: 1
-			path: src/metadata-service/src/CertificateChain/CertificateToolbox.php
-
-		-
-			message: "#^Parameter \\#1 \\$untrustedCertificates of static method Webauthn\\\\MetadataService\\\\Exception\\\\CertificateChainException\\:\\:create\\(\\) expects array\\<string\\>, array\\<SpomkyLabs\\\\Pki\\\\X509\\\\Certificate\\\\Certificate\\> given\\.$#"
-			count: 2
-			path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
-
-		-
-			message: "#^Parameter \\#2 \\$trustedCertificates of static method Webauthn\\\\MetadataService\\\\Exception\\\\CertificateChainException\\:\\:create\\(\\) expects array\\<string\\>, array\\<int, SpomkyLabs\\\\Pki\\\\X509\\\\Certificate\\\\Certificate\\> given\\.$#"
-			count: 2
-			path: src/metadata-service/src/CertificateChain/PhpCertificateChainValidator.php
-
-		-
 			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\ExtensionDescriptorDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/metadata-service/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
 			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\ExtensionDescriptorDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Denormalizer/ExtensionDescriptorDenormalizer.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
 			count: 1
 			path: src/metadata-service/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
@@ -44,276 +24,6 @@ parameters:
 			message: "#^Property Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/metadata-service/src/Psr18HttpClient.php
-
-		-
-			message: "#^Call to an undefined static method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:createFromString\\(\\)\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/DistantResourceMetadataService.php
-
-		-
-			message: "#^Parameter \\#4 \\$additionalHeaderParameters of class Webauthn\\\\MetadataService\\\\Service\\\\DistantResourceMetadataService constructor expects array\\<string, string\\>, array\\<string, mixed\\> given\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/DistantResourceMetadataService.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
-
-		-
-			message: "#^Call to an undefined static method Webauthn\\\\MetadataService\\\\Service\\\\MetadataBLOBPayloadEntry\\:\\:createFromArray\\(\\)\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
-
-		-
-			message: "#^Cannot access offset 'entries' on mixed\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
-
-		-
-			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:\\$statusReports \\(array\\<string, array\\<int, Webauthn\\\\MetadataService\\\\Statement\\\\StatusReport\\>\\>\\) does not accept array\\<int\\|string, mixed\\>\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
-
-		-
-			message: "#^Call to an undefined static method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:createFromString\\(\\)\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FolderResourceMetadataService.php
-
-		-
-			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/FolderResourceMetadataService.php
-
-		-
-			message: "#^Call to an undefined static method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:createFromString\\(\\)\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/JsonMetadataService.php
-
-		-
-			message: "#^Call to an undefined static method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:createFromString\\(\\)\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/LocalResourceMetadataService.php
-
-		-
-			message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decode\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/LocalResourceMetadataService.php
-
-		-
-			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\MetadataBLOBPayload\\:\\:\\$rootCertificates is never read, only written\\.$#"
-			count: 1
-			path: src/metadata-service/src/Service/MetadataBLOBPayload.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\AuthenticatorGetInfo\\:\\:jsonSerialize\\(\\) should return array\\<string\\> but returns array\\<int\\|string, mixed\\>\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/AuthenticatorGetInfo.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:__construct\\(\\) has parameter \\$tcDisplayPNGCharacteristics with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$alternativeDescriptions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$attachmentHint with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$attestationCertificateKeyIdentifiers with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$attestationRootCertificates with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$attestationTypes with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$authenticationAlgorithms with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$keyProtection with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$matcherProtection with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$publicKeyAlgAndEncodings with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$supportedExtensions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$tcDisplay with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$tcDisplayPNGCharacteristics with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$upv with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:create\\(\\) has parameter \\$userVerificationDetails with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/MetadataStatement.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\PatternAccuracyDescriptor\\:\\:jsonSerialize\\(\\) should return array\\<string, int\\|null\\> but returns array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/PatternAccuracyDescriptor.php
-
-		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Statement\\\\Version\\:\\:jsonSerialize\\(\\) should return array\\<string, int\\|null\\> but returns array\\.$#"
-			count: 1
-			path: src/metadata-service/src/Statement/Version.php
-
-		-
-			message: "#^Method Webauthn\\\\Stimulus\\\\WebauthnStimulusBundle\\:\\:getContainerExtension\\(\\) never returns null so it can be removed from the return type\\.$#"
-			count: 1
-			path: src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Storage\\\\OptionsStorage\\:\\:get\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 1
-			path: src/symfony/src/Controller/AssertionResponseController.php
-
-		-
-			message: "#^Parameter \\#1 \\$publicKeyCredentialSource of method Webauthn\\\\AuthenticatorAssertionResponseValidator\\:\\:check\\(\\) expects Webauthn\\\\PublicKeyCredentialSource, string\\|Webauthn\\\\PublicKeyCredentialSource given\\.$#"
-			count: 1
-			path: src/symfony/src/Controller/AssertionResponseController.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Storage\\\\OptionsStorage\\:\\:get\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 1
-			path: src/symfony/src/Controller/AttestationResponseController.php
-
-		-
-			message: "#^Parameter \\#2 \\$exception of method Symfony\\\\Component\\\\Security\\\\Http\\\\Authentication\\\\AuthenticationFailureHandlerInterface\\:\\:onAuthenticationFailure\\(\\) expects Symfony\\\\Component\\\\Security\\\\Core\\\\Exception\\\\AuthenticationException, Symfony\\\\Component\\\\Security\\\\Core\\\\Exception\\\\AuthenticationException\\|Webauthn\\\\Bundle\\\\Exception\\\\HttpNotImplementedException given\\.$#"
-			count: 1
-			path: src/symfony/src/Controller/AttestationResponseController.php
-
-		-
-			message: "#^Access to property \\$authenticatorAssertionResponse on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$authenticatorAssertionResponse on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$authenticatorAttestationResponse on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$credentialId on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$publicKeyCredentialCreationOptions on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\.$#"
-			count: 2
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$publicKeyCredentialRequestOptions on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 2
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$publicKeyCredentialRequestOptions on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 2
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$publicKeyCredentialSource on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$publicKeyCredentialSource on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$throwable on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$userHandle on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Access to property \\$userHandle on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Call to method getCredential\\(\\) on an unknown class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent not found\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent not found\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Class Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent not found\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAssertionResponseValidationFailed\\(\\) has invalid type Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationFailedEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAssertionResponseValidationSucceeded\\(\\) has invalid type Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAssertionResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			message: "#^Parameter \\$event of method Webauthn\\\\Bundle\\\\DataCollector\\\\WebauthnCollector\\:\\:addAuthenticatorAttestationResponseValidationSucceeded\\(\\) has invalid type Webauthn\\\\Bundle\\\\Event\\\\AuthenticatorAttestationResponseValidationSucceededEvent\\.$#"
-			count: 1
-			path: src/symfony/src/DataCollector/WebauthnCollector.php
 
 		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeParentInterface\\:\\:integerNode\\(\\)\\.$#"
@@ -368,21 +78,6 @@ parameters:
 		-
 			message: "#^Cannot access offset 'routes' on mixed\\.$#"
 			count: 12
-			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticator\\(\\) never returns array\\<string\\> so it can be removed from the return type\\.$#"
-			count: 1
-			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:getAssertionOptionsBuilderId\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:getAttestationOptionsBuilderId\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
@@ -591,96 +286,6 @@ parameters:
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AAGUIDDataType\\:\\:convertToDatabaseValue\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AAGUIDDataType\\:\\:convertToPHPValue\\(\\) should return Symfony\\\\Component\\\\Uid\\\\Uuid\\|null but returns mixed\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
-
-		-
-			message: "#^Parameter \\#1 \\$uuid of static method Symfony\\\\Component\\\\Uid\\\\Uuid\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AAGUIDDataType.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\AttestedCredentialData\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\Base64BinaryDataType\\:\\:convertToDatabaseValue\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/Base64BinaryDataType.php
-
-		-
-			message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decode\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/Base64BinaryDataType.php
-
-		-
-			message: "#^@readonly property Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:\\$publicKeyCredentialDescriptors is already assigned\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:jsonSerialize\\(\\) should return array\\<array\\<string, mixed\\>\\> but returns array\\<string, Webauthn\\\\PublicKeyCredentialDescriptor\\>\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
-
-		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: Webauthn\\\\PublicKeyCredentialDescriptor given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromString\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\TrustPath\\\\TrustPathLoader\\:\\:loadTrustPath\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository\\:\\:findAllForUserEntity\\(\\) should return array\\<Webauthn\\\\PublicKeyCredentialSource\\> but returns mixed\\.$#"
-			count: 1
-			path: src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository\\:\\:findOneByCredentialId\\(\\) should return Webauthn\\\\PublicKeyCredentialSource\\|null but returns mixed\\.$#"
-			count: 1
-			path: src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of method Symfony\\\\Component\\\\Security\\\\Core\\\\Authentication\\\\Token\\\\AbstractToken\\:\\:__unserialize\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
-
-		-
 			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$extensions \\(Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null\\) does not accept mixed\\.$#"
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
@@ -773,11 +378,6 @@ parameters:
 		-
 			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Http\\\\Authenticator\\\\WebauthnAuthenticator\\:\\:supports\\(\\) never returns null so it can be removed from the return type\\.$#"
 			count: 1
-			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
-
-		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Storage\\\\OptionsStorage\\:\\:get\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 2
 			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
@@ -1116,7 +716,7 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects iterable\\<string\\>, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
@@ -1221,7 +821,7 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects iterable\\<string\\>, array given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, array given\\.$#"
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
@@ -1281,7 +881,7 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects iterable\\<string\\>, array given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, array given\\.$#"
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
@@ -1396,7 +996,7 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects iterable\\<string\\>, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
@@ -1566,7 +1166,7 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
@@ -2226,17 +1826,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
+			message: "#^Method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromArray\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialDescriptor.php
 
 		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: src/webauthn/src/PublicKeyCredentialDescriptor.php
+
+		-
+			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\> given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
 
 		-
-			message: "#^Parameter \\#3 \\$extensions of method Webauthn\\\\PublicKeyCredentialOptions\\:\\:__construct\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, array\\<int\\|string, mixed\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null given\\.$#"
+			message: "#^Parameter \\#3 \\$extensions of method Webauthn\\\\PublicKeyCredentialOptions\\:\\:__construct\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, array\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialRequestOptions.php
 

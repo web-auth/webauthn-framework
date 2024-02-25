@@ -76,10 +76,10 @@ final class AttestationResponseController
             $this->credentialSourceRepository->saveCredentialSource($credentialSource);
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
-            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
             if ($throwable instanceof MissingFeatureException) {
-                $exception = new HttpNotImplementedException($throwable->getMessage(), $throwable);
+                throw new HttpNotImplementedException($throwable->getMessage(), $throwable);
             }
+            $exception = new AuthenticationException($throwable->getMessage(), 401, $throwable);
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure($request, $exception);
             }

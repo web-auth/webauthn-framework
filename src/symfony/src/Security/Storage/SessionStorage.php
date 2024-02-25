@@ -29,10 +29,11 @@ final readonly class SessionStorage implements OptionsStorage
         ]);
     }
 
-    public function get(string|null $tag = null): Item
+    public function get(string $challenge): Item
     {
         $session = $this->requestStack->getSession();
-        $sessionValue = $session->remove(self::SESSION_PARAMETER);
+        $key = sprintf('%s-%s', self::SESSION_PARAMETER, hash('xxh128', $challenge));
+        $sessionValue = $session->remove($key);
         if (! is_array($sessionValue) || ! array_key_exists('options', $sessionValue) || ! array_key_exists(
             'userEntity',
             $sessionValue

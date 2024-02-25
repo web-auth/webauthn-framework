@@ -9,7 +9,7 @@ use JsonSerializable;
 class AuthenticatorGetInfo implements JsonSerializable
 {
     /**
-     * @param array<string|int, mixed> $info
+     * @param array<array-key, mixed> $info
      */
     public function __construct(
         public array $info = []
@@ -17,7 +17,7 @@ class AuthenticatorGetInfo implements JsonSerializable
     }
 
     /**
-     * @param array<string|int, mixed> $info
+     * @param array<array-key, mixed> $info
      */
     public static function create(array $info = []): self
     {
@@ -25,7 +25,7 @@ class AuthenticatorGetInfo implements JsonSerializable
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, mixed>
      */
     public function jsonSerialize(): array
     {

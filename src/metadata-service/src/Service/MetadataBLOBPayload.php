@@ -12,11 +12,6 @@ class MetadataBLOBPayload implements JsonSerializable
     use ValueFilter;
 
     /**
-     * @var string[]
-     */
-    private array $rootCertificates = [];
-
-    /**
      * @param MetadataBLOBPayloadEntry[] $entries
      */
     public function __construct(

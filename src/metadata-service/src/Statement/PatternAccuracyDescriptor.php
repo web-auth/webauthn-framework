@@ -28,7 +28,7 @@ class PatternAccuracyDescriptor extends AbstractDescriptor
     }
 
     /**
-     * @return array<string, int|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

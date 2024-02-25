@@ -58,9 +58,6 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
         return self::createFromArray($data);
     }
 
-    /**
-     * @param mixed[] $json
-     */
     public static function createFromArray(array $data): self
     {
         array_key_exists('type', $data) || throw InvalidDataException::create(

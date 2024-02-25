@@ -10,7 +10,7 @@ readonly class PublicKeyCredentialParameters implements JsonSerializable
 {
     public function __construct(
         public string $type,
-        public int    $alg
+        public int $alg
     ) {
     }
 

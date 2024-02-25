@@ -22,16 +22,16 @@ use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialRequestOptions;
 
-final class AssertionResponseController
+final readonly class AssertionResponseController
 {
     public function __construct(
-        private readonly SerializerInterface $publicKeyCredentialLoader,
-        private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private readonly LoggerInterface $logger,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly SuccessHandler $successHandler,
-        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly ?PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository = null
+        private SerializerInterface $publicKeyCredentialLoader,
+        private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
+        private LoggerInterface $logger,
+        private OptionsStorage $optionsStorage,
+        private SuccessHandler $successHandler,
+        private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
     }
 
@@ -57,7 +57,7 @@ final class AssertionResponseController
                 'Invalid response'
             );
             $userEntity = $data->getPublicKeyCredentialUserEntity();
-            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository === null ? $publicKeyCredential->rawId : $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
+            $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId(
                 $publicKeyCredential->rawId
             );
             $publicKeyCredentialSource !== null || throw AuthenticatorResponseVerificationException::create(

@@ -27,7 +27,6 @@ use Webauthn\MetadataService\Statement\StatusReport;
 use function array_key_exists;
 use function is_array;
 use function sprintf;
-use const JSON_THROW_ON_ERROR;
 
 final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {

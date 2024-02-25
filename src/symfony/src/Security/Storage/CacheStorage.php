@@ -29,12 +29,9 @@ final readonly class CacheStorage implements OptionsStorage
         $this->cache->save($cacheItem);
     }
 
-    public function get(string|null $challenge = null): Item
+    public function get(string $challenge): Item
     {
-        if ($challenge === null) {
-            throw new BadRequestHttpException('No public key credential options available.');
-        }
-        $key = sprintf('%s-%s', self::CACHE_PARAMETER, hash('sha512', $challenge));
+        $key = sprintf('%s-%s', self::CACHE_PARAMETER, hash('xxh128', $challenge));
         $cacheItem = $this->cache->getItem($key);
         if (! $cacheItem->isHit()) {
             throw new BadRequestHttpException('No public key credential options available.');

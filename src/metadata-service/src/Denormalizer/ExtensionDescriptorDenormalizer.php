@@ -9,6 +9,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\MetadataService\Statement\ExtensionDescriptor;
 use function array_key_exists;
+use function assert;
+use function is_array;
 
 final class ExtensionDescriptorDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
@@ -18,6 +20,7 @@ final class ExtensionDescriptorDenormalizer implements DenormalizerInterface, De
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
+        assert(is_array($data), 'Data should be an array');
         if (array_key_exists('fail_if_unknown', $data)) {
             $data['failIfUnknown'] = $data['fail_if_unknown'];
             unset($data['fail_if_unknown']);

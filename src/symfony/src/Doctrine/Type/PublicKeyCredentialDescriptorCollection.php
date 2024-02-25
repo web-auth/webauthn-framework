@@ -11,7 +11,9 @@ use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
 use Webauthn\PublicKeyCredentialDescriptor;
+use function assert;
 use function count;
+use function is_array;
 use const COUNT_NORMAL;
 use const JSON_THROW_ON_ERROR;
 
@@ -19,11 +21,10 @@ use const JSON_THROW_ON_ERROR;
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
  * @internal
  */
-final class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
+final readonly class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
     /**
      * @var array<string, PublicKeyCredentialDescriptor>
-     * @readonly
      */
     public array $publicKeyCredentialDescriptors;
 
@@ -33,13 +34,14 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public function __construct(
         array $pkCredentialDescriptors = []
     ) {
-        $this->publicKeyCredentialDescriptors = [];
+        $result = [];
         foreach ($pkCredentialDescriptors as $pkCredentialDescriptor) {
             $pkCredentialDescriptor instanceof PublicKeyCredentialDescriptor || throw new InvalidArgumentException(
                 'Expected only instances of ' . PublicKeyCredentialDescriptor::class
             );
-            $this->publicKeyCredentialDescriptors[$pkCredentialDescriptor->id] = $pkCredentialDescriptor;
+            $result[$pkCredentialDescriptor->id] = $pkCredentialDescriptor;
         }
+        $this->publicKeyCredentialDescriptors = $result;
     }
 
     /**
@@ -74,6 +76,7 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     public static function createFromString(string $data): self
     {
         $data = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($data), 'Invalid data. Expected an array of PublicKeyCredentialDescriptor');
 
         return self::createFromArray($data);
     }
@@ -85,9 +88,10 @@ final class PublicKeyCredentialDescriptorCollection implements JsonSerializable,
     {
         return self::create(
             array_map(
-                static fn (array $item): PublicKeyCredentialDescriptor => PublicKeyCredentialDescriptor::createFromArray(
-                    $item
-                ),
+                static function (mixed $item): PublicKeyCredentialDescriptor {
+                    assert(is_array($item), 'Invalid data. Expected an array of PublicKeyCredentialDescriptor');
+                    return PublicKeyCredentialDescriptor::createFromArray($item);
+                },
                 $json
             )
         );
