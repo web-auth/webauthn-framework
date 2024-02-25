@@ -29,7 +29,6 @@ use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidAttestationStatementException;
-use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
 use Webauthn\MetadataService\Event\NullEventDispatcher;

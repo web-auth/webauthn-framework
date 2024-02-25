@@ -39,6 +39,7 @@ use function unpack;
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private EventDispatcherInterface $dispatcher;
+
     private readonly ClockInterface $clock;
 
     public function __construct(
