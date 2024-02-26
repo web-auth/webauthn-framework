@@ -12,6 +12,7 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 use function array_key_exists;
+use function in_array;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
