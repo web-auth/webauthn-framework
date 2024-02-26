@@ -48,9 +48,6 @@
     "suggest": {
         "psr/log-implementation": "Recommended to receive logs from the library",
         "web-token/jwt-library": "Mandatory for the AndroidSafetyNet Attestation Statement support",
-        "symfony/event-dispatcher": "Recommended to use dispatched events",
-        "symfony/property-access": "Mandatory for the deserialization of objects",
-        "symfony/property-info": "Mandatory for the deserialization of objects",
-        "symfony/serializer": "Mandatory for the deserialization of objects"
+        "symfony/event-dispatcher": "Recommended to use dispatched events"
     }
 }
