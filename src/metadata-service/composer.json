@@ -45,6 +45,8 @@
     },
     "suggest": {
         "symfony/serializer": "As of 4.5.x, the symfony/serializer component will become mandatory for converting objects such as the Metadata Statement",
+        "symfony/property-access": "As of 4.5.x, the symfony/serializer component will become mandatory for converting objects such as the Metadata Statement",
+        "symfony/property-info": "As of 4.5.x, the symfony/serializer component will become mandatory for converting objects such as the Metadata Statement",
         "phpdocumentor/reflection-docblock": "As of 4.5.x, the phpdocumentor/reflection-docblock component will become mandatory for converting objects such as the Metadata Statement",
         "psr/clock-implementation": "As of 4.5.x, the PSR Clock implementation will replace lcobucci/clock",
         "psr/log-implementation": "Recommended to receive logs from the library",
