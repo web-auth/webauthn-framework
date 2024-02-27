@@ -12,6 +12,7 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\TrustPath;
 use Webauthn\TrustPath\TrustPathLoader;
 use function array_key_exists;
+use function in_array;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
@@ -208,7 +209,7 @@ class PublicKeyCredentialSource implements JsonSerializable
     {
         $keys = array_keys(get_class_vars(self::class));
         foreach ($keys as $key) {
-            if ($key === 'otherUI') {
+            if (in_array($key, ['otherUI', 'backupEligible', 'backupStatus', 'uvInitialized'], true)) {
                 continue;
             }
             array_key_exists($key, $data) || throw InvalidDataException::create($data, sprintf(
