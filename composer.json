@@ -94,7 +94,7 @@
         "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
     "require-dev": {
-        "doctrine/dbal": "^3.8|4.0",
+        "doctrine/dbal": "^3.8|4.0|^4.0",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/orm": "^2.14|^3.0",
         "doctrine/persistence": "^3.1",
