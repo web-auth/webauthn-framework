@@ -26,9 +26,6 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
-        if ($this->denormalizer === null) {
-            throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
-        }
         if (array_key_exists('challenge', $data)) {
             $data['challenge'] = Base64UrlSafe::decodeNoPadding($data['challenge']);
         }
