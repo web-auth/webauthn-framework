@@ -2357,16 +2357,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
-
-		-
-			message: "#^Cannot access offset string on mixed\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
-
-		-
 			message: """
 				#^Fetching class constant class of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\:
 				since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
@@ -2389,11 +2379,6 @@ parameters:
 
 		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
-
-		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
@@ -3064,7 +3049,7 @@ parameters:
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
 
 		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<int\\|string, mixed\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
 

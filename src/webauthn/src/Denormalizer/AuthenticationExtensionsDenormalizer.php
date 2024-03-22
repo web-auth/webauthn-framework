@@ -11,7 +11,9 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use function assert;
 use function in_array;
+use function is_array;
 use function is_string;
 
 final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
@@ -21,9 +23,9 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
         if ($data instanceof AuthenticationExtensions) {
-            $data = $data->extensions;
+            return AuthenticationExtensions::create($data->extensions);
         }
-
+        assert(is_array($data), 'The data should be an array.');
         foreach ($data as $key => $value) {
             if (! is_string($key)) {
                 continue;
