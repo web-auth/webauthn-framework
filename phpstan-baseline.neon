@@ -137,6 +137,11 @@ parameters:
 			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
 
 		-
+			message: "#^Parameter &\\$rootCertificates by\\-ref type of method Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:getJwsPayload\\(\\) expects array\\<string\\>, array given\\.$#"
+			count: 1
+			path: src/metadata-service/src/Service/FidoAllianceCompliantMetadataService.php
+
+		-
 			message: """
 				#^Call to deprecated method createFromString\\(\\) of class Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:
 				since 4\\.7\\.0\\. Please use the symfony/serializer for converting the object\\.$#
@@ -2327,11 +2332,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
-
-		-
 			message: "#^Cannot access offset 'fmt' on mixed\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
@@ -2394,11 +2394,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<int\\|string, Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
@@ -2473,11 +2468,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
-
-		-
 			message: "#^Cannot access offset 'attestationObject' on mixed\\.$#"
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
@@ -2528,11 +2518,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
-
-		-
 			message: "#^Cannot access offset 1 on array\\|false\\.$#"
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
@@ -2578,11 +2563,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
-
-		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticatorResponseDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
@@ -2595,11 +2575,6 @@ parameters:
 		-
 			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
 			count: 2
-			path: src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
 
 		-
@@ -2628,11 +2603,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
-
-		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
@@ -2649,11 +2619,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#4 \\$response of static method Webauthn\\\\PublicKeyCredential\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorResponse, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
 
@@ -2833,11 +2798,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialParametersDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
@@ -3003,11 +2963,6 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
-
-		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialUserEntityDenormalizer\\:\\:denormalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
@@ -3019,11 +2974,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\DenormalizerInterface and null will always evaluate to false\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
