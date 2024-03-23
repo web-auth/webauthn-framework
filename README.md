@@ -37,11 +37,15 @@ Or
 
 [![Become a Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/FlorentMorselli)
 
+# Supported Versions
+
+The list of the supported versions is available [on this page](https://github.com/web-auth/webauthn-framework/blob/4.8.x/RELEASES.md).
+
 # Contributing
 
 If you discover a security vulnerability within the project, please **don't use the bug tracker and don't publish it
 publicly**.
-Instead, all security issues must be sent to security [at] spomky-labs.com.
+Instead, all security issues must be sent via the [GitHub Vulnerability Report system](https://github.com/web-auth/webauthn-framework/security).
 
 # Licence
 

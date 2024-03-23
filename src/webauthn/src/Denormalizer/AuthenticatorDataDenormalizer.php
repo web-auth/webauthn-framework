@@ -11,7 +11,6 @@ use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\TextStringObject;
 use CBOR\UnsignedIntegerObject;
-use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -38,10 +37,6 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
-        if ($this->denormalizer === null) {
-            throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
-        }
-
         $authData = $this->fixIncorrectEdDSAKey($data);
         $authDataStream = new StringStream($authData);
         $rp_id_hash = $authDataStream->read(32);

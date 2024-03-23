@@ -29,7 +29,7 @@ class AuthenticationExtensions implements JsonSerializable, Countable, IteratorA
     public array $extensions;
 
     /**
-     * @param array<string|int, mixed|AuthenticationExtension> $extensions
+     * @param array<array-key, mixed|AuthenticationExtension> $extensions
      */
     public function __construct(array $extensions = [])
     {
@@ -50,7 +50,7 @@ class AuthenticationExtensions implements JsonSerializable, Countable, IteratorA
     }
 
     /**
-     * @param array<string|int, AuthenticationExtension> $extensions
+     * @param array<array-key, AuthenticationExtension> $extensions
      */
     public static function create(array $extensions = []): static
     {

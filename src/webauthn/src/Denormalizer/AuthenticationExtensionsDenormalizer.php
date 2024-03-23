@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -12,7 +11,9 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
+use function assert;
 use function in_array;
+use function is_array;
 use function is_string;
 
 final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
@@ -21,9 +22,10 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
-        if ($this->denormalizer === null) {
-            throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
+        if ($data instanceof AuthenticationExtensions) {
+            return AuthenticationExtensions::create($data->extensions);
         }
+        assert(is_array($data), 'The data should be an array.');
         foreach ($data as $key => $value) {
             if (! is_string($key)) {
                 continue;

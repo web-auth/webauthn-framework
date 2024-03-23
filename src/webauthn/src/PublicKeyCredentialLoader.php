@@ -33,13 +33,6 @@ class PublicKeyCredentialLoader implements CanLogData
         if ($this->attestationObjectLoader === null && $this->serializer === null) {
             throw new InvalidArgumentException('You must provide an attestation object loader or a serializer');
         }
-        if ($this->attestationObjectLoader !== null) {
-            trigger_deprecation(
-                'web-auth/metadata-service',
-                '4.8.0',
-                'The argument "$attestationObjectLoader" is deprecated since 4.8.0 and will be removed in 5.0.0. Please set null instead and inject a serializer as second argument.'
-            );
-        }
         $this->logger = new NullLogger();
     }
 
@@ -57,7 +50,6 @@ class PublicKeyCredentialLoader implements CanLogData
 
     /**
      * @param mixed[] $json
-     * @deprecated since 4.8.0 and will be removed in 5.0.0. Please use {self::load} instead
      * @infection-ignore-all
      */
     public function loadArray(array $json): PublicKeyCredential

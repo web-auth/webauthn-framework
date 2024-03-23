@@ -18,6 +18,8 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
 final class WebauthnSerializerFactory
 {
+    private const PACKAGE_SYMFONY_PROPERTY_INFO = 'symfony/property-info';
+
     private const PACKAGE_SYMFONY_SERIALIZER = 'symfony/serializer';
 
     private const PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK = 'phpdocumentor/reflection-docblock';
@@ -75,9 +77,9 @@ final class WebauthnSerializerFactory
             UidNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
             ArrayDenormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
             ObjectNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
-            PropertyInfoExtractor::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            PropertyInfoExtractor::class => self::PACKAGE_SYMFONY_PROPERTY_INFO,
             PhpDocExtractor::class => self::PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK,
-            ReflectionExtractor::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            ReflectionExtractor::class => self::PACKAGE_SYMFONY_PROPERTY_INFO,
             JsonEncoder::class => self::PACKAGE_SYMFONY_SERIALIZER,
             Serializer::class => self::PACKAGE_SYMFONY_SERIALIZER,
         ];
