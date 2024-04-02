@@ -43,6 +43,9 @@ use function is_int;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
+/**
+ * @deprecated since 4.9.0 and will be removed in 5.0.0. Android SafetyNet is now deprecated.
+ */
 final class AndroidSafetyNetAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private ?string $apiKey = null;

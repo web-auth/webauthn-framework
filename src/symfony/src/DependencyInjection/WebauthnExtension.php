@@ -357,6 +357,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
+     * @deprecated since 4.9.0 and will be removed in 5.0.0. Android SafetyNet is now deprecated.
      * @param mixed[] $config
      */
     private function loadAndroidSafetyNet(ContainerBuilder $container, FileLoader $loader, array $config): void

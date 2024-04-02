@@ -456,10 +456,14 @@ final class Configuration implements ConfigurationInterface
             ->end();
     }
 
+    /**
+     * @deprecated since 4.9.0 and will be removed in 5.0.0. Android SafetyNet is now deprecated.
+     */
     private function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
     {
         $rootNode->children()
             ->arrayNode('android_safetynet')
+                ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.9.0', 'Android SafetyNet is now deprecated.')
                 ->addDefaultsIfNotSet()
                 ->info('Additional configuration options for the Android SafetyNet attestation.')
                 ->children()

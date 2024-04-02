@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 
+/**
+ * @deprecated since 4.9.0 and will be removed in 5.0.0. Android SafetyNet is now deprecated.
+ */
 final class EnforcedSafetyNetApiKeyVerificationCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
