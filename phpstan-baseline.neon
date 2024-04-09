@@ -861,6 +861,14 @@ parameters:
 			path: src/symfony/src/DependencyInjection/Configuration.php
 
 		-
+			message: """
+				#^Call to deprecated method addAndroidSafetynetConfig\\(\\) of class Webauthn\\\\Bundle\\\\DependencyInjection\\\\Configuration\\:
+				since 4\\.9\\.0 and will be removed in 5\\.0\\.0\\. Android SafetyNet is now deprecated\\.$#
+			"""
+			count: 1
+			path: src/symfony/src/DependencyInjection/Configuration.php
+
+		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeParentInterface\\:\\:scalarNode\\(\\)\\.$#"
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -1029,6 +1037,14 @@ parameters:
 			message: "#^Parameter \\#9 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			message: """
+				#^Call to deprecated method loadAndroidSafetyNet\\(\\) of class Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:
+				since 4\\.9\\.0 and will be removed in 5\\.0\\.0\\. Android SafetyNet is now deprecated\\.$#
+			"""
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
 			message: "#^Cannot access offset 'failure_handler' on mixed\\.$#"
@@ -1240,6 +1256,14 @@ parameters:
 			message: "#^Class Webauthn\\\\Bundle\\\\Repository\\\\PublicKeyCredentialSourceRepository extends generic class Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository but does not specify its types\\: T$#"
 			count: 1
 			path: src/symfony/src/Repository/PublicKeyCredentialSourceRepository.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Webauthn\\\\AttestationStatement\\\\AndroidSafetyNetAttestationStatementSupport\\:
+				since 4\\.9\\.0 and will be removed in 5\\.0\\.0\\. Android SafetyNet is now deprecated\\.$#
+			"""
+			count: 1
+			path: src/symfony/src/Resources/config/android_safetynet.php
 
 		-
 			message: """
@@ -1767,6 +1791,14 @@ parameters:
 			message: "#^Parameter \\#3 \\.\\.\\.\\$arrays of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+		-
+			message: """
+				#^Instantiation of deprecated class Webauthn\\\\Bundle\\\\DependencyInjection\\\\Compiler\\\\EnforcedSafetyNetApiKeyVerificationCompilerPass\\:
+				since 4\\.9\\.0 and will be removed in 5\\.0\\.0\\. Android SafetyNet is now deprecated\\.$#
+			"""
+			count: 1
+			path: src/symfony/src/WebauthnBundle.php
 
 		-
 			message: "#^Method Webauthn\\\\Bundle\\\\WebauthnBundle\\:\\:getContainerExtension\\(\\) never returns null so it can be removed from the return type\\.$#"
