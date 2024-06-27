@@ -12,6 +12,7 @@
         "symfony-ux",
         "bundle"
     ],
+    "minimum-stability": "dev",
     "homepage": "https://github.com/web-auth/webauthn-framework",
     "authors": [
         {
@@ -72,7 +73,7 @@
         "symfony/uid": "^6.1|^7.0",
         "symfony/validator": "^6.1|^7.0",
         "web-auth/cose-lib": "^4.2.3",
-        "web-token/jwt-library": "^3.3|4.0.x-dev"
+        "web-token/jwt-library": "^3.3|^4.0"
     },
     "replace": {
         "web-auth/webauthn-lib": "self.version",
