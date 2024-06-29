@@ -86,7 +86,7 @@ class PublicKeyCredentialLoader implements CanLogData
             hash_equals($id, $rawId) || throw InvalidDataException::create($json, 'Invalid ID');
 
             $publicKeyCredential = PublicKeyCredential::create(
-                $json['id'],
+                null,
                 $json['type'],
                 $rawId,
                 $this->createResponse($json['response'])

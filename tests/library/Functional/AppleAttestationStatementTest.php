@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use DateTimeImmutable;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
@@ -55,10 +54,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertSame(
-            base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true),
-            Base64UrlSafe::decode($publicKeyCredential->id)
-        );
+        static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredential->rawId);
         static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredentialDescriptor->id);
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,

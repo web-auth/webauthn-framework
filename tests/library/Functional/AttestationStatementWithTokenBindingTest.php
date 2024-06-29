@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -55,7 +54,7 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
                 '+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==',
                 true
             ),
-            Base64UrlSafe::decode($publicKeyCredential->id)
+            $publicKeyCredential->rawId
         );
         static::assertSame(
             base64_decode(

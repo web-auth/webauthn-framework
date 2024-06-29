@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -52,7 +51,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 'xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==',
                 true
             ),
-            Base64UrlSafe::decode($publicKeyCredential->id)
+            $publicKeyCredential->rawId
         );
         static::assertSame(
             base64_decode(
@@ -114,7 +113,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 'AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve',
                 true
             ),
-            Base64UrlSafe::decode($publicKeyCredential->id)
+            $publicKeyCredential->rawId
         );
         static::assertSame(
             base64_decode(
@@ -171,7 +170,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
         static::assertSame(
             base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true),
-            Base64UrlSafe::decode($publicKeyCredential->id)
+            $publicKeyCredential->rawId
         );
         static::assertSame(
             base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true),

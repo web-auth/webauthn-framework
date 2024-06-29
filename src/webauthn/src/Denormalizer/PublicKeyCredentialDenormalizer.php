@@ -29,7 +29,7 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         $data['rawId'] = $rawId;
 
         return PublicKeyCredential::create(
-            $data['id'],
+            null,
             $data['type'],
             $data['rawId'],
             $this->denormalizer->denormalize($data['response'], AuthenticatorResponse::class, $format, $context),

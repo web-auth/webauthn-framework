@@ -2349,6 +2349,14 @@ parameters:
 			path: src/webauthn/src/CollectedClientData.php
 
 		-
+			message: """
+				#^Access to deprecated property \\$id of class Webauthn\\\\Credential\\:
+				since 4\\.9\\.0\\. Please use the property rawId instead\\.$#
+			"""
+			count: 1
+			path: src/webauthn/src/Credential.php
+
+		-
 			message: "#^Cannot access offset 'authData' on mixed\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php

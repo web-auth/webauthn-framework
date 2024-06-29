@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Uid\Uuid;
@@ -46,7 +45,7 @@ final class W10Test extends AbstractTestCase
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
-        static::assertSame($credentialId, Base64UrlSafe::decode($publicKeyCredential->id));
+        static::assertSame($credentialId, $publicKeyCredential->rawId);
         static::assertSame($credentialId, $publicKeyCredentialDescriptor->id);
         static::assertSame(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
