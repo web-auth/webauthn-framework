@@ -13,13 +13,11 @@ use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 //use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
-use Rector\Symfony\Symfony42\Rector\New_\StringToArrayArgumentProcessRector;
 use Rector\ValueObject\PhpVersion;
 
 return static function (RectorConfig $config): void {
     $config->import(SetList::DEAD_CODE);
     $config->import(LevelSetList::UP_TO_PHP_81);
-    //$config->import(SymfonyLevelSetList::UP_TO_SYMFONY_60);
     $config->import(SymfonySetList::SYMFONY_60);
     $config->import(SymfonySetList::SYMFONY_50_TYPES);
     $config->import(SymfonySetList::SYMFONY_52_VALIDATOR_ATTRIBUTES);
@@ -30,7 +28,6 @@ return static function (RectorConfig $config): void {
     $config->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
     $config->import(PHPUnitSetList::PHPUNIT_CODE_QUALITY);
     $config->import(PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES);
-    //$config->import(PHPUnitLevelSetList::UP_TO_PHPUNIT_100);
     $config->import(PHPUnitSetList::PHPUNIT_100);
     $config->paths([__DIR__ . '/src', __DIR__ . '/tests', __DIR__ . '/ecs.php', __DIR__ . '/rector.php']);
     $config->skip([
@@ -42,7 +39,6 @@ return static function (RectorConfig $config): void {
         ],
         ReadOnlyPropertyRector::class => [__DIR__ . '/src/metadata-service/src/Statement/MetadataStatement.php'],
         PreferPHPUnitThisCallRector::class,
-        StringToArrayArgumentProcessRector::class => [__DIR__ . '/tests'],
     ]);
     $config->phpVersion(PhpVersion::PHP_81);
     $config->parallel();

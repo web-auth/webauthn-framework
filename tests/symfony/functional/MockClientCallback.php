@@ -17,7 +17,7 @@ final class MockClientCallback
      */
     private array $responses = [];
 
-    public function __invoke(string $method, string $url, array $options = []): ?ResponseInterface
+    public function __invoke(string $method, string $url): ?ResponseInterface
     {
         $key = $method . '-' . $url;
         if (! isset($this->responses[$key])) {
