@@ -1228,6 +1228,11 @@ parameters:
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
 
 		-
+			message: "#^Parameter \\#2 \\$mode of function count expects 0\\|1, int given\\.$#"
+			count: 1
+			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorCollection.php
+
+		-
 			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\PublicKeyCredentialDescriptor\\:\\:createFromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
@@ -2177,6 +2182,11 @@ parameters:
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
+			message: "#^Parameter \\#2 \\$mode of function count expects 0\\|1, int given\\.$#"
+			count: 1
+			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
+
+		-
 			message: "#^Class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs extends @final class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\.$#"
 			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionsClientInputs.php
@@ -3059,6 +3069,11 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$json of static method Webauthn\\\\PublicKeyCredentialDescriptorCollection\\:\\:createFromArray\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
+
+		-
+			message: "#^Parameter \\#2 \\$mode of function count expects 0\\|1, int given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialDescriptorCollection.php
 
