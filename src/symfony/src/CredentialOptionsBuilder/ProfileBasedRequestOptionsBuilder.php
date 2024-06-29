@@ -15,6 +15,7 @@ use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
@@ -32,6 +33,7 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private readonly string $profile,
+        private readonly null|FakeCredentialGenerator $fakeCredentialGenerator = null,
     ) {
         if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
             trigger_deprecation(
@@ -71,7 +73,16 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         $userEntity = $optionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
             $optionsRequest->username
         );
-        $allowedCredentials = $userEntity === null ? [] : $this->getCredentials($userEntity);
+        dump($this->fakeCredentialGenerator?->generate($request, $optionsRequest->username ?? ''));
+        $allowedCredentials = match (true) {
+            $userEntity === null && $optionsRequest->username === null, $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator === null => [],
+            $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator !== null => $this->fakeCredentialGenerator->generate(
+                $request,
+                $optionsRequest->username
+            ),
+            default => $this->getCredentials($userEntity),
+        };
+
         return $this->publicKeyCredentialRequestOptionsFactory->create(
             $this->profile,
             $allowedCredentials,

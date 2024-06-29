@@ -21,6 +21,7 @@ use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\SimpleFakeCredentialGenerator;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -61,6 +62,13 @@ final class Configuration implements ConfigurationInterface
                 )
                 ->defaultNull()
                 ->info('Creates PSR-7 HTTP Request and Response instances from Symfony ones.')
+            ->end()
+            ->scalarNode('fake_credential_generator')
+                ->defaultValue(SimpleFakeCredentialGenerator::class)
+                ->cannotBeEmpty()
+                ->info(
+                    'A service that implements the FakeCredentialGenerator to generate fake credentials for preventing username enumeration.'
+                )
             ->end()
             ->scalarNode('clock')
                 ->defaultValue('webauthn.clock.default')

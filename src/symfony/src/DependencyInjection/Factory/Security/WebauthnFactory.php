@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\ParentNodeDefinitionInterface;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +36,7 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\FakeCredentialGenerator;
 use function array_key_exists;
 use function assert;
 
@@ -490,7 +492,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
-                new Reference(WebauthnSerializerFactory::class),
+                new Reference(FakeCredentialGenerator::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
             ]);
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 

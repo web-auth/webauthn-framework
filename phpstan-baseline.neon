@@ -798,7 +798,17 @@ parameters:
 			path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
+			message: "#^Parameter \\#1 \\$userEntity of method Webauthn\\\\Bundle\\\\CredentialOptionsBuilder\\\\ProfileBasedRequestOptionsBuilder\\:\\:getCredentials\\(\\) expects Webauthn\\\\PublicKeyCredentialUserEntity, Webauthn\\\\PublicKeyCredentialUserEntity\\|null given\\.$#"
+			count: 1
+			path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
 			message: "#^Parameter \\$credentialSourceRepository of method Webauthn\\\\Bundle\\\\CredentialOptionsBuilder\\\\ProfileBasedRequestOptionsBuilder\\:\\:__construct\\(\\) has typehint with deprecated interface Webauthn\\\\PublicKeyCredentialSourceRepository\\.$#"
+			count: 1
+			path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			message: "#^Should not use function \"dump\", please change the code\\.$#"
 			count: 1
 			path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
@@ -3169,6 +3179,11 @@ parameters:
 			message: "#^Parameter \\#9 \\$counter of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects int, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialSource.php
+
+		-
+			message: "#^Method Webauthn\\\\SimpleFakeCredentialGenerator\\:\\:generate\\(\\) should return array\\<Webauthn\\\\PublicKeyCredentialDescriptor\\> but returns mixed\\.$#"
+			count: 1
+			path: src/webauthn/src/SimpleFakeCredentialGenerator.php
 
 		-
 			message: "#^Method Webauthn\\\\StringStream\\:\\:read\\(\\) should return string but returns string\\|false\\.$#"

@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -45,6 +46,7 @@ use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CeremonyStep\TopOriginValidator;
 use Webauthn\Counter\CounterChecker;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\Event\CanDispatchEvents;
@@ -100,6 +102,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.http_client', $config['http_client']);
         $container->setAlias('webauthn.logger', $config['logger']);
 
+        $container->setAlias(FakeCredentialGenerator::class, $config['fake_credential_generator']);
         $container->setAlias(PublicKeyCredentialSourceRepository::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialSourceRepositoryInterface::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepository::class, $config['user_repository']);
@@ -287,6 +290,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                         new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                         new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                         $requestConfig['profile'],
+                        new Reference(FakeCredentialGenerator::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
                     ]);
                 $container->setDefinition($assertionOptionsBuilderId, $assertionOptionsBuilder);
             }

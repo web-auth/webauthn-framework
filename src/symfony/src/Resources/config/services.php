@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Lcobucci\Clock\SystemClock;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -42,10 +43,12 @@ use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\MetadataService\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\SimpleFakeCredentialGenerator;
 use Webauthn\TokenBinding\IgnoreTokenBindingHandler;
 use Webauthn\TokenBinding\SecTokenBindingHandler;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
@@ -78,6 +81,11 @@ return static function (ContainerConfigurator $container): void {
         ->class(CeremonyStepManager::class)
         ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
         ->args([param('webauthn.secured_relying_party_ids')])
+    ;
+
+    $container
+        ->set(SimpleFakeCredentialGenerator::class)
+        ->args([service(CacheItemPoolInterface::class)->nullOnInvalid()])
     ;
 
     $container
@@ -162,6 +170,7 @@ return static function (ContainerConfigurator $container): void {
             service(AuthenticatorAssertionResponseValidator::class),
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
             service(PublicKeyCredentialSourceRepository::class)->nullOnInvalid(),
+            service(FakeCredentialGenerator::class)->nullOnInvalid(),
         ]);
 
     $container

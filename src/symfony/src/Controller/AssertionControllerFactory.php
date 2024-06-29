@@ -19,6 +19,7 @@ use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -34,7 +35,8 @@ final class AssertionControllerFactory implements CanLogData
         private readonly null|PublicKeyCredentialLoader $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $publicKeyCredentialUserEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
+        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
+        private readonly null|FakeCredentialGenerator $fakeCredentialGenerator = null,
     ) {
         if ($this->publicKeyCredentialLoader !== null) {
             trigger_deprecation(
@@ -68,6 +70,7 @@ final class AssertionControllerFactory implements CanLogData
             $this->publicKeyCredentialSourceRepository,
             $this->publicKeyCredentialRequestOptionsFactory,
             $profile,
+            $this->fakeCredentialGenerator,
         );
 
         return $this->createRequestController($optionsBuilder, $optionStorage, $optionsHandler, $failureHandler);
@@ -84,7 +87,7 @@ final class AssertionControllerFactory implements CanLogData
             $optionStorage,
             $optionsHandler,
             $failureHandler,
-            $this->logger
+            $this->logger,
         );
     }
 
