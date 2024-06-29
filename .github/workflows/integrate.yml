@@ -187,12 +187,6 @@ jobs:
         run: |
           vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
 
-      - name: "SonarCloud Scan"
-        uses: "sonarsource/sonarcloud-github-action@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   rector_checkstyle:
     name: "6️⃣ Rector Checkstyle"
     needs:
