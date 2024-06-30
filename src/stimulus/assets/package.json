@@ -17,15 +17,15 @@
         },
         "importmap": {
             "@hotwired/stimulus": "^3.0.0",
-            "@simplewebauthn/browser": "^7.0.0"
+            "@simplewebauthn/browser": "^10.0.0"
         }
     },
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^8.0.0"
+        "@simplewebauthn/browser": "^10.0.0"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^8.0.0"
+        "@simplewebauthn/browser": "^10.0.0"
     }
 }
