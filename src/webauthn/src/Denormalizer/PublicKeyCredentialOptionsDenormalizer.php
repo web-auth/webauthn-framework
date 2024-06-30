@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -18,11 +21,13 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
+use function assert;
 use function in_array;
 
-final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
+final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface, NormalizerInterface, NormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
+    use NormalizerAwareTrait;
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
@@ -107,6 +112,11 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         );
     }
 
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof PublicKeyCredentialCreationOptions || $data instanceof PublicKeyCredentialRequestOptions;
+    }
+
     /**
      * @return array<class-string, bool>
      */
@@ -116,5 +126,55 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
             PublicKeyCredentialCreationOptions::class => true,
             PublicKeyCredentialRequestOptions::class => true,
         ];
+    }
+
+    public function normalize(mixed $data, ?string $format = null, array $context = []): array
+    {
+        assert(
+            $data instanceof PublicKeyCredentialCreationOptions || $data instanceof PublicKeyCredentialRequestOptions
+        );
+        $json = [
+            'challenge' => Base64UrlSafe::encodeUnpadded($data->challenge),
+            'timeout' => $data->timeout,
+            'extensions' => $this->normalizer->normalize($data->extensions, $format, $context),
+        ];
+
+        if ($data instanceof PublicKeyCredentialCreationOptions) {
+            $json = [
+                ...$json,
+                'rp' => $this->normalizer->normalize($data->rp, PublicKeyCredentialRpEntity::class, $context),
+                'user' => $this->normalizer->normalize($data->user, PublicKeyCredentialUserEntity::class, $context),
+                'pubKeyCredParams' => $this->normalizer->normalize(
+                    $data->pubKeyCredParams,
+                    PublicKeyCredentialParameters::class . '[]',
+                    $context
+                ),
+                'authenticatorSelection' => $data->authenticatorSelection === null ? null : $this->normalizer->normalize(
+                    $data->authenticatorSelection,
+                    AuthenticatorSelectionCriteria::class,
+                    $context
+                ),
+                'attestation' => $data->attestation,
+                'excludeCredentials' => $this->normalizer->normalize(
+                    $data->excludeCredentials,
+                    PublicKeyCredentialDescriptor::class . '[]',
+                    $context
+                ),
+            ];
+        }
+        if ($data instanceof PublicKeyCredentialRequestOptions) {
+            $json = [
+                ...$json,
+                'rpId' => $data->rpId,
+                'allowCredentials' => $this->normalizer->normalize(
+                    $data->allowCredentials,
+                    PublicKeyCredentialDescriptor::class . '[]',
+                    $context
+                ),
+                'userVerification' => $data->userVerification,
+            ];
+        }
+
+        return array_filter($json, static fn ($value) => $value !== null && $value !== []);
     }
 }

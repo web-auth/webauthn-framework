@@ -2438,7 +2438,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionsDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
 
@@ -2753,7 +2768,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialOptionsDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialOptionsDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialOptionsDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialOptionsDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
@@ -3013,7 +3043,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialUserEntityDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialUserEntityDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialUserEntityDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialUserEntityDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
@@ -3041,7 +3086,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\TrustPathDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\TrustPathDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\TrustPathDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\TrustPathDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 

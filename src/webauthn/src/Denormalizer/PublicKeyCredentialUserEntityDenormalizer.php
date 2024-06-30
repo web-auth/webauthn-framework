@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Util\Base64;
 use function array_key_exists;
+use function assert;
 
-final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
+final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
-    use DenormalizerAwareTrait;
-
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
         if (! array_key_exists('id', $data)) {
@@ -43,5 +42,23 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
         return [
             PublicKeyCredentialUserEntity::class => true,
         ];
+    }
+
+    public function normalize(mixed $data, ?string $format = null, array $context = []): array
+    {
+        assert($data instanceof PublicKeyCredentialUserEntity);
+        $normalized = [
+            'id' => Base64UrlSafe::encodeUnpadded($data->id),
+            'name' => $data->name,
+            'displayName' => $data->displayName,
+            'icon' => $data->icon,
+        ];
+
+        return array_filter($normalized, fn ($value) => $value !== null);
+    }
+
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof PublicKeyCredentialUserEntity;
     }
 }
