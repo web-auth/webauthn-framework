@@ -6,15 +6,15 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
-use const JSON_UNESCAPED_SLASHES;
 
 /**
  * @internal
  */
-final class CodeAccuracyDescriptorObjectTest extends TestCase
+final class CodeAccuracyDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
@@ -30,7 +30,9 @@ final class CodeAccuracyDescriptorObjectTest extends TestCase
         static::assertSame($minLength, $object->minLength);
         static::assertSame($maxRetries, $object->maxRetries);
         static::assertSame($blockSlowdown, $object->blockSlowdown);
-        static::assertSame($expectedJson, json_encode($object, JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
     }
 
     public static function validObjectData(): iterable

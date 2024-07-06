@@ -49,6 +49,7 @@ use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\FakeCredentialGenerator;
 use Webauthn\MetadataService\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
+use Webauthn\MetadataService\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\SimpleFakeCredentialGenerator;
@@ -196,6 +197,11 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->alias('webauthn.request_factory.default', RequestFactoryInterface::class);
 
+    $container
+        ->set(VerificationMethodANDCombinationsDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
     $container
         ->set(ExtensionDescriptorDenormalizer::class)
         ->tag('serializer.normalizer', [

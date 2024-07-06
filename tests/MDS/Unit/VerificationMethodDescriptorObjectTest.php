@@ -6,24 +6,25 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\MetadataService\Statement\BiometricAccuracyDescriptor;
 use Webauthn\MetadataService\Statement\CodeAccuracyDescriptor;
 use Webauthn\MetadataService\Statement\PatternAccuracyDescriptor;
 use Webauthn\MetadataService\Statement\VerificationMethodDescriptor;
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_SLASHES;
 
 /**
  * @internal
  */
-final class VerificationMethodDescriptorObjectTest extends TestCase
+final class VerificationMethodDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
     public function validObject(VerificationMethodDescriptor $object, string $expectedJson): void
     {
-        static::assertSame($expectedJson, json_encode($object, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
+        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
     }
 
     public static function validObjectData(): iterable

@@ -46,6 +46,56 @@ parameters:
 			path: src/metadata-service/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns ArrayObject so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns bool so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns float so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns int so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns null so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) never returns string so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) return type with generic class ArrayObject does not specify its types\\: TKey, TValue$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\MetadataService\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/metadata-service/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:request\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/metadata-service/src/Psr18HttpClient.php

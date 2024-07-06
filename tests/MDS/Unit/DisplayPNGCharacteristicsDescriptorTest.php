@@ -6,14 +6,13 @@ namespace Webauthn\Tests\MetadataService\Unit;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Webauthn\MetadataService\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\DisplayPNGCharacteristicsDescriptor;
 
 /**
  * @internal
  */
-final class DisplayPNGCharacteristicsDescriptorTest extends TestCase
+final class DisplayPNGCharacteristicsDescriptorTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('getInvalidValues')]

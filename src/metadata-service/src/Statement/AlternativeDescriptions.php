@@ -50,6 +50,12 @@ class AlternativeDescriptions implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
+        trigger_deprecation(
+            'web-auth/webauthn-bundle',
+            '4.9.0',
+            'The "%s" method is deprecated and will be removed in 5.0. Please use the serializer instead.',
+            __METHOD__
+        );
         return $this->descriptions;
     }
 }

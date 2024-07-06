@@ -31,6 +31,7 @@ final class MetadataStatementSerializerFactory
         }
 
         $denormalizers = [
+            new VerificationMethodANDCombinationsDenormalizer(),
             new ExtensionDescriptorDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
