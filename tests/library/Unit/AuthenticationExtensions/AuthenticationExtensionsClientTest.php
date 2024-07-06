@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
-use const JSON_THROW_ON_ERROR;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class AuthenticationExtensionsClientTest extends TestCase
+final class AuthenticationExtensionsClientTest extends AbstractTestCase
 {
     #[Test]
     public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
@@ -23,7 +23,9 @@ final class AuthenticationExtensionsClientTest extends TestCase
 
         static::assertSame('name', $extension->name);
         static::assertSame(['value'], $extension->value);
-        static::assertSame('["value"]', json_encode($extension, JSON_THROW_ON_ERROR));
+        static::assertSame('["value"]', $this->getSerializer()->serialize($extension, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
     }
 
     #[Test]
@@ -34,7 +36,9 @@ final class AuthenticationExtensionsClientTest extends TestCase
         ]);
 
         static::assertSame(1, $inputs->count());
-        static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
+        static::assertSame('{"name":["value"]}', $this->getSerializer()->serialize($inputs, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
         static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 
@@ -46,7 +50,9 @@ final class AuthenticationExtensionsClientTest extends TestCase
         ]);
 
         static::assertSame(1, $inputs->count());
-        static::assertSame('{"name":["value"]}', json_encode($inputs, JSON_THROW_ON_ERROR));
+        static::assertSame('{"name":["value"]}', $this->getSerializer()->serialize($inputs, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
         static::assertContainsOnlyInstancesOf(AuthenticationExtension::class, $inputs);
     }
 }

@@ -32,6 +32,8 @@ use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Denormalizer\AttestationObjectDenormalizer;
 use Webauthn\Denormalizer\AttestationStatementDenormalizer;
+use Webauthn\Denormalizer\AttestedCredentialDataNormalizer;
+use Webauthn\Denormalizer\AuthenticationExtensionNormalizer;
 use Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer;
@@ -39,6 +41,7 @@ use Webauthn\Denormalizer\AuthenticatorDataDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorResponseDenormalizer;
 use Webauthn\Denormalizer\CollectedClientDataDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
@@ -206,6 +209,21 @@ return static function (ContainerConfigurator $container): void {
     $container
         ->set(AttestationStatementDenormalizer::class)
         ->args([service(AttestationStatementSupportManager::class)])
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $container
+        ->set(AuthenticationExtensionNormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $container
+        ->set(PublicKeyCredentialDescriptorNormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $container
+        ->set(AttestedCredentialDataNormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);

@@ -23,7 +23,7 @@ class PublicKeyCredential extends Credential implements Stringable
     }
 
     /**
-     * @deprecated since 4.8.0. Please use the PublicKeyCredentialDescriptor ({self::getPublicKeyCredentialDescriptor}) instead.
+     * @deprecated since 4.8.0.
      * @infection-ignore-all
      */
     public function __toString(): string

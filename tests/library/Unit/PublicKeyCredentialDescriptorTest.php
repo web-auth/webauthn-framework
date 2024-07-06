@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\PublicKeyCredentialDescriptor;
-use const JSON_THROW_ON_ERROR;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class PublicKeyCredentialDescriptorTest extends TestCase
+final class PublicKeyCredentialDescriptorTest extends AbstractTestCase
 {
     #[Test]
     public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed(): void
@@ -24,7 +24,10 @@ final class PublicKeyCredentialDescriptorTest extends TestCase
         static::assertSame(['transport'], $descriptor->transports);
         static::assertSame(
             '{"type":"type","id":"aWQ","transports":["transport"]}',
-            json_encode($descriptor, JSON_THROW_ON_ERROR)
+            $this->getSerializer()
+                ->serialize($descriptor, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
     }
 }

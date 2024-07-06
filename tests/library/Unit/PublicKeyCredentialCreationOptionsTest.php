@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\AbstractTestCase;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -42,9 +42,12 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         static::assertSame([$credentialParameters], $options->pubKeyCredParams);
         static::assertSame('direct', $options->attestation);
         static::assertSame(1000, $options->timeout);
-        static::assertSame(
+        static::assertJsonStringEqualsJsonString(
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"attestation":"direct"}',
-            json_encode($options, JSON_THROW_ON_ERROR)
+            $this->getSerializer()
+                ->serialize($options, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
 
         $data = $this->getSerializer()
@@ -56,9 +59,12 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         static::assertSame('challenge', $data->challenge);
         static::assertSame('direct', $data->attestation);
         static::assertSame(1000, $data->timeout);
-        static::assertSame(
+        static::assertJsonStringEqualsJsonString(
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
-            json_encode($data, JSON_THROW_ON_ERROR)
+            $this->getSerializer()
+                ->serialize($data, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
     }
 
@@ -79,15 +85,19 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
             timeout: 1000
         );
 
-        $json = json_encode($options, JSON_THROW_ON_ERROR);
-        static::assertSame(
-            // '{"rp":{"name":"RP"},"pubKeyCredParams":[{"type":"type","alg":-100}],"challenge":"Y2hhbGxlbmdl","attestation":"indirect","user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"authenticatorSelection":{"requireResidentKey":false,"userVerification":"preferred","residentKey":"preferred"},"excludeCredentials":[],"timeout":1000}', // TODO: On hold. Waiting for issue clarification. See https://github.com/fido-alliance/conformance-test-tools-resources/issues/676
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+        static::assertJsonStringEqualsJsonString(
             '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"indirect"}',
             $json
         );
 
         $data = $this->getSerializer()
-            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
         static::assertSame([], $data->excludeCredentials);
     }
 }

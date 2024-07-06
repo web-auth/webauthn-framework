@@ -8,6 +8,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Throwable;
@@ -51,6 +55,11 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
      * @var array<mixed>
      */
     private array $authenticatorAssertionResponseValidationFailed = [];
+
+    public function __construct(
+        private readonly SerializerInterface $serializer
+    ) {
+    }
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
@@ -110,9 +119,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->publicKeyCredentialCreationOptions[] = [
             'options' => $cloner->cloneVar($event->publicKeyCredentialCreationOptions),
-            'json' => json_encode(
+            'json' => $this->serializer->serialize(
                 $event->publicKeyCredentialCreationOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
         ];
     }
@@ -124,9 +137,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->authenticatorAttestationResponseValidationSucceeded[] = [
             'attestation_response' => $cloner->cloneVar($event->authenticatorAttestationResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialCreationOptions),
-            'options_json' => json_encode(
+            'options_json' => $this->serializer->serialize(
                 $event->publicKeyCredentialCreationOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
             'credential_source' => $cloner->cloneVar($event->publicKeyCredentialSource),
         ];
@@ -139,9 +156,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $this->authenticatorAttestationResponseValidationFailed[] = [
             'attestation_response' => $cloner->cloneVar($event->authenticatorAttestationResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialCreationOptions),
-            'options_json' => json_encode(
+            'options_json' => $this->serializer->serialize(
                 $event->publicKeyCredentialCreationOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
             'exception' => $cloner->cloneVar($event->throwable),
         ];
@@ -152,9 +173,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         $cloner = new VarCloner();
         $this->publicKeyCredentialRequestOptions[] = [
             'options' => $cloner->cloneVar($event->publicKeyCredentialRequestOptions),
-            'json' => json_encode(
+            'json' => $this->serializer->serialize(
                 $event->publicKeyCredentialRequestOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
         ];
     }
@@ -168,9 +193,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'credential_id' => $cloner->cloneVar($event->credentialId),
             'assertion_response' => $cloner->cloneVar($event->authenticatorAssertionResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialRequestOptions),
-            'options_json' => json_encode(
+            'options_json' => $this->serializer->serialize(
                 $event->publicKeyCredentialRequestOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
             'credential_source' => $cloner->cloneVar($event->publicKeyCredentialSource),
         ];
@@ -185,9 +214,13 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
             'credential_id' => $cloner->cloneVar($event->getCredential()?->publicKeyCredentialId),
             'assertion_response' => $cloner->cloneVar($event->authenticatorAssertionResponse),
             'options' => $cloner->cloneVar($event->publicKeyCredentialRequestOptions),
-            'options_json' => json_encode(
+            'options_json' => $this->serializer->serialize(
                 $event->publicKeyCredentialRequestOptions,
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
+                JsonEncoder::FORMAT,
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
+                ]
             ),
             'exception' => $cloner->cloneVar($event->throwable),
         ];

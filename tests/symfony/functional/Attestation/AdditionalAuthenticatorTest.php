@@ -54,7 +54,6 @@ final class AdditionalAuthenticatorTest extends WebTestCase
             'status',
             'errorMessage',
             'rp',
-            'pubKeyCredParams',
             'challenge',
             'attestation',
             'user',

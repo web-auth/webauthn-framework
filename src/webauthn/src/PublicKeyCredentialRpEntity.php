@@ -51,6 +51,12 @@ class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
      */
     public function jsonSerialize(): array
     {
+        trigger_deprecation(
+            'web-auth/webauthn-bundle',
+            '4.9.0',
+            'The "%s" method is deprecated and will be removed in 5.0. The serializer instead.',
+            __METHOD__
+        );
         $json = parent::jsonSerialize();
         if ($this->id !== null) {
             $json['id'] = $this->id;

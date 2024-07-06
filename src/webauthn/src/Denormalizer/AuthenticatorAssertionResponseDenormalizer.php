@@ -25,14 +25,14 @@ final class AuthenticatorAssertionResponseDenormalizer implements DenormalizerIn
         $data['clientDataJSON'] = Base64UrlSafe::decodeNoPadding($data['clientDataJSON']);
         $userHandle = $data['userHandle'] ?? null;
         if ($userHandle !== '' && $userHandle !== null) {
-            $data['userHandle'] = Base64::decode($userHandle);
+            $userHandle = Base64::decode($userHandle);
         }
 
         return AuthenticatorAssertionResponse::create(
             $this->denormalizer->denormalize($data['clientDataJSON'], CollectedClientData::class, $format, $context),
             $this->denormalizer->denormalize($data['authenticatorData'], AuthenticatorData::class, $format, $context),
             $data['signature'],
-            $data['userHandle'] ?? null,
+            $userHandle ?? null,
             ! isset($data['attestationObject']) ? null : $this->denormalizer->denormalize(
                 $data['attestationObject'],
                 AttestationObject::class,

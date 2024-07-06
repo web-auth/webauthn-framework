@@ -46,7 +46,7 @@ final class TrustPathTest extends TestCase
     public function theLoaderCannotLoadUnsupportedTypeName(): void
     {
         $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage('The trust path type "foo" is not supported');
+        $this->expectExceptionMessage('Unsupported trust path');
         TrustPathLoader::loadTrustPath([
             'type' => 'foo',
         ]);
@@ -59,9 +59,7 @@ final class TrustPathTest extends TestCase
     public function theLoaderCannotLoadUnsupportedTypeNameBasedOnClass(): void
     {
         $this->expectException(InvalidTrustPathException::class);
-        $this->expectExceptionMessage(
-            'The trust path type "Webauthn\Tests\Unit\TrustPath\NotAValidTrustPath" is not supported'
-        );
+        $this->expectExceptionMessage('Unsupported trust path');
         TrustPathLoader::loadTrustPath([
             'type' => NotAValidTrustPath::class,
         ]);

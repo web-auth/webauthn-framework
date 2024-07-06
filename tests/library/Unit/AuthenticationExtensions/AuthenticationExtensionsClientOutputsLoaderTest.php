@@ -9,16 +9,16 @@ use CBOR\MapItem;
 use CBOR\MapObject;
 use CBOR\OtherObject\TrueObject;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputs;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientOutputsLoader;
 use Webauthn\Exception\AuthenticationExtensionException;
-use const JSON_THROW_ON_ERROR;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
+final class AuthenticationExtensionsClientOutputsLoaderTest extends AbstractTestCase
 {
     #[Test]
     public function theExtensionsCanBeLoaded(): void
@@ -29,7 +29,9 @@ final class AuthenticationExtensionsClientOutputsLoaderTest extends TestCase
 
         static::assertInstanceOf(AuthenticationExtensionsClientOutputs::class, $extensions);
         static::assertCount(1, $extensions);
-        static::assertSame('{"loc":true}', json_encode($extensions, JSON_THROW_ON_ERROR));
+        static::assertSame('{"loc":true}', $this->getSerializer()->serialize($extensions, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
     }
 
     #[Test]

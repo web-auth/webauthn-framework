@@ -6,20 +6,21 @@ namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
-use const JSON_UNESCAPED_SLASHES;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class AttestedCredentialDataTest extends TestCase
+final class AttestedCredentialDataTest extends AbstractTestCase
 {
     #[Test]
     #[DataProvider('dataAAGUID')]
     public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
     {
+        // Given
         $attestedCredentialData = AttestedCredentialData::create(Uuid::fromString(
             $uuid
         ), 'credential_id', 'credential_public_key');
@@ -29,7 +30,10 @@ final class AttestedCredentialDataTest extends TestCase
         static::assertSame('credential_public_key', $attestedCredentialData->credentialPublicKey);
         static::assertSame(
             '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
-            json_encode($attestedCredentialData, JSON_UNESCAPED_SLASHES)
+            $this->getSerializer()
+                ->serialize($attestedCredentialData, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
 
         json_decode(

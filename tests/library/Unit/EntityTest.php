@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use const JSON_THROW_ON_ERROR;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class EntityTest extends TestCase
+final class EntityTest extends AbstractTestCase
 {
     #[Test]
     public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
@@ -25,8 +25,11 @@ final class EntityTest extends TestCase
         static::assertSame('icon', $user->icon);
         static::assertSame('id', $user->id);
         static::assertSame(
-            '{"name":"name","icon":"icon","id":"aWQ","displayName":"display_name"}',
-            json_encode($user, JSON_THROW_ON_ERROR)
+            '{"id":"aWQ","name":"name","displayName":"display_name","icon":"icon"}',
+            $this->getSerializer()
+                ->serialize($user, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
     }
 
@@ -38,6 +41,8 @@ final class EntityTest extends TestCase
         static::assertSame('name', $rp->name);
         static::assertSame('icon', $rp->icon);
         static::assertSame('id', $rp->id);
-        static::assertSame('{"name":"name","icon":"icon","id":"id"}', json_encode($rp, JSON_THROW_ON_ERROR));
+        static::assertSame('{"id":"id","name":"name","icon":"icon"}', $this->getSerializer()->serialize($rp, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]));
     }
 }

@@ -36,8 +36,10 @@ return static function (ContainerConfigurator $container): void {
     $container->set(DefaultFailureHandler::class);
     $container->set(SessionStorage::class)->args([service('request_stack')]);
     $container->set(CacheStorage::class)->args([service(CacheItemPoolInterface::class)]);
-    $container->set(DefaultCreationOptionsHandler::class);
-    $container->set(DefaultRequestOptionsHandler::class);
+    $container->set(DefaultCreationOptionsHandler::class)
+        ->args([service('serializer')]);
+    $container->set(DefaultRequestOptionsHandler::class)
+        ->args([service('serializer')]);
     $container
         ->set(WebauthnFactory::AUTHENTICATOR_DEFINITION_ID, WebauthnAuthenticator::class)
         ->abstract()

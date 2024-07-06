@@ -136,14 +136,18 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         $json = [
             'challenge' => Base64UrlSafe::encodeUnpadded($data->challenge),
             'timeout' => $data->timeout,
-            'extensions' => $this->normalizer->normalize($data->extensions, $format, $context),
+            'extensions' => $data->extensions->count() === 0 ? null : $this->normalizer->normalize(
+                $data->extensions,
+                $format,
+                $context
+            ),
         ];
 
         if ($data instanceof PublicKeyCredentialCreationOptions) {
             $json = [
                 ...$json,
-                'rp' => $this->normalizer->normalize($data->rp, PublicKeyCredentialRpEntity::class, $context),
-                'user' => $this->normalizer->normalize($data->user, PublicKeyCredentialUserEntity::class, $context),
+                'rp' => $this->normalizer->normalize($data->rp, $format, $context),
+                'user' => $this->normalizer->normalize($data->user, $format, $context),
                 'pubKeyCredParams' => $this->normalizer->normalize(
                     $data->pubKeyCredParams,
                     PublicKeyCredentialParameters::class . '[]',
@@ -151,26 +155,18 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 ),
                 'authenticatorSelection' => $data->authenticatorSelection === null ? null : $this->normalizer->normalize(
                     $data->authenticatorSelection,
-                    AuthenticatorSelectionCriteria::class,
+                    $format,
                     $context
                 ),
                 'attestation' => $data->attestation,
-                'excludeCredentials' => $this->normalizer->normalize(
-                    $data->excludeCredentials,
-                    PublicKeyCredentialDescriptor::class . '[]',
-                    $context
-                ),
+                'excludeCredentials' => $this->normalizer->normalize($data->excludeCredentials, $format, $context),
             ];
         }
         if ($data instanceof PublicKeyCredentialRequestOptions) {
             $json = [
                 ...$json,
                 'rpId' => $data->rpId,
-                'allowCredentials' => $this->normalizer->normalize(
-                    $data->allowCredentials,
-                    PublicKeyCredentialDescriptor::class . '[]',
-                    $context
-                ),
+                'allowCredentials' => $this->normalizer->normalize($data->allowCredentials, $format, $context),
                 'userVerification' => $data->userVerification,
             ];
         }
