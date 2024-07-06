@@ -2422,6 +2422,41 @@ parameters:
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AttestedCredentialDataNormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AttestedCredentialDataNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AttestedCredentialDataNormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AttestedCredentialDataNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AttestedCredentialDataNormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AttestedCredentialDataNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionNormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionNormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionNormalizer\\:\\:normalize\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionNormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionNormalizer.php
+
+		-
 			message: """
 				#^Fetching class constant class of deprecated class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensionsClientInputs\\:
 				since 4\\.8\\.0\\. Use \\{Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\} instead\\.$#
@@ -2474,7 +2509,7 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'clientDataJSON' on mixed\\.$#"
-			count: 3
+			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
@@ -2484,7 +2519,7 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'userHandle' on mixed\\.$#"
-			count: 3
+			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
@@ -2519,11 +2554,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$signature of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
-
-		-
-			message: "#^Parameter \\#4 \\$userHandle of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
@@ -2686,6 +2716,21 @@ parameters:
 			message: "#^Parameter \\#4 \\$response of static method Webauthn\\\\PublicKeyCredential\\:\\:create\\(\\) expects Webauthn\\\\AuthenticatorResponse, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialDescriptorNormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDescriptorNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialDescriptorNormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDescriptorNormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialDescriptorNormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDescriptorNormalizer.php
 
 		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
@@ -2963,7 +3008,22 @@ parameters:
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialSourceDenormalizer\\:\\:normalize\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialSourceDenormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
 			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialSourceDenormalizer\\:\\:supportsDenormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			message: "#^Method Webauthn\\\\Denormalizer\\\\PublicKeyCredentialSourceDenormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
@@ -3292,3 +3352,16 @@ parameters:
 			message: "#^Parameter \\#1 \\$ecdaaKeyId of class Webauthn\\\\TrustPath\\\\EcdaaKeyIdTrustPath constructor expects string, mixed given\\.$#"
 			count: 1
 			path: src/webauthn/src/TrustPath/EcdaaKeyIdTrustPath.php
+
+		-
+			message: """
+				#^Instantiation of deprecated class Webauthn\\\\TrustPath\\\\EcdaaKeyIdTrustPath\\:
+				since 4\\.2\\.0 and will be removed in 5\\.0\\.0\\. The ECDAA Trust Anchor does no longer exist in Webauthn specification\\.$#
+			"""
+			count: 1
+			path: src/webauthn/src/TrustPath/TrustPathLoader.php
+
+		-
+			message: "#^Parameter \\#1 \\$certificates of static method Webauthn\\\\TrustPath\\\\CertificateTrustPath\\:\\:create\\(\\) expects array\\<string\\>, array given\\.$#"
+			count: 1
+			path: src/webauthn/src/TrustPath/TrustPathLoader.php

@@ -47,9 +47,10 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
         ]));
         static::assertJsonStringEqualsJsonString(
             $expectedJson,
-            $this->getSerializer()->serialize($authenticatorSelectionCriteria, 'json', [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ])
+            $this->getSerializer()
+                ->serialize($authenticatorSelectionCriteria, 'json', [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                ])
         );
     }
 
