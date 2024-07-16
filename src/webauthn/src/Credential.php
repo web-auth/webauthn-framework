@@ -37,7 +37,7 @@ abstract class Credential
             $id = Base64UrlSafe::encodeUnpadded($rawId);
         }
         $this->id = $id;
-        $this->rawId = $rawId ?? Base64UrlSafe::decodeUnpadded($id);
+        $this->rawId = $rawId ?? Base64UrlSafe::decodeNoPadding($id);
     }
 
     /**
