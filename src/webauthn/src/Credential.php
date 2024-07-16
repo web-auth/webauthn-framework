@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use InvalidArgumentException;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 /**
  * @see https://w3c.github.io/webappsec-credential-management/#credential
@@ -33,10 +34,10 @@ abstract class Credential
                 'The property "$id" is deprecated and will be removed in 5.0.0. Please set null use "rawId" instead.'
             );
         } else {
-            $id = base64_encode($rawId);
+            $id = Base64UrlSafe::encodeUnpadded($rawId);
         }
         $this->id = $id;
-        $this->rawId = $rawId ?? base64_encode($id);
+        $this->rawId = $rawId ?? Base64UrlSafe::decodeUnpadded($id);
     }
 
     /**
