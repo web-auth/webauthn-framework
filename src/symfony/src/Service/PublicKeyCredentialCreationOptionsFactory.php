@@ -21,6 +21,7 @@ use function array_key_exists;
 use function gettype;
 use function is_int;
 use function is_string;
+use function sprintf;
 
 final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {

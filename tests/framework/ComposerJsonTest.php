@@ -8,6 +8,7 @@ use DirectoryIterator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Traversable;
+use function sprintf;
 use const JSON_THROW_ON_ERROR;
 
 /**

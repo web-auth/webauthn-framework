@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webauthn\Bundle\Routing\Loader;
 use function array_key_exists;
+use function sprintf;
 
 final readonly class DynamicRouteCompilerPass implements CompilerPassInterface
 {

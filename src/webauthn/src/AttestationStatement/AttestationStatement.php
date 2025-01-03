@@ -7,6 +7,7 @@ namespace Webauthn\AttestationStatement;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\TrustPath;
 use function array_key_exists;
+use function sprintf;
 
 class AttestationStatement
 {

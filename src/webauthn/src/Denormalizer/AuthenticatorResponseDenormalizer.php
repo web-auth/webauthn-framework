@@ -28,8 +28,12 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
         return $this->denormalizer->denormalize($data, $realType, $format, $context);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === AuthenticatorResponse::class;
     }
 

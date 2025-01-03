@@ -20,8 +20,12 @@ final class ExtensionDescriptorDenormalizer implements DenormalizerInterface
         return ExtensionDescriptor::create(...$data);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === ExtensionDescriptor::class;
     }
 

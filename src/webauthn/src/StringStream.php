@@ -12,6 +12,7 @@ use function fopen;
 use function fread;
 use function fwrite;
 use function rewind;
+use function sprintf;
 use function strlen;
 
 final class StringStream implements Stream

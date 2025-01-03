@@ -19,6 +19,7 @@ use Webauthn\U2FPublicKey;
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 
 class CheckAlgorithm implements CeremonyStep
 {
@@ -33,7 +34,7 @@ class CheckAlgorithm implements CeremonyStep
             return;
         }
         $credentialPublicKey = $publicKeyCredentialSource->getAttestedCredentialData()
-->credentialPublicKey;
+            ->credentialPublicKey;
         $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
             'No public key available.'
         );

@@ -24,8 +24,12 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
         return PublicKeyCredentialUserEntity::create($data['name'], $data['id'], $data['displayName']);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === PublicKeyCredentialUserEntity::class;
     }
 
