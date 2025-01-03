@@ -22,6 +22,7 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\CertificateTrustPath;
 use function count;
 use function in_array;
+use function sprintf;
 
 final class CheckMetadataStatement implements CeremonyStep, CanLogData
 {

@@ -10,6 +10,7 @@ use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
 use function is_array;
+use function sprintf;
 
 final readonly class SessionStorage implements OptionsStorage
 {

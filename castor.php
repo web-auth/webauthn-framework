@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
+use function Castor\context;
 use function Castor\io;
 use function Castor\run;
 
@@ -28,10 +29,13 @@ function infect(int $minMsi = 0, int $minCoveredMsi = 0, bool $ci = false): void
         $command[] = '--logger-github';
         $command[] = '-s';
     }
-    $environment = [
-        'XDEBUG_MODE' => 'coverage',
-    ];
-    run($command, environment: $environment);
+
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'coverage',
+        ])
+    ;
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Run tests')]
@@ -39,21 +43,28 @@ function test(bool $coverageHtml = false, bool $coverageText = false, null|strin
 {
     io()->title('Running tests');
     $command = ['php', 'vendor/bin/phpunit', '--color'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
+
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
     if ($coverageHtml) {
         $command[] = '--coverage-html=build/coverage';
-        $environment['XDEBUG_MODE'] = 'coverage';
+        $context = $context->withEnvironment([
+            'XDEBUG_MODE' => 'coverage',
+        ]);
     }
     if ($coverageText) {
         $command[] = '--coverage-text';
-        $environment['XDEBUG_MODE'] = 'coverage';
+        $context = $context->withEnvironment([
+            'XDEBUG_MODE' => 'coverage',
+        ]);
     }
     if ($group !== null) {
         $command[] = sprintf('--group=%s', $group);
     }
-    run($command, environment: $environment);
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Coding standards check')]
@@ -65,16 +76,18 @@ function cs(
 ): void {
     io()->title('Running coding standards check');
     $command = ['php', 'vendor/bin/ecs', 'check'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
     if ($fix) {
         $command[] = '--fix';
     }
     if ($clearCache) {
         $command[] = '--clear-cache';
     }
-    run($command, environment: $environment);
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Running PHPStan')]
@@ -85,10 +98,12 @@ function stan(bool $baseline = false): void
     if ($baseline) {
         $command[] = '--generate-baseline';
     }
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    run($command, environment: $environment);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Validate Composer configuration')]
@@ -96,13 +111,15 @@ function validate(): void
 {
     io()->title('Validating Composer configuration');
     $command = ['composer', 'validate', '--strict'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    run($command, environment: $environment);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    run($command, context: $context);
 
     $command = ['composer', 'dump-autoload', '--optimize', '--strict-psr'];
-    run($command, environment: $environment);
+    run($command, context: $context);
 }
 
 /**
@@ -115,10 +132,12 @@ function checkLicenses(
     io()->title('Checking licenses');
     $allowedExceptions = [];
     $command = ['composer', 'licenses', '-f', 'json'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    $result = run($command, environment: $environment, quiet: true);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    $result = run($command, context: $context, quiet: true);
     if (! $result->isSuccessful()) {
         io()->error('Cannot determine licenses');
         exit(1);
@@ -178,10 +197,12 @@ function rector(
     if ($clearCache) {
         $command[] = '--clear-cache';
     }
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    run($command, environment: $environment);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Run Rector')]
@@ -189,10 +210,12 @@ function deptrac(): void
 {
     io()->title('Running Rector');
     $command = ['php', 'vendor/bin/deptrac', 'analyse', '--fail-on-uncovered', '--no-cache'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    run($command, environment: $environment);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Run Linter')]
@@ -200,10 +223,12 @@ function lint(): void
 {
     io()->title('Running Linter');
     $command = ['composer', 'exec', '--', 'parallel-lint', __DIR__ . '/src/', __DIR__ . '/tests/'];
-    $environment = [
-        'XDEBUG_MODE' => 'off',
-    ];
-    run($command, environment: $environment);
+    $context = context()
+        ->withEnvironment([
+            'XDEBUG_MODE' => 'off',
+        ])
+    ;
+    run($command, context: $context);
 }
 
 #[AsTask(description: 'Run JS tests')]
