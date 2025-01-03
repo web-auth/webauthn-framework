@@ -21,7 +21,7 @@ final readonly class CacheStorage implements OptionsStorage
         $key = sprintf(
             '%s-%s',
             self::CACHE_PARAMETER,
-            hash('sha512', $item->getPublicKeyCredentialOptions()->challenge)
+            hash('xxh128', $item->getPublicKeyCredentialOptions()->challenge)
         );
 
         $cacheItem = $this->cache->getItem($key);
