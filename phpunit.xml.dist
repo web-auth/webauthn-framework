@@ -18,7 +18,7 @@
         <ini name="error_reporting" value="-1"/>
         <server name="APP_ENV" value="test" force="true"/>
         <server name="SHELL_VERBOSITY" value="-1"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
         <env name="APP_DEBUG" value="true"/>
         <server name="KERNEL_CLASS" value="Webauthn\Tests\Bundle\Functional\AppKernel"/>
         <ini name="memory_limit" value="-1"/>
