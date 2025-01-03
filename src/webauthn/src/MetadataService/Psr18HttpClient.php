@@ -54,7 +54,7 @@ class Psr18HttpClient implements HttpClientInterface
     /**
      * @param ResponseInterface|iterable<array-key, ResponseInterface> $responses
      */
-    public function stream(iterable|ResponseInterface $responses, float $timeout = null): ResponseStreamInterface
+    public function stream(iterable|ResponseInterface $responses, ?float $timeout = null): ResponseStreamInterface
     {
         throw new LogicException('Not implemented');
     }
@@ -119,7 +119,7 @@ class Psr18HttpClient implements HttpClientInterface
                 // noop
             }
 
-            public function getInfo(string $type = null): mixed
+            public function getInfo(?string $type = null): mixed
             {
                 return null;
             }

@@ -35,7 +35,7 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
         $this->decoder = Decoder::create();
     }
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $authData = $this->fixIncorrectEdDSAKey($data);
         $authDataStream = new StringStream($authData);
@@ -87,7 +87,7 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
         );
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === AuthenticatorData::class;
     }

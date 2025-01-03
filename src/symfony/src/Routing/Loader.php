@@ -31,12 +31,12 @@ class Loader extends SymfonyLoader
     /**
      * @noRector
      */
-    public function load(mixed $resource, string $type = null): RouteCollection
+    public function load(mixed $resource, ?string $type = null): RouteCollection
     {
         return $this->routes;
     }
 
-    public function supports(mixed $resource, string $type = null): bool
+    public function supports(mixed $resource, ?string $type = null): bool
     {
         return $type === 'webauthn';
     }

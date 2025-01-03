@@ -18,7 +18,7 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
 {
     use DenormalizerAwareTrait;
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (! array_key_exists('id', $data)) {
             return $data;
@@ -35,7 +35,7 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         );
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === PublicKeyCredential::class;
     }

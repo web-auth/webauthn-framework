@@ -19,7 +19,7 @@ final class FailureHandler implements AuthenticationFailureHandlerInterface, Fai
         return $this->onFailure($request, $exception);
     }
 
-    public function onFailure(Request $request, Throwable $exception = null): Response
+    public function onFailure(Request $request, ?Throwable $exception = null): Response
     {
         $data = [
             'status' => 'error',

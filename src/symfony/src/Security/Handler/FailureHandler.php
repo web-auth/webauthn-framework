@@ -10,5 +10,5 @@ use Throwable;
 
 interface FailureHandler
 {
-    public function onFailure(Request $request, Throwable $exception = null): Response;
+    public function onFailure(Request $request, ?Throwable $exception = null): Response;
 }
