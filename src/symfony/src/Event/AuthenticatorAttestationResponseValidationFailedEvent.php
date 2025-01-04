@@ -9,6 +9,7 @@ use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent as BaseAuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use function sprintf;
 
 /**
  * @deprecated since 4.3.0, use {@link \Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent} instead.

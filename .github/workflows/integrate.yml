@@ -59,9 +59,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
-        dependencies:
-          - "lowest"
-          - "highest"
+          - "8.4"
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: "Set up PHP"
@@ -98,7 +96,7 @@ jobs:
         operating-system:
           - "ubuntu-latest"
         php-version:
-          - "8.2"
+          - "8.3"
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: "Set up PHP"

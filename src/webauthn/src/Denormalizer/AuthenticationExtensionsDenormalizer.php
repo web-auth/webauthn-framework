@@ -33,8 +33,12 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
         return AuthenticationExtensions::create($data);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return in_array(
             $type,
             [

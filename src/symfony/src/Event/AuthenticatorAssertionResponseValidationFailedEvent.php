@@ -10,6 +10,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent as BaseAuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
+use function sprintf;
 
 /**
  * @deprecated since 4.3.0, use {@link \Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent} instead.

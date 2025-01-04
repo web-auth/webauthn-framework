@@ -9,6 +9,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent as BaseAuthenticatorAssertionResponseValidationSucceededEvent;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
+use function sprintf;
 
 /**
  * @deprecated since 4.3.0, use {@link \Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent} instead.

@@ -9,6 +9,7 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
+use function sprintf;
 
 /**
  * @deprecated since 4.2.0 and will be removed in 5.0.0. The ECDAA Trust Anchor does no longer exist in Webauthn specification.

@@ -14,6 +14,7 @@ use Webauthn\Exception\AuthenticationExtensionException;
 use function array_key_exists;
 use function count;
 use function is_string;
+use function sprintf;
 use const COUNT_NORMAL;
 
 /**

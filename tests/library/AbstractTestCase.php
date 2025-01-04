@@ -41,6 +41,7 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\Functional\MetadataStatementRepository;
 use Webauthn\Tests\Functional\StatusReportRepository;
+use function sprintf;
 
 abstract class AbstractTestCase extends TestCase
 {

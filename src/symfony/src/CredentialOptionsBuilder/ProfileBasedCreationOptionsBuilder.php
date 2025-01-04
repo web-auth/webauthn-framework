@@ -22,6 +22,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 use function is_array;
+use function sprintf;
 use const FILTER_VALIDATE_BOOLEAN;
 
 final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCreationOptionsBuilder

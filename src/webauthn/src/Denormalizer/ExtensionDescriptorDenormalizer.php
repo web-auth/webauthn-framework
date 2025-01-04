@@ -31,8 +31,12 @@ class ExtensionDescriptorDenormalizer implements DenormalizerInterface, Denormal
         return $this->denormalizer->denormalize($data, $type, $format, $context);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         if ($context[self::ALREADY_CALLED] ?? false) {
             return false;
         }

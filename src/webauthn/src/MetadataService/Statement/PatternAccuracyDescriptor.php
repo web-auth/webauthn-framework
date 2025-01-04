@@ -8,6 +8,7 @@ use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 use function is_int;
+use function sprintf;
 
 class PatternAccuracyDescriptor extends AbstractDescriptor
 {

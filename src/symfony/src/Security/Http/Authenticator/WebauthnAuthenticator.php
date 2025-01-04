@@ -44,6 +44,7 @@ use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function sprintf;
 
 final class WebauthnAuthenticator implements AuthenticatorInterface, InteractiveAuthenticatorInterface, CanLogData
 {

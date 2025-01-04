@@ -10,6 +10,7 @@ use Webauthn\MetadataService\ValueFilter;
 use function array_key_exists;
 use function in_array;
 use function is_string;
+use function sprintf;
 
 class StatusReport implements JsonSerializable
 {

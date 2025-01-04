@@ -36,6 +36,7 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function openssl_verify;
+use function sprintf;
 use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents

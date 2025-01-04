@@ -43,7 +43,7 @@ final class CheckSignature implements CeremonyStep
             return;
         }
         $credentialPublicKey = $publicKeyCredentialSource->getAttestedCredentialData()
-->credentialPublicKey;
+            ->credentialPublicKey;
         $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
             'No public key available.'
         );

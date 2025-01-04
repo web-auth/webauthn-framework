@@ -26,8 +26,12 @@ final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerIn
         };
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === TrustPath::class;
     }
 

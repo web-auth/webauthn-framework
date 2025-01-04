@@ -57,6 +57,7 @@ use Webauthn\TokenBinding\TokenBindingHandler;
 use function array_key_exists;
 use function count;
 use function is_array;
+use function sprintf;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {

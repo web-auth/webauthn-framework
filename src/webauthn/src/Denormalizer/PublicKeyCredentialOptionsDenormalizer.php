@@ -103,8 +103,12 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         throw new BadMethodCallException('Unsupported type');
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return in_array(
             $type,
             [PublicKeyCredentialCreationOptions::class, PublicKeyCredentialRequestOptions::class],

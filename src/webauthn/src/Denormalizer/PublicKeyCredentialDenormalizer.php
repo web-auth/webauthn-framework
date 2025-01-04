@@ -36,8 +36,12 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         );
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === PublicKeyCredential::class;
     }
 

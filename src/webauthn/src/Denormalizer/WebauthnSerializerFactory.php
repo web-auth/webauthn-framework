@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use function sprintf;
 
 final class WebauthnSerializerFactory
 {

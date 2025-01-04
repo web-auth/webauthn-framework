@@ -2707,6 +2707,11 @@ parameters:
 			path: src/webauthn/src/MetadataService/Service/DistantResourceMetadataService.php
 
 		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\DistantResourceMetadataService\\:\\:\\$serializer \\(Symfony\\\\Component\\\\Serializer\\\\SerializerInterface\\|null\\) is never assigned null so it can be removed from the property type\\.$#"
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/DistantResourceMetadataService.php
+
+		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
@@ -2760,6 +2765,11 @@ parameters:
 			path: src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
 
 		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:\\$serializer \\(Symfony\\\\Component\\\\Serializer\\\\SerializerInterface\\|null\\) is never assigned null so it can be removed from the property type\\.$#"
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
+
+		-
 			message: """
 				#^Call to deprecated method createFromString\\(\\) of class Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:
 				since 4\\.7\\.0\\. Please use the symfony/serializer for converting the object\\.$#
@@ -2773,10 +2783,20 @@ parameters:
 			path: src/webauthn/src/MetadataService/Service/FolderResourceMetadataService.php
 
 		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\FolderResourceMetadataService\\:\\:\\$serializer \\(Symfony\\\\Component\\\\Serializer\\\\SerializerInterface\\|null\\) is never assigned null so it can be removed from the property type\\.$#"
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/FolderResourceMetadataService.php
+
+		-
 			message: """
 				#^Call to deprecated method createFromString\\(\\) of class Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:
 				since 4\\.7\\.0\\. Please use the symfony/serializer for converting the object\\.$#
 			"""
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/JsonMetadataService.php
+
+		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\JsonMetadataService\\:\\:\\$serializer \\(Symfony\\\\Component\\\\Serializer\\\\SerializerInterface\\|null\\) is never assigned null so it can be removed from the property type\\.$#"
 			count: 1
 			path: src/webauthn/src/MetadataService/Service/JsonMetadataService.php
 
@@ -2795,6 +2815,11 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$statement of static method Webauthn\\\\MetadataService\\\\Statement\\\\MetadataStatement\\:\\:createFromString\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/LocalResourceMetadataService.php
+
+		-
+			message: "#^Property Webauthn\\\\MetadataService\\\\Service\\\\LocalResourceMetadataService\\:\\:\\$serializer \\(Symfony\\\\Component\\\\Serializer\\\\SerializerInterface\\|null\\) is never assigned null so it can be removed from the property type\\.$#"
 			count: 1
 			path: src/webauthn/src/MetadataService/Service/LocalResourceMetadataService.php
 

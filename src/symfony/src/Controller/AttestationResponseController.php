@@ -25,6 +25,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function sprintf;
 
 final class AttestationResponseController
 {

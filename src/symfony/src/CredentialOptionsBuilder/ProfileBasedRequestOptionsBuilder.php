@@ -23,6 +23,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 use function is_array;
+use function sprintf;
 
 final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequestOptionsBuilder
 {

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use InvalidArgumentException;
 use function is_string;
+use function sprintf;
 use const JSON_THROW_ON_ERROR;
 
 /**

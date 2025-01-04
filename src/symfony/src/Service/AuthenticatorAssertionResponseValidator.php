@@ -17,6 +17,7 @@ use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TokenBinding\TokenBindingHandler;
+use function sprintf;
 
 /**
  * @deprecated since 4.3.0. The class is deprecated and will be removed in 5.0.0. Please use "Webauthn\AuthenticatorAssertionResponseValidator" instead.

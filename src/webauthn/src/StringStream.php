@@ -11,6 +11,7 @@ use function fopen;
 use function fread;
 use function fwrite;
 use function rewind;
+use function sprintf;
 
 final class StringStream implements Stream
 {

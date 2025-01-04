@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Stringable;
+use function sprintf;
 use const E_USER_DEPRECATED;
 use const JSON_THROW_ON_ERROR;
 

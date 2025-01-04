@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function sprintf;
 
 /**
  * @template T of PublicKeyCredentialSource
