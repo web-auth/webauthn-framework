@@ -63,6 +63,7 @@ class StatusReport implements JsonSerializable
             AuthenticatorStatus::USER_KEY_PHYSICAL_COMPROMISE,
             AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE,
             AuthenticatorStatus::USER_VERIFICATION_BYPASS,
+            AuthenticatorStatus::REVOKED,
         ], true);
     }
 
