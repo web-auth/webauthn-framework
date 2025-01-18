@@ -47,7 +47,7 @@ class default_1 extends Controller {
             }
         }
         catch (e) {
-            this._dispatchEvent('webauthn:assertion:failure', {exception: e});
+            this._dispatchEvent('webauthn:assertion:failure', { exception: e, assertionResponse: null });
             return;
         }
     }
@@ -70,7 +70,7 @@ class default_1 extends Controller {
             }
         }
         catch (e) {
-            this._dispatchEvent('webauthn:attestation:failure', {exception: e});
+            this._dispatchEvent('webauthn:attestation:failure', { exception: e, assertionResponse: null });
             return;
         }
     }
@@ -120,7 +120,7 @@ class default_1 extends Controller {
             body: JSON.stringify(data)
         });
         if (!optionsResponse.ok) {
-            this._dispatchEvent('webauthn:options:failure', {});
+            this._dispatchEvent('webauthn:options:failure', { exception: null, optionsResponse });
             return false;
         }
         const options = await optionsResponse.json();
