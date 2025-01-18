@@ -57,7 +57,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         private readonly array $additionalHeaderParameters = [],
         private readonly ?CertificateChainValidator $certificateChainValidator = null,
         private readonly ?string $rootCertificateUri = null,
-        SerializerInterface $serializer = null,
+        ?SerializerInterface $serializer = null,
     ) {
         $this->serializer = $serializer ?? (new WebauthnSerializerFactory(
             AttestationStatementSupportManager::create()

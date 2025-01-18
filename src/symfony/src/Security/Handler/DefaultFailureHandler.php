@@ -13,7 +13,7 @@ use Throwable;
 
 final class DefaultFailureHandler implements FailureHandler, AuthenticationFailureHandlerInterface
 {
-    public function onFailure(Request $request, Throwable $exception = null): Response
+    public function onFailure(Request $request, ?Throwable $exception = null): Response
     {
         $data = [
             'status' => 'error',

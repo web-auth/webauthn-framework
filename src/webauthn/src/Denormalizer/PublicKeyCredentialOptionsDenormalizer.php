@@ -29,7 +29,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (array_key_exists('challenge', $data)) {
             $data['challenge'] = Base64UrlSafe::decodeNoPadding($data['challenge']);
@@ -103,7 +103,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         throw new BadMethodCallException('Unsupported type');
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return in_array(
             $type,

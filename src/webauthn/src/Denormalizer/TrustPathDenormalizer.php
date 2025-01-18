@@ -15,7 +15,7 @@ use function assert;
 
 final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         return match (true) {
             array_key_exists('x5c', $data) => CertificateTrustPath::create($data),
@@ -24,7 +24,7 @@ final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerIn
         };
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === TrustPath::class;
     }

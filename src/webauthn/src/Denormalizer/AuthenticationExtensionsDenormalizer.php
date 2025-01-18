@@ -14,7 +14,7 @@ use function is_string;
 
 final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if ($data instanceof AuthenticationExtensions) {
             return AuthenticationExtensions::create($data->extensions);
@@ -30,7 +30,7 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
         return AuthenticationExtensions::create($data);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === AuthenticationExtensions::class;
     }

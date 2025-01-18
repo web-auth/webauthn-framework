@@ -19,7 +19,7 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
 {
     use DenormalizerAwareTrait;
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $stream = new StringStream($data);
         $parsed = Decoder::create()->decode($stream);
@@ -46,7 +46,7 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
         );
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === AttestationObject::class;
     }

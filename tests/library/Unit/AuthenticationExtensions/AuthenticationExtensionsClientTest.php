@@ -32,7 +32,7 @@ final class AuthenticationExtensionsClientTest extends AbstractTestCase
     {
         $inputs = AuthenticationExtensions::create([AuthenticationExtension::create('name', ['value'])]);
 
-        static::assertSame(1, $inputs->count());
+        static::assertCount(1, $inputs);
         static::assertSame('{"name":["value"]}', $this->getSerializer()->serialize($inputs, 'json', [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
         ]));

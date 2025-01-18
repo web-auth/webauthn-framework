@@ -12,7 +12,7 @@ use Webauthn\Bundle\Security\Handler\FailureHandler;
 
 final class DefaultFailureHandler implements FailureHandler
 {
-    public function onFailure(Request $request, Throwable $exception = null): Response
+    public function onFailure(Request $request, ?Throwable $exception = null): Response
     {
         $data = [
             'status' => 'error',

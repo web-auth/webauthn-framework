@@ -18,7 +18,7 @@ final class AuthenticatorAssertionResponseDenormalizer implements DenormalizerIn
 {
     use DenormalizerAwareTrait;
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $data['authenticatorData'] = Base64::decode($data['authenticatorData']);
         $data['signature'] = Base64::decode($data['signature']);
@@ -42,7 +42,7 @@ final class AuthenticatorAssertionResponseDenormalizer implements DenormalizerIn
         );
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === AuthenticatorAssertionResponse::class;
     }
