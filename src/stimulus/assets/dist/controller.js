@@ -9,10 +9,10 @@ class default_1 extends Controller {
             const options = {
                 requestResultUrl: this.requestResultUrlValue,
                 requestOptionsUrl: this.requestOptionsUrlValue,
-                requestSuccessRedirectUri: (_a = this.requestSuccessRedirectUriValue) !== null && _a !== void 0 ? _a : null,
+                requestSuccessRedirectUri: (_a = this.requestSuccessRedirectUriValue) !== null && _a !== undefined ? _a : null,
                 creationResultUrl: this.creationResultUrlValue,
                 creationOptionsUrl: this.creationOptionsUrlValue,
-                creationSuccessRedirectUri: (_b = this.creationSuccessRedirectUriValue) !== null && _b !== void 0 ? _b : null,
+                creationSuccessRedirectUri: (_b = this.creationSuccessRedirectUriValue) !== null && _b !== undefined ? _b : null,
             };
             this._dispatchEvent('webauthn:connect', { options });
             const supportAutofill = await browserSupportsWebAuthnAutofill();
