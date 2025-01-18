@@ -1,1496 +1,2137 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\CredentialOptionsBuilder\\\\PublicKeyCredentialCreationOptionsBuilder\\:\\:getFromRequest\\(\\) invoked with 3 parameters, 2 required\\.$#"
+			message: '#^Binary operation "\." between mixed and ''/Resources/config…'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/stimulus/src/WebauthnStimulusBundle.php
+
+		-
+			message: '#^Cannot access offset ''path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/stimulus/src/WebauthnStimulusBundle.php
+
+		-
+			message: '#^Method Webauthn\\Bundle\\CredentialOptionsBuilder\\PublicKeyCredentialCreationOptionsBuilder\:\:getFromRequest\(\) invoked with 3 parameters, 2 required\.$#'
+			identifier: arguments.count
 			count: 1
 			path: src/symfony/src/Controller/AttestationRequestController.php
 
 		-
-			message: "#^Parameter \\#1 \\$userEntity of method Webauthn\\\\Bundle\\\\CredentialOptionsBuilder\\\\ProfileBasedRequestOptionsBuilder\\:\\:getCredentials\\(\\) expects Webauthn\\\\PublicKeyCredentialUserEntity, Webauthn\\\\PublicKeyCredentialUserEntity\\|null given\\.$#"
+			message: '#^Parameter \#1 \$userEntity of method Webauthn\\Bundle\\CredentialOptionsBuilder\\ProfileBasedRequestOptionsBuilder\:\:getCredentials\(\) expects Webauthn\\PublicKeyCredentialUserEntity, Webauthn\\PublicKeyCredentialUserEntity\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
-			message: "#^Cannot access offset 'enabled' on mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DataCollector\\WebauthnCollector\:\:getData\(\) should return array\<string, mixed\>\|Symfony\\Component\\VarDumper\\Cloner\\Data but returns array\|Symfony\\Component\\VarDumper\\Cloner\\Data\.$#'
+			identifier: return.type
+			count: 1
+			path: src/symfony/src/DataCollector/WebauthnCollector.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/Compiler/DynamicRouteCompilerPass.php
+
+		-
+			message: '#^Anonymous function should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/Configuration.php
+
+		-
+			message: '#^Cannot access offset ''creation_profiles'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/symfony/src/DependencyInjection/Configuration.php
+
+		-
+			message: '#^Cannot access offset ''request_profiles'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/symfony/src/DependencyInjection/Configuration.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'host' on mixed\\.$#"
+			message: '#^Cannot access offset ''host'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'options_handler' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_handler'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'options_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'options_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'result_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'result_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'routes' on mixed\\.$#"
+			message: '#^Cannot access offset ''routes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 12
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$config of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:getAssertionOptionsBuilderId\\(\\) expects array, mixed given\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:getAssertionOptionsBuilderId\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$config of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:getAttestationOptionsBuilderId\\(\\) expects array, mixed given\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:getAttestationOptionsBuilderId\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$method of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$config of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:getAssertionOptionsBuilderId\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$method of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$config of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:getAttestationOptionsBuilderId\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnServicesFactory\\:\\:createAuthenticatorAssertionResponseValidator\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#3 \$method of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$securedRpIds of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnServicesFactory\\:\\:createAuthenticatorAttestationResponseValidator\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#3 \$method of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#4 \\$method of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createResponseControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$securedRpIds of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnServicesFactory\:\:createAuthenticatorAssertionResponseValidator\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			message: '#^Parameter \#3 \$securedRpIds of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnServicesFactory\:\:createAuthenticatorAttestationResponseValidator\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			message: '#^Parameter \#4 \$method of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createResponseControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#4 \\$path of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#4 \$path of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#4 \\$path of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#4 \$path of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#4 \\$successHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#4 \$successHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAuthenticatorService\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#5 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#5 \$failureHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAuthenticatorService\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#5 \\$host of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#5 \$host of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#5 \\$host of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#5 \$host of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#5 \\$path of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createResponseControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#5 \$path of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createResponseControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#6 \\$host of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createResponseControllerAndRoute\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#6 \$host of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createResponseControllerAndRoute\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#7 \\$optionsStorageId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#7 \\$optionsStorageId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#7 \\$optionsStorageId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAuthenticatorService\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAuthenticatorService\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#8 \\$optionsHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#8 \$optionsHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#8 \\$optionsHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#8 \$optionsHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#9 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAssertionRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#9 \$failureHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Parameter \\#9 \\$failureHandlerId of method Webauthn\\\\Bundle\\\\DependencyInjection\\\\Factory\\\\Security\\\\WebauthnFactory\\:\\:createAttestationRequestControllerAndRoute\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#9 \$failureHandlerId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: "#^Cannot access offset 'failure_handler' on mixed\\.$#"
+			message: '#^Binary operation "\+\=" between mixed and array\{attested_credential_data\: ''Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AttestedCredentialDataType'', aaguid\: ''Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AAGUIDDataType'', base64\: ''Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\Base64BinaryDataType'', public_key_credential_descriptor\: ''Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorType'', trust_path\: ''Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\TrustPathDataType''\} results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Cannot access offset ''failure_handler'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'hide_existing…' on mixed\\.$#"
+			message: '#^Cannot access offset ''hide_existing_credentials'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'host' on mixed\\.$#"
+			message: '#^Cannot access offset ''host'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'options_builder' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_builder'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'options_handler' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_handler'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'options_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'options_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'options_storage' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_storage'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'profile' on mixed\\.$#"
+			message: '#^Cannot access offset ''profile'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'result_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'result_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'secured_rp_ids' on mixed\\.$#"
+			message: '#^Cannot access offset ''secured_rp_ids'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'success_handler' on mixed\\.$#"
+			message: '#^Cannot access offset ''success_handler'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Cannot access offset 'user_entity_guesser' on mixed\\.$#"
+			message: '#^Cannot access offset ''types'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Cannot access offset ''user_entity_guesser'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:\\:getConfiguration\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:getConfiguration\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:\\:getConfiguration\\(\\) never returns null so it can be removed from the return type\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:getConfiguration\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\DependencyInjection\\\\WebauthnExtension\\:\\:getDoctrineBundleConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:getDoctrineBundleConfiguration\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Parameter \\#1 \\$id of class Symfony\\\\Component\\\\DependencyInjection\\\\Reference constructor expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$id of class Symfony\\Component\\DependencyInjection\\Reference constructor expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 15
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AttestedCredentialDataType\\:\\:convertToDatabaseValue\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Parameter \#2 \$config of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:prependExtensionConfig\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#2 \$config of method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:loadControllersSupport\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#2 \$config of method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:loadCreationControllersSupport\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#2 \$config of method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:loadRequestControllersSupport\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#2 \$id of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:setAlias\(\) expects string\|Symfony\\Component\\DependencyInjection\\Alias, mixed given\.$#'
+			identifier: argument.type
+			count: 12
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#2 \$value of method Symfony\\Component\\DependencyInjection\\Container\:\:setParameter\(\) expects array\|bool\|float\|int\|string\|UnitEnum\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Parameter \#3 \$config of method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:loadMetadataServices\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AttestedCredentialDataType\\:\\:convertToPHPValue\\(\\) should return Webauthn\\\\AttestedCredentialData\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType\:\:convertToPHPValue\(\) should return Webauthn\\AttestedCredentialData\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\AttestedCredentialDataType\\:\\:deserialize\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType\:\:deserialize\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorType\\:\\:convertToDatabaseValue\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorType\\:\\:convertToPHPValue\\(\\) should return Webauthn\\\\PublicKeyCredentialDescriptor\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType\:\:convertToPHPValue\(\) should return Webauthn\\PublicKeyCredentialDescriptor\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\PublicKeyCredentialDescriptorType\\:\\:deserialize\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType\:\:deserialize\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\TrustPathDataType\\:\\:convertToDatabaseValue\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\TrustPathDataType\\:\\:convertToPHPValue\\(\\) should return Webauthn\\\\TrustPath\\\\TrustPath\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType\:\:convertToPHPValue\(\) should return Webauthn\\TrustPath\\TrustPath\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\Bundle\\\\Doctrine\\\\Type\\\\TrustPathDataType\\:\\:deserialize\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType\:\:deserialize\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository\\:\\:findAllForUserEntity\\(\\) should return array\\<Webauthn\\\\PublicKeyCredentialSource\\> but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Repository\\DoctrineCredentialSourceRepository\:\:findAllForUserEntity\(\) should return array\<Webauthn\\PublicKeyCredentialSource\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Repository\\\\DoctrineCredentialSourceRepository\\:\\:findOneByCredentialId\\(\\) should return Webauthn\\\\PublicKeyCredentialSource\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Repository\\DoctrineCredentialSourceRepository\:\:findOneByCredentialId\(\) should return Webauthn\\PublicKeyCredentialSource\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$extensions \\(Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null\\) does not accept mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:getAttributes\(\) should return array\<string\> but returns array\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$firewallName \\(string\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$extensions \(Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isBackedUp \\(bool\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$firewallName \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isBackupEligible \\(bool\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$isBackedUp \(bool\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isUserPresent \\(bool\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$isBackupEligible \(bool\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$isUserVerified \\(bool\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$isUserPresent \(bool\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$publicKeyCredentialDescriptor \\(Webauthn\\\\PublicKeyCredentialDescriptor\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$isUserVerified \(bool\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$publicKeyCredentialOptions \\(Webauthn\\\\PublicKeyCredentialOptions\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$publicKeyCredentialDescriptor \(Webauthn\\PublicKeyCredentialDescriptor\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$publicKeyCredentialUserEntity \\(Webauthn\\\\PublicKeyCredentialUserEntity\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$publicKeyCredentialOptions \(Webauthn\\PublicKeyCredentialOptions\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$reservedForFutureUse1 \\(int\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$publicKeyCredentialUserEntity \(Webauthn\\PublicKeyCredentialUserEntity\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$reservedForFutureUse2 \\(int\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$reservedForFutureUse1 \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Property Webauthn\\\\Bundle\\\\Security\\\\Authentication\\\\Token\\\\WebauthnToken\\:\\:\\$signCount \\(int\\) does not accept mixed\\.$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$reservedForFutureUse2 \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Http\\\\Authenticator\\\\WebauthnAuthenticator\\:\\:__construct\\(\\) has parameter \\$userProvider with generic interface Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserProviderInterface but does not specify its types\\: TUser$#"
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken\:\:\$signCount \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+
+		-
+			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:__construct\(\) has parameter \$userProvider with generic interface Symfony\\Component\\Security\\Core\\User\\UserProviderInterface but does not specify its types\: TUser$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Http\\\\Authenticator\\\\WebauthnAuthenticator\\:\\:onAuthenticationFailure\\(\\) never returns null so it can be removed from the return type\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:onAuthenticationFailure\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
 			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\Http\\\\Authenticator\\\\WebauthnAuthenticator\\:\\:supports\\(\\) never returns null so it can be removed from the return type\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:supports\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
 			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
-			message: "#^Cannot access offset 'enabled' on mixed\\.$#"
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'host' on mixed\\.$#"
+			message: '#^Cannot access offset ''host'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'options_handler' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_handler'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'options_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'options_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''options_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'profile' on mixed\\.$#"
+			message: '#^Cannot access offset ''profile'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'result_method' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'result_path' on mixed\\.$#"
+			message: '#^Cannot access offset ''result_path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'routes' on mixed\\.$#"
+			message: '#^Cannot access offset ''routes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 10
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationHost\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationHost\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationOptionsHandler\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationOptionsHandler\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationOptionsMethod\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationOptionsMethod\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationOptionsPath\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationOptionsPath\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationProfile\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationProfile\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationResultMethod\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationResultMethod\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getAuthenticationResultPath\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getAuthenticationResultPath\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getFailureHandler\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getFailureHandler\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getOptionsStorage\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getOptionsStorage\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationHost\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationHost\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationOptionsHandler\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationOptionsHandler\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationOptionsMethod\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationOptionsMethod\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationOptionsPath\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationOptionsPath\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationProfile\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationProfile\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationResultMethod\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationResultMethod\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getRegistrationResultPath\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getRegistrationResultPath\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getSecuredRpIds\\(\\) should return array\\<string\\> but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getSecuredRpIds\(\) should return array\<string\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getSuccessHandler\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getSuccessHandler\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:getUserProvider\\(\\) should return string\\|null but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getUserProvider\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:isAuthenticationEnabled\\(\\) should return bool but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:isAuthenticationEnabled\(\) should return bool but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\Security\\\\WebauthnFirewallConfig\\:\\:isRegistrationEnabled\\(\\) should return bool but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:isRegistrationEnabled\(\) should return bool but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: "#^Cannot access offset 'attestation…' on mixed\\.$#"
+			message: '#^Cannot access offset ''attestation_conveyance'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'authenticator…' on mixed\\.$#"
+			message: '#^Cannot access offset ''authenticator_attachment'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'challenge_length' on mixed\\.$#"
+			message: '#^Cannot access offset ''challenge_length'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'icon' on mixed\\.$#"
+			message: '#^Cannot access offset ''icon'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'name' on mixed\\.$#"
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'resident_key' on mixed\\.$#"
+			message: '#^Cannot access offset ''resident_key'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'timeout' on mixed\\.$#"
+			message: '#^Cannot access offset ''timeout'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'user_verification' on mixed\\.$#"
+			message: '#^Cannot access offset ''user_verification'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of function array_keys expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$authenticatorAttachment of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$authenticatorAttachment of static method Webauthn\\AuthenticatorSelectionCriteria\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(int\\|string, mixed\\)\\: mixed\\)\\|null, Closure\\(string, mixed\\)\\: Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension given\\.$#"
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(int\|string, mixed\)\: mixed\)\|null, Closure\(string, mixed\)\: Webauthn\\AuthenticationExtensions\\AuthenticationExtension given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$length of function random_bytes expects int\\<1, max\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$length of function random_bytes expects int\<1, max\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of static method Webauthn\\\\PublicKeyCredentialRpEntity\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$name of static method Webauthn\\PublicKeyCredentialRpEntity\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$profile of method Webauthn\\\\Bundle\\\\Service\\\\PublicKeyCredentialCreationOptionsFactory\\:\\:createAuthenticatorSelectionCriteria\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$profile of method Webauthn\\Bundle\\Service\\PublicKeyCredentialCreationOptionsFactory\:\:createAuthenticatorSelectionCriteria\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$profile of method Webauthn\\\\Bundle\\\\Service\\\\PublicKeyCredentialCreationOptionsFactory\\:\\:createCredentialParameters\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$profile of method Webauthn\\Bundle\\Service\\PublicKeyCredentialCreationOptionsFactory\:\:createCredentialParameters\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$profile of method Webauthn\\\\Bundle\\\\Service\\\\PublicKeyCredentialCreationOptionsFactory\\:\\:createExtensions\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$profile of method Webauthn\\Bundle\\Service\\PublicKeyCredentialCreationOptionsFactory\:\:createExtensions\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$profile of method Webauthn\\\\Bundle\\\\Service\\\\PublicKeyCredentialCreationOptionsFactory\\:\\:createRpEntity\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$profile of method Webauthn\\Bundle\\Service\\PublicKeyCredentialCreationOptionsFactory\:\:createRpEntity\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$alg of static method Webauthn\\PublicKeyCredentialParameters\:\:create\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#2 \\$id of static method Webauthn\\\\PublicKeyCredentialRpEntity\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#2 \\$userVerification of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$id of static method Webauthn\\PublicKeyCredentialRpEntity\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$icon of static method Webauthn\\\\PublicKeyCredentialRpEntity\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#2 \$userVerification of static method Webauthn\\AuthenticatorSelectionCriteria\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$residentKey of static method Webauthn\\\\AuthenticatorSelectionCriteria\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#3 \$icon of static method Webauthn\\PublicKeyCredentialRpEntity\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\.\\.\\.\\$arrays of function array_map expects array, mixed given\\.$#"
+			message: '#^Parameter \#3 \$residentKey of static method Webauthn\\AuthenticatorSelectionCriteria\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'challenge_length' on mixed\\.$#"
+			message: '#^Parameter \#3 \.\.\.\$arrays of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+		-
+			message: '#^Cannot access offset ''challenge_length'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'rp_id' on mixed\\.$#"
+			message: '#^Cannot access offset ''rp_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'timeout' on mixed\\.$#"
+			message: '#^Cannot access offset ''timeout'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Cannot access offset 'user_verification' on mixed\\.$#"
+			message: '#^Cannot access offset ''user_verification'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of function array_keys expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(int\\|string, mixed\\)\\: mixed\\)\\|null, Closure\\(string, mixed\\)\\: Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension given\\.$#"
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(int\|string, mixed\)\: mixed\)\|null, Closure\(string, mixed\)\: Webauthn\\AuthenticationExtensions\\AuthenticationExtension given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$length of function random_bytes expects int\\<1, max\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$length of function random_bytes expects int\<1, max\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$profile of method Webauthn\\\\Bundle\\\\Service\\\\PublicKeyCredentialRequestOptionsFactory\\:\\:createExtensions\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$profile of method Webauthn\\Bundle\\Service\\PublicKeyCredentialRequestOptionsFactory\:\:createExtensions\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\.\\.\\.\\$arrays of function array_map expects array, mixed given\\.$#"
+			message: '#^Parameter \#3 \.\.\.\$arrays of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			message: "#^Method Webauthn\\\\Bundle\\\\WebauthnBundle\\:\\:getContainerExtension\\(\\) never returns null so it can be removed from the return type\\.$#"
+			message: '#^Method Webauthn\\Bundle\\WebauthnBundle\:\:getContainerExtension\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
 			path: src/symfony/src/WebauthnBundle.php
 
 		-
-			message: "#^Cannot access offset 'x5c' on mixed\\.$#"
+			message: '#^Cannot access offset ''x5c'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Cose\\\\Key\\\\Key\\:\\:createFromData\\(\\) expects array\\<int, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Cose\\Key\\Key\:\:createFromData\(\) expects array\<int, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method SpomkyLabs\\Pki\\ASN1\\Element\:\:fromDER\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$fmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\MetadataService\\CertificateChain\\CertificateToolbox\:\:convertAllDERToPEM\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\\|false given\\.$#"
+			message: '#^Parameter \#1 \$fmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$signature of function openssl_verify expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Cose\\\\Key\\\\Key\\:\\:createFromData\\(\\) expects array\\<int, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$signature of function openssl_verify expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$fmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createAnonymizationCA\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Cose\\Key\\Key\:\:createFromData\(\) expects array\<int, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\\|false given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\MetadataService\\CertificateChain\\CertificateToolbox\:\:convertAllDERToPEM\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$fmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createAnonymizationCA\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
 
 		-
-			message: "#^Method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:create\\(\\) has parameter \\$attStmt with no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createAnonymizationCA\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#1 \$attestation of method Webauthn\\AttestationStatement\\AttestationStatementSupport\:\:load\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AttestationObjectLoader.php
+
+		-
+			message: '#^Parameter \#1 \$authData of method Webauthn\\AuthenticatorDataLoader\:\:load\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AttestationObjectLoader.php
+
+		-
+			message: '#^Parameter \#1 \$name of method Webauthn\\AttestationStatement\\AttestationStatementSupportManager\:\:get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AttestationObjectLoader.php
+
+		-
+			message: '#^Method Webauthn\\AttestationStatement\\AttestationStatement\:\:create\(\) has parameter \$attStmt with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AttestationStatement.php
 
 		-
-			message: "#^Cannot access offset 'x5c' on mixed\\.$#"
+			message: '#^Parameter \#2 \$attStmt of class Webauthn\\AttestationStatement\\AttestationStatement constructor expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/AttestationStatement.php
+
+		-
+			message: '#^Cannot access offset ''x5c'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, array given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\MetadataService\\CertificateChain\\CertificateToolbox\:\:convertAllDERToPEM\(\) expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$fmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$fmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\\|false given\\.$#"
+			message: '#^Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$signature of function openssl_verify expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$signature of function openssl_verify expects string, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/AttestationStatement/FidoU2FAttestationStatementSupport.php
-
-		-
-			message: "#^Cannot access offset 'x5c' on mixed\\.$#"
+			message: '#^Cannot access offset ''x5c'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 3
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, array given\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$fmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\MetadataService\\CertificateChain\\CertificateToolbox\:\:convertAllDERToPEM\(\) expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$fmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createSelf\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$fmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$signature of static method Webauthn\\\\Util\\\\CoseSignatureFixer\\:\\:fix\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$fmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createSelf\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$signature of static method Webauthn\\Util\\CoseSignatureFixer\:\:fix\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createBasic\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createSelf\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createBasic\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$signature of function openssl_verify expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createSelf\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'certInfo' on mixed\\.$#"
+			message: '#^Parameter \#2 \$signature of function openssl_verify expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#2 \$user_string of function hash_equals expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
+
+		-
+			message: '#^Cannot access offset ''certInfo'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'extraData' on mixed\\.$#"
+			message: '#^Cannot access offset ''extraData'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'parsedCertInfo' on mixed\\.$#"
+			message: '#^Cannot access offset ''parsedCertInfo'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'parsedPubArea' on mixed\\.$#"
+			message: '#^Cannot access offset ''parsedPubArea'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'pubArea' on mixed\\.$#"
+			message: '#^Cannot access offset ''pubArea'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'unique' on mixed\\.$#"
+			message: '#^Cannot access offset ''unique'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'ver' on mixed\\.$#"
+			message: '#^Cannot access offset ''ver'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 'x5c' on mixed\\.$#"
+			message: '#^Cannot access offset ''x5c'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot access offset 1 on array\\|false\\.$#"
+			message: '#^Cannot access offset 1 on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 9
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 2
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 3
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of function openssl_verify expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of function openssl_verify expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\AttestationStatement\\\\TPMAttestationStatementSupport\\:\\:checkCertInfo\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\AttestationStatement\\TPMAttestationStatementSupport\:\:checkCertInfo\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\AttestationStatement\\\\TPMAttestationStatementSupport\\:\\:checkPubArea\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\AttestationStatement\\TPMAttestationStatementSupport\:\:checkPubArea\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\MetadataService\\\\CertificateChain\\\\CertificateToolbox\\:\\:convertAllDERToPEM\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\MetadataService\\CertificateChain\\CertificateToolbox\:\:convertAllDERToPEM\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$unique of method Webauthn\\\\AttestationStatement\\\\TPMAttestationStatementSupport\\:\\:checkUniquePublicKey\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$length of method Webauthn\\StringStream\:\:read\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 8
+			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#1 \$unique of method Webauthn\\AttestationStatement\\TPMAttestationStatementSupport\:\:checkUniquePublicKey\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$attStmt of static method Webauthn\\\\AttestationStatement\\\\AttestationStatement\\:\\:createAttCA\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#2 \$attStmt of static method Webauthn\\AttestationStatement\\AttestationStatement\:\:createAttCA\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#2 \\$signature of function openssl_verify expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$signature of function openssl_verify expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed, int\\|string\\)\\: mixed\\)\\|null, Closure\\(mixed, string\\)\\: Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension given\\.$#"
+			message: '#^Parameter \#2 \$user_string of function hash_equals expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed, int\|string\)\: mixed\)\|null, Closure\(mixed, string\)\: Webauthn\\AuthenticationExtensions\\AuthenticationExtension given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensionLoader.php
 
 		-
-			message: "#^@readonly property Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:\\$extensions is assigned outside of the constructor\\.$#"
+			message: '#^@readonly property Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:\$extensions is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyByPhpDocAssignNotInConstructor
 			count: 3
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
-			message: "#^Class Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions implements generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+			message: '#^Class Webauthn\\AuthenticationExtensions\\AuthenticationExtensions implements generic interface ArrayAccess but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
-			message: "#^Parameter \\#1 \\$key of function array_key_exists expects int\\|string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$key of function array_key_exists expects int\|string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
-			message: "#^Parameter \\#2 \\$mode of function count expects 0\\|1, int given\\.$#"
+			message: '#^Parameter \#2 \$mode of function count expects 0\|1, int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
-			message: "#^Cannot access offset 1 on array\\|false\\.$#"
+			message: '#^Cannot access offset 1 on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
-			message: "#^Parameter \\#1 \\$search of function str_replace expects array\\|string, string\\|false given\\.$#"
+			message: '#^Parameter \#1 \$length of method Webauthn\\StringStream\:\:read\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_reduce expects callable\\(string, mixed\\)\\: string, Closure\\(string, string\\)\\: non\\-empty\\-string given\\.$#"
+			message: '#^Parameter \#1 \$search of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|false given\\.$#"
+			message: '#^Parameter \#2 \$callback of function array_reduce expects callable\(string, mixed\)\: string, Closure\(string, string\)\: non\-empty\-string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
-			message: "#^Access to an undefined property Webauthn\\\\PublicKeyCredentialCreationOptions\\|Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:\\$rp\\.$#"
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AuthenticatorDataLoader.php
+
+		-
+			message: '#^Parameter \#4 \$signCount of static method Webauthn\\AuthenticatorData\:\:create\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/AuthenticatorDataLoader.php
+
+		-
+			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/webauthn/src/CeremonyStep/CheckOrigin.php
 
 		-
-			message: "#^Access to an undefined property Webauthn\\\\PublicKeyCredentialCreationOptions\\|Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:\\$rp\\.$#"
+			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
 
 		-
-			message: "#^Cannot access offset 'authData' on mixed\\.$#"
+			message: '#^Property Webauthn\\CollectedClientData\:\:\$crossOrigin \(bool\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/webauthn/src/CollectedClientData.php
+
+		-
+			message: '#^Property Webauthn\\CollectedClientData\:\:\$topOrigin \(string\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/webauthn/src/CollectedClientData.php
+
+		-
+			message: '#^Cannot access offset ''authData'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of class Webauthn\\\\StringStream constructor expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of class Webauthn\\StringStream constructor expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$rawAttestationObject of static method Webauthn\\\\AttestationStatement\\\\AttestationObject\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rawAttestationObject of static method Webauthn\\AttestationStatement\\AttestationObject\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationObjectDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'fmt' on mixed\\.$#"
+			message: '#^Cannot access offset ''fmt'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$attestation of method Webauthn\\\\AttestationStatement\\\\AttestationStatementSupport\\:\\:load\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
+			message: '#^Parameter \#1 \$attestation of method Webauthn\\AttestationStatement\\AttestationStatementSupport\:\:load\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method Webauthn\\\\AttestationStatement\\\\AttestationStatementSupportManager\\:\\:get\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$name of method Webauthn\\AttestationStatement\\AttestationStatementSupportManager\:\:get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AttestationStatementDenormalizer.php
 
 		-
-			message: "#^Method Webauthn\\\\Denormalizer\\\\AuthenticationExtensionNormalizer\\:\\:normalize\\(\\) should return array but returns mixed\\.$#"
+			message: '#^Method Webauthn\\Denormalizer\\AuthenticationExtensionNormalizer\:\:normalize\(\) should return array\<mixed\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticationExtensionNormalizer.php
 
 		-
-			message: "#^Cannot access offset 'attestationObject' on mixed\\.$#"
+			message: '#^Parameter \#1 \$extensions of static method Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:create\(\) expects array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtension\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticationExtensionsDenormalizer.php
+
+		-
+			message: '#^Cannot access offset ''attestationObject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'authenticatorData' on mixed\\.$#"
+			message: '#^Cannot access offset ''authenticatorData'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'clientDataJSON' on mixed\\.$#"
+			message: '#^Cannot access offset ''clientDataJSON'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'signature' on mixed\\.$#"
+			message: '#^Cannot access offset ''signature'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'userHandle' on mixed\\.$#"
+			message: '#^Cannot access offset ''userHandle'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\Util\\\\Base64\\:\\:decode\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\Util\\Base64\:\:decode\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 3
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$encodedString of static method ParagonIE\\ConstantTime\\Base64\:\:decodeNoPadding\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#3 \\$signature of static method Webauthn\\\\AuthenticatorAssertionResponse\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$signature of static method Webauthn\\AuthenticatorAssertionResponse\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'attestationObject' on mixed\\.$#"
+			message: '#^Cannot access offset ''attestationObject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'clientDataJSON' on mixed\\.$#"
+			message: '#^Cannot access offset ''clientDataJSON'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'transports' on mixed\\.$#"
+			message: '#^Cannot access offset ''transports'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\Util\\\\Base64\\:\\:decode\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\Util\\Base64\:\:decode\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$encodedString of static method ParagonIE\\ConstantTime\\Base64\:\:decodeNoPadding\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#3 \\$transports of static method Webauthn\\\\AuthenticatorAttestationResponse\\:\\:create\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#3 \$transports of static method Webauthn\\AuthenticatorAttestationResponse\:\:create\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorAttestationResponseDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 1 on array\\|false\\.$#"
+			message: '#^Cannot access offset 1 on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of method Webauthn\\\\Denormalizer\\\\AuthenticatorDataDenormalizer\\:\\:fixIncorrectEdDSAKey\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of method Webauthn\\Denormalizer\\AuthenticatorDataDenormalizer\:\:fixIncorrectEdDSAKey\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$search of function str_replace expects array\\|string, string\\|false given\\.$#"
+			message: '#^Parameter \#1 \$length of method Webauthn\\StringStream\:\:read\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_reduce expects callable\\(string, mixed\\)\\: string, Closure\\(string, string\\)\\: non\\-empty\\-string given\\.$#"
+			message: '#^Parameter \#1 \$search of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|false given\\.$#"
+			message: '#^Parameter \#2 \$callback of function array_reduce expects callable\(string, mixed\)\: string, Closure\(string, string\)\: non\-empty\-string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
+
+		-
+			message: '#^Parameter \#4 \$signCount of static method Webauthn\\AuthenticatorData\:\:create\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$rawData of static method Webauthn\\\\CollectedClientData\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rawData of static method Webauthn\\CollectedClientData\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$data of static method Webauthn\\\\CollectedClientData\\:\\:create\\(\\) expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$data of static method Webauthn\\CollectedClientData\:\:create\(\) expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
 		-
-			message: "#^Only iterables can be unpacked, mixed given in argument \\#1\\.$#"
+			message: '#^Only iterables can be unpacked, mixed given in argument \#1\.$#'
+			identifier: argument.unpackNonIterable
 			count: 1
 			path: src/webauthn/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$id of static method Webauthn\\\\MetadataService\\\\Statement\\\\ExtensionDescriptor\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$id of static method Webauthn\\MetadataService\\Statement\\ExtensionDescriptor\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\Util\\Base64\:\:decode\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			message: '#^Parameter \#1 \$encodedString of static method ParagonIE\\ConstantTime\\Base64\:\:decodeNoPadding\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
+
+		-
+			message: '#^Parameter \#1 \$type of static method Webauthn\\PublicKeyCredential\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialDenormalizer.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'allowCredentials' on mixed\\.$#"
+			message: '#^Cannot access offset ''allowCredentials'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'allowCredentials'\\|'excludeCredentials' on mixed\\.$#"
+			message: '#^Cannot access offset ''allowCredentials''\|''excludeCredentials'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'attestation' on mixed\\.$#"
+			message: '#^Cannot access offset ''attestation'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'authenticatorSelect…' on mixed\\.$#"
+			message: '#^Cannot access offset ''authenticatorSelection'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'challenge' on mixed\\.$#"
+			message: '#^Cannot access offset ''challenge'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'excludeCredentials' on mixed\\.$#"
+			message: '#^Cannot access offset ''excludeCredentials'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'extensions' on mixed\\.$#"
+			message: '#^Cannot access offset ''extensions'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'pubKeyCredParams' on mixed\\.$#"
+			message: '#^Cannot access offset ''pubKeyCredParams'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'rp' on mixed\\.$#"
+			message: '#^Cannot access offset ''rp'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'rpId' on mixed\\.$#"
+			message: '#^Cannot access offset ''rpId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'timeout' on mixed\\.$#"
+			message: '#^Cannot access offset ''timeout'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'user' on mixed\\.$#"
+			message: '#^Cannot access offset ''user'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'userVerification' on mixed\\.$#"
+			message: '#^Cannot access offset ''userVerification'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Cannot access offset mixed on mixed\\.$#"
+			message: '#^Cannot access offset mixed on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$challenge of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$challenge of static method Webauthn\\PublicKeyCredentialRequestOptions\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$encodedString of static method ParagonIE\\\\ConstantTime\\\\Base64\\:\\:decodeNoPadding\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$encodedString of static method ParagonIE\\ConstantTime\\Base64\:\:decodeNoPadding\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$rpId of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
+			message: '#^Parameter \#2 \$rpId of static method Webauthn\\PublicKeyCredentialRequestOptions\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#3 \\$challenge of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$challenge of static method Webauthn\\PublicKeyCredentialCreationOptions\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#4 \\$userVerification of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#4 \$userVerification of static method Webauthn\\PublicKeyCredentialRequestOptions\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#5 \\$timeout of static method Webauthn\\\\PublicKeyCredentialRequestOptions\\:\\:create\\(\\) expects int\\<1, max\\>\\|null, mixed given\\.$#"
+			message: '#^Parameter \#5 \$timeout of static method Webauthn\\PublicKeyCredentialRequestOptions\:\:create\(\) expects int\<1, max\>\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#6 \\$attestation of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#6 \$attestation of static method Webauthn\\PublicKeyCredentialCreationOptions\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#8 \\$timeout of static method Webauthn\\\\PublicKeyCredentialCreationOptions\\:\\:create\\(\\) expects int\\<1, max\\>\\|null, mixed given\\.$#"
+			message: '#^Parameter \#8 \$timeout of static method Webauthn\\PublicKeyCredentialCreationOptions\:\:create\(\) expects int\<1, max\>\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$type of static method Webauthn\\PublicKeyCredentialParameters\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'aaguid' on mixed\\.$#"
+			message: '#^Parameter \#2 \$alg of static method Webauthn\\PublicKeyCredentialParameters\:\:create\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
+
+		-
+			message: '#^Cannot access offset ''aaguid'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'attestationType' on mixed\\.$#"
+			message: '#^Cannot access offset ''attestationType'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'backupEligible' on mixed\\.$#"
+			message: '#^Cannot access offset ''backupEligible'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'backupStatus' on mixed\\.$#"
+			message: '#^Cannot access offset ''backupStatus'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'counter' on mixed\\.$#"
+			message: '#^Cannot access offset ''counter'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'credentialPublicKey' on mixed\\.$#"
+			message: '#^Cannot access offset ''credentialPublicKey'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'otherUI' on mixed\\.$#"
+			message: '#^Cannot access offset ''otherUI'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'publicKeyCredential…' on mixed\\.$#"
+			message: '#^Cannot access offset ''publicKeyCredentialId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'transports' on mixed\\.$#"
+			message: '#^Cannot access offset ''transports'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'trustPath' on mixed\\.$#"
+			message: '#^Cannot access offset ''trustPath'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			message: '#^Cannot access offset ''type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'userHandle' on mixed\\.$#"
+			message: '#^Cannot access offset ''userHandle'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'uvInitialized' on mixed\\.$#"
+			message: '#^Cannot access offset ''uvInitialized'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method Webauthn\\\\Util\\\\Base64\\:\\:decode\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\Util\\Base64\:\:decode\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$publicKeyCredentialId of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$publicKeyCredentialId of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#1 \\$uuid of static method Symfony\\\\Component\\\\Uid\\\\Uuid\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$uuid of static method Symfony\\Component\\Uid\\Uuid\:\:fromString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#10 \\$otherUI of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects array\\<string, mixed\\>\\|null, mixed given\\.$#"
+			message: '#^Parameter \#10 \$otherUI of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects array\<string, mixed\>\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#11 \\$backupEligible of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+			message: '#^Parameter \#11 \$backupEligible of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects bool\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#12 \\$backupStatus of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+			message: '#^Parameter \#12 \$backupStatus of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects bool\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#13 \\$uvInitialized of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects bool\\|null, mixed given\\.$#"
+			message: '#^Parameter \#13 \$uvInitialized of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects bool\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$type of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$type of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#3 \\$transports of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects array\\<string\\>, mixed given\\.$#"
+			message: '#^Parameter \#3 \$transports of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#4 \\$attestationType of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#4 \$attestationType of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#7 \\$credentialPublicKey of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#7 \$credentialPublicKey of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#8 \\$userHandle of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#8 \$userHandle of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#9 \\$counter of static method Webauthn\\\\PublicKeyCredentialSource\\:\\:create\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#9 \$counter of static method Webauthn\\PublicKeyCredentialSource\:\:create\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$data of static method Webauthn\\Util\\Base64\:\:decode\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
 		-
-			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			message: '#^Parameter \#1 \$name of static method Webauthn\\PublicKeyCredentialUserEntity\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: '#^Parameter \#3 \$displayName of static method Webauthn\\PublicKeyCredentialUserEntity\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: '#^Parameter \#4 \$icon of static method Webauthn\\PublicKeyCredentialUserEntity\:\:create\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
+
+		-
+			message: '#^Cannot access offset ''type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			message: '#^Parameter \#1 \$certificates of static method Webauthn\\TrustPath\\CertificateTrustPath\:\:create\(\) expects array\<string\>, array given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
-			message: "#^Method Webauthn\\\\Denormalizer\\\\VerificationMethodANDCombinationsDenormalizer\\:\\:normalize\\(\\) should return array\\<Webauthn\\\\MetadataService\\\\Statement\\\\VerificationMethodDescriptor\\> but returns array\\<array\\|ArrayObject\\<\\(int\\|string\\), mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\.$#"
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+		-
+			message: '#^Method Webauthn\\Denormalizer\\VerificationMethodANDCombinationsDenormalizer\:\:normalize\(\) should return array\<Webauthn\\MetadataService\\Statement\\VerificationMethodDescriptor\> but returns array\<array\<mixed\>\|ArrayObject\<\(int\|string\), mixed\>\|bool\|float\|int\|string\|null\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/VerificationMethodANDCombinationsDenormalizer.php
 
 		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:request\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
 
 		-
-			message: "#^Method Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:withOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: '#^Binary operation "\." between mixed and string results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
 
 		-
-			message: "#^Property Webauthn\\\\MetadataService\\\\Psr18HttpClient\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
+			message: '#^Method Webauthn\\MetadataService\\Psr18HttpClient\:\:request\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
 
 		-
-			message: "#^Parameter &\\$rootCertificates by\\-ref type of method Webauthn\\\\MetadataService\\\\Service\\\\FidoAllianceCompliantMetadataService\\:\\:getJwsPayload\\(\\) expects array\\<string\\>, array given\\.$#"
+			message: '#^Method Webauthn\\MetadataService\\Psr18HttpClient\:\:withOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Parameter \#1 \$content of method Psr\\Http\\Message\\StreamFactoryInterface\:\:createStream\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Parameter \#1 \$data of function http_build_query expects array\|object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Parameter \#1 \$name of method Psr\\Http\\Message\\MessageInterface\:\:withHeader\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Parameter \#2 \$value of method Psr\\Http\\Message\\MessageInterface\:\:withHeader\(\) expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Property Webauthn\\MetadataService\\Psr18HttpClient\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/webauthn/src/MetadataService/Psr18HttpClient.php
+
+		-
+			message: '#^Parameter &\$rootCertificates by\-ref type of method Webauthn\\MetadataService\\Service\\FidoAllianceCompliantMetadataService\:\:getJwsPayload\(\) expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: parameterByRef.type
 			count: 1
 			path: src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
 
 		-
-			message: "#^Parameter \\#1 \\$extensions of static method Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\:\\:create\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtension\\>, array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\> given\\.$#"
+			message: '#^Property Webauthn\\MetadataService\\Service\\FidoAllianceCompliantMetadataService\:\:\$statusReports \(array\<string, array\<int, Webauthn\\MetadataService\\Statement\\StatusReport\>\>\) does not accept array\<string, array\<Webauthn\\MetadataService\\Statement\\StatusReport\>\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
+
+		-
+			message: '#^Parameter \#1 \$descriptions of static method Webauthn\\MetadataService\\Statement\\AlternativeDescriptions\:\:create\(\) expects array\<string, string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/webauthn/src/MetadataService/Statement/MetadataStatement.php
+
+		-
+			message: '#^Parameter \#1 \$extensions of static method Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:create\(\) expects array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtension\>, array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialOptions.php
 
 		-
-			message: "#^Parameter \\#3 \\$extensions of method Webauthn\\\\PublicKeyCredentialOptions\\:\\:__construct\\(\\) expects array\\<Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\>\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null, array\\|Webauthn\\\\AuthenticationExtensions\\\\AuthenticationExtensions\\|null given\\.$#"
+			message: '#^Parameter \#3 \$extensions of method Webauthn\\PublicKeyCredentialOptions\:\:__construct\(\) expects array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\>\|Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\|null, array\<mixed\>\|Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/PublicKeyCredentialRequestOptions.php
 
 		-
-			message: "#^Method Webauthn\\\\SimpleFakeCredentialGenerator\\:\\:generate\\(\\) should return array\\<Webauthn\\\\PublicKeyCredentialDescriptor\\> but returns mixed\\.$#"
+			message: '#^Method Webauthn\\SimpleFakeCredentialGenerator\:\:generate\(\) should return array\<Webauthn\\PublicKeyCredentialDescriptor\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/webauthn/src/SimpleFakeCredentialGenerator.php
