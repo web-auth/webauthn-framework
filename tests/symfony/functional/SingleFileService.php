@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use function array_key_exists;
+use function sprintf;
 
 final class SingleFileService implements MetadataService
 {

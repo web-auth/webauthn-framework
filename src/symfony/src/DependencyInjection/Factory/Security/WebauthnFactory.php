@@ -39,6 +39,7 @@ use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\FakeCredentialGenerator;
 use function array_key_exists;
 use function assert;
+use function sprintf;
 
 final readonly class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {

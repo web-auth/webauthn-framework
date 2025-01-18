@@ -24,6 +24,7 @@ use function count;
 use function is_array;
 use function openssl_pkey_get_public;
 use function openssl_verify;
+use function sprintf;
 use const OPENSSL_ALGO_SHA256;
 
 final class FidoU2FAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents

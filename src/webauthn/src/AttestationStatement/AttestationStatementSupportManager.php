@@ -6,6 +6,7 @@ namespace Webauthn\AttestationStatement;
 
 use Webauthn\Exception\InvalidDataException;
 use function array_key_exists;
+use function sprintf;
 
 class AttestationStatementSupportManager
 {

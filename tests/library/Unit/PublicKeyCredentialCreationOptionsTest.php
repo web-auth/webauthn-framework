@@ -108,11 +108,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         $rp = PublicKeyCredentialRpEntity::create('RP');
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
 
-        $options = PublicKeyCredentialCreationOptions::create(
-            $rp,
-            $user,
-            'challenge',
-        );
+        $options = PublicKeyCredentialCreationOptions::create($rp, $user, 'challenge');
 
         $actualAlgorithms = [];
         foreach ($options->pubKeyCredParams as $pubKeyCredParam) {

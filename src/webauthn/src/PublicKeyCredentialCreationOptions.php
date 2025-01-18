@@ -8,6 +8,7 @@ use Cose\Algorithms;
 use InvalidArgumentException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Exception\InvalidDataException;
+use function count;
 use function in_array;
 
 final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
