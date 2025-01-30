@@ -41,6 +41,14 @@ final readonly class CheckOrigin implements CeremonyStep
         is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin'
         );
+        // Companion application
+        if (in_array($parsedRelyingPartyId['scheme'], ['android', 'ios'])) {
+            in_array($C->origin, $this->securedRelyingPartyId, true) || throw AuthenticatorResponseVerificationException::create(
+                'Unauthorized origin.'
+            );
+            return;
+        }
+        // Web
         if (! in_array($facetId, $this->securedRelyingPartyId, true)) {
             $scheme = $parsedRelyingPartyId['scheme'] ?? '';
             $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
