@@ -39,7 +39,7 @@ class default_1 extends Controller {
     }
     async _processSignin(optionsResponseJson, useBrowserAutofill) {
         try {
-            const authenticatorResponse = await startAuthentication(optionsResponseJson, useBrowserAutofill);
+            const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             const assertionResponse = await this._getAssertionResponse(authenticatorResponse);
             if (assertionResponse !== false && this.requestSuccessRedirectUriValue) {
@@ -62,7 +62,7 @@ class default_1 extends Controller {
             if (!optionsResponseJson) {
                 return;
             }
-            const authenticatorResponse = await startRegistration(optionsResponseJson);
+            const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             const attestationResponseJSON = await this._getAttestationResponse(authenticatorResponse);
             if (attestationResponseJSON !== false && this.creationSuccessRedirectUriValue) {
