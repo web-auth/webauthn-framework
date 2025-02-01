@@ -83,7 +83,7 @@ export default class extends Controller {
     private async _processSignin(optionsResponseJson: Object, useBrowserAutofill: boolean): Promise<void> {
         try {
             // @ts-ignore
-            const authenticatorResponse = await startAuthentication(optionsResponseJson, useBrowserAutofill);
+            const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
 
             const assertionResponse = await this._getAssertionResponse(authenticatorResponse);
@@ -109,7 +109,7 @@ export default class extends Controller {
             }
 
             // @ts-ignore
-            const authenticatorResponse = await startRegistration(optionsResponseJson);
+            const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
 
             const attestationResponseJSON = await this._getAttestationResponse(authenticatorResponse);
