@@ -10,6 +10,7 @@ use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -59,6 +60,11 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         private readonly ?string $rootCertificateUri = null,
         ?SerializerInterface $serializer = null,
     ) {
+        if (! class_exists(CompactSerializer::class)) {
+            throw new LogicException(
+                'The "web-token/jwt-library" package is required to use this service. Please run "composer require web-token/jwt-library".'
+            );
+        }
         $this->serializer = $serializer ?? (new WebauthnSerializerFactory(
             AttestationStatementSupportManager::create()
         ))->create();
