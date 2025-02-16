@@ -88,7 +88,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->registerForAutoconfiguration(CanLogData::class)->addTag(LoggerSetterCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
 
+        // @deprecated Will be removed in 6.0.0
         $container->setParameter('webauthn.secured_relying_party_ids', $config['secured_rp_ids']);
+        $container->setParameter('webauthn.allowed_origins', $config['allowed_origins']);
+        $container->setParameter('webauthn.allow_subdomains', $config['allow_subdomains']);
         $container->setAlias('webauthn.event_dispatcher', $config['event_dispatcher']);
         $container->setAlias('webauthn.clock', $config['clock']);
         if ($config['top_origin_validator'] !== null) {
@@ -220,6 +223,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($creationCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'creationCeremony'])
+                // @deprecated Will be removed in 6.0.0
                 ->setArguments([$creationConfig['secured_rp_ids']])
             ;
 
@@ -300,6 +304,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($requestCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'requestCeremony'])
+                // @deprecated Will be removed in 6.0.0
                 ->setArguments([$requestConfig['secured_rp_ids']])
             ;
 

@@ -31,6 +31,15 @@ parameters:
 			path: src/symfony/src/DataCollector/WebauthnCollector.php
 
 		-
+			message: '''
+				#^Call to deprecated method setSecuredRelyingPartyId\(\) of class Webauthn\\Bundle\\DependencyInjection\\Compiler\\CeremonyStepManagerFactoryCompilerPass\:
+				Will be removed in 6\.0\.0$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/symfony/src/DependencyInjection/Compiler/CeremonyStepManagerFactoryCompilerPass.php
+
+		-
 			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -399,7 +408,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$value of method Symfony\\Component\\DependencyInjection\\Container\:\:setParameter\(\) expects array\|bool\|float\|int\|string\|UnitEnum\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 5
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -1385,6 +1394,21 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AuthenticatorDataLoader.php
+
+		-
+			message: '''
+				#^Instantiation of deprecated class Webauthn\\CeremonyStep\\CheckOrigin\:
+				since 5\.2\.0 and will be removed in 6\.0\.0\. Will be replaced by CheckAllowedOrigins$#
+			'''
+			identifier: new.deprecated
+			count: 2
+			path: src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
+
+		-
+			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
 
 		-
 			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'

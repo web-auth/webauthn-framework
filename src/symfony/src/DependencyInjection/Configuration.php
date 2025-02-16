@@ -87,7 +87,23 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue(DummyPublicKeyCredentialUserEntityRepository::class)
             ->info('This repository is responsible of the user storage')
             ->end()
+            ->arrayNode('allowed_origins')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()
+            ->end()
+            ->end()
+            ->booleanNode('allow_subdomains')
+            ->defaultFalse()
+            ->end()
             ->arrayNode('secured_rp_ids')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The "secured_rp_ids" node is deprecated. Please use "allowed_origins" and "allow_subdomains" instead.'
+            )
             ->treatFalseLike(null)
             ->treatTrueLike(null)
             ->treatNullLike(null)
@@ -350,7 +366,23 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('options_handler')
             ->defaultValue(DefaultCreationOptionsHandler::class)
             ->end()
+            ->arrayNode('allowed_origins')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()
+            ->end()
+            ->end()
+            ->booleanNode('allow_subdomains')
+            ->defaultFalse()
+            ->end()
             ->arrayNode('secured_rp_ids')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The "secured_rp_ids" node is deprecated. Please use "allowed_origins" and "allow_subdomains" instead.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -406,7 +438,23 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('options_handler')
             ->defaultValue(DefaultRequestOptionsHandler::class)
             ->end()
+            ->arrayNode('allowed_origins')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()
+            ->end()
+            ->end()
+            ->booleanNode('allow_subdomains')
+            ->defaultFalse()
+            ->end()
             ->arrayNode('secured_rp_ids')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The "secured_rp_ids" node is deprecated. Please use "allowed_origins" and "allow_subdomains" instead.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])

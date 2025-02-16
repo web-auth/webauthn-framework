@@ -51,83 +51,81 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()
+    $service = $container->services()
         ->defaults()
         ->private()
         ->autoconfigure();
 
-    $container
+    $service
         ->set(CeremonyStepManagerFactory::class)
     ;
 
-    $container
+    $service
         ->set('webauthn.clock.default')
         ->class(NativeClock::class)
     ;
 
-    $container
+    $service
         ->set('webauthn.ceremony_step_manager.creation')
         ->class(CeremonyStepManager::class)
         ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
-        ->args([param('webauthn.secured_relying_party_ids')])
     ;
 
-    $container
+    $service
         ->set(SimpleFakeCredentialGenerator::class)
         ->args([service(CacheItemPoolInterface::class)->nullOnInvalid()])
     ;
 
-    $container
+    $service
         ->set('webauthn.ceremony_step_manager.request')
         ->class(CeremonyStepManager::class)
         ->factory([service(CeremonyStepManagerFactory::class), 'requestCeremony'])
-        ->args([param('webauthn.secured_relying_party_ids')])
     ;
 
-    $container
+    $service
         ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([service('webauthn.ceremony_step_manager.creation')])
         ->public();
-    $container
+    $service
         ->set(AuthenticatorAssertionResponseValidator::class)
         ->class(AuthenticatorAssertionResponseValidator::class)
         ->args([service('webauthn.ceremony_step_manager.request')])
         ->public();
-    $container
+    $service
         ->set(PublicKeyCredentialCreationOptionsFactory::class)
         ->args([param('webauthn.creation_profiles')])
         ->public();
-    $container
+    $service
         ->set(PublicKeyCredentialRequestOptionsFactory::class)
         ->args([param('webauthn.request_profiles')])
         ->public();
 
-    $container
+    $service
         ->set(ExtensionOutputCheckerHandler::class);
-    $container
+    $service
         ->set(AttestationObjectLoader::class)
         ->args([service(AttestationStatementSupportManager::class)]);
-    $container
+    $service
         ->set(AttestationStatementSupportManager::class);
-    $container
+    $service
         ->set(NoneAttestationStatementSupport::class);
 
-    $container
+    $service
         ->set(ThrowExceptionIfInvalid::class)
         ->autowire(false);
 
-    $container
+    $service
         ->set(Loader::class)
         ->tag('routing.loader');
 
-    $container
+    $service
         ->set(AttestationControllerFactory::class)
         ->args([
             service(SerializerInterface::class),
             service(AuthenticatorAttestationResponseValidator::class),
             service(PublicKeyCredentialSourceRepositoryInterface::class),
         ]);
-    $container
+    $service
         ->set(AssertionControllerFactory::class)
         ->args([
             service(SerializerInterface::class),
@@ -135,112 +133,112 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialSourceRepositoryInterface::class),
         ]);
 
-    $container
+    $service
         ->set(DummyPublicKeyCredentialSourceRepository::class)
         ->autowire(false);
-    $container
+    $service
         ->set(DummyPublicKeyCredentialUserEntityRepository::class)
         ->autowire(false);
 
-    $container
+    $service
         ->set(DummyControllerFactory::class);
 
-    $container
+    $service
         ->set('webauthn.logger.default')
         ->class(NullLogger::class);
 
-    $container
+    $service
         ->alias('webauthn.http_client.default', HttpClientInterface::class);
 
-    $container
+    $service
         ->set(VerificationMethodANDCombinationsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(ExtensionDescriptorDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AttestationObjectDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AttestationStatementDenormalizer::class)
         ->args([service(AttestationStatementSupportManager::class)])
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticationExtensionNormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(PublicKeyCredentialDescriptorNormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AttestedCredentialDataNormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticationExtensionsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticatorAssertionResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticatorAttestationResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticatorDataDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(AuthenticatorResponseDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(CollectedClientDataDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(PublicKeyCredentialDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(PublicKeyCredentialOptionsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(PublicKeyCredentialSourceDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container
+    $service
         ->set(PublicKeyCredentialUserEntityDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $container->set(WebauthnSerializerFactory::class)
+    $service->set(WebauthnSerializerFactory::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;
-    $container->set(DefaultFailureHandler::class);
-    $container->set(DefaultSuccessHandler::class);
+    $service->set(DefaultFailureHandler::class);
+    $service->set(DefaultSuccessHandler::class);
 };
