@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -13,6 +14,9 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\AbstractTestCase;
+use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\TrustPath\EmptyTrustPath;
+use Webauthn\TrustPath\TrustPath;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -20,6 +24,55 @@ use const JSON_THROW_ON_ERROR;
  */
 final class SerializerTest extends AbstractTestCase
 {
+    public static function provideTrustPath(): iterable
+    {
+        yield [
+            CertificateTrustPath::create(['X509_KEY_1', 'X509_KEY_2', 'X509_KEY_3']),
+            '{"x5c":["X509_KEY_1","X509_KEY_2","X509_KEY_3"]}',
+        ];
+        yield [EmptyTrustPath::create(), '[]'];
+    }
+
+    #[Test]
+    #[DataProvider('provideTrustPath')]
+    public function theTrustPathCanBeSerialized(TrustPath $trustPath, string $expected): void
+    {
+        //When
+        $json = $this->getSerializer()
+            ->serialize(
+                $trustPath,
+                'json',
+                [
+                    JsonEncode::OPTIONS => JSON_THROW_ON_ERROR,
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    AbstractObjectNormalizer::SKIP_UNINITIALIZED_VALUES => true,
+                ],
+            );
+
+        //Then
+        static::assertJsonStringEqualsJsonString($expected, $json);
+    }
+
+    #[Test]
+    #[DataProvider('provideTrustPath')]
+    public function theTrustPathCanBeDeserialized(TrustPath $trustPath, string $expected): void
+    {
+        //When
+        $deserialized = $this->getSerializer()
+            ->deserialize(
+                $expected,
+                TrustPath::class,
+                'json',
+                [
+                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+                    AbstractObjectNormalizer::SKIP_UNINITIALIZED_VALUES => true,
+                ],
+            );
+
+        //Then
+        static::assertEquals($trustPath, $deserialized);
+    }
+
     #[Test]
     public function theCredentialCanBeDeserialized(): void
     {

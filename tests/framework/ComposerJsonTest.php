@@ -56,7 +56,7 @@ final class ComposerJsonTest extends TestCase
             'Dependencies declared in root composer.json, which are not declared in any sub-package: %s',
             implode('', $unusedDependencies)
         );
-        static::assertCount(0, $unusedDependencies, $message);
+        static::assertEmpty($unusedDependencies, $message);
     }
 
     #[Test]
