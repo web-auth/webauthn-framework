@@ -2011,7 +2011,7 @@ parameters:
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
-			message: '#^Parameter \#1 \$certificates of static method Webauthn\\TrustPath\\CertificateTrustPath\:\:create\(\) expects array\<string\>, array given\.$#'
+			message: '#^Parameter \#1 \$certificates of static method Webauthn\\TrustPath\\CertificateTrustPath\:\:create\(\) expects array\<string\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
