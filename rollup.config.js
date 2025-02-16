@@ -43,16 +43,14 @@ const wildcardExternalsPlugin = (peerDependencies) => ({
  *
  * This could probably be configured in the TypeScript plugin.
  */
-const moveTypescriptDeclarationsPlugin = (packagePath) => ({
-    name: 'move-ts-declarations',
-    writeBundle: async () => {
-        const files = glob.sync(path.join(packagePath, 'dist', '**', 'assets', 'src', '**/*.d.ts'));
+const moveTypescriptDeclarationsPlugin = () => ({
+    name: 'move-to-dist',
+    writeBundle: () =>{
+        console.log(packageRoot);
+        const files = glob.sync(path.join(packageRoot, 'dist', '**', 'assets', 'src', '**/*.d.ts'));
         files.forEach((file) => {
-            // a bit odd, but remove first 8 directories, which will leave
-            // only the relative path to the file
             const relativePath = file.split('/').slice(8).join('/');
-
-            const targetFile = path.join(packagePath, 'dist', relativePath);
+            const targetFile = path.join(packageRoot, 'dist', relativePath);
             if (!fs.existsSync(path.dirname(targetFile))) {
                 fs.mkdirSync(path.dirname(targetFile), { recursive: true });
             }
@@ -83,7 +81,6 @@ module.exports = {
             filterRoot: packageRoot,
             include: ['src/**/*.ts'],
             compilerOptions: {
-                outDir: 'dist',
                 declaration: true,
                 emitDeclarationOnly: true,
             }
