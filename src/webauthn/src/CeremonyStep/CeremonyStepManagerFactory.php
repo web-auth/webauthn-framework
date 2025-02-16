@@ -35,6 +35,13 @@ final class CeremonyStepManagerFactory
      */
     private null|array $securedRelyingPartyId = null;
 
+    /**
+     * @var string[]
+     */
+    private null|array $allowedOrigins = null;
+
+    private bool $allowSubdomains = false;
+
     private AttestationStatementSupportManager $attestationStatementSupportManager;
 
     private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
@@ -55,11 +62,21 @@ final class CeremonyStepManagerFactory
     }
 
     /**
+     * @deprecated since 5.2.0 and will be removed in 6.0.0. Use setAllowedOrigins instead.
      * @param string[] $securedRelyingPartyId
      */
     public function setSecuredRelyingPartyId(array $securedRelyingPartyId): void
     {
         $this->securedRelyingPartyId = $securedRelyingPartyId;
+    }
+
+    /**
+     * @param string[] $allowedOrigins
+     */
+    public function setAllowedOrigins(array $allowedOrigins, bool $allowSubdomains = false): void
+    {
+        $this->allowedOrigins = $allowedOrigins;
+        $this->allowSubdomains = $allowSubdomains;
     }
 
     public function setExtensionOutputCheckerHandler(ExtensionOutputCheckerHandler $extensionOutputCheckerHandler): void
@@ -116,7 +133,9 @@ final class CeremonyStepManagerFactory
         return new CeremonyStepManager([
             new CheckClientDataCollectorType(),
             new CheckChallenge(),
-            new CheckOrigin($this->securedRelyingPartyId ?? []),
+            $this->allowedOrigins === null ? new CheckOrigin(
+                $this->securedRelyingPartyId ?? []
+            ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
@@ -139,7 +158,9 @@ final class CeremonyStepManagerFactory
             new CheckUserHandle(),
             new CheckClientDataCollectorType(),
             new CheckChallenge(),
-            new CheckOrigin($this->securedRelyingPartyId ?? []),
+            $this->allowedOrigins === null ? new CheckOrigin(
+                $this->securedRelyingPartyId ?? []
+            ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
             new CheckTopOrigin(null),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),

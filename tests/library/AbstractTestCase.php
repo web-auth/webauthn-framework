@@ -101,7 +101,16 @@ abstract class AbstractTestCase extends TestCase
             $this->ceremonyStepManagerFactory->setExtensionOutputCheckerHandler(
                 ExtensionOutputCheckerHandler::create()
             );
-            $this->ceremonyStepManagerFactory->setSecuredRelyingPartyId(['localhost']);
+            $this->ceremonyStepManagerFactory->setAllowedOrigins([
+                'http://localhost',
+                'https://localhost',
+                'https://dev.dontneeda.pw',
+                'https://spomky-webauthn.herokuapp.com',
+                'https://tuleap-web.tuleap-aio-dev.docker',
+                'https://webauthn.spomky-labs.com',
+                'https://webauthn.morselli.fr',
+                'https://webauthn.firstyear.id.au',
+            ]);
         }
 
         return $this->ceremonyStepManagerFactory;

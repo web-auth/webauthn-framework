@@ -42,6 +42,7 @@ class WebauthnServicesFactory
     public function createAuthenticatorAssertionResponseValidator(
         ContainerBuilder $container,
         string $firewallName,
+        // @deprecated Will be removed in 6.0.0
         array $securedRpIds
     ): string {
         $ceremonyStepManagerId = WebauthnFactory::CEREMONY_STEP_MANAGER_ID_PREFIX . 'request.' . $firewallName;
@@ -70,6 +71,7 @@ class WebauthnServicesFactory
     public function createAuthenticatorAttestationResponseValidator(
         ContainerBuilder $container,
         string $firewallName,
+        // @deprecated Will be removed in 6.0.0
         array $securedRpIds
     ): string {
         $ceremonyStepManagerId = WebauthnFactory::CEREMONY_STEP_MANAGER_ID_PREFIX . 'creation.' . $firewallName;

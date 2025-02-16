@@ -126,6 +126,7 @@ final readonly class WebauthnFirewallConfig
     }
 
     /**
+     * @deprecated since 5.2.0 and will be removed in 6.0.
      * @return string[]
      */
     public function getSecuredRpIds(): array

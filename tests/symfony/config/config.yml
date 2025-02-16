@@ -126,6 +126,12 @@ doctrine:
 webauthn:
   credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
   user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
+  allowed_origins:
+    - 'https://localhost'
+    - 'https://bar.acme'
+    - 'https://webauthn.spomky-labs.com'
+    - 'https://spomky-webauthn.herokuapp.com'
+  allow_subdomains: false
   controllers:
     enabled: true
     creation:

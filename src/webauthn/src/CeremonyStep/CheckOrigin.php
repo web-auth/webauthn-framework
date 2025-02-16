@@ -16,6 +16,9 @@ use function is_array;
 use function is_string;
 use function strlen;
 
+/**
+ * @deprecated since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
+ */
 final readonly class CheckOrigin implements CeremonyStep
 {
     /**

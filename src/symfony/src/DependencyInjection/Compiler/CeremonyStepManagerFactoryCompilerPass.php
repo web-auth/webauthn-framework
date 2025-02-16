@@ -10,11 +10,15 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\Bundle\Controller\AllowedOriginsController;
+use Webauthn\Bundle\Routing\Loader;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CeremonyStep\TopOriginValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use function count;
+use function is_array;
 
 final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterface
 {
@@ -31,6 +35,7 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $this->setAlgorithmManager($container, $definition);
         $this->enableTopOriginValidator($container, $definition);
         $this->setSecuredRelyingPartyId($container, $definition);
+        $this->setAllowedOrigins($container, $definition);
     }
 
     private function setAttestationStatementSupportManager(ContainerBuilder $container, Definition $definition): void
@@ -105,6 +110,9 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $definition->addMethodCall('setAlgorithmManager', [new Reference('webauthn.cose.algorithm.manager')]);
     }
 
+    /**
+     * @deprecated Will be removed in 6.0.0
+     */
     private function setSecuredRelyingPartyId(ContainerBuilder $container, Definition $definition): void
     {
         if (! $container->hasParameter('webauthn.secured_relying_party_ids')) {
@@ -114,5 +122,39 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $definition->addMethodCall('setSecuredRelyingPartyId', [
             $container->getParameter('webauthn.secured_relying_party_ids'),
         ]);
+    }
+
+    private function setAllowedOrigins(ContainerBuilder $container, Definition $definition): void
+    {
+        if (! $container->hasParameter('webauthn.allowed_origins') || $container->getParameter(
+            'webauthn.allow_subdomains'
+        ) === null) {
+            return;
+        }
+        $allowedOrigins = $container->getParameter('webauthn.allowed_origins');
+        if (! is_array($allowedOrigins) || count($allowedOrigins) === 0) {
+            return;
+        }
+
+        $definition->addMethodCall('setAllowedOrigins', [
+            $container->getParameter('webauthn.allowed_origins'),
+            $container->getParameter('webauthn.allow_subdomains'),
+        ]);
+        $this->createControllerDefinition($container);
+    }
+
+    private function createControllerDefinition(ContainerBuilder $container): void
+    {
+        if (! $container->hasDefinition(Loader::class)) {
+            return;
+        }
+
+        $controllerDefinition = $container->setDefinition(
+            AllowedOriginsController::class,
+            new Definition(AllowedOriginsController::class, [$container->getParameter('webauthn.allowed_origins')])
+        );
+        $controllerDefinition->setPublic(true);
+        $definition = $container->getDefinition(Loader::class);
+        $definition->addMethodCall('add', ['/.well-known/webauthn', null, AllowedOriginsController::class, 'GET']);
     }
 }

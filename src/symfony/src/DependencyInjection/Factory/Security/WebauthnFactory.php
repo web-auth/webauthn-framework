@@ -121,6 +121,11 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->defaultValue(self::DEFAULT_FAILURE_HANDLER_SERVICE)
             ->end()
             ->arrayNode('secured_rp_ids')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The "secured_rp_ids" node is deprecated. Please use "allowed_origins" and "allow_subdomains" instead.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -214,11 +219,13 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         $authenticatorAssertionResponseValidatorId = $this->servicesFactory->createAuthenticatorAssertionResponseValidator(
             $container,
             $firewallName,
+            // @deprecated Will be removed in 6.0.0
             $config['secured_rp_ids']
         );
         $authenticatorAttestationResponseValidatorId = $this->servicesFactory->createAuthenticatorAttestationResponseValidator(
             $container,
             $firewallName,
+            // @deprecated Will be removed in 6.0.0
             $config['secured_rp_ids']
         );
 
