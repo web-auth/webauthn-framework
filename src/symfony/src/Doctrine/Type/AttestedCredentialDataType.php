@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\JsonType;
 use Doctrine\DBAL\Types\Type;
 use Webauthn\AttestedCredentialData;
 
@@ -38,5 +39,14 @@ final class AttestedCredentialDataType extends Type
     public function getName(): string
     {
         return 'attested_credential_data';
+    }
+
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        if (method_exists(JsonType::class, 'requiresSQLCommentHint')) {
+            return (new JsonType())->requiresSQLCommentHint($platform);
+        }
+
+        return false;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\JsonType;
 use Doctrine\DBAL\Types\Type;
 use Webauthn\TrustPath\TrustPath;
 
@@ -38,5 +39,14 @@ final class TrustPathDataType extends Type
     public function getName(): string
     {
         return 'trust_path';
+    }
+
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        if (method_exists(JsonType::class, 'requiresSQLCommentHint')) {
+            return (new JsonType())->requiresSQLCommentHint($platform);
+        }
+
+        return false;
     }
 }
