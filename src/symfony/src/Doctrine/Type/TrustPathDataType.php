@@ -6,10 +6,9 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType;
-use Doctrine\DBAL\Types\Type;
 use Webauthn\TrustPath\TrustPath;
 
-final class TrustPathDataType extends Type
+final class TrustPathDataType extends JsonType
 {
     use SerializerTrait;
 
@@ -31,22 +30,8 @@ final class TrustPathDataType extends Type
         return $this->deserialize($value, TrustPath::class);
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return $platform->getJsonTypeDeclarationSQL($column);
-    }
-
     public function getName(): string
     {
         return 'trust_path';
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        if (method_exists(JsonType::class, 'requiresSQLCommentHint')) {
-            return (new JsonType())->requiresSQLCommentHint($platform);
-        }
-
-        return false;
     }
 }

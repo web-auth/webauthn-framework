@@ -6,10 +6,9 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType;
-use Doctrine\DBAL\Types\Type;
 use Webauthn\PublicKeyCredentialDescriptor;
 
-final class PublicKeyCredentialDescriptorType extends Type
+final class PublicKeyCredentialDescriptorType extends JsonType
 {
     use SerializerTrait;
 
@@ -31,22 +30,8 @@ final class PublicKeyCredentialDescriptorType extends Type
         return $this->deserialize($value, PublicKeyCredentialDescriptor::class);
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return $platform->getJsonTypeDeclarationSQL($column);
-    }
-
     public function getName(): string
     {
         return 'public_key_credential_descriptor';
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        if (method_exists(JsonType::class, 'requiresSQLCommentHint')) {
-            return (new JsonType())->requiresSQLCommentHint($platform);
-        }
-
-        return false;
     }
 }
