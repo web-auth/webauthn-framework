@@ -23,6 +23,7 @@ final class AssertionControllerFactory implements CanLogData
 
     public function __construct(
         private readonly SerializerInterface $serializer,
+        private readonly OptionsStorage $optionStorage,
         private readonly AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         private readonly PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
     ) {
@@ -36,13 +37,20 @@ final class AssertionControllerFactory implements CanLogData
 
     public function createRequestController(
         PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
-        OptionsStorage $optionStorage,
+        null|OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
     ): AssertionRequestController {
+        if ($optionStorage !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.2.0',
+                'The parameter "$optionStorage" is deprecated since 5.2.0 and will be removed in 6.0.0. Please set "null" and use the global option storage instead.'
+            );
+        }
         return new AssertionRequestController(
             $optionsBuilder,
-            $optionStorage,
+            $optionStorage ?? $this->optionStorage,
             $optionsHandler,
             $failureHandler,
             $this->logger,
@@ -50,16 +58,23 @@ final class AssertionControllerFactory implements CanLogData
     }
 
     public function createResponseController(
-        OptionsStorage $optionStorage,
+        null|OptionsStorage $optionStorage,
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         null|AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null,
     ): AssertionResponseController {
+        if ($optionStorage !== null) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.2.0',
+                'The parameter "$optionStorage" is deprecated since 5.2.0 and will be removed in 6.0.0. Please set "null" and use the global option storage instead.'
+            );
+        }
         return new AssertionResponseController(
             $this->serializer,
             $authenticatorAssertionResponseValidator ?? $this->authenticatorAssertionResponseValidator,
             $this->logger,
-            $optionStorage,
+            $optionStorage ?? $this->optionStorage,
             $successHandler,
             $failureHandler,
             $this->publicKeyCredentialSourceRepository

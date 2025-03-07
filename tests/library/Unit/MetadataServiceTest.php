@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -16,7 +17,11 @@ use Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService;
  */
 final class MetadataServiceTest extends TestCase
 {
+    /*
+     * This test is slow because it loads the metadata, which is a large file.
+     */
     #[Test]
+    #[MaximumDuration(5000)]
     public function theMetadataServiceCanLoadUri(): void
     {
         //Given

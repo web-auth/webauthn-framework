@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use RangeException;
 use Webauthn\AttestedCredentialData;
@@ -30,6 +31,7 @@ final class AttestationTest extends AbstractTestCase
     }
 
     #[Test]
+    #[MaximumDuration(600)]
     public function anAttestationSignedWithEcDSA521ShouldBeVerified(): void
     {
         $options = '{"rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-46},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"MJr5sD0WitVwZM0eoSO6kWhyseT67vc3oQdk_k1VdZQ","attestation":"direct","user":{"name":"zOEOkAZGg3ZrD8l_TFwD","id":"ZDYzNGZlZGQtMGZiNi00ZDY3LWI5OGEtNDk2OWY2ZTMwNTY1","displayName":"Shenika Olin"},"authenticatorSelection":{"userVerification":"preferred"},"timeout":60000}';

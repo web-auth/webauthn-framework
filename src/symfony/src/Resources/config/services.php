@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -19,7 +17,6 @@ use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
@@ -54,7 +51,9 @@ return static function (ContainerConfigurator $container): void {
     $service = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure();
+        ->autoconfigure()
+        ->autowire()
+    ;
 
     $service
         ->set(CeremonyStepManagerFactory::class)
@@ -71,10 +70,7 @@ return static function (ContainerConfigurator $container): void {
         ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
     ;
 
-    $service
-        ->set(SimpleFakeCredentialGenerator::class)
-        ->args([service(CacheItemPoolInterface::class)->nullOnInvalid()])
-    ;
+    $service->set(SimpleFakeCredentialGenerator::class);
 
     $service
         ->set('webauthn.ceremony_step_manager.request')
@@ -100,15 +96,10 @@ return static function (ContainerConfigurator $container): void {
         ->args([param('webauthn.request_profiles')])
         ->public();
 
-    $service
-        ->set(ExtensionOutputCheckerHandler::class);
-    $service
-        ->set(AttestationObjectLoader::class)
-        ->args([service(AttestationStatementSupportManager::class)]);
-    $service
-        ->set(AttestationStatementSupportManager::class);
-    $service
-        ->set(NoneAttestationStatementSupport::class);
+    $service->set(ExtensionOutputCheckerHandler::class);
+    $service->set(AttestationObjectLoader::class);
+    $service->set(AttestationStatementSupportManager::class);
+    $service->set(NoneAttestationStatementSupport::class);
 
     $service
         ->set(ThrowExceptionIfInvalid::class)
@@ -118,20 +109,8 @@ return static function (ContainerConfigurator $container): void {
         ->set(Loader::class)
         ->tag('routing.loader');
 
-    $service
-        ->set(AttestationControllerFactory::class)
-        ->args([
-            service(SerializerInterface::class),
-            service(AuthenticatorAttestationResponseValidator::class),
-            service(PublicKeyCredentialSourceRepositoryInterface::class),
-        ]);
-    $service
-        ->set(AssertionControllerFactory::class)
-        ->args([
-            service(SerializerInterface::class),
-            service(AuthenticatorAssertionResponseValidator::class),
-            service(PublicKeyCredentialSourceRepositoryInterface::class),
-        ]);
+    $service->set(AttestationControllerFactory::class);
+    $service->set(AssertionControllerFactory::class);
 
     $service
         ->set(DummyPublicKeyCredentialSourceRepository::class)
@@ -236,9 +215,7 @@ return static function (ContainerConfigurator $container): void {
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
-    $service->set(WebauthnSerializerFactory::class)
-        ->args([service(AttestationStatementSupportManager::class)])
-    ;
+    $service->set(WebauthnSerializerFactory::class);
     $service->set(DefaultFailureHandler::class);
     $service->set(DefaultSuccessHandler::class);
 };

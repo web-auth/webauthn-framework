@@ -32,6 +32,7 @@ use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultFailureHandler;
 use Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\DefaultSuccessHandler;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -88,7 +89,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     private const PRIORITY = 0;
 
     public function __construct(
-        private WebauthnServicesFactory $servicesFactory
+        private WebauthnServicesFactory $servicesFactory,
     ) {
     }
 
@@ -112,7 +113,12 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->defaultNull()
             ->end()
             ->scalarNode('options_storage')
-            ->defaultValue(self::DEFAULT_SESSION_STORAGE_SERVICE)
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The child node "%node%" at path "%path%" is deprecated. Please use the root option "options_storage" instead.'
+            )
+            ->defaultNull()
             ->end()
             ->scalarNode('success_handler')
             ->defaultValue(self::DEFAULT_SUCCESS_HANDLER_SERVICE)
@@ -263,7 +269,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         string $successHandlerId,
         string $failureHandlerId,
         string $firewallConfigId,
-        string $optionsStorageId,
+        null|string $optionsStorageId,
         string $authenticatorAssertionResponseValidatorId,
         string $authenticatorAttestationResponseValidatorId
     ): string {
@@ -274,7 +280,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->replaceArgument(1, new Reference($userProviderId))
             ->replaceArgument(2, new Reference($successHandlerId))
             ->replaceArgument(3, new Reference($failureHandlerId))
-            ->replaceArgument(4, new Reference($optionsStorageId))
+            ->replaceArgument(4, new Reference($optionsStorageId ?? OptionsStorage::class))
             ->replaceArgument(8, new Reference($authenticatorAssertionResponseValidatorId))
             ->replaceArgument(9, new Reference($authenticatorAttestationResponseValidatorId))
             ->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
@@ -306,14 +312,16 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             $config['authentication']['options_handler'],
             $config['failure_handler'],
         );
-        $this->createResponseControllerAndRoute(
-            $container,
-            $firewallName,
-            'request',
-            $config['authentication']['routes']['result_method'],
-            $config['authentication']['routes']['result_path'],
-            $config['authentication']['routes']['host']
-        );
+        if ($config['authentication']['routes']['result_path'] !== null) {
+            $this->createResponseControllerAndRoute(
+                $container,
+                $firewallName,
+                'request',
+                $config['authentication']['routes']['result_method'],
+                $config['authentication']['routes']['result_path'],
+                $config['authentication']['routes']['host']
+            );
+        }
     }
 
     /**
@@ -340,14 +348,16 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             $config['registration']['options_handler'],
             $config['failure_handler'],
         );
-        $this->createResponseControllerAndRoute(
-            $container,
-            $firewallName,
-            'creation',
-            $config['registration']['routes']['result_method'],
-            $config['registration']['routes']['result_path'],
-            $config['registration']['routes']['host']
-        );
+        if ($config['registration']['routes']['result_path'] !== null) {
+            $this->createResponseControllerAndRoute(
+                $container,
+                $firewallName,
+                'creation',
+                $config['registration']['routes']['result_method'],
+                $config['registration']['routes']['result_path'],
+                $config['registration']['routes']['host']
+            );
+        }
     }
 
     private function createAssertionRequestControllerAndRoute(
@@ -357,7 +367,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         string $path,
         ?string $host,
         string $optionsBuilderId,
-        string $optionsStorageId,
+        null|string $optionsStorageId,
         string $optionsHandlerId,
         string $failureHandlerId,
     ): void {
@@ -365,7 +375,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
             ->setArguments([
                 new Reference($optionsBuilderId),
-                new Reference($optionsStorageId),
+                new Reference($optionsStorageId ?? OptionsStorage::class),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
             ]);
@@ -388,7 +398,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         string $path,
         ?string $host,
         string $optionsBuilderId,
-        string $optionsStorageId,
+        null|string $optionsStorageId,
         string $optionsHandlerId,
         string $failureHandlerId,
     ): void {
@@ -397,7 +407,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->setArguments([
                 new Reference($optionsBuilderId),
                 new Reference(RequestBodyUserEntityGuesser::class),
-                new Reference($optionsStorageId),
+                new Reference($optionsStorageId ?? OptionsStorage::class),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
                 true,
