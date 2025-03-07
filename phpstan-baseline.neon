@@ -2131,12 +2131,6 @@ parameters:
 			path: src/webauthn/src/MetadataService/Statement/MetadataStatement.php
 
 		-
-			message: '#^Since web\-auth/webauthn\-lib 5\.1\.0\: The parameter "\$icon" is deprecated since 5\.1\.0 and will be removed in 6\.0\.0\. This value has no effect\. Please set "null" instead\.\.$#'
-			identifier: todoBy.sfDeprecation
-			count: 1
-			path: src/webauthn/src/PublicKeyCredentialEntity.php
-
-		-
 			message: '#^Parameter \#1 \$extensions of static method Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:create\(\) expects array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtension\>, array\<Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\> given\.$#'
 			identifier: argument.type
 			count: 1
