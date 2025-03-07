@@ -108,7 +108,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''routes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 12
+			count: 14
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
@@ -214,19 +214,19 @@ parameters:
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAssertionRequestControllerAndRoute\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAttestationRequestControllerAndRoute\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAuthenticatorService\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#7 \$optionsStorageId of method Webauthn\\Bundle\\DependencyInjection\\Factory\\Security\\WebauthnFactory\:\:createAuthenticatorService\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
@@ -402,7 +402,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$id of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:setAlias\(\) expects string\|Symfony\\Component\\DependencyInjection\\Alias, mixed given\.$#'
 			identifier: argument.type
-			count: 12
+			count: 13
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -682,7 +682,7 @@ parameters:
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
 
 		-
-			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getOptionsStorage\(\) should return string but returns mixed\.$#'
+			message: '#^Method Webauthn\\Bundle\\Security\\WebauthnFirewallConfig\:\:getOptionsStorage\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/symfony/src/Security/WebauthnFirewallConfig.php
@@ -1339,6 +1339,12 @@ parameters:
 			message: '#^@readonly property Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:\$extensions is assigned outside of the constructor\.$#'
 			identifier: property.readOnlyByPhpDocAssignNotInConstructor
 			count: 3
+			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
+
+		-
+			message: '#^Cannot unset @readonly Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:\$extensions property\.$#'
+			identifier: unset.readOnlyPropertyByPhpDoc
+			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-

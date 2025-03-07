@@ -11,9 +11,11 @@ export default class extends Controller {
     static values = {
         requestResultUrl: { type: String, default: '/request' },
         requestOptionsUrl: { type: String, default: '/request/options' },
+        requestResultField: { type: String, default: null },
         requestSuccessRedirectUri: String,
         creationResultUrl: { type: String, default: '/creation' },
         creationOptionsUrl: { type: String, default: '/creation/options' },
+        creationResultField: { type: String, default: null },
         creationSuccessRedirectUri: String,
         usernameField: { type: String, default: 'username' },
         displayNameField: { type: String, default: 'displayName' },
@@ -32,9 +34,11 @@ export default class extends Controller {
 
     declare readonly requestResultUrlValue: string;
     declare readonly requestOptionsUrlValue: string;
+    declare readonly requestResultFieldValue?: string;
     declare readonly requestSuccessRedirectUriValue?: string;
     declare readonly creationResultUrlValue: string;
     declare readonly creationOptionsUrlValue: string;
+    declare readonly creationResultFieldValue?: string;
     declare readonly creationSuccessRedirectUriValue?: string;
     declare readonly usernameFieldValue: string;
     declare readonly displayNameFieldValue: string;
@@ -49,6 +53,8 @@ export default class extends Controller {
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
+            requestResultField: this.requestResultFieldValue ?? null,
+            creationResultField: this.creationResultFieldValue ?? null,
             requestSuccessRedirectUri: this.requestSuccessRedirectUriValue ?? null,
             creationResultUrl: this.creationResultUrlValue,
             creationOptionsUrl: this.creationOptionsUrlValue,
@@ -85,6 +91,11 @@ export default class extends Controller {
             // @ts-ignore
             const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
+            if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
+                this.element.querySelector(this.requestResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element.submit();
+                return;
+            }
 
             const assertionResponse = await this._getAssertionResponse(authenticatorResponse);
             if (assertionResponse !== false && this.requestSuccessRedirectUriValue) {
@@ -111,6 +122,11 @@ export default class extends Controller {
             // @ts-ignore
             const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
+            if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
+                this.element.querySelector(this.creationResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element.submit();
+                return;
+            }
 
             const attestationResponseJSON = await this._getAttestationResponse(authenticatorResponse);
             if (attestationResponseJSON !== false && this.creationSuccessRedirectUriValue) {

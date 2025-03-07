@@ -5,14 +5,16 @@ class default_1 extends Controller {
     constructor() {
         super(...arguments);
         this.connect = async () => {
-            var _a, _b;
+            var _a, _b, _c, _d;
             const options = {
                 requestResultUrl: this.requestResultUrlValue,
                 requestOptionsUrl: this.requestOptionsUrlValue,
-                requestSuccessRedirectUri: (_a = this.requestSuccessRedirectUriValue) !== null && _a !== undefined ? _a : null,
+                requestResultField: (_a = this.requestResultFieldValue) !== null && _a !== undefined ? _a : null,
+                creationResultField: (_b = this.creationResultFieldValue) !== null && _b !== undefined ? _b : null,
+                requestSuccessRedirectUri: (_c = this.requestSuccessRedirectUriValue) !== null && _c !== undefined ? _c : null,
                 creationResultUrl: this.creationResultUrlValue,
                 creationOptionsUrl: this.creationOptionsUrlValue,
-                creationSuccessRedirectUri: (_b = this.creationSuccessRedirectUriValue) !== null && _b !== undefined ? _b : null,
+                creationSuccessRedirectUri: (_d = this.creationSuccessRedirectUriValue) !== null && _d !== undefined ? _d : null,
             };
             this._dispatchEvent('webauthn:connect', { options });
             const supportAutofill = await browserSupportsWebAuthnAutofill();
@@ -38,9 +40,15 @@ class default_1 extends Controller {
         this._processSignin(optionsResponseJson, false);
     }
     async _processSignin(optionsResponseJson, useBrowserAutofill) {
+        var _a;
         try {
             const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
+            if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
+                (_a = this.element.querySelector(this.requestResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element.submit();
+                return;
+            }
             const assertionResponse = await this._getAssertionResponse(authenticatorResponse);
             if (assertionResponse !== false && this.requestSuccessRedirectUriValue) {
                 window.location.replace(this.requestSuccessRedirectUriValue);
@@ -52,6 +60,7 @@ class default_1 extends Controller {
         }
     }
     async signup(event) {
+        var _a;
         try {
             if (!browserSupportsWebAuthn()) {
                 this._dispatchEvent('webauthn:unsupported', {});
@@ -64,6 +73,11 @@ class default_1 extends Controller {
             }
             const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
+            if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
+                (_a = this.element.querySelector(this.creationResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element.submit();
+                return;
+            }
             const attestationResponseJSON = await this._getAttestationResponse(authenticatorResponse);
             if (attestationResponseJSON !== false && this.creationSuccessRedirectUriValue) {
                 window.location.replace(this.creationSuccessRedirectUriValue);
@@ -151,9 +165,11 @@ class default_1 extends Controller {
 default_1.values = {
     requestResultUrl: { type: String, default: '/request' },
     requestOptionsUrl: { type: String, default: '/request/options' },
+    requestResultField: { type: String, default: null },
     requestSuccessRedirectUri: String,
     creationResultUrl: { type: String, default: '/creation' },
     creationOptionsUrl: { type: String, default: '/creation/options' },
+    creationResultField: { type: String, default: null },
     creationSuccessRedirectUri: String,
     usernameField: { type: String, default: 'username' },
     displayNameField: { type: String, default: 'displayName' },

@@ -126,6 +126,7 @@ doctrine:
 webauthn:
   credential_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository'
   user_repository: 'Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository'
+  options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
   allowed_origins:
     - 'https://localhost'
     - 'https://bar.acme'
@@ -142,7 +143,7 @@ webauthn:
         #host: null
         #profile: 'default'
         user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
-        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
         #success_handler:
         #failure_handler:
         #option_handler:
@@ -154,7 +155,7 @@ webauthn:
         result_path: '/devices/test'
         #host: null
         #profile: 'default'
-        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
         #success_handler:
         #failure_handler:
         #option_handler:
@@ -204,7 +205,7 @@ security:
     main:
       webauthn:
         #               user_provider: null
-        options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
+        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
         failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
         success_handler: 'Webauthn\Tests\Bundle\Functional\SuccessHandler'
         registration:
