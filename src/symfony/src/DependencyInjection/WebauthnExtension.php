@@ -39,6 +39,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\CeremonyStep\CeremonyStepManager;
@@ -87,6 +88,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         );
         $container->registerForAutoconfiguration(CanLogData::class)->addTag(LoggerSetterCompilerPass::TAG);
         $container->registerForAutoconfiguration(Algorithm::class)->addTag(CoseAlgorithmCompilerPass::TAG);
+        $container->setAlias(OptionsStorage::class, $config['options_storage']);
 
         // @deprecated Will be removed in 6.0.0
         $container->setParameter('webauthn.secured_relying_party_ids', $config['secured_rp_ids']);
@@ -203,7 +205,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 ->setArguments([
                     new Reference($creationOptionsBuilderId),
                     new Reference($creationConfig['user_entity_guesser']),
-                    new Reference($creationConfig['options_storage']),
+                    new Reference($creationConfig['options_storage'] ?? OptionsStorage::class),
                     new Reference($creationConfig['options_handler']),
                     new Reference($creationConfig['failure_handler']),
                     $creationConfig['hide_existing_credentials'] ?? false,
@@ -241,17 +243,19 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 [new Reference(AttestationControllerFactory::class), 'createResponseController']
             );
             $attestationResponseController->setArguments([
-                new Reference($creationConfig['options_storage']),
+                new Reference($creationConfig['options_storage'] ?? OptionsStorage::class),
                 new Reference($creationConfig['success_handler']),
                 new Reference($creationConfig['failure_handler']),
                 null,
                 new Reference($attestationResponseValidatorId),
             ]);
-            $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
-                'method' => $creationConfig['result_method'],
-                'path' => $creationConfig['result_path'],
-                'host' => $creationConfig['host'],
-            ]);
+            if ($creationConfig['result_path'] !== null) {
+                $attestationResponseController->addTag(DynamicRouteCompilerPass::TAG, [
+                    'method' => $creationConfig['result_method'],
+                    'path' => $creationConfig['result_path'],
+                    'host' => $creationConfig['host'],
+                ]);
+            }
             $attestationResponseController->addTag('controller.service_arguments');
             $container->setDefinition($attestationResponseControllerId, $attestationResponseController);
         }
@@ -285,7 +289,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 ->setFactory([new Reference(AssertionControllerFactory::class), 'createRequestController'])
                 ->setArguments([
                     new Reference($assertionOptionsBuilderId),
-                    new Reference($requestConfig['options_storage']),
+                    new Reference($requestConfig['options_storage'] ?? OptionsStorage::class),
                     new Reference($requestConfig['options_handler']),
                     new Reference($requestConfig['failure_handler']),
                 ])
@@ -323,17 +327,19 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 [new Reference(AssertionControllerFactory::class), 'createResponseController']
             );
             $assertionResponseController->setArguments([
-                new Reference($requestConfig['options_storage']),
+                new Reference($requestConfig['options_storage'] ?? OptionsStorage::class),
                 new Reference($requestConfig['success_handler']),
                 new Reference($requestConfig['failure_handler']),
                 null,
                 new Reference($assertionResponseValidatorId),
             ]);
-            $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [
-                'method' => $requestConfig['result_method'],
-                'path' => $requestConfig['result_path'],
-                'host' => $requestConfig['host'],
-            ]);
+            if ($requestConfig['result_path'] !== null) {
+                $assertionResponseController->addTag(DynamicRouteCompilerPass::TAG, [
+                    'method' => $requestConfig['result_method'],
+                    'path' => $requestConfig['result_path'],
+                    'host' => $requestConfig['host'],
+                ]);
+            }
             $assertionResponseController->addTag('controller.service_arguments');
             $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
         }

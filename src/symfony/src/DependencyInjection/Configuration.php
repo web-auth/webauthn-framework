@@ -64,6 +64,10 @@ final class Configuration implements ConfigurationInterface
                 ->defaultValue('webauthn.clock.default')
                 ->info('PSR-20 Clock service.')
             ->end()
+            ->scalarNode('options_storage')
+                ->defaultValue(SessionStorage::class)
+                ->info('Service responsible of the options/user entity storage during the ceremony')
+            ->end()
             ->scalarNode('event_dispatcher')
                 ->defaultValue(EventDispatcherInterface::class)
                 ->info('PSR-14 Event Dispatcher service.')
@@ -330,7 +334,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue(Request::METHOD_POST)
             ->end()
             ->scalarNode('result_path')
-            ->isRequired()
+            ->defaultNull()
             ->end()
             ->scalarNode('host')
             ->defaultValue(null)
@@ -354,7 +358,12 @@ final class Configuration implements ConfigurationInterface
                 ->defaultFalse()
             ->end()
             ->scalarNode('options_storage')
-            ->defaultValue(SessionStorage::class)
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The child node "%node%" at path "%path%" is deprecated. Please use the root option "options_storage" instead.'
+            )
+            ->defaultNull()
             ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('success_handler')
@@ -411,7 +420,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue(Request::METHOD_POST)
             ->end()
             ->scalarNode('result_path')
-            ->isRequired()
+            ->defaultNull()
             ->end()
             ->scalarNode('host')
             ->defaultValue(null)
@@ -426,7 +435,12 @@ final class Configuration implements ConfigurationInterface
             ->defaultNull()
             ->end()
             ->scalarNode('options_storage')
-            ->defaultValue(SessionStorage::class)
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.2.0',
+                'The child node "%node%" at path "%path%" is deprecated. Please use the root option "options_storage" instead.'
+            )
+            ->defaultNull()
             ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('success_handler')

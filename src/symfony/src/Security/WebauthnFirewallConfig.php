@@ -30,9 +30,9 @@ final readonly class WebauthnFirewallConfig
         return $this->options['user_provider'] ?? null;
     }
 
-    public function getOptionsStorage(): string
+    public function getOptionsStorage(): ?string
     {
-        return $this->options['options_storage'] ?? WebauthnFactory::DEFAULT_SESSION_STORAGE_SERVICE;
+        return $this->options['options_storage'] ?? null;
     }
 
     public function getSuccessHandler(): string

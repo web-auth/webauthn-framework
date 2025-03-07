@@ -12,26 +12,26 @@ use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()
+    $service = $container->services()
         ->defaults()
         ->private()
         ->autoconfigure();
 
-    $container
+    $service
         ->set(AppleAttestationStatementSupport::class);
-    $container
+    $service
         ->set(TPMAttestationStatementSupport::class)
         ->args([service('webauthn.clock')])
     ;
-    $container
+    $service
         ->set(FidoU2FAttestationStatementSupport::class);
-    $container
+    $service
         ->set(AndroidKeyAttestationStatementSupport::class);
-    $container
+    $service
         ->set(PackedAttestationStatementSupport::class)
         ->args([service('webauthn.cose.algorithm.manager')]);
 
-    $container
+    $service
         ->set(PhpCertificateChainValidator::class)
         ->args([service('webauthn.http_client'), service('webauthn.clock')]);
 };
