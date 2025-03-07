@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -22,6 +23,7 @@ use const JSON_THROW_ON_ERROR;
 final class SecuredAreaTest extends WebTestCase
 {
     #[Test]
+    #[MaximumDuration(600)]
     public function aClientCannotAccessToTheResourceIfUserIsNotAuthenticated(): void
     {
         $client = static::createClient([], [

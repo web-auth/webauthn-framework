@@ -32,4 +32,7 @@
             <file>src/symfony/src/Repository/DummyPublicKeyCredentialUserEntityRepository.php</file>
         </exclude>
     </source>
+    <extensions>
+        <bootstrap class="Ergebnis\PHPUnit\SlowTestDetector\Extension"/>
+    </extensions>
 </phpunit>

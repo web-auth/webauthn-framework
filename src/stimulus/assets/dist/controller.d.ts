@@ -9,6 +9,10 @@ export default class extends Controller {
             type: StringConstructor;
             default: string;
         };
+        requestResultField: {
+            type: StringConstructor;
+            default: null;
+        };
         requestSuccessRedirectUri: StringConstructor;
         creationResultUrl: {
             type: StringConstructor;
@@ -17,6 +21,10 @@ export default class extends Controller {
         creationOptionsUrl: {
             type: StringConstructor;
             default: string;
+        };
+        creationResultField: {
+            type: StringConstructor;
+            default: null;
         };
         creationSuccessRedirectUri: StringConstructor;
         usernameField: {
@@ -59,9 +67,11 @@ export default class extends Controller {
     };
     readonly requestResultUrlValue: string;
     readonly requestOptionsUrlValue: string;
+    readonly requestResultFieldValue?: string;
     readonly requestSuccessRedirectUriValue?: string;
     readonly creationResultUrlValue: string;
     readonly creationOptionsUrlValue: string;
+    readonly creationResultFieldValue?: string;
     readonly creationSuccessRedirectUriValue?: string;
     readonly usernameFieldValue: string;
     readonly displayNameFieldValue: string;

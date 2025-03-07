@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\PublicKeyCredential;
@@ -18,9 +19,12 @@ final class ConformanceTest extends AbstractTestCase
     /**
      * P-2 Send a valid ServerAuthenticatorAttestationResponse with FULL "packed" attestation that contains chain that
      * links to the root certificate in the metadata in it's response, and check that server succeeds
+     *
+     * This test is slow because it requires a lot of cryptographic operations (certificate chain verification).
      */
     #[Test]
     #[DataProvider('responsesWithLink')]
+    #[MaximumDuration(4000)]
     public function validAttestationResponseWithLinkShouldSucceed(string $options, string $response): void
     {
         //Given

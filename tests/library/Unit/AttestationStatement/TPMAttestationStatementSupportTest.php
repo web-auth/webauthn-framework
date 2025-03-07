@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredential;
@@ -17,7 +18,11 @@ use Webauthn\Tests\AbstractTestCase;
  */
 final class TPMAttestationStatementSupportTest extends AbstractTestCase
 {
+    /**
+     * This test is slow because it is testing the TPM attestation statement, which requires several cryptographic operations.
+     */
     #[Test]
+    #[MaximumDuration(3000)]
     public function theAttestationStatementIsAValidECC(): void
     {
         //Given

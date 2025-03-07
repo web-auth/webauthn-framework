@@ -8,12 +8,14 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()
+    $service = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure();
+        ->autoconfigure()
+        ->autowire()
+    ;
 
-    $container->set(WebauthnCollector::class)
+    $service->set(WebauthnCollector::class)
         ->args([service('serializer')])
         ->tag('data_collector', [
             'id' => 'webauthn_collector',
