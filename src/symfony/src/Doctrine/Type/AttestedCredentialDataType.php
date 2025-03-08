@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\JsonType;
 use Webauthn\AttestedCredentialData;
 
-final class AttestedCredentialDataType extends Type
+final class AttestedCredentialDataType extends JsonType
 {
     use SerializerTrait;
 
@@ -28,11 +28,6 @@ final class AttestedCredentialDataType extends Type
         }
 
         return $this->deserialize($value, AttestedCredentialData::class);
-    }
-
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return $platform->getJsonTypeDeclarationSQL($column);
     }
 
     public function getName(): string
