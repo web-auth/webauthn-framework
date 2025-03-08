@@ -14,6 +14,8 @@ use function sprintf;
 /**
  * @template T of PublicKeyCredentialSource
  * @template-extends  ServiceEntityRepository<T>
+ *
+ * @deprecated since 5.2.0, to be removed in 6.0.0. Please create your own doctrine-based repository.
  */
 class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
