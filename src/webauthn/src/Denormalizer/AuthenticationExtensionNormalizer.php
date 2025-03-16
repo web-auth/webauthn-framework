@@ -23,11 +23,11 @@ final class AuthenticationExtensionNormalizer implements NormalizerInterface
     /**
      * @return array<mixed>
      */
-    public function normalize(mixed $data, ?string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
-        assert($data instanceof AuthenticationExtension);
+        assert($object instanceof AuthenticationExtension);
 
-        return $data->value;
+        return $object->value;
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

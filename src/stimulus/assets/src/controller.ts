@@ -3,9 +3,11 @@
 import { Controller } from '@hotwired/stimulus';
 import {
     AuthenticationResponseJSON,
-    RegistrationResponseJSON
+    RegistrationResponseJSON,
+    PublicKeyCredentialRequestOptionsJSON,
+    PublicKeyCredentialCreationOptionsJSON
 } from '@simplewebauthn/types';
-import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication, startRegistration } from '@simplewebauthn/browser';
+import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication, startRegistration, base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
 
 export default class extends Controller {
     static values = {
@@ -89,7 +91,11 @@ export default class extends Controller {
     private async _processSignin(optionsResponseJson: Object, useBrowserAutofill: boolean): Promise<void> {
         try {
             // @ts-ignore
-            const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
+            // @ts-ignore
+            let authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            // @ts-ignore
+            authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
                 this.element.querySelector(this.requestResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
@@ -114,13 +120,16 @@ export default class extends Controller {
                 return;
             }
             event.preventDefault();
-            const optionsResponseJson = await this._getPublicKeyCredentialCreationOptions(null);
+            let optionsResponseJson = await this._getPublicKeyCredentialCreationOptions(null);
             if (!optionsResponseJson) {
                 return;
             }
 
+            optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
             // @ts-ignore
-            const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
+            let authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
+            // @ts-ignore
+            authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
                 this.element.querySelector(this.creationResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
@@ -227,5 +236,90 @@ export default class extends Controller {
         this._dispatchEvent(eventPrefix+'success', {data:attestationResponseJSON});
 
         return attestationResponseJSON;
+    }
+
+    private _processExtensionsInput(options: Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON): Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON {
+        // @ts-ignore
+        if (!options || !options.extensions) {
+            return options;
+        }
+
+        // @ts-ignore
+        if (options.extensions.prf) {
+            // @ts-ignore
+            options.extensions.prf = this._processPrfInput(options.extensions.prf);
+        }
+
+        return options;
+    }
+
+    private _processPrfInput(prf: Object): Object {
+        // @ts-ignore
+        if (prf.eval) {
+            // @ts-ignore
+            prf.eval = this._importPrfValues(eval);
+        }
+
+        // @ts-ignore
+        if (prf.evalByCredential) {
+            // @ts-ignore
+            Object.keys(prf.evalByCredential).forEach((key) => {
+                // @ts-ignore
+                prf.evalByCredential[key] = this._importPrfValues(prf.evalByCredential[key]);
+            });
+        }
+
+        return prf;
+    }
+
+    private _importPrfValues(values: Object): Object {
+        // @ts-ignore
+        values.first = base64URLStringToBuffer(values.first);
+        // @ts-ignore
+        if (values.second) {
+            // @ts-ignore
+            values.second = base64URLStringToBuffer(values.second);
+        }
+
+        return values;
+    }
+
+    private _processExtensionsOutput(options: Object|AuthenticationResponseJSON|RegistrationResponseJSON): Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON {
+        // @ts-ignore
+        if (!options || !options.extensions) {
+            return options;
+        }
+
+        // @ts-ignore
+        if (options.extensions.prf) {
+            // @ts-ignore
+            options.extensions.prf = this._processPrfOutput(options.extensions.prf);
+        }
+
+        return options;
+    }
+
+    private _processPrfOutput(prf: Object): Object {
+        // @ts-ignore
+        if (!prf.result) {
+            return prf
+        }
+
+        // @ts-ignore
+        prf.result = this._exportPrfValues(prf.result);
+
+        return prf;
+    }
+
+    private _exportPrfValues(values: Object): Object {
+        // @ts-ignore
+        values.first = bufferToBase64URLString(values.first);
+        // @ts-ignore
+        if (values.second) {
+            // @ts-ignore
+            values.second = bufferToBase64URLString(values.second);
+        }
+
+        return values;
     }
 }
