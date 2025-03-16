@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
@@ -15,8 +16,9 @@ use Webauthn\Stimulus\WebauthnStimulusBundle;
 
 final class AppKernel extends Kernel
 {
-    public function __construct(string $environment)
-    {
+    public function __construct(
+        string $environment,
+    ) {
         parent::__construct($environment, true);
     }
 
@@ -27,6 +29,7 @@ final class AppKernel extends Kernel
             new DoctrineBundle(),
             new SecurityBundle(),
             new MonologBundle(),
+            new TwigBundle(),
 
             new WebauthnBundle(),
             new WebauthnStimulusBundle(),

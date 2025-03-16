@@ -27,6 +27,11 @@ final readonly class PublicKeyCredentialUserEntityRepository implements PublicKe
         ));
     }
 
+    public function ensureUserDoesNotExist(string $username): void
+    {
+        $this->cacheItemPool->deleteItem('user-name' . Base64UrlSafe::encodeUnpadded($username));
+    }
+
     public function findOneByUsername(string $username): ?PublicKeyCredentialUserEntity
     {
         $item = $this->cacheItemPool->getItem('user-name' . Base64UrlSafe::encodeUnpadded($username));

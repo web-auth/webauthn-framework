@@ -6,7 +6,7 @@ namespace Webauthn\Tests\Bundle\Functional;
 
 use Symfony\Component\HttpFoundation\Response;
 
-final class SecurityController
+final readonly class SecurityController
 {
     /**
      * Intercepted by the security listener.

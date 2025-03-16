@@ -418,7 +418,7 @@ parameters:
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns T of mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
@@ -436,7 +436,7 @@ parameters:
 			path: src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
 
 		-
-			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType\:\:convertToDatabaseValue\(\) should return string\|null but returns T of mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
@@ -454,7 +454,7 @@ parameters:
 			path: src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
 
 		-
-			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns mixed\.$#'
+			message: '#^Method Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType\:\:convertToDatabaseValue\(\) should return string\|null but returns T of mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/symfony/src/Doctrine/Type/TrustPathDataType.php
@@ -560,6 +560,168 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: src/symfony/src/Security/Authentication/Token/WebauthnToken.php
+
+		-
+			message: '#^Access to an undefined property Webauthn\\AuthenticatorResponse\:\:\$attestationObject\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot access property \$authData on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot access property \$extensions on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot access property \$signCount on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method getReservedForFutureUse1\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method getReservedForFutureUse2\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method isBackedUp\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method isBackupEligible\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method isUserPresent\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Cannot call method isUserVerified\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#12 \$isBackupEligible of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#13 \$isBackedUp of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#4 \$isUserPresent of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#5 \$isUserVerified of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#6 \$reservedForFutureUse1 of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#7 \$reservedForFutureUse2 of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#8 \$signCount of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Parameter \#9 \$extensions of class Webauthn\\Bundle\\Security\\Authentication\\Token\\WebauthnToken constructor expects Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
+			message: '#^Class Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge has an uninitialized property \$authenticatorResponse\. Give it default value or assign it in the constructor\.$#'
+			identifier: property.uninitialized
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Class Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge has an uninitialized property \$publicKeyCredentialOptions\. Give it default value or assign it in the constructor\.$#'
+			identifier: property.uninitialized
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Class Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge has an uninitialized property \$publicKeyCredentialSource\. Give it default value or assign it in the constructor\.$#'
+			identifier: property.uninitialized
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Class Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge has an uninitialized property \$publicKeyCredentialUserEntity\. Give it default value or assign it in the constructor\.$#'
+			identifier: property.uninitialized
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Class Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge has an uninitialized property \$user\. Give it default value or assign it in the constructor\.$#'
+			identifier: property.uninitialized
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Method Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge\:\:__construct\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Property Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadge\:\:\$user \(Symfony\\Component\\Security\\Core\\User\\UserInterface\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			message: '#^Method Webauthn\\Bundle\\Security\\Authentication\\WebauthnBadgeListener\:\:__construct\(\) has parameter \$userProvider with generic interface Symfony\\Component\\Security\\Core\\User\\UserProviderInterface but does not specify its types\: TUser$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			message: '#^Webauthn\\Bundle\\Security\\Authentication\\WebauthnPassport\:\:__construct\(\) does not call parent constructor from Symfony\\Component\\Security\\Http\\Authenticator\\Passport\\Passport\.$#'
+			identifier: constructor.missingParentCall
+			count: 1
+			path: src/symfony/src/Security/Authentication/WebauthnPassport.php
 
 		-
 			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:__construct\(\) has parameter \$userProvider with generic interface Symfony\\Component\\Security\\Core\\User\\UserProviderInterface but does not specify its types\: TUser$#'
@@ -1339,12 +1501,6 @@ parameters:
 			message: '#^@readonly property Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:\$extensions is assigned outside of the constructor\.$#'
 			identifier: property.readOnlyByPhpDocAssignNotInConstructor
 			count: 3
-			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
-
-		-
-			message: '#^Cannot unset @readonly Webauthn\\AuthenticationExtensions\\AuthenticationExtensions\:\:\$extensions property\.$#'
-			identifier: unset.readOnlyPropertyByPhpDoc
-			count: 1
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-

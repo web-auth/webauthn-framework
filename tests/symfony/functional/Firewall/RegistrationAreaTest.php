@@ -6,7 +6,6 @@ namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use Cose\Algorithms;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -17,6 +16,7 @@ use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Tests\Bundle\Functional\User;
+use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
 use function base64_decode;
 use function json_decode;
 use function json_encode;
@@ -25,7 +25,7 @@ use const JSON_THROW_ON_ERROR;
 /**
  * @internal
  */
-final class RegistrationAreaTest extends WebTestCase
+final class RegistrationAreaTest extends WebauthnTestCase
 {
     #[Test]
     public function aRequestWithoutUsernameCanBeProcessed(): void

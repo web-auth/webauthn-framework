@@ -6,7 +6,6 @@ namespace Webauthn\Tests\Bundle\Functional\Assertion;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -16,12 +15,13 @@ use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
 use Webauthn\Tests\MockedRequestTrait;
 
 /**
  * @internal
  */
-final class AssertionTest extends WebTestCase
+final class AssertionTest extends WebauthnTestCase
 {
     use MockedRequestTrait;
 

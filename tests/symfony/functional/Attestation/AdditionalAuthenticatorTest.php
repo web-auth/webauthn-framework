@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -24,6 +23,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\User;
+use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
 use function assert;
 use function base64_decode;
 use function count;
@@ -32,7 +32,7 @@ use const JSON_THROW_ON_ERROR;
 /**
  * @internal
  */
-final class AdditionalAuthenticatorTest extends WebTestCase
+final class AdditionalAuthenticatorTest extends WebauthnTestCase
 {
     #[Test]
     public function anExistingUserCanAskForOptionsUsingTheDedicatedController(): void

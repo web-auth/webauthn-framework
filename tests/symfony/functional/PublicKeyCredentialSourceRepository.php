@@ -58,6 +58,11 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->saveCredentialSource($publicKeyCredentialSource2);
     }
 
+    public function ensureCredentialNotExist(string $publicKeyCredentialId): void
+    {
+        $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
+    }
+
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));

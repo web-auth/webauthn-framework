@@ -27,9 +27,9 @@ framework:
   uid:
     default_uuid_version: 7
     time_based_uuid_version: 7
-  assets:
-    base_urls:
-      - '%kernel.project_dir%/tests/symfony/public'
+twig:
+  file_name_pattern: '*.twig'
+  default_path: '%kernel.project_dir%/tests/symfony/templates'
 
 services:
   _defaults:
@@ -39,6 +39,9 @@ services:
     tags: [ serializer.normalizer ]
 
   Webauthn\Tests\Bundle\Functional\MockClientCallback: ~
+
+  Webauthn\Tests\Bundle\Functional\WebauthnAuthenticator:
+    autowire: true
 
   Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository:
     autowire: true
@@ -70,21 +73,9 @@ services:
       - '%kernel.project_dir%/tests/metadataStatements'
       - '@serializer'
 
-    #  fido_alliance_official:
-    #    class: Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService
-    #    tags:
-    #      - 'webauthn.mds_service'
-    #    arguments:
-    #      - '@Psr\Http\Client\ClientInterface'
-    #      - 'https://fidoalliance.co.nz/blob.jwt'
-    #      - [ ]
-    #      - '@Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator'
-    #      - 'https://localhost/FidoAllianceRootR3.crt'
-
   Webauthn\MetadataService\Service\ChainedMetadataServices:
     arguments:
       - '@mds_single_file_1'
-  #      - '@fido_alliance_official'
   ### MDS ###
 
   Webauthn\Tests\Bundle\Functional\FailureHandler: ~
@@ -140,25 +131,13 @@ webauthn:
         hide_existing_credentials: true
         options_path: '/devices/add/options'
         result_path: '/devices/add'
-        #host: null
-        #profile: 'default'
         user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
-        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-        #success_handler:
-        #failure_handler:
-        #option_handler:
         secured_rp_ids:
           - 'localhost'
     request:
       test:
         options_path: '/devices/test/options'
         result_path: '/devices/test'
-        #host: null
-        #profile: 'default'
-        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
-        #success_handler:
-        #failure_handler:
-        #option_handler:
         secured_rp_ids:
           - 'localhost'
   creation_profiles:
@@ -173,25 +152,13 @@ webauthn:
         user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
         resident_key: !php/const Webauthn\AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
       extensions: [ ]
-      #            public_key_credential_parameters:
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_EdDSA #Order is important. Preferred algorithms go first
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES256K
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES384
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_ES512
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS256
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS384
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_RS512
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS256
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS384
-      #                - !php/const Cose\Algorithms::COSE_ALGORITHM_PS512
       attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
   request_profiles:
     default:
       rp_id: 'localhost'
       challenge_length: 32
       user_verification: !php/const Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-  metadata: ## Optional
+  metadata:
     enabled: true
     mds_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
     status_report_repository: 'Webauthn\Tests\Bundle\Functional\MetadataStatementRepository'
@@ -200,39 +167,32 @@ security:
   providers:
     default:
       id: 'Webauthn\Tests\Bundle\Functional\UserProvider'
-
   firewalls:
     main:
+      custom_authenticator: 'Webauthn\Tests\Bundle\Functional\WebauthnAuthenticator'
       webauthn:
-        #               user_provider: null
-        #options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
         failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
         success_handler: 'Webauthn\Tests\Bundle\Functional\SuccessHandler'
         registration:
           enabled: true
-          #                   profile: default
           routes:
-            #                       host: null
             options_path: '/api/register/options'
             result_path: '/api/register'
-        #                   options_handler: DefaultCreationOptionsHandler::class
         authentication:
           enabled: true
-          #                   profile: default
           routes:
-            #                       host: null
             options_path: '/api/login/options'
             result_path: '/api/login'
-      #                   options_handler: DefaultRequestOptionsHandler::class
       logout:
         path: /logout
         target: /
 
   access_control:
-    - { path: ^/devices/add,  roles: ROLE_USER, requires_channel: https }
-    - { path: ^/logout,  roles: PUBLIC_ACCESS , requires_channel: https }
-    - { path: ^/api/login,  roles: PUBLIC_ACCESS , requires_channel: https }
-    - { path: ^/api/register,  roles: PUBLIC_ACCESS , requires_channel: https }
-    - { path: ^/admin,  roles: 'ROLE_ADMIN', requires_channel: https }
-    - { path: ^/page,   roles: 'ROLE_USER', requires_channel: https }
-    - { path: ^/,       roles: PUBLIC_ACCESS , requires_channel: https }
+    - { path: '^/devices/add',  roles: 'ROLE_USER', requires_channel: 'https' }
+    - { path: '^/logout',  roles: 'PUBLIC_ACCESS' , requires_channel: 'https' }
+    - { path: '^/api/login',  roles: 'PUBLIC_ACCESS' , requires_channel: 'https' }
+    - { path: '^/api/register',  roles: 'PUBLIC_ACCESS' , requires_channel: 'https' }
+    - { path: '^/admin',  roles: 'ROLE_ADMIN', requires_channel: 'https' }
+    - { path: '^/page',   roles: 'ROLE_USER', requires_channel: 'https' }
+    - { path: '^/login',  roles: 'PUBLIC_ACCESS', requires_channel: 'https' }
+    - { path: '^/',       roles: 'PUBLIC_ACCESS' , requires_channel: 'https' }

@@ -20,6 +20,11 @@ return static function (RoutingConfigurator $routes): void {
         ->controller([HomeController::class, 'home'])
         ->methods(['GET']);
 
+    // Login
+    $routes->add('app_login', '/login')
+        ->controller([HomeController::class, 'login'])
+        ->methods(['GET', 'POST']);
+
     // Admin
     $routes->add('app_admin', '/admin')
         ->controller([AdminController::class, 'admin'])
