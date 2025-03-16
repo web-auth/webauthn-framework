@@ -1522,6 +1522,24 @@ parameters:
 			path: src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/webauthn/src/AuthenticationExtensions/PseudoRandomFunctionInputExtensionBuilder.php
+
+		-
+			message: '#^PHPDoc tag @var has invalid value \(array\{eval\?\: array\{first\: string, second\?\: string\}, evalByCredential\?\: array\<string, array\{first\: string, second\?\: string\}\>\)\: Unexpected token "\*/", expected ''\}'' at offset 145 on line 3$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/webauthn/src/AuthenticationExtensions/PseudoRandomFunctionInputExtensionBuilder.php
+
+		-
+			message: '#^Property Webauthn\\AuthenticationExtensions\\PseudoRandomFunctionInputExtensionBuilder\:\:\$values type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/webauthn/src/AuthenticationExtensions/PseudoRandomFunctionInputExtensionBuilder.php
+
+		-
 			message: '#^Cannot access offset 1 on array\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2

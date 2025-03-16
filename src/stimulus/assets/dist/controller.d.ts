@@ -93,4 +93,10 @@ export default class extends Controller {
     private _getAttestationResponse;
     private _getAssertionResponse;
     private _getResult;
+    private _processExtensionsInput;
+    private _processPrfInput;
+    private _importPrfValues;
+    private _processExtensionsOutput;
+    private _processPrfOutput;
+    private _exportPrfValues;
 }

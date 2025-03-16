@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { browserSupportsWebAuthnAutofill, browserSupportsWebAuthn, startAuthentication, startRegistration } from '@simplewebauthn/browser';
+import { browserSupportsWebAuthnAutofill, browserSupportsWebAuthn, startAuthentication, startRegistration, base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
 
 class default_1 extends Controller {
     constructor() {
@@ -42,7 +42,9 @@ class default_1 extends Controller {
     async _processSignin(optionsResponseJson, useBrowserAutofill) {
         var _a;
         try {
-            const authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
+            let authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
                 (_a = this.element.querySelector(this.requestResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
@@ -67,11 +69,13 @@ class default_1 extends Controller {
                 return;
             }
             event.preventDefault();
-            const optionsResponseJson = await this._getPublicKeyCredentialCreationOptions(null);
+            let optionsResponseJson = await this._getPublicKeyCredentialCreationOptions(null);
             if (!optionsResponseJson) {
                 return;
             }
-            const authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
+            optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
+            let authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
+            authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
                 (_a = this.element.querySelector(this.creationResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
@@ -160,6 +164,56 @@ class default_1 extends Controller {
         const attestationResponseJSON = await attestationResponse.json();
         this._dispatchEvent(eventPrefix + 'success', { data: attestationResponseJSON });
         return attestationResponseJSON;
+    }
+    _processExtensionsInput(options) {
+        if (!options || !options.extensions) {
+            return options;
+        }
+        if (options.extensions.prf) {
+            options.extensions.prf = this._processPrfInput(options.extensions.prf);
+        }
+        return options;
+    }
+    _processPrfInput(prf) {
+        if (prf.eval) {
+            prf.eval = this._importPrfValues(eval);
+        }
+        if (prf.evalByCredential) {
+            Object.keys(prf.evalByCredential).forEach((key) => {
+                prf.evalByCredential[key] = this._importPrfValues(prf.evalByCredential[key]);
+            });
+        }
+        return prf;
+    }
+    _importPrfValues(values) {
+        values.first = base64URLStringToBuffer(values.first);
+        if (values.second) {
+            values.second = base64URLStringToBuffer(values.second);
+        }
+        return values;
+    }
+    _processExtensionsOutput(options) {
+        if (!options || !options.extensions) {
+            return options;
+        }
+        if (options.extensions.prf) {
+            options.extensions.prf = this._processPrfOutput(options.extensions.prf);
+        }
+        return options;
+    }
+    _processPrfOutput(prf) {
+        if (!prf.result) {
+            return prf;
+        }
+        prf.result = this._exportPrfValues(prf.result);
+        return prf;
+    }
+    _exportPrfValues(values) {
+        values.first = bufferToBase64URLString(values.first);
+        if (values.second) {
+            values.second = bufferToBase64URLString(values.second);
+        }
+        return values;
     }
 }
 default_1.values = {
