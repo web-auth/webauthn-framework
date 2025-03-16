@@ -8,6 +8,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
+use Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser;
@@ -51,9 +52,7 @@ return static function (ContainerConfigurator $container): void {
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
             service(SerializerInterface::class),
             abstract_arg('Authenticator Assertion Response Validator'),
-            abstract_arg(
-                'Authenticator Attestation Response Validator'
-            ), //service(AuthenticatorAttestationResponseValidator::class)
+            abstract_arg('Authenticator Attestation Response Validator'),
         ]);
     $service
         ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)
@@ -62,4 +61,5 @@ return static function (ContainerConfigurator $container): void {
 
     $service->set(CurrentUserEntityGuesser::class);
     $service->set(RequestBodyUserEntityGuesser::class);
+    $service->set(WebauthnBadgeListener::class);
 };
