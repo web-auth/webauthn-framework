@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -218,4 +219,5 @@ return static function (ContainerConfigurator $container): void {
     $service->set(WebauthnSerializerFactory::class);
     $service->set(DefaultFailureHandler::class);
     $service->set(DefaultSuccessHandler::class);
+    $service->set(UserProviderInterface::class);
 };
