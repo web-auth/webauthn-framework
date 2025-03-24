@@ -131,6 +131,10 @@ return static function (ContainerConfigurator $container): void {
         ->alias('webauthn.http_client.default', HttpClientInterface::class);
 
     $service
+        ->set(UserProviderInterface::class)
+        ->alias('security.user_providers', UserProviderInterface::class);
+
+    $service
         ->set(VerificationMethodANDCombinationsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
@@ -219,5 +223,4 @@ return static function (ContainerConfigurator $container): void {
     $service->set(WebauthnSerializerFactory::class);
     $service->set(DefaultFailureHandler::class);
     $service->set(DefaultSuccessHandler::class);
-    $service->set(UserProviderInterface::class);
 };
