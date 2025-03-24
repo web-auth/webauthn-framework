@@ -167,8 +167,10 @@ security:
   providers:
     default:
       id: 'Webauthn\Tests\Bundle\Functional\UserProvider'
+    users_in_memory: { memory: null }
   firewalls:
     main:
+      provider: default
       custom_authenticator: 'Webauthn\Tests\Bundle\Functional\WebauthnAuthenticator'
       webauthn:
         failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
