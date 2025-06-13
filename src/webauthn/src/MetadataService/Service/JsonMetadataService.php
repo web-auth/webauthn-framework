@@ -30,10 +30,8 @@ final class JsonMetadataService implements MetadataService, CanDispatchEvents
     /**
      * @param string[] $statements
      */
-    public function __construct(
-        array $statements,
-        ?SerializerInterface $serializer = null,
-    ) {
+    public function __construct(array $statements, ?SerializerInterface $serializer = null)
+    {
         $this->dispatcher = new NullEventDispatcher();
         $this->serializer = $serializer ?? (new WebauthnSerializerFactory(
             AttestationStatementSupportManager::create()
