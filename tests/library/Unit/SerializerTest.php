@@ -10,9 +10,13 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Signal\AllAcceptedCredentials;
+use Webauthn\Signal\CurrentUserDetails;
+use Webauthn\Signal\UnknownCredential;
 use Webauthn\Tests\AbstractTestCase;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -132,6 +136,62 @@ final class SerializerTest extends AbstractTestCase
                 "attestation": "none"
             }',
             $json,
+        );
+    }
+
+    #[Test]
+    public function itSerializesSignalUnknownCredential(): void
+    {
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $credential = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-123',
+            []
+        );
+        $signal = new UnknownCredential($rp, $credential);
+
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+        static::assertJsonStringEqualsJsonString('{"rpId":"rp.example.com","credentialId":"Y3JlZC0xMjM"}', $json);
+    }
+
+    #[Test]
+    public function itSerializesSignalAllAcceptedCredentials(): void
+    {
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $user = new PublicKeyCredentialUserEntity('john.doe', 'user-1', 'John Doe');
+        $cred1 = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-1',
+            []
+        );
+        $cred2 = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-2',
+            []
+        );
+        $signal = new AllAcceptedCredentials($rp, $user, [$cred1, $cred2]);
+
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+        static::assertJsonStringEqualsJsonString(
+            '{"rpId":"rp.example.com","userId":"dXNlci0x","allAcceptedCredentialIds":["Y3JlZC0x","Y3JlZC0y"]}',
+            $json
+        );
+    }
+
+    #[Test]
+    public function itSerializesSignalCurrentUserDetails(): void
+    {
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $user = new PublicKeyCredentialUserEntity('john.doe', 'user-1', 'John Doe');
+        $signal = new CurrentUserDetails($rp, $user);
+
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+        static::assertJsonStringEqualsJsonString(
+            '{"rpId":"rp.example.com","userId":"dXNlci0x","name":"john.doe","displayName":"John Doe"}',
+            $json
         );
     }
 }
