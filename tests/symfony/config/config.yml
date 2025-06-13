@@ -37,6 +37,7 @@ services:
 
   Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
     tags: [ serializer.normalizer ]
+    autowire: true
 
   Webauthn\Tests\Bundle\Functional\MockClientCallback: ~
 

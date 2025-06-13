@@ -16,9 +16,8 @@ final readonly class CheckClientDataCollectorType implements CeremonyStep
 {
     private ClientDataCollectorManager $clientDataCollectorManager;
 
-    public function __construct(
-        null|ClientDataCollectorManager $clientDataCollectorManager = null,
-    ) {
+    public function __construct(null|ClientDataCollectorManager $clientDataCollectorManager = null)
+    {
         $this->clientDataCollectorManager = $clientDataCollectorManager ?? new ClientDataCollectorManager([
             new WebauthnAuthenticationCollector(),
         ]);

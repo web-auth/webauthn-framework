@@ -16,9 +16,8 @@ use Webauthn\Stimulus\WebauthnStimulusBundle;
 
 final class AppKernel extends Kernel
 {
-    public function __construct(
-        string $environment,
-    ) {
+    public function __construct(string $environment)
+    {
         parent::__construct($environment, true);
     }
 
