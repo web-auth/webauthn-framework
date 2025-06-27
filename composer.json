@@ -111,7 +111,7 @@
         "deptrac/deptrac": "^3.0",
         "rector/rector": "^2.0",
         "roave/security-advisories": "dev-latest",
-        "staabm/phpstan-todo-by": "^0.2",
+        "staabm/phpstan-todo-by": "^0.2 || ^0.3",
         "struggle-for-php/sfp-phpstan-psr-log": "^0.23 || ^0.24",
         "symfony/asset": "^6.4|^7.0",
         "symfony/asset-mapper": "^6.4|^7.0",
