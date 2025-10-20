@@ -12,7 +12,7 @@ use function Castor\run;
 function infect(int $minMsi = 0, int $minCoveredMsi = 0, bool $ci = false): void
 {
     io()->title('Running infection');
-    $nproc = run('nproc', quiet: true);
+    $nproc = run('nproc');
     if (! $nproc->isSuccessful()) {
         io()->error('Cannot determine the number of processors');
         return;
@@ -137,7 +137,7 @@ function checkLicenses(
             'XDEBUG_MODE' => 'off',
         ])
     ;
-    $result = run($command, context: $context, quiet: true);
+    $result = run($command, context: $context);
     if (! $result->isSuccessful()) {
         io()->error('Cannot determine licenses');
         exit(1);
