@@ -92,7 +92,7 @@ final class AuthenticationExtensions implements Countable, IteratorAggregate, Ar
 
     public function offsetGet(mixed $offset): mixed
     {
-        if (!is_string($offset)) {
+        if (! is_string($offset)) {
             throw new InvalidArgumentException('Offset must be a string');
         }
         return $this->extensions[$offset];
@@ -116,7 +116,7 @@ final class AuthenticationExtensions implements Countable, IteratorAggregate, Ar
 
     public function offsetUnset(mixed $offset): void
     {
-        if (!is_string($offset)) {
+        if (! is_string($offset)) {
             throw new InvalidArgumentException('Offset must be a string');
         }
         unset($this->extensions[$offset]);

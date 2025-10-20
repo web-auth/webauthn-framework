@@ -72,10 +72,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        $config = $processor->processConfiguration(
-            $this->getConfiguration($configs, $container),
-            $configs
-        );
+        $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
             AttestationStatementSupportCompilerPass::TAG

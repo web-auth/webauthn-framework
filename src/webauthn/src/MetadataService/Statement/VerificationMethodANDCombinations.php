@@ -10,7 +10,9 @@ class VerificationMethodANDCombinations
      * @param VerificationMethodDescriptor[] $verificationMethods
      */
     public function __construct(
-        /** @readonly */
+        /**
+         * @readonly
+         */
         public array $verificationMethods = []
     ) {
     }

@@ -19,7 +19,9 @@ class DisplayPNGCharacteristicsDescriptor
         public readonly int $compression,
         public readonly int $filter,
         public readonly int $interlace,
-        /** @readonly */
+        /**
+         * @readonly
+         */
         public array $plte = [],
     ) {
         $width >= 0 || throw MetadataStatementLoadingException::create('Invalid width');
