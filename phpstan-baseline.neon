@@ -358,12 +358,6 @@ parameters:
 			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:getConfiguration\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
 			message: '#^Method Webauthn\\Bundle\\DependencyInjection\\WebauthnExtension\:\:getDoctrineBundleConfiguration\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -726,18 +720,6 @@ parameters:
 		-
 			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:__construct\(\) has parameter \$userProvider with generic interface Symfony\\Component\\Security\\Core\\User\\UserProviderInterface but does not specify its types\: TUser$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
-
-		-
-			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:onAuthenticationFailure\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
-
-		-
-			message: '#^Method Webauthn\\Bundle\\Security\\Http\\Authenticator\\WebauthnAuthenticator\:\:supports\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
 			count: 1
 			path: src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
@@ -1112,12 +1094,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-		-
-			message: '#^Method Webauthn\\Bundle\\WebauthnBundle\:\:getContainerExtension\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/symfony/src/WebauthnBundle.php
 
 		-
 			message: '#^Cannot access offset ''x5c'' on mixed\.$#'
@@ -1592,24 +1568,6 @@ parameters:
 			identifier: new.deprecatedClass
 			count: 2
 			path: src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
-
-		-
-			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
-
-		-
-			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/webauthn/src/CeremonyStep/CheckOrigin.php
-
-		-
-			message: '#^Access to an undefined property Webauthn\\PublicKeyCredentialCreationOptions\|Webauthn\\PublicKeyCredentialRequestOptions\:\:\$rp\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
 
 		-
 			message: '#^Property Webauthn\\CollectedClientData\:\:\$crossOrigin \(bool\) does not accept mixed\.$#'

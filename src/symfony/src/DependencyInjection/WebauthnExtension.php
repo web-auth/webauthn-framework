@@ -73,7 +73,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     {
         $processor = new Processor();
         $config = $processor->processConfiguration(
-            $this->getConfiguration($configs, $container) ?? new Configuration($this->alias),
+            $this->getConfiguration($configs, $container),
             $configs
         );
 
