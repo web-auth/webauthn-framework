@@ -5,7 +5,9 @@ report.md
 node_modules
 yarn.lock
 yarn-error.log
-/composer.lock
-/vendor
-/.phpunit.cache/
-/.castor.stub.php
+composer.lock
+vendor
+.phpunit.cache
+.castor.stub.php
+
+.idea
