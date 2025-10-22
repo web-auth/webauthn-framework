@@ -6,13 +6,14 @@ namespace Webauthn\Bundle\Security\Authorization\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
 final readonly class IsUserPresentVoter implements VoterInterface
 {
     public const IS_USER_PRESENT = 'IS_USER_PRESENT';
 
-    public function vote(TokenInterface $token, mixed $subject, array $attributes): int
+    public function vote(TokenInterface $token, mixed $subject, array $attributes, ?Vote $vote = null): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;
         if (! $token instanceof WebauthnToken) {
