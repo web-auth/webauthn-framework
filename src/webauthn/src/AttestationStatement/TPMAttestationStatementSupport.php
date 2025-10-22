@@ -411,9 +411,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
             $parsed['extensions']['extendedKeyUsage'],
             ['2.23.133.8.3', 'Attestation Identity Key Certificate'],
             true
-        ) || throw AttestationStatementVerificationException::create(
-            'The "extendedKeyUsage" is invalid'
-        );
+        ) || throw AttestationStatementVerificationException::create('The "extendedKeyUsage" is invalid');
 
         // id-fido-gen-ce-aaguid OID check
         in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
