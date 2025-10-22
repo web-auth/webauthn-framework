@@ -5020,20 +5020,8 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/WebauthnSerializerFactory.php
 
 		-
-			rawMessage: Constructor of Webauthn\Denormalizer\ObjectNormalizer is invoked with named argument for parameter $propertyTypeExtractor.
+			rawMessage: Constructor of Symfony\Component\Serializer\Normalizer\ObjectNormalizer is invoked with named argument for parameter $propertyTypeExtractor.
 			identifier: ergebnis.noNamedArgument
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/WebauthnSerializerFactory.php
-
-		-
-			rawMessage: Instantiated class Webauthn\Denormalizer\ObjectNormalizer not found.
-			identifier: class.notFound
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/WebauthnSerializerFactory.php
-
-		-
-			rawMessage: 'Parameter #1 $normalizers of class Symfony\Component\Serializer\Serializer constructor expects array<Symfony\Component\Serializer\Normalizer\DenormalizerInterface|Symfony\Component\Serializer\Normalizer\NormalizerInterface>, array<int, Symfony\Component\Serializer\Normalizer\ArrayDenormalizer|Symfony\Component\Serializer\Normalizer\UidNormalizer|Webauthn\Denormalizer\AttestationObjectDenormalizer|Webauthn\Denormalizer\AttestationStatementDenormalizer|Webauthn\Denormalizer\AttestedCredentialDataNormalizer|Webauthn\Denormalizer\AuthenticationExtensionNormalizer|Webauthn\Denormalizer\AuthenticationExtensionsDenormalizer|Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer|Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer|Webauthn\Denormalizer\AuthenticatorDataDenormalizer|Webauthn\Denormalizer\AuthenticatorResponseDenormalizer|Webauthn\Denormalizer\CollectedClientDataDenormalizer|Webauthn\Denormalizer\ExtensionDescriptorDenormalizer|Webauthn\Denormalizer\ObjectNormalizer|Webauthn\Denormalizer\PublicKeyCredentialDenormalizer|Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer|Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer|Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer|Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer|Webauthn\Denormalizer\SignalAllAcceptedCredentialsDenormalizer|Webauthn\Denormalizer\SignalCurrentUserDetailsDenormalizer|Webauthn\Denormalizer\SignalUnknownCredentialDenormalizer|Webauthn\Denormalizer\TrustPathDenormalizer|Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer> given.'
-			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/WebauthnSerializerFactory.php
 
