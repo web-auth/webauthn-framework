@@ -19,7 +19,7 @@ jobs:
           coverage: "xdebug"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Fetch Git base reference"
         run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
