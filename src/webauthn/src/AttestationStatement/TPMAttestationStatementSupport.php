@@ -407,7 +407,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         isset($parsed['extensions']['extendedKeyUsage']) || throw AttestationStatementVerificationException::create(
             'The "subjectAltName" is missing'
         );
-        $parsed['extensions']['extendedKeyUsage'] === '2.23.133.8.3' || throw AttestationStatementVerificationException::create(
+        $parsed['extensions']['extendedKeyUsage'] === '2.23.133.8.3' || $parsed['extensions']['extendedKeyUsage'] === 'Attestation Identity Key Certificate' || throw AttestationStatementVerificationException::create(
             'The "extendedKeyUsage" is invalid'
         );
 
