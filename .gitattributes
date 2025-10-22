@@ -8,8 +8,11 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.gitsplit.yml export-ignore
-/babel.config.js export-ignore
 /castor.php export-ignore
-/jest.config.js export-ignore
-/rollup.config.js export-ignore
+
+/link export-ignore
+/babel.config.js export-ignore
+/eslint.config.cjs export-ignore
+/jest.config.cjs export-ignore
+/rollup.config.cjs export-ignore
 /tsconfig.json export-ignore
