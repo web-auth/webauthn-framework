@@ -165,29 +165,6 @@ jobs:
           key: ${{ needs.prepare_dependencies.outputs.cache-key }}
       - run: castor deptrac
 
-  js_tests:
-    name: "7️⃣ Architecture Layer Check (Deptrac)"
-    needs: [prepare_dependencies]
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/spomky-labs/phpqa:8.4
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
-
-      - name: Run JS Tests
-        run: castor js
-
   tests:
     name: "8️⃣ Unit & Functional Tests (PHP ${{ matrix.php-version }}${{ matrix.lowest-deps && ' --prefer-lowest' || '' }})"
     needs:
@@ -224,9 +201,40 @@ jobs:
       - name: Run PHPUnit
         run: castor phpunit
 
+  js_tests:
+    name: "9️⃣ JS Tests"
+    needs:
+      - prepare_dependencies
+      - phpstan
+      - ecs
+      - rector
+      - lint
+      - validate
+      - check_licenses
+      - deptrac
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+
+      - name: Run JS Tests
+        run: castor js
+
   infection:
     name: "🧬 Mutation Testing"
-    needs: [prepare_dependencies, tests]
+    needs: [prepare_dependencies, tests, js_tests]
     if: ${{ endsWith(github.ref_name, '.x') }}
     runs-on: ubuntu-latest
     container:

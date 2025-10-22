@@ -5,9 +5,16 @@ import {
     AuthenticationResponseJSON,
     RegistrationResponseJSON,
     PublicKeyCredentialRequestOptionsJSON,
-    PublicKeyCredentialCreationOptionsJSON
+    PublicKeyCredentialCreationOptionsJSON,
 } from '@simplewebauthn/types';
-import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication, startRegistration, base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
+import {
+    browserSupportsWebAuthn,
+    browserSupportsWebAuthnAutofill,
+    startAuthentication,
+    startRegistration,
+    base64URLStringToBuffer,
+    bufferToBase64URLString,
+} from '@simplewebauthn/browser';
 
 export default class extends Controller {
     static values = {
@@ -26,12 +33,15 @@ export default class extends Controller {
         residentKeyField: { type: String, default: 'residentKey' },
         authenticatorAttachmentField: { type: String, default: 'authenticatorAttachment' },
         useBrowserAutofill: { type: Boolean, default: false },
-        requestHeaders: { type: Object, default: {
+        requestHeaders: {
+            type: Object,
+            default: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'mode': 'no-cors',
-                'credentials': 'include'
-        } },
+                Accept: 'application/json',
+                mode: 'no-cors',
+                credentials: 'include',
+            },
+        },
     };
 
     declare readonly requestResultUrlValue: string;
@@ -73,7 +83,7 @@ export default class extends Controller {
             }
             this._processSignin(optionsResponseJson, true);
         }
-    }
+    };
 
     public async signin(event: Event): Promise<void> {
         if (!browserSupportsWebAuthn()) {
@@ -88,17 +98,22 @@ export default class extends Controller {
         this._processSignin(optionsResponseJson, false);
     }
 
-    private async _processSignin(optionsResponseJson: Object, useBrowserAutofill: boolean): Promise<void> {
+    private async _processSignin(optionsResponseJson: object, useBrowserAutofill: boolean): Promise<void> {
         try {
             // @ts-ignore
             optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
             // @ts-ignore
-            let authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            let authenticatorResponse = await startAuthentication({
+                optionsJSON: optionsResponseJson,
+                useBrowserAutofill,
+            });
             // @ts-ignore
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
-                this.element.querySelector(this.requestResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element
+                    .querySelector(this.requestResultFieldValue)
+                    ?.setAttribute('value', JSON.stringify(authenticatorResponse));
                 this.element.submit();
                 return;
             }
@@ -108,7 +123,7 @@ export default class extends Controller {
                 window.location.replace(this.requestSuccessRedirectUriValue);
             }
         } catch (e) {
-            this._dispatchEvent('webauthn:assertion:failure', {exception: e, assertionResponse: null});
+            this._dispatchEvent('webauthn:assertion:failure', { exception: e, assertionResponse: null });
             return;
         }
     }
@@ -132,7 +147,9 @@ export default class extends Controller {
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
-                this.element.querySelector(this.creationResultFieldValue)?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                this.element
+                    .querySelector(this.creationResultFieldValue)
+                    ?.setAttribute('value', JSON.stringify(authenticatorResponse));
                 this.element.submit();
                 return;
             }
@@ -142,7 +159,7 @@ export default class extends Controller {
                 window.location.replace(this.creationSuccessRedirectUriValue);
             }
         } catch (e) {
-            this._dispatchEvent('webauthn:attestation:failure', {exception: e, assertionResponse: null});
+            this._dispatchEvent('webauthn:attestation:failure', { exception: e, assertionResponse: null });
             return;
         }
     }
@@ -151,11 +168,11 @@ export default class extends Controller {
         this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
     }
 
-    private  _getData() {
+    private _getData() {
         let data = new FormData();
         try {
             // @ts-ignore
-            this.element.reportValidity()
+            this.element.reportValidity();
             // @ts-ignore
             if (!this.element.checkValidity()) {
                 return;
@@ -182,15 +199,15 @@ export default class extends Controller {
         });
     }
 
-    private async _getPublicKeyCredentialRequestOptions(formData: null|Object): Promise<false|Object> {
+    private async _getPublicKeyCredentialRequestOptions(formData: null | object): Promise<false | object> {
         return this._getOptions(this.requestOptionsUrlValue, formData);
     }
 
-    private async _getPublicKeyCredentialCreationOptions(formData: null|Object): Promise<false|Object> {
+    private async _getPublicKeyCredentialCreationOptions(formData: null | object): Promise<false | object> {
         return this._getOptions(this.creationOptionsUrlValue, formData);
     }
 
-    private async _getOptions(url: string, formData: null|Object): Promise<false|Object> {
+    private async _getOptions(url: string, formData: null | object): Promise<false | object> {
         const data = formData || this._getData();
         if (!data) {
             return false;
@@ -198,17 +215,17 @@ export default class extends Controller {
 
         this._dispatchEvent('webauthn:options:request', { data });
         const optionsResponse = await fetch(url, {
-            headers: {...this.requestHeadersValue},
+            headers: { ...this.requestHeadersValue },
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
         if (!optionsResponse.ok) {
-            this._dispatchEvent('webauthn:options:failure', {exception: null, optionsResponse});
+            this._dispatchEvent('webauthn:options:failure', { exception: null, optionsResponse });
             return false;
         }
 
         const options = await optionsResponse.json();
-        this._dispatchEvent('webauthn:options:success', {data: options});
+        this._dispatchEvent('webauthn:options:success', { data: options });
 
         return options;
     }
@@ -221,24 +238,29 @@ export default class extends Controller {
         return this._getResult(this.requestResultUrlValue, 'webauthn:assertion:', authenticatorResponse);
     }
 
-    private async _getResult(url: string, eventPrefix: string, authenticatorResponse: RegistrationResponseJSON|AuthenticationResponseJSON): Promise<false|Object> {
-
+    private async _getResult(
+        url: string,
+        eventPrefix: string,
+        authenticatorResponse: RegistrationResponseJSON | AuthenticationResponseJSON
+    ): Promise<false | object> {
         const attestationResponse = await fetch(url, {
-            headers: {...this.requestHeadersValue},
-            method:'POST',
-            body: JSON.stringify(authenticatorResponse)
+            headers: { ...this.requestHeadersValue },
+            method: 'POST',
+            body: JSON.stringify(authenticatorResponse),
         });
         if (!attestationResponse.ok) {
-            this._dispatchEvent(eventPrefix+'failure', {});
+            this._dispatchEvent(eventPrefix + 'failure', {});
             return false;
         }
         const attestationResponseJSON = await attestationResponse.json();
-        this._dispatchEvent(eventPrefix+'success', {data:attestationResponseJSON});
+        this._dispatchEvent(eventPrefix + 'success', { data: attestationResponseJSON });
 
         return attestationResponseJSON;
     }
 
-    private _processExtensionsInput(options: Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON): Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON {
+    private _processExtensionsInput(
+        options: object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON
+    ): object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON {
         // @ts-ignore
         if (!options || !options.extensions) {
             return options;
@@ -253,7 +275,7 @@ export default class extends Controller {
         return options;
     }
 
-    private _processPrfInput(prf: Object): Object {
+    private _processPrfInput(prf: object): object {
         // @ts-ignore
         if (prf.eval) {
             // @ts-ignore
@@ -272,7 +294,7 @@ export default class extends Controller {
         return prf;
     }
 
-    private _importPrfValues(values: Object): Object {
+    private _importPrfValues(values: object): object {
         // @ts-ignore
         values.first = base64URLStringToBuffer(values.first);
         // @ts-ignore
@@ -284,7 +306,9 @@ export default class extends Controller {
         return values;
     }
 
-    private _processExtensionsOutput(options: Object|AuthenticationResponseJSON|RegistrationResponseJSON): Object|PublicKeyCredentialRequestOptionsJSON|PublicKeyCredentialCreationOptionsJSON {
+    private _processExtensionsOutput(
+        options: object | AuthenticationResponseJSON | RegistrationResponseJSON
+    ): object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON {
         // @ts-ignore
         if (!options || !options.extensions) {
             return options;
@@ -299,10 +323,10 @@ export default class extends Controller {
         return options;
     }
 
-    private _processPrfOutput(prf: Object): Object {
+    private _processPrfOutput(prf: object): object {
         // @ts-ignore
         if (!prf.result) {
-            return prf
+            return prf;
         }
 
         // @ts-ignore
@@ -311,7 +335,7 @@ export default class extends Controller {
         return prf;
     }
 
-    private _exportPrfValues(values: Object): Object {
+    private _exportPrfValues(values: object): object {
         // @ts-ignore
         values.first = bufferToBase64URLString(values.first);
         // @ts-ignore
