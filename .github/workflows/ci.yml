@@ -254,7 +254,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check exported files
         run: |
-          EXPECTED="CODE_OF_CONDUCT.md,LICENSE,RELEASES.md,README.md,SECURITY.md,composer.json"
+          EXPECTED="CODE_OF_CONDUCT.md,LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json"
           CURRENT=$(git archive HEAD | tar --list | grep -v '/$' | grep -Ev '^(assets|bin|config|fixtures|frankenphp|migrations|public|src|templates|translations)/' | sort | paste -sd "," -)
           echo "CURRENT = ${CURRENT}"
           echo "EXPECTED = ${EXPECTED}"
