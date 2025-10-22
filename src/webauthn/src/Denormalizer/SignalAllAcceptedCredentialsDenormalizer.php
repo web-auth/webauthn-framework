@@ -36,12 +36,14 @@ class SignalAllAcceptedCredentialsDenormalizer implements NormalizerInterface, N
 
         $normalized_user = $this->normalizer->normalize($data->user, $format, $context);
 
-        $normalized_credentials = array_map(function (PublicKeyCredentialDescriptor $credential) use (
-            $format,
-            $context
-        ) {
-            return $this->normalizer->normalize($credential, $format, $context);
-        }, $data->allAcceptedCredentials);
+        $normalized_credentials = array_map(
+            fn (PublicKeyCredentialDescriptor $credential) => $this->normalizer->normalize(
+                $credential,
+                $format,
+                $context
+            ),
+            $data->allAcceptedCredentials
+        );
 
         return [
             'rpId' => $normalized_rp['id'],

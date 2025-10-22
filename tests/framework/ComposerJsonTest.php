@@ -28,7 +28,7 @@ final class ComposerJsonTest extends TestCase
             $packageDependencies = $this->getComposerDependencies(self::SRC_DIR . '/' . $package . '/composer.json');
             foreach ($packageDependencies as $dependency => $version) {
                 // Skip web-auth/* dependencies, except cose-lib
-                if ($dependency !== 'web-auth/cose-lib' && str_starts_with($dependency, 'web-auth/')) {
+                if ($dependency !== 'web-auth/cose-lib' && str_starts_with((string) $dependency, 'web-auth/')) {
                     continue;
                 }
 

@@ -41,6 +41,9 @@ use Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
+use Webauthn\Denormalizer\SignalAllAcceptedCredentialsDenormalizer;
+use Webauthn\Denormalizer\SignalCurrentUserDetailsDenormalizer;
+use Webauthn\Denormalizer\SignalUnknownCredentialDenormalizer;
 use Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\SimpleFakeCredentialGenerator;
@@ -212,6 +215,21 @@ return static function (ContainerConfigurator $container): void {
         ]);
     $service
         ->set(PublicKeyCredentialUserEntityDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalAllAcceptedCredentialsDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalCurrentUserDetailsDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalUnknownCredentialDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);

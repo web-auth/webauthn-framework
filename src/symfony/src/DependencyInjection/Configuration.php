@@ -22,10 +22,10 @@ use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\SimpleFakeCredentialGenerator;
 
-final class Configuration implements ConfigurationInterface
+final readonly class Configuration implements ConfigurationInterface
 {
     public function __construct(
-        private readonly string $alias
+        private string $alias
     ) {
     }
 
@@ -54,23 +54,23 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('fake_credential_generator')
-                ->defaultValue(SimpleFakeCredentialGenerator::class)
-                ->cannotBeEmpty()
-                ->info(
-                    'A service that implements the FakeCredentialGenerator to generate fake credentials for preventing username enumeration.'
-                )
+            ->defaultValue(SimpleFakeCredentialGenerator::class)
+            ->cannotBeEmpty()
+            ->info(
+                'A service that implements the FakeCredentialGenerator to generate fake credentials for preventing username enumeration.'
+            )
             ->end()
             ->scalarNode('clock')
-                ->defaultValue('webauthn.clock.default')
-                ->info('PSR-20 Clock service.')
+            ->defaultValue('webauthn.clock.default')
+            ->info('PSR-20 Clock service.')
             ->end()
             ->scalarNode('options_storage')
-                ->defaultValue(SessionStorage::class)
-                ->info('Service responsible of the options/user entity storage during the ceremony')
+            ->defaultValue(SessionStorage::class)
+            ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('event_dispatcher')
-                ->defaultValue(EventDispatcherInterface::class)
-                ->info('PSR-14 Event Dispatcher service.')
+            ->defaultValue(EventDispatcherInterface::class)
+            ->info('PSR-14 Event Dispatcher service.')
             ->end()
             ->scalarNode('http_client')
             ->cannotBeEmpty()
@@ -149,120 +149,116 @@ final class Configuration implements ConfigurationInterface
         ];
         $rootNode->children()
             ->arrayNode('creation_profiles')
-                ->treatFalseLike($defaultCreationProfiles)
-                ->treatNullLike($defaultCreationProfiles)
-                ->treatTrueLike($defaultCreationProfiles)
-                ->useAttributeAsKey('name')
-                ->arrayPrototype()
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('rp')
-                            ->isRequired()
-                            ->children()
-                                ->scalarNode('id')
-                                    ->defaultNull()
-                                ->end()
-                                ->scalarNode('name')
-                                    ->isRequired()
-                                ->end()
-                                ->scalarNode('icon')
-                                    ->setDeprecated(
-                                        'web-auth/webauthn-symfony-bundle',
-                                        '5.1.0',
-                                        'The child node "%node%" at path "%path%" is deprecated and has no effect.'
-                                    )
-                                    ->defaultNull()
-                                ->end()
-                            ->end()
-                        ->end()
-                        ->integerNode('challenge_length')
-                            ->min(16)
-                            ->defaultValue(32)
-                        ->end()
-                        ->integerNode('timeout')
-                            ->min(0)
-                            ->defaultNull()
-                        ->end()
-                        ->arrayNode('authenticator_selection_criteria')
-                            ->addDefaultsIfNotSet()
-                            ->beforeNormalization()
-                            ->ifArray()
-                                ->then(function (array $v): array {
-                                    if (isset($v['attachment_mode'])) {
-                                        $v['authenticator_attachment'] = $v['attachment_mode'];
-                                        unset($v['attachment_mode']);
-                                    }
-
-                                    return $v;
-                                })
-                            ->end()
-                            ->children()
-                                ->scalarNode('authenticator_attachment')
-                                    ->defaultValue(
-                                        AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE
-                                    )
-                                    ->validate()
-                                        ->ifNotInArray([
-                                            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
-                                            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
-                                            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
-                                        ])
-                                        ->thenInvalid($errorTemplate)
-                                    ->end()
-                                ->end()
-                                ->booleanNode('require_resident_key')
-                                    ->defaultFalse()
-                                ->end()
-                                ->scalarNode('user_verification')
-                                    ->defaultValue(
-                                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-                                    )
-                                ->validate()
-                                    ->ifNotInArray([
-                                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-                                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-                                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-                                    ])
-                                    ->thenInvalid($errorTemplate)
-                                ->end()
-                            ->end()
-                            ->scalarNode('resident_key')
-                                ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
-                                ->validate()
-                                    ->ifNotInArray([
-                                        AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
-                                        AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
-                                        AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
-                                        AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
-                                    ])
-                                    ->thenInvalid($errorTemplate)
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('extensions')
-                        ->treatFalseLike([])
-                        ->treatTrueLike([])
-                        ->treatNullLike([])
-                        ->useAttributeAsKey('name')
-                        ->scalarPrototype()
-->end()
-                    ->end()
-                    ->arrayNode('public_key_credential_parameters')
-                        ->integerPrototype()
-->end()
-                        ->requiresAtLeastOneElement()
-                        ->treatNullLike([])
-                        ->treatFalseLike([])
-                        ->treatTrueLike([])
-                        ->defaultValue([])
-                    ->end()
-                    ->scalarNode('attestation_conveyance')
-                        ->defaultValue(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
-                    ->end()
-                ->end()
+            ->treatFalseLike($defaultCreationProfiles)
+            ->treatNullLike($defaultCreationProfiles)
+            ->treatTrueLike($defaultCreationProfiles)
+            ->useAttributeAsKey('name')
+            ->arrayPrototype()
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->arrayNode('rp')
+            ->isRequired()
+            ->children()
+            ->scalarNode('id')
+            ->defaultNull()
             ->end()
-        ->end()
+            ->scalarNode('name')
+            ->isRequired()
+            ->end()
+            ->scalarNode('icon')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.1.0',
+                'The child node "%node%" at path "%path%" is deprecated and has no effect.'
+            )
+            ->defaultNull()
+            ->end()
+            ->end()
+            ->end()
+            ->integerNode('challenge_length')
+            ->min(16)
+            ->defaultValue(32)
+            ->end()
+            ->integerNode('timeout')
+            ->min(0)
+            ->defaultNull()
+            ->end()
+            ->arrayNode('authenticator_selection_criteria')
+            ->addDefaultsIfNotSet()
+            ->beforeNormalization()
+            ->ifArray()
+            ->then(function (array $v): array {
+                if (isset($v['attachment_mode'])) {
+                    $v['authenticator_attachment'] = $v['attachment_mode'];
+                    unset($v['attachment_mode']);
+                }
+
+                return $v;
+            })
+            ->end()
+            ->children()
+            ->scalarNode('authenticator_attachment')
+            ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            ])
+            ->thenInvalid($errorTemplate)
+            ->end()
+            ->end()
+            ->booleanNode('require_resident_key')
+            ->defaultFalse()
+            ->end()
+            ->scalarNode('user_verification')
+            ->defaultValue(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            ])
+            ->thenInvalid($errorTemplate)
+            ->end()
+            ->end()
+            ->scalarNode('resident_key')
+            ->defaultValue(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED)
+            ->validate()
+            ->ifNotInArray([
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
+                AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+            ])
+            ->thenInvalid($errorTemplate)
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('extensions')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->useAttributeAsKey('name')
+            ->scalarPrototype()
+            ->end()
+            ->end()
+            ->arrayNode('public_key_credential_parameters')
+            ->integerPrototype()
+            ->end()
+            ->requiresAtLeastOneElement()
+            ->treatNullLike([])
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->defaultValue([])
+            ->end()
+            ->scalarNode('attestation_conveyance')
+            ->defaultValue(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+            ->end()
+            ->end()
+            ->end()
+            ->end()
             ->end();
     }
 
@@ -352,10 +348,10 @@ final class Configuration implements ConfigurationInterface
             ->isRequired()
             ->end()
             ->scalarNode('hide_existing_credentials')
-                ->info(
-                    'In order to prevent username enumeration, the existing credentials can be hidden. This is highly recommended when the attestation ceremony is performed by anonymous users.'
-                )
-                ->defaultFalse()
+            ->info(
+                'In order to prevent username enumeration, the existing credentials can be hidden. This is highly recommended when the attestation ceremony is performed by anonymous users.'
+            )
+            ->defaultFalse()
             ->end()
             ->scalarNode('options_storage')
             ->setDeprecated(

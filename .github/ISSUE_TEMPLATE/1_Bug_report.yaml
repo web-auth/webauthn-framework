@@ -1,6 +1,7 @@
 name: 🐛 Bug Report
 description: ⚠️ NEVER report security issues, email security AT spomky-labs.com instead
 labels: Bug
+
 body:
   - type: input
     id: affected-versions

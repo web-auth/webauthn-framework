@@ -17,8 +17,6 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function sprintf;
-use function strlen;
-use function substr;
 
 final readonly class CheckAllowedOrigins implements CeremonyStep
 {
@@ -109,7 +107,7 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
 
     private function isSubdomainOf(string $subdomain, string $domain): bool
     {
-        return substr('.' . $subdomain, -strlen('.' . $domain)) === '.' . $domain;
+        return str_ends_with('.' . $subdomain, '.' . $domain);
     }
 
     private function getFacetId(

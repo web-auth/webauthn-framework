@@ -9,15 +9,15 @@ deptrac:
     - name: 'UX'
       collectors:
         - type: 'directory'
-          value: 'src/stimulus/.*'
+          value: '../src/stimulus/.*'
     - name: 'SymfonyBundle'
       collectors:
         - type: 'directory'
-          value: 'src/symfony/.*'
+          value: '../src/symfony/.*'
     - name: 'MetadataService'
       collectors:
         - type: 'directory'
-          value: 'src/metadata-service/.*'
+          value: '../src/metadata-service/.*'
     - name: 'Vendors'
       collectors:
         - { type: classLike, value: '^Cose\\' }
