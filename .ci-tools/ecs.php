@@ -19,13 +19,14 @@ use PhpCsFixer\Fixer\Phpdoc\PhpdocTrimConsecutiveBlankLineSeparationFixer;
 use PhpCsFixer\Fixer\PhpTag\LinebreakAfterOpeningTagFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestAnnotationFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestCaseStaticMethodCallsFixer;
+use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestClassRequiresCoversFixer;
 use PhpCsFixer\Fixer\ReturnNotation\SimplifiedNullReturnFixer;
 use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 use PhpCsFixer\Fixer\Strict\StrictComparisonFixer;
 use PhpCsFixer\Fixer\Strict\StrictParamFixer;
 use PhpCsFixer\Fixer\Whitespace\ArrayIndentationFixer;
-use PhpCsFixer\Fixer\Whitespace\CompactNullableTypehintFixer;
 use PhpCsFixer\Fixer\Whitespace\MethodChainingIndentationFixer;
+use Symplify\CodingStandard\Fixer\Spacing\MethodChainingNewlineFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
@@ -55,7 +56,6 @@ return static function (ECSConfig $config): void {
     $config->rule(LinebreakAfterOpeningTagFixer::class);
     $config->rule(CombineConsecutiveIssetsFixer::class);
     $config->rule(CombineConsecutiveUnsetsFixer::class);
-    $config->rule(CompactNullableTypehintFixer::class);
     $config->rule(NoSuperfluousElseifFixer::class);
     $config->rule(NoSuperfluousPhpdocTagsFixer::class);
     $config->rule(PhpdocTrimConsecutiveBlankLineSeparationFixer::class);
@@ -84,12 +84,19 @@ return static function (ECSConfig $config): void {
         'import_constants' => true,
         'import_functions' => true,
     ]);
+
     $config->skip([
-        MethodChainingIndentationFixer::class => [__DIR__ . '*/DependencyInjection/Configuration.php'],
+        PhpUnitTestClassRequiresCoversFixer::class,
+        MethodChainingIndentationFixer::class => [__DIR__ . '/src/Resources/config'],
+        MethodChainingNewlineFixer::class => [__DIR__ . '/src/Resources/config'],
     ]);
 
     $config->parallel();
-    $config->paths(
-        [__DIR__ . '/src', __DIR__ . '/tests', __DIR__ . '/ecs.php', __DIR__ . '/rector.php', __DIR__ . '/castor.php']
-    );
+    $config->paths([
+        __DIR__ . '/../src',
+        __DIR__ . '/../tests',
+        __DIR__ . '/../castor.php',
+        __DIR__ . '/ecs.php',
+        __DIR__ . '/rector.php',
+    ]);
 };

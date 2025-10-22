@@ -9,12 +9,12 @@ class default_1 extends Controller {
             const options = {
                 requestResultUrl: this.requestResultUrlValue,
                 requestOptionsUrl: this.requestOptionsUrlValue,
-                requestResultField: (_a = this.requestResultFieldValue) !== null && _a !== undefined ? _a : null,
-                creationResultField: (_b = this.creationResultFieldValue) !== null && _b !== undefined ? _b : null,
-                requestSuccessRedirectUri: (_c = this.requestSuccessRedirectUriValue) !== null && _c !== undefined ? _c : null,
+                requestResultField: (_a = this.requestResultFieldValue) !== null && _a !== void 0 ? _a : null,
+                creationResultField: (_b = this.creationResultFieldValue) !== null && _b !== void 0 ? _b : null,
+                requestSuccessRedirectUri: (_c = this.requestSuccessRedirectUriValue) !== null && _c !== void 0 ? _c : null,
                 creationResultUrl: this.creationResultUrlValue,
                 creationOptionsUrl: this.creationOptionsUrlValue,
-                creationSuccessRedirectUri: (_d = this.creationSuccessRedirectUriValue) !== null && _d !== undefined ? _d : null,
+                creationSuccessRedirectUri: (_d = this.creationSuccessRedirectUriValue) !== null && _d !== void 0 ? _d : null,
             };
             this._dispatchEvent('webauthn:connect', { options });
             const supportAutofill = await browserSupportsWebAuthnAutofill();
@@ -43,11 +43,15 @@ class default_1 extends Controller {
         var _a;
         try {
             optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
-            let authenticatorResponse = await startAuthentication({ optionsJSON: optionsResponseJson, useBrowserAutofill });
+            let authenticatorResponse = await startAuthentication({
+                optionsJSON: optionsResponseJson,
+                useBrowserAutofill,
+            });
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
-                (_a = this.element.querySelector(this.requestResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
+                (_a = this.element
+                    .querySelector(this.requestResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
                 this.element.submit();
                 return;
             }
@@ -78,7 +82,8 @@ class default_1 extends Controller {
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
-                (_a = this.element.querySelector(this.creationResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
+                (_a = this.element
+                    .querySelector(this.creationResultFieldValue)) === null || _a === void 0 ? void 0 : _a.setAttribute('value', JSON.stringify(authenticatorResponse));
                 this.element.submit();
                 return;
             }
@@ -135,7 +140,7 @@ class default_1 extends Controller {
         const optionsResponse = await fetch(url, {
             headers: Object.assign({}, this.requestHeadersValue),
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
         if (!optionsResponse.ok) {
             this._dispatchEvent('webauthn:options:failure', { exception: null, optionsResponse });
@@ -155,7 +160,7 @@ class default_1 extends Controller {
         const attestationResponse = await fetch(url, {
             headers: Object.assign({}, this.requestHeadersValue),
             method: 'POST',
-            body: JSON.stringify(authenticatorResponse)
+            body: JSON.stringify(authenticatorResponse),
         });
         if (!attestationResponse.ok) {
             this._dispatchEvent(eventPrefix + 'failure', {});
@@ -232,12 +237,15 @@ default_1.values = {
     residentKeyField: { type: String, default: 'residentKey' },
     authenticatorAttachmentField: { type: String, default: 'authenticatorAttachment' },
     useBrowserAutofill: { type: Boolean, default: false },
-    requestHeaders: { type: Object, default: {
+    requestHeaders: {
+        type: Object,
+        default: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'mode': 'no-cors',
-            'credentials': 'include'
-        } },
+            Accept: 'application/json',
+            mode: 'no-cors',
+            credentials: 'include',
+        },
+    },
 };
 
 export { default_1 as default };

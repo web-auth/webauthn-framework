@@ -28,7 +28,7 @@ final class WebauthnAuthenticator extends BaseWebauthnAuthenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
     {
         return new JsonResponse([
             'success' => true,

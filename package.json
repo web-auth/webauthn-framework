@@ -1,15 +1,20 @@
 {
+    "type": "module",
     "private": true,
     "workspaces": [
         "src/*/assets"
     ],
     "scripts": {
-        "build": "node bin/build_javascript.js && node bin/build_styles.js",
-        "test": "yarn workspaces run jest",
-        "lint": "yarn workspaces run eslint src test",
-        "format": "prettier src/*/assets/src/*.ts src/*/assets/test/*.js {,src/*/}*.{json,md} --write",
-        "check-lint": "yarn lint --no-fix",
-        "check-format": "yarn format --no-write --check"
+        "build": "node bin/build_javascript.cjs && node bin/build_styles.cjs",
+        "test": "npm exec -ws -- jest",
+
+        "lint": "npm exec -ws -- eslint src test",
+        "lint:fix": "npm exec -ws -- eslint src test --fix",
+
+        "check-lint": "npm exec -ws -- eslint src test --no-fix",
+
+        "format": "npm exec -ws -- prettier \"src/**/*.{ts,js}\" \"test/**/*.{ts,js}\" \"**/*.{json,md}\" --write",
+        "check-format": "npm exec -ws -- prettier \"src/**/*.{ts,js}\" \"test/**/*.{ts,js}\" \"**/*.{json,md}\" --no-write --check"
     },
     "devDependencies": {
         "@simplewebauthn/types": "^12.0.0",
@@ -33,48 +38,16 @@
         "prettier": "^3.0.0",
         "rollup": "^4.18.0",
         "tslib": "^2.3.1",
-        "typescript": "^5.0.0"
-    },
-    "eslintConfig": {
-        "root": true,
-        "parser": "@typescript-eslint/parser",
-        "plugins": [
-            "@typescript-eslint"
-        ],
-        "extends": [
-            "eslint:recommended",
-            "prettier",
-            "plugin:@typescript-eslint/eslint-recommended",
-            "plugin:@typescript-eslint/recommended"
-        ],
-        "rules": {
-            "@typescript-eslint/no-explicit-any": "off",
-            "@typescript-eslint/no-empty-function": "off",
-            "@typescript-eslint/ban-ts-comment": "off",
-            "quotes": [
-                "error",
-                "single"
-            ]
-        },
-        "env": {
-            "browser": true
-        },
-        "overrides": [
-            {
-                "files": [
-                    "src/*/assets/test/**/*.ts"
-                ],
-                "extends": [
-                    "plugin:jest/recommended"
-                ]
-            }
-        ]
+        "typescript": "^5.0.0",
+        "@eslint/js": "^9.14.0",
+        "globals": "^15.11.0",
+        "@eslint/eslintrc": "^3.1.0"
     },
     "prettier": {
         "printWidth": 120,
         "trailingComma": "es5",
         "tabWidth": 4,
-        "jsxBracketSameLine": true,
+        "bracketSameLine": true,
         "singleQuote": true
     }
 }

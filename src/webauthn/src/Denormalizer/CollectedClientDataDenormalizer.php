@@ -16,7 +16,7 @@ final class CollectedClientDataDenormalizer implements DenormalizerInterface, De
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        return CollectedClientData::create($data, json_decode($data, true, flags: JSON_THROW_ON_ERROR));
+        return CollectedClientData::create($data, json_decode((string) $data, true, flags: JSON_THROW_ON_ERROR));
     }
 
     public function supportsDenormalization(
