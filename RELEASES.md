@@ -14,7 +14,5 @@ Such releases will be considered as "pre-releases".
 
 | Version | Supported          |
 |---------| ------------------ |
-| 5.0.x   | :white_check_mark: |
-| 4.8.x   | :white_check_mark: |
-| 4.7.x   | :white_check_mark: |
-| <4.7.x  | :x:                |
+| 5.3.x   | :white_check_mark: |
+| <5.3.x  | :x:                |

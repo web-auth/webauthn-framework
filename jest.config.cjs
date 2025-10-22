@@ -11,7 +11,7 @@ module.exports = {
         path.join(__dirname, 'tests/setup.js'),
     ],
     transform: {
-        '\\.(j|t)s$': ['babel-jest', { configFile: path.join(__dirname, './babel.config.js') }]
+        '\\.(j|t)s$': ['babel-jest', { configFile: path.join(__dirname, './babel.config.cjs') }]
     },
     "transformIgnorePatterns": [
         "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"

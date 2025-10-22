@@ -11,8 +11,9 @@
 /castor.php export-ignore
 
 /link export-ignore
-/babel.config.js export-ignore
-/eslint.config.cjs export-ignore
+/babel.config.cjs export-ignore
+/eslint.config.js export-ignore
 /jest.config.cjs export-ignore
 /rollup.config.cjs export-ignore
 /tsconfig.json export-ignore
+/package.json export-ignore
