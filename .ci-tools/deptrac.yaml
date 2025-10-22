@@ -1,11 +1,11 @@
 deptrac:
   paths:
-    - './src'
+    - '../src'
   layers:
     - name: 'Webauthn'
       collectors:
         - type: 'directory'
-          value: 'src/webauthn/.*'
+          value: '../src/webauthn/.*'
     - name: 'UX'
       collectors:
         - type: 'directory'
