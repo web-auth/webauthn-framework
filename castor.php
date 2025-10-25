@@ -114,7 +114,7 @@ function phpqa(array $command, array $dockerOptions = []): void
         '-e', 'XDEBUG_MODE=off',
         '-e', 'PHP_INI_SCAN_DIR=/usr/local/etc/php/conf.d',
         '-e', 'PHP_INI_ENTRY=sys_temp_dir=/project/tmp-phpqa',
-    ];;
+    ];
 
     run([
         'docker', 'run',
