@@ -7,7 +7,6 @@ use Castor\Attribute\AsTask;
 use function Castor\context;
 use function Castor\guard_min_version;
 use function Castor\io;
-use function Castor\notify;
 use function Castor\run;
 
 guard_min_version('v0.23.0');
@@ -72,95 +71,6 @@ function checkLicenses(
         ->success('All licenses are allowed');
 }
 
-#[AsTask(description: 'Restart the containers.')]
-function restart(): void
-{
-    stop();
-    start();
-}
-
-#[AsTask(description: 'Clean the infrastructure (remove container, volume, networks).')]
-function destroy(bool $force = false): void
-{
-    if (! $force) {
-        io()->warning('This will permanently remove all containers, volumes, networks... created for this project.');
-        io()
-            ->comment('You can use the --force option to avoid this confirmation.');
-
-        if (! io()->confirm('Are you sure?', false)) {
-            io()->comment('Aborted.');
-
-            return;
-        }
-    }
-
-    run('docker-compose down -v --remove-orphans --volumes --rmi=local');
-    notify('The infrastructure has been destroyed.');
-}
-
-#[AsTask(description: 'Stops and removes the containers.')]
-function stop(): void
-{
-    run(['docker', 'compose', 'down']);
-}
-
-#[AsTask(description: 'Starts the containers.')]
-function start(): void
-{
-    run(['docker', 'compose', 'up', '-d']);
-    frontend();
-}
-
-#[AsTask(description: 'Build the images.')]
-function build(): void
-{
-    run(['docker', 'compose', 'build', '--no-cache', '--pull']);
-}
-
-#[AsTask(description: 'Compile the frontend.')]
-function frontend(): void
-{
-    $consoleOutput = run(['bin/console'], context: context()->withQuiet());
-    $commandsToRun = [
-        'assets:install' => [],
-        'importmap:install' => [],
-        //'tailwind:build' => ['--watch'],
-    ];
-
-    foreach ($commandsToRun as $command => $arguments) {
-        if (str_contains((string) $consoleOutput->getOutput(), $command)) {
-            php(['bin/console', $command, ...$arguments]);
-        }
-    }
-}
-
-#[AsTask(description: 'Update the dependencies and other features.')]
-function update(): void
-{
-    run(['composer', 'update']);
-    $consoleOutput = run(['bin/console'], context: context()->withQuiet());
-    $commandsToRun = [
-        'doctrine:migrations:migrate' => [],
-        'doctrine:schema:validate' => [],
-        'doctrine:fixtures:load' => [],
-        'geoip2:update' => [],
-        'app:browscap:update' => [],
-        'importmap:update' => [],
-    ];
-
-    foreach ($commandsToRun as $command => $arguments) {
-        if (str_contains((string) $consoleOutput->getOutput(), $command)) {
-            php(['bin/console', $command, ...$arguments]);
-        }
-    }
-}
-
-#[AsTask(description: 'Runs a Consumer from the Docket Container.')]
-function consume(): void
-{
-    php(['bin/console', 'messenger:consume', '--all']);
-}
-
 #[AsTask(description: 'Runs a Symfony Console command from the Docket Container.', ignoreValidationErrors: true)]
 function console(#[AsRawTokens] array $args = []): void
 {
@@ -170,23 +80,26 @@ function console(#[AsRawTokens] array $args = []): void
 #[AsTask(description: 'Runs a PHP command from the Docket Container.', ignoreValidationErrors: true)]
 function php(#[AsRawTokens] array $args = []): void
 {
-    run(['docker', 'compose', 'exec', '-T', 'php', ...$args]);
+    $inContainer = file_exists('/.dockerenv');
+    $hasDocker = trim(shell_exec('command -v docker') ?? '') !== '';
+
+    if (! $hasDocker || $inContainer) {
+        run($args);
+        return;
+    }
+
+    run(['php', ...$args]);
 }
 
 function phpqa(array $command, array $dockerOptions = []): void
 {
     $inContainer = file_exists('/.dockerenv');
-    $hasDocker = trim((string) shell_exec('command -v docker')) !== '';
+    $hasDocker = trim(shell_exec('command -v docker') ?? '') !== '';
+    $phpVersion = getenv('PHP_VERSION') ?: \PHP_MAJOR_VERSION . '.' . \PHP_MINOR_VERSION;
 
     if (! $hasDocker || $inContainer) {
         run($command);
         return;
-    }
-
-    if (! is_dir('tmp-phpqa')) {
-        mkdir('tmp-phpqa', 0777, true);
-        chown('tmp-phpqa', 1000);
-        chgrp('tmp-phpqa', 1000);
     }
 
     $defaultDockerOptions = [
@@ -196,13 +109,12 @@ function phpqa(array $command, array $dockerOptions = []): void
         '--user', sprintf('%s:%s', getmyuid(), getmygid()),
         '--pull', 'always',
         '-v', getcwd() . ':/project',
-        '-v', getcwd() . '/tmp-phpqa:/tmp',
+        '-v', getcwd() . '/tmp-phpqa:/project/tmp-phpqa',
         '-w', '/project',
         '-e', 'XDEBUG_MODE=off',
+        '-e', 'PHP_INI_SCAN_DIR=/usr/local/etc/php/conf.d',
+        '-e', 'PHP_INI_ENTRY=sys_temp_dir=/project/tmp-phpqa',
     ];
-
-    $phpVersion = (getenv('PHP_VERSION') ?: \PHP_MAJOR_VERSION . '.' . \PHP_MINOR_VERSION)
-            ?: '8.4';
 
     run([
         'docker', 'run',
@@ -211,6 +123,14 @@ function phpqa(array $command, array $dockerOptions = []): void
         sprintf('ghcr.io/spomky-labs/phpqa:%s', $phpVersion),
         ...$command,
     ]);
+}
+
+#[AsTask(description: 'Update the PHPQA Docker image')]
+function phpqa_update(): void
+{
+    $phpVersion = getenv('PHP_VERSION') ?: (\PHP_MAJOR_VERSION . '.' . \PHP_MINOR_VERSION);
+
+    run(['docker', 'pull', 'ghcr.io/spomky-labs/phpqa:' . $phpVersion]);
 }
 
 #[AsTask(description: 'Run PHPUnit tests with coverage')]
@@ -223,7 +143,7 @@ function phpunit(): void
             '--log-junit=.ci-tools/coverage/junit.xml',
             '--configuration', '.ci-tools/phpunit.xml.dist',
         ],
-        ['-e', 'XDEBUG_MODE=coverage'] // Docker options supplémentaires
+        ['-e', 'XDEBUG_MODE=coverage']
     );
 }
 
@@ -282,16 +202,6 @@ function deptrac(): void
     ]);
 }
 
-#[AsTask(description: 'Install the dependencies')]
-function install(bool $lowest = false): void
-{
-    $command = ['composer', 'install'];
-    if ($lowest) {
-        $command[] = '--prefer-lowest';
-    }
-    phpqa($command);
-}
-
 #[AsTask(description: 'Run PHP parallel linter')]
 function lint(): void
 {
@@ -314,16 +224,28 @@ function infect($minMsi = 0, $minCoveredMsi = 0): void
     ], ['-e', 'XDEBUG_MODE=coverage']);
 }
 
-#[AsTask(description: 'Run QA command', ignoreValidationErrors: true)]
-function qa(#[AsRawTokens] array $args = []): void
-{
-    phpqa(['composer', 'exec', '--', ...$args]);
-}
-
 #[AsTask(description: 'Run JS tests')]
 function js(): void
 {
     io()->title('Running JS tests');
     run(['npm', 'install', '--force']);
     run(['npm', 'test']);
+}
+
+#[AsTask(description: 'Fix code style and apply Rector rules, then run static analysis.')]
+function prepare_pr(): void
+{
+    io()->title('Preparing code for pull request…');
+
+    ecs_fix();
+    rector_fix();
+
+    io()
+        ->section('Running static analysis…');
+    phpstan_baseline();
+    deptrac();
+    lint();
+
+    io()
+        ->success('Code is ready. You may now commit and push your changes.');
 }
