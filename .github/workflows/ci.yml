@@ -166,7 +166,7 @@ jobs:
       - run: castor deptrac
 
   tests:
-    name: "8️⃣ Unit & Functional Tests (PHP ${{ matrix.php-version }})"
+    name: "🧪 Unit & Functional Tests (PHP ${{ matrix.php-version }})"
     needs:
       - prepare_dependencies
       - phpstan
@@ -337,7 +337,7 @@ jobs:
 
   infection:
     name: "🧬 Mutation Testing"
-    needs: [prepare_dependencies, tests]
+    needs: [tests]
     if: ${{ endsWith(github.ref_name, '.x') }}
     runs-on: ubuntu-latest
     container:
@@ -350,7 +350,7 @@ jobs:
         run: castor infect
 
   exported_files:
-    name: "📁 Exported Files Check"
+    name: "8️⃣ Exported Files Check"
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
