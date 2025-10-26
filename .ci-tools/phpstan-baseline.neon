@@ -4267,6 +4267,12 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
+			rawMessage: Cannot access offset 'hints' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
 			rawMessage: Cannot access offset 'id' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -4387,6 +4393,12 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
+			rawMessage: 'Parameter #10 $hints of static method Webauthn\PublicKeyCredentialCreationOptions::create() expects array<string>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
 			rawMessage: 'Parameter #2 $array of function array_key_exists expects array, mixed given.'
 			identifier: argument.type
 			count: 2
@@ -4418,6 +4430,12 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #6 $attestation of static method Webauthn\PublicKeyCredentialCreationOptions::create() expects string|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #7 $hints of static method Webauthn\PublicKeyCredentialRequestOptions::create() expects array<string>, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
@@ -7360,6 +7378,12 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialCreationOptions.php
 
 		-
+			rawMessage: Constructor in Webauthn\PublicKeyCredentialCreationOptions has parameter $hints with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialCreationOptions.php
+
+		-
 			rawMessage: Constructor in Webauthn\PublicKeyCredentialCreationOptions has parameter $pubKeyCredParams with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
@@ -7522,6 +7546,12 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialOptions.php
 
 		-
+			rawMessage: Constructor in Webauthn\PublicKeyCredentialOptions has parameter $hints with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialOptions.php
+
+		-
 			rawMessage: Constructor in Webauthn\PublicKeyCredentialOptions has parameter $timeout with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
@@ -7577,6 +7607,12 @@ parameters:
 
 		-
 			rawMessage: Constructor in Webauthn\PublicKeyCredentialRequestOptions has parameter $extensions with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialRequestOptions.php
+
+		-
+			rawMessage: Constructor in Webauthn\PublicKeyCredentialRequestOptions has parameter $hints with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialRequestOptions.php
