@@ -203,19 +203,38 @@ jobs:
 
   js_lint:
     name: "9️⃣ JS Lint"
-    needs: [pre_checks]
+    needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # Détecte un lockfile (package-lock.json ou npm-shrinkwrap.json)
+      - name: Detect npm lockfile
+        id: npm_lock
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
+          elif [ -f npm-shrinkwrap.json ]; then
+            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Avec cache si lockfile présent
+      - name: Setup Node.js (with cache)
+        if: ${{ steps.npm_lock.outputs.path != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            package-lock.json
-            **/package-lock.json
+          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
+
+      # Sans cache si pas de lockfile
+      - name: Setup Node.js (no cache)
+        if: ${{ steps.npm_lock.outputs.path == '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install Node dependencies
         run: |
@@ -230,19 +249,35 @@ jobs:
 
   js_format:
     name: "🔟 JS Format (check)"
-    needs: [pre_checks]
+    needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Detect npm lockfile
+        id: npm_lock
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
+          elif [ -f npm-shrinkwrap.json ]; then
+            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js (with cache)
+        if: ${{ steps.npm_lock.outputs.path != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            package-lock.json
-            **/package-lock.json
+          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
+
+      - name: Setup Node.js (no cache)
+        if: ${{ steps.npm_lock.outputs.path == '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install Node dependencies
         run: |
@@ -272,14 +307,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Detect npm lockfile
+        id: npm_lock
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
+          elif [ -f npm-shrinkwrap.json ]; then
+            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js (with cache)
+        if: ${{ steps.npm_lock.outputs.path != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            package-lock.json
-            **/package-lock.json
+          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
+
+      - name: Setup Node.js (no cache)
+        if: ${{ steps.npm_lock.outputs.path == '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install Node dependencies
         run: |
@@ -294,7 +345,7 @@ jobs:
 
   infection:
     name: "🧬 Mutation Testing"
-    needs: [prepare_dependencies, tests, js_tests]
+    needs: [prepare_dependencies, tests]
     if: ${{ endsWith(github.ref_name, '.x') }}
     runs-on: ubuntu-latest
     container:
