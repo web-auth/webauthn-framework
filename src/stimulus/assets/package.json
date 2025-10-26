@@ -2,7 +2,7 @@
     "name": "@web-auth/webauthn-stimulus",
     "description": "Webauthn integration for Symfony",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "main": "src/controller.js",
     "symfony": {
         "controllers": {
@@ -11,20 +11,44 @@
                 "name": "web-auth/webauthn-stimulus",
                 "webpackMode": "eager",
                 "fetch": "eager",
+                "enabled": false
+            },
+            "authentication": {
+                "main": "src/authentication-controller.js",
+                "name": "web-auth/authentication",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "registration": {
+                "main": "src/registration-controller.js",
+                "name": "web-auth/registration",
+                "webpackMode": "eager",
+                "fetch": "eager",
                 "enabled": true
             }
         },
         "importmap": {
             "@hotwired/stimulus": "^3.0.0",
-            "@simplewebauthn/browser": "^13.0.0"
+            "@simplewebauthn/browser": "^13.2.0"
         }
     },
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^13.0.0"
+        "@simplewebauthn/browser": "^13.2.0"
+    },
+    "scripts": {
+        "test": "jest"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^13.0.0"
+        "@simplewebauthn/browser": "^13.2.0",
+        "@babel/core": "^7.0.0",
+        "@babel/preset-env": "^7.0.0",
+        "@symfony/stimulus-testing": "^2.0.0",
+        "@testing-library/dom": "^10.0.0",
+        "babel-jest": "^29.0.0",
+        "jest": "^29.0.0",
+        "jest-environment-jsdom": "^29.0.0"
     }
 }
