@@ -5,7 +5,6 @@
         "src/*/assets"
     ],
     "scripts": {
-        "build": "node bin/build_styles.cjs",
         "test": "npm exec -ws -- jest",
 
         "lint": "npm exec -ws -- eslint src test",
@@ -22,7 +21,6 @@
         "@babel/preset-react": "^7.15.8",
         "@symfony/stimulus-testing": "^2.0.1",
         "babel-jest": "^29.0",
-        "clean-css-cli": "^5.6.2",
         "eslint": "^9.6.0",
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-jest": "^28.6.0",
