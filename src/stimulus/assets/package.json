@@ -2,13 +2,27 @@
     "name": "@web-auth/webauthn-stimulus",
     "description": "Webauthn integration for Symfony",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "main": "src/controller.js",
     "symfony": {
         "controllers": {
             "webauthn": {
                 "main": "src/controller.js",
                 "name": "web-auth/webauthn-stimulus",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": false
+            },
+            "authentication": {
+                "main": "src/authentication-controller.js",
+                "name": "web-auth/authentication",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "registration": {
+                "main": "src/registration-controller.js",
+                "name": "web-auth/registration",
                 "webpackMode": "eager",
                 "fetch": "eager",
                 "enabled": true
