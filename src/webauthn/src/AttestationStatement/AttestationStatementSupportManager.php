@@ -18,6 +18,9 @@ class AttestationStatementSupportManager
     ) {
         $this->add(new NoneAttestationStatementSupport());
         foreach ($attestationStatementSupports as $attestationStatementSupport) {
+            if ($attestationStatementSupport instanceof AttestationStatementSupportManagerAwareInterface) {
+                $attestationStatementSupport->setAttestationStatementSupportManager($this);
+            }
             $this->add($attestationStatementSupport);
         }
     }

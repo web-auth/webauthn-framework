@@ -2539,6 +2539,54 @@ parameters:
 			path: ../src/webauthn/src/AttestationStatement/AttestationStatementSupportManager.php
 
 		-
+			rawMessage: Class Webauthn\AttestationStatement\CompoundAttestationStatementSupport has an uninitialized property $attestationStatementSupportManager. Give it default value or assign it in the constructor.
+			identifier: property.uninitialized
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Method Webauthn\AttestationStatement\CompoundAttestationStatementSupport::checkRules() has parameter $minimum with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Method Webauthn\AttestationStatement\CompoundAttestationStatementSupport::checkRules() has parameter $ratio with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Parameter #1 $attestation of method Webauthn\AttestationStatement\AttestationStatementSupport::load() expects array<string, mixed>, array given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Parameter #1 $fmt of static method Webauthn\AttestationStatement\AttestationStatement::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Parameter #1 $name of method Webauthn\AttestationStatement\AttestationStatementSupportManager::get() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Parameter #1 $name of method Webauthn\AttestationStatement\AttestationStatementSupportManager::has() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: 'Parameter #2 ...$values of function sprintf expects bool|float|int|string|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
 			rawMessage: Cannot access offset 'x5c' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
