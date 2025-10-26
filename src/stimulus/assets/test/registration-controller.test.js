@@ -62,7 +62,7 @@ describe('RegistrationController', () => {
 
         // Mock fetch globally
         fetchMock = jest.fn();
-        global.fetch = fetchMock;
+        globalThis.fetch = fetchMock;
 
         // Default mocks
         SimpleWebAuthnBrowser.browserSupportsWebAuthn.mockReturnValue(true);
@@ -76,7 +76,7 @@ describe('RegistrationController', () => {
         }
         clearDOM();
         jest.clearAllMocks();
-        delete global.fetch;
+        delete globalThis.fetch;
     });
 
     describe('Connection and initialization', () => {
