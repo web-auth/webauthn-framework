@@ -658,6 +658,12 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
+			rawMessage: Cannot access offset 'conditional_create' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
 			rawMessage: Cannot access offset 'failure_handler' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
@@ -708,7 +714,7 @@ parameters:
 		-
 			rawMessage: Cannot access offset 'profile' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 3
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -748,6 +754,12 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
+			rawMessage: Cannot access offset mixed on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
 			rawMessage: Class "Webauthn\Bundle\DependencyInjection\WebauthnExtension" is not allowed to extend "Symfony\Component\DependencyInjection\Extension\Extension".
 			identifier: ergebnis.noExtends
 			count: 1
@@ -762,7 +774,7 @@ parameters:
 		-
 			rawMessage: 'Language construct isset() should not be used.'
 			identifier: ergebnis.noIsset
-			count: 2
+			count: 3
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -3569,6 +3581,12 @@ parameters:
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckUserVerification.php
+
+		-
+			rawMessage: Constructor in Webauthn\CeremonyStep\CheckUserWasPresent has parameter $requireUserPresence with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
 
 		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckUserWasPresent::process() has parameter $userHandle with a nullable type declaration.'

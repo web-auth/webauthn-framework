@@ -222,9 +222,17 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 'webauthn.controller.creation.response.ceremony_step_manager.%s',
                 $name
             );
+
+            // Get the profile configuration to check if conditional_create is enabled
+            $profiles = $config['creation_profiles'] ?? [];
+            $profileName = $creationConfig['profile'];
+            $isConditionalCreate = isset($profiles[$profileName]['conditional_create']) && $profiles[$profileName]['conditional_create'] === true;
+
+            $ceremonyFactoryMethod = $isConditionalCreate ? 'conditionalCreateCeremony' : 'creationCeremony';
+
             $container
                 ->setDefinition($creationCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
-                ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'creationCeremony'])
+                ->setFactory([new Reference(CeremonyStepManagerFactory::class), $ceremonyFactoryMethod])
                 // @deprecated Will be removed in 6.0.0
                 ->setArguments([$creationConfig['secured_rp_ids']])
             ;

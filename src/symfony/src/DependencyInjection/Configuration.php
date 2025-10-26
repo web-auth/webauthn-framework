@@ -260,6 +260,12 @@ final readonly class Configuration implements ConfigurationInterface
             ->scalarNode('attestation_conveyance')
             ->defaultValue(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
             ->end()
+            ->booleanNode('conditional_create')
+            ->defaultFalse()
+            ->info(
+                'Enable Conditional Create (auto-register) for this profile. When true, user presence can be false after password authentication. See https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create'
+            )
+            ->end()
             ->end()
             ->end()
             ->end()
