@@ -5,6 +5,7 @@ import {
     startRegistration,
     WebAuthnAbortService,
     WebAuthnError,
+    platformAuthenticatorIsAvailable,
 } from '@simplewebauthn/browser';
 import BaseController from './base-controller.js';
 
@@ -42,10 +43,12 @@ import BaseController from './base-controller.js';
  * @property {boolean} hasOptionsUrlValue - Whether optionsUrl value is set
  * @property {string} resultUrlValue - URL to verify registration result at
  * @property {boolean} hasResultUrlValue - Whether resultUrl value is set
- * @property {boolean} useResultTargetValue - Whether to use result target for form submission
- * @property {boolean} hasUseResultTargetValue - Whether useResultTarget value is set
+ * @property {boolean} submitViaFormValue - Whether to submit credential via form instead of API
+ * @property {boolean} hasSubmitViaFormValue - Whether submitViaForm value is set
  * @property {string} successRedirectUriValue - URI to redirect to on success
  * @property {boolean} hasSuccessRedirectUriValue - Whether successRedirectUri value is set
+ * @property {boolean} autoRegisterValue - Whether to use auto-register (conditional create)
+ * @property {boolean} hasAutoRegisterValue - Whether autoRegister value is set
  */
 export default class extends BaseController {
     static targets = [
@@ -61,14 +64,16 @@ export default class extends BaseController {
         ...BaseController.values,
         optionsUrl: { type: String, default: '/registration/options' },
         resultUrl: { type: String, default: '/registration/verify' },
-        useResultTarget: { type: Boolean, default: false },
+        submitViaForm: { type: Boolean, default: false },
         successRedirectUri: String,
+        autoRegister: { type: Boolean, default: false },
     };
 
-    connect() {
+    async connect() {
         this._dispatchEvent('webauthn:registration:connect', {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
+            supportsPlatformAuthenticator: await platformAuthenticatorIsAvailable(),
         });
     }
 
@@ -129,13 +134,14 @@ export default class extends BaseController {
 
             let credential = await startRegistration({
                 optionsJSON: processedOptions,
+                useAutoRegister: this.autoRegisterValue,
             });
 
             credential = this._processExtensionsOutput(credential);
             this._dispatchEvent('webauthn:registration:credential', { credential });
 
             // Submit via form if using result target
-            if (this.useResultTargetValue && this.hasResultTarget) {
+            if (this.submitViaFormValue && this.hasResultTarget) {
                 this.resultTarget.value = JSON.stringify(credential);
                 this.element.submit();
                 return;

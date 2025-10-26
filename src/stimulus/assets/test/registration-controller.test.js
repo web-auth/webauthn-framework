@@ -66,6 +66,7 @@ describe('RegistrationController', () => {
 
         // Default mocks
         SimpleWebAuthnBrowser.browserSupportsWebAuthn.mockReturnValue(true);
+        SimpleWebAuthnBrowser.platformAuthenticatorIsAvailable.mockResolvedValue(true);
     });
 
     afterEach(() => {
@@ -166,7 +167,7 @@ describe('RegistrationController', () => {
                     data-controller="webauthn--registration"
                     data-action="submit->webauthn--registration#register"
                     data-webauthn--registration-options-url-value="/register/options"
-                    data-webauthn--registration-use-result-target-value="true"
+                    data-webauthn--registration-submit-via-form-value="true"
                 >
                     <input type="text" name="username" value="newuser">
                     <input type="hidden" data-webauthn--registration-target="result">

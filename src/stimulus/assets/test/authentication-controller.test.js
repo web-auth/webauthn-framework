@@ -63,6 +63,7 @@ describe('AuthenticationController', () => {
         // Default mocks
         SimpleWebAuthnBrowser.browserSupportsWebAuthn.mockReturnValue(true);
         SimpleWebAuthnBrowser.browserSupportsWebAuthnAutofill.mockResolvedValue(false);
+        SimpleWebAuthnBrowser.platformAuthenticatorIsAvailable.mockResolvedValue(true);
     });
 
     afterEach(() => {
@@ -114,13 +115,13 @@ describe('AuthenticationController', () => {
             });
         });
 
-        it('starts autofill when enabled and supported', async () => {
+        it('starts conditional UI when enabled and supported', async () => {
             container = mountDOM(`
                 <form
                     data-testid="autofill-form"
                     data-controller="webauthn--authentication"
                     data-action="submit->webauthn--authentication#authenticate"
-                    data-webauthn--authentication-use-browser-autofill-value="true"
+                    data-webauthn--authentication-conditional-ui-value="true"
                     data-webauthn--authentication-options-url-value="/auth/options"
                     data-webauthn--authentication-result-url-value="/auth/verify"
                 >
@@ -145,6 +146,7 @@ describe('AuthenticationController', () => {
                 expect(SimpleWebAuthnBrowser.startAuthentication).toHaveBeenCalledWith({
                     optionsJSON: { challenge: 'test-challenge' },
                     useBrowserAutofill: true,
+                    verifyBrowserAutofillInput: true,
                 });
             });
         });
@@ -199,7 +201,7 @@ describe('AuthenticationController', () => {
                     data-controller="webauthn--authentication"
                     data-action="submit->webauthn--authentication#authenticate"
                     data-webauthn--authentication-options-url-value="/auth/options"
-                    data-webauthn--authentication-use-result-target-value="true"
+                    data-webauthn--authentication-submit-via-form-value="true"
                 >
                     <input type="text" name="username" value="testuser">
                     <input type="hidden" data-webauthn--authentication-target="result">

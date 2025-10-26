@@ -6,6 +6,7 @@ import {
     startAuthentication,
     WebAuthnAbortService,
     WebAuthnError,
+    platformAuthenticatorIsAvailable,
 } from '@simplewebauthn/browser';
 import BaseController from './base-controller.js';
 
@@ -16,8 +17,9 @@ import BaseController from './base-controller.js';
  * <form data-controller="webauthn--authentication"
  *       data-webauthn--authentication-options-url-value="/auth/options"
  *       data-webauthn--authentication-result-url-value="/auth/verify"
+ *       data-webauthn--authentication-conditional-ui-value="true"
  *       data-action="submit->webauthn--authentication#authenticate">
- *   <input type="text" name="username" data-webauthn--authentication-target="username">
+ *   <input type="text" name="username" autocomplete="username webauthn" data-webauthn--authentication-target="username">
  *   <input type="hidden" data-webauthn--authentication-target="result">
  *   <button type="submit">Sign In</button>
  * </form>
@@ -33,12 +35,14 @@ import BaseController from './base-controller.js';
  * @property {boolean} hasOptionsUrlValue - Whether optionsUrl value is set
  * @property {string} resultUrlValue - URL to verify authentication result at
  * @property {boolean} hasResultUrlValue - Whether resultUrl value is set
- * @property {boolean} useResultTargetValue - Whether to use result target for form submission
- * @property {boolean} hasUseResultTargetValue - Whether useResultTarget value is set
+ * @property {boolean} submitViaFormValue - Whether to submit credential via form instead of API
+ * @property {boolean} hasSubmitViaFormValue - Whether submitViaForm value is set
  * @property {string} successRedirectUriValue - URI to redirect to on success
  * @property {boolean} hasSuccessRedirectUriValue - Whether successRedirectUri value is set
- * @property {boolean} useBrowserAutofillValue - Whether to enable browser autofill
- * @property {boolean} hasUseBrowserAutofillValue - Whether useBrowserAutofill value is set
+ * @property {boolean} conditionalUiValue - Whether to enable conditional UI (browser autofill)
+ * @property {boolean} hasConditionalUiValue - Whether conditionalUi value is set
+ * @property {boolean} verifyAutofillInputValue - Whether to verify autofill input element exists
+ * @property {boolean} hasVerifyAutofillInputValue - Whether verifyAutofillInput value is set
  */
 export default class extends BaseController {
     static targets = ['username', 'userVerification', 'result'];
@@ -47,24 +51,26 @@ export default class extends BaseController {
         ...BaseController.values,
         optionsUrl: { type: String, default: '/authentication/options' },
         resultUrl: { type: String, default: '/authentication/verify' },
-        useResultTarget: { type: Boolean, default: false },
+        submitViaForm: { type: Boolean, default: false },
         successRedirectUri: String,
-        useBrowserAutofill: { type: Boolean, default: false },
+        conditionalUi: { type: Boolean, default: false },
+        verifyAutofillInput: { type: Boolean, default: true },
     };
 
     async connect() {
         this._dispatchEvent('webauthn:authentication:connect', {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
+            supportsPlatformAuthenticator: await platformAuthenticatorIsAvailable(),
         });
 
-        if (!this.useBrowserAutofillValue) {
+        if (!this.conditionalUiValue) {
             return;
         }
 
         const supportsAutofill = await browserSupportsWebAuthnAutofill();
         if (supportsAutofill) {
-            await this._startAuthenticationWithAutofill();
+            await this._startAuthenticationWithConditionalUi();
         }
     }
 
@@ -90,24 +96,27 @@ export default class extends BaseController {
     }
 
     /**
-     * Start authentication with browser autofill
+     * Start authentication with conditional UI (browser autofill)
      * @private
      */
-    async _startAuthenticationWithAutofill() {
+    async _startAuthenticationWithConditionalUi() {
         const options = await this._fetchOptions(this.optionsUrlValue, {}, 'webauthn:authentication');
         if (!options) {
             return;
         }
 
-        await this._processAuthentication(options, true);
+        await this._processAuthentication(options, {
+            useBrowserAutofill: true,
+            verifyBrowserAutofillInput: this.verifyAutofillInputValue,
+        });
     }
 
     /**
      * Start authentication process
      * @private
-     * @param {boolean} useBrowserAutofill - Whether to use browser autofill
+     * @param {Object} options - Additional options for startAuthentication
      */
-    async _startAuthentication(useBrowserAutofill) {
+    async _startAuthentication(options = {}) {
         const formData = this._getFormData([
             { name: 'username', targetName: 'username' },
             { name: 'userVerification', targetName: 'userVerification' },
@@ -117,34 +126,34 @@ export default class extends BaseController {
             return;
         }
 
-        const options = await this._fetchOptions(this.optionsUrlValue, formData, 'webauthn:authentication');
-        if (!options) {
+        const webauthnOptions = await this._fetchOptions(this.optionsUrlValue, formData, 'webauthn:authentication');
+        if (!webauthnOptions) {
             return;
         }
 
-        await this._processAuthentication(options, useBrowserAutofill);
+        await this._processAuthentication(webauthnOptions, options);
     }
 
     /**
      * Process authentication with WebAuthn
      * @private
-     * @param {Object} options - WebAuthn credential request options
-     * @param {boolean} useBrowserAutofill - Whether to use browser autofill
+     * @param {Object} credentialRequestOptions - WebAuthn credential request options
+     * @param {Object} startAuthenticationOptions - Options for startAuthentication call
      */
-    async _processAuthentication(options, useBrowserAutofill) {
+    async _processAuthentication(credentialRequestOptions, startAuthenticationOptions = {}) {
         try {
-            const processedOptions = this._processExtensionsInput(options);
+            const processedOptions = this._processExtensionsInput(credentialRequestOptions);
 
             let credential = await startAuthentication({
                 optionsJSON: processedOptions,
-                useBrowserAutofill,
+                ...startAuthenticationOptions,
             });
 
             credential = this._processExtensionsOutput(credential);
             this._dispatchEvent('webauthn:authentication:credential', { credential });
 
             // Submit via form if using result target
-            if (this.useResultTargetValue && this.hasResultTarget) {
+            if (this.submitViaFormValue && this.hasResultTarget) {
                 this.resultTarget.value = JSON.stringify(credential);
                 this.element.submit();
                 return;
