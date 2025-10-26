@@ -82,6 +82,9 @@ class CollectedClientData
         return new self($rawData, $data);
     }
 
+    /**
+     * @deprecated Since 5.3.0 and will be removed in 6.0.0. No replacement as not used anymore.
+     */
     public static function createFormJson(string $data): self
     {
         $rawData = Base64UrlSafe::decodeNoPadding($data);
