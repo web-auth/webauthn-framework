@@ -35,11 +35,11 @@ final class EntityTest extends AbstractTestCase
     #[Test]
     public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
     {
-        $rp = PublicKeyCredentialRpEntity::create('name', 'id');
+        $rp = PublicKeyCredentialRpEntity::create('', 'id');
 
-        static::assertSame('name', $rp->name);
+        static::assertSame('', $rp->name);
         static::assertSame('id', $rp->id);
-        static::assertSame('{"id":"id","name":"name"}', $this->getSerializer()->serialize($rp, 'json', [
+        static::assertSame('{"id":"id"}', $this->getSerializer()->serialize($rp, 'json', [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
         ]));
     }

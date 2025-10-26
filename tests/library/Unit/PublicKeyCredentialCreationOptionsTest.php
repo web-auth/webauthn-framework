@@ -21,7 +21,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
     #[Test]
     public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
     {
-        $rp = PublicKeyCredentialRpEntity::create('RP');
+        $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
 
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
@@ -43,7 +43,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         static::assertSame('direct', $options->attestation);
         static::assertSame(1000, $options->timeout);
         static::assertJsonStringEqualsJsonString(
-            '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"attestation":"direct"}',
+            '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"attestation":"direct"}',
             $this->getSerializer()
                 ->serialize($options, 'json', [
                     AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
@@ -52,7 +52,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
 
         $data = $this->getSerializer()
             ->deserialize(
-                '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
+                '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
                 PublicKeyCredentialCreationOptions::class,
                 'json'
             );
@@ -60,7 +60,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         static::assertSame('direct', $data->attestation);
         static::assertSame(1000, $data->timeout);
         static::assertJsonStringEqualsJsonString(
-            '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
+            '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
             $this->getSerializer()
                 ->serialize($data, 'json', [
                     AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
@@ -71,7 +71,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
     #[Test]
     public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
     {
-        $rp = PublicKeyCredentialRpEntity::create('RP');
+        $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
 
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
@@ -90,7 +90,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
         static::assertJsonStringEqualsJsonString(
-            '{"rp":{"name":"RP"},"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"excludeCredentials": [],"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"indirect"}',
+            '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"excludeCredentials": [],"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"indirect"}',
             $json
         );
 

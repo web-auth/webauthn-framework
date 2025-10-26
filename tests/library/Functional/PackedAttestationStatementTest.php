@@ -24,7 +24,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     public function aPackedAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -85,7 +85,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     public function aPackedAttestationWithSelfStatementCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),

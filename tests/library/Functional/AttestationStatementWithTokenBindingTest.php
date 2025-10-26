@@ -26,7 +26,7 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
     public function anAttestationWithTokenBindingCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),

@@ -1540,6 +1540,15 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
 
 		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
 			rawMessage: Class "Webauthn\Bundle\Security\Authentication\WebauthnBadge" is not allowed to extend "Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge".
 			identifier: ergebnis.noExtends
 			count: 1
@@ -1646,6 +1655,15 @@ parameters:
 			identifier: constructor.missingParentCall
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
 			rawMessage: Control structures using switch should not be used.
@@ -1760,6 +1778,15 @@ parameters:
 			identifier: ergebnis.noNullableReturnTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/Security/Http/Authenticator/Passport/Credentials/WebauthnCredentials.php
+
+		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 3
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator::__construct() has parameter $userProvider with generic interface Symfony\Component\Security\Core\User\UserProviderInterface but does not specify its types: TUser'
@@ -4450,6 +4477,60 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialParametersDenormalizer.php
 
 		-
+			rawMessage: '''
+				Access to deprecated property $icon of class Webauthn\PublicKeyCredentialEntity:
+				since 5.1.0 and will be removed in 6.0.0. This value is always null.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::getSupportedTypes() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::normalize() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::normalize() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::normalize() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::supportsNormalization() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer::supportsNormalization() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
+
+		-
 			rawMessage: Cannot access offset 'aaguid' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -4664,6 +4745,15 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
 		-
 			rawMessage: 'Method Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer::denormalize() has parameter $format with a nullable type declaration.'
@@ -7399,6 +7489,15 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
 
 		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialEntity.php
+
+		-
 			rawMessage: Constructor in Webauthn\PublicKeyCredentialEntity has parameter $icon with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
@@ -7627,6 +7726,12 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialRpEntity.php
 
 		-
+			rawMessage: Constructor in Webauthn\PublicKeyCredentialRpEntity has parameter $name with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialRpEntity.php
+
+		-
 			rawMessage: 'Method Webauthn\PublicKeyCredentialRpEntity::__construct() has parameter $icon with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -7799,6 +7904,15 @@ parameters:
 			identifier: ergebnis.noParameterWithNullDefaultValue
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialSource.php
+
+		-
+			rawMessage: '''
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
+				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+			'''
+			identifier: property.deprecated
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialUserEntity.php
 
 		-
 			rawMessage: Class "Webauthn\PublicKeyCredentialUserEntity" is not allowed to extend "Webauthn\PublicKeyCredentialEntity".

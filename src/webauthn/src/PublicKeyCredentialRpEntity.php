@@ -7,14 +7,15 @@ namespace Webauthn;
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
     public function __construct(
-        string $name,
+        string $name = '',
         public readonly ?string $id = null,
         ?string $icon = null
     ) {
+
         parent::__construct($name, $icon);
     }
 
-    public static function create(string $name, ?string $id = null, ?string $icon = null): self
+    public static function create(string $name = '', ?string $id = null, ?string $icon = null): self
     {
         return new self($name, $id, $icon);
     }

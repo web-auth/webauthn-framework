@@ -27,7 +27,7 @@ final class AppleAttestationStatementTest extends AbstractTestCase
     {
         $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),

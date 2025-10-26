@@ -36,7 +36,7 @@ final class AttestationTest extends KernelTestCase
         self::bootKernel();
         self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -74,7 +74,7 @@ final class AttestationTest extends KernelTestCase
         self::bootKernel();
         self::$kernel->getContainer()->get(PublicKeyCredentialSourceRepository::class)->clearCredentials();
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
