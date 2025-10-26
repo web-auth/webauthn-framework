@@ -13,21 +13,16 @@
 
         "check-lint": "npm exec -ws -- eslint src test --no-fix",
 
-        "format": "npm exec -ws -- prettier \"src/**/*.{ts,js}\" \"test/**/*.{ts,js}\" \"**/*.{json,md}\" --write",
-        "check-format": "npm exec -ws -- prettier \"src/**/*.{ts,js}\" \"test/**/*.{ts,js}\" \"**/*.{json,md}\" --no-write --check"
+        "format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --write",
+        "check-format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --no-write --check"
     },
     "devDependencies": {
-        "@simplewebauthn/types": "^12.0.0",
         "@babel/core": "^7.15.8",
         "@babel/preset-env": "^7.15.8",
         "@babel/preset-react": "^7.15.8",
-        "@babel/preset-typescript": "^7.15.8",
         "@rollup/plugin-commonjs": "^28.0",
         "@rollup/plugin-node-resolve": "^16.0",
-        "@rollup/plugin-typescript": "^11.1",
         "@symfony/stimulus-testing": "^2.0.1",
-        "@typescript-eslint/eslint-plugin": "^8.20",
-        "@typescript-eslint/parser": "^8.20",
         "babel-jest": "^29.0",
         "clean-css-cli": "^5.6.2",
         "eslint": "^9.6.0",
@@ -37,8 +32,6 @@
         "jest-environment-jsdom": "^29.0",
         "prettier": "^3.0.0",
         "rollup": "^4.18.0",
-        "tslib": "^2.3.1",
-        "typescript": "^5.0.0",
         "@eslint/js": "^9.14.0",
         "globals": "^15.11.0",
         "@eslint/eslintrc": "^3.1.0"

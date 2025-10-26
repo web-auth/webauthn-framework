@@ -15,13 +15,13 @@ class CheckController extends Controller {
 }
 
 const startStimulus = () => {
-    const application: Application = Application.start();
+    const application = Application.start();
     application.register('check', CheckController);
     application.register('webauthn', WebauthnController);
 };
 
 describe('WebauthnController', () => {
-    let container: any;
+    let container;
 
     beforeEach(() => {
         container = mountDOM(`

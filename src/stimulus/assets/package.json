@@ -4,7 +4,6 @@
     "license": "MIT",
     "version": "1.0.0",
     "main": "dist/controller.js",
-    "types": "dist/controller.d.ts",
     "symfony": {
         "controllers": {
             "webauthn": {

@@ -1,5 +1,5 @@
 /**
- * This file is used to compile the TypeScript files in the assets/src directory
+ * This file is used to compile the JavaScript files in the assets/src directory
  * of each package.
  *
  * It allows each package to spawn its own rollup process, which is necessary
@@ -9,7 +9,7 @@ const { spawnSync } = require('child_process');
 const glob = require('glob');
 
 const files = [
-    ...glob.sync('src/*/assets/src/*controller.ts'),
+    ...glob.sync('src/*/assets/src/*controller.js'),
 ];
 
 files.forEach((file) => {

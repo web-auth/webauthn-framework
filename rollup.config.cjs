@@ -1,6 +1,5 @@
 const resolve = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
-const typescript = require('@rollup/plugin-typescript');
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
@@ -38,26 +37,6 @@ const wildcardExternalsPlugin = (peerDependencies) => ({
     }
 });
 
-/**
- * Moves the generated TypeScript declaration files to the correct location.
- *
- * This could probably be configured in the TypeScript plugin.
- */
-const moveTypescriptDeclarationsPlugin = () => ({
-    name: 'move-to-dist',
-    writeBundle: () =>{
-        console.log(packageRoot);
-        const files = glob.sync(path.join(packageRoot, 'dist', '**', 'assets', 'src', '**/*.d.ts'));
-        files.forEach((file) => {
-            const relativePath = file.split('/').slice(8).join('/');
-            const targetFile = path.join(packageRoot, 'dist', relativePath);
-            if (!fs.existsSync(path.dirname(targetFile))) {
-                fs.mkdirSync(path.dirname(targetFile), { recursive: true });
-            }
-            fs.renameSync(file, targetFile);
-        });
-    }
-});
 
 const file = process.env.INPUT_FILE;
 const packageRoot = path.join(file, '..', '..');
@@ -71,22 +50,13 @@ const peerDependencies = [
 module.exports = {
     input: file,
     output: {
-        file: path.join(packageRoot, 'dist', path.basename(file, '.ts') + '.js'),
+        file: path.join(packageRoot, 'dist', path.basename(file, '.js') + '.js'),
         format: 'esm',
     },
     external: peerDependencies,
     plugins: [
         resolve(),
-        typescript({
-            filterRoot: packageRoot,
-            include: ['src/**/*.ts'],
-            compilerOptions: {
-                declaration: true,
-                emitDeclarationOnly: true,
-            }
-        }),
         commonjs(),
         wildcardExternalsPlugin(peerDependencies),
-        moveTypescriptDeclarationsPlugin(packageRoot),
     ],
 };
