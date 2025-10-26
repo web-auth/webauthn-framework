@@ -37,8 +37,18 @@
         "@hotwired/stimulus": "^3.0.0",
         "@simplewebauthn/browser": "^13.0.0"
     },
+    "scripts": {
+        "test": "jest"
+    },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^13.0.0"
+        "@simplewebauthn/browser": "^13.0.0",
+        "@babel/core": "^7.0.0",
+        "@babel/preset-env": "^7.0.0",
+        "@symfony/stimulus-testing": "^2.0.0",
+        "@testing-library/dom": "^10.0.0",
+        "babel-jest": "^29.0.0",
+        "jest": "^29.0.0",
+        "jest-environment-jsdom": "^29.0.0"
     }
 }
