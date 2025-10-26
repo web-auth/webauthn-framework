@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
+use Webauthn\AttestationStatement\CompoundAttestationStatementSupport;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
@@ -25,6 +26,8 @@ return static function (ContainerConfigurator $container): void {
     ;
     $service
         ->set(FidoU2FAttestationStatementSupport::class);
+    $service
+        ->set(CompoundAttestationStatementSupport::class);
     $service
         ->set(AndroidKeyAttestationStatementSupport::class);
     $service
