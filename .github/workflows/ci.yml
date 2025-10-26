@@ -293,14 +293,6 @@ jobs:
   js_tests:
     name: "🧪 JS Tests"
     needs:
-      - prepare_dependencies
-      - phpstan
-      - ecs
-      - rector
-      - lint
-      - validate
-      - check_licenses
-      - deptrac
       - js_lint
       - js_format
     runs-on: ubuntu-latest
