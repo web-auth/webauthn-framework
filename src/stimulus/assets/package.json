@@ -3,11 +3,11 @@
     "description": "Webauthn integration for Symfony",
     "license": "MIT",
     "version": "1.0.0",
-    "main": "dist/controller.js",
+    "main": "src/controller.js",
     "symfony": {
         "controllers": {
             "webauthn": {
-                "main": "dist/controller.js",
+                "main": "src/controller.js",
                 "name": "web-auth/webauthn-stimulus",
                 "webpackMode": "eager",
                 "fetch": "eager",
