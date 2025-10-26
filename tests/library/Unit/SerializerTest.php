@@ -82,7 +82,7 @@ final class SerializerTest extends AbstractTestCase
     {
         //Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('Example.com', 'example.com'),
+            PublicKeyCredentialRpEntity::create('', 'example.com'),
             PublicKeyCredentialUserEntity::create('john.doe', '0123456789', 'John Doe'),
             hash('xxh128', 'pk id test', true),
             [PublicKeyCredentialParameters::createPk(-1), PublicKeyCredentialParameters::createPk(256)],
@@ -109,8 +109,7 @@ final class SerializerTest extends AbstractTestCase
         static::assertJsonStringEqualsJsonString(
             '{
                 "rp": {
-                    "id": "example.com",
-                    "name": "Example.com"
+                    "id": "example.com"
                 },
                 "user": {
                     "id": "MDEyMzQ1Njc4OQ",

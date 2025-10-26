@@ -143,7 +143,7 @@ final readonly class Configuration implements ConfigurationInterface
         $defaultCreationProfiles = [
             'default' => [
                 'rp' => [
-                    'name' => 'Secured Application',
+                    'name' => '',
                 ],
             ],
         ];
@@ -157,13 +157,17 @@ final readonly class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
             ->arrayNode('rp')
-            ->isRequired()
             ->children()
             ->scalarNode('id')
             ->defaultNull()
             ->end()
             ->scalarNode('name')
-            ->isRequired()
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.3.0',
+                'The child node "%node%" at path "%path%" is deprecated and will be removed in the next major release.'
+            )
+            ->defaultValue('')
             ->end()
             ->scalarNode('icon')
             ->setDeprecated(

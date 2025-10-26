@@ -23,7 +23,7 @@ final class Fido2AttestationStatementTest extends AbstractTestCase
     public function aFidoU2FAttestationCanBeVerified(): void
     {
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),

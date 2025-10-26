@@ -30,7 +30,7 @@ final class TPMAttestationStatementSupportTest extends AbstractTestCase
         $response = $this->getSerializer()
             ->deserialize($data, PublicKeyCredential::class, 'json');
         $options = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('https://webauthn.firstyear.id.au'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
             base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
             attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
