@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -99,5 +100,83 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
         static::assertSame([], $data->excludeCredentials);
+    }
+
+    #[Test]
+    public function anPublicKeyCredentialCreationOptionsWithHintsCanBeCreatedAndSerialized(): void
+    {
+        $rp = PublicKeyCredentialRpEntity::create();
+        $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
+        $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
+
+        $options = PublicKeyCredentialCreationOptions::create(
+            $rp,
+            $user,
+            'challenge',
+            [$credentialParameters],
+            attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
+            timeout: 1000,
+            hints: [
+                PublicKeyCredentialCreationOptions::HINT_SECURITY_KEY,
+                PublicKeyCredentialCreationOptions::HINT_HYBRID,
+            ]
+        );
+
+        static::assertSame([
+            PublicKeyCredentialCreationOptions::HINT_SECURITY_KEY,
+            PublicKeyCredentialCreationOptions::HINT_HYBRID,
+        ], $options->hints);
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+        static::assertJsonStringEqualsJsonString(
+            '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"excludeCredentials":[],"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"none","hints":["security-key","hybrid"]}',
+            $json
+        );
+
+        $data = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
+        static::assertSame(['security-key', 'hybrid'], $data->hints);
+    }
+
+    #[Test]
+    public function anPublicKeyCredentialCreationOptionsWithInvalidHintThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Invalid hint "invalid-hint". Allowed values are: security-key, client-device, hybrid'
+        );
+
+        $rp = PublicKeyCredentialRpEntity::create();
+        $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
+        $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
+
+        PublicKeyCredentialCreationOptions::create(
+            $rp,
+            $user,
+            'challenge',
+            [$credentialParameters],
+            hints: ['invalid-hint']
+        );
+    }
+
+    #[Test]
+    public function anPublicKeyCredentialCreationOptionsWithEmptyHintsCanBeCreated(): void
+    {
+        $rp = PublicKeyCredentialRpEntity::create();
+        $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
+        $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
+
+        $options = PublicKeyCredentialCreationOptions::create(
+            $rp,
+            $user,
+            'challenge',
+            [$credentialParameters],
+            hints: []
+        );
+
+        static::assertSame([], $options->hints);
     }
 }

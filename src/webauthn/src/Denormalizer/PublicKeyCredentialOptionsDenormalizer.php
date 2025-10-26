@@ -22,6 +22,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
 use function assert;
+use function count;
 use function in_array;
 
 final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface, NormalizerInterface, NormalizerAwareInterface
@@ -78,6 +79,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                     $format,
                     $context
                 ),
+                $data['hints'] ?? [],
             );
         }
         if ($type === PublicKeyCredentialRequestOptions::class) {
@@ -98,6 +100,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                     $format,
                     $context
                 ),
+                $data['hints'] ?? [],
             );
         }
         throw new BadMethodCallException('Unsupported type');
@@ -148,6 +151,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 $format,
                 $context
             ),
+            'hints' => count($object->hints) === 0 ? null : $object->hints,
         ];
 
         if ($object instanceof PublicKeyCredentialCreationOptions) {
