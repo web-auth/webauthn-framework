@@ -2,8 +2,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import { FlatCompat } from '@eslint/eslintrc';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
 
 const compat = new FlatCompat();
 
@@ -12,38 +10,27 @@ const jestScoped = compat
     .map((c) => ({
         ...c,
         files: [
-            'src/*/assets/test/**/*.ts',
-            '**/__tests__/**/*.{js,ts}',
-            '**/test/**/*.{js,ts}'
+            'src/*/assets/test/**/*.js',
+            '**/__tests__/**/*.js',
+            '**/test/**/*.js'
         ]
     }));
 
 export default [
     js.configs.recommended,
 
-    ...compat.extends(
-        'prettier',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended'
-    ),
+    ...compat.extends('prettier'),
 
     {
-        files: ['**/*.{js,ts}'],
+        files: ['**/*.js'],
         ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.cache/**'],
         languageOptions: {
             ecmaVersion: 'latest',
             sourceType: 'module',
-            parser: tsParser,
             globals: globals.browser
         },
-        plugins: {
-            '@typescript-eslint': tsPlugin
-        },
         rules: {
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-empty-function': 'off',
-            '@typescript-eslint/ban-ts-comment': 'off',
-            '@typescript-eslint/no-unused-vars': [
+            'no-unused-vars': [
                 'warn',
                 {
                     argsIgnorePattern: '^_',

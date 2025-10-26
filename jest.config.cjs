@@ -5,13 +5,13 @@ module.exports = {
         "url": "https://localhost/"
     },
     verbose: true,
-    testRegex: "test/.*\\.test.ts",
+    testRegex: "test/.*\\.test.js",
     testEnvironment: 'jsdom',
     setupFilesAfterEnv: [
         path.join(__dirname, 'tests/setup.js'),
     ],
     transform: {
-        '\\.(j|t)s$': ['babel-jest', { configFile: path.join(__dirname, './babel.config.cjs') }]
+        '\\.js$': ['babel-jest', { configFile: path.join(__dirname, './babel.config.cjs') }]
     },
     "transformIgnorePatterns": [
         "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"

@@ -2,12 +2,6 @@
 
 import { Controller } from '@hotwired/stimulus';
 import {
-    AuthenticationResponseJSON,
-    RegistrationResponseJSON,
-    PublicKeyCredentialRequestOptionsJSON,
-    PublicKeyCredentialCreationOptionsJSON,
-} from '@simplewebauthn/types';
-import {
     browserSupportsWebAuthn,
     browserSupportsWebAuthnAutofill,
     startAuthentication,
@@ -44,24 +38,7 @@ export default class extends Controller {
         },
     };
 
-    declare readonly requestResultUrlValue: string;
-    declare readonly requestOptionsUrlValue: string;
-    declare readonly requestResultFieldValue?: string;
-    declare readonly requestSuccessRedirectUriValue?: string;
-    declare readonly creationResultUrlValue: string;
-    declare readonly creationOptionsUrlValue: string;
-    declare readonly creationResultFieldValue?: string;
-    declare readonly creationSuccessRedirectUriValue?: string;
-    declare readonly usernameFieldValue: string;
-    declare readonly displayNameFieldValue: string;
-    declare readonly attestationFieldValue: string;
-    declare readonly userVerificationFieldValue: string;
-    declare readonly residentKeyFieldValue: string;
-    declare readonly authenticatorAttachmentFieldValue: string;
-    declare readonly useBrowserAutofillValue: boolean;
-    declare readonly requestHeadersValue: object;
-
-    public connect = async () => {
+    connect = async () => {
         const options = {
             requestResultUrl: this.requestResultUrlValue,
             requestOptionsUrl: this.requestOptionsUrlValue,
@@ -85,7 +62,7 @@ export default class extends Controller {
         }
     };
 
-    public async signin(event: Event): Promise<void> {
+    async signin(event) {
         if (!browserSupportsWebAuthn()) {
             this._dispatchEvent('webauthn:unsupported', {});
             return;
@@ -98,16 +75,13 @@ export default class extends Controller {
         this._processSignin(optionsResponseJson, false);
     }
 
-    private async _processSignin(optionsResponseJson: object, useBrowserAutofill: boolean): Promise<void> {
+    async _processSignin(optionsResponseJson, useBrowserAutofill) {
         try {
-            // @ts-ignore
             optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
-            // @ts-ignore
             let authenticatorResponse = await startAuthentication({
                 optionsJSON: optionsResponseJson,
                 useBrowserAutofill,
             });
-            // @ts-ignore
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
@@ -128,7 +102,7 @@ export default class extends Controller {
         }
     }
 
-    public async signup(event: Event): Promise<void> {
+    async signup(event) {
         try {
             if (!browserSupportsWebAuthn()) {
                 this._dispatchEvent('webauthn:unsupported', {});
@@ -141,9 +115,7 @@ export default class extends Controller {
             }
 
             optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
-            // @ts-ignore
             let authenticatorResponse = await startRegistration({ optionsJSON: optionsResponseJson });
-            // @ts-ignore
             authenticatorResponse = this._processExtensionsOutput(authenticatorResponse);
             this._dispatchEvent('webauthn:authenticator:response', { response: authenticatorResponse });
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
@@ -164,26 +136,23 @@ export default class extends Controller {
         }
     }
 
-    private _dispatchEvent(name: string, payload: any): void {
+    _dispatchEvent(name, payload) {
         this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
     }
 
-    private _getData() {
+    _getData() {
         let data = new FormData();
         try {
-            // @ts-ignore
             this.element.reportValidity();
-            // @ts-ignore
             if (!this.element.checkValidity()) {
                 return;
             }
-            // @ts-ignore
             data = new FormData(this.element);
-        } catch (e) {
+        } catch (_e) {
             //Nothing to do
         }
 
-        function removeEmpty(obj: object): any {
+        function removeEmpty(obj) {
             return Object.entries(obj)
                 .filter(([, v]) => v !== null && v !== '')
                 .reduce((acc, [k, v]) => ({ ...acc, [k]: v === Object(v) ? removeEmpty(v) : v }), {});
@@ -199,15 +168,15 @@ export default class extends Controller {
         });
     }
 
-    private async _getPublicKeyCredentialRequestOptions(formData: null | object): Promise<false | object> {
+    async _getPublicKeyCredentialRequestOptions(formData) {
         return this._getOptions(this.requestOptionsUrlValue, formData);
     }
 
-    private async _getPublicKeyCredentialCreationOptions(formData: null | object): Promise<false | object> {
+    async _getPublicKeyCredentialCreationOptions(formData) {
         return this._getOptions(this.creationOptionsUrlValue, formData);
     }
 
-    private async _getOptions(url: string, formData: null | object): Promise<false | object> {
+    async _getOptions(url, formData) {
         const data = formData || this._getData();
         if (!data) {
             return false;
@@ -230,19 +199,15 @@ export default class extends Controller {
         return options;
     }
 
-    private async _getAttestationResponse(authenticatorResponse: RegistrationResponseJSON) {
+    async _getAttestationResponse(authenticatorResponse) {
         return this._getResult(this.creationResultUrlValue, 'webauthn:attestation:', authenticatorResponse);
     }
 
-    private async _getAssertionResponse(authenticatorResponse: AuthenticationResponseJSON) {
+    async _getAssertionResponse(authenticatorResponse) {
         return this._getResult(this.requestResultUrlValue, 'webauthn:assertion:', authenticatorResponse);
     }
 
-    private async _getResult(
-        url: string,
-        eventPrefix: string,
-        authenticatorResponse: RegistrationResponseJSON | AuthenticationResponseJSON
-    ): Promise<false | object> {
+    async _getResult(url, eventPrefix, authenticatorResponse) {
         const attestationResponse = await fetch(url, {
             headers: { ...this.requestHeadersValue },
             method: 'POST',
@@ -258,35 +223,25 @@ export default class extends Controller {
         return attestationResponseJSON;
     }
 
-    private _processExtensionsInput(
-        options: object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON
-    ): object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON {
-        // @ts-ignore
+    _processExtensionsInput(options) {
         if (!options || !options.extensions) {
             return options;
         }
 
-        // @ts-ignore
         if (options.extensions.prf) {
-            // @ts-ignore
             options.extensions.prf = this._processPrfInput(options.extensions.prf);
         }
 
         return options;
     }
 
-    private _processPrfInput(prf: object): object {
-        // @ts-ignore
+    _processPrfInput(prf) {
         if (prf.eval) {
-            // @ts-ignore
             prf.eval = this._importPrfValues(eval);
         }
 
-        // @ts-ignore
         if (prf.evalByCredential) {
-            // @ts-ignore
             Object.keys(prf.evalByCredential).forEach((key) => {
-                // @ts-ignore
                 prf.evalByCredential[key] = this._importPrfValues(prf.evalByCredential[key]);
             });
         }
@@ -294,53 +249,40 @@ export default class extends Controller {
         return prf;
     }
 
-    private _importPrfValues(values: object): object {
-        // @ts-ignore
+    _importPrfValues(values) {
         values.first = base64URLStringToBuffer(values.first);
-        // @ts-ignore
         if (values.second) {
-            // @ts-ignore
             values.second = base64URLStringToBuffer(values.second);
         }
 
         return values;
     }
 
-    private _processExtensionsOutput(
-        options: object | AuthenticationResponseJSON | RegistrationResponseJSON
-    ): object | PublicKeyCredentialRequestOptionsJSON | PublicKeyCredentialCreationOptionsJSON {
-        // @ts-ignore
+    _processExtensionsOutput(options) {
         if (!options || !options.extensions) {
             return options;
         }
 
-        // @ts-ignore
         if (options.extensions.prf) {
-            // @ts-ignore
             options.extensions.prf = this._processPrfOutput(options.extensions.prf);
         }
 
         return options;
     }
 
-    private _processPrfOutput(prf: object): object {
-        // @ts-ignore
+    _processPrfOutput(prf) {
         if (!prf.result) {
             return prf;
         }
 
-        // @ts-ignore
         prf.result = this._exportPrfValues(prf.result);
 
         return prf;
     }
 
-    private _exportPrfValues(values: object): object {
-        // @ts-ignore
+    _exportPrfValues(values) {
         values.first = bufferToBase64URLString(values.first);
-        // @ts-ignore
         if (values.second) {
-            // @ts-ignore
             values.second = bufferToBase64URLString(values.second);
         }
 
