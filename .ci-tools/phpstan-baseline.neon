@@ -7390,6 +7390,15 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
 
 		-
+			rawMessage: '''
+				Fetching deprecated class constant AUTHENTICATOR_TRANSPORT_CABLE of class Webauthn\PublicKeyCredentialDescriptor:
+				Please use AUTHENTICATOR_TRANSPORT_BLE instead. Will be removed in 6.0.0
+			'''
+			identifier: classConstant.deprecated
+			count: 1
+			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
+
+		-
 			rawMessage: Constructor in Webauthn\PublicKeyCredentialEntity has parameter $icon with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
