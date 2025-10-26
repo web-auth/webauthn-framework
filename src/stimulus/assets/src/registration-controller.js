@@ -1,6 +1,11 @@
 'use strict';
 
-import { browserSupportsWebAuthn, startRegistration } from '@simplewebauthn/browser';
+import {
+    browserSupportsWebAuthn,
+    startRegistration,
+    WebAuthnAbortService,
+    WebAuthnError,
+} from '@simplewebauthn/browser';
 import BaseController from './base-controller.js';
 
 /**
@@ -65,6 +70,12 @@ export default class extends BaseController {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
         });
+    }
+
+    disconnect() {
+        // Cancel any pending WebAuthn operations when the controller is disconnected
+        // (e.g., when navigating away from the page)
+        WebAuthnAbortService.cancelCeremony();
     }
 
     /**
@@ -141,7 +152,16 @@ export default class extends BaseController {
                 window.location.replace(this.successRedirectUriValue);
             }
         } catch (error) {
-            this._dispatchEvent('webauthn:registration:error', { error });
+            // Check if this is a WebAuthn-specific error
+            if (error instanceof WebAuthnError) {
+                this._dispatchEvent('webauthn:registration:error', {
+                    error,
+                    code: error.code,
+                    name: error.name,
+                });
+            } else {
+                this._dispatchEvent('webauthn:registration:error', { error });
+            }
         }
     }
 }

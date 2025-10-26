@@ -401,6 +401,39 @@ describe('AuthenticationController', () => {
                 expect(verifyErrorEvent).toBeTruthy();
             });
         });
+
+        it('includes code and name for WebAuthnError', async () => {
+            const form = getByTestId(container, 'authentication-form');
+            let errorEvent = null;
+
+            form.addEventListener('webauthn:authentication:error', (e) => {
+                errorEvent = e.detail;
+            });
+
+            fetchMock.mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ challenge: 'test' }),
+            });
+
+            const webAuthnError = new Error('User cancelled');
+            webAuthnError.name = 'NotAllowedError';
+            webAuthnError.code = 'ERROR_CEREMONY_ABORTED';
+            Object.setPrototypeOf(webAuthnError, SimpleWebAuthnBrowser.WebAuthnError.prototype);
+
+            SimpleWebAuthnBrowser.startAuthentication.mockRejectedValue(webAuthnError);
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(errorEvent).toBeTruthy();
+                expect(errorEvent.code).toBe('ERROR_CEREMONY_ABORTED');
+                expect(errorEvent.name).toBe('NotAllowedError');
+            });
+        });
     });
 
     describe('Form validation', () => {

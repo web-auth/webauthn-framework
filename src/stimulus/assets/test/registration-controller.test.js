@@ -486,6 +486,39 @@ describe('RegistrationController', () => {
                 expect(verifyErrorEvent.response.status).toBe(409);
             });
         });
+
+        it('includes code and name for WebAuthnError', async () => {
+            const form = getByTestId(container, 'registration-form');
+            let errorEvent = null;
+
+            form.addEventListener('webauthn:registration:error', (e) => {
+                errorEvent = e.detail;
+            });
+
+            fetchMock.mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ challenge: 'test', rp: {}, user: {} }),
+            });
+
+            const webAuthnError = new Error('Authenticator not responding');
+            webAuthnError.name = 'NotReadableError';
+            webAuthnError.code = 'ERROR_AUTHENTICATOR_NO_RESPONSE';
+            Object.setPrototypeOf(webAuthnError, SimpleWebAuthnBrowser.WebAuthnError.prototype);
+
+            SimpleWebAuthnBrowser.startRegistration.mockRejectedValue(webAuthnError);
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(errorEvent).toBeTruthy();
+                expect(errorEvent.code).toBe('ERROR_AUTHENTICATOR_NO_RESPONSE');
+                expect(errorEvent.name).toBe('NotReadableError');
+            });
+        });
     });
 
     describe('Form validation', () => {

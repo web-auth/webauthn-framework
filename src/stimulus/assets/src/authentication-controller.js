@@ -1,6 +1,12 @@
 'use strict';
 
-import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser';
+import {
+    browserSupportsWebAuthn,
+    browserSupportsWebAuthnAutofill,
+    startAuthentication,
+    WebAuthnAbortService,
+    WebAuthnError,
+} from '@simplewebauthn/browser';
 import BaseController from './base-controller.js';
 
 /**
@@ -60,6 +66,12 @@ export default class extends BaseController {
         if (supportsAutofill) {
             await this._startAuthenticationWithAutofill();
         }
+    }
+
+    disconnect() {
+        // Cancel any pending WebAuthn operations when the controller is disconnected
+        // (e.g., when navigating away from the page)
+        WebAuthnAbortService.cancelCeremony();
     }
 
     /**
@@ -149,7 +161,16 @@ export default class extends BaseController {
                 window.location.replace(this.successRedirectUriValue);
             }
         } catch (error) {
-            this._dispatchEvent('webauthn:authentication:error', { error });
+            // Check if this is a WebAuthn-specific error
+            if (error instanceof WebAuthnError) {
+                this._dispatchEvent('webauthn:authentication:error', {
+                    error,
+                    code: error.code,
+                    name: error.name,
+                });
+            } else {
+                this._dispatchEvent('webauthn:authentication:error', { error });
+            }
         }
     }
 }
