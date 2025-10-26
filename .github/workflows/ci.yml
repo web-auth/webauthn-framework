@@ -166,7 +166,7 @@ jobs:
       - run: castor deptrac
 
   tests:
-    name: "8️⃣ Unit & Functional Tests (PHP ${{ matrix.php-version }}${{ matrix.lowest-deps && ' --prefer-lowest' || '' }})"
+    name: "8️⃣ Unit & Functional Tests (PHP ${{ matrix.php-version }})"
     needs:
       - prepare_dependencies
       - phpstan
@@ -201,8 +201,62 @@ jobs:
       - name: Run PHPUnit
         run: castor phpunit
 
+  js_lint:
+    name: "9️⃣ JS Lint"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
+
+      - name: Install Node dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i --no-audit --no-fund
+          fi
+
+      - name: ESLint (check)
+        run: npm run lint
+
+  js_format:
+    name: "🔟 JS Format (check)"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
+
+      - name: Install Node dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i --no-audit --no-fund
+          fi
+
+      - name: Prettier (check)
+        run: npm run format
+
   js_tests:
-    name: "9️⃣ JS Tests"
+    name: "🧪 JS Tests"
     needs:
       - prepare_dependencies
       - phpstan
@@ -212,25 +266,31 @@ jobs:
       - validate
       - check_licenses
       - deptrac
+      - js_lint
+      - js_format
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
 
-      - uses: actions/cache@v4
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - name: Install Node dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i --no-audit --no-fund
+          fi
 
-      - name: Run JS Tests
-        run: castor js
+      - name: Run JS tests
+        run: npm run test
 
   infection:
     name: "🧬 Mutation Testing"

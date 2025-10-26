@@ -8,10 +8,10 @@
         "test": "npm exec -ws -- jest",
 
         "lint:fix": "npm exec -ws -- eslint src test --fix",
-        "check-lint": "npm exec -ws -- eslint src test --no-fix",
+        "lint": "npm exec -ws -- eslint src test --no-fix",
 
-        "format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --write",
-        "check-format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --no-write --check"
+        "format:fix": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --write",
+        "format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --no-write --check"
     },
     "devDependencies": {
         "@babel/core": "^7.15.8",
