@@ -30,19 +30,19 @@
         },
         "importmap": {
             "@hotwired/stimulus": "^3.0.0",
-            "@simplewebauthn/browser": "^13.0.0"
+            "@simplewebauthn/browser": "^13.2.0"
         }
     },
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^13.0.0"
+        "@simplewebauthn/browser": "^13.2.0"
     },
     "scripts": {
         "test": "jest"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
-        "@simplewebauthn/browser": "^13.0.0",
+        "@simplewebauthn/browser": "^13.2.0",
         "@babel/core": "^7.0.0",
         "@babel/preset-env": "^7.0.0",
         "@symfony/stimulus-testing": "^2.0.0",
