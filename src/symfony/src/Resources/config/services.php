@@ -74,6 +74,12 @@ return static function (ContainerConfigurator $container): void {
         ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
     ;
 
+    $service
+        ->set('webauthn.ceremony_step_manager.conditional_creation')
+        ->class(CeremonyStepManager::class)
+        ->factory([service(CeremonyStepManagerFactory::class), 'conditionalCreateCeremony'])
+    ;
+
     $service->set(SimpleFakeCredentialGenerator::class);
 
     $service
@@ -85,6 +91,11 @@ return static function (ContainerConfigurator $container): void {
     $service
         ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([service('webauthn.ceremony_step_manager.creation')])
+        ->public();
+    $service
+        ->set('webauthn.authenticator_attestation_response_validator.conditional_creation')
+        ->class(AuthenticatorAttestationResponseValidator::class)
+        ->args([service('webauthn.ceremony_step_manager.conditional_creation')])
         ->public();
     $service
         ->set(AuthenticatorAssertionResponseValidator::class)
