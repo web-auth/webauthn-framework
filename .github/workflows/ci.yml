@@ -16,7 +16,7 @@ jobs:
     name: "0️⃣ Pre-checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: "Check file permissions"
         run: |
@@ -43,7 +43,7 @@ jobs:
     outputs:
       cache-key: ${{ steps.cache-key-generator.outputs.key }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id: cache-key-generator
         run: echo "key=composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}" >> $GITHUB_OUTPUT
@@ -69,7 +69,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: |
@@ -85,7 +85,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: |
@@ -101,7 +101,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: |
@@ -117,7 +117,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: |
@@ -136,7 +136,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: composer exec -- parallel-lint src tests
 
   check_licenses:
@@ -146,7 +146,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: castor check-licenses
 
   deptrac:
@@ -156,7 +156,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: |
@@ -189,7 +189,7 @@ jobs:
       XDEBUG_MODE: coverage
       PHP_VERSION: ${{ matrix.php-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install dependencies
         run: |
           if [ "${{ matrix.lowest-deps || 'false' }}" = "true" ]; then
@@ -206,7 +206,7 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Détecte un lockfile (package-lock.json ou npm-shrinkwrap.json)
       - name: Detect npm lockfile
@@ -252,7 +252,7 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Detect npm lockfile
         id: npm_lock
@@ -297,7 +297,7 @@ jobs:
       - js_format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Detect npm lockfile
         id: npm_lock
@@ -345,7 +345,7 @@ jobs:
     env:
       XDEBUG_MODE: coverage
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Execute Infection
         run: castor infect
 
@@ -354,7 +354,7 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check exported files
         run: |
           EXPECTED="CODE_OF_CONDUCT.md,LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json"
