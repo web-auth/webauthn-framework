@@ -223,7 +223,7 @@ jobs:
       # Avec cache si lockfile présent
       - name: Setup Node.js (with cache)
         if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'npm'
@@ -232,7 +232,7 @@ jobs:
       # Sans cache si pas de lockfile
       - name: Setup Node.js (no cache)
         if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -267,7 +267,7 @@ jobs:
 
       - name: Setup Node.js (with cache)
         if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'npm'
@@ -275,7 +275,7 @@ jobs:
 
       - name: Setup Node.js (no cache)
         if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -312,7 +312,7 @@ jobs:
 
       - name: Setup Node.js (with cache)
         if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'npm'
@@ -320,7 +320,7 @@ jobs:
 
       - name: Setup Node.js (no cache)
         if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
