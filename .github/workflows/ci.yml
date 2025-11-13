@@ -219,6 +219,10 @@ jobs:
       XDEBUG_MODE: coverage
     steps:
       - uses: actions/checkout@v5
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+      - name: Run PHPUnit
+        run: castor phpunit
       - name: Execute Infection
         run: castor infect
 
