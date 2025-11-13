@@ -5248,12 +5248,6 @@ parameters:
 			path: ../src/webauthn/src/Event/AuthenticatorAttestationResponseValidationSucceededEvent.php
 
 		-
-			rawMessage: Class Webauthn\Event\BackupEligibilityChangedEvent is neither abstract nor final.
-			identifier: ergebnis.final
-			count: 1
-			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
-
-		-
 			rawMessage: 'Method Webauthn\Event\BackupEligibilityChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -5264,12 +5258,6 @@ parameters:
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
-
-		-
-			rawMessage: Class Webauthn\Event\BackupStatusChangedEvent is neither abstract nor final.
-			identifier: ergebnis.final
-			count: 1
-			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
 
 		-
 			rawMessage: 'Method Webauthn\Event\BackupStatusChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
