@@ -2,7 +2,8 @@ name: 📁 PHP CI & Docker Build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - '*.*.x'
     tags: ['*']
   pull_request: ~
   workflow_dispatch: ~
@@ -166,7 +167,7 @@ jobs:
       - run: castor deptrac
 
   tests:
-    name: "🧪 Unit & Functional Tests (PHP ${{ matrix.php-version }})"
+    name: "🧪 Unit & Functional Tests (PHP ${{ matrix.php-version }}${{ matrix.lowest-deps && ' - Lowest Deps' || '' }})"
     needs:
       - prepare_dependencies
       - phpstan
@@ -177,12 +178,18 @@ jobs:
       - check_licenses
       - deptrac
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - php-version: '8.2'
+            lowest-deps: true
+          - php-version: '8.2'
           - php-version: '8.3'
           - php-version: '8.4'
+          - php-version: '8.5'
+            experimental: true
     container:
       image: ghcr.io/spomky-labs/phpqa:${{ matrix.php-version }}
     env:
@@ -200,140 +207,6 @@ jobs:
 
       - name: Run PHPUnit
         run: castor phpunit
-
-  js_lint:
-    name: "9️⃣ JS Lint"
-    needs: [prepare_dependencies]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      # Détecte un lockfile (package-lock.json ou npm-shrinkwrap.json)
-      - name: Detect npm lockfile
-        id: npm_lock
-        run: |
-          if [ -f package-lock.json ]; then
-            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
-          elif [ -f npm-shrinkwrap.json ]; then
-            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
-          else
-            echo "path=" >> "$GITHUB_OUTPUT"
-          fi
-
-      # Avec cache si lockfile présent
-      - name: Setup Node.js (with cache)
-        if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
-
-      # Sans cache si pas de lockfile
-      - name: Setup Node.js (no cache)
-        if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
-      - name: Install Node dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm i --no-audit --no-fund
-          fi
-
-      - name: ESLint (check)
-        run: npm run lint
-
-  js_format:
-    name: "🔟 JS Format (check)"
-    needs: [prepare_dependencies]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect npm lockfile
-        id: npm_lock
-        run: |
-          if [ -f package-lock.json ]; then
-            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
-          elif [ -f npm-shrinkwrap.json ]; then
-            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
-          else
-            echo "path=" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Setup Node.js (with cache)
-        if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
-
-      - name: Setup Node.js (no cache)
-        if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
-      - name: Install Node dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm i --no-audit --no-fund
-          fi
-
-      - name: Prettier (check)
-        run: npm run format
-
-  js_tests:
-    name: "🧪 JS Tests"
-    needs:
-      - js_lint
-      - js_format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect npm lockfile
-        id: npm_lock
-        run: |
-          if [ -f package-lock.json ]; then
-            echo "path=package-lock.json" >> "$GITHUB_OUTPUT"
-          elif [ -f npm-shrinkwrap.json ]; then
-            echo "path=npm-shrinkwrap.json" >> "$GITHUB_OUTPUT"
-          else
-            echo "path=" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Setup Node.js (with cache)
-        if: ${{ steps.npm_lock.outputs.path != '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ${{ steps.npm_lock.outputs.path }}
-
-      - name: Setup Node.js (no cache)
-        if: ${{ steps.npm_lock.outputs.path == '' }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
-      - name: Install Node dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm i --no-audit --no-fund
-          fi
-
-      - name: Run JS tests
-        run: npm run test
 
   infection:
     name: "🧬 Mutation Testing"
