@@ -11,6 +11,8 @@ use Throwable;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
+use Webauthn\Event\BackupEligibilityChangedEvent;
+use Webauthn\Event\BackupStatusChangedEvent;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
@@ -61,11 +63,35 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 $host
             );
 
+            // Store previous backup state values to detect changes
+            $previousBackupEligible = $publicKeyCredentialSource->backupEligible;
+            $previousBackupStatus = $publicKeyCredentialSource->backupStatus;
+
             $publicKeyCredentialSource->counter = $authenticatorAssertionResponse->authenticatorData->signCount; //26.1.
             $publicKeyCredentialSource->backupEligible = $authenticatorAssertionResponse->authenticatorData->isBackupEligible(); //26.2.
             $publicKeyCredentialSource->backupStatus = $authenticatorAssertionResponse->authenticatorData->isBackedUp(); //26.2.
             if ($publicKeyCredentialSource->uvInitialized === false) {
                 $publicKeyCredentialSource->uvInitialized = $authenticatorAssertionResponse->authenticatorData->isUserVerified(); //26.3.
+            }
+
+            // Dispatch events if backup state changed
+            if ($previousBackupEligible !== $publicKeyCredentialSource->backupEligible) {
+                $this->eventDispatcher->dispatch(
+                    new BackupEligibilityChangedEvent(
+                        $publicKeyCredentialSource,
+                        $previousBackupEligible,
+                        $publicKeyCredentialSource->backupEligible
+                    )
+                );
+            }
+            if ($previousBackupStatus !== $publicKeyCredentialSource->backupStatus) {
+                $this->eventDispatcher->dispatch(
+                    new BackupStatusChangedEvent(
+                        $publicKeyCredentialSource,
+                        $previousBackupStatus,
+                        $publicKeyCredentialSource->backupStatus
+                    )
+                );
             }
             /*
              * 26.3.

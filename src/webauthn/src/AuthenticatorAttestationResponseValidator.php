@@ -11,6 +11,8 @@ use Throwable;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
+use Webauthn\Event\BackupEligibilityChangedEvent;
+use Webauthn\Event\BackupStatusChangedEvent;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
@@ -72,10 +74,34 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 $host
             );
 
+            // Store previous backup state values to detect changes (will be null for new credentials)
+            $previousBackupEligible = $publicKeyCredentialSource->backupEligible;
+            $previousBackupStatus = $publicKeyCredentialSource->backupStatus;
+
             $publicKeyCredentialSource->counter = $authenticatorAttestationResponse->attestationObject->authData->signCount;
             $publicKeyCredentialSource->backupEligible = $authenticatorAttestationResponse->attestationObject->authData->isBackupEligible();
             $publicKeyCredentialSource->backupStatus = $authenticatorAttestationResponse->attestationObject->authData->isBackedUp();
             $publicKeyCredentialSource->uvInitialized = $authenticatorAttestationResponse->attestationObject->authData->isUserVerified();
+
+            // Dispatch events if backup state changed
+            if ($previousBackupEligible !== $publicKeyCredentialSource->backupEligible) {
+                $this->eventDispatcher->dispatch(
+                    new BackupEligibilityChangedEvent(
+                        $publicKeyCredentialSource,
+                        $previousBackupEligible,
+                        $publicKeyCredentialSource->backupEligible
+                    )
+                );
+            }
+            if ($previousBackupStatus !== $publicKeyCredentialSource->backupStatus) {
+                $this->eventDispatcher->dispatch(
+                    new BackupStatusChangedEvent(
+                        $publicKeyCredentialSource,
+                        $previousBackupStatus,
+                        $publicKeyCredentialSource->backupStatus
+                    )
+                );
+            }
 
             $this->logger->info('The attestation is valid');
             $this->logger->debug('Public Key Credential Source', [

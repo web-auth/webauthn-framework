@@ -5248,6 +5248,30 @@ parameters:
 			path: ../src/webauthn/src/Event/AuthenticatorAttestationResponseValidationSucceededEvent.php
 
 		-
+			rawMessage: 'Method Webauthn\Event\BackupEligibilityChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
+
+		-
+			rawMessage: 'Method Webauthn\Event\BackupEligibilityChangedEvent::__construct() has parameter $previousValue with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
+
+		-
+			rawMessage: 'Method Webauthn\Event\BackupStatusChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
+
+		-
+			rawMessage: 'Method Webauthn\Event\BackupStatusChangedEvent::__construct() has parameter $previousValue with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
+
+		-
 			rawMessage: Class "Webauthn\Exception\AttestationStatementException" is not allowed to extend "Webauthn\Exception\WebauthnException".
 			identifier: ergebnis.noExtends
 			count: 1
