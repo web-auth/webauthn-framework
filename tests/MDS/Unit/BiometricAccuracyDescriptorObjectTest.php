@@ -39,7 +39,7 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
     public static function validObjectData(): iterable
     {
         yield [
-            BiometricAccuracyDescriptor::create(125.21, null, null, null, null),
+            BiometricAccuracyDescriptor::create(125.21, null, null),
             125.21,
             null,
             null,
@@ -48,7 +48,7 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
             '{"selfAttestedFRR":125.21}',
         ];
         yield [
-            BiometricAccuracyDescriptor::create(125.21, 0.001, null, null, null),
+            BiometricAccuracyDescriptor::create(125.21, 0.001, null),
             125.21,
             0.001,
             null,
@@ -57,7 +57,7 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
             '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001}',
         ];
         yield [
-            BiometricAccuracyDescriptor::create(125.21, 0.001, 12.3, null, null),
+            BiometricAccuracyDescriptor::create(125.21, 0.001, 12.3),
             125.21,
             0.001,
             12.3,
@@ -66,7 +66,7 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
             '{"selfAttestedFRR":125.21,"selfAttestedFAR":0.001,"maxTemplates":12.3}',
         ];
         yield [
-            BiometricAccuracyDescriptor::create(125.21, null, null, 50, null),
+            BiometricAccuracyDescriptor::create(125.21, null, null, 50),
             125.21,
             null,
             null,

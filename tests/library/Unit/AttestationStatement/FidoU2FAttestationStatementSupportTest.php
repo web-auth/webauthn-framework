@@ -124,7 +124,7 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
             ]))
         );
 
-        $authenticatorData = AuthenticatorData::create('', 'FOO', '', 0, $attestedCredentialData, null);
+        $authenticatorData = AuthenticatorData::create('', 'FOO', '', 0, $attestedCredentialData);
 
         static::assertSame('fido-u2f', $support->name());
         static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
