@@ -63,6 +63,7 @@
         "symfony/security-core": "^6.4|^7.0",
         "symfony/security-http": "^6.4|^7.0",
         "symfony/serializer": "^6.4|^7.0",
+        "symfony/service-contracts": "^3.0",
         "symfony/uid": "^6.4|^7.0",
         "symfony/validator": "^6.4|^7.0",
         "web-auth/cose-lib": "^4.2.3"
