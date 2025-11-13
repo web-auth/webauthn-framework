@@ -57,7 +57,7 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
     public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
     {
         // Given
-        $expectedJson = '{"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
+        $expectedJson = '{"requireResidentKey":true,"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
@@ -80,6 +80,7 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             $data->authenticatorAttachment
         );
         static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $data->residentKey);
+        static::assertTrue($data->requireResidentKey);
         static::assertJsonStringEqualsJsonString($expectedJson, $this->getSerializer()->serialize($data, 'json', [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
         ]));
