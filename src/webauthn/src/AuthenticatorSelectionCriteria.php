@@ -48,6 +48,15 @@ class AuthenticatorSelectionCriteria
         self::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
     ];
 
+    /**
+     * Legacy property for backward compatibility.
+     *
+     * requireResidentKey is based on residentKey for backward compatibility
+     * Per WebAuthn Level 3 spec: "Relying Parties SHOULD set it to true if, and only if, residentKey is set to required."
+     * Only set when residentKey is "required"; leave uninitialized otherwise
+     */
+    public readonly ?bool $requireResidentKey;
+
     public function __construct(
         public null|string $authenticatorAttachment = null,
         public string $userVerification = self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
@@ -62,6 +71,12 @@ class AuthenticatorSelectionCriteria
         in_array($residentKey, self::RESIDENT_KEY_REQUIREMENTS, true) || throw new InvalidArgumentException(
             'Invalid resident key'
         );
+
+        if ($residentKey === self::RESIDENT_KEY_REQUIREMENT_REQUIRED) {
+            $this->requireResidentKey = true;
+        } else {
+            $this->requireResidentKey = null;
+        }
     }
 
     public static function create(
