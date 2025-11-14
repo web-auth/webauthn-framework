@@ -88,7 +88,7 @@
         "web-token/jwt-library": "Mandatory for fetching Metadata Statement from distant sources",
         "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
-    "minimum-stability": "rc",
+    "minimum-stability": "beta",
     "require-dev": {
         "doctrine/dbal": "^3.8|^4.0",
         "symfony/doctrine-bridge": "^6.4|^7.0|^8.0",
