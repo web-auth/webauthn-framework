@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Webauthn\CredentialRecord;
 use Webauthn\MetadataService\CanLogData;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -32,8 +33,9 @@ class DummyCredentialRecordRepository implements CredentialRecordRepositoryInter
         $this->throwException();
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
-    {
+    public function findOneByCredentialId(
+        string $publicKeyCredentialId
+    ): CredentialRecord|PublicKeyCredentialSource|null {
         $this->throwException();
     }
 

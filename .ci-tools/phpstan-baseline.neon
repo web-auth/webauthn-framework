@@ -1484,6 +1484,15 @@ parameters:
 
 		-
 			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\DummyCredentialRecordRepository::findOneByCredentialId() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: '''
 				Class Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository implements deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
 			'''

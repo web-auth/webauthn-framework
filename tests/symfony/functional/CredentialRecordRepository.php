@@ -12,6 +12,7 @@ use Webauthn\Bundle\Repository\CanSaveCredentialSource;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
@@ -63,8 +64,9 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
         $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
-    {
+    public function findOneByCredentialId(
+        string $publicKeyCredentialId
+    ): CredentialRecord|PublicKeyCredentialSource|null {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
         if (! $item->isHit()) {
             return null;
@@ -90,7 +92,7 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(CredentialRecord $credentialRecord): void
+    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
     {
         $item = $this->cacheItemPool->getItem(
             'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)
