@@ -17,11 +17,13 @@ use Webauthn\AuthenticatorData;
 final class AuthenticatorDataTest extends TestCase
 {
     #[Test]
-    public function anAuthenticatorDataCanBeCreatedAndValueAccessed(): void
+    public function authenticatorDataCanBeCreatedAndValuesAccessed(): void
     {
+        // Given
         $attestedCredentialData = AttestedCredentialData::create(Uuid::v4(), '');
         $extensions = AuthenticationExtensions::create();
 
+        // When
         $authenticatorData = AuthenticatorData::create(
             'auth_data',
             'rp_id_hash',
@@ -31,6 +33,7 @@ final class AuthenticatorDataTest extends TestCase
             $extensions
         );
 
+        // Then
         static::assertSame('auth_data', $authenticatorData->authData);
         static::assertSame('rp_id_hash', $authenticatorData->rpIdHash);
         static::assertTrue($authenticatorData->isUserPresent());

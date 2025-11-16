@@ -22,37 +22,43 @@ final class MetadataServiceTest extends TestCase
      */
     #[Test]
     #[MaximumDuration(5000)]
-    public function theMetadataServiceCanLoadUri(): void
+    public function fidoAllianceMetadataServiceCanLoadAndQueryMetadata(): void
     {
-        //Given
+        // Given
         $response = new MockResponse(trim(file_get_contents(__DIR__ . '/../../blob.jwt')));
         $client = new MockHttpClient();
         $client->setResponseFactory($response);
 
         $service = FidoAllianceCompliantMetadataService::create($client, 'https://fidoalliance.co.nz');
+
+        // When
         $aaguids = $service->list();
+
+        // Then
         foreach ($aaguids as $aaguid) {
             static::assertTrue($service->has($aaguid));
         }
     }
 
     #[Test]
-    public function aMetadataStatementFromAnUriCanBeRetrieved(): void
+    public function distantMetadataServiceCanRetrieveMetadataStatementFromUri(): void
     {
-        //Given
+        // Given
         $response = new MockResponse(trim(file_get_contents(__DIR__ . '/../../solo.json')));
         $client = new MockHttpClient();
         $client->setResponseFactory($response);
 
-        //When
         $service = DistantResourceMetadataService::create(
             $client,
             'https://raw.githubusercontent.com/solokeys/solo/2.1.0/metadata/Solo-FIDO2-CTAP2-Authenticator.json'
         );
 
-        //Then
-        static::assertTrue($service->has('8876631b-d4a0-427f-5773-0ec71c9e0279'));
+        // When
+        $hasMetadata = $service->has('8876631b-d4a0-427f-5773-0ec71c9e0279');
         $ms = $service->get('8876631b-d4a0-427f-5773-0ec71c9e0279');
+
+        // Then
+        static::assertTrue($hasMetadata);
         static::assertSame('8876631b-d4a0-427f-5773-0ec71c9e0279', $ms->aaguid);
         static::assertSame('Solo Secp256R1 FIDO2 CTAP2 Authenticator', $ms->description);
         static::assertSame([], $ms->alternativeDescriptions->descriptions);

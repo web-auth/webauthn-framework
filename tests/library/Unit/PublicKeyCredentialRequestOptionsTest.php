@@ -44,8 +44,9 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
     }
 
     #[Test]
-    public function aPublicKeyCredentialRequestOptionsCanBeCreatedAndValueAccessed(): void
+    public function publicKeyCredentialRequestOptionsCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $extensions = AuthenticationExtensions::create([AuthenticationExtension::create('foo', 'bar')]);
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
 
@@ -58,6 +59,19 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
             extensions: $extensions
         );
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($publicKeyCredentialRequestOptions, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+        $data = $this->getSerializer()
+            ->deserialize(
+                '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}',
+                PublicKeyCredentialRequestOptions::class,
+                'json'
+            );
+
+        // Then
         static::assertSame('challenge', $publicKeyCredentialRequestOptions->challenge);
         static::assertSame(1000, $publicKeyCredentialRequestOptions->timeout);
         static::assertSame('rp_id', $publicKeyCredentialRequestOptions->rpId);
@@ -66,18 +80,9 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticationExtensions::class, $publicKeyCredentialRequestOptions->extensions);
         static::assertJsonStringEqualsJsonString(
             '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}',
-            $this->getSerializer()
-                ->serialize($publicKeyCredentialRequestOptions, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
+            $serialized
         );
 
-        $data = $this->getSerializer()
-            ->deserialize(
-                '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"extensions":{"foo":"bar"},"timeout":1000}',
-                PublicKeyCredentialRequestOptions::class,
-                'json'
-            );
         static::assertSame('challenge', $data->challenge);
         static::assertSame(1000, $data->timeout);
         static::assertSame('rp_id', $data->rpId);
@@ -93,8 +98,9 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
     }
 
     #[Test]
-    public function aPublicKeyCredentialRequestOptionsWithHintsCanBeCreatedAndSerialized(): void
+    public function publicKeyCredentialRequestOptionsWithHintsCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
 
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
@@ -109,47 +115,62 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
             ]
         );
 
-        static::assertSame([
-            PublicKeyCredentialRequestOptions::HINT_CLIENT_DEVICE,
-            PublicKeyCredentialRequestOptions::HINT_HYBRID,
-        ], $publicKeyCredentialRequestOptions->hints);
-
+        // When
         $json = $this->getSerializer()
             ->serialize($publicKeyCredentialRequestOptions, 'json', [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
+        $data = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialRequestOptions::class, 'json');
+
+        // Then
+        static::assertSame([
+            PublicKeyCredentialRequestOptions::HINT_CLIENT_DEVICE,
+            PublicKeyCredentialRequestOptions::HINT_HYBRID,
+        ], $publicKeyCredentialRequestOptions->hints);
         static::assertJsonStringEqualsJsonString(
             '{"challenge":"Y2hhbGxlbmdl","rpId":"rp_id","userVerification":"preferred","allowCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"timeout":1000,"hints":["client-device","hybrid"]}',
             $json
         );
-
-        $data = $this->getSerializer()
-            ->deserialize($json, PublicKeyCredentialRequestOptions::class, 'json');
         static::assertSame(['client-device', 'hybrid'], $data->hints);
     }
 
     #[Test]
-    public function aPublicKeyCredentialRequestOptionsWithInvalidHintThrowsException(): void
+    public function creatingPublicKeyCredentialRequestOptionsWithInvalidHintThrowsException(): void
     {
+        // Then
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Invalid hint "invalid-hint". Allowed values are: security-key, client-device, hybrid'
         );
 
+        // Given
+        // Invalid hint provided
+
+        // When
         PublicKeyCredentialRequestOptions::create('challenge', hints: ['invalid-hint']);
     }
 
     #[Test]
-    public function aPublicKeyCredentialRequestOptionsWithEmptyHintsCanBeCreated(): void
+    public function publicKeyCredentialRequestOptionsWithEmptyHintsPreservesEmptyArray(): void
     {
+        // Given
+        // No hints provided
+
+        // When
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create('challenge');
 
+        // Then
         static::assertSame([], $publicKeyCredentialRequestOptions->hints);
     }
 
     #[Test]
-    public function aPublicKeyCredentialRequestOptionsWithAllThreeHintsCanBeCreated(): void
+    public function publicKeyCredentialRequestOptionsWithAllThreeHintsPreservesAllValues(): void
     {
+        // Given
+        // All three hints provided
+
+        // When
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
             'challenge',
             hints: [
@@ -159,6 +180,7 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
             ]
         );
 
+        // Then
         static::assertSame([
             PublicKeyCredentialRequestOptions::HINT_SECURITY_KEY,
             PublicKeyCredentialRequestOptions::HINT_CLIENT_DEVICE,

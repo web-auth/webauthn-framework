@@ -15,11 +15,16 @@ use Webauthn\Exception\InvalidDataException;
 final class AttestationStatementSupportManagerTest extends TestCase
 {
     #[Test]
-    public function theAttestationFormatIsNotSupported(): void
+    public function gettingUnsupportedAttestationFormatThrowsException(): void
     {
+        // Then
         $this->expectException(InvalidDataException::class);
         $this->expectExceptionMessage('The attestation statement format "bar" is not supported.');
+
+        // Given
         $manager = AttestationStatementSupportManager::create();
+
+        // When
         $manager->get('bar');
     }
 }

@@ -24,6 +24,7 @@ final class BackupStateEventsTest extends AbstractTestCase
     #[Test]
     public function backupStateEventsAreDispatchedWhenChanged(): void
     {
+        // Given
         $dispatchedEvents = [];
         $eventDispatcher = new class($dispatchedEvents) implements EventDispatcherInterface {
             public function __construct(
@@ -86,6 +87,7 @@ final class BackupStateEventsTest extends AbstractTestCase
         $validator = $this->getAuthenticatorAssertionResponseValidator();
         $validator->setEventDispatcher($eventDispatcher);
 
+        // When
         $validator->check(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -94,6 +96,7 @@ final class BackupStateEventsTest extends AbstractTestCase
             'foo'
         );
 
+        // Then
         // Filter to only backup state events
         $backupEvents = array_filter(
             $dispatchedEvents,
@@ -130,6 +133,7 @@ final class BackupStateEventsTest extends AbstractTestCase
     #[Test]
     public function backupStateEventsAreNotDispatchedWhenUnchanged(): void
     {
+        // Given
         $dispatchedEvents = [];
         $eventDispatcher = new class($dispatchedEvents) implements EventDispatcherInterface {
             public function __construct(
@@ -191,6 +195,7 @@ final class BackupStateEventsTest extends AbstractTestCase
         $validator = $this->getAuthenticatorAssertionResponseValidator();
         $validator->setEventDispatcher($eventDispatcher);
 
+        // When
         $validator->check(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -199,6 +204,7 @@ final class BackupStateEventsTest extends AbstractTestCase
             'foo'
         );
 
+        // Then
         // Filter to only backup state events
         $backupEvents = array_filter(
             $dispatchedEvents,

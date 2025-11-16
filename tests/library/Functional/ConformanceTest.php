@@ -27,7 +27,7 @@ final class ConformanceTest extends AbstractTestCase
     #[MaximumDuration(4000)]
     public function validAttestationResponseWithLinkShouldSucceed(string $options, string $response): void
     {
-        //Given
+        // Given
         $serializer = $this->getSerializer();
         $publicKeyCredentialCreationOptions = $serializer->deserialize(
             $options,
@@ -36,6 +36,7 @@ final class ConformanceTest extends AbstractTestCase
         );
         $publicKeyCredential = $this->getSerializer()
             ->deserialize($response, PublicKeyCredential::class, 'json');
+
         // When
         $pkSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check(
@@ -43,7 +44,8 @@ final class ConformanceTest extends AbstractTestCase
                 $publicKeyCredentialCreationOptions,
                 'webauthn.spomky-labs.com'
             );
-        //Then
+
+        // Then
         static::assertSame('80f53d1e-852e-43ed-bb3f-d02f1322e5af', $pkSource->aaguid->toRfc4122());
     }
 

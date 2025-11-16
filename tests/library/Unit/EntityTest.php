@@ -16,31 +16,39 @@ use Webauthn\Tests\AbstractTestCase;
 final class EntityTest extends AbstractTestCase
 {
     #[Test]
-    public function anPublicKeyCredentialUserEntityCanBeCreatedAndValueAccessed(): void
+    public function publicKeyCredentialUserEntityCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $user = PublicKeyCredentialUserEntity::create('name', 'id', 'display_name');
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($user, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame('name', $user->name);
         static::assertSame('display_name', $user->displayName);
         static::assertSame('id', $user->id);
-        static::assertSame(
-            '{"id":"aWQ","name":"name","displayName":"display_name"}',
-            $this->getSerializer()
-                ->serialize($user, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
-        );
+        static::assertSame('{"id":"aWQ","name":"name","displayName":"display_name"}', $serialized);
     }
 
     #[Test]
-    public function anPublicKeyCredentialRpEntityCanBeCreatedAndValueAccessed(): void
+    public function publicKeyCredentialRpEntityCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $rp = PublicKeyCredentialRpEntity::create('', 'id');
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($rp, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame('', $rp->name);
         static::assertSame('id', $rp->id);
-        static::assertSame('{"id":"id"}', $this->getSerializer()->serialize($rp, 'json', [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertSame('{"id":"id"}', $serialized);
     }
 }

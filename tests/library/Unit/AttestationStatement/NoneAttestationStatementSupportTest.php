@@ -17,20 +17,27 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class NoneAttestationStatementSupportTest extends TestCase
 {
     #[Test]
-    public function theAttestationStatementIsNotValid(): void
+    public function validatingNoneAttestationWithoutCertificatesSucceeds(): void
     {
+        // Given
         $support = new NoneAttestationStatementSupport();
 
         $attestationStatement = AttestationStatement::create('none', [], '', EmptyTrustPath::create());
         $authenticatorData = AuthenticatorData::create('', '', '', 0);
 
         static::assertSame('none', $support->name());
-        static::assertTrue($support->isValid('FOO', $attestationStatement, $authenticatorData));
+
+        // When
+        $result = $support->isValid('FOO', $attestationStatement, $authenticatorData);
+
+        // Then
+        static::assertTrue($result);
     }
 
     #[Test]
-    public function theAttestationStatementIsValid(): void
+    public function validatingNoneAttestationWithCertificatesFails(): void
     {
+        // Given
         $support = new NoneAttestationStatementSupport();
 
         $attestationStatement = AttestationStatement::create('none', [
@@ -39,6 +46,11 @@ final class NoneAttestationStatementSupportTest extends TestCase
         $authenticatorData = AuthenticatorData::create('', '', '', 0);
 
         static::assertSame('none', $support->name());
-        static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
+
+        // When
+        $result = $support->isValid('FOO', $attestationStatement, $authenticatorData);
+
+        // Then
+        static::assertFalse($result);
     }
 }

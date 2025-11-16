@@ -20,11 +20,21 @@ final class VerificationMethodDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
-    public function validObject(VerificationMethodDescriptor $object, string $expectedJson): void
-    {
-        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+    public function verificationMethodDescriptorSerializesCorrectly(
+        VerificationMethodDescriptor $object,
+        string $expectedJson
+    ): void {
+        // Given
+        // Object provided by data provider
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($object, JsonEncoder::FORMAT, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
+        static::assertSame($expectedJson, $serialized);
     }
 
     public static function validObjectData(): iterable

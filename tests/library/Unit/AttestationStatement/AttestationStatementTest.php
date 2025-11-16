@@ -16,11 +16,14 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class AttestationStatementTest extends TestCase
 {
     #[Test]
-    public function anAttestationStatementOfNoneTypeReturnsTheExpectedProperties(): void
+    public function creatingNoneTypeAttestationStatementPreservesAllProperties(): void
     {
+        // Given/When
         $attestationStatement = AttestationStatement::createNone('fmt', [
             'bar' => 'FOO',
         ], EmptyTrustPath::create());
+
+        // Then
         static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
@@ -33,11 +36,14 @@ final class AttestationStatementTest extends TestCase
     }
 
     #[Test]
-    public function anAttestationStatementOfBasicTypeReturnsTheExpectedProperties(): void
+    public function creatingBasicTypeAttestationStatementPreservesAllProperties(): void
     {
+        // Given/When
         $attestationStatement = AttestationStatement::createBasic('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create(['key_id']));
+
+        // Then
         static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
@@ -50,11 +56,14 @@ final class AttestationStatementTest extends TestCase
     }
 
     #[Test]
-    public function anAttestationStatementOfAttCATypeReturnsTheExpectedProperties(): void
+    public function creatingAttCATypeAttestationStatementPreservesAllProperties(): void
     {
+        // Given/When
         $attestationStatement = AttestationStatement::createAttCA('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create(['key_id']));
+
+        // Then
         static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',
@@ -67,11 +76,14 @@ final class AttestationStatementTest extends TestCase
     }
 
     #[Test]
-    public function anAttestationStatementOfSelfTypeReturnsTheExpectedProperties(): void
+    public function creatingSelfTypeAttestationStatementPreservesAllProperties(): void
     {
+        // Given/When
         $attestationStatement = AttestationStatement::createSelf('fmt', [
             'bar' => 'FOO',
         ], CertificateTrustPath::create([]));
+
+        // Then
         static::assertSame('fmt', $attestationStatement->fmt);
         static::assertSame([
             'bar' => 'FOO',

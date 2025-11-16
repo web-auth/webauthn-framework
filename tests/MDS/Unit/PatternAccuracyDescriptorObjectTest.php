@@ -18,19 +18,27 @@ final class PatternAccuracyDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
-    public function validObject(
+    public function validPatternAccuracyDescriptorSerializesCorrectly(
         PatternAccuracyDescriptor $object,
         int $minComplexity,
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedJson
     ): void {
+        // Given
+        // Object provided by data provider
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($object, JsonEncoder::FORMAT, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame($minComplexity, $object->minComplexity);
         static::assertSame($maxRetries, $object->maxRetries);
         static::assertSame($blockSlowdown, $object->blockSlowdown);
-        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertSame($expectedJson, $serialized);
     }
 
     public static function validObjectData(): iterable
@@ -47,15 +55,20 @@ final class PatternAccuracyDescriptorObjectTest extends MdsTestCase
 
     #[Test]
     #[DataProvider('invalidObjectData')]
-    public function invalidObject(
+    public function creatingPatternAccuracyDescriptorWithInvalidValuesThrowsException(
         int $minComplexity,
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedMessage
     ): void {
+        // Then
         $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
+        // Given
+        // Parameters provided by data provider
+
+        // When
         PatternAccuracyDescriptor::create($minComplexity, $maxRetries, $blockSlowdown);
     }
 

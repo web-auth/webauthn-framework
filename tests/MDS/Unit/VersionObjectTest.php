@@ -18,13 +18,25 @@ final class VersionObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
-    public function validObject(Version $object, ?int $major, ?int $minor, string $expectedJson): void
-    {
+    public function validVersionSerializesCorrectly(
+        Version $object,
+        ?int $major,
+        ?int $minor,
+        string $expectedJson
+    ): void {
+        // Given
+        // Object provided by data provider
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($object, JsonEncoder::FORMAT, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame($major, $object->major);
         static::assertSame($minor, $object->minor);
-        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertSame($expectedJson, $serialized);
     }
 
     public static function validObjectData(): iterable
@@ -36,11 +48,19 @@ final class VersionObjectTest extends MdsTestCase
 
     #[Test]
     #[DataProvider('invalidObjectData')]
-    public function invalidObject(?int $major, ?int $minor, string $expectedMessage): void
-    {
+    public function creatingVersionWithInvalidValuesThrowsException(
+        ?int $major,
+        ?int $minor,
+        string $expectedMessage
+    ): void {
+        // Then
         $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
+        // Given
+        // Parameters provided by data provider
+
+        // When
         Version::create($major, $minor);
     }
 

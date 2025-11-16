@@ -18,13 +18,18 @@ use Webauthn\Tests\AbstractTestCase;
 final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
 {
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
+    public function loadingAttestationWithoutSignatureThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
+
+        // Given
         $support = AndroidKeyAttestationStatementSupport::create();
 
         static::assertSame('android-key', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [],
@@ -32,11 +37,16 @@ final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
     }
 
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
+    public function loadingAttestationWithoutCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
+
+        // Given
         $support = AndroidKeyAttestationStatementSupport::create();
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -46,11 +56,16 @@ final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
     }
 
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredAlgorithmParameter(): void
+    public function loadingAttestationWithoutAlgorithmParameterThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "alg" is missing.');
+
+        // Given
         $support = AndroidKeyAttestationStatementSupport::create();
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -61,15 +76,20 @@ final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
     }
 
     #[Test]
-    public function theAttestationStatementContainsAnEmptyCertificateList(): void
+    public function loadingAttestationWithEmptyCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
+
+        // Given
         $support = AndroidKeyAttestationStatementSupport::create();
 
         static::assertSame('android-key', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'android-key',
             'attStmt' => [
@@ -81,7 +101,7 @@ final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
     }
 
     #[Test]
-    public function aValidInputCanBeVerified(): void
+    public function validatingAttestationStatementWithValidInputSucceeds(): void
     {
         // Given
         $support = AndroidKeyAttestationStatementSupport::create();
@@ -94,7 +114,7 @@ final class AndroidKeyAttestationStatementSupportTest extends AbstractTestCase
         $response = $publicKeyCredential->response;
         $clientDataJSONHash = hash('sha256', $response->clientDataJSON->rawData, true);
 
-        //When
+        // When
         $result = $support->isValid(
             $clientDataJSONHash,
             $response->attestationObject

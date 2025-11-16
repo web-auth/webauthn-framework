@@ -18,27 +18,30 @@ final class AttestedCredentialDataTest extends AbstractTestCase
 {
     #[Test]
     #[DataProvider('dataAAGUID')]
-    public function anAttestedCredentialDataCanBeCreatedAndValueAccessed(string $uuid): void
+    public function attestedCredentialDataCanBeSerializedAndDeserialized(string $uuid): void
     {
         // Given
         $attestedCredentialData = AttestedCredentialData::create(Uuid::fromString(
             $uuid
         ), 'credential_id', 'credential_public_key');
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($attestedCredentialData, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+        json_decode(
+            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
+            true
+        );
+
+        // Then
         static::assertSame($uuid, $attestedCredentialData->aaguid->__toString());
         static::assertSame('credential_id', $attestedCredentialData->credentialId);
         static::assertSame('credential_public_key', $attestedCredentialData->credentialPublicKey);
         static::assertSame(
             '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
-            $this->getSerializer()
-                ->serialize($attestedCredentialData, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
-        );
-
-        json_decode(
-            '{"aaguid":"' . $uuid . '","credentialId":"Y3JlZGVudGlhbF9pZA==","credentialPublicKey":"Y3JlZGVudGlhbF9wdWJsaWNfa2V5"}',
-            true
+            $serialized
         );
     }
 
