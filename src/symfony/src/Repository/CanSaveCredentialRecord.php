@@ -8,9 +8,9 @@ use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialSource;
 
 /**
- * @deprecated since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+ * Interface for repositories that can save credential records.
  */
-interface CanSaveCredentialSource
+interface CanSaveCredentialRecord
 {
     public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void;
 }

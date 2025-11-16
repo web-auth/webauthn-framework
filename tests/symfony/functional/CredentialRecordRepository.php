@@ -9,19 +9,18 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
+final readonly class CredentialRecordRepository implements CredentialRecordRepositoryInterface, CanSaveCredentialSource
 {
     public function __construct(
         private CacheItemPoolInterface $cacheItemPool
     ) {
-        $publicKeyCredentialSource1 = PublicKeyCredentialSource::create(
+        $credentialRecord1 = CredentialRecord::create(
             base64_decode(
                 'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
                 true
@@ -38,8 +37,8 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
             'foo',
             100
         );
-        $this->saveCredentialSource($publicKeyCredentialSource1);
-        $publicKeyCredentialSource2 = PublicKeyCredentialSource::create(
+        $this->saveCredentialSource($credentialRecord1);
+        $credentialRecord2 = CredentialRecord::create(
             base64_decode(
                 'Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=',
                 true
@@ -56,7 +55,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
             '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
             100
         );
-        $this->saveCredentialSource($publicKeyCredentialSource2);
+        $this->saveCredentialSource($credentialRecord2);
     }
 
     public function ensureCredentialNotExist(string $publicKeyCredentialId): void
@@ -64,7 +63,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
     {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
         if (! $item->isHit()) {
@@ -91,7 +90,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
+    public function saveCredentialSource(CredentialRecord $credentialRecord): void
     {
         $item = $this->cacheItemPool->getItem(
             'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)

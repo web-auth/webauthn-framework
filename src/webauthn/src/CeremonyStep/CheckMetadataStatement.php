@@ -9,6 +9,7 @@ use Psr\Log\NullLogger;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
@@ -23,6 +24,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
 use function count;
 use function in_array;
 use function sprintf;
+use function trigger_deprecation;
 
 final class CheckMetadataStatement implements CeremonyStep, CanLogData
 {
@@ -60,12 +62,20 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
     }
 
     public function process(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,
         string $host
     ): void {
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.3',
+                'Passing a PublicKeyCredentialSource to "%s::process()" is deprecated, pass a CredentialRecord instead.',
+                self::class
+            );
+        }
         if (
             ! $publicKeyCredentialOptions instanceof PublicKeyCredentialCreationOptions
             || ! $authenticatorResponse instanceof AuthenticatorAttestationResponse

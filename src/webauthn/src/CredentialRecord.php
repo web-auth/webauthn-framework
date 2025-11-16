@@ -8,11 +8,12 @@ use Symfony\Component\Uid\Uuid;
 use Webauthn\TrustPath\TrustPath;
 
 /**
- * @see https://www.w3.org/TR/webauthn/#iface-pkcredential
+ * Credential Record represents a stored credential on the server side.
+ * It contains all the necessary data for validating authentication assertions.
  *
- * @deprecated since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+ * @see https://www.w3.org/TR/webauthn-3/#credential-record
  */
-class PublicKeyCredentialSource
+class CredentialRecord
 {
     /**
      * @param string[] $transports

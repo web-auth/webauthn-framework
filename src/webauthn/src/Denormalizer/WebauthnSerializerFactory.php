@@ -59,6 +59,7 @@ final readonly class WebauthnSerializerFactory
             new CollectedClientDataDenormalizer(),
             new PublicKeyCredentialDenormalizer(),
             new PublicKeyCredentialOptionsDenormalizer(),
+            new CredentialRecordDenormalizer(),
             new PublicKeyCredentialSourceDenormalizer(),
             new PublicKeyCredentialRpEntityDenormalizer(),
             new PublicKeyCredentialUserEntityDenormalizer(),

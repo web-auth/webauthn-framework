@@ -7,9 +7,11 @@ namespace Webauthn\CeremonyStep;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\Counter\CounterChecker;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
+use function trigger_deprecation;
 
 final readonly class CheckCounter implements CeremonyStep
 {
@@ -19,18 +21,26 @@ final readonly class CheckCounter implements CeremonyStep
     }
 
     public function process(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,
         string $host
     ): void {
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.3',
+                'Passing a PublicKeyCredentialSource to "%s::process()" is deprecated, pass a CredentialRecord instead.',
+                self::class
+            );
+        }
         $authData = $authenticatorResponse instanceof AuthenticatorAssertionResponse ? $authenticatorResponse->authenticatorData : $authenticatorResponse->attestationObject->authData;
-        $storedCounter = $publicKeyCredentialSource->counter;
+        $storedCounter = $credentialRecord->counter;
         $responseCounter = $authData->signCount;
         if ($responseCounter !== 0 || $storedCounter !== 0) {
-            $this->counterChecker->check($publicKeyCredentialSource, $responseCounter);
+            $this->counterChecker->check($credentialRecord, $responseCounter);
         }
-        $publicKeyCredentialSource->counter = $responseCounter;
+        $credentialRecord->counter = $responseCounter;
     }
 }
