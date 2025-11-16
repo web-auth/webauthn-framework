@@ -21,18 +21,21 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class CompoundAttestationStatementSupportTest extends TestCase
 {
     #[Test]
-    public function theSupportReturnsCorrectName(): void
+    public function supportReturnsCorrectName(): void
     {
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
 
+        // When/Then
         static::assertSame('compound', $support->name());
     }
 
     #[Test]
-    public function itLoadsCompoundAttestationWithMultipleNestedAttestations(): void
+    public function loadingCompoundAttestationWithMultipleNestedAttestationsSucceeds(): void
     {
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -51,16 +54,23 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             ],
         ];
 
+        // When
         $result = $support->load($attestation);
 
+        // Then
         static::assertSame('compound', $result->fmt);
         static::assertInstanceOf(EmptyTrustPath::class, $result->trustPath);
         static::assertCount(2, $result->attStmt);
     }
 
     #[Test]
-    public function itThrowsExceptionWhenAttestationsIsNotAnArray(): void
+    public function loadingCompoundAttestationWithNonArrayAttestationsThrowsException(): void
     {
+        // Then
+        $this->expectException(AttestationStatementLoadingException::class);
+        $this->expectExceptionMessage('Invalid attestation object');
+
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -70,15 +80,18 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             'attStmt' => 'not-an-array',
         ];
 
-        $this->expectException(AttestationStatementLoadingException::class);
-        $this->expectExceptionMessage('Invalid attestation object');
-
+        // When
         $support->load($attestation);
     }
 
     #[Test]
-    public function itThrowsExceptionWhenAttestationsIsEmpty(): void
+    public function validatingCompoundAttestationWithEmptyAttestationsThrowsException(): void
     {
+        // Then
+        $this->expectException(AttestationStatementVerificationException::class);
+        $this->expectExceptionMessage('Compound attestation must contain at least two attestations.');
+
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -88,17 +101,21 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             'attStmt' => [],
         ];
 
-        $this->expectException(AttestationStatementVerificationException::class);
-        $this->expectExceptionMessage('Compound attestation must contain at least two attestations.');
-
         $attestationStatement = $support->load($attestation);
         $authenticatorData = AuthenticatorData::create('', '', '', 0);
+
+        // When
         $support->isValid('FOO', $attestationStatement, $authenticatorData);
     }
 
     #[Test]
-    public function itThrowsExceptionWhenNestedAttestationMissingFmt(): void
+    public function loadingCompoundAttestationWithNestedAttestationMissingFmtThrowsException(): void
     {
+        // Then
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid attestation object');
+
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -116,15 +133,18 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             ],
         ];
 
-        $this->expectException(InvalidDataException::class);
-        $this->expectExceptionMessage('Invalid attestation object');
-
+        // When
         $support->load($attestation);
     }
 
     #[Test]
-    public function itThrowsExceptionWhenNestedAttestationMissingAttStmt(): void
+    public function loadingCompoundAttestationWithNestedAttestationMissingAttStmtThrowsException(): void
     {
+        // Then
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid attestation object');
+
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -142,15 +162,18 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             ],
         ];
 
-        $this->expectException(InvalidDataException::class);
-        $this->expectExceptionMessage('Invalid attestation object');
-
+        // When
         $support->load($attestation);
     }
 
     #[Test]
-    public function itThrowsExceptionWhenNestedAttestationFormatIsUnsupported(): void
+    public function loadingCompoundAttestationWithUnsupportedNestedFormatThrowsException(): void
     {
+        // Then
+        $this->expectException(AttestationStatementLoadingException::class);
+        $this->expectExceptionMessage('Unsupported attestation format "unsupported-format" at index 0.');
+
+        // Given
         $manager = new AttestationStatementSupportManager([]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -169,15 +192,14 @@ final class CompoundAttestationStatementSupportTest extends TestCase
             ],
         ];
 
-        $this->expectException(AttestationStatementLoadingException::class);
-        $this->expectExceptionMessage('Unsupported attestation format "unsupported-format" at index 0.');
-
+        // When
         $support->load($attestation);
     }
 
     #[Test]
-    public function itValidatesCompoundAttestationSuccessfully(): void
+    public function validatingCompoundAttestationWithValidNestedAttestationsSucceeds(): void
     {
+        // Given
         $manager = new AttestationStatementSupportManager([new NoneAttestationStatementSupport()]);
         $support = new CompoundAttestationStatementSupport();
         $support->setAttestationStatementSupportManager($manager);
@@ -200,8 +222,10 @@ final class CompoundAttestationStatementSupportTest extends TestCase
         $attestationStatement = $support->load($attestation);
         $authenticatorData = AuthenticatorData::create('', '', '', 0);
 
+        // When
         $isValid = $support->isValid('FOO', $attestationStatement, $authenticatorData);
 
+        // Then
         static::assertTrue($isValid);
     }
 }

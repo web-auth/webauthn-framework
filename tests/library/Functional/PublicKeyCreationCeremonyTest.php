@@ -18,21 +18,25 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
 {
     #[Test]
     #[DataProvider('getPublicKeyCredentialCreationOptions')]
-    public function theCeremonySucceeded(
+    public function creationCeremonySucceedsWithValidCredentials(
         string $options,
         string $response,
         string $keyId,
         string $type,
         string $host
     ): void {
+        // Given
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize($options, PublicKeyCredentialCreationOptions::class, 'json');
         $publicKeyCredential = $this->getSerializer()
             ->deserialize($response, PublicKeyCredential::class, 'json');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $source = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
 
+        // Then
         static::assertSame(hex2bin($keyId), $source->publicKeyCredentialId);
         static::assertSame($type, $source->attestationType);
     }

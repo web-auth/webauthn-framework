@@ -17,13 +17,16 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class AttestationObjectTest extends TestCase
 {
     #[Test]
-    public function anAttestationObjectCanBeCreated(): void
+    public function creatingAttestationObjectPreservesAllProperties(): void
     {
+        // Given
         $attestationStatement = AttestationStatement::create('', [], '', emptyTrustPath::create());
         $authenticatorData = AuthenticatorData::create('', '', '', 0);
 
+        // When
         $object = AttestationObject::create('rawAttestationObject', $attestationStatement, $authenticatorData);
 
+        // Then
         static::assertSame('rawAttestationObject', $object->rawAttestationObject);
         static::assertInstanceOf(AttestationStatement::class, $object->attStmt);
         static::assertInstanceOf(AuthenticatorData::class, $object->authData);

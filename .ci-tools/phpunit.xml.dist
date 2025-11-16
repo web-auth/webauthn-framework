@@ -19,7 +19,7 @@
     <server name="SHELL_VERBOSITY" value="-1" />
     <server name="KERNEL_CLASS" value="Webauthn\Tests\Bundle\Functional\AppKernel"/>
 </php>
-  <source>
+  <source ignoreIndirectDeprecations="true">
     <include>
       <directory>./../src</directory>
     </include>

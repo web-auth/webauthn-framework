@@ -15,19 +15,21 @@ use Webauthn\Tests\AbstractTestCase;
 final class PublicKeyCredentialDescriptorTest extends AbstractTestCase
 {
     #[Test]
-    public function anPublicKeyCredentialDescriptorCanBeCreatedAndValueAccessed(): void
+    public function publicKeyCredentialDescriptorCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $descriptor = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($descriptor, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame('type', $descriptor->type);
         static::assertSame('id', $descriptor->id);
         static::assertSame(['transport'], $descriptor->transports);
-        static::assertSame(
-            '{"type":"type","id":"aWQ","transports":["transport"]}',
-            $this->getSerializer()
-                ->serialize($descriptor, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
-        );
+        static::assertSame('{"type":"type","id":"aWQ","transports":["transport"]}', $serialized);
     }
 }

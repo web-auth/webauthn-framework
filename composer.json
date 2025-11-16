@@ -88,10 +88,8 @@
         "web-token/jwt-library": "Mandatory for fetching Metadata Statement from distant sources",
         "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     },
-    "minimum-stability": "beta",
     "require-dev": {
         "doctrine/dbal": "^3.8|^4.0",
-        "symfony/doctrine-bridge": "^6.4|^7.0|^8.0",
         "doctrine/doctrine-bundle": "^2.12",
         "doctrine/orm": "^2.14|^3.0",
         "doctrine/persistence": "^3.1|^4.0",
@@ -103,11 +101,13 @@
         "symfony/asset": "^6.4|^7.0|^8.0",
         "symfony/asset-mapper": "^6.4|^7.0|^8.0",
         "symfony/browser-kit": "^6.4|^7.0|^8.0",
+        "symfony/doctrine-bridge": "^6.4|^7.0|^8.0",
         "symfony/filesystem": "^6.4|^7.0|^8.0",
         "symfony/finder": "^6.4|^7.0|^8.0",
         "symfony/monolog-bundle": "^3.8",
         "symfony/twig-bundle": "^6.4|^7.0|^8.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
+        "symfony/var-exporter": "^6.4|^7.0|^8.0",
         "symfony/yaml": "^6.4|^7.0|^8.0",
         "web-token/jwt-library": "^3.4|^4.0"
     },

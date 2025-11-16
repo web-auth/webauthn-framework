@@ -45,7 +45,12 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         }
         if ($type === PublicKeyCredentialCreationOptions::class) {
             return PublicKeyCredentialCreationOptions::create(
-                $this->denormalizer->denormalize($data['rp'], PublicKeyCredentialRpEntity::class, $format, $context),
+                ! isset($data['rp']) ? PublicKeyCredentialRpEntity::create() : $this->denormalizer->denormalize(
+                    $data['rp'],
+                    PublicKeyCredentialRpEntity::class,
+                    $format,
+                    $context
+                ),
                 $this->denormalizer->denormalize(
                     $data['user'],
                     PublicKeyCredentialUserEntity::class,

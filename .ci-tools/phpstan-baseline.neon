@@ -778,12 +778,6 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::getAlias() has Symfony\Component\DependencyInjection\Exception\BadMethodCallException in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
 			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::getConfiguration() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
 			identifier: ergebnis.noParameterWithContainerTypeDeclaration
 			count: 1
@@ -1641,12 +1635,6 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Authentication\WebauthnBadge::__construct() has parameter $userLoader with null as default value.'
 			identifier: ergebnis.noParameterWithNullDefaultValue
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\Security\Authentication\WebauthnBadge::getUser() has Symfony\Component\Security\Core\Exception\AuthenticationException in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
 
@@ -4101,7 +4089,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #2 $array of function array_key_exists expects array, mixed given.'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: ../src/webauthn/src/Denormalizer/AuthenticatorResponseDenormalizer.php
 
 		-
@@ -4185,12 +4173,6 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Denormalizer\ExtensionDescriptorDenormalizer::supportsDenormalization() has parameter $format with null as default value.'
 			identifier: ergebnis.noParameterWithNullDefaultValue
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/ExtensionDescriptorDenormalizer.php
-
-		-
-			rawMessage: 'Only iterables can be unpacked, mixed given in argument #1.'
-			identifier: argument.unpackNonIterable
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/ExtensionDescriptorDenormalizer.php
 
@@ -4297,87 +4279,9 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
-			rawMessage: Cannot access offset 'allowCredentials' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'attestation' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'authenticatorSelection' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'challenge' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'excludeCredentials' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'extensions' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'hints' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
 			rawMessage: Cannot access offset 'id' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'pubKeyCredParams' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'rp' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'rpId' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'timeout' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'user' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
-
-		-
-			rawMessage: Cannot access offset 'userVerification' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
@@ -4389,7 +4293,7 @@ parameters:
 		-
 			rawMessage: 'Language construct isset() should not be used.'
 			identifier: ergebnis.noIsset
-			count: 6
+			count: 7
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
@@ -4467,7 +4371,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #2 $array of function array_key_exists expects array, mixed given.'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialOptionsDenormalizer.php
 
 		-
@@ -5094,12 +4998,6 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Denormalizer\TrustPathDenormalizer::getSupportedTypes() has parameter $format with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
-
-		-
-			rawMessage: 'Method Webauthn\Denormalizer\TrustPathDenormalizer::normalize() has Symfony\Component\Serializer\Exception\ExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
@@ -5892,60 +5790,6 @@ parameters:
 		-
 			rawMessage: Class Webauthn\MetadataService\Psr18HttpClient is neither abstract nor final.
 			identifier: ergebnis.final
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getContent() has Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getContent() has Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getContent() has Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getContent() has Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getHeaders() has Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getHeaders() has Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getHeaders() has Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getHeaders() has Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
-			count: 1
-			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
-
-		-
-			rawMessage: 'Method Symfony\Contracts\HttpClient\ResponseInterface@anonymous/webauthn/src/MetadataService/Psr18HttpClient.php:75::getStatusCode() has Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface in PHPDoc @throws tag but it''s not thrown.'
-			identifier: throws.unusedType
 			count: 1
 			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
 

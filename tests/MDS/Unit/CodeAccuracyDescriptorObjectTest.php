@@ -18,7 +18,7 @@ final class CodeAccuracyDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
-    public function validObject(
+    public function validCodeAccuracyDescriptorSerializesCorrectly(
         CodeAccuracyDescriptor $object,
         int $base,
         int $minLength,
@@ -26,13 +26,21 @@ final class CodeAccuracyDescriptorObjectTest extends MdsTestCase
         ?int $blockSlowdown,
         string $expectedJson
     ): void {
+        // Given
+        // Object provided by data provider
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($object, JsonEncoder::FORMAT, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame($base, $object->base);
         static::assertSame($minLength, $object->minLength);
         static::assertSame($maxRetries, $object->maxRetries);
         static::assertSame($blockSlowdown, $object->blockSlowdown);
-        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertSame($expectedJson, $serialized);
     }
 
     public static function validObjectData(): iterable
@@ -50,16 +58,21 @@ final class CodeAccuracyDescriptorObjectTest extends MdsTestCase
 
     #[Test]
     #[DataProvider('invalidObjectData')]
-    public function invalidObject(
+    public function creatingCodeAccuracyDescriptorWithInvalidValuesThrowsException(
         int $base,
         int $minLength,
         ?int $maxRetries,
         ?int $blockSlowdown,
         string $expectedMessage
     ): void {
+        // Then
         $this->expectException(MetadataStatementLoadingException::class);
         $this->expectExceptionMessage($expectedMessage);
 
+        // Given
+        // Parameters provided by data provider
+
+        // When
         CodeAccuracyDescriptor::create($base, $minLength, $maxRetries, $blockSlowdown);
     }
 

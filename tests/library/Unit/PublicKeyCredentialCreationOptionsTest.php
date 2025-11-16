@@ -20,11 +20,11 @@ use Webauthn\Tests\AbstractTestCase;
 final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
 {
     #[Test]
-    public function anPublicKeyCredentialCreationOptionsCanBeCreatedAndValueAccessed(): void
+    public function serializingAndDeserializingOptionsWithExcludeCredentialsPreservesAllValues(): void
     {
+        // Given
         $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
-
         $credential = PublicKeyCredentialDescriptor::create('type', 'id', ['transport']);
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
@@ -38,6 +38,20 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
             timeout: 1000
         );
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        $deserialized = $this->getSerializer()
+            ->deserialize(
+                '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
+                PublicKeyCredentialCreationOptions::class,
+                'json'
+            );
+
+        // Then
         static::assertSame('challenge', $options->challenge);
         static::assertSame([$credential], $options->excludeCredentials);
         static::assertSame([$credentialParameters], $options->pubKeyCredParams);
@@ -45,36 +59,27 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
         static::assertSame(1000, $options->timeout);
         static::assertJsonStringEqualsJsonString(
             '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"attestation":"direct"}',
-            $this->getSerializer()
-                ->serialize($options, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
+            $serialized
         );
 
-        $data = $this->getSerializer()
-            ->deserialize(
-                '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
-                PublicKeyCredentialCreationOptions::class,
-                'json'
-            );
-        static::assertSame('challenge', $data->challenge);
-        static::assertSame('direct', $data->attestation);
-        static::assertSame(1000, $data->timeout);
+        static::assertSame('challenge', $deserialized->challenge);
+        static::assertSame('direct', $deserialized->attestation);
+        static::assertSame(1000, $deserialized->timeout);
         static::assertJsonStringEqualsJsonString(
             '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"excludeCredentials":[{"type":"type","id":"aWQ","transports":["transport"]}],"authenticatorSelection":{"userVerification":"preferred","residentKey":"preferred"},"attestation":"direct"}',
             $this->getSerializer()
-                ->serialize($data, 'json', [
+                ->serialize($deserialized, 'json', [
                     AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
                 ])
         );
     }
 
     #[Test]
-    public function anPublicKeyCredentialCreationOptionsWithoutExcludeCredentialsCanBeSerializedAndDeserialized(): void
+    public function serializingOptionsWithoutExcludeCredentialsPreservesEmptyArray(): void
     {
+        // Given
         $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
-
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
         $options = PublicKeyCredentialCreationOptions::create(
@@ -86,25 +91,29 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
             timeout: 1000
         );
 
+        // When
         $json = $this->getSerializer()
             ->serialize($options, 'json', [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
+
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertJsonStringEqualsJsonString(
             '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"excludeCredentials": [],"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"indirect"}',
             $json
         );
-
-        $data = $this->getSerializer()
-            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json', [
-                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-            ]);
-        static::assertSame([], $data->excludeCredentials);
+        static::assertSame([], $deserialized->excludeCredentials);
     }
 
     #[Test]
-    public function anPublicKeyCredentialCreationOptionsWithHintsCanBeCreatedAndSerialized(): void
+    public function serializingOptionsWithHintsIncludesHintsInJson(): void
     {
+        // Given
         $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
@@ -122,37 +131,44 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
             ]
         );
 
+        // When
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
+
+        // Then
         static::assertSame([
             PublicKeyCredentialCreationOptions::HINT_SECURITY_KEY,
             PublicKeyCredentialCreationOptions::HINT_HYBRID,
         ], $options->hints);
 
-        $json = $this->getSerializer()
-            ->serialize($options, 'json', [
-                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-            ]);
         static::assertJsonStringEqualsJsonString(
             '{"user":{"name":"USER","id":"aWQ","displayName":"FOO BAR"},"excludeCredentials":[],"challenge":"Y2hhbGxlbmdl","pubKeyCredParams":[{"type":"type","alg":-100}],"timeout":1000,"attestation":"none","hints":["security-key","hybrid"]}',
             $json
         );
 
-        $data = $this->getSerializer()
-            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
-        static::assertSame(['security-key', 'hybrid'], $data->hints);
+        static::assertSame(['security-key', 'hybrid'], $deserialized->hints);
     }
 
     #[Test]
-    public function anPublicKeyCredentialCreationOptionsWithInvalidHintThrowsException(): void
+    public function creatingOptionsWithInvalidHintThrowsException(): void
     {
+        // Then
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Invalid hint "invalid-hint". Allowed values are: security-key, client-device, hybrid'
         );
 
+        // Given
         $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
+        // When
         PublicKeyCredentialCreationOptions::create(
             $rp,
             $user,
@@ -163,12 +179,14 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
     }
 
     #[Test]
-    public function anPublicKeyCredentialCreationOptionsWithEmptyHintsCanBeCreated(): void
+    public function creatingOptionsWithEmptyHintsPreservesEmptyArray(): void
     {
+        // Given
         $rp = PublicKeyCredentialRpEntity::create();
         $user = PublicKeyCredentialUserEntity::create('USER', 'id', 'FOO BAR');
         $credentialParameters = PublicKeyCredentialParameters::create('type', -100);
 
+        // When
         $options = PublicKeyCredentialCreationOptions::create(
             $rp,
             $user,
@@ -177,6 +195,7 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
             hints: []
         );
 
+        // Then
         static::assertSame([], $options->hints);
     }
 }

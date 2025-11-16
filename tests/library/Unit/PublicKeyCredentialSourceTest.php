@@ -17,24 +17,28 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class PublicKeyCredentialSourceTest extends AbstractTestCase
 {
     #[Test]
-    public function backwardCompatibilityIsEnsured(): void
+    public function publicKeyCredentialSourceBackwardCompatibilityIsPreserved(): void
     {
         // Given
         $data = '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":[],"aaguid":"014c0f17-f86f-4586-9914-2779922ba877","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789}';
 
-        //When
+        // When
         $source = $this->getSerializer()
             ->deserialize($data, PublicKeyCredentialSource::class, 'json');
+        $serialized = $this->getSerializer()
+            ->serialize($source, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
 
+        // Then
         static::assertSame('publicKeyCredentialId', $source->publicKeyCredentialId);
-        static::assertJsonStringEqualsJsonString($data, $this->getSerializer()->serialize($source, 'json', [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertJsonStringEqualsJsonString($data, $serialized);
     }
 
     #[Test]
-    public function objectSerialization(): void
+    public function publicKeyCredentialSourceCanBeSerialized(): void
     {
+        // Given
         $source = PublicKeyCredentialSource::create(
             'publicKeyCredentialId',
             'type',
@@ -51,12 +55,16 @@ final class PublicKeyCredentialSourceTest extends AbstractTestCase
             false
         );
 
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($source, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertJsonStringEqualsJsonString(
             '{"publicKeyCredentialId":"cHVibGljS2V5Q3JlZGVudGlhbElk","type":"type","transports":["transport1","transport2"],"attestationType":"attestationType","trustPath":[],"aaguid":"02ffd35d-7f0c-46b5-9eae-851ee4807b25","credentialPublicKey":"cHVibGljS2V5","userHandle":"dXNlckhhbmRsZQ","counter":123456789,"backupEligible":true,"backupStatus":true,"uvInitialized":false}',
-            $this->getSerializer()
-                ->serialize($source, 'json', [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ])
+            $serialized
         );
     }
 }

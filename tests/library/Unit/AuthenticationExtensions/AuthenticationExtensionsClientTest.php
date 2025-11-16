@@ -16,10 +16,12 @@ use Webauthn\Tests\AbstractTestCase;
 final class AuthenticationExtensionsClientTest extends AbstractTestCase
 {
     #[Test]
-    public function anAuthenticationExtensionsClientCanBeCreatedAndValueAccessed(): void
+    public function creatingAuthenticationExtensionPreservesNameAndValue(): void
     {
+        // Given/When
         $extension = new AuthenticationExtension('name', ['value']);
 
+        // Then
         static::assertSame('name', $extension->name);
         static::assertSame(['value'], $extension->value);
         static::assertSame('["value"]', $this->getSerializer()->serialize($extension, 'json', [
@@ -28,10 +30,12 @@ final class AuthenticationExtensionsClientTest extends AbstractTestCase
     }
 
     #[Test]
-    public function theAuthenticationExtensionsCanManageExtensions(): void
+    public function authenticationExtensionsCanManageMultipleExtensions(): void
     {
+        // Given/When
         $inputs = AuthenticationExtensions::create([AuthenticationExtension::create('name', ['value'])]);
 
+        // Then
         static::assertCount(1, $inputs);
         static::assertSame('{"name":["value"]}', $this->getSerializer()->serialize($inputs, 'json', [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,

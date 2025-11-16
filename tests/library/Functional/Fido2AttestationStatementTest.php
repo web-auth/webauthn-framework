@@ -20,8 +20,9 @@ use Webauthn\Tests\AbstractTestCase;
 final class Fido2AttestationStatementTest extends AbstractTestCase
 {
     #[Test]
-    public function aFidoU2FAttestationCanBeVerified(): void
+    public function fidoU2FAttestationCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
             PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
@@ -42,7 +43,11 @@ final class Fido2AttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
+
+        // When
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // Then
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
     }
