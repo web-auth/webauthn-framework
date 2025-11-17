@@ -21,6 +21,7 @@ use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\SimpleFakeCredentialGenerator;
+use function assert;
 
 final readonly class Configuration implements ConfigurationInterface
 {
@@ -132,6 +133,7 @@ final readonly class Configuration implements ConfigurationInterface
         $this->addRequestProfilesConfig($rootNode);
         $this->addMetadataConfig($rootNode);
         $this->addControllersConfig($rootNode);
+        $this->addPasskeyEndpointsConfig($rootNode);
 
         return $treeBuilder;
     }
@@ -513,5 +515,60 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end();
+    }
+
+    private function addPasskeyEndpointsConfig(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode->children()
+            ->arrayNode('passkey_endpoints')
+            ->canBeEnabled()
+            ->info(
+                'Enable the .well-known/passkey-endpoints discovery endpoint as defined in the W3C Passkey Endpoints specification.'
+            )
+            ->children()
+            ->append($this->getUrlNode('enroll', 'URL to the passkey enrollment/creation interface.'))
+            ->append($this->getUrlNode('manage', 'URL to the passkey management interface.'))
+            ->append(
+                $this->getUrlNode(
+                    'prf_usage_details',
+                    'URL to informational page about PRF (Pseudo-Random Function) extension usage.'
+                )
+            )
+            ->end()
+            ->end()
+            ->end();
+    }
+
+    private function getUrlNode(string $name, string $info): ArrayNodeDefinition
+    {
+        $treeBuilder = new TreeBuilder($name);
+        $node = $treeBuilder->getRootNode();
+        assert($node instanceof ArrayNodeDefinition);
+        $node
+            ->info($info)
+            ->beforeNormalization()
+            ->ifString()
+            ->then(static fn (string $v): array => [
+                'path' => $v,
+            ])
+            ->end()
+            ->children()
+            ->scalarNode('path')
+            ->isRequired()
+            ->info('The absolute HTTPS URL or Symfony route name.')
+            ->example(['https://example.com/enroll', 'app_passkey_enroll'])
+            ->end()
+            ->arrayNode('params')
+            ->treatFalseLike([])
+            ->treatTrueLike([])
+            ->treatNullLike([])
+            ->prototype('variable')
+            ->end()
+            ->info('Route parameters (only used when path is a Symfony route name).')
+            ->end()
+            ->end()
+            ->end();
+
+        return $node;
     }
 }

@@ -304,6 +304,30 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Compiler/LoggerSetterCompilerPass.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass::createControllerDefinition() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
+			identifier: ergebnis.noParameterWithContainerTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Compiler/PasskeyEndpointsCompilerPass.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass::createPasskeyEndpointsResponse() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
+			identifier: ergebnis.noParameterWithContainerTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Compiler/PasskeyEndpointsCompilerPass.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass::process() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
+			identifier: ergebnis.noParameterWithContainerTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Compiler/PasskeyEndpointsCompilerPass.php
+
+		-
+			rawMessage: 'Parameter #1 $value of method Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass::createUrlDefinition() expects array<string, mixed>|string, array|bool|float|int|string given.'
+			identifier: argument.type
+			count: 3
+			path: ../src/symfony/src/DependencyInjection/Compiler/PasskeyEndpointsCompilerPass.php
+
+		-
 			rawMessage: Anonymous function should return array but returns mixed.
 			identifier: return.type
 			count: 1
@@ -832,6 +856,12 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadPasskeyEndpointsConfig() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
+			identifier: ergebnis.noParameterWithContainerTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadRequestControllersSupport() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
 			identifier: ergebnis.noParameterWithContainerTypeDeclaration
 			count: 1
@@ -868,6 +898,12 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
+			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadPasskeyEndpointsConfig() expects array<mixed>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
 			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadRequestControllersSupport() expects array<mixed>, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -882,7 +918,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #2 $value of method Symfony\Component\DependencyInjection\Container::setParameter() expects array|bool|float|int|string|UnitEnum|null, mixed given.'
 			identifier: argument.type
-			count: 5
+			count: 9
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -5050,6 +5086,54 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
 
 		-
+			rawMessage: Constructor in Webauthn\Denormalizer\UrlNormalizer has parameter $urlGenerator with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::__construct() has parameter $urlGenerator with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::__construct() has parameter $urlGenerator with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::getSupportedTypes() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::normalize() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::normalize() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::supportsNormalization() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\UrlNormalizer::supportsNormalization() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/UrlNormalizer.php
+
+		-
 			rawMessage: 'Method Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer::getSupportedTypes() has parameter $format with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -7270,6 +7354,96 @@ parameters:
 			path: ../src/webauthn/src/MetadataService/Statement/Version.php
 
 		-
+			rawMessage: Constructor in Webauthn\PasskeyEndpointsResponse has parameter $enroll with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: Constructor in Webauthn\PasskeyEndpointsResponse has parameter $manage with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: Constructor in Webauthn\PasskeyEndpointsResponse has parameter $prfUsageDetails with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $enroll with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $enroll with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $manage with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $manage with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $prfUsageDetails with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::__construct() has parameter $prfUsageDetails with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $enroll with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $enroll with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $manage with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $manage with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $prfUsageDetails with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
+			rawMessage: 'Method Webauthn\PasskeyEndpointsResponse::create() has parameter $prfUsageDetails with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/PasskeyEndpointsResponse.php
+
+		-
 			rawMessage: Class "Webauthn\PublicKeyCredential" is not allowed to extend "Webauthn\Credential".
 			identifier: ergebnis.noExtends
 			count: 1
@@ -7967,6 +8141,12 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../src/webauthn/src/SimpleFakeCredentialGenerator.php
+
+		-
+			rawMessage: Constructor in Webauthn\Url has parameter $params with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Url.php
 
 		-
 			rawMessage: 'Method Webauthn\Util\Base64::decode() is not final, but since the containing class is abstract, it should be.'
