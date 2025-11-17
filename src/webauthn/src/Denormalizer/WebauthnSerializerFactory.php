@@ -49,6 +49,7 @@ final readonly class WebauthnSerializerFactory
             new AuthenticationExtensionNormalizer(),
             new PublicKeyCredentialDescriptorNormalizer(),
             new AttestedCredentialDataNormalizer(),
+            new UrlNormalizer(),
             new AttestationObjectDenormalizer(),
             new AttestationStatementDenormalizer($this->attestationStatementSupportManager),
             new AuthenticationExtensionsDenormalizer(),

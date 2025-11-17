@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Webauthn\Tests\Bundle\Functional\AdminController;
 use Webauthn\Tests\Bundle\Functional\HomeController;
+use Webauthn\Tests\Bundle\Functional\ManageController;
 use Webauthn\Tests\Bundle\Functional\SecurityController;
 
 return static function (RoutingConfigurator $routes): void {
@@ -28,5 +29,10 @@ return static function (RoutingConfigurator $routes): void {
     // Admin
     $routes->add('app_admin', '/admin')
         ->controller([AdminController::class, 'admin'])
+        ->methods(['GET']);
+
+    // Admin
+    $routes->add('app_manage', '/manage/{foo}')
+        ->controller([ManageController::class, 'manage'])
         ->methods(['GET']);
 };
