@@ -20,7 +20,7 @@ final class WebauthnStimulusBundle extends AbstractBundle
         $builder->prependExtensionConfig('framework', [
             'asset_mapper' => [
                 'paths' => [
-                    __DIR__ . '/../assets/dist' => '@web-auth/webauthn-stimulus',
+                    __DIR__ . '/../assets/src' => '@web-auth/webauthn-stimulus',
                 ],
             ],
         ]);
