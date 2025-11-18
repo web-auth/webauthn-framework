@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Security\Handler;
 
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -23,7 +24,8 @@ final readonly class DefaultCreationOptionsHandler implements CreationOptionsHan
 
     public function onCreationOptions(
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-        PublicKeyCredentialUserEntity $userEntity
+        PublicKeyCredentialUserEntity $userEntity,
+        ?Request $request = null,
     ): Response {
         $data = $this->normalizer->normalize($publicKeyCredentialCreationOptions, JsonEncoder::FORMAT, [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,

@@ -1768,6 +1768,30 @@ parameters:
 			path: ../src/symfony/src/Security/Authorization/Voter/IsUserVerifiedVoter.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\CreationOptionsHandler::onCreationOptions() has parameter $request with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/CreationOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\CreationOptionsHandler::onCreationOptions() has parameter $request with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/CreationOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler::onCreationOptions() has parameter $request with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultCreationOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler::onCreationOptions() has parameter $request with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultCreationOptionsHandler.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultFailureHandler::onFailure() has parameter $exception with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -1780,10 +1804,58 @@ parameters:
 			path: ../src/symfony/src/Security/Handler/DefaultFailureHandler.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler::onRequestOptions() has parameter $request with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultRequestOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler::onRequestOptions() has parameter $request with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultRequestOptionsHandler.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultRequestOptionsHandler::onRequestOptions() has parameter $userEntity with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/Security/Handler/DefaultRequestOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredential with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredential with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $userEntity with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\DefaultSuccessHandler::onSuccess() has parameter $userEntity with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/DefaultSuccessHandler.php
 
 		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Handler\FailureHandler::onFailure() has parameter $exception with a nullable type declaration.'
@@ -1798,10 +1870,58 @@ parameters:
 			path: ../src/symfony/src/Security/Handler/FailureHandler.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\RequestOptionsHandler::onRequestOptions() has parameter $request with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/RequestOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\RequestOptionsHandler::onRequestOptions() has parameter $request with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/RequestOptionsHandler.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Handler\RequestOptionsHandler::onRequestOptions() has parameter $userEntity with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/Security/Handler/RequestOptionsHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $publicKeyCredential with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $publicKeyCredential with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $userEntity with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\SuccessHandler::onSuccess() has parameter $userEntity with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Security/Handler/SuccessHandler.php
 
 		-
 			rawMessage: Class Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials is neither abstract nor final.
@@ -2081,6 +2201,42 @@ parameters:
 			identifier: ergebnis.noParameterWithNullDefaultValue
 			count: 1
 			path: ../src/symfony/src/Service/DefaultFailureHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredential with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredential with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $publicKeyCredentialOptions with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $userEntity with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\DefaultSuccessHandler::onSuccess() has parameter $userEntity with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/Service/DefaultSuccessHandler.php
 
 		-
 			rawMessage: Cannot access offset 'attestation_conveyance' on mixed.
