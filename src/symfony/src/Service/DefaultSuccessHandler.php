@@ -8,11 +8,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
+use Webauthn\PublicKeyCredential;
+use Webauthn\PublicKeyCredentialOptions;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 final class DefaultSuccessHandler implements SuccessHandler
 {
-    public function onSuccess(Request $request): Response
-    {
+    public function onSuccess(
+        Request $request,
+        ?PublicKeyCredential $publicKeyCredential = null,
+        ?PublicKeyCredentialOptions $publicKeyCredentialOptions = null,
+        ?PublicKeyCredentialUserEntity $userEntity = null
+    ): Response {
         $data = [
             'status' => 'ok',
             'errorMessage' => '',

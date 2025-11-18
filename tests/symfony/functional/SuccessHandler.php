@@ -10,11 +10,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Webauthn\Bundle\Security\Handler\SuccessHandler as SuccessHandlerInterface;
+use Webauthn\PublicKeyCredential;
+use Webauthn\PublicKeyCredentialOptions;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 final class SuccessHandler implements AuthenticationSuccessHandlerInterface, SuccessHandlerInterface
 {
-    public function onSuccess(Request $request): Response
-    {
+    public function onSuccess(
+        Request $request,
+        ?PublicKeyCredential $publicKeyCredential = null,
+        ?PublicKeyCredentialOptions $publicKeyCredentialOptions = null,
+        ?PublicKeyCredentialUserEntity $userEntity = null
+    ): Response {
         $data = [
             'status' => 'ok',
             'errorMessage' => '',
