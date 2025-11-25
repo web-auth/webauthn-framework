@@ -89,41 +89,49 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
         $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
             'No attested credential data found'
         );
+
+        /**
+         * RP does not want to verify the authentication attestation.
+         * @see https://www.w3.org/TR/webauthn-3/#dom-attestationconveyancepreference-none
+         */
+        if (in_array(
+            $publicKeyCredentialOptions->attestation,
+            [null, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE],
+            true
+        )) {
+            return;
+        }
+
+        /**
+         * No trust path available for verification
+         *
+         * @see https://www.w3.org/TR/webauthn-3/#none
+         * @see https://www.w3.org/TR/webauthn-3/#self
+         */
+        if (in_array(
+            $attestationStatement->type,
+            [AttestationStatement::TYPE_NONE, AttestationStatement::TYPE_SELF],
+            true
+        )) {
+            return;
+        }
+
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
-        if ($publicKeyCredentialOptions->attestation === null || $publicKeyCredentialOptions->attestation === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
-            $this->logger->debug('No attestation is asked.');
-            if ($aaguid === '00000000-0000-0000-0000-000000000000' && in_array(
-                $attestationStatement->type,
-                [AttestationStatement::TYPE_NONE, AttestationStatement::TYPE_SELF],
-                true
-            )) {
-                $this->logger->debug('The Attestation Statement is anonymous.');
-                $this->checkCertificateChain($attestationStatement, null);
-                return;
-            }
-            return;
-        }
-        // If no Attestation Statement has been returned or if null AAGUID (=00000000-0000-0000-0000-000000000000)
-        // => nothing to check
-        if ($attestationStatement->type === AttestationStatement::TYPE_NONE) {
-            $this->logger->debug('No attestation returned.');
-            //No attestation is returned. We shall ensure that the AAGUID is a null one.
-            //if ($aaguid !== '00000000-0000-0000-0000-000000000000') {
-            //$this->logger->debug('Anonymization required. AAGUID and Attestation Statement changed.', [
-            //    'aaguid' => $aaguid,
-            //    'AttestationStatement' => $attestationStatement,
-            //]);
-            //$attestedCredentialData->aaguid = Uuid::fromString('00000000-0000-0000-0000-000000000000');
-            //    return;
-            //}
-            return;
-        }
+        /**
+         * All-zeros AAGUID: either privacy placeholder or U2F device (which predates AAGUID).
+         * 1) Privacy Placeholder indicates the authenticator does not provide detailed information.
+         * 2) U2F device can not provide useful AAGUID.
+         *
+         * So Metadata Statement lookup by AAGUID not possible, skip it.
+         *
+         * @see https://www.w3.org/TR/webauthn-3/#sctn-createCredential
+         * @see https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html#u2f-authenticatorMakeCredential-interoperability
+         */
         if ($aaguid === '00000000-0000-0000-0000-000000000000') {
-            //No need to continue if the AAGUID is null.
-            // This could be the case e.g. with AnonCA type
             return;
         }
+
         //The MDS Repository is mandatory here
         $this->metadataStatementRepository !== null || throw AuthenticatorResponseVerificationException::create(
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
@@ -181,17 +189,13 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
     private function checkCertificateChain(
         AttestationStatement $attestationStatement,
-        ?MetadataStatement $metadataStatement
+        MetadataStatement $metadataStatement
     ): void {
         $trustPath = $attestationStatement->trustPath;
-        if (! $trustPath instanceof CertificateTrustPath) {
-            return;
-        }
+        $trustPath instanceof CertificateTrustPath || throw AuthenticatorResponseVerificationException::create(
+            'Certificate trust path is required for attestation verification'
+        );
         $authenticatorCertificates = $trustPath->certificates;
-        if ($metadataStatement === null) {
-            $this->certificateChainValidator?->check($authenticatorCertificates, []);
-            return;
-        }
         $trustedCertificates = CertificateToolbox::fixPEMStructures(
             $metadataStatement->attestationRootCertificates
         );
