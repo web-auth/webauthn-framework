@@ -6,6 +6,7 @@ namespace Webauthn\CeremonyStep;
 
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
@@ -13,7 +14,7 @@ use Webauthn\PublicKeyCredentialSource;
 interface CeremonyStep
 {
     public function process(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,

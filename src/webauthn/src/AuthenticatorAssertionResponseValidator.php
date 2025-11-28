@@ -17,6 +17,7 @@ use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
+use function trigger_deprecation;
 
 class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatchEvents
 {
@@ -40,15 +41,24 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,
         ?string $userHandle,
-    ): PublicKeyCredentialSource {
+    ): CredentialRecord|PublicKeyCredentialSource {
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.3',
+                'Passing a PublicKeyCredentialSource to "%s::check()" is deprecated, pass a CredentialRecord instead.',
+                self::class
+            );
+        }
+
         try {
             $this->logger->info('Checking the authenticator assertion response', [
-                'publicKeyCredentialSource' => $publicKeyCredentialSource,
+                'credentialRecord' => $credentialRecord,
                 'authenticatorAssertionResponse' => $authenticatorAssertionResponse,
                 'publicKeyCredentialRequestOptions' => $publicKeyCredentialRequestOptions,
                 'host' => $host,
@@ -56,7 +66,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             ]);
 
             $this->ceremonyStepManager->process(
-                $publicKeyCredentialSource,
+                $credentialRecord,
                 $authenticatorAssertionResponse,
                 $publicKeyCredentialRequestOptions,
                 $userHandle,
@@ -64,32 +74,32 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
             );
 
             // Store previous backup state values to detect changes
-            $previousBackupEligible = $publicKeyCredentialSource->backupEligible;
-            $previousBackupStatus = $publicKeyCredentialSource->backupStatus;
+            $previousBackupEligible = $credentialRecord->backupEligible;
+            $previousBackupStatus = $credentialRecord->backupStatus;
 
-            $publicKeyCredentialSource->counter = $authenticatorAssertionResponse->authenticatorData->signCount; //26.1.
-            $publicKeyCredentialSource->backupEligible = $authenticatorAssertionResponse->authenticatorData->isBackupEligible(); //26.2.
-            $publicKeyCredentialSource->backupStatus = $authenticatorAssertionResponse->authenticatorData->isBackedUp(); //26.2.
-            if ($publicKeyCredentialSource->uvInitialized === false) {
-                $publicKeyCredentialSource->uvInitialized = $authenticatorAssertionResponse->authenticatorData->isUserVerified(); //26.3.
+            $credentialRecord->counter = $authenticatorAssertionResponse->authenticatorData->signCount; //26.1.
+            $credentialRecord->backupEligible = $authenticatorAssertionResponse->authenticatorData->isBackupEligible(); //26.2.
+            $credentialRecord->backupStatus = $authenticatorAssertionResponse->authenticatorData->isBackedUp(); //26.2.
+            if ($credentialRecord->uvInitialized === false) {
+                $credentialRecord->uvInitialized = $authenticatorAssertionResponse->authenticatorData->isUserVerified(); //26.3.
             }
 
             // Dispatch events if backup state changed
-            if ($previousBackupEligible !== $publicKeyCredentialSource->backupEligible) {
+            if ($previousBackupEligible !== $credentialRecord->backupEligible) {
                 $this->eventDispatcher->dispatch(
                     new BackupEligibilityChangedEvent(
-                        $publicKeyCredentialSource,
+                        $credentialRecord,
                         $previousBackupEligible,
-                        $publicKeyCredentialSource->backupEligible
+                        $credentialRecord->backupEligible
                     )
                 );
             }
-            if ($previousBackupStatus !== $publicKeyCredentialSource->backupStatus) {
+            if ($previousBackupStatus !== $credentialRecord->backupStatus) {
                 $this->eventDispatcher->dispatch(
                     new BackupStatusChangedEvent(
-                        $publicKeyCredentialSource,
+                        $credentialRecord,
                         $previousBackupStatus,
-                        $publicKeyCredentialSource->backupStatus
+                        $credentialRecord->backupStatus
                     )
                 );
             }
@@ -100,8 +110,8 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
 
             //All good. We can continue.
             $this->logger->info('The assertion is valid');
-            $this->logger->debug('Public Key Credential Source', [
-                'publicKeyCredentialSource' => $publicKeyCredentialSource,
+            $this->logger->debug('Credential Record', [
+                'credentialRecord' => $credentialRecord,
             ]);
             $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationSucceededEvent(
@@ -109,18 +119,18 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                     $publicKeyCredentialRequestOptions,
                     $host,
                     $userHandle,
-                    $publicKeyCredentialSource
+                    $credentialRecord
                 )
             );
             // 27.
-            return $publicKeyCredentialSource;
+            return $credentialRecord;
         } catch (AuthenticatorResponseVerificationException $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
             ]);
             $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAssertionResponseValidationFailedEvent(
-                    $publicKeyCredentialSource,
+                    $credentialRecord,
                     $authenticatorAssertionResponse,
                     $publicKeyCredentialRequestOptions,
                     $host,
@@ -147,19 +157,19 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,
         ?string $userHandle,
-        PublicKeyCredentialSource $publicKeyCredentialSource
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord
     ): AuthenticatorAssertionResponseValidationSucceededEvent {
         return new AuthenticatorAssertionResponseValidationSucceededEvent(
             $authenticatorAssertionResponse,
             $publicKeyCredentialRequestOptions,
             $host,
             $userHandle,
-            $publicKeyCredentialSource
+            $credentialRecord
         );
     }
 
     protected function createAuthenticatorAssertionResponseValidationFailedEvent(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,
@@ -167,7 +177,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
         Throwable $throwable
     ): AuthenticatorAssertionResponseValidationFailedEvent {
         return new AuthenticatorAssertionResponseValidationFailedEvent(
-            $publicKeyCredentialSource,
+            $credentialRecord,
             $authenticatorAssertionResponse,
             $publicKeyCredentialRequestOptions,
             $host,

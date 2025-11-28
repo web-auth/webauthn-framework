@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Webauthn\AuthenticatorResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -24,7 +25,7 @@ final class WebauthnBadge extends UserBadge
 
     private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
 
-    private PublicKeyCredentialSource $publicKeyCredentialSource;
+    private CredentialRecord|PublicKeyCredentialSource $publicKeyCredentialSource;
 
     private UserInterface $user;
 
@@ -72,7 +73,7 @@ final class WebauthnBadge extends UserBadge
         return $this->publicKeyCredentialUserEntity;
     }
 
-    public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
+    public function getPublicKeyCredentialSource(): CredentialRecord|PublicKeyCredentialSource
     {
         if (! $this->isResolved) {
             throw new LogicException('The badge is not resolved.');
@@ -92,7 +93,7 @@ final class WebauthnBadge extends UserBadge
         AuthenticatorResponse $authenticatorResponse,
         PublicKeyCredentialOptions $publicKeyCredentialOptions,
         PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $publicKeyCredentialSource,
     ): void {
         if ($this->userLoader === null) {
             throw new LogicException(sprintf(

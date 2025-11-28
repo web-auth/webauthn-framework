@@ -61,6 +61,51 @@ parameters:
 			path: ../src/symfony/src/Controller/AssertionControllerFactory.php
 
 		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AssertionControllerFactory::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionControllerFactory.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionControllerFactory.php
+
+		-
+			rawMessage: '''
+				Call to method findOneByCredentialId() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionResponseController.php
+
+		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AssertionResponseController::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionResponseController.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionResponseController.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\Controller\AttestationControllerFactory::createRequestController() has parameter $optionStorage with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -85,6 +130,24 @@ parameters:
 			path: ../src/symfony/src/Controller/AttestationControllerFactory.php
 
 		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AttestationControllerFactory::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationControllerFactory.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationControllerFactory.php
+
+		-
 			rawMessage: Constructor in Webauthn\Bundle\Controller\AttestationRequestController has parameter $hideExistingExcludedCredentials with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
@@ -95,6 +158,114 @@ parameters:
 			identifier: arguments.count
 			count: 1
 			path: ../src/symfony/src/Controller/AttestationRequestController.php
+
+		-
+			rawMessage: '''
+				Call to method findOneByCredentialId() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: '''
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialSourceRepository of method Webauthn\Bundle\Controller\AttestationResponseController::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: '''
+				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: '''
+				Call to method findAllForUserEntity() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Call to method getPublicKeyCredentialDescriptor() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Parameter $credential of anonymous function has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialSourceRepository of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Call to method findAllForUserEntity() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Call to method getPublicKeyCredentialDescriptor() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
 			rawMessage: Constructor in Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder has parameter $fakeCredentialGenerator with default value.
@@ -139,6 +310,33 @@ parameters:
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
+			rawMessage: '''
+				Parameter $credential of anonymous function has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialSourceRepository of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialRequestOptionsBuilder::getFromRequest() has parameter $userEntity that is passed by reference.'
 			identifier: ergebnis.noParameterPassedByReference
 			count: 1
@@ -155,6 +353,15 @@ parameters:
 			identifier: ergebnis.noParameterWithNullDefaultValue
 			count: 1
 			path: ../src/symfony/src/CredentialOptionsBuilder/PublicKeyCredentialRequestOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Access to property $publicKeyCredentialId of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 2
+			path: ../src/symfony/src/DataCollector/WebauthnCollector.php
 
 		-
 			rawMessage: Class "Webauthn\Bundle\DataCollector\WebauthnCollector" is not allowed to extend "Symfony\Component\HttpKernel\DataCollector\DataCollector".
@@ -350,6 +557,15 @@ parameters:
 			identifier: ergebnis.noIsset
 			count: 3
 			path: ../src/symfony/src/DependencyInjection/Configuration.php
+
+		-
+			rawMessage: '''
+				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 2
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
 			rawMessage: Cannot access offset 'enabled' on mixed.
@@ -674,6 +890,15 @@ parameters:
 			identifier: ergebnis.noParameterWithContainerTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnServicesFactory.php
+
+		-
+			rawMessage: '''
+				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 3
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
 			rawMessage: 'Binary operation "+=" between mixed and array{attested_credential_data: ''Webauthn\\Bundle\\Doctrine\\Type\\AttestedCredentialDataType'', aaguid: ''Webauthn\\Bundle\\Doctrine\\Type\\AAGUIDDataType'', base64: ''Webauthn\\Bundle\\Doctrine\\Type\\Base64BinaryDataType'', public_key_credential_descriptor: ''Webauthn\\Bundle\\Doctrine\\Type\\PublicKeyCredentialDescriptorType'', trust_path: ''Webauthn\\Bundle\\Doctrine\\Type\\TrustPathDataType''} results in an error.'
@@ -1204,6 +1429,39 @@ parameters:
 			path: ../src/symfony/src/Repository/CanGenerateUserEntity.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Bundle\Repository\CanSaveCredentialRecord::saveCredentialSource() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/CanSaveCredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface::findOneByCredentialId() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Repository/CredentialRecordRepositoryInterface.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface::findAllForUserEntity() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/CredentialRecordRepositoryInterface.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface::findOneByCredentialId() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/CredentialRecordRepositoryInterface.php
+
+		-
 			rawMessage: Class "Webauthn\Bundle\Repository\DoctrineCredentialSourceRepository" is not allowed to extend "Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository".
 			identifier: ergebnis.noExtends
 			count: 1
@@ -1216,7 +1474,7 @@ parameters:
 			path: ../src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\Repository\DoctrineCredentialSourceRepository::findAllForUserEntity() should return array<Webauthn\PublicKeyCredentialSource> but returns mixed.'
+			rawMessage: 'Method Webauthn\Bundle\Repository\DoctrineCredentialSourceRepository::findAllForUserEntity() should return array<Webauthn\CredentialRecord|Webauthn\PublicKeyCredentialSource> but returns mixed.'
 			identifier: return.type
 			count: 1
 			path: ../src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
@@ -1228,10 +1486,55 @@ parameters:
 			path: ../src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\Repository\DoctrineCredentialSourceRepository::findOneByCredentialId() should return Webauthn\PublicKeyCredentialSource|null but returns mixed.'
+			rawMessage: 'Method Webauthn\Bundle\Repository\DoctrineCredentialSourceRepository::findOneByCredentialId() should return Webauthn\CredentialRecord|Webauthn\PublicKeyCredentialSource|null but returns mixed.'
 			identifier: return.type
 			count: 1
 			path: ../src/symfony/src/Repository/DoctrineCredentialSourceRepository.php
+
+		-
+			rawMessage: Class Webauthn\Bundle\Repository\DummyCredentialRecordRepository is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: Constructor in Webauthn\Bundle\Repository\DummyCredentialRecordRepository has parameter $logger with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Repository\DummyCredentialRecordRepository::findOneByCredentialId() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\DummyCredentialRecordRepository::findAllForUserEntity() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\DummyCredentialRecordRepository::findOneByCredentialId() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/DummyCredentialRecordRepository.php
+
+		-
+			rawMessage: '''
+				Class Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository implements deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: class.implementsDeprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
 
 		-
 			rawMessage: Class Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository is neither abstract nor final.
@@ -1248,6 +1551,24 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository::findOneByCredentialId() has a nullable return type declaration.'
 			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository::findAllForUserEntity() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository::findOneByCredentialId() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
 			count: 1
 			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
 
@@ -1292,6 +1613,15 @@ parameters:
 			identifier: ergebnis.noNullableReturnTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/Repository/PublicKeyCredentialUserEntityRepositoryInterface.php
+
+		-
+			rawMessage: '''
+				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Resources/config/security.php
 
 		-
 			rawMessage: Class "Webauthn\Bundle\Routing\Loader" is not allowed to extend "Symfony\Component\Config\Loader\Loader".
@@ -1468,6 +1798,15 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
 
 		-
+			rawMessage: '''
+				Call to method getPublicKeyCredentialDescriptor() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnAuthenticator.php
+
+		-
 			rawMessage: Cannot access property $authData on mixed.
 			identifier: property.nonObject
 			count: 1
@@ -1591,6 +1930,15 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
 
 		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
 			rawMessage: Class "Webauthn\Bundle\Security\Authentication\WebauthnBadge" is not allowed to extend "Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge".
 			identifier: ergebnis.noExtends
 			count: 1
@@ -1681,8 +2029,35 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
 
 		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSource of method Webauthn\Bundle\Security\Authentication\WebauthnBadge::markResolved() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSource references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
 			rawMessage: 'Property Webauthn\Bundle\Security\Authentication\WebauthnBadge::$user (Symfony\Component\Security\Core\User\UserInterface) does not accept mixed.'
 			identifier: assign.propertyType
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Security\Authentication\WebauthnBadge::getPublicKeyCredentialSource() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
 
@@ -1702,9 +2077,45 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Call to method findOneByCredentialId() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 2
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 2
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
 			rawMessage: Control structures using switch should not be used.
 			identifier: ergebnis.noSwitch
 			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedInterface
+			count: 2
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
@@ -1722,6 +2133,24 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener::processRequest() has parameter $userEntity with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
@@ -1937,11 +2366,83 @@ parameters:
 
 		-
 			rawMessage: '''
+				Parameter $publicKeyCredentialSource of method Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/Passport/Credentials/WebauthnCredentials.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSource references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/Passport/Credentials/WebauthnCredentials.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials::getPublicKeyCredentialSource() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/Passport/Credentials/WebauthnCredentials.php
+
+		-
+			rawMessage: '''
 				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
 				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
 			'''
 			identifier: property.deprecated
 			count: 3
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Call to method findOneByCredentialId() of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 2
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Call to method getPublicKeyCredentialDescriptor() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 2
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedInterface
+			count: 2
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
@@ -1953,6 +2454,24 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator::onAuthenticationSuccess() has a nullable return type declaration.'
 			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedInterface
 			count: 1
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
@@ -3337,8 +3856,53 @@ parameters:
 			path: ../src/webauthn/src/AuthenticatorAssertionResponse.php
 
 		-
+			rawMessage: '''
+				Access to property $backupEligible of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 4
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Access to property $backupStatus of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 4
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Access to property $counter of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Access to property $uvInitialized of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 2
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
 			rawMessage: Class Webauthn\AuthenticatorAssertionResponseValidator is neither abstract nor final.
 			identifier: ergebnis.final
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
 
@@ -3357,6 +3921,42 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\AuthenticatorAssertionResponseValidator::createAuthenticatorAssertionResponseValidationSucceededEvent() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\AuthenticatorAssertionResponseValidator::check() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\AuthenticatorAssertionResponseValidator::createAuthenticatorAssertionResponseValidationFailedEvent() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\AuthenticatorAssertionResponseValidator::createAuthenticatorAssertionResponseValidationSucceededEvent() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\AuthenticatorAssertionResponseValidator::check() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: return.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
 
@@ -3529,8 +4129,35 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStep.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CeremonyStep::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CeremonyStep.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManager.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CeremonyStepManager::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManager.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CeremonyStepManager::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManager.php
 
@@ -3553,8 +4180,26 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
 
 		-
+			rawMessage: '''
+				Call to method getAttestedCredentialData() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAlgorithm.php
+
+		-
 			rawMessage: Class Webauthn\CeremonyStep\CheckAlgorithm is neither abstract nor final.
 			identifier: ergebnis.final
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAlgorithm.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckAlgorithm.php
 
@@ -3565,14 +4210,59 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckAlgorithm.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckAlgorithm::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAlgorithm.php
+
+		-
+			rawMessage: '''
+				Access to property $publicKeyCredentialId of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAllowedCredentialList.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAllowedCredentialList.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckAllowedCredentialList::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckAllowedCredentialList.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckAllowedCredentialList::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAllowedCredentialList.php
+
+		-
 			rawMessage: Constructor in Webauthn\CeremonyStep\CheckAllowedOrigins has parameter $allowSubdomains with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
 
@@ -3589,10 +4279,46 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckAllowedOrigins::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAllowedOrigins.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAttestationFormatIsKnownAndValid.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckAttestationFormatIsKnownAndValid::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckAttestationFormatIsKnownAndValid.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckAttestationFormatIsKnownAndValid::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckAttestationFormatIsKnownAndValid.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckBackupBitsAreConsistent.php
 
 		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckBackupBitsAreConsistent::process() has parameter $userHandle with a nullable type declaration.'
@@ -3601,14 +4327,50 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckBackupBitsAreConsistent.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckBackupBitsAreConsistent::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckBackupBitsAreConsistent.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckChallenge.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckChallenge::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckChallenge.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckChallenge::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckChallenge.php
+
+		-
 			rawMessage: Constructor in Webauthn\CeremonyStep\CheckClientDataCollectorType has parameter $clientDataCollectorManager with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckClientDataCollectorType.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckClientDataCollectorType.php
 
@@ -3631,14 +4393,68 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckClientDataCollectorType.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckClientDataCollectorType::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckClientDataCollectorType.php
+
+		-
+			rawMessage: '''
+				Access to property $counter of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 2
+			path: ../src/webauthn/src/CeremonyStep/CheckCounter.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckCounter.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckCounter::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckCounter.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckCounter::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckCounter.php
+
+		-
+			rawMessage: '''
+				Access to property $publicKeyCredentialId of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckCredentialId.php
+
+		-
 			rawMessage: Class Webauthn\CeremonyStep\CheckCredentialId is neither abstract nor final.
 			identifier: ergebnis.final
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckCredentialId.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckCredentialId.php
 
@@ -3649,16 +4465,70 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckCredentialId.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckCredentialId::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckCredentialId.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckExtensions.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckExtensions::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckExtensions.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckExtensions::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckExtensions.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckHasAttestedCredentialData.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckHasAttestedCredentialData::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckHasAttestedCredentialData.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckHasAttestedCredentialData::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckHasAttestedCredentialData.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
 
 		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckMetadataStatement::checkCertificateChain() has parameter $metadataStatement with a nullable type declaration.'
@@ -3669,6 +4539,15 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckMetadataStatement::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckMetadataStatement::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
 
@@ -3685,6 +4564,24 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckOrigin.php
 
 		-
+			rawMessage: '''
+				Call to method getAttestedCredentialData() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckRelyingPartyIdIdHash::getFacetId() has parameter $authenticationExtensionsClientOutputs with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -3697,8 +4594,35 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckRelyingPartyIdIdHash::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckRelyingPartyIdIdHash.php
+
+		-
+			rawMessage: '''
+				Call to method getAttestedCredentialData() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckSignature.php
+
+		-
 			rawMessage: Constructor in Webauthn\CeremonyStep\CheckSignature has parameter $algorithmManager with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckSignature.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckSignature.php
 
@@ -3721,6 +4645,15 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckSignature.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckSignature::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckSignature.php
+
+		-
 			rawMessage: Class Webauthn\CeremonyStep\CheckTopOrigin is neither abstract nor final.
 			identifier: ergebnis.final
 			count: 1
@@ -3729,6 +4662,15 @@ parameters:
 		-
 			rawMessage: Constructor in Webauthn\CeremonyStep\CheckTopOrigin has parameter $topOriginValidator with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckTopOrigin.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckTopOrigin.php
 
@@ -3751,14 +4693,68 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckTopOrigin.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckTopOrigin::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckTopOrigin.php
+
+		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserHandle.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserHandle.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckUserHandle::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckUserHandle.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckUserHandle::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserHandle.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserVerification.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckUserVerification::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserVerification.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckUserVerification::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckUserVerification.php
 
@@ -3769,8 +4765,26 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
 
 		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
+
+		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckUserWasPresent::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\CeremonyStep\CheckUserWasPresent::process() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
 
@@ -3799,10 +4813,172 @@ parameters:
 			path: ../src/webauthn/src/CollectedClientData.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Counter\CounterChecker::check() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Counter/CounterChecker.php
+
+		-
+			rawMessage: '''
+				Access to property $counter of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 3
+			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
+
+		-
 			rawMessage: Constructor in Webauthn\Counter\ThrowExceptionIfInvalid has parameter $logger with default value.
 			identifier: ergebnis.noConstructorParameterWithDefaultValue
 			count: 1
 			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Counter\ThrowExceptionIfInvalid::check() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
+
+		-
+			rawMessage: Class Webauthn\CredentialRecord is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: Constructor in Webauthn\CredentialRecord has parameter $backupEligible with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: Constructor in Webauthn\CredentialRecord has parameter $backupStatus with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: Constructor in Webauthn\CredentialRecord has parameter $otherUI with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: Constructor in Webauthn\CredentialRecord has parameter $uvInitialized with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $backupEligible with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $backupEligible with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $backupStatus with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $backupStatus with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $otherUI with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $otherUI with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $uvInitialized with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::__construct() has parameter $uvInitialized with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $backupEligible with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $backupEligible with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $backupStatus with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $backupStatus with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $otherUI with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $otherUI with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $uvInitialized with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
+
+		-
+			rawMessage: 'Method Webauthn\CredentialRecord::create() has parameter $uvInitialized with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/CredentialRecord.php
 
 		-
 			rawMessage: Cannot access offset 'authData' on mixed.
@@ -4339,6 +5515,228 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/CollectedClientDataDenormalizer.php
 
 		-
+			rawMessage: Cannot access offset 'aaguid' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'attestationType' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'backupEligible' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'backupStatus' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'counter' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'credentialPublicKey' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'otherUI' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'publicKeyCredentialId' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'transports' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'trustPath' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'type' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'userHandle' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Cannot access offset 'uvInitialized' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: Class Webauthn\Denormalizer\CredentialRecordDenormalizer is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::denormalize() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::denormalize() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::getSupportedTypes() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::normalize() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::normalize() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::supportsDenormalization() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::supportsDenormalization() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::supportsNormalization() has parameter $format with a nullable type declaration.'
+			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Method Webauthn\Denormalizer\CredentialRecordDenormalizer::supportsNormalization() has parameter $format with null as default value.'
+			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #1 $data of static method Webauthn\Util\Base64::decode() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #1 $publicKeyCredentialId of static method Webauthn\CredentialRecord::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #1 $uuid of static method Symfony\Component\Uid\Uuid::fromString() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #10 $otherUI of static method Webauthn\CredentialRecord::create() expects array<string, mixed>|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #11 $backupEligible of static method Webauthn\CredentialRecord::create() expects bool|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #12 $backupStatus of static method Webauthn\CredentialRecord::create() expects bool|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #13 $uvInitialized of static method Webauthn\CredentialRecord::create() expects bool|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #2 $array of function array_key_exists expects array, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #2 $type of static method Webauthn\CredentialRecord::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #3 $transports of static method Webauthn\CredentialRecord::create() expects array<string>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #4 $attestationType of static method Webauthn\CredentialRecord::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #7 $credentialPublicKey of static method Webauthn\CredentialRecord::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #8 $userHandle of static method Webauthn\CredentialRecord::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
+			rawMessage: 'Parameter #9 $counter of static method Webauthn\CredentialRecord::create() expects int, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CredentialRecordDenormalizer.php
+
+		-
 			rawMessage: 'Method Webauthn\Denormalizer\ExtensionDescriptorDenormalizer::denormalize() has parameter $format with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -4711,6 +6109,141 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialRpEntityDenormalizer.php
 
 		-
+			rawMessage: '''
+				Access to constant on deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 2
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $aaguid of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $attestationType of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $backupEligible of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $backupStatus of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $counter of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $credentialPublicKey of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $otherUI of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $publicKeyCredentialId of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $transports of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $trustPath of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $type of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Access to property $uvInitialized of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Call to method create() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: staticMethod.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
 			rawMessage: Cannot access offset 'aaguid' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -4786,6 +6319,15 @@ parameters:
 			rawMessage: Cannot access offset 'uvInitialized' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
+			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
+
+		-
+			rawMessage: '''
+				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: instanceof.deprecatedClass
+			count: 2
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
@@ -5362,6 +6904,24 @@ parameters:
 			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationFailedEvent.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationFailedEvent.php
+
+		-
+			rawMessage: '''
+				Property $credentialRecord references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationFailedEvent.php
+
+		-
 			rawMessage: Class Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent is neither abstract nor final.
 			identifier: ergebnis.final
 			count: 1
@@ -5370,6 +6930,24 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent::__construct() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationSucceededEvent.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationSucceededEvent.php
+
+		-
+			rawMessage: '''
+				Property $credentialRecord references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/Event/AuthenticatorAssertionResponseValidationSucceededEvent.php
 
@@ -5386,6 +6964,24 @@ parameters:
 			path: ../src/webauthn/src/Event/AuthenticatorAttestationResponseValidationSucceededEvent.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAttestationResponseValidationSucceededEvent.php
+
+		-
+			rawMessage: '''
+				Property $credentialRecord references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/AuthenticatorAttestationResponseValidationSucceededEvent.php
+
+		-
 			rawMessage: 'Method Webauthn\Event\BackupEligibilityChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -5398,6 +6994,24 @@ parameters:
 			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
 
 		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Event\BackupEligibilityChangedEvent::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
+
+		-
+			rawMessage: '''
+				Property $credentialRecord references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/BackupEligibilityChangedEvent.php
+
+		-
 			rawMessage: 'Method Webauthn\Event\BackupStatusChangedEvent::__construct() has parameter $newValue with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -5406,6 +7020,24 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Event\BackupStatusChangedEvent::__construct() has parameter $previousValue with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
+			count: 1
+			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
+
+		-
+			rawMessage: '''
+				Parameter $credentialRecord of method Webauthn\Event\BackupStatusChangedEvent::__construct() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
+
+		-
+			rawMessage: '''
+				Property $credentialRecord references deprecated class Webauthn\PublicKeyCredentialSource in its type:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/Event/BackupStatusChangedEvent.php
 
@@ -8321,3 +9953,138 @@ parameters:
 			identifier: ergebnis.noSwitch
 			count: 1
 			path: ../src/webauthn/src/Util/CoseSignatureFixer.php
+
+		-
+			rawMessage: '''
+				Access to property $aaguid of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $attestationType of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $backupEligible of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $backupStatus of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $counter of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $credentialPublicKey of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $otherUI of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $publicKeyCredentialId of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $transports of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $trustPath of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $type of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $userHandle of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Access to property $uvInitialized of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: property.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Parameter $source of method Webauthn\Util\CredentialRecordConverter::toCredentialRecord() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 2
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php
+
+		-
+			rawMessage: '''
+				Parameter $sources of method Webauthn\Util\CredentialRecordConverter::toCredentialRecords() has typehint with deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: parameter.deprecatedClass
+			count: 1
+			path: ../src/webauthn/src/Util/CredentialRecordConverter.php

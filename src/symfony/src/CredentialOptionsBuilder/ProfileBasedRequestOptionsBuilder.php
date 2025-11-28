@@ -16,6 +16,7 @@ use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\CredentialRecord;
 use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -85,7 +86,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         $credentialSources = $this->credentialSourceRepository->findAllForUserEntity($userEntity);
 
         return array_map(
-            static fn (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
+            static fn (CredentialRecord|PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
             $credentialSources
         );
     }

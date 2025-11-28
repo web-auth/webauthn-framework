@@ -6,24 +6,34 @@ namespace Webauthn\CeremonyStep;
 
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\Exception\InvalidUserHandleException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
+use function trigger_deprecation;
 
 final class CheckUserHandle implements CeremonyStep
 {
     public function process(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,
         string $host
     ): void {
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.3',
+                'Passing a PublicKeyCredentialSource to "%s::process()" is deprecated, pass a CredentialRecord instead.',
+                self::class
+            );
+        }
         if (! $authenticatorResponse instanceof AuthenticatorAssertionResponse) {
             return;
         }
-        $credentialUserHandle = $publicKeyCredentialSource->userHandle;
+        $credentialUserHandle = $credentialRecord->userHandle;
         $responseUserHandle = $authenticatorResponse->userHandle;
         if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
             $credentialUserHandle === $userHandle || throw InvalidUserHandleException::create();

@@ -1,8 +1,10 @@
 * text=auto
 
+/CLAUDE.md export-ignore
 /.ci-tools export-ignore
 /.github export-ignore
 /bin export-ignore
+/docs export-ignore
 /tests export-ignore
 /.editorconfig export-ignore
 /.gitattributes export-ignore

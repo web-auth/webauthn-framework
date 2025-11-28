@@ -120,14 +120,134 @@ final class BackupStateEventsTest extends AbstractTestCase
         $eligibilityEvent = $backupEligibilityEvents[0];
         static::assertTrue($eligibilityEvent->previousValue);
         static::assertFalse($eligibilityEvent->newValue);
-        static::assertSame($publicKeyCredentialSource, $eligibilityEvent->publicKeyCredentialSource);
+        static::assertSame($publicKeyCredentialSource, $eligibilityEvent->credentialRecord);
 
         // Verify BackupStatusChangedEvent
         static::assertCount(1, $backupStatusEvents, 'One BackupStatusChangedEvent should be dispatched');
         $statusEvent = $backupStatusEvents[0];
         static::assertTrue($statusEvent->previousValue);
         static::assertFalse($statusEvent->newValue);
-        static::assertSame($publicKeyCredentialSource, $statusEvent->publicKeyCredentialSource);
+        static::assertSame($publicKeyCredentialSource, $statusEvent->credentialRecord);
+    }
+
+    #[Test]
+    public function deprecatedPublicKeyCredentialSourcePropertyIsStillAccessible(): void
+    {
+        // Given
+        $dispatchedEvents = [];
+        $eventDispatcher = new class($dispatchedEvents) implements EventDispatcherInterface {
+            public function __construct(
+                private array &$events
+            ) {
+            }
+
+            public function dispatch(object $event): object
+            {
+                $this->events[] = $event;
+                return $event;
+            }
+        };
+
+        $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
+            base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
+            rpId: 'localhost',
+            allowCredentials: [
+                PublicKeyCredentialDescriptor::create(
+                    PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    Base64UrlSafe::decode(
+                        'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w',
+                        true
+                    )
+                ),
+            ],
+            userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            timeout: 60000,
+        );
+
+        $publicKeyCredential = $this->getSerializer()
+            ->deserialize(
+                '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}',
+                PublicKeyCredential::class,
+                'json'
+            );
+
+        static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->response);
+
+        $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            base64_decode(
+                'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
+                true
+            ),
+            'foo',
+            100,
+            Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+            base64_decode(
+                'pQECAyYgASFYIJV56vRrFusoDf9hm3iDmllcxxXzzKyO9WruKw4kWx7zIlgg/nq63l8IMJcIdKDJcXRh9hoz0L+nVwP1Oxil3/oNQYs=',
+                true
+            )
+        );
+
+        $publicKeyCredentialSource->backupEligible = true;
+        $publicKeyCredentialSource->backupStatus = true;
+
+        $validator = $this->getAuthenticatorAssertionResponseValidator();
+        $validator->setEventDispatcher($eventDispatcher);
+
+        // When
+        $validator->check(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            'localhost',
+            'foo'
+        );
+
+        // Then
+        $backupEvents = array_filter(
+            $dispatchedEvents,
+            fn ($event) => $event instanceof BackupEligibilityChangedEvent || $event instanceof BackupStatusChangedEvent
+        );
+
+        static::assertNotEmpty($backupEvents, 'Backup state change events should have been dispatched');
+
+        $backupEligibilityEvents = array_values(array_filter(
+            $backupEvents,
+            fn ($event) => $event instanceof BackupEligibilityChangedEvent
+        ));
+        $backupStatusEvents = array_values(array_filter(
+            $backupEvents,
+            fn ($event) => $event instanceof BackupStatusChangedEvent
+        ));
+
+        // Verify deprecated property access via magic __get() method
+        static::assertCount(1, $backupEligibilityEvents);
+        $eligibilityEvent = $backupEligibilityEvents[0];
+        static::assertSame(
+            $eligibilityEvent->credentialRecord,
+            $eligibilityEvent->publicKeyCredentialSource,
+            'Deprecated publicKeyCredentialSource property should return the same value as credentialRecord'
+        );
+
+        static::assertCount(1, $backupStatusEvents);
+        $statusEvent = $backupStatusEvents[0];
+        static::assertSame(
+            $statusEvent->credentialRecord,
+            $statusEvent->publicKeyCredentialSource,
+            'Deprecated publicKeyCredentialSource property should return the same value as credentialRecord'
+        );
+
+        // Verify deprecated method access
+        static::assertSame(
+            $eligibilityEvent->credentialRecord,
+            $eligibilityEvent->getPublicKeyCredentialSource(),
+            'Deprecated getPublicKeyCredentialSource() method should return the same value as credentialRecord'
+        );
+
+        static::assertSame(
+            $statusEvent->credentialRecord,
+            $statusEvent->getPublicKeyCredentialSource(),
+            'Deprecated getPublicKeyCredentialSource() method should return the same value as credentialRecord'
+        );
     }
 
     #[Test]

@@ -9,9 +9,11 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * @deprecated since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+ * Repository interface for storing and retrieving credential records.
+ *
+ * @see https://www.w3.org/TR/webauthn-3/#credential-record
  */
-interface PublicKeyCredentialSourceRepositoryInterface
+interface CredentialRecordRepositoryInterface
 {
     /**
      * @return array<CredentialRecord|PublicKeyCredentialSource>
