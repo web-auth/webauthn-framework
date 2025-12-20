@@ -529,53 +529,6 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Configuration.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::getConfigTreeBuilder() return type with generic class Symfony\Component\Config\Definition\Builder\TreeBuilder does not specify its types: T'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'PHPDoc tag `@var` for variable $rootNode contains generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::addCreationProfilesConfig() has parameter $rootNode with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::addRequestProfilesConfig() has parameter $rootNode with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::addControllersConfig() has parameter $rootNode with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::addMetadataConfig() has parameter $rootNode with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::addPasskeyEndpointsConfig() has parameter $rootNode with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Configuration::getUrlNode() return type with generic class Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Configuration.php
-
-		-
 			rawMessage: '''
 				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.

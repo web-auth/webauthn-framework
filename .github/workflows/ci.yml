@@ -65,18 +65,16 @@ jobs:
 
   phpstan:
     name: "1️⃣ Static Analysis (PHPStan)"
-    needs: [prepare_dependencies]
+    needs: [pre_checks]
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v4
+      - uses: ramsey/composer-install@v3
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor phpstan
 
   ecs:
