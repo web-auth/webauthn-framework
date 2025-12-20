@@ -30,7 +30,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           coverage: "none"
           tools: "castor"
 
@@ -95,7 +95,7 @@ jobs:
         operating-system:
           - "ubuntu-latest"
         php-version:
-          - "8.3"
+          - "8.4"
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: "Set up PHP"
@@ -130,7 +130,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           tools: "castor"
           coverage: "none"
@@ -163,7 +163,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           tools: "castor"
           coverage: "none"
@@ -199,7 +199,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           tools: "castor"
           coverage: "xdebug"
