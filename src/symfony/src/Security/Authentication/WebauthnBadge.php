@@ -105,7 +105,7 @@ final class WebauthnBadge extends UserBadge
         $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
         $this->publicKeyCredentialSource = $publicKeyCredentialSource;
-        $user = ($this->userLoader)($publicKeyCredentialUserEntity->name, $this->attributes);
+        $user = ($this->userLoader)($publicKeyCredentialUserEntity->name, $this->attributes ?? []);
         if ($user === null) {
             $exception = new UserNotFoundException();
             $exception->setUserIdentifier($publicKeyCredentialSource->userHandle);

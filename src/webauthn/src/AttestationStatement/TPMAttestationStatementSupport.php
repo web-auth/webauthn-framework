@@ -15,6 +15,12 @@ use DateTimeImmutable;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
+use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
+use SpomkyLabs\Pki\CryptoEncoding\PEM;
+use SpomkyLabs\Pki\X509\Certificate\Certificate;
+use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
+use SpomkyLabs\Pki\X509\Certificate\TBSCertificate;
 use Symfony\Component\Clock\NativeClock;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -28,15 +34,16 @@ use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use function array_key_exists;
 use function count;
-use function in_array;
-use function is_array;
-use function is_int;
 use function openssl_verify;
 use function sprintf;
 use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
+    private const OID_FIDO_GEN_CE_AAGUID = '1.3.6.1.4.1.45724.1.1.4';
+
+    private const OID_AIK_CERTIFICATE = '2.23.133.8.3';
+
     private EventDispatcherInterface $dispatcher;
 
     private readonly ClockInterface $clock;
@@ -348,79 +355,75 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         return $result === 1;
     }
 
+    // https://www.w3.org/TR/webauthn-3/#sctn-tpm-cert-requirements
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
     {
-        $parsed = openssl_x509_parse($attestnCert);
-        is_array($parsed) || throw AttestationStatementVerificationException::create('Invalid certificate');
+        $certificate = Certificate::fromPEM(PEM::fromString($attestnCert));
+        $tbsCertificate = $certificate->tbsCertificate();
 
-        //Check version
-        (isset($parsed['version']) && $parsed['version'] === 2) || throw AttestationStatementVerificationException::create(
+        // Version MUST be set to 3 (X.509 version 3 is encoded as 2)
+        $tbsCertificate->version() === TBSCertificate::VERSION_3 || throw AttestationStatementVerificationException::create(
             'Invalid certificate version'
         );
 
-        //Check subject field is empty
-        isset($parsed['subject']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate name. The Subject should be empty'
-        );
-        is_array($parsed['subject']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate name. The Subject should be empty'
-        );
-        count($parsed['subject']) === 0 || throw AttestationStatementVerificationException::create(
-            'Invalid certificate name. The Subject should be empty'
-        );
+        // Subject field MUST be set to empty
+        $tbsCertificate->subject()
+            ->count() === 0 || throw AttestationStatementVerificationException::create(
+                'Invalid certificate name. The Subject should be empty'
+            );
 
         // Check period of validity
-        array_key_exists(
-            'validFrom_time_t',
-            $parsed
-        ) || throw AttestationStatementVerificationException::create('Invalid certificate start date.');
-        is_int($parsed['validFrom_time_t']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate start date.'
-        );
-        $startDate = (new DateTimeImmutable('now'))->setTimestamp($parsed['validFrom_time_t']);
+        $validity = $tbsCertificate->validity();
+        $startDate = DateTimeImmutable::createFromInterface($validity->notBefore()->dateTime());
         $startDate < $this->clock->now() || throw AttestationStatementVerificationException::create(
             'Invalid certificate start date.'
         );
 
-        array_key_exists('validTo_time_t', $parsed) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate end date.'
-        );
-        is_int($parsed['validTo_time_t']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate end date.'
-        );
-        $endDate = (new DateTimeImmutable('now'))->setTimestamp($parsed['validTo_time_t']);
+        $endDate = DateTimeImmutable::createFromInterface($validity->notAfter()->dateTime());
         $endDate > $this->clock->now() || throw AttestationStatementVerificationException::create(
             'Invalid certificate end date.'
         );
 
-        //Check extensions
-        (isset($parsed['extensions']) && is_array(
-            $parsed['extensions']
-        )) || throw AttestationStatementVerificationException::create('Certificate extensions are missing');
+        // Check extensions
+        $extensions = $tbsCertificate->extensions();
 
-        //Check subjectAltName
-        isset($parsed['extensions']['subjectAltName']) || throw AttestationStatementVerificationException::create(
-            'The "subjectAltName" is missing'
+        // Check Subject Alternative Name extension
+        $extensions->hasSubjectAlternativeName() || throw AttestationStatementVerificationException::create(
+            'The Subject Alternative Name extension must be set'
         );
 
-        //Check extendedKeyUsage
-        isset($parsed['extensions']['extendedKeyUsage']) || throw AttestationStatementVerificationException::create(
-            'The "subjectAltName" is missing'
+        // Check Extended Key Usage extension MUST contain the OID 2.23.133.8.3
+        $extensions->hasExtendedKeyUsage() || throw AttestationStatementVerificationException::create(
+            'The Extended Key Usage extensions must contain ' . self::OID_AIK_CERTIFICATE,
         );
-        in_array(
-            $parsed['extensions']['extendedKeyUsage'],
-            ['2.23.133.8.3', 'Attestation Identity Key Certificate'],
-            true
-        ) || throw AttestationStatementVerificationException::create('The "extendedKeyUsage" is invalid');
+        $extendedKeyUsage = $extensions->extendedKeyUsage();
+        $extendedKeyUsage->has(self::OID_AIK_CERTIFICATE) || throw AttestationStatementVerificationException::create(
+            'The Extended Key Usage extensions must contain ' . self::OID_AIK_CERTIFICATE,
+        );
+
+        // The Basic Constraints extension MUST have the CA component set to false.
+        $extensions->basicConstraints()
+            ->isCA() === false || throw AttestationStatementVerificationException::create(
+                'The Basic Constraints extension must have the CA component set to false'
+            );
 
         // id-fido-gen-ce-aaguid OID check
-        in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && ! hash_equals(
-            $authenticatorData->attestedCredentialData
-                ?->aaguid
-                ->toBinary() ?? '',
-            $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
-        ) && throw AttestationStatementVerificationException::create(
-            'The value of the "aaguid" does not match with the certificate'
-        );
+        if ($extensions->has(self::OID_FIDO_GEN_CE_AAGUID)) {
+            /** @var UnknownExtension $aaguidExtension */
+            $aaguidExtension = $extensions->get(self::OID_FIDO_GEN_CE_AAGUID);
+            $aaguidElement = UnspecifiedType::fromDER($aaguidExtension->extensionValue())->asElement();
+            $aaguidElement instanceof OctetString || throw AttestationStatementVerificationException::create(
+                'Invalid ' . self::OID_FIDO_GEN_CE_AAGUID . ' extension format'
+            );
+            $aaguidValue = $aaguidElement->string();
+            hash_equals(
+                $authenticatorData->attestedCredentialData
+                    ?->aaguid
+                    ->toBinary() ?? '',
+                $aaguidValue
+            ) || throw AttestationStatementVerificationException::create(
+                'The value of the "aaguid" does not match with the certificate'
+            );
+        }
     }
 }

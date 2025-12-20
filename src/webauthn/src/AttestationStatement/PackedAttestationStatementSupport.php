@@ -11,6 +11,13 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Algorithms;
 use Cose\Key\Key;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
+use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
+use SpomkyLabs\Pki\CryptoEncoding\PEM;
+use SpomkyLabs\Pki\X501\ASN1\AttributeType;
+use SpomkyLabs\Pki\X509\Certificate\Certificate;
+use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
+use SpomkyLabs\Pki\X509\Certificate\TBSCertificate;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -26,13 +33,14 @@ use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\Util\CoseSignatureFixer;
 use function array_key_exists;
 use function count;
-use function in_array;
 use function is_array;
 use function is_string;
 use function openssl_verify;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
+    private const OID_FIDO_GEN_CE_AAGUID = '1.3.6.1.4.1.45724.1.1.4';
+
     private readonly Decoder $decoder;
 
     private EventDispatcherInterface $dispatcher;
@@ -148,45 +156,48 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         return $attestationStatement;
     }
 
+    // https://www.w3.org/TR/webauthn-3/#sctn-packed-attestation-cert-requirements
     private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
     {
-        $parsed = openssl_x509_parse($attestnCert);
-        is_array($parsed) || throw AttestationStatementVerificationException::create('Invalid certificate');
+        $certificate = Certificate::fromPEM(PEM::fromString($attestnCert));
+        $tbsCertificate = $certificate->tbsCertificate();
 
-        //Check version
-        isset($parsed['version']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate version'
-        );
-        $parsed['version'] === 2 || throw AttestationStatementVerificationException::create(
+        //Check version (X.509 version 3 is encoded as 2)
+        $tbsCertificate->version() === TBSCertificate::VERSION_3 || throw AttestationStatementVerificationException::create(
             'Invalid certificate version'
         );
 
         //Check subject field
-        isset($parsed['name']) || throw AttestationStatementVerificationException::create(
-            'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
-        );
-        str_contains(
-            (string) $parsed['name'],
-            '/OU=Authenticator Attestation'
-        ) || throw AttestationStatementVerificationException::create(
+        $subject = $tbsCertificate->subject();
+        $subject->countOfType(
+            AttributeType::OID_COUNTRY_NAME
+        ) > 0 || throw AttestationStatementVerificationException::create('Certificate Subject-C must be set');
+        $subject->countOfType(
+            AttributeType::OID_ORGANIZATION_NAME
+        ) > 0 || throw AttestationStatementVerificationException::create('Certificate Subject-O must be set');
+        $subject->countOfType(
+            AttributeType::OID_ORGANIZATIONAL_UNIT_NAME
+        ) > 0 || throw AttestationStatementVerificationException::create('Certificate Subject-OU must be set');
+        $subject->countOfType(
+            AttributeType::OID_COMMON_NAME
+        ) > 0 || throw AttestationStatementVerificationException::create('Certificate Subject-CN must be set');
+        $ouValue = $subject->firstValueOf('OU')
+            ->stringValue();
+        $ouValue === 'Authenticator Attestation' || throw AttestationStatementVerificationException::create(
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
         //Check extensions
-        isset($parsed['extensions']) || throw AttestationStatementVerificationException::create(
-            'Certificate extensions are missing'
-        );
-        is_array($parsed['extensions']) || throw AttestationStatementVerificationException::create(
-            'Certificate extensions are missing'
-        );
+        $extensions = $tbsCertificate->extensions();
 
         //Check certificate is not a CA cert
-        isset($parsed['extensions']['basicConstraints']) || throw AttestationStatementVerificationException::create(
+        $extensions->hasBasicConstraints() || throw AttestationStatementVerificationException::create(
             'The Basic Constraints extension must have the CA component set to false'
         );
-        $parsed['extensions']['basicConstraints'] === 'CA:FALSE' || throw AttestationStatementVerificationException::create(
-            'The Basic Constraints extension must have the CA component set to false'
-        );
+        ! $extensions->basicConstraints()
+            ->isCA() || throw AttestationStatementVerificationException::create(
+                'The Basic Constraints extension must have the CA component set to false'
+            );
 
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
@@ -194,13 +205,24 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
 
         // id-fido-gen-ce-aaguid OID check
-        if (in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true)) {
+        if ($extensions->has(self::OID_FIDO_GEN_CE_AAGUID)) {
+            /** @var UnknownExtension $aaguidExtension */
+            $aaguidExtension = $extensions->get(self::OID_FIDO_GEN_CE_AAGUID);
+            ! $aaguidExtension->isCritical() || throw AttestationStatementVerificationException::create(
+                'Extension ' . self::OID_FIDO_GEN_CE_AAGUID . ' must not be marked as critical'
+            );
+
+            $aaguidElement = UnspecifiedType::fromDER($aaguidExtension->extensionValue())->asElement();
+            $aaguidElement instanceof OctetString || throw AttestationStatementVerificationException::create(
+                'Invalid ' . self::OID_FIDO_GEN_CE_AAGUID . ' extension format'
+            );
+            $aaguidValue = $aaguidElement->string();
             hash_equals(
                 $attestedCredentialData->aaguid
                     ->toBinary(),
-                $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']
+                $aaguidValue
             ) || throw AttestationStatementVerificationException::create(
-                'The value of the "aaguid" does not match with the certificate'
+                'The value of the "aaguid" does not match with the certificate extension ' . self::OID_FIDO_GEN_CE_AAGUID
             );
         }
     }

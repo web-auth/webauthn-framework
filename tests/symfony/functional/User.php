@@ -41,6 +41,7 @@ final class User extends PublicKeyCredentialUserEntity implements UserInterface
 
     public function eraseCredentials(): void
     {
+        // Intentionally left empty - required by UserInterface
     }
 
     public function getUserIdentifier(): string

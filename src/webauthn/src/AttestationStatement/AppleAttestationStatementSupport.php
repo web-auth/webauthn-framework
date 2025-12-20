@@ -10,6 +10,12 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
+use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
+use SpomkyLabs\Pki\ASN1\Type\Tagged\ExplicitTagging;
+use SpomkyLabs\Pki\CryptoEncoding\PEM;
+use SpomkyLabs\Pki\X509\Certificate\Certificate;
+use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -22,11 +28,11 @@ use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use function array_key_exists;
 use function count;
-use function is_array;
-use function openssl_pkey_get_public;
 
 final class AppleAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
+    private const OID_APPLE = '1.2.840.113635.100.8.2';
+
     private readonly Decoder $decoder;
 
     private EventDispatcherInterface $dispatcher;
@@ -105,17 +111,14 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         return true;
     }
 
+    /**
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-apple-anonymous-attestation
+     */
     private function checkCertificateAndGetPublicKey(
         string $certificate,
         string $clientDataHash,
         AuthenticatorData $authenticatorData
     ): void {
-        $resource = openssl_pkey_get_public($certificate);
-        $details = openssl_pkey_get_details($resource);
-        is_array($details) || throw AttestationStatementVerificationException::create(
-            'Unable to read the certificate'
-        );
-
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
@@ -140,38 +143,49 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
             'Unsupported key type'
         );
 
-        //We check the attested key corresponds to the key in the certificate
-        $publicKey->asPEM() === $details['key'] || throw AttestationStatementVerificationException::create(
-            'Invalid key'
-        );
-
         /*---------------------------*/
-        $certDetails = openssl_x509_parse($certificate);
+        $cert = Certificate::fromPEM(PEM::fromString($certificate));
+
+        //We check the attested key corresponds to the key in the certificate
+        PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
+            ->subjectPublicKeyInfo()
+            ->toPEM()
+            ->string() || throw AttestationStatementVerificationException::create('Invalid key');
+
+        $extensions = $cert->tbsCertificate()
+            ->extensions();
 
         //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
-        is_array(
-            $certDetails
-        ) || throw AttestationStatementVerificationException::create('The certificate is not valid');
-        array_key_exists('extensions', $certDetails) || throw AttestationStatementVerificationException::create(
-            'The certificate has no extension'
+        $extensions->has(self::OID_APPLE) || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_APPLE . '" is missing'
         );
-        is_array($certDetails['extensions']) || throw AttestationStatementVerificationException::create(
-            'The certificate has no extension'
+        /** @var UnknownExtension $appleExtension */
+        $appleExtension = $extensions->get(self::OID_APPLE);
+        $extensionSequence = Sequence::fromDER($appleExtension->extensionValue());
+        $extensionSequence->has(0) || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_APPLE . '" is message'
         );
-        array_key_exists(
-            '1.2.840.113635.100.8.2',
-            $certDetails['extensions']
-        ) || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.2.840.113635.100.8.2" is missing'
+        $firstExtension = $extensionSequence->at(0);
+        $firstExtension->isTagged() || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_APPLE . '" is invalid'
         );
-        $extension = $certDetails['extensions']['1.2.840.113635.100.8.2'];
+        $taggedExtension = $firstExtension->asTagged()
+            ->asElement();
+        $taggedExtension instanceof ExplicitTagging || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_APPLE . '" is invalid'
+        );
+        $explicitExtension = $taggedExtension->explicit()
+            ->asElement();
+        $explicitExtension instanceof OctetString || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_APPLE . '" is invalid'
+        );
+        $extensionData = $explicitExtension->string();
 
         $nonceToHash = $authenticatorData->authData . $clientDataHash;
-        $nonce = hash('sha256', $nonceToHash);
+        $nonce = hash('sha256', $nonceToHash, true);
 
-        //'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
-        '3024a1220420' . $nonce === bin2hex(
-            (string) $extension
-        ) || throw AttestationStatementVerificationException::create('The client data hash is not valid');
+        hash_equals($nonce, $extensionData) || throw AttestationStatementVerificationException::create(
+            'The client data hash is not valid'
+        );
     }
 }
