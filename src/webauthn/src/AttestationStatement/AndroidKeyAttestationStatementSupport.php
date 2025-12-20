@@ -165,11 +165,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
          */
         $cert = Certificate::fromPEM(PEM::fromString($certificate));
         //We check the attested key corresponds to the key in the certificate
-        PEM::fromString(
-            $publicKey->asPEM()
-        )->string() === $cert->tbsCertificate()->subjectPublicKeyInfo()->toPEM()->string() || throw AttestationStatementVerificationException::create(
-            'Invalid key'
-        );
+        PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
+            ->subjectPublicKeyInfo()
+            ->toPEM()
+            ->string() || throw AttestationStatementVerificationException::create('Invalid key');
 
         $extensions = $cert->tbsCertificate()
             ->extensions();
