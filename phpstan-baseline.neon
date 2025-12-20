@@ -1126,12 +1126,6 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			rawMessage: 'Parameter #1 $data of static method SpomkyLabs\Pki\ASN1\Element::fromDER() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Webauthn\MetadataService\CertificateChain\CertificateToolbox::convertAllDERToPEM() expects array<string>, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -1139,12 +1133,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #1 $fmt of static method Webauthn\AttestationStatement\AttestationStatement::createBasic() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #1 $key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey|false given.'
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
@@ -1168,12 +1156,6 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Cose\Key\Key::createFromData() expects array<int, mixed>, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -1187,12 +1169,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #1 $fmt of static method Webauthn\AttestationStatement\AttestationStatement::createAnonymizationCA() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #1 $key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey|false given.'
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
@@ -1294,12 +1270,6 @@ parameters:
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Webauthn\MetadataService\CertificateChain\CertificateToolbox::convertAllDERToPEM() expects array<string>, array<mixed, mixed> given.'
 			identifier: argument.type
 			count: 1
@@ -1343,12 +1313,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #2 $signature of function openssl_verify expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #2 $user_string of function hash_equals expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
@@ -1469,12 +1433,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #2 $signature of function openssl_verify expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #2 $user_string of function hash_equals expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php

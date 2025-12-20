@@ -14,6 +14,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
 use SpomkyLabs\Pki\ASN1\Type\Tagged\ExplicitTagging;
+use SpomkyLabs\Pki\CryptoEncoding\PEM;
+use SpomkyLabs\Pki\X509\Certificate\Certificate;
+use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -26,13 +29,19 @@ use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use function array_key_exists;
 use function count;
-use function is_array;
-use function openssl_pkey_get_public;
 use function openssl_verify;
 use function sprintf;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
+    private const OID_ANDROID = '1.3.6.1.4.1.11129.2.1.17';
+
+    /**
+     * Tag 600 (allApplications)
+     * @see https://source.android.com/docs/security/features/keystore/attestation#version-1
+     */
+    private const ANDROID_TAG_ALL_APPLICATIONS = 600;
+
     private readonly Decoder $decoder;
 
     private EventDispatcherInterface $dispatcher;
@@ -117,17 +126,14 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         ) === 1;
     }
 
+    /**
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-android-key-attestation
+     */
     private function checkCertificate(
         string $certificate,
         string $clientDataHash,
         AuthenticatorData $authenticatorData
     ): void {
-        $resource = openssl_pkey_get_public($certificate);
-        $details = openssl_pkey_get_details($resource);
-        is_array($details) || throw AttestationStatementVerificationException::create(
-            'Unable to read the certificate'
-        );
-
         //Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
@@ -148,45 +154,45 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         $publicDataStream->close();
         $publicKey = Key::createFromData($coseKey->normalize());
-
         ($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey) || throw AttestationStatementVerificationException::create(
             'Unsupported key type'
         );
-        $publicKey->asPEM() === $details['key'] || throw AttestationStatementVerificationException::create(
-            'Invalid key'
-        );
 
         /*---------------------------*/
-        $certDetails = openssl_x509_parse($certificate);
+        /**
+         * @see https://w3c.github.io/webauthn/#sctn-key-attstn-cert-requirements
+         * @see https://source.android.com/docs/security/features/keystore/attestation#attestation-certificate
+         */
+        $cert = Certificate::fromPEM(PEM::fromString($certificate));
+        //We check the attested key corresponds to the key in the certificate
+        PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
+            ->subjectPublicKeyInfo()
+            ->toPEM()
+            ->string() || throw AttestationStatementVerificationException::create('Invalid key');
 
-        //Find Android KeyStore Extension with OID "1.3.6.1.4.1.11129.2.1.17" in certificate extensions
-        is_array(
-            $certDetails
-        ) || throw AttestationStatementVerificationException::create('The certificate is not valid');
-        array_key_exists('extensions', $certDetails) || throw AttestationStatementVerificationException::create(
-            'The certificate has no extension'
+        $extensions = $cert->tbsCertificate()
+            ->extensions();
+
+        //Find Android KeyStore Extension with OID self::OID_ANDROID in certificate extensions
+        $extensions->has(self::OID_ANDROID) || throw AttestationStatementVerificationException::create(
+            'The certificate extension "' . self::OID_ANDROID . '" is missing'
         );
-        is_array($certDetails['extensions']) || throw AttestationStatementVerificationException::create(
-            'The certificate has no extension'
-        );
-        array_key_exists(
-            '1.3.6.1.4.1.11129.2.1.17',
-            $certDetails['extensions']
-        ) || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is missing'
-        );
-        $extension = $certDetails['extensions']['1.3.6.1.4.1.11129.2.1.17'];
-        $extensionAsAsn1 = Sequence::fromDER($extension);
-        $extensionAsAsn1->has(4);
+        /** @var UnknownExtension $androidExtension */
+        $androidExtension = $extensions->get(self::OID_ANDROID);
+        /**
+         * Parse the Android extension value structure
+         * @see https://source.android.com/docs/security/features/keystore/attestation#attestation-extension
+         */
+        $extensionAsAsn1 = Sequence::fromDER($androidExtension->extensionValue());
 
         //Check that attestationChallenge is set to the clientDataHash.
         $extensionAsAsn1->has(4) || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The attestationChallenge field is missing'
         );
         $ext = $extensionAsAsn1->at(4)
             ->asElement();
         $ext instanceof OctetString || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The attestationChallenge field must be an OctetString'
         );
         $clientDataHash === $ext->string() || throw AttestationStatementVerificationException::create(
             'The client data hash is not valid'
@@ -194,23 +200,23 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
         $extensionAsAsn1->has(6) || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The softwareEnforced field is missing'
         );
 
         $softwareEnforcedFlags = $extensionAsAsn1->at(6)
             ->asElement();
         $softwareEnforcedFlags instanceof Sequence || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The softwareEnforced field must be a Sequence'
         );
         $this->checkAbsenceOfAllApplicationsTag($softwareEnforcedFlags);
 
         $extensionAsAsn1->has(7) || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The teeEnforced field is missing'
         );
         $teeEnforcedFlags = $extensionAsAsn1->at(7)
             ->asElement();
         $teeEnforcedFlags instanceof Sequence || throw AttestationStatementVerificationException::create(
-            'The certificate extension "1.3.6.1.4.1.11129.2.1.17" is invalid'
+            'The teeEnforced field must be a Sequence'
         );
         $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
     }
@@ -218,11 +224,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void
     {
         foreach ($sequence->elements() as $tag) {
-            $tag->asElement() instanceof ExplicitTagging || throw AttestationStatementVerificationException::create(
+            $element = $tag->asElement();
+            $element instanceof ExplicitTagging || throw AttestationStatementVerificationException::create(
                 'Invalid tag'
             );
-            $tag->asElement()
-                ->tag() !== 600 || throw AttestationStatementVerificationException::create('Forbidden tag 600 found');
+            $element->tag() !== self::ANDROID_TAG_ALL_APPLICATIONS || throw AttestationStatementVerificationException::create(
+                'The allApplications tag (' . self::ANDROID_TAG_ALL_APPLICATIONS . ') is forbidden - key must be bound to specific application'
+            );
         }
     }
 }
