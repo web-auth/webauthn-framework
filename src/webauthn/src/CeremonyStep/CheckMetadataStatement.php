@@ -89,68 +89,155 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
         $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
             'No attested credential data found'
         );
+
+        if (! $this->isAttestationVerificationRequested($publicKeyCredentialOptions)) {
+            $this->logger->debug('No attestation verification requested by RP.');
+            return;
+        }
+
+        if ($attestationStatement->type === AttestationStatement::TYPE_NONE) {
+            $this->logger->debug('None attestation format. No metadata verification required.');
+            return;
+        }
+
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
-        if ($publicKeyCredentialOptions->attestation === null || $publicKeyCredentialOptions->attestation === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE) {
-            $this->logger->debug('No attestation is asked.');
-            if ($aaguid === '00000000-0000-0000-0000-000000000000' && in_array(
-                $attestationStatement->type,
-                [AttestationStatement::TYPE_NONE, AttestationStatement::TYPE_SELF],
-                true
-            )) {
-                $this->logger->debug('The Attestation Statement is anonymous.');
-                $this->checkCertificateChain($attestationStatement, null);
-                return;
-            }
+        if ($this->isNullAaguid($aaguid)) {
+            $this->logger->debug('Null AAGUID detected. Skipping metadata verification.', [
+                'reason' => 'Privacy placeholder or U2F device',
+            ]);
             return;
         }
-        // If no Attestation Statement has been returned or if null AAGUID (=00000000-0000-0000-0000-000000000000)
-        // => nothing to check
-        if ($attestationStatement->type === AttestationStatement::TYPE_NONE) {
-            $this->logger->debug('No attestation returned.');
-            //No attestation is returned. We shall ensure that the AAGUID is a null one.
-            //if ($aaguid !== '00000000-0000-0000-0000-000000000000') {
-            //$this->logger->debug('Anonymization required. AAGUID and Attestation Statement changed.', [
-            //    'aaguid' => $aaguid,
-            //    'AttestationStatement' => $attestationStatement,
-            //]);
-            //$attestedCredentialData->aaguid = Uuid::fromString('00000000-0000-0000-0000-000000000000');
-            //    return;
-            //}
+
+        if ($attestationStatement->type === AttestationStatement::TYPE_SELF) {
+            $this->logger->debug('Self attestation detected.', [
+                'aaguid' => $aaguid,
+            ]);
+            $this->processSelfAttestation($aaguid);
             return;
         }
-        if ($aaguid === '00000000-0000-0000-0000-000000000000') {
-            //No need to continue if the AAGUID is null.
-            // This could be the case e.g. with AnonCA type
+
+        $this->logger->debug('Processing attestation with full metadata validation.', [
+            'type' => $attestationStatement->type,
+            'aaguid' => $aaguid,
+        ]);
+        $this->processWithMetadata($attestationStatement, $aaguid);
+    }
+
+    /**
+     * Check if RP requested attestation verification.
+     * @see https://www.w3.org/TR/webauthn-3/#dom-attestationconveyancepreference-none
+     */
+    private function isAttestationVerificationRequested(
+        PublicKeyCredentialCreationOptions $publicKeyCredentialOptions
+    ): bool {
+        return ! in_array(
+            $publicKeyCredentialOptions->attestation,
+            [null, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE],
+            true
+        );
+    }
+
+    /**
+     * Check if AAGUID is all-zeros (privacy placeholder or U2F device).
+     *
+     * All-zeros AAGUID: either privacy placeholder or U2F device (which predates AAGUID).
+     * 1) Privacy Placeholder indicates the authenticator does not provide detailed information.
+     * 2) U2F device cannot provide useful AAGUID.
+     *
+     * So Metadata Statement lookup by AAGUID not possible.
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-createCredential
+     * @see https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html#u2f-authenticatorMakeCredential-interoperability
+     */
+    private function isNullAaguid(string $aaguid): bool
+    {
+        return $aaguid === '00000000-0000-0000-0000-000000000000';
+    }
+
+    /**
+     * Process self attestation: check MDS for compromised devices.
+     *
+     * Self attestation: authenticator uses credential key pair to sign attestation.
+     * No attestation certificate chain to validate, but we still check MDS for compromised devices.
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#self
+     */
+    private function processSelfAttestation(string $aaguid): void
+    {
+        $metadataStatement = $this->metadataStatementRepository?->findOneByAAGUID($aaguid);
+        if ($metadataStatement === null) {
+            $this->logger->info('No metadata statement found for self attestation. Skipping MDS verification.', [
+                'aaguid' => $aaguid,
+            ]);
             return;
         }
-        //The MDS Repository is mandatory here
+
+        $this->logger->debug('Metadata statement found for self attestation. Checking status reports.', [
+            'aaguid' => $aaguid,
+        ]);
+        $this->checkStatusReport($aaguid);
+        // Note: We do NOT check attestationTypes for self attestation as the authenticator
+        // is using its credential key (not attestation certificate), which may differ from
+        // the declared attestation types in metadata (which describe certificate-based attestation).
+    }
+
+    /**
+     * Process attestation with full metadata validation (Basic, AttCA, AnonCA).
+     */
+    private function processWithMetadata(AttestationStatement $attestationStatement, string $aaguid): void
+    {
         $this->metadataStatementRepository !== null || throw AuthenticatorResponseVerificationException::create(
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-        // At this point, the Metadata Statement is mandatory
         $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(
             sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
         );
-        // We check the last status report
+
+        $this->logger->debug('Metadata statement found. Starting validation.', [
+            'aaguid' => $aaguid,
+            'attestation_type' => $attestationStatement->type,
+        ]);
+
         $this->checkStatusReport($aaguid);
-        // We check the certificate chain (if any)
+        $this->logger->debug('Status report verification completed.');
+
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
-        // Check Attestation Type is allowed
-        if (count($metadataStatement->attestationTypes) !== 0) {
-            $type = $this->getAttestationType($attestationStatement);
-            in_array(
-                $type,
-                $metadataStatement->attestationTypes,
-                true
-            ) || throw AuthenticatorResponseVerificationException::create(
-                sprintf(
-                    'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator.',
-                    $type
-                )
-            );
+        $this->logger->debug('Certificate chain verification completed.');
+
+        $this->checkAttestationTypeIsAllowed($attestationStatement, $metadataStatement);
+        $this->logger->debug('Attestation type verification completed.');
+    }
+
+    /**
+     * Check if the attestation type is allowed for this authenticator.
+     */
+    private function checkAttestationTypeIsAllowed(
+        AttestationStatement $attestationStatement,
+        MetadataStatement $metadataStatement
+    ): void {
+        if (count($metadataStatement->attestationTypes) === 0) {
+            $this->logger->debug('No attestation types restrictions in metadata statement.');
+            return;
         }
+
+        $type = $this->getAttestationType($attestationStatement);
+        $this->logger->debug('Checking attestation type.', [
+            'type' => $type,
+            'allowed_types' => $metadataStatement->attestationTypes,
+        ]);
+
+        in_array(
+            $type,
+            $metadataStatement->attestationTypes,
+            true
+        ) || throw AuthenticatorResponseVerificationException::create(
+            sprintf(
+                'Invalid attestation statement. The attestation type "%s" is not allowed for this authenticator.',
+                $type
+            )
+        );
     }
 
     private function getAttestationType(AttestationStatement $attestationStatement): string
@@ -169,29 +256,39 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
         $statusReports = $this->statusReportRepository === null ? [] : $this->statusReportRepository->findStatusReportsByAAGUID(
             $aaguid
         );
-        if (count($statusReports) !== 0) {
-            $lastStatusReport = end($statusReports);
-            if ($lastStatusReport->isCompromised()) {
-                throw AuthenticatorResponseVerificationException::create(
-                    'The authenticator is compromised and cannot be used'
-                );
-            }
+        if (count($statusReports) === 0) {
+            $this->logger->debug('No status reports found for authenticator.', [
+                'aaguid' => $aaguid,
+            ]);
+            return;
+        }
+
+        $lastStatusReport = end($statusReports);
+        $this->logger->debug('Status report found.', [
+            'aaguid' => $aaguid,
+            'status' => $lastStatusReport->status,
+        ]);
+
+        if ($lastStatusReport->isCompromised()) {
+            $this->logger->warning('Authenticator is marked as compromised in MDS.', [
+                'aaguid' => $aaguid,
+                'status' => $lastStatusReport->status,
+            ]);
+            throw AuthenticatorResponseVerificationException::create(
+                'The authenticator is compromised and cannot be used'
+            );
         }
     }
 
     private function checkCertificateChain(
         AttestationStatement $attestationStatement,
-        ?MetadataStatement $metadataStatement
+        MetadataStatement $metadataStatement
     ): void {
         $trustPath = $attestationStatement->trustPath;
-        if (! $trustPath instanceof CertificateTrustPath) {
-            return;
-        }
+        $trustPath instanceof CertificateTrustPath || throw AuthenticatorResponseVerificationException::create(
+            'Certificate trust path is required for attestation verification'
+        );
         $authenticatorCertificates = $trustPath->certificates;
-        if ($metadataStatement === null) {
-            $this->certificateChainValidator?->check($authenticatorCertificates, []);
-            return;
-        }
         $trustedCertificates = CertificateToolbox::fixPEMStructures(
             $metadataStatement->attestationRootCertificates
         );
