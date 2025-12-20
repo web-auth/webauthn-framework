@@ -61,7 +61,5 @@ return static function (ContainerConfigurator $container): void {
 
     $service->set(CurrentUserEntityGuesser::class);
     $service->set(RequestBodyUserEntityGuesser::class);
-    $service->set(WebauthnBadgeListener::class)
-        ->arg('$userProvider', service('security.user_providers'))
-    ;
+    $service->set(WebauthnBadgeListener::class);
 };
