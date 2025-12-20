@@ -4465,12 +4465,6 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
 
 		-
-			rawMessage: 'Method Webauthn\CeremonyStep\CheckMetadataStatement::checkCertificateChain() has parameter $metadataStatement with a nullable type declaration.'
-			identifier: ergebnis.noParameterWithNullableTypeDeclaration
-			count: 1
-			path: ../src/webauthn/src/CeremonyStep/CheckMetadataStatement.php
-
-		-
 			rawMessage: 'Method Webauthn\CeremonyStep\CheckMetadataStatement::process() has parameter $userHandle with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
