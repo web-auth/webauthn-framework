@@ -544,6 +544,12 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
+			rawMessage: Cannot access offset 'hide_existing_credentials' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
 			rawMessage: Cannot access offset 'host' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
@@ -708,6 +714,12 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::getAttestationOptionsBuilderId() should return string but returns mixed.'
 			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			rawMessage: 'Parameter #10 $hideExistingCredentials of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects bool, mixed given.'
+			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 

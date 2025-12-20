@@ -176,6 +176,9 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->arrayNode('registration')
             ->canBeEnabled()
             ->children()
+            ->booleanNode('hide_existing_credentials')
+            ->defaultTrue()
+            ->end()
             ->scalarNode('profile')
             ->defaultValue('default')
             ->end()
@@ -347,6 +350,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             $config['options_storage'],
             $config['registration']['options_handler'],
             $config['failure_handler'],
+            $config['registration']['hide_existing_credentials'],
         );
         if ($config['registration']['routes']['result_path'] !== null) {
             $this->createResponseControllerAndRoute(
@@ -401,6 +405,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         null|string $optionsStorageId,
         string $optionsHandlerId,
         string $failureHandlerId,
+        bool $hideExistingCredentials,
     ): void {
         $controller = (new Definition(AttestationRequestController::class))
             ->setFactory([new Reference(AttestationControllerFactory::class), 'createRequestController'])
@@ -410,7 +415,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference($optionsStorageId ?? OptionsStorage::class),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
-                true,
+                $hideExistingCredentials,
             ]);
         $this->createControllerAndRoute(
             $container,
