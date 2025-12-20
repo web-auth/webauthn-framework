@@ -21,8 +21,9 @@ use Webauthn\Tests\AbstractTestCase;
 final class AssertionTest extends AbstractTestCase
 {
     #[Test]
-    public function anAssertionCanBeVerified(): void
+    public function assertionCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
             base64_decode('G0JbLLndef3a0Iy3S2sSQA8uO4SO/ze6FZMAuPI6+xI=', true),
             rpId: 'localhost',
@@ -58,6 +59,8 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
+
+        // When
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
@@ -66,12 +69,15 @@ final class AssertionTest extends AbstractTestCase
                 'localhost',
                 'foo'
             );
+
+        // Then
         static::assertSame(123, $publicKeyCredentialSource->counter);
     }
 
     #[Test]
-    public function anAssertionWithTokenBindingCanBeVerified(): void
+    public function assertionWithTokenBindingCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
             base64_decode('5rCH1TZzlhWn1ux5QyEFSZlmoYiKJm84FHxJZu1Zk4s=', true),
             rpId: 'webauthn.morselli.fr',
@@ -107,6 +113,8 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
+
+        // When
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
@@ -115,12 +123,15 @@ final class AssertionTest extends AbstractTestCase
                 'localhost',
                 'foo'
             );
+
+        // Then
         static::assertSame(148, $publicKeyCredentialSource->counter);
     }
 
     #[Test]
-    public function anAssertionWithUserHandleCanBeVerified(): void
+    public function assertionWithUserHandleCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialRequestOptions = PublicKeyCredentialRequestOptions::create(
             base64_decode('wKlW7S3EENHlcF2NgYhdUJfRJeCvAvlbk+Mllvxo0HA=', true),
             rpId: 'spomky-webauthn.herokuapp.com',
@@ -156,6 +167,8 @@ final class AssertionTest extends AbstractTestCase
                 true
             )
         );
+
+        // When
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
@@ -164,15 +177,18 @@ final class AssertionTest extends AbstractTestCase
                 'spomky-webauthn.herokuapp.com',
                 null
             );
+
+        // Then
         static::assertSame(1_548_765_641, $publicKeyCredentialSource->counter);
     }
 
     #[Test]
-    public function aPreviouslyFixedKeyCanBeVerified(): void
+    public function previouslyFixedKeyCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize(
-                '{"rp": {"name": "Tuleap","id": "tuleap-web.tuleap-aio-dev.docker"},"user": {"name": "admin","id": "MTAx","displayName": "Site Administrator"},"challenge": "sNZel5OhIwA5vR4wdVkwiGHR6QEnNhYOqi97OHQrc2A","pubKeyCredParams": [{"type": "public-key","alg": -8},{"type": "public-key","alg": -7},{"type": "public-key","alg": -257}],"attestation": "none"}',
+                '{"rp": {"id": "tuleap-web.tuleap-aio-dev.docker"},"user": {"name": "admin","id": "MTAx","displayName": "Site Administrator"},"challenge": "sNZel5OhIwA5vR4wdVkwiGHR6QEnNhYOqi97OHQrc2A","pubKeyCredParams": [{"type": "public-key","alg": -8},{"type": "public-key","alg": -7},{"type": "public-key","alg": -257}],"attestation": "none"}',
                 PublicKeyCredentialCreationOptions::class,
                 'json'
             );
@@ -203,6 +219,8 @@ final class AssertionTest extends AbstractTestCase
                 'json'
             );
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->response);
+
+        // When & Then
         $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $source,

@@ -23,11 +23,12 @@ use Webauthn\Tests\AbstractTestCase;
 final class AppleAttestationStatementTest extends AbstractTestCase
 {
     #[Test]
-    public function anAppleAttestationCanBeVerified(): void
+    public function appleAttestationCanBeVerified(): void
     {
+        // Given
         $this->clock->set((new DateTimeImmutable())->setTimestamp(1_600_000_000));
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -50,10 +51,14 @@ final class AppleAttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
+
+        // When
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'dev.dontneeda.pw');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
         static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredential->rawId);
         static::assertSame(base64_decode('J4lAqPXhefDrUD7oh5LQMbBH5TE', true), $publicKeyCredentialDescriptor->id);
         static::assertSame(

@@ -15,8 +15,9 @@ use Webauthn\CollectedClientData;
 final class CollectedClientDataTest extends TestCase
 {
     #[Test]
-    public function anCollectedClientDataCanBeCreatedAndValueAccessed(): void
+    public function collectedClientDataCanBeCreatedAndValuesAccessed(): void
     {
+        // Given
         $collectedClientData = CollectedClientData::create(
             'raw_data',
             [
@@ -32,15 +33,16 @@ final class CollectedClientDataTest extends TestCase
             ]
         );
 
+        // When
+        $allKeys = $collectedClientData->all();
+
+        // Then
         static::assertSame('raw_data', $collectedClientData->rawData);
         static::assertSame('origin', $collectedClientData->origin);
         static::assertTrue($collectedClientData->crossOrigin);
         static::assertSame('challenge', $collectedClientData->challenge);
         static::assertSame('type', $collectedClientData->type);
-        static::assertSame(
-            ['type', 'origin', 'crossOrigin', 'challenge', 'extensions', 'tokenBinding'],
-            $collectedClientData->all()
-        );
+        static::assertSame(['type', 'origin', 'crossOrigin', 'challenge', 'extensions', 'tokenBinding'], $allKeys);
         static::assertTrue($collectedClientData->has('extensions'));
         static::assertSame('extensions', $collectedClientData->get('extensions'));
     }

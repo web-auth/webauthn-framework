@@ -16,19 +16,19 @@ use Webauthn\Tests\AbstractTestCase;
 final class CheckAllowedOriginsTest extends AbstractTestCase
 {
     #[Test]
-    public function theOriginIsNotInAllowedOrigins(): void
+    public function originIsNotInAllowedOrigins(): void
     {
-        //Then
+        // Then
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('Invalid origin');
 
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins(['https://example.org']);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -39,15 +39,15 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
     }
 
     #[Test]
-    public function theOriginIsValid(): void
+    public function originIsValid(): void
     {
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins(['https://webauthn.spomky-labs.com']);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -56,20 +56,20 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
             'webauthn.spomky-labs.com',
         );
 
-        //Then
+        // Then
         static::assertTrue(true);
     }
 
     #[Test]
     public function validSubdomainWithAllowSubdomains(): void
     {
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins(['spomky-labs.com'], true);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -78,24 +78,24 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
             'spomky-labs.com',
         );
 
-        //Then
+        // Then
         static::assertTrue(true);
     }
 
     #[Test]
     public function invalidSubdomainWithoutAllowSubdomains(): void
     {
-        //Then
+        // Then
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('Invalid origin');
 
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins(['https://spomky-labs.com']);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -108,13 +108,13 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
     #[Test]
     public function emptyAllowedOriginsDefaultsToHttps(): void
     {
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins([]);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -123,24 +123,24 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
             'webauthn.spomky-labs.com',
         );
 
-        //Then
+        // Then
         static::assertTrue(true); // if no exception, test passes
     }
 
     #[Test]
     public function emptyAllowedOriginsWithoutSubdomains(): void
     {
-        //Then
+        // Then
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('Invalid origin. Subdomains are not allowed.');
 
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins([], false);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -153,13 +153,13 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
     #[Test]
     public function emptyAllowedOriginsWithSubdomains(): void
     {
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins([], true);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -168,20 +168,20 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
             'spomky-labs.com',
         );
 
-        //Then
+        // Then
         static::assertTrue(true); // if no exception, test passes
     }
 
     #[Test]
     public function emptyAllowedOriginsWithoutSubdomainsAndValidHost(): void
     {
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins([], false);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,
@@ -190,24 +190,24 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
             'webauthn.spomky-labs.com',
         );
 
-        //Then
+        // Then
         static::assertTrue(true); // if no exception, test passes
     }
 
     #[Test]
     public function emptyAllowedOriginsWithSubdomainsAndInvalidHost(): void
     {
-        //Then
+        // Then
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('Invalid origin. Subdomains are not allowed.');
 
-        //Given
+        // Given
         $checkOrigins = new CheckAllowedOrigins([], false);
         $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
         $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
         $publicKeyCredential = $this->getPublicKeyCredential();
 
-        //When
+        // When
         $checkOrigins->process(
             $publicKeyCredentialSource,
             $publicKeyCredential->response,

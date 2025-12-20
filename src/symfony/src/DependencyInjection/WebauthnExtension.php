@@ -115,6 +115,8 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.creation_profiles', $config['creation_profiles']);
         $container->setParameter('webauthn.request_profiles', $config['request_profiles']);
 
+        $this->loadPasskeyEndpointsConfig($container, $config['passkey_endpoints']);
+
         $loader->load('services.php');
         $loader->load('cose.php');
         $loader->load('security.php');
@@ -222,9 +224,17 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 'webauthn.controller.creation.response.ceremony_step_manager.%s',
                 $name
             );
+
+            // Get the profile configuration to check if conditional_create is enabled
+            $profiles = $config['creation_profiles'] ?? [];
+            $profileName = $creationConfig['profile'];
+            $isConditionalCreate = isset($profiles[$profileName]['conditional_create']) && $profiles[$profileName]['conditional_create'] === true;
+
+            $ceremonyFactoryMethod = $isConditionalCreate ? 'conditionalCreateCeremony' : 'creationCeremony';
+
             $container
                 ->setDefinition($creationCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
-                ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'creationCeremony'])
+                ->setFactory([new Reference(CeremonyStepManagerFactory::class), $ceremonyFactoryMethod])
                 // @deprecated Will be removed in 6.0.0
                 ->setArguments([$creationConfig['secured_rp_ids']])
             ;
@@ -357,5 +367,16 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(StatusReportRepository::class, $config['status_report_repository']);
         $container->setAlias(CertificateChainValidator::class, $config['certificate_chain_checker']);
         $loader->load('metadata_statement_supports.php');
+    }
+
+    /**
+     * @param mixed[] $config
+     */
+    private function loadPasskeyEndpointsConfig(ContainerBuilder $container, array $config): void
+    {
+        $container->setParameter('webauthn.passkey_endpoints.enabled', $config['enabled'] ?? false);
+        $container->setParameter('webauthn.passkey_endpoints.enroll', $config['enroll'] ?? null);
+        $container->setParameter('webauthn.passkey_endpoints.manage', $config['manage'] ?? null);
+        $container->setParameter('webauthn.passkey_endpoints.prf_usage_details', $config['prf_usage_details'] ?? null);
     }
 }

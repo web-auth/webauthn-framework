@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials;
 
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CredentialsInterface;
 use Webauthn\AuthenticatorResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -16,7 +17,7 @@ class WebauthnCredentials implements CredentialsInterface
         private readonly AuthenticatorResponse $authenticatorResponse,
         private readonly PublicKeyCredentialOptions $publicKeyCredentialOptions,
         private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        private readonly PublicKeyCredentialSource $publicKeyCredentialSource,
+        private readonly CredentialRecord|PublicKeyCredentialSource $publicKeyCredentialSource,
         private readonly string $firewallName,
     ) {
     }
@@ -36,7 +37,7 @@ class WebauthnCredentials implements CredentialsInterface
         return $this->publicKeyCredentialUserEntity;
     }
 
-    public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
+    public function getPublicKeyCredentialSource(): CredentialRecord|PublicKeyCredentialSource
     {
         return $this->publicKeyCredentialSource;
     }

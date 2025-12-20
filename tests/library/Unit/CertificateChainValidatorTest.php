@@ -17,8 +17,9 @@ final class CertificateChainValidatorTest extends TestCase
      * @use \Webauthn\CertificateToolbox::checkChain
      */
     #[Test]
-    public function anCertificateChainValidatorCanBeCreatedAndValueAccessed(): void
+    public function convertingDERCertificatesToPEMFormatSucceeds(): void
     {
+        // Given
         $x5c = [
             file_get_contents(__DIR__ . '/../certificates/chain/1.der'),
             file_get_contents(__DIR__ . '/../certificates/chain/2.der'),
@@ -32,7 +33,10 @@ final class CertificateChainValidatorTest extends TestCase
             file_get_contents(__DIR__ . '/../certificates/chain/4.crt'),
         ];
 
+        // When
         $certs = CertificateToolbox::convertAllDERToPEM($x5c);
+
+        // Then
         static::assertSame($expected, $certs);
     }
 }

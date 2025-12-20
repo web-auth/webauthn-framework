@@ -16,6 +16,7 @@ use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
@@ -82,7 +83,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         $credentialSources = $this->credentialSourceRepository->findAllForUserEntity($userEntity);
 
         return array_map(
-            static fn (PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
+            static fn (CredentialRecord|PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
             $credentialSources
         );
     }

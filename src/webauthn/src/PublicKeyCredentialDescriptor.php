@@ -14,7 +14,14 @@ class PublicKeyCredentialDescriptor
 
     final public const AUTHENTICATOR_TRANSPORT_BLE = 'ble';
 
+    /**
+     * @deprecated Please use AUTHENTICATOR_TRANSPORT_BLE instead. Will be removed in 6.0.0
+     */
     final public const AUTHENTICATOR_TRANSPORT_CABLE = 'cable';
+
+    final public const AUTHENTICATOR_TRANSPORT_SMART_CARD = 'smart-card';
+
+    final public const AUTHENTICATOR_TRANSPORT_HYBRID = 'hybrid';
 
     final public const AUTHENTICATOR_TRANSPORT_INTERNAL = 'internal';
 
@@ -23,6 +30,8 @@ class PublicKeyCredentialDescriptor
         self::AUTHENTICATOR_TRANSPORT_NFC,
         self::AUTHENTICATOR_TRANSPORT_BLE,
         self::AUTHENTICATOR_TRANSPORT_CABLE,
+        self::AUTHENTICATOR_TRANSPORT_SMART_CARD,
+        self::AUTHENTICATOR_TRANSPORT_HYBRID,
         self::AUTHENTICATOR_TRANSPORT_INTERNAL,
     ];
 

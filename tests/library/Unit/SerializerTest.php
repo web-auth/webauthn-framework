@@ -10,9 +10,13 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Signal\AllAcceptedCredentials;
+use Webauthn\Signal\CurrentUserDetails;
+use Webauthn\Signal\UnknownCredential;
 use Webauthn\Tests\AbstractTestCase;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
@@ -35,9 +39,12 @@ final class SerializerTest extends AbstractTestCase
 
     #[Test]
     #[DataProvider('provideTrustPath')]
-    public function theTrustPathCanBeSerialized(TrustPath $trustPath, string $expected): void
+    public function trustPathCanBeSerialized(TrustPath $trustPath, string $expected): void
     {
-        //When
+        // Given
+        // TrustPath provided by data provider
+
+        // When
         $json = $this->getSerializer()
             ->serialize(
                 $trustPath,
@@ -49,15 +56,18 @@ final class SerializerTest extends AbstractTestCase
                 ],
             );
 
-        //Then
+        // Then
         static::assertJsonStringEqualsJsonString($expected, $json);
     }
 
     #[Test]
     #[DataProvider('provideTrustPath')]
-    public function theTrustPathCanBeDeserialized(TrustPath $trustPath, string $expected): void
+    public function trustPathCanBeDeserialized(TrustPath $trustPath, string $expected): void
     {
-        //When
+        // Given
+        // TrustPath provided by data provider
+
+        // When
         $deserialized = $this->getSerializer()
             ->deserialize(
                 $expected,
@@ -69,16 +79,16 @@ final class SerializerTest extends AbstractTestCase
                 ],
             );
 
-        //Then
+        // Then
         static::assertEquals($trustPath, $deserialized);
     }
 
     #[Test]
-    public function theCredentialCanBeDeserialized(): void
+    public function credentialCanBeSerializedAndDeserialized(): void
     {
-        //Given
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('Example.com', 'example.com'),
+            PublicKeyCredentialRpEntity::create('', 'example.com'),
             PublicKeyCredentialUserEntity::create('john.doe', '0123456789', 'John Doe'),
             hash('xxh128', 'pk id test', true),
             [PublicKeyCredentialParameters::createPk(-1), PublicKeyCredentialParameters::createPk(256)],
@@ -89,7 +99,7 @@ final class SerializerTest extends AbstractTestCase
             PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
         );
 
-        //When
+        // When
         $json = $this->getSerializer()
             ->serialize(
                 $publicKeyCredentialCreationOptions,
@@ -101,12 +111,11 @@ final class SerializerTest extends AbstractTestCase
                 ],
             );
 
-        //Then
+        // Then
         static::assertJsonStringEqualsJsonString(
             '{
                 "rp": {
-                    "id": "example.com",
-                    "name": "Example.com"
+                    "id": "example.com"
                 },
                 "user": {
                     "id": "MDEyMzQ1Njc4OQ",
@@ -132,6 +141,74 @@ final class SerializerTest extends AbstractTestCase
                 "attestation": "none"
             }',
             $json,
+        );
+    }
+
+    #[Test]
+    public function signalUnknownCredentialCanBeSerialized(): void
+    {
+        // Given
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $credential = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-123',
+            []
+        );
+        $signal = new UnknownCredential($rp, $credential);
+
+        // When
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+
+        // Then
+        static::assertJsonStringEqualsJsonString('{"rpId":"rp.example.com","credentialId":"Y3JlZC0xMjM"}', $json);
+    }
+
+    #[Test]
+    public function signalAllAcceptedCredentialsCanBeSerialized(): void
+    {
+        // Given
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $user = new PublicKeyCredentialUserEntity('john.doe', 'user-1', 'John Doe');
+        $cred1 = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-1',
+            []
+        );
+        $cred2 = new PublicKeyCredentialDescriptor(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'cred-2',
+            []
+        );
+        $signal = new AllAcceptedCredentials($rp, $user, [$cred1, $cred2]);
+
+        // When
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+
+        // Then
+        static::assertJsonStringEqualsJsonString(
+            '{"rpId":"rp.example.com","userId":"dXNlci0x","allAcceptedCredentialIds":["Y3JlZC0x","Y3JlZC0y"]}',
+            $json
+        );
+    }
+
+    #[Test]
+    public function signalCurrentUserDetailsCanBeSerialized(): void
+    {
+        // Given
+        $rp = new PublicKeyCredentialRpEntity('Example.com', 'rp.example.com');
+        $user = new PublicKeyCredentialUserEntity('john.doe', 'user-1', 'John Doe');
+        $signal = new CurrentUserDetails($rp, $user);
+
+        // When
+        $serializer = $this->getSerializer();
+        $json = $serializer->serialize($signal, 'json');
+
+        // Then
+        static::assertJsonStringEqualsJsonString(
+            '{"rpId":"rp.example.com","userId":"dXNlci0x","name":"john.doe","displayName":"John Doe"}',
+            $json
         );
     }
 }

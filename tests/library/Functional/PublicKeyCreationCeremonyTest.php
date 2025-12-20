@@ -18,21 +18,25 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
 {
     #[Test]
     #[DataProvider('getPublicKeyCredentialCreationOptions')]
-    public function theCeremonySucceeded(
+    public function creationCeremonySucceedsWithValidCredentials(
         string $options,
         string $response,
         string $keyId,
         string $type,
         string $host
     ): void {
+        // Given
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize($options, PublicKeyCredentialCreationOptions::class, 'json');
         $publicKeyCredential = $this->getSerializer()
             ->deserialize($response, PublicKeyCredential::class, 'json');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $source = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
 
+        // Then
         static::assertSame(hex2bin($keyId), $source->publicKeyCredentialId);
         static::assertSame($type, $source->attestationType);
     }
@@ -47,7 +51,7 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
             'spomky-labs.com',
         ];
         yield 'wrongEdDSAlgorithmIsFixed' => [
-            '{"rp": {"name": "Tuleap", "id": "tuleap-web.tuleap-aio-dev.docker"}, "user": {"name": "admin", "id": "MTAx", "displayName": "Site Administrator"}, "challenge": "oq1vpg74u-TmqW3Dv2LwU_jH00NQf65OqpMhrvr7yPY", "pubKeyCredParams": [{"type": "public-key", "alg": -8}, {"type": "public-key", "alg": -7}, {"type": "public-key", "alg": -257}], "attestation": "none"}',
+            '{"rp": {"id": "tuleap-web.tuleap-aio-dev.docker"}, "user": {"name": "admin", "id": "MTAx", "displayName": "Site Administrator"}, "challenge": "oq1vpg74u-TmqW3Dv2LwU_jH00NQf65OqpMhrvr7yPY", "pubKeyCredParams": [{"type": "public-key", "alg": -8}, {"type": "public-key", "alg": -7}, {"type": "public-key", "alg": -257}], "attestation": "none"}',
             '{"clientExtensionResults": {}, "id": "ma2Y7hbtrzJtoDR4N2PkazhnrO6_58gZ8mO8epx-6aCnR9Jtio8Ge1w0_msV7HniYmLIH9yxOW8Yu_9ze_y8oj-MehAozj1jFTsjlQUEc_dxdzG5uFJTn6_RnzhulEWCcZZwcvlNTYne99MpWAD31c-4IuEr-eRRV1DWSANcax0", "rawId": "ma2Y7hbtrzJtoDR4N2PkazhnrO6_58gZ8mO8epx-6aCnR9Jtio8Ge1w0_msV7HniYmLIH9yxOW8Yu_9ze_y8oj-MehAozj1jFTsjlQUEc_dxdzG5uFJTn6_RnzhulEWCcZZwcvlNTYne99MpWAD31c-4IuEr-eRRV1DWSANcax0", "response": {"attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBCRawLfvD1MyjfrwvZRZlmxIhDbnhAYq58TqWkGOOpv2oRQAAAAIvwFefgRNH6rEWu1qNuSAqAICZrZjuFu2vMm2gNHg3Y-RrOGes7r_nyBnyY7x6nH7poKdH0m2KjwZ7XDT-axXseeJiYsgf3LE5bxi7_3N7_LyiP4x6ECjOPWMVOyOVBQRz93F3Mbm4UlOfr9GfOG6URYJxlnBy-U1Nid730ylYAPfVz7gi4Sv55FFXUNZIA1xrHaMBY09LUAMnIGdFZDI1NTE5IZggCBjXGDcYzBgpGFwYlBgcGJYYTxjdGOYY8BjyGL4YPxg7GEgYfBh_GCIYKxhgChgmGIQYkhhQGH0Y1hjoGIk", "clientDataJSON": "eyJjaGFsbGVuZ2UiOiJvcTF2cGc3NHUtVG1xVzNEdjJMd1VfakgwME5RZjY1T3FwTWhydnI3eVBZIiwib3JpZ2luIjoiaHR0cHM6Ly90dWxlYXAtd2ViLnR1bGVhcC1haW8tZGV2LmRvY2tlciIsInR5cGUiOiJ3ZWJhdXRobi5jcmVhdGUifQ"}, "type": "public-key"}',
             '99ad98ee16edaf326da034783763e46b3867aceebfe7c819f263bc7a9c7ee9a0a747d26d8a8f067b5c34fe6b15ec79e26262c81fdcb1396f18bbff737bfcbca23f8c7a1028ce3d63153b2395050473f7717731b9b852539fafd19f386e94458271967072f94d4d89def7d3295800f7d5cfb822e12bf9e4515750d648035c6b1d',
             'none',

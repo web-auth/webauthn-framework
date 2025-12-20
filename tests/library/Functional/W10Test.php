@@ -26,7 +26,7 @@ final class W10Test extends AbstractTestCase
 {
     #[Test]
     #[DataProvider('getAttestationCanBeVerifiedData')]
-    public function anAttestationCanBeVerified(
+    public function attestationResponseCanBeVerifiedAndValidated(
         string $publicKeyCredentialCreationOptionsData,
         string $publicKeyCredentialData,
         string $credentialId,
@@ -37,14 +37,19 @@ final class W10Test extends AbstractTestCase
         string $attestationType,
         string $trustPath,
     ): void {
+        // Given
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize($publicKeyCredentialCreationOptionsData, PublicKeyCredentialCreationOptions::class, 'json');
         $publicKeyCredential = $this->getSerializer()
             ->deserialize($publicKeyCredentialData, PublicKeyCredential::class, 'json');
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $publicKeyCredentialSource = $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, $host);
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
         static::assertSame($credentialId, $publicKeyCredential->rawId);
         static::assertSame($credentialId, $publicKeyCredentialDescriptor->id);
         static::assertSame(
@@ -115,8 +120,9 @@ final class W10Test extends AbstractTestCase
     }
 
     #[Test]
-    public function anAssertionCanBeVerified(): void
+    public function assertionResponseCanBeVerifiedAndValidated(): void
     {
+        // Given
         $publicKeyCredentialRequestOptions = $this->getSerializer()
             ->deserialize(
                 '{"challenge":"w-BeaUTZZnYMzvUB5GWUpiT1WYOnr9iCGUt5irUiUko","userVerification":"preferred","allowCredentials":[{"type":"public-key","id":"6oRgydKXdC3LtZBDoAXxKnWte68elEQejDrYOV9x-18"}],"timeout":60000}',
@@ -140,6 +146,8 @@ final class W10Test extends AbstractTestCase
                 true
             )
         );
+
+        // When
         $publicKeyCredentialSource = $this->getAuthenticatorAssertionResponseValidator()
             ->check(
                 $publicKeyCredentialSource,
@@ -148,6 +156,8 @@ final class W10Test extends AbstractTestCase
                 'webauthn.spomky-labs.com',
                 'ee13d4f1-4863-47dd-a407-097cb49ac822'
             );
+
+        // Then
         static::assertSame(4, $publicKeyCredentialSource->counter);
     }
 }

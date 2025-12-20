@@ -2,142 +2,31 @@
 
 declare(strict_types=1);
 
-use Castor\Attribute\AsOption;
+use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use function Castor\context;
+use function Castor\guard_min_version;
 use function Castor\io;
 use function Castor\run;
 
-#[AsTask(description: 'Run mutation testing')]
-function infect(int $minMsi = 0, int $minCoveredMsi = 0, bool $ci = false): void
-{
-    io()->title('Running infection');
-    $nproc = run('nproc', quiet: true);
-    if (! $nproc->isSuccessful()) {
-        io()->error('Cannot determine the number of processors');
-        return;
-    }
-    $threads = (int) $nproc->getOutput();
-    $command = [
-        'php',
-        'vendor/bin/infection',
-        sprintf('--min-msi=%s', $minMsi),
-        sprintf('--min-covered-msi=%s', $minCoveredMsi),
-        sprintf('--threads=%s', $threads),
-    ];
-    if ($ci) {
-        $command[] = '--logger-github';
-        $command[] = '-s';
-    }
-
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'coverage',
-        ])
-    ;
-    run($command, context: $context);
-}
-
-#[AsTask(description: 'Run tests')]
-function test(bool $coverageHtml = false, bool $coverageText = false, null|string $group = null): void
-{
-    io()->title('Running tests');
-    $command = ['php', 'vendor/bin/phpunit', '--color'];
-
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    if ($coverageHtml) {
-        $command[] = '--coverage-html=build/coverage';
-        $context = $context->withEnvironment([
-            'XDEBUG_MODE' => 'coverage',
-        ]);
-    }
-    if ($coverageText) {
-        $command[] = '--coverage-text';
-        $context = $context->withEnvironment([
-            'XDEBUG_MODE' => 'coverage',
-        ]);
-    }
-    if ($group !== null) {
-        $command[] = sprintf('--group=%s', $group);
-    }
-    run($command, context: $context);
-}
-
-#[AsTask(description: 'Coding standards check')]
-function cs(
-    #[AsOption(description: 'Fix issues if possible')]
-    bool $fix = false,
-    #[AsOption(description: 'Clear cache')]
-    bool $clearCache = false
-): void {
-    io()->title('Running coding standards check');
-    $command = ['php', 'vendor/bin/ecs', 'check'];
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    if ($fix) {
-        $command[] = '--fix';
-    }
-    if ($clearCache) {
-        $command[] = '--clear-cache';
-    }
-    run($command, context: $context);
-}
-
-#[AsTask(description: 'Running PHPStan')]
-function stan(bool $baseline = false): void
-{
-    io()->title('Running PHPStan');
-    $command = ['php', 'vendor/bin/phpstan', 'analyse'];
-    if ($baseline) {
-        $command[] = '--generate-baseline';
-    }
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    run($command, context: $context);
-}
-
-#[AsTask(description: 'Validate Composer configuration')]
-function validate(): void
-{
-    io()->title('Validating Composer configuration');
-    $command = ['composer', 'validate', '--strict'];
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    run($command, context: $context);
-
-    $command = ['composer', 'dump-autoload', '--optimize', '--strict-psr'];
-    run($command, context: $context);
-}
+guard_min_version('v0.23.0');
 
 /**
  * @param array<string> $allowedLicenses
  */
-#[AsTask(description: 'Check licenses')]
+#[AsTask(description: 'Check licenses.')]
 function checkLicenses(
     array $allowedLicenses = ['Apache-2.0', 'BSD-2-Clause', 'BSD-3-Clause', 'ISC', 'MIT', 'MPL-2.0', 'OSL-3.0']
 ): void {
     io()->title('Checking licenses');
     $allowedExceptions = [];
     $command = ['composer', 'licenses', '-f', 'json'];
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    $result = run($command, context: $context, quiet: true);
+    $context = context();
+    $context->withEnvironment([
+        'XDEBUG_MODE' => 'off',
+    ]);
+    $context->withQuiet();
+    $result = run($command, context: $context);
     if (! $result->isSuccessful()) {
         io()->error('Cannot determine licenses');
         exit(1);
@@ -182,53 +71,160 @@ function checkLicenses(
         ->success('All licenses are allowed');
 }
 
-#[AsTask(description: 'Run Rector')]
-function rector(
-    #[AsOption(description: 'Fix issues if possible')]
-    bool $fix = false,
-    #[AsOption(description: 'Clear cache')]
-    bool $clearCache = false
-): void {
-    io()->title('Running Rector');
-    $command = ['php', 'vendor/bin/rector', 'process', '--ansi'];
-    if (! $fix) {
-        $command[] = '--dry-run';
-    }
-    if ($clearCache) {
-        $command[] = '--clear-cache';
-    }
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    run($command, context: $context);
+#[AsTask(description: 'Runs a Symfony Console command from the Docket Container.', ignoreValidationErrors: true)]
+function console(#[AsRawTokens] array $args = []): void
+{
+    php(['bin/console', ...$args]);
 }
 
-#[AsTask(description: 'Run Rector')]
+#[AsTask(description: 'Runs a PHP command from the Docket Container.', ignoreValidationErrors: true)]
+function php(#[AsRawTokens] array $args = []): void
+{
+    $inContainer = file_exists('/.dockerenv');
+    $hasDocker = trim(shell_exec('command -v docker') ?? '') !== '';
+
+    if (! $hasDocker || $inContainer) {
+        run($args);
+        return;
+    }
+
+    run(['php', ...$args]);
+}
+
+function phpqa(array $command, array $dockerOptions = []): void
+{
+    $inContainer = file_exists('/.dockerenv');
+    $hasDocker = trim(shell_exec('command -v docker') ?? '') !== '';
+    $phpVersion = getenv('PHP_VERSION') ?: \PHP_MAJOR_VERSION . '.' . \PHP_MINOR_VERSION;
+
+    if (! $hasDocker || $inContainer) {
+        run($command);
+        return;
+    }
+
+    $defaultDockerOptions = [
+        '--rm',
+        '--init',
+        '-it',
+        '--user', sprintf('%s:%s', getmyuid(), getmygid()),
+        '--pull', 'always',
+        '-v', getcwd() . ':/project',
+        '-v', getcwd() . '/tmp-phpqa:/project/tmp-phpqa',
+        '-w', '/project',
+        '-e', 'XDEBUG_MODE=off',
+        '-e', 'PHP_INI_SCAN_DIR=/usr/local/etc/php/conf.d',
+        '-e', 'PHP_INI_ENTRY=sys_temp_dir=/project/tmp-phpqa',
+    ];
+
+    run([
+        'docker', 'run',
+        ...$defaultDockerOptions,
+        ...$dockerOptions,
+        sprintf('ghcr.io/spomky-labs/phpqa:%s', $phpVersion),
+        ...$command,
+    ]);
+}
+
+#[AsTask(description: 'Update the PHPQA Docker image')]
+function phpqa_update(): void
+{
+    $phpVersion = getenv('PHP_VERSION') ?: (\PHP_MAJOR_VERSION . '.' . \PHP_MINOR_VERSION);
+
+    run(['docker', 'pull', 'ghcr.io/spomky-labs/phpqa:' . $phpVersion]);
+}
+
+#[AsTask(description: 'Run PHPUnit tests with coverage', ignoreValidationErrors: true)]
+function phpunit(#[AsRawTokens] array $args = []): void
+{
+    phpqa(
+        [
+            'composer', 'exec', '--', 'phpunit-11',
+            '--coverage-xml', '.ci-tools/coverage',
+            '--log-junit=.ci-tools/coverage/junit.xml',
+            '--configuration', '.ci-tools/phpunit.xml.dist',
+            '--display-warnings',
+            '--display-deprecations',
+            ...$args,
+        ],
+        ['-e', 'XDEBUG_MODE=coverage']
+    );
+}
+
+#[AsTask(description: 'Run Easy Coding Standard')]
+function ecs(): void
+{
+    phpqa(['composer', 'exec', '--', 'ecs', 'check', '--config', '.ci-tools/ecs.php']);
+}
+
+#[AsTask(description: 'Fix coding style with Easy Coding Standard')]
+function ecs_fix(): void
+{
+    phpqa(['composer', 'exec', '--', 'ecs', 'check', '--config', '.ci-tools/ecs.php', '--fix']);
+}
+
+#[AsTask(description: 'Run Rector dry-run')]
+function rector(): void
+{
+    phpqa(['composer', 'exec', '--', 'rector', 'process', '--dry-run', '--config', '.ci-tools/rector.php']);
+}
+
+#[AsTask(description: 'Run Rector with fix')]
+function rector_fix(): void
+{
+    phpqa(['composer', 'exec', '--', 'rector', 'process', '--config', '.ci-tools/rector.php']);
+}
+
+#[AsTask(description: 'Run PHPStan')]
+function phpstan(): void
+{
+    phpqa(
+        [
+            'composer', 'exec', '--', 'phpstan', 'analyse', '--error-format=github', '--configuration=.ci-tools/phpstan.neon']
+    );
+}
+
+#[AsTask(description: 'Generate PHPStan baseline')]
+function phpstan_baseline(): void
+{
+    phpqa([
+        'composer', 'exec', '--', 'phpstan', 'analyse',
+        '--configuration=.ci-tools/phpstan.neon',
+        '--generate-baseline=.ci-tools/phpstan-baseline.neon',
+    ]);
+}
+
+#[AsTask(description: 'Run Deptrac')]
 function deptrac(): void
 {
-    io()->title('Running Rector');
-    $command = ['php', 'vendor/bin/deptrac', 'analyse', '--fail-on-uncovered', '--no-cache'];
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    run($command, context: $context);
+    phpqa([
+        'composer', 'exec', '--', 'deptrac',
+        '--config-file', '.ci-tools/deptrac.yaml',
+        '--report-uncovered',
+        '--report-skipped',
+        '--fail-on-uncovered',
+    ]);
 }
 
-#[AsTask(description: 'Run Linter')]
+#[AsTask(description: 'Run PHP parallel linter')]
 function lint(): void
 {
-    io()->title('Running Linter');
-    $command = ['composer', 'exec', '--', 'parallel-lint', __DIR__ . '/src/', __DIR__ . '/tests/'];
-    $context = context()
-        ->withEnvironment([
-            'XDEBUG_MODE' => 'off',
-        ])
-    ;
-    run($command, context: $context);
+    phpqa(['composer', 'exec', '--', 'parallel-lint', 'src', 'tests']);
+}
+
+#[AsTask(description: 'Run Infection for mutation testing')]
+function infect($minMsi = 0, $minCoveredMsi = 0): void
+{
+    phpqa([
+        'composer', 'exec', '--', 'infection',
+        '--coverage=coverage',
+        sprintf('--min-msi=%d', $minMsi),
+        sprintf('--min-covered-msi=%d', $minCoveredMsi),
+        '--threads=max',
+        '--logger-github',
+        '-s',
+        '--filter=src/',
+        '--configuration=.ci-tools/infection.json.dist',
+    ], ['-e', 'XDEBUG_MODE=coverage']);
 }
 
 #[AsTask(description: 'Run JS tests')]
@@ -237,4 +233,22 @@ function js(): void
     io()->title('Running JS tests');
     run(['npm', 'install', '--force']);
     run(['npm', 'test']);
+}
+
+#[AsTask(description: 'Fix code style and apply Rector rules, then run static analysis.')]
+function prepare_pr(): void
+{
+    io()->title('Preparing code for pull request…');
+
+    ecs_fix();
+    rector_fix();
+
+    io()
+        ->section('Running static analysis…');
+    phpstan_baseline();
+    deptrac();
+    lint();
+
+    io()
+        ->success('Code is ready. You may now commit and push your changes.');
 }

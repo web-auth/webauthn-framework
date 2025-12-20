@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Webauthn\Denormalizer;
+
+use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Webauthn\Signal\CurrentUserDetails;
+use function assert;
+
+class SignalCurrentUserDetailsDenormalizer implements NormalizerInterface, NormalizerAwareInterface
+{
+    use NormalizerAwareTrait;
+
+    /**
+     * @return array<class-string, bool>
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            CurrentUserDetails::class => true,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function normalize(mixed $data, ?string $format = null, array $context = []): array
+    {
+        assert($data instanceof CurrentUserDetails);
+
+        $normalized_rp = $this->normalizer->normalize($data->rp, $format, $context);
+
+        $normalized_user = $this->normalizer->normalize($data->user, $format, $context);
+
+        return [
+            'rpId' => $normalized_rp['id'],
+            'userId' => $normalized_user['id'],
+            'name' => $normalized_user['name'],
+            'displayName' => $normalized_user['displayName'],
+        ];
+    }
+
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof CurrentUserDetails;
+    }
+}

@@ -9,3 +9,6 @@ yarn-error.log
 /vendor
 /.phpunit.cache/
 /.castor.stub.php
+/tmp*
+/.ci-tools/coverage
+/package-lock.json

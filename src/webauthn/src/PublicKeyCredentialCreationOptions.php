@@ -33,6 +33,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      * @param null|positive-int $timeout
+     * @param string[] $hints
      */
     public function __construct(
         public readonly PublicKeyCredentialRpEntity $rp,
@@ -44,6 +45,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         public array $excludeCredentials = [],
         null|int $timeout = null,
         null|AuthenticationExtensions $extensions = null,
+        array $hints = [],
     ) {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
             $pubKeyCredParam instanceof PublicKeyCredentialParameters || throw new InvalidArgumentException(
@@ -60,13 +62,14 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             'Invalid attestation conveyance mode'
         );
 
-        parent::__construct($challenge, $timeout, $extensions);
+        parent::__construct($challenge, $timeout, $extensions, $hints);
     }
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      * @param null|positive-int $timeout
+     * @param string[] $hints
      */
     public static function create(
         PublicKeyCredentialRpEntity $rp,
@@ -78,6 +81,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         array $excludeCredentials = [],
         null|int $timeout = null,
         null|AuthenticationExtensions $extensions = null,
+        array $hints = [],
     ): self {
         return new self(
             $rp,
@@ -88,7 +92,8 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             $attestation,
             $excludeCredentials,
             $timeout,
-            $extensions
+            $extensions,
+            $hints
         );
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authorization\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
@@ -12,7 +13,7 @@ final readonly class IsUserVerifiedVoter implements VoterInterface
 {
     public const IS_USER_VERIFIED = 'IS_USER_VERIFIED';
 
-    public function vote(TokenInterface $token, mixed $subject, array $attributes): int
+    public function vote(TokenInterface $token, mixed $subject, array $attributes, ?Vote $vote = null): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;
         if (! $token instanceof WebauthnToken) {

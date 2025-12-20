@@ -11,6 +11,8 @@ use Throwable;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAttestationResponseValidationSucceededEvent;
+use Webauthn\Event\BackupEligibilityChangedEvent;
+use Webauthn\Event\BackupStatusChangedEvent;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
@@ -51,7 +53,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         string $host,
-    ): PublicKeyCredentialSource {
+    ): CredentialRecord {
         try {
             $this->logger->info('Checking the authenticator attestation response', [
                 'authenticatorAttestationResponse' => $authenticatorAttestationResponse,
@@ -59,37 +61,61 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
                 'host' => $host,
             ]);
 
-            $publicKeyCredentialSource = $this->createPublicKeyCredentialSource(
+            $credentialRecord = $this->createCredentialRecord(
                 $authenticatorAttestationResponse,
                 $publicKeyCredentialCreationOptions
             );
 
             $this->ceremonyStepManager->process(
-                $publicKeyCredentialSource,
+                $credentialRecord,
                 $authenticatorAttestationResponse,
                 $publicKeyCredentialCreationOptions,
                 $publicKeyCredentialCreationOptions->user->id,
                 $host
             );
 
-            $publicKeyCredentialSource->counter = $authenticatorAttestationResponse->attestationObject->authData->signCount;
-            $publicKeyCredentialSource->backupEligible = $authenticatorAttestationResponse->attestationObject->authData->isBackupEligible();
-            $publicKeyCredentialSource->backupStatus = $authenticatorAttestationResponse->attestationObject->authData->isBackedUp();
-            $publicKeyCredentialSource->uvInitialized = $authenticatorAttestationResponse->attestationObject->authData->isUserVerified();
+            // Store previous backup state values to detect changes (will be null for new credentials)
+            $previousBackupEligible = $credentialRecord->backupEligible;
+            $previousBackupStatus = $credentialRecord->backupStatus;
+
+            $credentialRecord->counter = $authenticatorAttestationResponse->attestationObject->authData->signCount;
+            $credentialRecord->backupEligible = $authenticatorAttestationResponse->attestationObject->authData->isBackupEligible();
+            $credentialRecord->backupStatus = $authenticatorAttestationResponse->attestationObject->authData->isBackedUp();
+            $credentialRecord->uvInitialized = $authenticatorAttestationResponse->attestationObject->authData->isUserVerified();
+
+            // Dispatch events if backup state changed
+            if ($previousBackupEligible !== $credentialRecord->backupEligible) {
+                $this->eventDispatcher->dispatch(
+                    new BackupEligibilityChangedEvent(
+                        $credentialRecord,
+                        $previousBackupEligible,
+                        $credentialRecord->backupEligible
+                    )
+                );
+            }
+            if ($previousBackupStatus !== $credentialRecord->backupStatus) {
+                $this->eventDispatcher->dispatch(
+                    new BackupStatusChangedEvent(
+                        $credentialRecord,
+                        $previousBackupStatus,
+                        $credentialRecord->backupStatus
+                    )
+                );
+            }
 
             $this->logger->info('The attestation is valid');
-            $this->logger->debug('Public Key Credential Source', [
-                'publicKeyCredentialSource' => $publicKeyCredentialSource,
+            $this->logger->debug('Credential Record', [
+                'credentialRecord' => $credentialRecord,
             ]);
             $this->eventDispatcher->dispatch(
                 $this->createAuthenticatorAttestationResponseValidationSucceededEvent(
                     $authenticatorAttestationResponse,
                     $publicKeyCredentialCreationOptions,
                     $host,
-                    $publicKeyCredentialSource
+                    $credentialRecord
                 )
             );
-            return $publicKeyCredentialSource;
+            return $credentialRecord;
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred', [
                 'exception' => $throwable,
@@ -110,13 +136,13 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
         string $host,
-        PublicKeyCredentialSource $publicKeyCredentialSource
+        CredentialRecord $credentialRecord
     ): AuthenticatorAttestationResponseValidationSucceededEvent {
         return new AuthenticatorAttestationResponseValidationSucceededEvent(
             $authenticatorAttestationResponse,
             $publicKeyCredentialCreationOptions,
             $host,
-            $publicKeyCredentialSource
+            $credentialRecord
         );
     }
 
@@ -134,10 +160,10 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         );
     }
 
-    private function createPublicKeyCredentialSource(
+    private function createCredentialRecord(
         AuthenticatorAttestationResponse $authenticatorAttestationResponse,
         PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions,
-    ): PublicKeyCredentialSource {
+    ): CredentialRecord {
         $attestationObject = $authenticatorAttestationResponse->attestationObject;
         $attestedCredentialData = $attestationObject->authData->attestedCredentialData;
         $attestedCredentialData !== null || throw AuthenticatorResponseVerificationException::create(
@@ -151,7 +177,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         $userHandle = $publicKeyCredentialCreationOptions->user->id;
         $transports = $authenticatorAttestationResponse->transports;
 
-        return PublicKeyCredentialSource::create(
+        return CredentialRecord::create(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transports,

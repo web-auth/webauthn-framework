@@ -13,6 +13,7 @@ use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -21,6 +22,7 @@ use Webauthn\StringStream;
 use Webauthn\U2FPublicKey;
 use Webauthn\Util\CoseSignatureFixer;
 use function is_array;
+use function trigger_deprecation;
 
 final readonly class CheckSignature implements CeremonyStep
 {
@@ -32,16 +34,24 @@ final readonly class CheckSignature implements CeremonyStep
     }
 
     public function process(
-        PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,
         string $host
     ): void {
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.3',
+                'Passing a PublicKeyCredentialSource to "%s::process()" is deprecated, pass a CredentialRecord instead.',
+                self::class
+            );
+        }
         if (! $authenticatorResponse instanceof AuthenticatorAssertionResponse) {
             return;
         }
-        $credentialPublicKey = $publicKeyCredentialSource->getAttestedCredentialData()
+        $credentialPublicKey = $credentialRecord->getAttestedCredentialData()
             ->credentialPublicKey;
         $credentialPublicKey !== null || throw AuthenticatorResponseVerificationException::create(
             'No public key available.'

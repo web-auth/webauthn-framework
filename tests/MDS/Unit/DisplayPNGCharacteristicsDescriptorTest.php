@@ -16,7 +16,7 @@ final class DisplayPNGCharacteristicsDescriptorTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('getInvalidValues')]
-    public function validObject(
+    public function creatingDisplayPNGDescriptorWithInvalidValuesThrowsException(
         int $width,
         int $height,
         int $bitDepth,
@@ -26,11 +26,14 @@ final class DisplayPNGCharacteristicsDescriptorTest extends MdsTestCase
         int $interlace,
         string $message
     ): void {
-        //Then
+        // Then
         static::expectException(MetadataStatementLoadingException::class);
         static::expectExceptionMessage($message);
 
-        //When
+        // Given
+        // Parameters provided by data provider
+
+        // When
         DisplayPNGCharacteristicsDescriptor::create(
             width: $width,
             height: $height,

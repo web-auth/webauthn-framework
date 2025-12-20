@@ -27,13 +27,18 @@ use Webauthn\TrustPath\CertificateTrustPath;
 final class FidoU2FAttestationStatementSupportTest extends TestCase
 {
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredSignature(): void
+    public function loadingAttestationWithoutSignatureThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "sig" is missing.');
+
+        // Given
         $support = new FidoU2FAttestationStatementSupport();
 
         static::assertSame('fido-u2f', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
             'attStmt' => [],
@@ -41,11 +46,16 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
     }
 
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
+    public function loadingAttestationWithoutCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
+
+        // Given
         $support = new FidoU2FAttestationStatementSupport();
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
             'attStmt' => [
@@ -55,13 +65,18 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
     }
 
     #[Test]
-    public function theAttestationStatementContainsAnEmptyCertificateList(): void
+    public function loadingAttestationWithEmptyCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" must be a list with one certificate.');
+
+        // Given
         $support = new FidoU2FAttestationStatementSupport();
 
         static::assertSame('fido-u2f', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
             'attStmt' => [
@@ -72,13 +87,18 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
     }
 
     #[Test]
-    public function theAttestationStatementDoesNotContainAValidCertificateList(): void
+    public function loadingAttestationWithInvalidCertificateThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementVerificationException::class);
         $this->expectExceptionMessage('Invalid certificate or certificate chain');
+
+        // Given
         $support = new FidoU2FAttestationStatementSupport();
 
         static::assertSame('fido-u2f', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'fido-u2f',
             'attStmt' => [
@@ -89,8 +109,9 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
     }
 
     #[Test]
-    public function theAttestationStatementContain(): void
+    public function validatingFidoU2FAttestationWithInvalidDataFails(): void
     {
+        // Given
         $support = new FidoU2FAttestationStatementSupport();
 
         $attestationStatement = AttestationStatement::create(
@@ -127,6 +148,8 @@ final class FidoU2FAttestationStatementSupportTest extends TestCase
         $authenticatorData = AuthenticatorData::create('', 'FOO', '', 0, $attestedCredentialData);
 
         static::assertSame('fido-u2f', $support->name());
+
+        // When/Then
         static::assertFalse($support->isValid('FOO', $attestationStatement, $authenticatorData));
     }
 }

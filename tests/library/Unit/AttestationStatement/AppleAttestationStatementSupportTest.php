@@ -15,11 +15,16 @@ use Webauthn\Exception\AttestationStatementLoadingException;
 final class AppleAttestationStatementSupportTest extends TestCase
 {
     #[Test]
-    public function theAttestationStatementDoesNotContainTheRequiredCertificateList(): void
+    public function loadingAttestationWithoutCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage('The attestation statement value "x5c" is missing.');
+
+        // Given
         $support = new AppleAttestationStatementSupport();
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'apple',
             'attStmt' => [
@@ -29,15 +34,20 @@ final class AppleAttestationStatementSupportTest extends TestCase
     }
 
     #[Test]
-    public function theAttestationStatementContainsAnEmptyCertificateList(): void
+    public function loadingAttestationWithEmptyCertificateListThrowsException(): void
     {
+        // Then
         $this->expectException(AttestationStatementLoadingException::class);
         $this->expectExceptionMessage(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
+
+        // Given
         $support = new AppleAttestationStatementSupport();
 
         static::assertSame('apple', $support->name());
+
+        // When
         static::assertFalse($support->load([
             'fmt' => 'apple',
             'attStmt' => [

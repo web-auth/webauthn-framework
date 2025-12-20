@@ -18,10 +18,11 @@ use Webauthn\Tests\AbstractTestCase;
 final class NoneAttestationStatementTest extends AbstractTestCase
 {
     #[Test]
-    public function aNoneAttestationCanBeVerified(): void
+    public function noneAttestationCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -38,7 +39,11 @@ final class NoneAttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
+
+        // When
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // Then
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
     }

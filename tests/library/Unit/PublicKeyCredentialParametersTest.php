@@ -15,18 +15,24 @@ use Webauthn\Tests\AbstractTestCase;
 final class PublicKeyCredentialParametersTest extends AbstractTestCase
 {
     #[Test]
-    public function aPublicKeyCredentialParametersCanBeCreatedAndValueAccessed(): void
+    public function publicKeyCredentialParametersCanBeSerializedAndDeserialized(): void
     {
+        // Given
         $parameters = PublicKeyCredentialParameters::create('type', 100);
 
-        static::assertSame('type', $parameters->type);
-        static::assertSame(100, $parameters->alg);
-        static::assertSame('{"type":"type","alg":100}', $this->getSerializer()->serialize($parameters, 'json', [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
-
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($parameters, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
         $data = $this->getSerializer()
             ->deserialize('{"type":"type","alg":100}', PublicKeyCredentialParameters::class, 'json');
+
+        // Then
+        static::assertSame('type', $parameters->type);
+        static::assertSame(100, $parameters->alg);
+        static::assertSame('{"type":"type","alg":100}', $serialized);
+
         static::assertSame('type', $data->type);
         static::assertSame(100, $data->alg);
         static::assertSame('{"type":"type","alg":100}', $this->getSerializer()->serialize($data, 'json', [

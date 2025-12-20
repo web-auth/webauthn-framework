@@ -1,80 +1,39 @@
 {
+    "type": "module",
     "private": true,
     "workspaces": [
         "src/*/assets"
     ],
     "scripts": {
-        "build": "node bin/build_javascript.js && node bin/build_styles.js",
-        "test": "yarn workspaces run jest",
-        "lint": "yarn workspaces run eslint src test",
-        "format": "prettier src/*/assets/src/*.ts src/*/assets/test/*.js {,src/*/}*.{json,md} --write",
-        "check-lint": "yarn lint --no-fix",
-        "check-format": "yarn format --no-write --check"
+        "test": "npm exec -ws -- jest",
+
+        "lint:fix": "npm exec -ws -- eslint src test --fix",
+        "lint": "npm exec -ws -- eslint src test --no-fix",
+
+        "format:fix": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --write",
+        "format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --no-write --check"
     },
     "devDependencies": {
-        "@simplewebauthn/types": "^12.0.0",
         "@babel/core": "^7.15.8",
         "@babel/preset-env": "^7.15.8",
         "@babel/preset-react": "^7.15.8",
-        "@babel/preset-typescript": "^7.15.8",
-        "@rollup/plugin-commonjs": "^28.0",
-        "@rollup/plugin-node-resolve": "^16.0",
-        "@rollup/plugin-typescript": "^11.1",
         "@symfony/stimulus-testing": "^2.0.1",
-        "@typescript-eslint/eslint-plugin": "^8.20",
-        "@typescript-eslint/parser": "^8.20",
         "babel-jest": "^29.0",
-        "clean-css-cli": "^5.6.2",
         "eslint": "^9.6.0",
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-jest": "^28.6.0",
         "jest": "^29.0.0",
         "jest-environment-jsdom": "^29.0",
         "prettier": "^3.0.0",
-        "rollup": "^4.18.0",
-        "tslib": "^2.3.1",
-        "typescript": "^5.0.0"
-    },
-    "eslintConfig": {
-        "root": true,
-        "parser": "@typescript-eslint/parser",
-        "plugins": [
-            "@typescript-eslint"
-        ],
-        "extends": [
-            "eslint:recommended",
-            "prettier",
-            "plugin:@typescript-eslint/eslint-recommended",
-            "plugin:@typescript-eslint/recommended"
-        ],
-        "rules": {
-            "@typescript-eslint/no-explicit-any": "off",
-            "@typescript-eslint/no-empty-function": "off",
-            "@typescript-eslint/ban-ts-comment": "off",
-            "quotes": [
-                "error",
-                "single"
-            ]
-        },
-        "env": {
-            "browser": true
-        },
-        "overrides": [
-            {
-                "files": [
-                    "src/*/assets/test/**/*.ts"
-                ],
-                "extends": [
-                    "plugin:jest/recommended"
-                ]
-            }
-        ]
+        "@eslint/js": "^9.14.0",
+        "globals": "^15.11.0",
+        "@eslint/eslintrc": "^3.1.0"
     },
     "prettier": {
         "printWidth": 120,
         "trailingComma": "es5",
         "tabWidth": 4,
-        "jsxBracketSameLine": true,
+        "bracketSameLine": true,
         "singleQuote": true
     }
 }

@@ -9,6 +9,7 @@ use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
@@ -48,6 +49,7 @@ final readonly class WebauthnSerializerFactory
             new AuthenticationExtensionNormalizer(),
             new PublicKeyCredentialDescriptorNormalizer(),
             new AttestedCredentialDataNormalizer(),
+            new UrlNormalizer(),
             new AttestationObjectDenormalizer(),
             new AttestationStatementDenormalizer($this->attestationStatementSupportManager),
             new AuthenticationExtensionsDenormalizer(),
@@ -58,8 +60,13 @@ final readonly class WebauthnSerializerFactory
             new CollectedClientDataDenormalizer(),
             new PublicKeyCredentialDenormalizer(),
             new PublicKeyCredentialOptionsDenormalizer(),
+            new CredentialRecordDenormalizer(),
             new PublicKeyCredentialSourceDenormalizer(),
+            new PublicKeyCredentialRpEntityDenormalizer(),
             new PublicKeyCredentialUserEntityDenormalizer(),
+            new SignalAllAcceptedCredentialsDenormalizer(),
+            new SignalCurrentUserDetailsDenormalizer(),
+            new SignalUnknownCredentialDenormalizer(),
             new TrustPathDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
@@ -82,7 +89,7 @@ final readonly class WebauthnSerializerFactory
         return [
             UidNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
             ArrayDenormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
-            ObjectNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
+            AbstractNormalizer::class => self::PACKAGE_SYMFONY_SERIALIZER,
             PropertyInfoExtractor::class => self::PACKAGE_SYMFONY_PROPERTY_INFO,
             PhpDocExtractor::class => self::PACKAGE_PHPDOCUMENTOR_REFLECTION_DOCBLOCK,
             ReflectionExtractor::class => self::PACKAGE_SYMFONY_PROPERTY_INFO,

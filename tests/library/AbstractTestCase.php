@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AttestationStatement\CompoundAttestationStatementSupport;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
@@ -171,6 +172,7 @@ abstract class AbstractTestCase extends TestCase
         $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
             $this->getAlgorithmManager()
         ));
+        $attestationStatementSupportManager->add(CompoundAttestationStatementSupport::create());
         $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock));
 
         return $attestationStatementSupportManager;

@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Repository;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Webauthn\CredentialRecord;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -32,8 +33,9 @@ class DummyPublicKeyCredentialSourceRepository implements PublicKeyCredentialSou
         $this->throwException();
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
-    {
+    public function findOneByCredentialId(
+        string $publicKeyCredentialId
+    ): CredentialRecord|PublicKeyCredentialSource|null {
         $this->throwException();
     }
 

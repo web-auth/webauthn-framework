@@ -21,10 +21,11 @@ use Webauthn\Tests\AbstractTestCase;
 final class PackedAttestationStatementTest extends AbstractTestCase
 {
     #[Test]
-    public function aPackedAttestationCanBeVerified(): void
+    public function packedAttestationCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -42,10 +43,14 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'localhost');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         static::assertSame(
             base64_decode(
                 'xYw3gEj0LVL83JXz7oKL14XQjh9W1NMFrTALWI+lqXl7ndKW+n8JFYsBCuKbZA3zRAUxAZDHG/tXHsAi6TbO0Q==',
@@ -82,10 +87,11 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     }
 
     #[Test]
-    public function aPackedAttestationWithSelfStatementCanBeVerified(): void
+    public function packedAttestationWithSelfStatementCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -100,7 +106,8 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $this->getAuthenticatorAttestationResponseValidator()
             ->check(
                 $publicKeyCredential->response,
@@ -108,6 +115,9 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 'spomky-webauthn.herokuapp.com'
             );
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         static::assertSame(
             base64_decode(
                 'AFkzwaxVuCUz4qFPaNAgnYgoZKKTtvGIAaIASAbnlHGy8UktdI/jN0CetpIkiw9++R0AF9a6OJnHD+G4aIWur+Pxj+sI9xDE+AVeQKve',
@@ -146,8 +156,9 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     }
 
     #[Test]
-    public function p2(): void
+    public function packedAttestationWithIntermediateCertificateCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = $this->getSerializer()
             ->deserialize(
                 '{"status":"ok","errorMessage":"","rp":{"name":"Webauthn Demo","id":"webauthn.spomky-labs.com"},"pubKeyCredParams":[{"type":"public-key","alg":-8},{"type":"public-key","alg":-7},{"type":"public-key","alg":-43},{"type":"public-key","alg":-35},{"type":"public-key","alg":-36},{"type":"public-key","alg":-257},{"type":"public-key","alg":-258},{"type":"public-key","alg":-259},{"type":"public-key","alg":-37},{"type":"public-key","alg":-38},{"type":"public-key","alg":-39}],"challenge":"KhWQ12Gltp92RModoTPgDqpgXCvR73JXKozijHIfwHE","attestation":"direct","user":{"name":"hw1BfGxhRSKwTOAIx39K","id":"NzExYmI2ZTItYmU3My00YTcyLWE1MDUtYTQzYWE3ZTUyYzgw","displayName":"Leona Grayson"},"authenticatorSelection":{"userVerification":"preferred"},"timeout":60000}',
@@ -160,7 +171,8 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
-        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
+
+        // When
         $this->getAuthenticatorAttestationResponseValidator()
             ->check(
                 $publicKeyCredential->response,
@@ -168,6 +180,9 @@ final class PackedAttestationStatementTest extends AbstractTestCase
                 'webauthn.spomky-labs.com'
             );
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
+        static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         static::assertSame(
             base64_decode('RSRHHrZblfX23SKbu09qBzVp8Y1W1c9GI1EtHZ9gDzY=', true),
             $publicKeyCredential->rawId

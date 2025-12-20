@@ -39,8 +39,13 @@ use Webauthn\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
+use Webauthn\Denormalizer\PublicKeyCredentialRpEntityDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
+use Webauthn\Denormalizer\SignalAllAcceptedCredentialsDenormalizer;
+use Webauthn\Denormalizer\SignalCurrentUserDetailsDenormalizer;
+use Webauthn\Denormalizer\SignalUnknownCredentialDenormalizer;
+use Webauthn\Denormalizer\UrlNormalizer;
 use Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\SimpleFakeCredentialGenerator;
@@ -70,6 +75,12 @@ return static function (ContainerConfigurator $container): void {
         ->factory([service(CeremonyStepManagerFactory::class), 'creationCeremony'])
     ;
 
+    $service
+        ->set('webauthn.ceremony_step_manager.conditional_creation')
+        ->class(CeremonyStepManager::class)
+        ->factory([service(CeremonyStepManagerFactory::class), 'conditionalCreateCeremony'])
+    ;
+
     $service->set(SimpleFakeCredentialGenerator::class);
 
     $service
@@ -81,6 +92,11 @@ return static function (ContainerConfigurator $container): void {
     $service
         ->set(AuthenticatorAttestationResponseValidator::class)
         ->args([service('webauthn.ceremony_step_manager.creation')])
+        ->public();
+    $service
+        ->set('webauthn.authenticator_attestation_response_validator.conditional_creation')
+        ->class(AuthenticatorAttestationResponseValidator::class)
+        ->args([service('webauthn.ceremony_step_manager.conditional_creation')])
         ->public();
     $service
         ->set(AuthenticatorAssertionResponseValidator::class)
@@ -166,6 +182,12 @@ return static function (ContainerConfigurator $container): void {
             'priority' => 1024,
         ]);
     $service
+        ->set(UrlNormalizer::class)
+        ->args([service('router')])
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
         ->set(AuthenticationExtensionsDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
@@ -211,7 +233,27 @@ return static function (ContainerConfigurator $container): void {
             'priority' => 1024,
         ]);
     $service
+        ->set(PublicKeyCredentialRpEntityDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
         ->set(PublicKeyCredentialUserEntityDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalAllAcceptedCredentialsDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalCurrentUserDetailsDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(SignalUnknownCredentialDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);

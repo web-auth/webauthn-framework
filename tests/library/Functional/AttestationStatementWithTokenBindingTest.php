@@ -23,10 +23,11 @@ use Webauthn\Tests\AbstractTestCase;
 final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 {
     #[Test]
-    public function anAttestationWithTokenBindingCanBeVerified(): void
+    public function attestationWithTokenBindingCanBeVerified(): void
     {
+        // Given
         $publicKeyCredentialCreationOptions = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create('My Application'),
+            PublicKeyCredentialRpEntity::create(),
             PublicKeyCredentialUserEntity::create(
                 'test@foo.com',
                 random_bytes(64),
@@ -45,10 +46,14 @@ final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
                 PublicKeyCredential::class,
                 'json'
             );
+
+        // When
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $publicKeyCredential->response);
         $this->getAuthenticatorAttestationResponseValidator()
             ->check($publicKeyCredential->response, $publicKeyCredentialCreationOptions, 'webauthn.morselli.fr');
         $publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+
+        // Then
         static::assertSame(
             base64_decode(
                 '+uZVS9+4JgjAYI49YhdzTgHmbn638+ZNSvC0UtHkWTVS+CtTjnaSbqtzdzijByOAvEAsh+TaQJAr43FRj+dYag==',

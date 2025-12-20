@@ -19,16 +19,18 @@ final class ComposerJsonTest extends TestCase
     private const SRC_DIR = __DIR__ . '/../../src';
 
     #[Test]
-    public function packageDependenciesEqualRootDependencies(): void
+    public function packageDependenciesMatchRootDependencies(): void
     {
+        // Given
         $usedDependencies = ['symfony/symfony']; // Some builds add this to composer.json
         $rootDependencies = $this->getComposerDependencies(__DIR__ . '/../../composer.json');
 
+        // When
         foreach ($this->listSubPackages() as $package) {
             $packageDependencies = $this->getComposerDependencies(self::SRC_DIR . '/' . $package . '/composer.json');
             foreach ($packageDependencies as $dependency => $version) {
                 // Skip web-auth/* dependencies, except cose-lib
-                if ($dependency !== 'web-auth/cose-lib' && str_starts_with($dependency, 'web-auth/')) {
+                if ($dependency !== 'web-auth/cose-lib' && str_starts_with((string) $dependency, 'web-auth/')) {
                     continue;
                 }
 
@@ -51,6 +53,7 @@ final class ComposerJsonTest extends TestCase
             }
         }
 
+        // Then
         $unusedDependencies = array_diff(array_keys($rootDependencies), array_unique($usedDependencies));
         $message = sprintf(
             'Dependencies declared in root composer.json, which are not declared in any sub-package: %s',
@@ -60,9 +63,12 @@ final class ComposerJsonTest extends TestCase
     }
 
     #[Test]
-    public function rootReplacesSubPackages(): void
+    public function rootComposerReplacesAllSubPackages(): void
     {
+        // Given
         $rootReplaces = $this->getComposerReplaces(__DIR__ . '/../../composer.json');
+
+        // When/Then
         foreach ($this->listSubPackages() as $package) {
             $packageName = $this->getComposerPackageName(self::SRC_DIR . '/' . $package . '/composer.json');
             $message = sprintf('Root composer.json must replace the sub-packages "%s"', $packageName);

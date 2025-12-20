@@ -22,6 +22,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function array_key_exists;
 use function assert;
+use function count;
 use function in_array;
 
 final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface, NormalizerInterface, NormalizerAwareInterface
@@ -44,7 +45,12 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
         }
         if ($type === PublicKeyCredentialCreationOptions::class) {
             return PublicKeyCredentialCreationOptions::create(
-                $this->denormalizer->denormalize($data['rp'], PublicKeyCredentialRpEntity::class, $format, $context),
+                ! isset($data['rp']) ? PublicKeyCredentialRpEntity::create() : $this->denormalizer->denormalize(
+                    $data['rp'],
+                    PublicKeyCredentialRpEntity::class,
+                    $format,
+                    $context
+                ),
                 $this->denormalizer->denormalize(
                     $data['user'],
                     PublicKeyCredentialUserEntity::class,
@@ -78,6 +84,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                     $format,
                     $context
                 ),
+                $data['hints'] ?? [],
             );
         }
         if ($type === PublicKeyCredentialRequestOptions::class) {
@@ -98,6 +105,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                     $format,
                     $context
                 ),
+                $data['hints'] ?? [],
             );
         }
         throw new BadMethodCallException('Unsupported type');
@@ -148,6 +156,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 $format,
                 $context
             ),
+            'hints' => count($object->hints) === 0 ? null : $object->hints,
         ];
 
         if ($object instanceof PublicKeyCredentialCreationOptions) {

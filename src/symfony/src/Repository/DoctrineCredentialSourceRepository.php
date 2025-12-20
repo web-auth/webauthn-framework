@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function sprintf;
@@ -37,10 +38,10 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
         parent::__construct($registry, $class);
     }
 
-    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
+    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
     {
         $this->getEntityManager()
-            ->persist($publicKeyCredentialSource);
+            ->persist($credentialRecord);
         $this->getEntityManager()
             ->flush();
     }
@@ -57,8 +58,9 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->execute();
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
-    {
+    public function findOneByCredentialId(
+        string $publicKeyCredentialId
+    ): CredentialRecord|PublicKeyCredentialSource|null {
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->from($this->class, 'c')

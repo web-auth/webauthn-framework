@@ -15,7 +15,7 @@ use Webauthn\Tests\AbstractTestCase;
 final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
 {
     #[Test]
-    public function anAuthenticatorSelectionCriteriaCanBeCreatedAndValueAccessed(): void
+    public function authenticatorSelectionCriteriaCanBeSerializedAndDeserialized(): void
     {
         // Given
         $expectedJson = '{"userVerification":"required","authenticatorAttachment":"platform"}';
@@ -25,13 +25,13 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_NO_PREFERENCE
         );
 
-        //When
+        // When
         $data = $this->getSerializer()
             ->deserialize($expectedJson, AuthenticatorSelectionCriteria::class, 'json', [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
 
-        //Then
+        // Then
         static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             $data->userVerification
@@ -54,23 +54,23 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
     }
 
     #[Test]
-    public function anAuthenticatorSelectionCriteriaWithResidentKeyCanBeCreatedAndValueAccessed(): void
+    public function authenticatorSelectionCriteriaWithResidentKeyCanBeSerializedAndDeserialized(): void
     {
         // Given
-        $expectedJson = '{"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
+        $expectedJson = '{"requireResidentKey":true,"userVerification":"required","residentKey":"required","authenticatorAttachment":"platform"}';
         $authenticatorSelectionCriteria = AuthenticatorSelectionCriteria::create(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
         );
 
-        //When
+        // When
         $data = $this->getSerializer()
             ->deserialize($expectedJson, AuthenticatorSelectionCriteria::class, 'json', [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
 
-        //Then
+        // Then
         static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             $data->userVerification
@@ -80,6 +80,7 @@ final class AuthenticatorSelectionCriteriaTest extends AbstractTestCase
             $data->authenticatorAttachment
         );
         static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $data->residentKey);
+        static::assertTrue($data->requireResidentKey);
         static::assertJsonStringEqualsJsonString($expectedJson, $this->getSerializer()->serialize($data, 'json', [
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
         ]));

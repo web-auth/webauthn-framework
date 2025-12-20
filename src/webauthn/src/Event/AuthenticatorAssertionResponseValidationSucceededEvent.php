@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Event;
 
+use LogicException;
 use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
+use function sprintf;
 
 class AuthenticatorAssertionResponseValidationSucceededEvent
 {
@@ -15,7 +18,45 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         public readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         public readonly string $host,
         public readonly ?string $userHandle,
-        public readonly PublicKeyCredentialSource $publicKeyCredentialSource
+        public readonly CredentialRecord|PublicKeyCredentialSource $credentialRecord
     ) {
+    }
+
+    /**
+     * @deprecated since 5.3, use credentialRecord instead. Will be removed in 6.0.
+     */
+    public function __get(string $name): mixed
+    {
+        if ($name === 'publicKeyCredentialSource') {
+            return $this->getPublicKeyCredentialSource();
+        }
+
+        throw new LogicException(sprintf('Undefined property: %s::$%s', self::class, $name));
+    }
+
+    /**
+     * @deprecated since 5.3, use credentialRecord instead. Will be removed in 6.0.
+     */
+    public function getPublicKeyCredentialSource(): PublicKeyCredentialSource
+    {
+        if ($this->credentialRecord instanceof PublicKeyCredentialSource) {
+            return $this->credentialRecord;
+        }
+
+        return PublicKeyCredentialSource::create(
+            $this->credentialRecord->publicKeyCredentialId,
+            $this->credentialRecord->type,
+            $this->credentialRecord->transports,
+            $this->credentialRecord->attestationType,
+            $this->credentialRecord->trustPath,
+            $this->credentialRecord->aaguid,
+            $this->credentialRecord->credentialPublicKey,
+            $this->credentialRecord->userHandle,
+            $this->credentialRecord->counter,
+            $this->credentialRecord->otherUI,
+            $this->credentialRecord->backupEligible,
+            $this->credentialRecord->backupStatus,
+            $this->credentialRecord->uvInitialized,
+        );
     }
 }

@@ -10,6 +10,7 @@ use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -63,8 +64,9 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
     }
 
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
-    {
+    public function findOneByCredentialId(
+        string $publicKeyCredentialId
+    ): CredentialRecord|PublicKeyCredentialSource|null {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
         if (! $item->isHit()) {
             return null;
@@ -90,22 +92,22 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
+    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
     {
         $item = $this->cacheItemPool->getItem(
-            'pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->publicKeyCredentialId)
+            'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)
         );
-        $item->set($publicKeyCredentialSource);
+        $item->set($credentialRecord);
         $this->cacheItemPool->save($item);
 
         $item = $this->cacheItemPool->getItem(
-            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->userHandle)
+            'user-pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->userHandle)
         );
         $pks = [];
         if ($item->isHit()) {
             $pks = $item->get();
         }
-        $pks[] = $publicKeyCredentialSource;
+        $pks[] = $credentialRecord;
         $item->set($pks);
         $this->cacheItemPool->save($item);
     }

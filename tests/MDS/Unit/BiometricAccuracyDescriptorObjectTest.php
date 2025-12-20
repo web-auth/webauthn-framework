@@ -17,7 +17,7 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
 {
     #[Test]
     #[DataProvider('validObjectData')]
-    public function validObject(
+    public function validBiometricAccuracyDescriptorSerializesCorrectly(
         BiometricAccuracyDescriptor $object,
         ?float $selfAttestedFAR,
         ?float $selfAttestedFRR,
@@ -26,14 +26,22 @@ final class BiometricAccuracyDescriptorObjectTest extends MdsTestCase
         ?int $blockSlowdown,
         string $expectedJson
     ): void {
+        // Given
+        // Object provided by data provider
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($object, JsonEncoder::FORMAT, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
         static::assertSame($selfAttestedFAR, $object->selfAttestedFRR);
         static::assertSame($selfAttestedFRR, $object->selfAttestedFAR);
         static::assertSame($maxTemplates, $object->maxTemplates);
         static::assertSame($maxRetries, $object->maxRetries);
         static::assertSame($blockSlowdown, $object->blockSlowdown);
-        static::assertSame($expectedJson, $this->getSerializer()->serialize($object, JsonEncoder::FORMAT, [
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ]));
+        static::assertSame($expectedJson, $serialized);
     }
 
     public static function validObjectData(): iterable
