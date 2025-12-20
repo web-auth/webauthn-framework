@@ -41,9 +41,8 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
     private readonly ClockInterface $clock;
 
-    public function __construct(
-        null|ClockInterface $clock = null
-    ) {
+    public function __construct(null|ClockInterface $clock = null)
+    {
         $this->clock = $clock ?? new NativeClock();
         $this->dispatcher = new NullEventDispatcher();
     }

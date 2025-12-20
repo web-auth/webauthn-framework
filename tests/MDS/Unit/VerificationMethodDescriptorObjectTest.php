@@ -30,19 +30,14 @@ final class VerificationMethodDescriptorObjectTest extends MdsTestCase
     public static function validObjectData(): iterable
     {
         yield [
-            VerificationMethodDescriptor::create(
-                VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL,
-                null,
-                null,
-                null
-            ),
+            VerificationMethodDescriptor::create(VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL),
             '{"userVerificationMethod":"fingerprint_internal"}',
         ];
         yield [
             VerificationMethodDescriptor::create(
                 VerificationMethodDescriptor::USER_VERIFY_PATTERN_EXTERNAL,
                 CodeAccuracyDescriptor::create(35, 5),
-                BiometricAccuracyDescriptor::create(0.12, null, null, null, null),
+                BiometricAccuracyDescriptor::create(0.12, null, null),
                 PatternAccuracyDescriptor::create(50)
             ),
             '{"userVerificationMethod":"pattern_external","caDesc":{"base":35,"minLength":5},"baDesc":{"selfAttestedFRR":0.12},"paDesc":{"minComplexity":50}}',
