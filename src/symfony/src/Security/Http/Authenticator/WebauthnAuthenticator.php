@@ -68,7 +68,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         $this->logger = $logger;
     }
 
-    public function supports(Request $request): ?bool
+    public function supports(Request $request): bool
     {
         if ($request->getMethod() !== Request::METHOD_POST) {
             return false;
@@ -144,7 +144,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         return $this->successHandler->onAuthenticationSuccess($request, $token);
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $this->logger->info('Webauthn authentication request failed.', [
             'request' => $request,

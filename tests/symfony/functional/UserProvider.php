@@ -31,7 +31,7 @@ final readonly class UserProvider implements UserProviderInterface
         return $this->loadUserByIdentifier($user->getUserIdentifier());
     }
 
-    public function supportsClass($class): bool
+    public function supportsClass(string $class): bool
     {
         return $class === User::class || is_subclass_of($class, User::class);
     }

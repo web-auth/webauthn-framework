@@ -35,7 +35,7 @@ final class VerificationMethodANDCombinationsObjectTest extends MdsTestCase
                 VerificationMethodDescriptor::create(
                     VerificationMethodDescriptor::USER_VERIFY_PATTERN_EXTERNAL,
                     CodeAccuracyDescriptor::create(35, 5),
-                    BiometricAccuracyDescriptor::create(0.12, null, null, null, null),
+                    BiometricAccuracyDescriptor::create(0.12, null, null),
                     PatternAccuracyDescriptor::create(50)
                 ),
                 VerificationMethodDescriptor::create(VerificationMethodDescriptor::USER_VERIFY_FINGERPRINT_INTERNAL),

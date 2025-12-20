@@ -161,7 +161,7 @@ final class CeremonyStepManagerFactory
             $this->allowedOrigins === null ? new CheckOrigin(
                 $this->securedRelyingPartyId ?? []
             ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
-            new CheckTopOrigin(null),
+            new CheckTopOrigin(),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
             new CheckUserVerification(),
