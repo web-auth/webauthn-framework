@@ -190,26 +190,4 @@ final class CeremonyStepManagerFactory
             new CheckCredentialId(),
         ]);
     }
-
-    public function requestCeremony(): CeremonyStepManager
-    {
-        /* @see https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion */
-        return new CeremonyStepManager([
-            new CheckAllowedCredentialList(),
-            new CheckUserHandle(),
-            new CheckClientDataCollectorType(),
-            new CheckChallenge(),
-            $this->allowedOrigins === null ? new CheckOrigin(
-                $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
-            new CheckTopOrigin(null),
-            new CheckRelyingPartyIdIdHash(),
-            new CheckUserWasPresent(),
-            new CheckUserVerification(),
-            new CheckBackupBitsAreConsistent(),
-            new CheckExtensions($this->extensionOutputCheckerHandler),
-            new CheckSignature($this->algorithmManager),
-            new CheckCounter($this->counterChecker),
-        ]);
-    }
 }

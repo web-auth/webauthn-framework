@@ -1,38 +1,8 @@
 parameters:
 	ignoreErrors:
 		-
-			rawMessage: Binary operation "." between mixed and '/Resources/config…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
-			rawMessage: Cannot access offset 'path' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
 			rawMessage: Class "Webauthn\Stimulus\WebauthnStimulusBundle" is not allowed to extend "Symfony\Component\HttpKernel\Bundle\AbstractBundle".
 			identifier: ergebnis.noExtends
-			count: 1
-			path: ../src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
-			rawMessage: 'Language construct isset() should not be used.'
-			identifier: ergebnis.noIsset
-			count: 1
-			path: ../src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
-			rawMessage: 'Method Webauthn\Stimulus\WebauthnStimulusBundle::isAssetMapperAvailable() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
-			identifier: ergebnis.noParameterWithContainerTypeDeclaration
-			count: 1
-			path: ../src/stimulus/src/WebauthnStimulusBundle.php
-
-		-
-			rawMessage: 'Method Webauthn\Stimulus\WebauthnStimulusBundle::prependExtension() has a parameter $builder with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
-			identifier: ergebnis.noParameterWithContainerTypeDeclaration
 			count: 1
 			path: ../src/stimulus/src/WebauthnStimulusBundle.php
 
@@ -613,6 +583,12 @@ parameters:
 			rawMessage: Cannot access offset 'routes' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 14
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::addConfiguration() has parameter $builder with generic class Symfony\Component\Config\Definition\Builder\NodeDefinition but does not specify its types: TParent'
+			identifier: missingType.generics
+			count: 1
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
@@ -3106,12 +3082,6 @@ parameters:
 			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			rawMessage: 'Parameter #1 $data of static method SpomkyLabs\Pki\ASN1\Element::fromDER() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Webauthn\MetadataService\CertificateChain\CertificateToolbox::convertAllDERToPEM() expects array<string>, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -3119,12 +3089,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #1 $fmt of static method Webauthn\AttestationStatement\AttestationStatement::createBasic() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #1 $key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey|false given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
@@ -3148,12 +3112,6 @@ parameters:
 			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
 
 		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Cose\Key\Key::createFromData() expects array<int, mixed>, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -3167,12 +3125,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #1 $fmt of static method Webauthn\AttestationStatement\AttestationStatement::createAnonymizationCA() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #1 $key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey|false given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/AppleAttestationStatementSupport.php
@@ -3358,18 +3310,6 @@ parameters:
 			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
 
 		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Language construct isset() should not be used.'
-			identifier: ergebnis.noIsset
-			count: 4
-			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Parameter #1 $data of static method Webauthn\MetadataService\CertificateChain\CertificateToolbox::convertAllDERToPEM() expects array<string>, array<mixed, mixed> given.'
 			identifier: argument.type
 			count: 1
@@ -3413,12 +3353,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #2 $signature of function openssl_verify expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #2 $user_string of function hash_equals expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
@@ -3502,12 +3436,6 @@ parameters:
 			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
-			rawMessage: 'Language construct isset() should not be used.'
-			identifier: ergebnis.noIsset
-			count: 5
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
 			rawMessage: 'Method Webauthn\AttestationStatement\TPMAttestationStatementSupport::__construct() has parameter $clock with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -3581,12 +3509,6 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #2 $signature of function openssl_verify expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
-			rawMessage: 'Parameter #2 $user_string of function hash_equals expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
