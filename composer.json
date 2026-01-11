@@ -45,7 +45,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "paragonie/constant_time_encoding": "^2.6|^3.0",
-        "phpdocumentor/reflection-docblock": "^5.3",
+        "phpdocumentor/reflection-docblock": "^5.3|^6.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.0|^2.0|^3.0",
