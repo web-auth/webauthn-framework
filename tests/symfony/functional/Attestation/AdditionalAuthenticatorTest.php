@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
+use function base64_decode;
 use Cose\Algorithms;
+use function count;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -24,9 +27,6 @@ use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\User;
 use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
-use function base64_decode;
-use function count;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

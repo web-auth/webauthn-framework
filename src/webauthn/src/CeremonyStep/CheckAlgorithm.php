@@ -8,6 +8,11 @@ use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
 use Cose\Key\Key;
+use function count;
+use function in_array;
+use function is_array;
+use function sprintf;
+use function trigger_deprecation;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
@@ -17,16 +22,11 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\StringStream;
 use Webauthn\U2FPublicKey;
-use function count;
-use function in_array;
-use function is_array;
-use function sprintf;
-use function trigger_deprecation;
 
 class CheckAlgorithm implements CeremonyStep
 {
     public function process(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,

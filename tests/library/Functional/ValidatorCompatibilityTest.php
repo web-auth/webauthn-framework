@@ -113,7 +113,7 @@ final class ValidatorCompatibilityTest extends AbstractTestCase
         static::assertInstanceOf(AuthenticatorAssertionResponse::class, $publicKeyCredential->response);
 
         // Create a PublicKeyCredentialSource (deprecated but should still work)
-        $publicKeyCredentialSource = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             base64_decode(
                 'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
                 true
@@ -141,9 +141,9 @@ final class ValidatorCompatibilityTest extends AbstractTestCase
             'foo'
         );
 
-        // Validator returns the same type that was passed in
+        // Validator returns CredentialRecord; PKCS extends CR so it's both
         static::assertInstanceOf(PublicKeyCredentialSource::class, $updatedPkcs);
-        static::assertNotInstanceOf(CredentialRecord::class, $updatedPkcs);
+        static::assertInstanceOf(CredentialRecord::class, $updatedPkcs);
         static::assertSame(123, $updatedPkcs->counter);
     }
 
@@ -163,7 +163,7 @@ final class ValidatorCompatibilityTest extends AbstractTestCase
             10
         );
 
-        $pkcs = PublicKeyCredentialSource::create(
+        $pkcs = new PublicKeyCredentialSource(
             'test-id-2',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -178,8 +178,8 @@ final class ValidatorCompatibilityTest extends AbstractTestCase
         // Both types should work with ceremony steps
         static::assertInstanceOf(CredentialRecord::class, $credentialRecord);
         static::assertInstanceOf(PublicKeyCredentialSource::class, $pkcs);
-        // PKCS and CR are independent classes
-        static::assertNotInstanceOf(CredentialRecord::class, $pkcs);
+        // PKCS extends CredentialRecord
+        static::assertInstanceOf(CredentialRecord::class, $pkcs);
         static::assertNotInstanceOf(PublicKeyCredentialSource::class, $credentialRecord);
     }
 
@@ -200,7 +200,7 @@ final class ValidatorCompatibilityTest extends AbstractTestCase
             10
         );
 
-        $pkcs = PublicKeyCredentialSource::create(
+        $pkcs = new PublicKeyCredentialSource(
             'test-id-2',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],

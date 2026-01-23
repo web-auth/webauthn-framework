@@ -7,13 +7,12 @@ namespace Webauthn\Bundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
-use Webauthn\CredentialRecord;
-use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialUserEntity;
 use function sprintf;
+use Webauthn\CredentialRecord;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * @template T of PublicKeyCredentialSource
+ * @template T of CredentialRecord
  * @template-extends  ServiceEntityRepository<T>
  *
  * @deprecated since 5.2.0, to be removed in 6.0.0. Please create your own doctrine-based repository.
@@ -30,15 +29,18 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
      */
     public function __construct(ManagerRegistry $registry, string $class)
     {
-        is_subclass_of($class, PublicKeyCredentialSource::class) || throw new InvalidArgumentException(sprintf(
-            'Invalid class. Must be an instance of "Webauthn\PublicKeyCredentialSource", got "%s" instead.',
-            $class
-        ));
+        is_subclass_of(
+            $class,
+            CredentialRecord::class,
+            true
+        ) || $class === CredentialRecord::class || throw new InvalidArgumentException(
+            sprintf('Invalid class. Must be an instance of "Webauthn\CredentialRecord", got "%s" instead.', $class)
+        );
         $this->class = $class;
         parent::__construct($registry, $class);
     }
 
-    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
+    public function saveCredentialSource(CredentialRecord $credentialRecord): void
     {
         $this->getEntityManager()
             ->persist($credentialRecord);
@@ -58,9 +60,8 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->execute();
     }
 
-    public function findOneByCredentialId(
-        string $publicKeyCredentialId
-    ): CredentialRecord|PublicKeyCredentialSource|null {
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
+    {
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->from($this->class, 'c')

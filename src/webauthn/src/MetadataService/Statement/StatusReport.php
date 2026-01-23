@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Statement;
 
-use Webauthn\Exception\MetadataStatementLoadingException;
 use function in_array;
+use Webauthn\Exception\MetadataStatementLoadingException;
 
 readonly class StatusReport
 {

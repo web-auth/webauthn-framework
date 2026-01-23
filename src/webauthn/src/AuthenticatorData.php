@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use function ord;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#sec-authenticator-data

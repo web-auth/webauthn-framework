@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use function array_key_exists;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\MetadataStatementFound;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use function array_key_exists;
 
 final class InMemoryMetadataService implements MetadataService, CanDispatchEvents
 {

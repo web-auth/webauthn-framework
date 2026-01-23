@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function assert;
+use function count;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\PublicKeyCredentialDescriptor;
-use function assert;
-use function count;
 
 final class PublicKeyCredentialDescriptorNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {

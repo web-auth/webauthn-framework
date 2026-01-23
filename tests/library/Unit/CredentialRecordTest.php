@@ -95,7 +95,7 @@ final class CredentialRecordTest extends AbstractTestCase
     }
 
     #[Test]
-    public function publicKeyCredentialSourceHasSameStructureAsCredentialRecord(): void
+    public function publicKeyCredentialSourceExtendsCredentialRecord(): void
     {
         $credentialId = 'credential-id';
         $userHandle = 'user-handle';
@@ -103,7 +103,7 @@ final class CredentialRecordTest extends AbstractTestCase
         $aaguid = Uuid::v4();
         $publicKey = 'public-key';
 
-        $pkcs = PublicKeyCredentialSource::create(
+        $pkcs = new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -115,11 +115,11 @@ final class CredentialRecordTest extends AbstractTestCase
             $counter
         );
 
-        // PublicKeyCredentialSource is a separate class, not extending CredentialRecord
+        // PublicKeyCredentialSource extends CredentialRecord
         static::assertInstanceOf(PublicKeyCredentialSource::class, $pkcs);
-        static::assertNotInstanceOf(CredentialRecord::class, $pkcs);
+        static::assertInstanceOf(CredentialRecord::class, $pkcs);
 
-        // But it has the same properties
+        // It has the same properties (inherited from CredentialRecord)
         static::assertSame($credentialId, $pkcs->publicKeyCredentialId);
         static::assertSame($userHandle, $pkcs->userHandle);
         static::assertSame($counter, $pkcs->counter);

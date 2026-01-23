@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function assert;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\AttestedCredentialData;
-use function assert;
 
 final class AttestedCredentialDataNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {

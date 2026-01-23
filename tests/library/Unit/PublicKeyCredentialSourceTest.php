@@ -39,7 +39,7 @@ final class PublicKeyCredentialSourceTest extends AbstractTestCase
     public function publicKeyCredentialSourceCanBeSerialized(): void
     {
         // Given
-        $source = PublicKeyCredentialSource::create(
+        $source = new PublicKeyCredentialSource(
             'publicKeyCredentialId',
             'type',
             ['transport1', 'transport2'],

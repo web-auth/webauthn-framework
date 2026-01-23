@@ -6,8 +6,8 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use ParagonIE\ConstantTime\Base64;
 use function is_string;
+use ParagonIE\ConstantTime\Base64;
 
 final class Base64BinaryDataType extends Type
 {

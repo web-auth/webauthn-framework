@@ -8,6 +8,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
+use function trigger_deprecation;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
@@ -17,7 +18,6 @@ use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
-use function trigger_deprecation;
 
 class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatchEvents
 {
@@ -41,12 +41,12 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
      * @see https://www.w3.org/TR/webauthn/#verifying-assertion
      */
     public function check(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,
         ?string $userHandle,
-    ): CredentialRecord|PublicKeyCredentialSource {
+    ): CredentialRecord {
         if ($credentialRecord instanceof PublicKeyCredentialSource) {
             trigger_deprecation(
                 'web-auth/webauthn-lib',
@@ -157,7 +157,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,
         ?string $userHandle,
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord
+        CredentialRecord $credentialRecord
     ): AuthenticatorAssertionResponseValidationSucceededEvent {
         return new AuthenticatorAssertionResponseValidationSucceededEvent(
             $authenticatorAssertionResponse,
@@ -169,7 +169,7 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
     }
 
     protected function createAuthenticatorAssertionResponseValidationFailedEvent(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse $authenticatorAssertionResponse,
         PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         string $host,

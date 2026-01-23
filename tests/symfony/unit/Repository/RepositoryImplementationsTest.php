@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use ReflectionClass;
 use ReflectionMethod;
-use ReflectionUnionType;
+use ReflectionNamedType;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
@@ -26,7 +26,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
  * Tests for bundle repository implementations to ensure they properly handle both
- * CredentialRecord and PublicKeyCredentialSource types.
+ * CredentialRecord and PublicKeyCredentialSource types (via inheritance).
  *
  * @internal
  */
@@ -53,38 +53,32 @@ final class RepositoryImplementationsTest extends TestCase
     }
 
     #[Test]
-    public function dummyCredentialRecordRepositoryReturnsCorrectUnionType(): void
+    public function dummyCredentialRecordRepositoryReturnsCredentialRecord(): void
     {
         // Given
         $repository = new DummyCredentialRecordRepository(new NullLogger());
 
-        // Then - verify the return type is the correct union type
+        // Then - verify the return type is CredentialRecord (nullable)
         $reflection = new ReflectionMethod($repository, 'findOneByCredentialId');
         $returnType = $reflection->getReturnType();
 
-        static::assertInstanceOf(ReflectionUnionType::class, $returnType);
-
-        $types = array_map(fn ($type) => $type->getName(), $returnType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertInstanceOf(ReflectionNamedType::class, $returnType);
+        static::assertSame(CredentialRecord::class, $returnType->getName());
         static::assertTrue($returnType->allowsNull());
     }
 
     #[Test]
-    public function dummyPublicKeyCredentialSourceRepositoryReturnsCorrectUnionType(): void
+    public function dummyPublicKeyCredentialSourceRepositoryReturnsCredentialRecord(): void
     {
         // Given
         $repository = new DummyPublicKeyCredentialSourceRepository(new NullLogger());
 
-        // Then - verify the return type is the correct union type
+        // Then - verify the return type is CredentialRecord (nullable)
         $reflection = new ReflectionMethod($repository, 'findOneByCredentialId');
         $returnType = $reflection->getReturnType();
 
-        static::assertInstanceOf(ReflectionUnionType::class, $returnType);
-
-        $types = array_map(fn ($type) => $type->getName(), $returnType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertInstanceOf(ReflectionNamedType::class, $returnType);
+        static::assertSame(CredentialRecord::class, $returnType->getName());
         static::assertTrue($returnType->allowsNull());
     }
 
@@ -100,41 +94,35 @@ final class RepositoryImplementationsTest extends TestCase
     }
 
     #[Test]
-    public function doctrineCredentialSourceRepositoryAcceptsUnionTypeInSaveMethod(): void
+    public function doctrineCredentialSourceRepositoryAcceptsCredentialRecordInSaveMethod(): void
     {
         // Given - use reflection to check method signature
         $reflection = new ReflectionMethod(DoctrineCredentialSourceRepository::class, 'saveCredentialSource');
         $parameters = $reflection->getParameters();
 
-        // Then - verify the parameter type accepts union type
+        // Then - verify the parameter type accepts CredentialRecord
         static::assertCount(1, $parameters);
         $paramType = $parameters[0]->getType();
 
-        static::assertInstanceOf(ReflectionUnionType::class, $paramType);
-
-        $types = array_map(fn ($type) => $type->getName(), $paramType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertInstanceOf(ReflectionNamedType::class, $paramType);
+        static::assertSame(CredentialRecord::class, $paramType->getName());
     }
 
     #[Test]
-    public function doctrineCredentialSourceRepositoryReturnsCorrectUnionType(): void
+    public function doctrineCredentialSourceRepositoryReturnsCredentialRecord(): void
     {
         // Given - use reflection to check method signature
         $reflection = new ReflectionMethod(DoctrineCredentialSourceRepository::class, 'findOneByCredentialId');
         $returnType = $reflection->getReturnType();
 
-        // Then - verify the return type is the correct union type
-        static::assertInstanceOf(ReflectionUnionType::class, $returnType);
-
-        $types = array_map(fn ($type) => $type->getName(), $returnType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        // Then - verify the return type is CredentialRecord (nullable)
+        static::assertInstanceOf(ReflectionNamedType::class, $returnType);
+        static::assertSame(CredentialRecord::class, $returnType->getName());
         static::assertTrue($returnType->allowsNull());
     }
 
     #[Test]
-    public function canSaveCredentialRecordInterfaceAcceptsUnionType(): void
+    public function canSaveCredentialRecordInterfaceAcceptsCredentialRecord(): void
     {
         // This test verifies that the interface itself has the correct signature
         $reflection = new ReflectionMethod(CanSaveCredentialRecord::class, 'saveCredentialSource');
@@ -143,61 +131,47 @@ final class RepositoryImplementationsTest extends TestCase
         static::assertCount(1, $parameters);
         $paramType = $parameters[0]->getType();
 
-        static::assertInstanceOf(ReflectionUnionType::class, $paramType);
-
-        $types = array_map(fn ($type) => $type->getName(), $paramType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertInstanceOf(ReflectionNamedType::class, $paramType);
+        static::assertSame(CredentialRecord::class, $paramType->getName());
     }
 
     #[Test]
-    public function canSaveCredentialSourceInterfaceAcceptsUnionType(): void
+    public function canSaveCredentialSourceInterfaceExtendsCanSaveCredentialRecord(): void
     {
-        // This test verifies that the deprecated interface has the correct signature
-        $reflection = new ReflectionMethod(CanSaveCredentialSource::class, 'saveCredentialSource');
-        $parameters = $reflection->getParameters();
+        // This test verifies that the deprecated interface extends the new one
+        $reflection = new ReflectionClass(CanSaveCredentialSource::class);
 
-        static::assertCount(1, $parameters);
-        $paramType = $parameters[0]->getType();
-
-        static::assertInstanceOf(ReflectionUnionType::class, $paramType);
-
-        $types = array_map(fn ($type) => $type->getName(), $paramType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertTrue($reflection->implementsInterface(CanSaveCredentialRecord::class));
     }
 
     #[Test]
-    public function credentialRecordRepositoryInterfaceReturnsUnionType(): void
+    public function credentialRecordRepositoryInterfaceReturnsCredentialRecord(): void
     {
-        // Verify findOneByCredentialId returns union type
+        // Verify findOneByCredentialId returns CredentialRecord (nullable)
         $reflection = new ReflectionMethod(CredentialRecordRepositoryInterface::class, 'findOneByCredentialId');
         $returnType = $reflection->getReturnType();
 
-        static::assertInstanceOf(ReflectionUnionType::class, $returnType);
-
-        $types = array_map(fn ($type) => $type->getName(), $returnType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
+        static::assertInstanceOf(ReflectionNamedType::class, $returnType);
+        static::assertSame(CredentialRecord::class, $returnType->getName());
         static::assertTrue($returnType->allowsNull());
     }
 
     #[Test]
-    public function publicKeyCredentialSourceRepositoryInterfaceReturnsUnionType(): void
+    public function publicKeyCredentialSourceRepositoryInterfaceExtendsCredentialRecordRepositoryInterface(): void
     {
-        // Verify findOneByCredentialId returns union type
-        $reflection = new ReflectionMethod(
-            PublicKeyCredentialSourceRepositoryInterface::class,
-            'findOneByCredentialId'
-        );
-        $returnType = $reflection->getReturnType();
+        // Verify the deprecated interface extends the new one
+        $reflection = new ReflectionClass(PublicKeyCredentialSourceRepositoryInterface::class);
 
-        static::assertInstanceOf(ReflectionUnionType::class, $returnType);
+        static::assertTrue($reflection->implementsInterface(CredentialRecordRepositoryInterface::class));
+    }
 
-        $types = array_map(fn ($type) => $type->getName(), $returnType->getTypes());
-        static::assertContains(CredentialRecord::class, $types);
-        static::assertContains(PublicKeyCredentialSource::class, $types);
-        static::assertTrue($returnType->allowsNull());
+    #[Test]
+    public function publicKeyCredentialSourceExtendsCredentialRecord(): void
+    {
+        // Verify inheritance relationship
+        $reflection = new ReflectionClass(PublicKeyCredentialSource::class);
+
+        static::assertTrue($reflection->isSubclassOf(CredentialRecord::class));
     }
 
     #[Test]
@@ -212,14 +186,13 @@ final class RepositoryImplementationsTest extends TestCase
             ) {
             }
 
-            public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
+            public function saveCredentialSource(CredentialRecord $credentialRecord): void
             {
                 $this->storage[$credentialRecord->publicKeyCredentialId] = $credentialRecord;
             }
 
-            public function findOneByCredentialId(
-                string $publicKeyCredentialId
-            ): CredentialRecord|PublicKeyCredentialSource|null {
+            public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
+            {
                 return $this->storage[$publicKeyCredentialId] ?? null;
             }
 
@@ -244,7 +217,7 @@ final class RepositoryImplementationsTest extends TestCase
             10
         );
 
-        $publicKeyCredentialSource = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             'pkcs-id',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -256,15 +229,17 @@ final class RepositoryImplementationsTest extends TestCase
             20
         );
 
-        // When - saving both types
+        // When - saving both types (PublicKeyCredentialSource extends CredentialRecord)
         $repository->saveCredentialSource($credentialRecord);
         $repository->saveCredentialSource($publicKeyCredentialSource);
 
-        // Then - both can be retrieved
+        // Then - both can be retrieved as CredentialRecord
         $retrievedCr = $repository->findOneByCredentialId('cr-id');
         $retrievedPkcs = $repository->findOneByCredentialId('pkcs-id');
 
         static::assertInstanceOf(CredentialRecord::class, $retrievedCr);
+        static::assertInstanceOf(CredentialRecord::class, $retrievedPkcs);
+        // PublicKeyCredentialSource is still a PublicKeyCredentialSource (inheritance)
         static::assertInstanceOf(PublicKeyCredentialSource::class, $retrievedPkcs);
         static::assertSame('user-1', $retrievedCr->userHandle);
         static::assertSame('user-1', $retrievedPkcs->userHandle);

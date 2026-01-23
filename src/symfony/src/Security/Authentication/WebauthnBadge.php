@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication;
 
 use LogicException;
+use function sprintf;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Webauthn\AuthenticatorResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialOptions;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function sprintf;
 
 final class WebauthnBadge extends UserBadge
 {
@@ -25,7 +24,7 @@ final class WebauthnBadge extends UserBadge
 
     private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
 
-    private CredentialRecord|PublicKeyCredentialSource $publicKeyCredentialSource;
+    private CredentialRecord $publicKeyCredentialSource;
 
     private UserInterface $user;
 
@@ -73,7 +72,7 @@ final class WebauthnBadge extends UserBadge
         return $this->publicKeyCredentialUserEntity;
     }
 
-    public function getPublicKeyCredentialSource(): CredentialRecord|PublicKeyCredentialSource
+    public function getPublicKeyCredentialSource(): CredentialRecord
     {
         if (! $this->isResolved) {
             throw new LogicException('The badge is not resolved.');
@@ -93,7 +92,7 @@ final class WebauthnBadge extends UserBadge
         AuthenticatorResponse $authenticatorResponse,
         PublicKeyCredentialOptions $publicKeyCredentialOptions,
         PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
-        CredentialRecord|PublicKeyCredentialSource $publicKeyCredentialSource,
+        CredentialRecord $publicKeyCredentialSource,
     ): void {
         if ($this->userLoader === null) {
             throw new LogicException(sprintf(

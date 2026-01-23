@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Storage;
 
+use function array_key_exists;
+use function is_array;
+use function sprintf;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function array_key_exists;
-use function is_array;
-use function sprintf;
 
 final readonly class SessionStorage implements OptionsStorage
 {

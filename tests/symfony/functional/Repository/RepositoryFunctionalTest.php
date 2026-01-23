@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Repository;
 
+use function count;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,7 +18,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CredentialRecordRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\TrustPath\EmptyTrustPath;
-use function count;
 
 /**
  * Functional tests for repository implementations in the Symfony bundle.
@@ -39,7 +39,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
         // Given
         $repository = new PublicKeyCredentialSourceRepository($this->cache);
 
-        $publicKeyCredentialSource = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             base64_decode('test123', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -55,7 +55,8 @@ final class RepositoryFunctionalTest extends KernelTestCase
         $repository->saveCredentialSource($publicKeyCredentialSource);
         $retrieved = $repository->findOneByCredentialId(base64_decode('test123', true));
 
-        // Then
+        // Then - PublicKeyCredentialSource extends CredentialRecord, so it's both
+        static::assertInstanceOf(CredentialRecord::class, $retrieved);
         static::assertInstanceOf(PublicKeyCredentialSource::class, $retrieved);
         static::assertSame('test-user', $retrieved->userHandle);
         static::assertSame(100, $retrieved->counter);
@@ -123,7 +124,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
         // Given
         $repository = new CredentialRecordRepository($this->cache);
 
-        $publicKeyCredentialSource = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             base64_decode('pkcs999', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -139,7 +140,8 @@ final class RepositoryFunctionalTest extends KernelTestCase
         $repository->saveCredentialSource($publicKeyCredentialSource);
         $retrieved = $repository->findOneByCredentialId(base64_decode('pkcs999', true));
 
-        // Then
+        // Then - PublicKeyCredentialSource extends CredentialRecord, so it's both
+        static::assertInstanceOf(CredentialRecord::class, $retrieved);
         static::assertInstanceOf(PublicKeyCredentialSource::class, $retrieved);
         static::assertSame('test-user-4', $retrieved->userHandle);
         static::assertSame(400, $retrieved->counter);
@@ -165,7 +167,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
             100
         );
 
-        $publicKeyCredentialSource = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             'multi2',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -184,14 +186,15 @@ final class RepositoryFunctionalTest extends KernelTestCase
         $userEntity = PublicKeyCredentialUserEntity::create($userId, $userId, 'Multi User');
         $allCredentials = $repository->findAllForUserEntity($userEntity);
 
-        // Then - should retrieve both types
+        // Then - should retrieve both types (all are CredentialRecord, some may also be PublicKeyCredentialSource)
         static::assertGreaterThanOrEqual(2, count($allCredentials));
 
         $hasCredentialRecord = false;
         $hasPublicKeyCredentialSource = false;
 
         foreach ($allCredentials as $credential) {
-            if ($credential instanceof CredentialRecord && $credential->publicKeyCredentialId === 'multi1') {
+            static::assertInstanceOf(CredentialRecord::class, $credential);
+            if ($credential->publicKeyCredentialId === 'multi1') {
                 $hasCredentialRecord = true;
             }
             if ($credential instanceof PublicKeyCredentialSource && $credential->publicKeyCredentialId === 'multi2') {
