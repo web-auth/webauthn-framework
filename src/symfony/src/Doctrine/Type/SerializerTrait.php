@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
-use const JSON_THROW_ON_ERROR;
 
 trait SerializerTrait
 {

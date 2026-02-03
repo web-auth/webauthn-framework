@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
+use function count;
+use function is_array;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -20,10 +22,7 @@ use Webauthn\CredentialRecord;
 use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function count;
-use function is_array;
 
 final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequestOptionsBuilder
 {
@@ -86,7 +85,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         $credentialSources = $this->credentialSourceRepository->findAllForUserEntity($userEntity);
 
         return array_map(
-            static fn (CredentialRecord|PublicKeyCredentialSource $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
+            static fn (CredentialRecord $credential): PublicKeyCredentialDescriptor => $credential->getPublicKeyCredentialDescriptor(),
             $credentialSources
         );
     }

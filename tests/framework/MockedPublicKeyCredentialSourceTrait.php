@@ -22,7 +22,7 @@ trait MockedPublicKeyCredentialSourceTrait
         string $attestationType = 'none',
         ?TrustPath $trustPath = null
     ): PublicKeyCredentialSource {
-        return PublicKeyCredentialSource::create(
+        return new PublicKeyCredentialSource(
             $id,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transport,

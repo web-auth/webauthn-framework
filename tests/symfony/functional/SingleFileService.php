@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
+use function array_key_exists;
 use InvalidArgumentException;
+use function sprintf;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\MetadataService\Service\MetadataService;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use function array_key_exists;
-use function sprintf;
 
 final class SingleFileService implements MetadataService
 {

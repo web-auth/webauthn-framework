@@ -6,6 +6,7 @@ namespace Webauthn\MetadataService\Service;
 
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use function sprintf;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -17,7 +18,6 @@ use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use function sprintf;
 
 final class DistantResourceMetadataService implements MetadataService, CanDispatchEvents
 {

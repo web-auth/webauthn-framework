@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Repository;
 
 use Webauthn\CredentialRecord;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -16,11 +15,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 interface CredentialRecordRepositoryInterface
 {
     /**
-     * @return array<CredentialRecord|PublicKeyCredentialSource>
+     * @return array<CredentialRecord>
      */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array;
 
-    public function findOneByCredentialId(
-        string $publicKeyCredentialId
-    ): CredentialRecord|PublicKeyCredentialSource|null;
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord;
 }

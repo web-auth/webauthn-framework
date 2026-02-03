@@ -21,7 +21,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
     public function __construct(
         private CacheItemPoolInterface $cacheItemPool
     ) {
-        $publicKeyCredentialSource1 = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource1 = new PublicKeyCredentialSource(
             base64_decode(
                 'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
                 true
@@ -39,7 +39,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
             100
         );
         $this->saveCredentialSource($publicKeyCredentialSource1);
-        $publicKeyCredentialSource2 = PublicKeyCredentialSource::create(
+        $publicKeyCredentialSource2 = new PublicKeyCredentialSource(
             base64_decode(
                 'Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=',
                 true
@@ -64,9 +64,8 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
     }
 
-    public function findOneByCredentialId(
-        string $publicKeyCredentialId
-    ): CredentialRecord|PublicKeyCredentialSource|null {
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
+    {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
         if (! $item->isHit()) {
             return null;
@@ -92,7 +91,7 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
+    public function saveCredentialSource(CredentialRecord $credentialRecord): void
     {
         $item = $this->cacheItemPool->getItem(
             'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)

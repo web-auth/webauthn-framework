@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
+use function count;
+use function in_array;
+use function parse_url;
+use const PHP_EOL;
+use const PHP_URL_SCHEME;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
@@ -11,6 +16,7 @@ use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\CertificationPath\CertificationPath;
 use SpomkyLabs\Pki\X509\CertificationPath\PathValidation\PathValidationConfig;
+use function sprintf;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
@@ -22,12 +28,6 @@ use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\CertificateChainException;
 use Webauthn\Exception\CertificateRevocationListException;
 use Webauthn\Exception\InvalidCertificateException;
-use function count;
-use function in_array;
-use function parse_url;
-use function sprintf;
-use const PHP_EOL;
-use const PHP_URL_SCHEME;
 
 final class PhpCertificateChainValidator implements CertificateChainValidator, CanDispatchEvents
 {

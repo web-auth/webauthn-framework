@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function is_string;
+use function trigger_deprecation;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -13,13 +15,11 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\U2FPublicKey;
-use function is_string;
-use function trigger_deprecation;
 
 final class CheckRelyingPartyIdIdHash implements CeremonyStep
 {
     public function process(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Webauthn\Exception\InvalidDataException;
 use function strlen;
+use Webauthn\Exception\InvalidDataException;
 
 class PublicKeyCredentialUserEntity extends PublicKeyCredentialEntity
 {

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\Event;
 
 use LogicException;
+use function sprintf;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialSource;
-use function sprintf;
 
 /**
  * Event dispatched when the backup status flag (BS) changes.
@@ -19,7 +19,7 @@ use function sprintf;
 final readonly class BackupStatusChangedEvent implements WebauthnEvent
 {
     public function __construct(
-        public CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        public CredentialRecord $credentialRecord,
         public ?bool $previousValue,
         public ?bool $newValue
     ) {
@@ -46,7 +46,7 @@ final readonly class BackupStatusChangedEvent implements WebauthnEvent
             return $this->credentialRecord;
         }
 
-        return PublicKeyCredentialSource::create(
+        return new PublicKeyCredentialSource(
             $this->credentialRecord->publicKeyCredentialId,
             $this->credentialRecord->type,
             $this->credentialRecord->transports,

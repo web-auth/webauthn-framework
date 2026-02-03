@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Denormalizer;
 
 use RuntimeException;
+use function sprintf;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
@@ -16,7 +17,6 @@ use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
-use function sprintf;
 
 final readonly class WebauthnSerializerFactory
 {

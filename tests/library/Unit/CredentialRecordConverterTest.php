@@ -28,7 +28,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
         $publicKey = 'test-public-key';
         $transports = ['usb', 'nfc'];
 
-        $pkcs = PublicKeyCredentialSource::create(
+        $pkcs = new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transports,
@@ -117,7 +117,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
     #[Test]
     public function canConvertArrayOfPublicKeyCredentialSourcesToCredentialRecords(): void
     {
-        $pkcs1 = PublicKeyCredentialSource::create(
+        $pkcs1 = new PublicKeyCredentialSource(
             'id1',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -129,7 +129,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
             1
         );
 
-        $pkcs2 = PublicKeyCredentialSource::create(
+        $pkcs2 = new PublicKeyCredentialSource(
             'id2',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -203,7 +203,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
         ];
 
         // Create PKCS -> convert to CR -> convert back to PKCS
-        $originalPkcs = PublicKeyCredentialSource::create(
+        $originalPkcs = new PublicKeyCredentialSource(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transports,
@@ -240,7 +240,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
     #[Test]
     public function conversionHandlesNullValues(): void
     {
-        $pkcs = PublicKeyCredentialSource::create(
+        $pkcs = new PublicKeyCredentialSource(
             'id',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],

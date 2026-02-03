@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use function assert;
+use const DIRECTORY_SEPARATOR;
+use function file_get_contents;
 use InvalidArgumentException;
+use function is_array;
+use function sprintf;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use function assert;
-use function file_get_contents;
-use function is_array;
-use function sprintf;
-use const DIRECTORY_SEPARATOR;
 
 final class FolderResourceMetadataService implements MetadataService
 {

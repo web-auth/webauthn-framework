@@ -9,12 +9,11 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSource;
 
 interface CeremonyStep
 {
     public function process(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Guesser;
 
+use function count;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -14,7 +15,6 @@ use Webauthn\Bundle\Repository\CanGenerateUserEntity;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function count;
 
 final readonly class RequestBodyUserEntityGuesser implements UserEntityGuesser
 {

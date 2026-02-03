@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Webauthn\Event;
 
 use LogicException;
+use function sprintf;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use function sprintf;
 
 class AuthenticatorAssertionResponseValidationSucceededEvent
 {
@@ -18,7 +18,7 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
         public readonly PublicKeyCredentialRequestOptions $publicKeyCredentialRequestOptions,
         public readonly string $host,
         public readonly ?string $userHandle,
-        public readonly CredentialRecord|PublicKeyCredentialSource $credentialRecord
+        public readonly CredentialRecord $credentialRecord
     ) {
     }
 
@@ -43,7 +43,7 @@ class AuthenticatorAssertionResponseValidationSucceededEvent
             return $this->credentialRecord;
         }
 
-        return PublicKeyCredentialSource::create(
+        return new PublicKeyCredentialSource(
             $this->credentialRecord->publicKeyCredentialId,
             $this->credentialRecord->type,
             $this->credentialRecord->transports,

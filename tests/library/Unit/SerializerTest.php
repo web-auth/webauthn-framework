@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
@@ -21,7 +22,6 @@ use Webauthn\Tests\AbstractTestCase;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\TrustPath\TrustPath;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function trigger_deprecation;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -12,12 +13,11 @@ use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use function trigger_deprecation;
 
 final class CheckUserVerification implements CeremonyStep
 {
     public function process(
-        CredentialRecord|PublicKeyCredentialSource $credentialRecord,
+        CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
         PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
         ?string $userHandle,

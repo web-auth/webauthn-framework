@@ -16,16 +16,25 @@ use Webauthn\PublicKeyCredentialSource;
 final class CredentialRecordConverter
 {
     /**
-     * Converts a PublicKeyCredentialSource to a CredentialRecord.
+     * Converts a CredentialRecord (or subclass) to a pure CredentialRecord.
      *
      * Since PublicKeyCredentialSource extends CredentialRecord, this method
-     * simply returns a new CredentialRecord instance with the same data.
+     * can accept either type. If the input is already a pure CredentialRecord,
+     * it is returned as-is. Otherwise, a new CredentialRecord is created.
      *
-     * @param PublicKeyCredentialSource $source The source credential to convert
+     * @param CredentialRecord $source The source credential to convert
      * @return CredentialRecord The converted credential record
      */
-    public static function toCredentialRecord(PublicKeyCredentialSource $source): CredentialRecord
+    public static function toCredentialRecord(CredentialRecord $source): CredentialRecord
     {
+        // Since PublicKeyCredentialSource now extends CredentialRecord,
+        // any PublicKeyCredentialSource is already a CredentialRecord.
+        // If it's already a pure CredentialRecord (not a subclass), return as-is.
+        // Otherwise, create a new CredentialRecord to "strip" the subclass.
+        if ($source::class === CredentialRecord::class) {
+            return $source;
+        }
+
         return CredentialRecord::create(
             $source->publicKeyCredentialId,
             $source->type,
@@ -56,7 +65,12 @@ final class CredentialRecordConverter
      */
     public static function toPublicKeyCredentialSource(CredentialRecord $record): PublicKeyCredentialSource
     {
-        return PublicKeyCredentialSource::create(
+        // If already a PublicKeyCredentialSource, return as-is
+        if ($record instanceof PublicKeyCredentialSource) {
+            return $record;
+        }
+
+        return new PublicKeyCredentialSource(
             $record->publicKeyCredentialId,
             $record->type,
             $record->transports,
@@ -74,9 +88,9 @@ final class CredentialRecordConverter
     }
 
     /**
-     * Converts an array of PublicKeyCredentialSource instances to CredentialRecord instances.
+     * Converts an array of CredentialRecord (or subclass) instances to pure CredentialRecord instances.
      *
-     * @param PublicKeyCredentialSource[] $sources Array of credential sources
+     * @param CredentialRecord[] $sources Array of credential records
      * @return CredentialRecord[] Array of credential records
      */
     public static function toCredentialRecords(array $sources): array

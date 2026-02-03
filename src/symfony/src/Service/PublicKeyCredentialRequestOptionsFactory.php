@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
+use function array_key_exists;
+use function gettype;
 use InvalidArgumentException;
+use function is_int;
+use function is_string;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use function sprintf;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Event\PublicKeyCredentialRequestOptionsCreatedEvent;
@@ -13,11 +18,6 @@ use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use function array_key_exists;
-use function gettype;
-use function is_int;
-use function is_string;
-use function sprintf;
 
 final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvents
 {

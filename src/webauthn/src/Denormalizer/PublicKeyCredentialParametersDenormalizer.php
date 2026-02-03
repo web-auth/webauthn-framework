@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function array_key_exists;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialParameters;
-use function array_key_exists;
 
 final class PublicKeyCredentialParametersDenormalizer implements DenormalizerInterface
 {
