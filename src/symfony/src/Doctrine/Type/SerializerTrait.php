@@ -23,10 +23,16 @@ trait SerializerTrait
         ]);
     }
 
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
+     */
     protected function deserialize(string $data, string $class): mixed
     {
         $serializer = (new WebauthnSerializerFactory(AttestationStatementSupportManager::create()))->create();
 
+        /** @var T */
         return $serializer->deserialize($data, $class, JsonEncoder::FORMAT);
     }
 }

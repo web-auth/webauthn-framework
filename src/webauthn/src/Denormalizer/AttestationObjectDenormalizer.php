@@ -24,6 +24,7 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var string $data */
         $stream = new StringStream($data);
         $parsed = Decoder::create()->decode($stream);
 
@@ -31,6 +32,7 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
             $parsed,
             'Invalid attestation object. Unexpected object.'
         );
+        /** @var array<string, mixed> $attestationObject */
         $attestationObject = $parsed->normalize();
         $stream->isEOF() || throw InvalidDataException::create(
             null,

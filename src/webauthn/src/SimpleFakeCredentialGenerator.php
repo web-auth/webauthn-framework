@@ -28,6 +28,7 @@ final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGene
         $cacheKey = 'fake_credentials_' . hash('xxh128', $username);
         $cacheItem = $this->cache->getItem($cacheKey);
         if ($cacheItem->isHit()) {
+            /** @var PublicKeyCredentialDescriptor[] */
             return $cacheItem->get();
         }
 

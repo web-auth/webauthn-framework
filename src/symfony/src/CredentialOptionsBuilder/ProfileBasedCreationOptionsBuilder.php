@@ -76,23 +76,22 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         }
 
         // Build criteria considering override policy
+        /** @var ?string $userVerification */
         $userVerification = $this->overridePolicy->getEffectiveValue(
             'user_verification',
             $optionsRequest->userVerification,
             null // Will be handled by factory fallback to profile
         );
 
+        /** @var ?string $authenticatorAttachment */
         $authenticatorAttachment = $this->overridePolicy->getEffectiveValue(
             'authenticator_attachment',
             $optionsRequest->authenticatorAttachment,
             null
         );
 
-        $residentKey = $this->overridePolicy->getEffectiveValue(
-            'resident_key',
-            $optionsRequest->residentKey,
-            null
-        );
+        /** @var ?string $residentKey */
+        $residentKey = $this->overridePolicy->getEffectiveValue('resident_key', $optionsRequest->residentKey, null);
 
         // Only create if we have at least one override value
         if ($userVerification !== null || $authenticatorAttachment !== null || $residentKey !== null) {
@@ -108,6 +107,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
 
     private function getEffectiveAttestation(PublicKeyCredentialCreationOptionsRequest $optionsRequest): ?string
     {
+        /** @var string|null */
         return $this->overridePolicy->getEffectiveValue(
             'attestation_conveyance',
             $optionsRequest->attestation,

@@ -21,6 +21,7 @@ final readonly class AttestationStatementDenormalizer implements DenormalizerInt
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{fmt: string, attStmt: array<string, mixed>, authData: string} $data */
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($data['fmt']);
 
         return $attestationStatementSupport->load($data);

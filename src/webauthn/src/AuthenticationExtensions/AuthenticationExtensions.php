@@ -17,7 +17,8 @@ use function sprintf;
 use Webauthn\Exception\AuthenticationExtensionException;
 
 /**
- * @implements IteratorAggregate<AuthenticationExtension>
+ * @implements IteratorAggregate<string, AuthenticationExtension>
+ * @implements ArrayAccess<string, AuthenticationExtension>
  */
 final class AuthenticationExtensions implements Countable, IteratorAggregate, ArrayAccess
 {
@@ -79,6 +80,9 @@ final class AuthenticationExtensions implements Countable, IteratorAggregate, Ar
         return new ArrayIterator($this->extensions);
     }
 
+    /**
+     * @param 0|1 $mode
+     */
     public function count(int $mode = COUNT_NORMAL): int
     {
         return count($this->extensions, $mode);

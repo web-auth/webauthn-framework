@@ -9,6 +9,8 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Webauthn\AuthenticatorAssertionResponse;
+use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\AuthenticatorData;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
 abstract class WebauthnAuthenticator extends AbstractLoginFormAuthenticator
@@ -18,14 +20,14 @@ abstract class WebauthnAuthenticator extends AbstractLoginFormAuthenticator
         assert($passport instanceof WebauthnPassport, 'Invalid passport');
         $webauthnBadge = $passport->getBadge(WebauthnBadge::class);
         assert($webauthnBadge instanceof WebauthnBadge, 'Invalid badge');
-        if ($webauthnBadge->getAuthenticatorResponse() instanceof AuthenticatorAssertionResponse) {
-            $authData = $webauthnBadge->getAuthenticatorResponse()
-                ->authenticatorData;
+        $response = $webauthnBadge->getAuthenticatorResponse();
+        if ($response instanceof AuthenticatorAssertionResponse) {
+            $authData = $response->authenticatorData;
         } else {
-            $authData = $webauthnBadge->getAuthenticatorResponse()
-                ->attestationObject
-                ->authData;
+            assert($response instanceof AuthenticatorAttestationResponse);
+            $authData = $response->attestationObject->authData;
         }
+        /** @var AuthenticatorData $authData */
 
         $token = new WebauthnToken(
             $webauthnBadge->getPublicKeyCredentialUserEntity(),

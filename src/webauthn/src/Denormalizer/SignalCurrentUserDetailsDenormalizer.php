@@ -31,8 +31,10 @@ class SignalCurrentUserDetailsDenormalizer implements NormalizerInterface, Norma
     {
         assert($data instanceof CurrentUserDetails);
 
+        /** @var array<string, mixed> $normalized_rp */
         $normalized_rp = $this->normalizer->normalize($data->rp, $format, $context);
 
+        /** @var array<string, mixed> $normalized_user */
         $normalized_user = $this->normalizer->normalize($data->user, $format, $context);
 
         return [

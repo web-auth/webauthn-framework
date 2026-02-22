@@ -8,6 +8,7 @@ use function in_array;
 use InvalidArgumentException;
 use function is_string;
 use function sprintf;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 abstract class PublicKeyCredentialOptions
@@ -24,7 +25,7 @@ abstract class PublicKeyCredentialOptions
 
     /**
      * @param positive-int|null $timeout
-     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtension> $extensions
      * @param string[] $hints
      * @protected
      */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function assert;
 use CBOR\ByteStringObject;
 use CBOR\Decoder;
 use CBOR\ListObject;
@@ -12,6 +13,7 @@ use CBOR\NegativeIntegerObject;
 use CBOR\TextStringObject;
 use CBOR\UnsignedIntegerObject;
 use function chr;
+use function is_string;
 use function ord;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
@@ -40,17 +42,20 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        assert(is_string($data));
         $authData = $this->fixIncorrectEdDSAKey($data);
         $authDataStream = new StringStream($authData);
         $rp_id_hash = $authDataStream->read(32);
         $flags = $authDataStream->read(1);
         $signCount = $authDataStream->read(4);
+        /** @var array{1: int} $signCount */
         $signCount = unpack('N', $signCount);
 
         $attestedCredentialData = null;
         if (0 !== (ord($flags) & AuthenticatorData::FLAG_AT)) {
             $aaguid = Uuid::fromBinary($authDataStream->read(16));
             $credentialLength = $authDataStream->read(2);
+            /** @var array{1: int} $credentialLength */
             $credentialLength = unpack('n', $credentialLength);
             $credentialId = $authDataStream->read($credentialLength[1]);
             $credentialPublicKey = $this->decoder->decode($authDataStream);
@@ -111,9 +116,11 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
 
     private function fixIncorrectEdDSAKey(string $data): string
     {
+        /** @var string $needle */
         $needle = hex2bin('a301634f4b500327206745643235353139');
+        /** @var string $correct */
         $correct = hex2bin('a401634f4b500327206745643235353139');
-        $position = strpos($data, (string) $needle);
+        $position = strpos($data, $needle);
         if ($position === false) {
             return $data;
         }
@@ -130,8 +137,10 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
         );
         $badX = $badKey->get(-2);
         $badX instanceof ListObject || throw InvalidDataException::create($end, 'Invalid authentication data.');
+        /** @var list<string> $normalizedBadX */
+        $normalizedBadX = $badX->normalize();
         $keyBytes = array_reduce(
-            $badX->normalize(),
+            $normalizedBadX,
             static fn (string $carry, string $item): string => $carry . chr((int) $item),
             ''
         );

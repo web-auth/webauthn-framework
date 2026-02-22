@@ -48,8 +48,12 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->flush();
     }
 
+    /**
+     * @return array<CredentialRecord>
+     */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
+        /** @var array<CredentialRecord> */
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->from($this->class, 'c')
@@ -62,6 +66,7 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
 
     public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
     {
+        /** @var CredentialRecord|null */
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->from($this->class, 'c')

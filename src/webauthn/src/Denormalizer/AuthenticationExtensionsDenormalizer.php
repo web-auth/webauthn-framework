@@ -27,6 +27,7 @@ final class AuthenticationExtensionsDenormalizer implements DenormalizerInterfac
             $data[$key] = AuthenticationExtension::create($key, $value);
         }
 
+        /** @var array<string, AuthenticationExtension> $data */
         return AuthenticationExtensions::create($data);
     }
 

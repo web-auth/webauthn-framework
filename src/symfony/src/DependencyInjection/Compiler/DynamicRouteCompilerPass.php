@@ -25,6 +25,7 @@ final readonly class DynamicRouteCompilerPass implements CompilerPassInterface
 
         $taggedServices = $container->findTaggedServiceIds(self::TAG);
         foreach ($taggedServices as $id => $tags) {
+            /** @var array<string, mixed> $attributes */
             foreach ($tags as $attributes) {
                 array_key_exists('path', $attributes) || throw new InvalidArgumentException(sprintf(
                     'The path is missing for "%s"',

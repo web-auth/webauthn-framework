@@ -23,15 +23,18 @@ final class AuthenticatorAttestationResponseDenormalizer implements Denormalizer
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{clientDataJSON: string, attestationObject: string, transports?: string[]} $data */
         $data['clientDataJSON'] = Base64UrlSafe::decodeNoPadding($data['clientDataJSON']);
         $data['attestationObject'] = Base64::decode($data['attestationObject']);
 
+        /** @var CollectedClientData $clientDataJSON */
         $clientDataJSON = $this->denormalizer->denormalize(
             $data['clientDataJSON'],
             CollectedClientData::class,
             $format,
             $context
         );
+        /** @var AttestationObject $attestationObject */
         $attestationObject = $this->denormalizer->denormalize(
             $data['attestationObject'],
             AttestationObject::class,

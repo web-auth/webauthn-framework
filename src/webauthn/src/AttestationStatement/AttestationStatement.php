@@ -32,6 +32,9 @@ class AttestationStatement
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $attStmt
+     */
     public static function create(string $fmt, array $attStmt, string $type, TrustPath $trustPath): self
     {
         return new self($fmt, $attStmt, $type, $trustPath);

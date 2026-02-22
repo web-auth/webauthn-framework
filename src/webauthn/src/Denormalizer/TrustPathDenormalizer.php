@@ -21,6 +21,7 @@ final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerIn
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{x5c?: list<string>, type?: string} $data */
         return match (true) {
             array_key_exists('x5c', $data) && is_array($data['x5c']) => CertificateTrustPath::create($data['x5c']),
             $data === [], isset($data['type']) && $data['type'] === EmptyTrustPath::class => EmptyTrustPath::create(),

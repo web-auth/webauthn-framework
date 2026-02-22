@@ -33,6 +33,9 @@ final class WebauthnBadge extends UserBadge
      */
     private $userLoader;
 
+    /**
+     * @param array<string, mixed>|null $attributes
+     */
     public function __construct(
         public readonly string $host,
         public readonly string $response,
@@ -104,6 +107,7 @@ final class WebauthnBadge extends UserBadge
         $this->publicKeyCredentialOptions = $publicKeyCredentialOptions;
         $this->publicKeyCredentialUserEntity = $publicKeyCredentialUserEntity;
         $this->publicKeyCredentialSource = $publicKeyCredentialSource;
+        /** @var UserInterface|null $user */
         $user = ($this->userLoader)($publicKeyCredentialUserEntity->name, $this->attributes ?? []);
         if ($user === null) {
             $exception = new UserNotFoundException();

@@ -72,21 +72,23 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     public function load(array $attestation): AttestationStatement
     {
-        array_key_exists('sig', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+        /** @var array<string, mixed> $attStmt */
+        $attStmt = $attestation['attStmt'];
+        array_key_exists('sig', $attStmt) || throw AttestationStatementLoadingException::create(
             $attestation,
             'The attestation statement value "sig" is missing.'
         );
-        array_key_exists('alg', $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+        array_key_exists('alg', $attStmt) || throw AttestationStatementLoadingException::create(
             $attestation,
             'The attestation statement value "alg" is missing.'
         );
-        is_string($attestation['attStmt']['sig']) || throw AttestationStatementLoadingException::create(
+        is_string($attStmt['sig']) || throw AttestationStatementLoadingException::create(
             $attestation,
             'The attestation statement value "sig" is missing.'
         );
 
         return match (true) {
-            array_key_exists('x5c', $attestation['attStmt']) => $this->loadBasicType($attestation),
+            array_key_exists('x5c', $attStmt) => $this->loadBasicType($attestation),
             default => $this->loadEmptyType($attestation),
         };
     }
@@ -122,7 +124,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private function loadBasicType(array $attestation): AttestationStatement
     {
-        $certificates = $attestation['attStmt']['x5c'];
+        /** @var array<string, mixed> $attStmt */
+        $attStmt = $attestation['attStmt'];
+        /** @var array<string> $certificates */
+        $certificates = $attStmt['x5c'];
         is_array($certificates) || throw AttestationStatementVerificationException::create(
             'The attestation statement value "x5c" must be a list with at least one certificate.'
         );
@@ -131,9 +136,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
+        /** @var string $fmt */
+        $fmt = $attestation['fmt'];
         $attestationStatement = AttestationStatement::createBasic(
-            $attestation['fmt'],
-            $attestation['attStmt'],
+            $fmt,
+            $attStmt,
             CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
@@ -146,11 +153,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
      */
     private function loadEmptyType(array $attestation): AttestationStatement
     {
-        $attestationStatement = AttestationStatement::createSelf(
-            $attestation['fmt'],
-            $attestation['attStmt'],
-            EmptyTrustPath::create()
-        );
+        /** @var string $fmt */
+        $fmt = $attestation['fmt'];
+        /** @var array<string, mixed> $attStmt */
+        $attStmt = $attestation['attStmt'];
+        $attestationStatement = AttestationStatement::createSelf($fmt, $attStmt, EmptyTrustPath::create());
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
 
         return $attestationStatement;
@@ -244,12 +251,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
 
         // Verification of the signature
         $signedData = $authenticatorData->authData . $clientDataJSONHash;
-        $result = openssl_verify(
-            $signedData,
-            $attestationStatement->get('sig'),
-            $certificates[0],
-            $opensslAlgorithmIdentifier
-        );
+        /** @var string $sig */
+        $sig = $attestationStatement->get('sig');
+        $result = openssl_verify($signedData, $sig, $certificates[0], $opensslAlgorithmIdentifier);
 
         return $result === 1;
     }
@@ -278,18 +282,19 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
         $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
-        $publicKey->alg() === (int) $attestationStatement->get(
-            'alg'
-        ) || throw AttestationStatementVerificationException::create(
+        $alg = (int) $attestationStatement->get('alg');
+        $publicKey->alg() === $alg || throw AttestationStatementVerificationException::create(
             'The algorithm of the attestation statement and the key are not identical.'
         );
 
         $dataToVerify = $authenticatorData->authData . $clientDataJSONHash;
-        $algorithm = $this->algorithmManager->get((int) $attestationStatement->get('alg'));
+        $algorithm = $this->algorithmManager->get($alg);
         if (! $algorithm instanceof Signature) {
             throw InvalidDataException::create($algorithm, 'Invalid algorithm');
         }
-        $signature = CoseSignatureFixer::fix($attestationStatement->get('sig'), $algorithm);
+        /** @var string $sigForFix */
+        $sigForFix = $attestationStatement->get('sig');
+        $signature = CoseSignatureFixer::fix($sigForFix, $algorithm);
 
         return $algorithm->verify($dataToVerify, $publicKey, $signature);
     }

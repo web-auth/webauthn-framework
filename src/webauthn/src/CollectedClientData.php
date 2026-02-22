@@ -62,8 +62,12 @@ class CollectedClientData
         );
         $this->origin = $origin;
 
-        $this->topOrigin = $data['topOrigin'] ?? null;
-        $this->crossOrigin = $data['crossOrigin'] ?? false;
+        /** @var string|null $topOrigin */
+        $topOrigin = $data['topOrigin'] ?? null;
+        $this->topOrigin = $topOrigin;
+        /** @var bool $crossOrigin */
+        $crossOrigin = $data['crossOrigin'] ?? false;
+        $this->crossOrigin = $crossOrigin;
 
         $tokenBinding = $data['tokenBinding'] ?? null;
         $tokenBinding === null || is_array($tokenBinding) || throw InvalidDataException::create(

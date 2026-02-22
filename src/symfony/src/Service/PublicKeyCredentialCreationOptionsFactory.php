@@ -28,7 +28,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     private EventDispatcherInterface $eventDispatcher;
 
     /**
-     * @param mixed[] $profiles
+     * @param array<string, array{rp: array{name: string, id: ?string}, challenge_length: int, timeout?: ?int, attestation_conveyance?: ?string, authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>}> $profiles
      */
     public function __construct(
         private readonly array $profiles,
@@ -71,11 +71,13 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
             gettype($attestation)
         ));
 
+        /** @var int<1, max> $challengeLength */
+        $challengeLength = $profile['challenge_length'];
         $options = PublicKeyCredentialCreationOptions
             ::create(
                 $this->createRpEntity($profile),
                 $userEntity,
-                random_bytes($profile['challenge_length']),
+                random_bytes($challengeLength),
                 $this->createCredentialParameters($profile),
                 authenticatorSelection: $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
                     $profile
@@ -91,7 +93,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
-     * @param mixed[] $profile
+     * @param array{extensions: array<string, mixed>} $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {
@@ -108,19 +110,19 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
-     * @param mixed[] $profile
+     * @param array{authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}} $profile
      */
     private function createAuthenticatorSelectionCriteria(array $profile): AuthenticatorSelectionCriteria
     {
         return AuthenticatorSelectionCriteria::create(
             $profile['authenticator_selection_criteria']['authenticator_attachment'],
-            $profile['authenticator_selection_criteria']['user_verification'],
+            $profile['authenticator_selection_criteria']['user_verification'] ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $profile['authenticator_selection_criteria']['resident_key'],
         );
     }
 
     /**
-     * @param mixed[] $profile
+     * @param array{rp: array{name: string, id: ?string}} $profile
      */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
@@ -128,13 +130,13 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
-     * @param mixed[] $profile
+     * @param array{public_key_credential_parameters: list<int>} $profile
      *
      * @return PublicKeyCredentialParameters[]
      */
     private function createCredentialParameters(array $profile): array
     {
-        $callback = static fn ($alg): PublicKeyCredentialParameters => PublicKeyCredentialParameters::create(
+        $callback = static fn (int $alg): PublicKeyCredentialParameters => PublicKeyCredentialParameters::create(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $alg
         );

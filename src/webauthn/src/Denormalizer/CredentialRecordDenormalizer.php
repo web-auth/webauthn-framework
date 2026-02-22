@@ -32,6 +32,7 @@ class CredentialRecordDenormalizer implements DenormalizerInterface, Denormalize
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{publicKeyCredentialId: string, credentialPublicKey: string, userHandle: string, type: string, transports: string[], attestationType: string, trustPath: array<string, mixed>, aaguid: string, counter: int, otherUI?: ?array<string, mixed>, backupEligible?: ?bool, backupStatus?: ?bool, uvInitialized?: ?bool} $data */
         $keys = ['publicKeyCredentialId', 'credentialPublicKey', 'userHandle'];
         foreach ($keys as $key) {
             array_key_exists($key, $data) || throw InvalidDataException::create($data, 'Missing ' . $key);

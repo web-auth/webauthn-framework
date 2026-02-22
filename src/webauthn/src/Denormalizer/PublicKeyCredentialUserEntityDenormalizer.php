@@ -20,6 +20,7 @@ final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInt
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{id?: string, name: string, displayName: string} $data */
         if (! array_key_exists('id', $data)) {
             return $data;
         }

@@ -23,6 +23,7 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{id?: string, rawId: string, type: string, response: array<string, mixed>} $data */
         if (! array_key_exists('id', $data)) {
             return $data;
         }
@@ -31,11 +32,15 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         hash_equals($id, $rawId) || throw InvalidDataException::create($data, 'Invalid ID');
         $data['rawId'] = $rawId;
 
-        return PublicKeyCredential::create(
-            $data['type'],
-            $data['rawId'],
-            $this->denormalizer->denormalize($data['response'], AuthenticatorResponse::class, $format, $context),
+        /** @var AuthenticatorResponse $response */
+        $response = $this->denormalizer->denormalize(
+            $data['response'],
+            AuthenticatorResponse::class,
+            $format,
+            $context
         );
+
+        return PublicKeyCredential::create($data['type'], $data['rawId'], $response);
     }
 
     public function supportsDenormalization(

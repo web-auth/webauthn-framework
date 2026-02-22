@@ -41,7 +41,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     private array $statements = [];
 
     /**
-     * @var array<string, array<int, StatusReport>>
+     * @var array<string, StatusReport[]>
      */
     private array $statusReports = [];
 
@@ -145,6 +145,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         try {
             $payload = $this->getJwsPayload($content, $jwtCertificates);
             $this->validateCertificates(...$jwtCertificates);
+            /** @var MetadataBLOBPayload $blob */
             $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, JsonEncoder::FORMAT);
             foreach ($blob->entries as $entry) {
                 $mds = $entry->metadataStatement;

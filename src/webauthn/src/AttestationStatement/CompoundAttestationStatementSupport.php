@@ -82,17 +82,20 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
         array_key_exists('attStmt', $attestation) || throw AttestationStatementLoadingException::create($attestation);
         is_array($attestation['attStmt']) || throw AttestationStatementLoadingException::create($attestation);
 
+        /** @var array<string, mixed> $attStmt */
+        $attStmt = $attestation['attStmt'];
         $loadedAttestations = [];
-        foreach ($attestation['attStmt'] as $index => $nestedAttestationObject) {
+        foreach ($attStmt as $index => $nestedAttestationObject) {
             is_array($nestedAttestationObject) || throw AttestationStatementLoadingException::create(
                 $attestation,
-                sprintf('Attestation at index %d must be an array.', $index)
+                sprintf('Attestation at index %s must be an array.', (string) $index)
             );
 
             array_key_exists('fmt', $nestedAttestationObject) || throw InvalidDataException::create(
                 $nestedAttestationObject,
                 'Invalid attestation object'
             );
+            /** @var string $fmt */
             $fmt = $nestedAttestationObject['fmt'];
             $fmt !== 'compound' || throw InvalidDataException::create(
                 $nestedAttestationObject,
@@ -104,16 +107,19 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
             );
             $this->attestationStatementSupportManager->has($fmt) || throw AttestationStatementLoadingException::create(
                 $attestation,
-                sprintf('Unsupported attestation format "%s" at index %d.', $fmt, $index)
+                sprintf('Unsupported attestation format "%s" at index %s.', $fmt, (string) $index)
             );
 
+            /** @var array<string, mixed> $nestedAttestationObject */
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
             $loadedAttestations[] = $attestationStatementSupport->load($nestedAttestationObject);
         }
 
+        /** @var string $compoundFmt */
+        $compoundFmt = $attestation['fmt'];
         // Create a compound attestation statement with compound trust path
         $attestationStatement = AttestationStatement::create(
-            $attestation['fmt'],
+            $compoundFmt,
             $loadedAttestations,
             AttestationStatement::TYPE_BASIC,
             EmptyTrustPath::create()
