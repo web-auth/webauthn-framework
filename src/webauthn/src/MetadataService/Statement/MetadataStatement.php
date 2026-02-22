@@ -211,7 +211,7 @@ class MetadataStatement
      * @param string[] $attachmentHint
      * @param ExtensionDescriptor[] $supportedExtensions
      * @param DisplayPNGCharacteristicsDescriptor[] $tcDisplayPNGCharacteristics
-     * @param string[] $alternativeDescriptions
+     * @param array<string, string> $alternativeDescriptions
      */
     public static function create(
         string $description,

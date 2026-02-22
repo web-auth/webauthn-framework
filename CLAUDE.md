@@ -22,15 +22,15 @@ castor phpunit
 
 # Static analysis
 castor phpstan
-castor phpstan:baseline  # Generate new baseline
+castor phpstan-baseline  # Generate new baseline
 
 # Code style
 castor ecs              # Check coding standards
-castor ecs:fix          # Auto-fix coding standards
+castor ecs-fix          # Auto-fix coding standards
 
 # Refactoring
 castor rector           # Check refactoring suggestions
-castor rector:fix       # Apply refactoring
+castor rector-fix       # Apply refactoring
 
 # Architecture validation
 castor deptrac          # Check dependency layers

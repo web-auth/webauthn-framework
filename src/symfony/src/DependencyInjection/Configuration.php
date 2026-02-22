@@ -40,7 +40,7 @@ final readonly class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->beforeNormalization()
             ->ifArray()
-            ->then(static function ($v): array {
+            ->then(static function (array $v): array {
                 if (! isset($v['creation_profiles'])) {
                     $v['creation_profiles'] = null;
                 }

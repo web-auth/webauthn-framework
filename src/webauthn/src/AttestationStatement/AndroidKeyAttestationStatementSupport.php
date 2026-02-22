@@ -73,13 +73,16 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     public function load(array $attestation): AttestationStatement
     {
         array_key_exists('attStmt', $attestation) || throw AttestationStatementLoadingException::create($attestation);
+        /** @var array<string, mixed> $attStmt */
+        $attStmt = $attestation['attStmt'];
         foreach (['sig', 'x5c', 'alg'] as $key) {
-            array_key_exists($key, $attestation['attStmt']) || throw AttestationStatementLoadingException::create(
+            array_key_exists($key, $attStmt) || throw AttestationStatementLoadingException::create(
                 $attestation,
                 sprintf('The attestation statement value "%s" is missing.', $key)
             );
         }
-        $certificates = $attestation['attStmt']['x5c'];
+        /** @var array<string> $certificates */
+        $certificates = $attStmt['x5c'];
         (is_countable($certificates) ? count(
             $certificates
         ) : 0) > 0 || throw AttestationStatementLoadingException::create(
@@ -88,9 +91,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         );
         $certificates = CertificateToolbox::convertAllDERToPEM($certificates);
 
+        /** @var string $fmt */
+        $fmt = $attestation['fmt'];
         $attestationStatement = AttestationStatement::createBasic(
-            $attestation['fmt'],
-            $attestation['attStmt'],
+            $fmt,
+            $attStmt,
             CertificateTrustPath::create($certificates)
         );
         $this->dispatcher->dispatch(AttestationStatementLoaded::create($attestationStatement));
@@ -116,14 +121,11 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
         $signedData = $authenticatorData->authData . $clientDataJSONHash;
-        $alg = $attestationStatement->get('alg');
+        $alg = (int) $attestationStatement->get('alg');
+        /** @var string $sig */
+        $sig = $attestationStatement->get('sig');
 
-        return openssl_verify(
-            $signedData,
-            $attestationStatement->get('sig'),
-            $leaf,
-            Algorithms::getOpensslAlgorithmFor((int) $alg)
-        ) === 1;
+        return openssl_verify($signedData, $sig, $leaf, Algorithms::getOpensslAlgorithmFor($alg)) === 1;
     }
 
     /**
@@ -153,7 +155,9 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'Invalid public key data. Presence of extra bytes.'
         );
         $publicDataStream->close();
-        $publicKey = Key::createFromData($coseKey->normalize());
+        /** @var array<int, mixed> $coseKeyData */
+        $coseKeyData = $coseKey->normalize();
+        $publicKey = Key::createFromData($coseKeyData);
         ($publicKey instanceof Ec2Key) || ($publicKey instanceof RsaKey) || throw AttestationStatementVerificationException::create(
             'Unsupported key type'
         );

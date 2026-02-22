@@ -19,6 +19,9 @@ use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
 class Psr18HttpClient implements HttpClientInterface
 {
+    /**
+     * @var array<string, string>
+     */
     private array $options = [];
 
     public function __construct(
@@ -28,11 +31,14 @@ class Psr18HttpClient implements HttpClientInterface
     ) {
     }
 
+    /**
+     * @param array{base_uri?: string, query?: array<string, string>, body?: string, headers?: array<string, string>, ...} $options
+     */
     public function request(string $method, string $url, array $options = []): ResponseInterface
     {
         $baseUri = $options['base_uri'] ?? '';
         $query = $options['query'] ?? [];
-        if ($query) {
+        if ($query !== []) {
             $url .= (! str_contains($url, '?') ? '?' : '&') . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
         }
         $request = $this->requestFactory->createRequest($method, $baseUri . $url);
@@ -59,6 +65,9 @@ class Psr18HttpClient implements HttpClientInterface
         throw new LogicException('Not implemented');
     }
 
+    /**
+     * @param array<string, string> $options
+     */
     public function withOptions(array $options): static
     {
         $this->options = $options;

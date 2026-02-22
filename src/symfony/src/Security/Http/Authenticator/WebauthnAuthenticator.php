@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
@@ -48,6 +49,9 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
 {
     private LoggerInterface $logger;
 
+    /**
+     * @param UserProviderInterface<UserInterface> $userProvider
+     */
     public function __construct(
         private readonly WebauthnFirewallConfig $firewallConfig,
         private readonly UserProviderInterface $userProvider,
@@ -103,13 +107,13 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         );
         $userBadge = $passport->getBadge(UserBadge::class);
         $userBadge instanceof UserBadge || throw InvalidDataException::create($userBadge, 'Invalid user');
-        /** @var AuthenticatorAttestationResponse|AuthenticatorAssertionResponse $response */
         $response = $credentialsBadge->getAuthenticatorResponse();
         if ($response instanceof AuthenticatorAssertionResponse) {
             $authData = $response->authenticatorData;
+        } elseif ($response instanceof AuthenticatorAttestationResponse) {
+            $authData = $response->attestationObject->authData;
         } else {
-            $authData = $response->attestationObject
-                ->authData;
+            throw InvalidDataException::create($response, 'Invalid response type');
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
         $userEntity !== null || throw new MissingUserEntityException('The user entity is missing');

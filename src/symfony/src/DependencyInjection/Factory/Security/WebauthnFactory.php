@@ -476,7 +476,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array<array-key, mixed> $config
+     * @param array{options_builder?: ?string, profile?: string, ...} $config
      */
     private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
@@ -505,7 +505,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array<array-key, mixed> $config
+     * @param array{options_builder?: ?string, profile?: string, ...} $config
      */
     private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,

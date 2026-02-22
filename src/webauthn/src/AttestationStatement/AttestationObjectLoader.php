@@ -82,6 +82,7 @@ class AttestationObjectLoader implements CanDispatchEvents, CanLogData
                 'Invalid attestation object'
             );
 
+            /** @var array{fmt: string, authData: string, attStmt: array<string, mixed>} $attestationObject */
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);
             $attestationStatement = $attestationStatementSupport->load($attestationObject);
             $this->logger->info('Attestation Statement loaded');

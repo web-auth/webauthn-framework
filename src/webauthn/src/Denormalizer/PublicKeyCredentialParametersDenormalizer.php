@@ -16,6 +16,7 @@ final class PublicKeyCredentialParametersDenormalizer implements DenormalizerInt
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        /** @var array{type?: string, alg?: int} $data */
         if (! array_key_exists('type', $data) || ! array_key_exists('alg', $data)) {
             throw new InvalidDataException($data, 'Missing type or alg');
         }

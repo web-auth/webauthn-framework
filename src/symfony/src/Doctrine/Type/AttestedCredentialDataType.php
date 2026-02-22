@@ -12,6 +12,9 @@ final class AttestedCredentialDataType extends JsonType
 {
     use SerializerTrait;
 
+    /**
+     * @param AttestedCredentialData|string|null $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (! $value instanceof AttestedCredentialData) {
@@ -27,6 +30,7 @@ final class AttestedCredentialDataType extends JsonType
             return $value;
         }
 
+        /** @var string $value */
         return $this->deserialize($value, AttestedCredentialData::class);
     }
 

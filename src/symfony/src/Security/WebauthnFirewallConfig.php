@@ -11,7 +11,37 @@ use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 final readonly class WebauthnFirewallConfig
 {
     /**
-     * @param array<string,mixed> $options
+     * @param array{
+     *     user_provider?: ?string,
+     *     options_storage?: ?string,
+     *     success_handler?: string,
+     *     failure_handler?: string,
+     *     secured_rp_ids?: string[],
+     *     authentication?: array{
+     *         enabled?: bool,
+     *         profile?: string,
+     *         options_handler?: string,
+     *         routes?: array{
+     *             host?: ?string,
+     *             options_method?: string,
+     *             options_path?: string,
+     *             result_method?: string,
+     *             result_path?: string,
+     *         },
+     *     },
+     *     registration?: array{
+     *         enabled?: bool,
+     *         profile?: string,
+     *         options_handler?: string,
+     *         routes?: array{
+     *             host?: ?string,
+     *             options_method?: string,
+     *             options_path?: string,
+     *             result_method?: string,
+     *             result_path?: string,
+     *         },
+     *     },
+     * } $options
      */
     public function __construct(
         private array $options,

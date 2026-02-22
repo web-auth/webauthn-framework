@@ -12,6 +12,9 @@ final class TrustPathDataType extends JsonType
 {
     use SerializerTrait;
 
+    /**
+     * @param TrustPath|string|null $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (! $value instanceof TrustPath) {
@@ -27,6 +30,7 @@ final class TrustPathDataType extends JsonType
             return $value;
         }
 
+        /** @var string $value */
         return $this->deserialize($value, TrustPath::class);
     }
 

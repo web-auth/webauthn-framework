@@ -58,10 +58,12 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
                 $request,
                 $optionsRequest->username
             ),
-            default => $this->getCredentials($userEntity),
+            $userEntity !== null => $this->getCredentials($userEntity),
+            default => [],
         };
 
         // Apply override policy to determine effective values
+        /** @var ?string $userVerification */
         $userVerification = $this->overridePolicy->getEffectiveValue(
             'user_verification',
             $optionsRequest->userVerification,

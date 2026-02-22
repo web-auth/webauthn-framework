@@ -10,7 +10,7 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 final class PseudoRandomFunctionInputExtensionBuilder
 {
     /**
-     * @var array{eval?: array{first: string, second?: string}, evalByCredential?: array<string, array{first: string, second?: string}>
+     * @var array{eval?: array{first: string, second?: string}, evalByCredential?: array<string, array{first: string, second?: string}>}
      */
     private array $values = [];
 

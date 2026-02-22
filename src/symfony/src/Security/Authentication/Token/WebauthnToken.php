@@ -57,7 +57,21 @@ class WebauthnToken extends AbstractToken
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array{
+     *     0: PublicKeyCredentialUserEntity,
+     *     1: PublicKeyCredentialDescriptor,
+     *     2: PublicKeyCredentialOptions,
+     *     3: bool,
+     *     4: bool,
+     *     5: bool,
+     *     6: bool,
+     *     7: int,
+     *     8: int,
+     *     9: int,
+     *     10: AuthenticationExtensions|null,
+     *     11: string,
+     *     12: array<mixed>,
+     * } $data
      */
     public function __unserialize(array $data): void
     {
@@ -151,6 +165,7 @@ class WebauthnToken extends AbstractToken
      */
     public function getAttributes(): array
     {
+        /** @var string[] $attributes */
         $attributes = parent::getAttributes();
         if ($this->isUserVerified) {
             $attributes[] = IsUserVerifiedVoter::IS_USER_VERIFIED;

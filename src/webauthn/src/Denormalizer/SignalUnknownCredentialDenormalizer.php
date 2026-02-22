@@ -31,8 +31,10 @@ class SignalUnknownCredentialDenormalizer implements NormalizerInterface, Normal
     {
         assert($data instanceof UnknownCredential);
 
+        /** @var array<string, mixed> $normalized_rp */
         $normalized_rp = $this->normalizer->normalize($data->rp, $format, $context);
 
+        /** @var array<string, mixed> $normalized_credential */
         $normalized_credential = $this->normalizer->normalize($data->credential, $format, $context);
 
         return [

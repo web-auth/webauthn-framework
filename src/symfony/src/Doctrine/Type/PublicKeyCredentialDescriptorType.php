@@ -12,6 +12,9 @@ final class PublicKeyCredentialDescriptorType extends JsonType
 {
     use SerializerTrait;
 
+    /**
+     * @param PublicKeyCredentialDescriptor|string|null $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (! $value instanceof PublicKeyCredentialDescriptor) {
@@ -27,6 +30,7 @@ final class PublicKeyCredentialDescriptorType extends JsonType
             return $value;
         }
 
+        /** @var string $value */
         return $this->deserialize($value, PublicKeyCredentialDescriptor::class);
     }
 

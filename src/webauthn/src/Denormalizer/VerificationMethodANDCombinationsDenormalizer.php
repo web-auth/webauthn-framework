@@ -26,14 +26,19 @@ final class VerificationMethodANDCombinationsDenormalizer implements NormalizerI
     }
 
     /**
-     * @return array<VerificationMethodDescriptor>
+     * @return array<array<string, mixed>>
      */
     public function normalize(mixed $data, ?string $format = null, array $context = []): array
     {
         assert($data instanceof VerificationMethodANDCombinations);
 
+        /** @var array<array<string, mixed>> */
         return array_map(
-            fn ($verificationMethod) => $this->normalizer->normalize($verificationMethod, $format, $context),
+            fn (VerificationMethodDescriptor $verificationMethod) => $this->normalizer->normalize(
+                $verificationMethod,
+                $format,
+                $context
+            ),
             $data->verificationMethods
         );
     }

@@ -24,7 +24,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     private EventDispatcherInterface $eventDispatcher;
 
     /**
-     * @param mixed[] $profiles
+     * @param array<string, array{challenge_length: int, rp_id?: ?string, timeout?: ?int, user_verification?: ?string, extensions: array<string, mixed>}> $profiles
      */
     public function __construct(
         private readonly array $profiles,
@@ -65,8 +65,10 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
             gettype($userVerification)
         ));
 
+        /** @var int<1, max> $challengeLength */
+        $challengeLength = $profile['challenge_length'];
         $options = PublicKeyCredentialRequestOptions::create(
-            random_bytes($profile['challenge_length']),
+            random_bytes($challengeLength),
             rpId: $rpId,
             allowCredentials: $allowCredentials,
             userVerification: $userVerification,
@@ -84,7 +86,7 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
     }
 
     /**
-     * @param mixed[] $profile
+     * @param array{extensions: array<string, mixed>} $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {

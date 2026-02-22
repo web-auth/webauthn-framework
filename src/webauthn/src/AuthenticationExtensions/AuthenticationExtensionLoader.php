@@ -13,6 +13,7 @@ abstract class AuthenticationExtensionLoader
     public static function load(CBORObject $object): AuthenticationExtensions
     {
         $object instanceof MapObject || throw AuthenticationExtensionException::create('Invalid extension object');
+        /** @var array<string, mixed> $data */
         $data = $object->normalize();
         return AuthenticationExtensions::create(
             array_map(

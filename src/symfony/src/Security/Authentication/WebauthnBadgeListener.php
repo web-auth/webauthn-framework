@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication;
 
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Event\CheckPassportEvent;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -28,6 +29,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 final readonly class WebauthnBadgeListener
 {
+    /**
+     * @param UserProviderInterface<UserInterface> $userProvider
+     */
     public function __construct(
         private OptionsStorage $optionsStorage,
         private SerializerInterface $publicKeyCredentialLoader,

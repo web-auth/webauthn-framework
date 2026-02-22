@@ -128,6 +128,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
@@ -139,22 +142,22 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (! is_array($config)) {
             return;
         }
-        if (! isset($config['dbal'])) {
-            $config['dbal'] = [];
-        }
-        if (! isset($config['dbal']['types'])) {
-            $config['dbal']['types'] = [];
-        }
-        $config['dbal']['types'] += [
+        /** @var array<string, class-string> $types */
+        $types = $config['dbal']['types'] ?? [];
+        $types += [
             'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
             'aaguid' => DbalType\AAGUIDDataType::class,
             'base64' => DbalType\Base64BinaryDataType::class,
             'public_key_credential_descriptor' => DbalType\PublicKeyCredentialDescriptorType::class,
             'trust_path' => DbalType\TrustPathDataType::class,
         ];
+        $config['dbal']['types'] = $types;
         $container->prependExtensionConfig('doctrine', $config);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
     {
         if (! $container->hasParameter('kernel.bundles')) {

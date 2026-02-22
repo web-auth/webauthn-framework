@@ -37,14 +37,16 @@ final readonly class AuthenticatorDataLoader
         $authDataStream = new StringStream($authData);
         $rp_id_hash = $authDataStream->read(32);
         $flags = $authDataStream->read(1);
-        $signCount = $authDataStream->read(4);
-        $signCount = unpack('N', $signCount);
+        $signCountRaw = $authDataStream->read(4);
+        /** @var array{1: int} $signCount */
+        $signCount = unpack('N', $signCountRaw);
 
         $attestedCredentialData = null;
         if (0 !== (ord($flags) & AuthenticatorData::FLAG_AT)) {
             $aaguid = Uuid::fromBinary($authDataStream->read(16));
-            $credentialLength = $authDataStream->read(2);
-            $credentialLength = unpack('n', $credentialLength);
+            $credentialLengthRaw = $authDataStream->read(2);
+            /** @var array{1: int} $credentialLength */
+            $credentialLength = unpack('n', $credentialLengthRaw);
             $credentialId = $authDataStream->read($credentialLength[1]);
             $credentialPublicKey = $this->decoder->decode($authDataStream);
             $credentialPublicKey instanceof MapObject || throw InvalidDataException::create(
@@ -81,9 +83,11 @@ final readonly class AuthenticatorDataLoader
 
     private function fixIncorrectEdDSAKey(string $data): string
     {
+        /** @var string $needle */
         $needle = hex2bin('a301634f4b500327206745643235353139');
+        /** @var string $correct */
         $correct = hex2bin('a401634f4b500327206745643235353139');
-        $position = strpos($data, (string) $needle);
+        $position = strpos($data, $needle);
         if ($position === false) {
             return $data;
         }
@@ -100,8 +104,10 @@ final readonly class AuthenticatorDataLoader
         );
         $badX = $badKey->get(-2);
         $badX instanceof ListObject || throw InvalidDataException::create($end, 'Invalid authentication data.');
+        /** @var list<string> $normalizedBadX */
+        $normalizedBadX = $badX->normalize();
         $keyBytes = array_reduce(
-            $badX->normalize(),
+            $normalizedBadX,
             static fn (string $carry, string $item): string => $carry . chr((int) $item),
             ''
         );
