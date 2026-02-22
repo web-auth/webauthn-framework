@@ -184,10 +184,12 @@ final class PhpCertificateChainValidator implements CertificateChainValidator, C
         return false;
     }
 
-    private function validateCertificates(Certificate ...$certificates): bool
+    private function validateCertificates(Certificate $trustAnchor, Certificate ...$certificates): bool
     {
         try {
-            $config = PathValidationConfig::create($this->clock->now(), self::MAX_VALIDATION_LENGTH);
+            $config = PathValidationConfig::create($this->clock->now(), self::MAX_VALIDATION_LENGTH)->withTrustAnchor(
+                $trustAnchor
+            );
             CertificationPath::create(...$certificates)->validate($config);
 
             return true;

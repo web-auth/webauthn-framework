@@ -148,6 +148,54 @@ parameters:
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
+			rawMessage: Constructor in Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder has parameter $overridePolicy with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::buildAuthenticatorSelectionCriteria() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::getEffectiveAttestation() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::getEffectiveAttestation() should return string|null but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::getEffectiveExtensions() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $authenticatorAttachment of static method Webauthn\AuthenticatorSelectionCriteria::create() expects string|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #2 $userVerification of static method Webauthn\AuthenticatorSelectionCriteria::create() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #3 $residentKey of static method Webauthn\AuthenticatorSelectionCriteria::create() expects string|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
+
+		-
 			rawMessage: '''
 				Parameter $credentialSourceRepository of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
@@ -172,6 +220,12 @@ parameters:
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
+			rawMessage: Constructor in Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder has parameter $overridePolicy with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::__construct() has parameter $fakeCredentialGenerator with a nullable type declaration.'
 			identifier: ergebnis.noParameterWithNullableTypeDeclaration
 			count: 1
@@ -180,6 +234,12 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::__construct() has parameter $fakeCredentialGenerator with null as default value.'
 			identifier: ergebnis.noParameterWithNullDefaultValue
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::getEffectiveExtensions() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
 			count: 1
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
@@ -203,6 +263,12 @@ parameters:
 
 		-
 			rawMessage: 'Parameter #1 $userEntity of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::getCredentials() expects Webauthn\PublicKeyCredentialUserEntity, Webauthn\PublicKeyCredentialUserEntity|null given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #3 $userVerification of method Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory::create() expects string|null, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
@@ -1035,7 +1101,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #2 $value of method Symfony\Component\DependencyInjection\Container::setParameter() expects array|bool|float|int|string|UnitEnum|null, mixed given.'
 			identifier: argument.type
-			count: 9
+			count: 10
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -1307,6 +1373,12 @@ parameters:
 			identifier: ergebnis.noParameterWithNullDefaultValue
 			count: 1
 			path: ../src/symfony/src/Exception/MissingUserEntityException.php
+
+		-
+			rawMessage: Constructor in Webauthn\Bundle\Policy\ClientOverridePolicy has parameter $policies with default value.
+			identifier: ergebnis.noConstructorParameterWithDefaultValue
+			count: 1
+			path: ../src/symfony/src/Policy/ClientOverridePolicy.php
 
 		-
 			rawMessage: 'Method Webauthn\Bundle\Repository\CanGenerateUserEntity::generateUserEntity() has parameter $displayName with a nullable type declaration.'
@@ -2772,6 +2844,12 @@ parameters:
 		-
 			rawMessage: 'Method Webauthn\Bundle\WebauthnBundle::registerMappings() has a parameter $container with a type declaration of Symfony\Component\DependencyInjection\ContainerBuilder, but containers should not be injected.'
 			identifier: ergebnis.noParameterWithContainerTypeDeclaration
+			count: 1
+			path: ../src/symfony/src/WebauthnBundle.php
+
+		-
+			rawMessage: Possibly invalid array key type string|false.
+			identifier: array.invalidKey
 			count: 1
 			path: ../src/symfony/src/WebauthnBundle.php
 

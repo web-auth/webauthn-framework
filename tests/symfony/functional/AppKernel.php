@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Kernel;
 use Webauthn\Bundle\WebauthnBundle;
 use Webauthn\Stimulus\WebauthnStimulusBundle;
 
-final class AppKernel extends Kernel
+class AppKernel extends Kernel
 {
     public function __construct(string $environment)
     {
