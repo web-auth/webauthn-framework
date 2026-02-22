@@ -1,0 +1,16 @@
+webauthn:
+  client_override_policy:
+    user_verification:
+      enabled: false
+      allowed_values: ['required', 'preferred', 'discouraged']
+    authenticator_attachment:
+      enabled: false
+      allowed_values: ['platform', 'cross-platform']
+    resident_key:
+      enabled: false
+      allowed_values: ['required', 'preferred', 'discouraged']
+    attestation_conveyance:
+      enabled: false
+      allowed_values: ['none', 'indirect', 'direct', 'enterprise']
+    extensions:
+      enabled: false

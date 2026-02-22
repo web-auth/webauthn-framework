@@ -16,6 +16,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\CredentialRecord;
@@ -31,6 +32,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         private PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
         private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
         private string $profile,
+        private ClientOverridePolicy $overridePolicy = new ClientOverridePolicy(),
     ) {
     }
 
@@ -46,32 +48,86 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         $excludedCredentials = $hideExistingExcludedCredentials === true ? [] : $this->getCredentials($userEntity);
         $optionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
 
-        $residentKey = $optionsRequest->residentKey ?? null;
-        $authenticatorSelection = AuthenticatorSelectionCriteria::create(
-            $optionsRequest->authenticatorAttachment,
-            $optionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-            $residentKey,
-        );
-        $extensions = null;
-        if (is_array($optionsRequest->extensions)) {
-            $extensions = AuthenticationExtensions::create(array_map(
-                static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
-                    $name,
-                    $data
-                ),
-                array_keys($optionsRequest->extensions),
-                $optionsRequest->extensions
-            ));
-        }
+        // Apply override policy to determine effective values
+        $authenticatorSelection = $this->buildAuthenticatorSelectionCriteria($optionsRequest);
+        $attestation = $this->getEffectiveAttestation($optionsRequest);
+        $extensions = $this->getEffectiveExtensions($optionsRequest);
 
         return $this->publicKeyCredentialCreationOptionsFactory->create(
             $this->profile,
             $userEntity,
             $excludedCredentials,
             $authenticatorSelection,
-            $optionsRequest->attestation,
+            $attestation,
             $extensions
         );
+    }
+
+    private function buildAuthenticatorSelectionCriteria(
+        PublicKeyCredentialCreationOptionsRequest $optionsRequest
+    ): ?AuthenticatorSelectionCriteria {
+        // Check if any authenticator selection override is allowed
+        $hasOverrides = $this->overridePolicy->canOverride('user_verification') ||
+                       $this->overridePolicy->canOverride('authenticator_attachment') ||
+                       $this->overridePolicy->canOverride('resident_key');
+
+        if (! $hasOverrides) {
+            return null; // Use profile configuration
+        }
+
+        // Build criteria considering override policy
+        $userVerification = $this->overridePolicy->getEffectiveValue(
+            'user_verification',
+            $optionsRequest->userVerification,
+            null // Will be handled by factory fallback to profile
+        );
+
+        $authenticatorAttachment = $this->overridePolicy->getEffectiveValue(
+            'authenticator_attachment',
+            $optionsRequest->authenticatorAttachment,
+            null
+        );
+
+        $residentKey = $this->overridePolicy->getEffectiveValue(
+            'resident_key',
+            $optionsRequest->residentKey,
+            null
+        );
+
+        // Only create if we have at least one override value
+        if ($userVerification !== null || $authenticatorAttachment !== null || $residentKey !== null) {
+            return AuthenticatorSelectionCriteria::create(
+                $authenticatorAttachment,
+                $userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                $residentKey,
+            );
+        }
+
+        return null; // Use profile configuration
+    }
+
+    private function getEffectiveAttestation(PublicKeyCredentialCreationOptionsRequest $optionsRequest): ?string
+    {
+        return $this->overridePolicy->getEffectiveValue(
+            'attestation_conveyance',
+            $optionsRequest->attestation,
+            null // Will fallback to profile
+        );
+    }
+
+    private function getEffectiveExtensions(
+        PublicKeyCredentialCreationOptionsRequest $optionsRequest
+    ): ?AuthenticationExtensions {
+        if (! $this->overridePolicy->canOverride('extensions') || ! is_array($optionsRequest->extensions)) {
+            return null; // Use profile extensions
+        }
+
+        $extensions = [];
+        foreach ($optionsRequest->extensions as $name => $data) {
+            $extensions[] = AuthenticationExtension::create($name, $data);
+        }
+
+        return AuthenticationExtensions::create($extensions);
     }
 
     /**

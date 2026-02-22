@@ -12,3 +12,4 @@ yarn-error.log
 /tmp*
 /.ci-tools/coverage
 /package-lock.json
+.grepai/

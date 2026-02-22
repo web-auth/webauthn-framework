@@ -131,11 +131,93 @@ final readonly class Configuration implements ConfigurationInterface
 
         $this->addCreationProfilesConfig($rootNode);
         $this->addRequestProfilesConfig($rootNode);
+        $this->addClientOverridePolicyConfig($rootNode);
         $this->addMetadataConfig($rootNode);
         $this->addControllersConfig($rootNode);
         $this->addPasskeyEndpointsConfig($rootNode);
 
         return $treeBuilder;
+    }
+
+    private function addClientOverridePolicyConfig(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode->children()
+            ->arrayNode('client_override_policy')
+            ->addDefaultsIfNotSet()
+            ->info('Configuration for allowing client request values to override profile configuration')
+            ->children()
+            ->arrayNode('user_verification')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultTrue()
+            ->info('Whether to allow client requests to override the user verification requirement')
+            ->end()
+            ->arrayNode('allowed_values')
+            ->defaultValue(['required', 'preferred', 'discouraged'])
+            ->scalarPrototype()
+            ->end()
+            ->info('List of allowed values for user verification requirement')
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('authenticator_attachment')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultTrue()
+            ->info('Whether to allow client requests to override the authenticator attachment')
+            ->end()
+            ->arrayNode('allowed_values')
+            ->defaultValue(['platform', 'cross-platform'])
+            ->scalarPrototype()
+            ->end()
+            ->info('List of allowed values for authenticator attachment')
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('resident_key')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultTrue()
+            ->info('Whether to allow client requests to override the resident key requirement')
+            ->end()
+            ->arrayNode('allowed_values')
+            ->defaultValue(['required', 'preferred', 'discouraged'])
+            ->scalarPrototype()
+            ->end()
+            ->info('List of allowed values for resident key requirement')
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('attestation_conveyance')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultTrue()
+            ->info('Whether to allow client requests to override the attestation conveyance preference')
+            ->end()
+            ->arrayNode('allowed_values')
+            ->defaultValue(['none', 'indirect', 'direct', 'enterprise'])
+            ->scalarPrototype()
+            ->end()
+            ->info('List of allowed values for attestation conveyance')
+            ->end()
+            ->end()
+            ->end()
+            ->arrayNode('extensions')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultTrue()
+            ->info('Whether to allow client requests to override extensions')
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
     }
 
     private function addCreationProfilesConfig(ArrayNodeDefinition $rootNode): void

@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
@@ -34,6 +35,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private string $profile,
         private null|FakeCredentialGenerator $fakeCredentialGenerator = null,
+        private ClientOverridePolicy $overridePolicy = new ClientOverridePolicy(),
     ) {
     }
 
@@ -45,17 +47,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
         $optionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
-        $extensions = null;
-        if (is_array($optionsRequest->extensions)) {
-            $extensions = AuthenticationExtensions::create(array_map(
-                static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
-                    $name,
-                    $data
-                ),
-                array_keys($optionsRequest->extensions),
-                $optionsRequest->extensions
-            ));
-        }
+
         $userEntity = $optionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
             $optionsRequest->username
         );
@@ -69,12 +61,36 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
             default => $this->getCredentials($userEntity),
         };
 
+        // Apply override policy to determine effective values
+        $userVerification = $this->overridePolicy->getEffectiveValue(
+            'user_verification',
+            $optionsRequest->userVerification,
+            null // Will fallback to profile
+        );
+
+        $extensions = $this->getEffectiveExtensions($optionsRequest);
+
         return $this->publicKeyCredentialRequestOptionsFactory->create(
             $this->profile,
             $allowedCredentials,
-            $optionsRequest->userVerification,
+            $userVerification,
             $extensions
         );
+    }
+
+    private function getEffectiveExtensions(
+        ServerPublicKeyCredentialRequestOptionsRequest $optionsRequest
+    ): ?AuthenticationExtensions {
+        if (! $this->overridePolicy->canOverride('extensions') || ! is_array($optionsRequest->extensions)) {
+            return null; // Use profile extensions
+        }
+
+        $extensions = [];
+        foreach ($optionsRequest->extensions as $name => $data) {
+            $extensions[] = AuthenticationExtension::create($name, $data);
+        }
+
+        return AuthenticationExtensions::create($extensions);
     }
 
     /**

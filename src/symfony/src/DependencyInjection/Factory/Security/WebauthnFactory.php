@@ -28,6 +28,7 @@ use Webauthn\Bundle\Controller\DummyControllerFactory;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
@@ -39,7 +40,6 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
-use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\FakeCredentialGenerator;
 
 final readonly class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
@@ -497,6 +497,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
                 new Reference(FakeCredentialGenerator::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                new Reference(ClientOverridePolicy::class),
             ]);
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 
@@ -523,7 +524,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
                 new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                 $config['profile'],
-                new Reference(WebauthnSerializerFactory::class),
+                new Reference(ClientOverridePolicy::class),
             ]);
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 

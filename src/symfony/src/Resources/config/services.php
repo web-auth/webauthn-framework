@@ -17,6 +17,7 @@ use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Controller\AssertionControllerFactory;
 use Webauthn\Bundle\Controller\AttestationControllerFactory;
 use Webauthn\Bundle\Controller\DummyControllerFactory;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
 use Webauthn\Bundle\Routing\Loader;
@@ -260,4 +261,9 @@ return static function (ContainerConfigurator $container): void {
     $service->set(WebauthnSerializerFactory::class);
     $service->set(DefaultFailureHandler::class);
     $service->set(DefaultSuccessHandler::class);
+
+    $service
+        ->set(ClientOverridePolicy::class)
+        ->args([param('webauthn.client_override_policy')])
+        ->public();
 };
