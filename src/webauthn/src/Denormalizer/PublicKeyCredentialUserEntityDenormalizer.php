@@ -9,11 +9,15 @@ use function assert;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Util\Base64;
 
 final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (! array_key_exists('id', $data)) {

@@ -19,6 +19,9 @@ final class AttestationObjectDenormalizer implements DenormalizerInterface, Deno
 {
     use DenormalizerAwareTrait;
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $stream = new StringStream($data);

@@ -17,6 +17,9 @@ final class AuthenticatorResponseDenormalizer implements DenormalizerInterface, 
 {
     use DenormalizerAwareTrait;
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $realType = match (true) {

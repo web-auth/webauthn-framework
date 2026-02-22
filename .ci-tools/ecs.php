@@ -13,6 +13,7 @@ use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\LanguageConstruct\CombineConsecutiveIssetsFixer;
 use PhpCsFixer\Fixer\LanguageConstruct\CombineConsecutiveUnsetsFixer;
 use PhpCsFixer\Fixer\Phpdoc\AlignMultilineCommentFixer;
+use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocOrderFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocTrimConsecutiveBlankLineSeparationFixer;
@@ -83,6 +84,9 @@ return static function (ECSConfig $config): void {
         'import_classes' => true,
         'import_constants' => true,
         'import_functions' => true,
+    ]);
+    $config->ruleWithConfiguration(GeneralPhpdocAnnotationRemoveFixer::class, [
+        'annotations' => ['author', 'package', 'group', 'covers', 'category'],
     ]);
 
     $config->skip([

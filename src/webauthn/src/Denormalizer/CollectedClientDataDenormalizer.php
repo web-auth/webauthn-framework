@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Denormalizer;
 
 use const JSON_THROW_ON_ERROR;
+use JsonException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -14,6 +15,9 @@ final class CollectedClientDataDenormalizer implements DenormalizerInterface, De
 {
     use DenormalizerAwareTrait;
 
+    /**
+     * @throws JsonException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         return CollectedClientData::create($data, json_decode((string) $data, true, flags: JSON_THROW_ON_ERROR));

@@ -35,6 +35,9 @@ final class AuthenticatorDataDenormalizer implements DenormalizerInterface, Deno
         $this->decoder = Decoder::create();
     }
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $authData = $this->fixIncorrectEdDSAKey($data);
