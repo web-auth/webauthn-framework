@@ -27,6 +27,9 @@ class CredentialRecordDenormalizer implements DenormalizerInterface, Denormalize
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $keys = ['publicKeyCredentialId', 'credentialPublicKey', 'userHandle'];

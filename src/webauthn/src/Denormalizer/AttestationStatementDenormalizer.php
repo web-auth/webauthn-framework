@@ -7,6 +7,7 @@ namespace Webauthn\Denormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\Exception\InvalidDataException;
 
 final readonly class AttestationStatementDenormalizer implements DenormalizerInterface
 {
@@ -15,6 +16,9 @@ final readonly class AttestationStatementDenormalizer implements DenormalizerInt
     ) {
     }
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($data['fmt']);

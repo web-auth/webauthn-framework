@@ -30,6 +30,9 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
 
+    /**
+     * @throws BadMethodCallException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (array_key_exists('challenge', $data)) {

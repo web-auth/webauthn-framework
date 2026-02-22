@@ -11,6 +11,9 @@ use Webauthn\PublicKeyCredentialParameters;
 
 final class PublicKeyCredentialParametersDenormalizer implements DenormalizerInterface
 {
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (! array_key_exists('type', $data) || ! array_key_exists('alg', $data)) {

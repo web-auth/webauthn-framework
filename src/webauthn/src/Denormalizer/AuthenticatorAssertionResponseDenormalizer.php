@@ -12,12 +12,16 @@ use Webauthn\AttestationStatement\AttestationObject;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\CollectedClientData;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\Util\Base64;
 
 final class AuthenticatorAssertionResponseDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $data['authenticatorData'] = Base64::decode($data['authenticatorData']);

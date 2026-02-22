@@ -18,6 +18,9 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
 {
     use DenormalizerAwareTrait;
 
+    /**
+     * @throws InvalidDataException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         if (! array_key_exists('id', $data)) {

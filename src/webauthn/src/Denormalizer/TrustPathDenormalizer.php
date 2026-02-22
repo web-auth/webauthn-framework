@@ -16,6 +16,9 @@ use Webauthn\TrustPath\TrustPath;
 
 final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    /**
+     * @throws InvalidTrustPathException
+     */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         return match (true) {
