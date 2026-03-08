@@ -34,21 +34,15 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         array $allowedOrigins,
         private bool $allowSubdomains = false
     ) {
-        $origins = [];
         foreach ($allowedOrigins as $allowedOrigin) {
             $parsedAllowedOrigin = parse_url($allowedOrigin);
             $parsedAllowedOrigin !== false || throw new InvalidArgumentException(sprintf(
                 'Invalid origin: %s',
                 $allowedOrigin
             ));
-            $allowedOriginHost = $parsedAllowedOrigin['host'] ?? '';
-            if ($allowedOriginHost === '') {
-                $allowedOriginHost = $allowedOrigin;
-            }
-            $origins[] = $allowedOriginHost;
         }
 
-        $this->allowedOrigins = array_unique($origins);
+        $this->allowedOrigins = array_unique($allowedOrigins);
     }
 
     public function process(
@@ -77,10 +71,14 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to parse the origin.'
         );
-        if (in_array($clientDataRpId, $this->allowedOrigins, true)) {
+        if (in_array($C->origin, $this->allowedOrigins, true)) {
             return;
         }
-        $isSubDomain = $this->isSubdomain($this->allowedOrigins, $clientDataRpId);
+        $allowedHosts = array_map(
+            static fn (string $origin): string => parse_url($origin, PHP_URL_HOST) ?? $origin,
+            $this->allowedOrigins
+        );
+        $isSubDomain = $this->isSubdomain($allowedHosts, $clientDataRpId);
         if ($this->allowSubdomains && $isSubDomain) {
             return;
         }
