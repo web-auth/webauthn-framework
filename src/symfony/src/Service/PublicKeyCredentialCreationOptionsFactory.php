@@ -7,8 +7,6 @@ namespace Webauthn\Bundle\Service;
 use function array_key_exists;
 use function gettype;
 use InvalidArgumentException;
-use function is_int;
-use function is_string;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use function sprintf;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
@@ -59,17 +57,12 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         $profile = $this->profiles[$key];
 
         $timeout = $profile['timeout'] ?? null;
-        $timeout === null || (is_int($timeout) && $timeout > 1) || throw new InvalidArgumentException(sprintf(
+        $timeout === null || $timeout > 1 || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" has an invalid timeout value. Expected a positive integer greater than 0, got "%s".',
             $key,
             gettype($timeout)
         ));
         $attestation = $attestationConveyance ?? $profile['attestation_conveyance'] ?? null;
-        $attestation === null || is_string($attestation) || throw new InvalidArgumentException(sprintf(
-            'The profile with key "%s" has an invalid attestation_conveyance value. Expected a string or null, got "%s".',
-            $key,
-            gettype($attestation)
-        ));
 
         /** @var int<1, max> $challengeLength */
         $challengeLength = $profile['challenge_length'];

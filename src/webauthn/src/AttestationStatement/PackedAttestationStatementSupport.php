@@ -246,7 +246,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $this->checkCertificate($certificates[0], $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
-        $coseAlgorithmIdentifier = (int) $attestationStatement->get('alg');
+        /** @var int $coseAlgorithmIdentifier */
+        $coseAlgorithmIdentifier = $attestationStatement->get('alg');
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         // Verification of the signature
@@ -282,7 +283,8 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         );
         $publicKey = $publicKey->normalize();
         $publicKey = new Key($publicKey);
-        $alg = (int) $attestationStatement->get('alg');
+        /** @var int $alg */
+        $alg = $attestationStatement->get('alg');
         $publicKey->alg() === $alg || throw AttestationStatementVerificationException::create(
             'The algorithm of the attestation statement and the key are not identical.'
         );

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
-use function array_key_exists;
 use function assert;
 use function sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
@@ -216,6 +215,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     /**
      * Creates the authenticator service(s) for the provided configuration.
      *
+     * @param array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}} $config
      * @return string The authenticator service ID to be used by the firewall
      */
     public function createAuthenticator(
@@ -292,7 +292,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array<array-key, mixed> $config
+     * @param array{options_storage: string|null, failure_handler: string, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}} $config
      */
     private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
@@ -328,7 +328,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array<array-key, mixed> $config
+     * @param array{options_storage: string|null, failure_handler: string, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}} $config
      */
     private function createAttestationControllersAndRoutes(
         ContainerBuilder $container,
@@ -476,14 +476,14 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array{options_builder?: ?string, profile?: string, ...} $config
+     * @param array{options_builder: string|null, profile: string} $config
      */
     private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
         array $config
     ): string {
-        if (array_key_exists('options_builder', $config) && $config['options_builder'] !== null) {
+        if ($config['options_builder'] !== null) {
             return $config['options_builder'];
         }
 
@@ -505,14 +505,14 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
     }
 
     /**
-     * @param array{options_builder?: ?string, profile?: string, ...} $config
+     * @param array{options_builder: string|null, profile: string} $config
      */
     private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
         array $config
     ): string {
-        if (array_key_exists('options_builder', $config) && $config['options_builder'] !== null) {
+        if ($config['options_builder'] !== null) {
             return $config['options_builder'];
         }
 

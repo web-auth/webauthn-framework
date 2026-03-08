@@ -73,9 +73,6 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
         ];
     }
 
-    /**
-     * @phpstan-return array<string, mixed>|Data
-     */
     public function getData(): array|Data
     {
         return $this->data;

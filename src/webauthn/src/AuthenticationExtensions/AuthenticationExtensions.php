@@ -24,7 +24,6 @@ final class AuthenticationExtensions implements Countable, IteratorAggregate, Ar
 {
     /**
      * @var array<string, AuthenticationExtension>
-     * @readonly
      */
     public array $extensions;
 
@@ -93,7 +92,7 @@ final class AuthenticationExtensions implements Countable, IteratorAggregate, Ar
         return array_key_exists($offset, $this->extensions);
     }
 
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet(mixed $offset): AuthenticationExtension
     {
         return $this->extensions[$offset];
     }

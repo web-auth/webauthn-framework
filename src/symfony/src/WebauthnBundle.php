@@ -79,6 +79,9 @@ final class WebauthnBundle extends Bundle
     private function registerMappings(ContainerBuilder $container): void
     {
         $realPath = realpath(__DIR__ . '/Resources/config/doctrine-mapping');
+        if ($realPath === false) {
+            return;
+        }
         $mappings = [
             $realPath => 'Webauthn',
         ];

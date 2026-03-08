@@ -124,8 +124,14 @@ parameters:
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() should return array<string, mixed>|Symfony\Component\VarDumper\Cloner\Data but returns array|Symfony\Component\VarDumper\Cloner\Data.'
-			identifier: return.type
+			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/symfony/src/DataCollector/WebauthnCollector.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() return type has no value type specified in iterable type array|Symfony\Component\VarDumper\Cloner\Data.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: ../src/symfony/src/DataCollector/WebauthnCollector.php
 
@@ -154,200 +160,8 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
-			rawMessage: Cannot access offset 'enabled' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'hide_existing_credentials' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'host' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'options_handler' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'options_method' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'options_path' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'result_method' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'result_path' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: Cannot access offset 'routes' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 14
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Offset ''profile'' might not exist on array{options_builder?: string|null, profile?: string}.'
-			identifier: offsetAccess.notFound
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #10 $hideExistingCredentials of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects bool, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::getAssertionOptionsBuilderId() expects array{options_builder?: string|null, profile?: string}, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::getAttestationOptionsBuilderId() expects array{options_builder?: string|null, profile?: string}, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $method of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $method of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $securedRpIds of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory::createAuthenticatorAssertionResponseValidator() expects array<string>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #3 $securedRpIds of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory::createAuthenticatorAttestationResponseValidator() expects array<string>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #4 $method of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createResponseControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #4 $path of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #4 $path of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #4 $successHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticatorService() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #5 $failureHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticatorService() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #5 $host of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #5 $host of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #5 $path of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createResponseControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #6 $host of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createResponseControllerAndRoute() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #7 $optionsStorageId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #7 $optionsStorageId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #7 $optionsStorageId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticatorService() expects string|null, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #8 $optionsHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #8 $optionsHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #9 $failureHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Parameter #9 $failureHandlerId of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationRequestControllerAndRoute() expects string, mixed given.'
-			identifier: argument.type
+			rawMessage: 'Parameter #3 $config (array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}) of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticator() should be contravariant with parameter $config (array<string, mixed>) of method Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface::createAuthenticator()'
+			identifier: method.childParameterType
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
@@ -361,157 +175,25 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: Cannot access offset 'conditional_create' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'failure_handler' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'hide_existing_credentials' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'host' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'options_builder' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'options_handler' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'options_method' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'options_path' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'options_storage' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'profile' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'result_method' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'result_path' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'secured_rp_ids' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'success_handler' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
 			rawMessage: Cannot access offset 'types' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: Cannot access offset 'user_entity_guesser' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
+			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadControllersSupport() has parameter $config with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: Cannot access offset mixed on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Expression on left side of ?? is not nullable.
-			identifier: nullCoalesce.expr
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #1 $id of class Symfony\Component\DependencyInjection\Reference constructor expects string, mixed given.'
-			identifier: argument.type
-			count: 15
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadControllersSupport() expects array<mixed>, mixed given.'
+			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadCreationControllersSupport() expects array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, ...}>, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadCreationControllersSupport() expects array<mixed>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadPasskeyEndpointsConfig() expects array<mixed>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadRequestControllersSupport() expects array<mixed>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $id of method Symfony\Component\DependencyInjection\ContainerBuilder::setAlias() expects string|Symfony\Component\DependencyInjection\Alias, mixed given.'
-			identifier: argument.type
-			count: 13
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $value of method Symfony\Component\DependencyInjection\Container::setParameter() expects array|bool|float|int|string|UnitEnum|null, mixed given.'
-			identifier: argument.type
-			count: 10
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadMetadataServices() expects array<mixed>, mixed given.'
+			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadRequestControllersSupport() expects array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, ...}>, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
@@ -688,42 +370,6 @@ parameters:
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
-			rawMessage: 'Call to function is_int() with int will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-		-
-			rawMessage: 'Call to function is_string() with string will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-		-
-			rawMessage: 'Call to function is_int() with int will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-		-
-			rawMessage: 'Call to function is_string() with string will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
-
-		-
-			rawMessage: Possibly invalid array key type string|false.
-			identifier: array.invalidKey
-			count: 1
-			path: ../src/symfony/src/WebauthnBundle.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
 			rawMessage: Class Webauthn\AttestationStatement\CompoundAttestationStatementSupport has an uninitialized property $attestationStatementSupportManager. Give it default value or assign it in the constructor.
 			identifier: property.uninitialized
 			count: 1
@@ -734,42 +380,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 2
-			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot access offset 1 on array|false.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 2
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 3
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
-
-		-
-			rawMessage: @@readonly property Webauthn\AuthenticationExtensions\AuthenticationExtensions::$extensions is assigned outside of the constructor.
-			identifier: property.readOnlyByPhpDocAssignNotInConstructor
-			count: 3
-			path: ../src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
-
-		-
-			rawMessage: 'Method Webauthn\AuthenticationExtensions\AuthenticationExtensions::offsetGet() never returns null so it can be removed from the return type.'
-			identifier: return.unusedType
-			count: 1
-			path: ../src/webauthn/src/AuthenticationExtensions/AuthenticationExtensions.php
 
 		-
 			rawMessage: '''
@@ -1033,12 +643,6 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
 		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/SignalAllAcceptedCredentialsDenormalizer.php
-
-		-
 			rawMessage: 'Parameter #1 $options (array<string, string>) of method Webauthn\MetadataService\Psr18HttpClient::withOptions() should be contravariant with parameter $options (array) of method Symfony\Contracts\HttpClient\HttpClientInterface::withOptions()'
 			identifier: method.childParameterType
 			count: 1
@@ -1079,12 +683,6 @@ parameters:
 			identifier: property.deprecated
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialEntity.php
-
-		-
-			rawMessage: 'Parameter #3 $extensions of method Webauthn\PublicKeyCredentialOptions::__construct() expects array<Webauthn\AuthenticationExtensions\AuthenticationExtension>|Webauthn\AuthenticationExtensions\AuthenticationExtensions|null, array<mixed>|Webauthn\AuthenticationExtensions\AuthenticationExtensions|null given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/PublicKeyCredentialRequestOptions.php
 
 		-
 			rawMessage: '''

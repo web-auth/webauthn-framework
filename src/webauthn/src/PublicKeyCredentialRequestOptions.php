@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function in_array;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Exception\InvalidDataException;
 
@@ -27,7 +28,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
 
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
-     * @param null|AuthenticationExtensions|array<array-key, mixed|AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtension> $extensions
      * @param string[] $hints
      */
     public function __construct(
@@ -54,7 +55,7 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param positive-int $timeout
-     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtensions> $extensions
+     * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtension> $extensions
      * @param string[] $hints
      */
     public static function create(
