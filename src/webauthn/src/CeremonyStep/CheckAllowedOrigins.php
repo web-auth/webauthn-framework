@@ -141,7 +141,9 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         if (! isset($parsedOrigin['scheme'], $parsedOrigin['host'])) {
             return false;
         }
+        /** @var string $originScheme */
         $originScheme = $parsedOrigin['scheme'];
+        /** @var string $originHost */
         $originHost = $parsedOrigin['host'];
         $originPort = $parsedOrigin['port'] ?? null;
 
@@ -150,14 +152,18 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
             if (! is_array($parsedAllowed) || ! isset($parsedAllowed['scheme'], $parsedAllowed['host'])) {
                 continue;
             }
-            if ($originScheme !== $parsedAllowed['scheme']) {
+            /** @var string $allowedScheme */
+            $allowedScheme = $parsedAllowed['scheme'];
+            /** @var string $allowedHost */
+            $allowedHost = $parsedAllowed['host'];
+            if ($originScheme !== $allowedScheme) {
                 continue;
             }
             $allowedPort = $parsedAllowed['port'] ?? null;
             if ($originPort !== $allowedPort) {
                 continue;
             }
-            if ($this->isSubdomainOf($originHost, $parsedAllowed['host'])) {
+            if ($this->isSubdomainOf($originHost, $allowedHost)) {
                 return true;
             }
         }
