@@ -370,6 +370,12 @@ parameters:
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 1
+			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
+
+		-
 			rawMessage: Class Webauthn\AttestationStatement\CompoundAttestationStatementSupport has an uninitialized property $attestationStatementSupportManager. Give it default value or assign it in the constructor.
 			identifier: property.uninitialized
 			count: 1
@@ -380,6 +386,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 2
+			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 2
+			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
 			rawMessage: '''

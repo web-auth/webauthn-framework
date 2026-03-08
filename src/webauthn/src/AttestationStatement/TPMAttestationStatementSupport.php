@@ -139,8 +139,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         AuthenticatorData $authenticatorData
     ): bool {
         $attToBeSigned = $authenticatorData->authData . $clientDataJSONHash;
-        /** @var int $alg */
-        $alg = $attestationStatement->get('alg');
+        $alg = (int) $attestationStatement->get('alg');
         $attToBeSignedHash = hash(Algorithms::getHashAlgorithmFor($alg), $attToBeSigned, true);
         /** @var array{extraData: string} $parsedCertInfo */
         $parsedCertInfo = $attestationStatement->get('parsedCertInfo');
@@ -372,8 +371,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $this->checkCertificate($certificates[0], $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
-        /** @var int $coseAlgorithmIdentifier */
-        $coseAlgorithmIdentifier = $attestationStatement->get('alg');
+        $coseAlgorithmIdentifier = (int) $attestationStatement->get('alg');
         $opensslAlgorithmIdentifier = Algorithms::getOpensslAlgorithmFor($coseAlgorithmIdentifier);
 
         /** @var string $certInfo */
