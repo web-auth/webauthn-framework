@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\CeremonyStep\CheckAllowedOrigins;
