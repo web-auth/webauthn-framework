@@ -13,6 +13,18 @@ parameters:
 			path: src/stimulus/src/WebauthnStimulusBundle.php
 
 		-
+			rawMessage: 'Since web-auth/webauthn-lib 5.2.0: The parameter "$optionStorage" is deprecated since 5.2.0 and will be removed in 6.0.0. Please set "null" and use the global option storage instead..'
+			identifier: todoBy.sfDeprecation
+			count: 2
+			path: src/symfony/src/Controller/AssertionControllerFactory.php
+
+		-
+			rawMessage: 'Since web-auth/webauthn-lib 5.2.0: The parameter "$optionStorage" is deprecated since 5.2.0 and will be removed in 6.0.0. Please set "null" and use the global option storage instead..'
+			identifier: todoBy.sfDeprecation
+			count: 2
+			path: src/symfony/src/Controller/AttestationControllerFactory.php
+
+		-
 			rawMessage: 'Method Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialCreationOptionsBuilder::getFromRequest() invoked with 3 parameters, 2 required.'
 			identifier: arguments.count
 			count: 1
@@ -109,12 +121,6 @@ parameters:
 			rawMessage: Cannot access offset 'routes' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 14
-			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::addConfiguration() has parameter $builder with generic class Symfony\Component\Config\Definition\Builder\NodeDefinition but does not specify its types: TParent'
-			identifier: missingType.generics
-			count: 1
 			path: src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
@@ -1106,6 +1112,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+		-
+			rawMessage: Possibly invalid array key type string|false.
+			identifier: array.invalidKey
+			count: 1
+			path: src/symfony/src/WebauthnBundle.php
 
 		-
 			rawMessage: Cannot access offset 'x5c' on mixed.
@@ -2168,6 +2180,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/webauthn/src/MetadataService/Statement/MetadataStatement.php
+
+		-
+			rawMessage: 'Since web-auth/webauthn-lib 5.1.0: The parameter "$icon" is deprecated since 5.1.0 and will be removed in 6.0.0. This value has no effect. Please set "null" instead..'
+			identifier: todoBy.sfDeprecation
+			count: 1
+			path: src/webauthn/src/PublicKeyCredentialEntity.php
 
 		-
 			rawMessage: 'Parameter #1 $extensions of static method Webauthn\AuthenticationExtensions\AuthenticationExtensions::create() expects array<Webauthn\AuthenticationExtensions\AuthenticationExtension>, array<Webauthn\AuthenticationExtensions\AuthenticationExtensions> given.'
