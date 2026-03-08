@@ -105,6 +105,7 @@ abstract class AbstractTestCase extends TestCase
             $this->ceremonyStepManagerFactory->setAllowedOrigins([
                 'http://localhost',
                 'https://localhost',
+                'https://localhost:8443',
                 'https://dev.dontneeda.pw',
                 'https://spomky-webauthn.herokuapp.com',
                 'https://tuleap-web.tuleap-aio-dev.docker',
