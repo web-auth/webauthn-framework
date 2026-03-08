@@ -23,9 +23,18 @@ use function substr;
 final readonly class CheckAllowedOrigins implements CeremonyStep
 {
     /**
+     * Full origin entries (scheme://host[:port]) from allowed origins that include a scheme.
+     *
      * @var string[]
      */
-    private array $allowedOrigins;
+    private array $fullOrigins;
+
+    /**
+     * Host-only entries from allowed origins without a scheme (backward compatibility).
+     *
+     * @var string[]
+     */
+    private array $hostOrigins;
 
     /**
      * @param string[] $allowedOrigins
@@ -34,21 +43,20 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         array $allowedOrigins,
         private bool $allowSubdomains = false
     ) {
-        $origins = [];
+        $fullOrigins = [];
+        $hostOrigins = [];
         foreach ($allowedOrigins as $allowedOrigin) {
-            $parsedAllowedOrigin = parse_url($allowedOrigin);
-            $parsedAllowedOrigin !== false || throw new InvalidArgumentException(sprintf(
-                'Invalid origin: %s',
-                $allowedOrigin
-            ));
-            $allowedOriginHost = $parsedAllowedOrigin['host'] ?? '';
-            if ($allowedOriginHost === '') {
-                $allowedOriginHost = $allowedOrigin;
+            $parsed = parse_url($allowedOrigin);
+            $parsed !== false || throw new InvalidArgumentException(sprintf('Invalid origin: %s', $allowedOrigin));
+            if (isset($parsed['scheme'], $parsed['host'])) {
+                $fullOrigins[] = self::buildOrigin($parsed['scheme'], $parsed['host'], $parsed['port'] ?? null);
+            } else {
+                $hostOrigins[] = $parsed['host'] ?? $allowedOrigin;
             }
-            $origins[] = $allowedOriginHost;
         }
 
-        $this->allowedOrigins = array_unique($origins);
+        $this->fullOrigins = array_unique($fullOrigins);
+        $this->hostOrigins = array_unique($hostOrigins);
     }
 
     public function process(
@@ -61,25 +69,43 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         $authData = $authenticatorResponse instanceof AuthenticatorAssertionResponse ? $authenticatorResponse->authenticatorData : $authenticatorResponse->attestationObject->authData;
         $C = $authenticatorResponse->clientDataJSON;
 
-        $parsedRelyingPartyId = parse_url($C->origin);
-        $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-        if ($clientDataRpId === '') {
-            $clientDataRpId = $C->origin;
-        }
-        is_array($parsedRelyingPartyId) || throw AuthenticatorResponseVerificationException::create(
+        $parsedOrigin = parse_url($C->origin);
+        is_array($parsedOrigin) || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to parse the origin.'
         );
-        if (in_array($clientDataRpId, $this->allowedOrigins, true)) {
-            return;
-        }
-        $isSubDomain = $this->isSubdomain($this->allowedOrigins, $clientDataRpId);
-        if ($this->allowSubdomains && $isSubDomain) {
-            return;
-        }
-        if (! $this->allowSubdomains && $isSubDomain) {
-            throw AuthenticatorResponseVerificationException::create('Invalid origin. Subdomains are not allowed.');
-        }
-        if (count($this->allowedOrigins) !== 0) {
+        $originHost = $parsedOrigin['host'] ?? $C->origin;
+
+        $hasAllowedOrigins = count($this->fullOrigins) !== 0 || count($this->hostOrigins) !== 0;
+
+        if ($hasAllowedOrigins) {
+            // Full origin match (scheme + host + port)
+            if (isset($parsedOrigin['scheme'], $parsedOrigin['host'])) {
+                $normalizedOrigin = self::buildOrigin(
+                    $parsedOrigin['scheme'],
+                    $parsedOrigin['host'],
+                    $parsedOrigin['port'] ?? null
+                );
+                if (in_array($normalizedOrigin, $this->fullOrigins, true)) {
+                    return;
+                }
+            }
+
+            // Host-only match (backward compatibility for entries without scheme)
+            if (in_array($originHost, $this->hostOrigins, true)) {
+                return;
+            }
+
+            // Subdomain matching
+            $isFullOriginSubdomain = $this->isSubdomainOfFullOrigins($parsedOrigin);
+            $isHostSubdomain = $this->isSubdomain($this->hostOrigins, $originHost);
+            $isSubDomain = $isFullOriginSubdomain || $isHostSubdomain;
+
+            if ($this->allowSubdomains && $isSubDomain) {
+                return;
+            }
+            if (! $this->allowSubdomains && $isSubDomain) {
+                throw AuthenticatorResponseVerificationException::create('Invalid origin. Subdomains are not allowed.');
+            }
             throw AuthenticatorResponseVerificationException::create(
                 'Invalid origin. Not in the list of allowed origins.'
             );
@@ -90,10 +116,10 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         $facetId !== '' || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to determine the facet ID.'
         );
-        if ($clientDataRpId === $facetId) {
+        if ($originHost === $facetId) {
             return;
         }
-        $isSubDomains = $this->isSubdomainOf($clientDataRpId, $facetId);
+        $isSubDomains = $this->isSubdomainOf($originHost, $facetId);
         if ($this->allowSubdomains && $isSubDomains) {
             return;
         }
@@ -101,10 +127,57 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
             throw AuthenticatorResponseVerificationException::create('Invalid origin. Subdomains are not allowed.');
         }
 
-        $scheme = $parsedRelyingPartyId['scheme'] ?? '';
+        $scheme = $parsedOrigin['scheme'] ?? '';
         $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
             'Invalid scheme. HTTPS required.'
         );
+    }
+
+    /**
+     * @param array<string, mixed> $parsedOrigin Parsed origin from parse_url()
+     */
+    private function isSubdomainOfFullOrigins(array $parsedOrigin): bool
+    {
+        if (! isset($parsedOrigin['scheme'], $parsedOrigin['host'])) {
+            return false;
+        }
+        $originScheme = $parsedOrigin['scheme'];
+        $originHost = $parsedOrigin['host'];
+        $originPort = $parsedOrigin['port'] ?? null;
+
+        foreach ($this->fullOrigins as $fullOrigin) {
+            $parsedAllowed = parse_url($fullOrigin);
+            if (! is_array($parsedAllowed) || ! isset($parsedAllowed['scheme'], $parsedAllowed['host'])) {
+                continue;
+            }
+            if ($originScheme !== $parsedAllowed['scheme']) {
+                continue;
+            }
+            $allowedPort = $parsedAllowed['port'] ?? null;
+            if ($originPort !== $allowedPort) {
+                continue;
+            }
+            if ($this->isSubdomainOf($originHost, $parsedAllowed['host'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function buildOrigin(string $scheme, string $host, ?int $port): string
+    {
+        if ($port === null) {
+            return sprintf('%s://%s', $scheme, $host);
+        }
+        $defaultPorts = [
+            'https' => 443,
+            'http' => 80,
+        ];
+        if (isset($defaultPorts[$scheme]) && $port === $defaultPorts[$scheme]) {
+            return sprintf('%s://%s', $scheme, $host);
+        }
+        return sprintf('%s://%s:%d', $scheme, $host, $port);
     }
 
     private function isSubdomainOf(string $subdomain, string $domain): bool

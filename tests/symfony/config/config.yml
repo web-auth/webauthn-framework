@@ -121,6 +121,7 @@ webauthn:
   options_storage: 'Webauthn\Tests\Bundle\Functional\CustomSessionStorage'
   allowed_origins:
     - 'https://localhost'
+    - 'https://localhost:8443'
     - 'https://bar.acme'
     - 'https://webauthn.spomky-labs.com'
     - 'https://spomky-webauthn.herokuapp.com'
