@@ -27,7 +27,7 @@ final readonly class ClientOverridePolicy
      */
     public function canOverride(string $field): bool
     {
-        return $this->policies[$field]['enabled'] ?? true;
+        return $this->policies[$field]['enabled'] ?? false;
     }
 
     /**
