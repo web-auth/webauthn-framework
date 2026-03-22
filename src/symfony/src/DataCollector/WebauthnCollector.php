@@ -78,7 +78,9 @@ class WebauthnCollector extends DataCollector implements EventSubscriberInterfac
      */
     public function getData(): array|Data
     {
-        return $this->data;
+        /** @var array<string, mixed>|Data $data */
+        $data = $this->data;
+        return $data;
     }
 
     public function getName(): string
