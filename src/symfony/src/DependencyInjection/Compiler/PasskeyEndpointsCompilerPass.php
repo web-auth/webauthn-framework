@@ -38,8 +38,11 @@ final class PasskeyEndpointsCompilerPass implements CompilerPassInterface
 
     private function createPasskeyEndpointsResponse(ContainerBuilder $container): void
     {
+        /** @var string|array<string, mixed>|null $enroll */
         $enroll = $container->getParameter('webauthn.passkey_endpoints.enroll');
+        /** @var string|array<string, mixed>|null $manage */
         $manage = $container->getParameter('webauthn.passkey_endpoints.manage');
+        /** @var string|array<string, mixed>|null $prfUsageDetails */
         $prfUsageDetails = $container->getParameter('webauthn.passkey_endpoints.prf_usage_details');
 
         // Create Url definitions from string configuration

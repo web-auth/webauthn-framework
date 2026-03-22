@@ -36,13 +36,14 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
 
     private EventDispatcherInterface $dispatcher;
 
-    private ?float $ratio = 1;
+    private ?float $ratio = 1.0;
 
     private ?int $minimum = null;
 
     public function __construct()
     {
         $this->dispatcher = new NullEventDispatcher();
+        $this->attestationStatementSupportManager = AttestationStatementSupportManager::create();
     }
 
     public function setMinimum(int $minimum): void

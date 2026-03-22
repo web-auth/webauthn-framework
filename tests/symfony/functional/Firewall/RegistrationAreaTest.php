@@ -76,7 +76,7 @@ final class RegistrationAreaTest extends WebauthnTestCase
             'username' => 'foo',
             'displayName' => 'FOO',
             'authenticatorAttachment' => 'cross-platform',
-            'userVerification' => 'required',
+            'userVerification' => 'preferred',
             'residentKey' => 'required',
             'attestation' => 'indirect',
         ];
@@ -103,7 +103,7 @@ final class RegistrationAreaTest extends WebauthnTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'authenticatorAttachment' => 'cross-platform',
-            'userVerification' => 'required',
+            'userVerification' => 'preferred',
             'residentKey' => 'required',
         ], $data['authenticatorSelection']);
     }
@@ -150,7 +150,7 @@ final class RegistrationAreaTest extends WebauthnTestCase
         $content = [
             'username' => 'foo',
             'displayName' => 'FOO',
-            'userVerification' => 'required',
+            'userVerification' => 'preferred',
             'residentKey' => 'required',
             'authenticatorAttachment' => 'platform',
             'extensions' => [
@@ -185,7 +185,7 @@ final class RegistrationAreaTest extends WebauthnTestCase
         static::assertSame([
             'requireResidentKey' => true,
             'authenticatorAttachment' => 'platform',
-            'userVerification' => 'required',
+            'userVerification' => 'preferred',
             'residentKey' => 'required',
         ], $data['authenticatorSelection']);
     }

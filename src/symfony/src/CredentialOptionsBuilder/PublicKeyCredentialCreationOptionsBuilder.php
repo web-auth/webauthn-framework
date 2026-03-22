@@ -13,6 +13,6 @@ interface PublicKeyCredentialCreationOptionsBuilder
     public function getFromRequest(
         Request $request,
         PublicKeyCredentialUserEntity $userEntity,
-        /*bool $hideExistingExcludedCredentials = false*/
+        bool $hideExistingExcludedCredentials = false,
     ): PublicKeyCredentialCreationOptions;
 }

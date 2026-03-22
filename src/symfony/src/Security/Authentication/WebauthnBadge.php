@@ -18,15 +18,15 @@ final class WebauthnBadge extends UserBadge
 {
     private bool $isResolved = false;
 
-    private AuthenticatorResponse $authenticatorResponse;
+    private ?AuthenticatorResponse $authenticatorResponse = null;
 
-    private PublicKeyCredentialOptions $publicKeyCredentialOptions;
+    private ?PublicKeyCredentialOptions $publicKeyCredentialOptions = null;
 
-    private PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity;
+    private ?PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity = null;
 
-    private CredentialRecord $publicKeyCredentialSource;
+    private ?CredentialRecord $publicKeyCredentialSource = null;
 
-    private UserInterface $user;
+    private ?UserInterface $user = null;
 
     /**
      * @var callable|null
@@ -43,6 +43,7 @@ final class WebauthnBadge extends UserBadge
         private readonly ?array $attributes = null,
         public bool $allowRegistration = false
     ) {
+        parent::__construct($host, $userLoader, $attributes);
         $this->userLoader = $userLoader;
     }
 
@@ -53,7 +54,7 @@ final class WebauthnBadge extends UserBadge
 
     public function getAuthenticatorResponse(): AuthenticatorResponse
     {
-        if (! $this->isResolved) {
+        if (! $this->isResolved || $this->authenticatorResponse === null) {
             throw new LogicException('The badge is not resolved.');
         }
         return $this->authenticatorResponse;
@@ -61,7 +62,7 @@ final class WebauthnBadge extends UserBadge
 
     public function getPublicKeyCredentialOptions(): PublicKeyCredentialOptions
     {
-        if (! $this->isResolved) {
+        if (! $this->isResolved || $this->publicKeyCredentialOptions === null) {
             throw new LogicException('The badge is not resolved.');
         }
         return $this->publicKeyCredentialOptions;
@@ -69,7 +70,7 @@ final class WebauthnBadge extends UserBadge
 
     public function getPublicKeyCredentialUserEntity(): PublicKeyCredentialUserEntity
     {
-        if (! $this->isResolved) {
+        if (! $this->isResolved || $this->publicKeyCredentialUserEntity === null) {
             throw new LogicException('The badge is not resolved.');
         }
         return $this->publicKeyCredentialUserEntity;
@@ -77,7 +78,7 @@ final class WebauthnBadge extends UserBadge
 
     public function getPublicKeyCredentialSource(): CredentialRecord
     {
-        if (! $this->isResolved) {
+        if (! $this->isResolved || $this->publicKeyCredentialSource === null) {
             throw new LogicException('The badge is not resolved.');
         }
         return $this->publicKeyCredentialSource;
@@ -85,7 +86,7 @@ final class WebauthnBadge extends UserBadge
 
     public function getUser(): UserInterface
     {
-        if (! $this->isResolved) {
+        if (! $this->isResolved || $this->user === null) {
             throw new LogicException('The badge is not resolved.');
         }
         return $this->user;
