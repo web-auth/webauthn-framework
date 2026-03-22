@@ -183,7 +183,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     }
 
     /**
-     * @param array<array-key, mixed> $rootCertificates
+     * @param string[] $rootCertificates
      */
     private function getJwsPayload(string $token, array &$rootCertificates): string
     {
@@ -206,8 +206,10 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         is_array($header['x5c']) || throw MetadataStatementLoadingException::create(
             'The "x5c" parameter should be an array.'
         );
-        $key = JWKFactory::createFromX5C($header['x5c']);
-        $rootCertificates = $header['x5c'];
+        /** @var string[] $x5c */
+        $x5c = $header['x5c'];
+        $key = JWKFactory::createFromX5C($x5c);
+        $rootCertificates = $x5c;
 
         $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
         $isValid = $verifier->verifyWithKey($jws, $key, 0);
