@@ -151,24 +151,6 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
-			rawMessage: 'Parameter #1 $value (string|Webauthn\AttestedCredentialData|null) of method Webauthn\Bundle\Doctrine\Type\AttestedCredentialDataType::convertToDatabaseValue() should be contravariant with parameter $value (mixed) of method Doctrine\DBAL\Types\JsonType::convertToDatabaseValue()'
-			identifier: method.childParameterType
-			count: 1
-			path: ../src/symfony/src/Doctrine/Type/AttestedCredentialDataType.php
-
-		-
-			rawMessage: 'Parameter #1 $value (string|Webauthn\PublicKeyCredentialDescriptor|null) of method Webauthn\Bundle\Doctrine\Type\PublicKeyCredentialDescriptorType::convertToDatabaseValue() should be contravariant with parameter $value (mixed) of method Doctrine\DBAL\Types\JsonType::convertToDatabaseValue()'
-			identifier: method.childParameterType
-			count: 1
-			path: ../src/symfony/src/Doctrine/Type/PublicKeyCredentialDescriptorType.php
-
-		-
-			rawMessage: 'Parameter #1 $value (string|Webauthn\TrustPath\TrustPath|null) of method Webauthn\Bundle\Doctrine\Type\TrustPathDataType::convertToDatabaseValue() should be contravariant with parameter $value (mixed) of method Doctrine\DBAL\Types\JsonType::convertToDatabaseValue()'
-			identifier: method.childParameterType
-			count: 1
-			path: ../src/symfony/src/Doctrine/Type/TrustPathDataType.php
-
-		-
 			rawMessage: '''
 				Class Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository implements deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
@@ -204,42 +186,6 @@ parameters:
 				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
 			'''
 			identifier: property.deprecated
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: Class Webauthn\Bundle\Security\Authentication\WebauthnBadge has an uninitialized property $authenticatorResponse. Give it default value or assign it in the constructor.
-			identifier: property.uninitialized
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: Class Webauthn\Bundle\Security\Authentication\WebauthnBadge has an uninitialized property $publicKeyCredentialOptions. Give it default value or assign it in the constructor.
-			identifier: property.uninitialized
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: Class Webauthn\Bundle\Security\Authentication\WebauthnBadge has an uninitialized property $publicKeyCredentialSource. Give it default value or assign it in the constructor.
-			identifier: property.uninitialized
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: Class Webauthn\Bundle\Security\Authentication\WebauthnBadge has an uninitialized property $publicKeyCredentialUserEntity. Give it default value or assign it in the constructor.
-			identifier: property.uninitialized
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: Class Webauthn\Bundle\Security\Authentication\WebauthnBadge has an uninitialized property $user. Give it default value or assign it in the constructor.
-			identifier: property.uninitialized
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: 'Webauthn\Bundle\Security\Authentication\WebauthnBadge::__construct() does not call parent constructor from Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge.'
-			identifier: constructor.missingParentCall
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
 

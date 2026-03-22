@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
+use function assert;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType;
+use function is_string;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 final class PublicKeyCredentialDescriptorType extends JsonType
 {
     use SerializerTrait;
 
-    /**
-     * @param PublicKeyCredentialDescriptor|string|null $value
-     */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if (! $value instanceof PublicKeyCredentialDescriptor) {
+            assert($value === null || is_string($value));
             return $value;
         }
 
