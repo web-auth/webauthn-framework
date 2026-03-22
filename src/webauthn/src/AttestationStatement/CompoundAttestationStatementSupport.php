@@ -34,6 +34,14 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
 {
     use AttestationStatementSupportManagerAwareTrait;
 
+    private const ATTESTATION_TYPE_TRUST_ORDER = [
+        AttestationStatement::TYPE_ATTCA,
+        AttestationStatement::TYPE_ANONCA,
+        AttestationStatement::TYPE_BASIC,
+        AttestationStatement::TYPE_SELF,
+        AttestationStatement::TYPE_NONE,
+    ];
+
     private EventDispatcherInterface $dispatcher;
 
     private ?float $ratio = 1.0;
@@ -118,11 +126,12 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
 
         /** @var string $compoundFmt */
         $compoundFmt = $attestation['fmt'];
+        $attestationType = $this->deriveAttestationType($loadedAttestations);
         // Create a compound attestation statement with compound trust path
         $attestationStatement = AttestationStatement::create(
             $compoundFmt,
             $loadedAttestations,
-            AttestationStatement::TYPE_BASIC,
+            $attestationType,
             EmptyTrustPath::create()
         );
 
@@ -169,6 +178,28 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
             return $countValid >= $this->minimum;
         }
         return $countValid / $total >= $this->ratio;
+    }
+
+    /**
+     * Derives the compound attestation type from the nested attestation types
+     * by selecting the weakest (least trusted) type among them.
+     *
+     * @param array<AttestationStatement> $loadedAttestations
+     */
+    private function deriveAttestationType(array $loadedAttestations): string
+    {
+        $weakest = 0;
+        foreach ($loadedAttestations as $stmt) {
+            $index = array_search($stmt->type, self::ATTESTATION_TYPE_TRUST_ORDER, true);
+            if ($index === false) {
+                return AttestationStatement::TYPE_NONE;
+            }
+            if ($index > $weakest) {
+                $weakest = $index;
+            }
+        }
+
+        return self::ATTESTATION_TYPE_TRUST_ORDER[$weakest];
     }
 
     private function checkRules(?float $ratio, ?int $minimum): void
