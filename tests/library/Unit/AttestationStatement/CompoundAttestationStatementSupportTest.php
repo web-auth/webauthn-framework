@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Unit\AttestationStatement;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\CompoundAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -194,6 +195,35 @@ final class CompoundAttestationStatementSupportTest extends TestCase
 
         // When
         $support->load($attestation);
+    }
+
+    #[Test]
+    public function loadingCompoundAttestationDerivesTypeFromNestedAttestations(): void
+    {
+        // Given
+        $manager = new AttestationStatementSupportManager([]);
+        $support = new CompoundAttestationStatementSupport();
+        $support->setAttestationStatementSupportManager($manager);
+
+        $attestation = [
+            'fmt' => 'compound',
+            'attStmt' => [
+                [
+                    'fmt' => 'none',
+                    'attStmt' => [],
+                ],
+                [
+                    'fmt' => 'none',
+                    'attStmt' => [],
+                ],
+            ],
+        ];
+
+        // When
+        $result = $support->load($attestation);
+
+        // Then — all nested are TYPE_NONE, so compound should derive TYPE_NONE
+        static::assertSame(AttestationStatement::TYPE_NONE, $result->type);
     }
 
     #[Test]
