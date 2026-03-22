@@ -183,7 +183,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     }
 
     /**
-     * @param string[] $rootCertificates
+     * @param array<array-key, mixed> $rootCertificates
      */
     private function getJwsPayload(string $token, array &$rootCertificates): string
     {

@@ -140,7 +140,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         if (! is_array($config)) {
             return;
         }
-        /** @var array<string, class-string> $types */
+        /** @var array{dbal?: array{types?: array<string, class-string>}} $config */
         $types = $config['dbal']['types'] ?? [];
         $types += [
             'attested_credential_data' => DbalType\AttestedCredentialDataType::class,
@@ -170,14 +170,21 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         return count($configs) === 0 ? null : current($configs);
     }
 
+    /**
+     * @param array{enabled: bool, creation?: array<string, mixed>, request?: array<string, mixed>} $config
+     */
     private function loadControllersSupport(ContainerBuilder $container, array $config): void
     {
         if ($config['enabled'] === false) {
             return;
         }
 
-        $this->loadCreationControllersSupport($container, $config['creation'] ?? []);
-        $this->loadRequestControllersSupport($container, $config['request'] ?? []);
+        /** @var array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}> $creation */
+        $creation = $config['creation'] ?? [];
+        /** @var array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}> $request */
+        $request = $config['request'] ?? [];
+        $this->loadCreationControllersSupport($container, $creation);
+        $this->loadRequestControllersSupport($container, $request);
     }
 
     /**

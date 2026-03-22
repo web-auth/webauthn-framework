@@ -124,14 +124,8 @@ parameters:
 			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
-			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() return type has no value type specified in iterable type array.'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/symfony/src/DataCollector/WebauthnCollector.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() return type has no value type specified in iterable type array|Symfony\Component\VarDumper\Cloner\Data.'
-			identifier: missingType.iterableValue
+			rawMessage: 'Method Webauthn\Bundle\DataCollector\WebauthnCollector::getData() should return array<string, list<array<string, mixed>>>|Symfony\Component\VarDumper\Cloner\Data but returns array|Symfony\Component\VarDumper\Cloner\Data.'
+			identifier: return.type
 			count: 1
 			path: ../src/symfony/src/DataCollector/WebauthnCollector.php
 
@@ -143,12 +137,6 @@ parameters:
 			identifier: method.deprecated
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/Compiler/CeremonyStepManagerFactoryCompilerPass.php
-
-		-
-			rawMessage: 'Parameter #1 $value of method Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass::createUrlDefinition() expects array<string, mixed>|string, array|bool|float|int|string given.'
-			identifier: argument.type
-			count: 3
-			path: ../src/symfony/src/DependencyInjection/Compiler/PasskeyEndpointsCompilerPass.php
 
 		-
 			rawMessage: '''
@@ -172,30 +160,6 @@ parameters:
 			'''
 			identifier: classConstant.deprecatedInterface
 			count: 3
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: Cannot access offset 'types' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadControllersSupport() has parameter $config with no value type specified in iterable type array.'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadCreationControllersSupport() expects array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, ...}>, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
-
-		-
-			rawMessage: 'Parameter #2 $config of method Webauthn\Bundle\DependencyInjection\WebauthnExtension::loadRequestControllersSupport() expects array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, ...}>, mixed given.'
-			identifier: argument.type
-			count: 1
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -370,12 +334,6 @@ parameters:
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 1
-			path: ../src/webauthn/src/AttestationStatement/AndroidKeyAttestationStatementSupport.php
-
-		-
 			rawMessage: Class Webauthn\AttestationStatement\CompoundAttestationStatementSupport has an uninitialized property $attestationStatementSupportManager. Give it default value or assign it in the constructor.
 			identifier: property.uninitialized
 			count: 1
@@ -386,18 +344,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/AttestationStatement/CompoundAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 2
-			path: ../src/webauthn/src/AttestationStatement/PackedAttestationStatementSupport.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 2
-			path: ../src/webauthn/src/AttestationStatement/TPMAttestationStatementSupport.php
 
 		-
 			rawMessage: '''
@@ -679,8 +625,8 @@ parameters:
 			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
 
 		-
-			rawMessage: 'Parameter &$rootCertificates by-ref type of method Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService::getJwsPayload() expects array<string>, array<mixed, mixed> given.'
-			identifier: parameterByRef.type
+			rawMessage: 'Parameter #1 ...$untrustedCertificates of method Webauthn\MetadataService\Service\FidoAllianceCompliantMetadataService::validateCertificates() expects string, mixed given.'
+			identifier: argument.type
 			count: 1
 			path: ../src/webauthn/src/MetadataService/Service/FidoAllianceCompliantMetadataService.php
 

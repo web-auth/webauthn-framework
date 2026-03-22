@@ -36,7 +36,7 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
 
     private EventDispatcherInterface $dispatcher;
 
-    private ?float $ratio = 1;
+    private ?float $ratio = 1.0;
 
     private ?int $minimum = null;
 
