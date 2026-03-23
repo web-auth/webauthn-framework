@@ -200,5 +200,4 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
 
         return (is_string($appId) && $wasUsed === true) ? $appId : $rpId;
     }
-
 }
