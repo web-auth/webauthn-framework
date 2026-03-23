@@ -135,7 +135,11 @@ final class CeremonyStepManagerFactory
             new CheckChallenge(),
             $this->allowedOrigins === null ? new CheckOrigin(
                 $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
+            ) : new CheckAllowedOrigins(
+                $this->allowedOrigins,
+                $this->allowSubdomains,
+                $this->securedRelyingPartyId ?? []
+            ),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
@@ -160,7 +164,11 @@ final class CeremonyStepManagerFactory
             new CheckChallenge(),
             $this->allowedOrigins === null ? new CheckOrigin(
                 $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins($this->allowedOrigins, $this->allowSubdomains),
+            ) : new CheckAllowedOrigins(
+                $this->allowedOrigins,
+                $this->allowSubdomains,
+                $this->securedRelyingPartyId ?? []
+            ),
             new CheckTopOrigin(),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),

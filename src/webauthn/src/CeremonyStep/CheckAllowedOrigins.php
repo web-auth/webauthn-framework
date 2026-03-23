@@ -38,10 +38,12 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
 
     /**
      * @param string[] $allowedOrigins
+     * @param string[] $securedRelyingPartyId RP IDs that are allowed to use HTTP (e.g. localhost for development)
      */
     public function __construct(
         array $allowedOrigins,
-        private bool $allowSubdomains = false
+        private bool $allowSubdomains = false,
+        private array $securedRelyingPartyId = [],
     ) {
         $fullOrigins = [];
         $hostOrigins = [];
@@ -113,6 +115,13 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
 
         $rpId = $publicKeyCredentialOptions->rpId ?? $publicKeyCredentialOptions->rp->id ?? $host;
         $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData->extensions);
+
+        if (! in_array($facetId, $this->securedRelyingPartyId, true)) {
+            $scheme = $parsedOrigin['scheme'] ?? '';
+            $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid scheme. HTTPS required.'
+            );
+        }
         $facetId !== '' || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to determine the facet ID.'
         );
@@ -126,11 +135,7 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         if (! $this->allowSubdomains && $isSubDomains) {
             throw AuthenticatorResponseVerificationException::create('Invalid origin. Subdomains are not allowed.');
         }
-
-        $scheme = $parsedOrigin['scheme'] ?? '';
-        $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
-            'Invalid scheme. HTTPS required.'
-        );
+        throw AuthenticatorResponseVerificationException::create('Invalid origin.');
     }
 
     /**
