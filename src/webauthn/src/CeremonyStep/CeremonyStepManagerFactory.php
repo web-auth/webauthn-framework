@@ -169,7 +169,7 @@ final class CeremonyStepManagerFactory
                 $this->allowSubdomains,
                 $this->securedRelyingPartyId ?? []
             ),
-            new CheckTopOrigin(),
+            new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
             new CheckUserVerification(),
