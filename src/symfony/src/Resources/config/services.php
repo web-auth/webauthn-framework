@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -82,7 +83,9 @@ return static function (ContainerConfigurator $container): void {
         ->factory([service(CeremonyStepManagerFactory::class), 'conditionalCreateCeremony'])
     ;
 
-    $service->set(SimpleFakeCredentialGenerator::class);
+    $service->set(SimpleFakeCredentialGenerator::class)
+        ->args([service(CacheItemPoolInterface::class)->nullOnInvalid(), param('kernel.secret')])
+    ;
 
     $service
         ->set('webauthn.ceremony_step_manager.request')
