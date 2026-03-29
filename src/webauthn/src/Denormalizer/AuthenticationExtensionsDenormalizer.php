@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function assert;
+use function is_array;
+use function is_string;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
-use function assert;
-use function is_array;
-use function is_string;
 
 final class AuthenticationExtensionsDenormalizer implements DenormalizerInterface, NormalizerInterface
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Repository;
 
+use function count;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,7 +18,6 @@ use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CredentialRecordRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\TrustPath\EmptyTrustPath;
-use function count;
 
 /**
  * Functional tests for repository implementations in the Symfony bundle.

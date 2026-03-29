@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
+use function in_array;
 use InvalidArgumentException;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Exception\InvalidDataException;
-use function in_array;
 
 final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOptions
 {

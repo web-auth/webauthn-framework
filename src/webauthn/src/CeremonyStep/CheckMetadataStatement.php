@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function count;
+use function in_array;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function sprintf;
+use function trigger_deprecation;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -21,10 +25,6 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\CertificateTrustPath;
-use function count;
-use function in_array;
-use function sprintf;
-use function trigger_deprecation;
 
 final class CheckMetadataStatement implements CeremonyStep, CanLogData
 {

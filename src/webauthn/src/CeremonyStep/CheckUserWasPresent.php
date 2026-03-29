@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function trigger_deprecation;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
@@ -11,7 +12,6 @@ use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use function trigger_deprecation;
 
 /**
  * Conditional check for user presence

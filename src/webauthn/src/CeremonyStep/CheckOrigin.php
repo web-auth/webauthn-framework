@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function in_array;
+use function is_array;
+use function is_string;
+use function strlen;
+use function trigger_deprecation;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -12,11 +17,6 @@ use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use function in_array;
-use function is_array;
-use function is_string;
-use function strlen;
-use function trigger_deprecation;
 
 /**
  * @deprecated since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\Request;
 use function count;
 use function ord;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGenerator
 {

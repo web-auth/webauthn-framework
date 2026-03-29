@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use function count;
+use function is_string;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\MetadataService\Statement\BiometricStatusReport;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
-use function count;
-use function is_string;
 
 class MetadataBLOBPayloadEntry
 {

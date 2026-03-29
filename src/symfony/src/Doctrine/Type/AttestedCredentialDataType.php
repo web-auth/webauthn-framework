@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Doctrine\Type;
 
+use function assert;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType;
-use Webauthn\AttestedCredentialData;
-use function assert;
 use function is_string;
+use Webauthn\AttestedCredentialData;
 
 final class AttestedCredentialDataType extends JsonType
 {

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Webauthn\Event;
 
 use LogicException;
+use function sprintf;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
-use function sprintf;
 
 class AuthenticatorAttestationResponseValidationSucceededEvent
 {

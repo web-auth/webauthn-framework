@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function array_key_exists;
+use function assert;
+use function count;
+use function in_array;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
@@ -20,10 +24,6 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function array_key_exists;
-use function assert;
-use function count;
-use function in_array;
 
 final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface, NormalizerInterface, NormalizerAwareInterface
 {

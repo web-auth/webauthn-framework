@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication\Token;
 
+use function assert;
+use function is_array;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
@@ -11,8 +13,6 @@ use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function assert;
-use function is_array;
 
 class WebauthnToken extends AbstractToken
 {

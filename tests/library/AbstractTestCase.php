@@ -14,6 +14,7 @@ use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
 use PHPUnit\Framework\TestCase;
+use function sprintf;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -39,7 +40,6 @@ use Webauthn\MetadataService\Service\LocalResourceMetadataService;
 use Webauthn\Tests\Bundle\Functional\MockClock;
 use Webauthn\Tests\Functional\MetadataStatementRepository;
 use Webauthn\Tests\Functional\StatusReportRepository;
-use function sprintf;
 
 abstract class AbstractTestCase extends TestCase
 {

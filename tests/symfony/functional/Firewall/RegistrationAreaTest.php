@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
+use function base64_decode;
 use Cose\Algorithms;
+use function json_decode;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\Bundle\Security\Storage\Item;
@@ -17,10 +21,6 @@ use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialUserEntityRepository;
 use Webauthn\Tests\Bundle\Functional\User;
 use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
-use function base64_decode;
-use function json_decode;
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

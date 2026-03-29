@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
+use function assert;
+use function file_get_contents;
 use ParagonIE\ConstantTime\Base64;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -16,8 +18,6 @@ use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\Statement\MetadataStatement;
-use function assert;
-use function file_get_contents;
 
 final class LocalResourceMetadataService implements MetadataService, CanDispatchEvents
 {

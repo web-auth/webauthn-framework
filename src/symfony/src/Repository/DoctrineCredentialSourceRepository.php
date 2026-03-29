@@ -7,9 +7,9 @@ namespace Webauthn\Bundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
+use function sprintf;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialUserEntity;
-use function sprintf;
 
 /**
  * @template T of CredentialRecord

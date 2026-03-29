@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use Webauthn\Exception\InvalidDataException;
 use function array_key_exists;
 use function is_array;
 use function is_string;
-use function sprintf;
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use function sprintf;
+use Webauthn\Exception\InvalidDataException;
 
 class CollectedClientData
 {

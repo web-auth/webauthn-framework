@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function assert;
 use CBOR\ByteStringObject;
 use CBOR\Decoder;
 use CBOR\ListObject;
@@ -11,6 +12,9 @@ use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\TextStringObject;
 use CBOR\UnsignedIntegerObject;
+use function chr;
+use function is_string;
+use function ord;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -21,10 +25,6 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorData;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\StringStream;
-use function assert;
-use function chr;
-use function is_string;
-use function ord;
 
 final class AuthenticatorDataDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {

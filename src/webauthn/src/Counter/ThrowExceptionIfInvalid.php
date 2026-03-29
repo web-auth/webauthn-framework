@@ -6,11 +6,11 @@ namespace Webauthn\Counter;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function trigger_deprecation;
 use Webauthn\CredentialRecord;
 use Webauthn\Exception\CounterException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredentialSource;
-use function trigger_deprecation;
 
 final class ThrowExceptionIfInvalid implements CounterChecker, CanLogData
 {

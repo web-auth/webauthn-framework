@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\Event;
 
 use LogicException;
+use function sprintf;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialSource;
-use function sprintf;
 
 /**
  * Event dispatched when the backup eligibility flag (BE) changes.

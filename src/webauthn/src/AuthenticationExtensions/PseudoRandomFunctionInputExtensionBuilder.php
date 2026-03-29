@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\AuthenticationExtensions;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use function array_key_exists;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 final class PseudoRandomFunctionInputExtensionBuilder
 {

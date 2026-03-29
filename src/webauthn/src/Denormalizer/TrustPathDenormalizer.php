@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
+use function array_key_exists;
+use function assert;
+use function is_array;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\Exception\InvalidTrustPathException;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
 use Webauthn\TrustPath\TrustPath;
-use function array_key_exists;
-use function assert;
-use function is_array;
 
 final class TrustPathDenormalizer implements DenormalizerInterface, NormalizerInterface
 {

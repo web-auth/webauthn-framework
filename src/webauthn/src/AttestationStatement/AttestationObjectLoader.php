@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
+use function is_array;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -18,8 +20,6 @@ use Webauthn\Exception\InvalidDataException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\StringStream;
 use Webauthn\Util\Base64;
-use function array_key_exists;
-use function is_array;
 
 class AttestationObjectLoader implements CanDispatchEvents, CanLogData
 {

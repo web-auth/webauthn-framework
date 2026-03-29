@@ -6,6 +6,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
@@ -51,8 +53,6 @@ use Webauthn\Denormalizer\UrlNormalizer;
 use Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\SimpleFakeCredentialGenerator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
     $service = $container->services()

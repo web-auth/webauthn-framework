@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
+use function count;
+use function is_array;
+use function is_string;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -11,9 +14,6 @@ use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\TrustPath\EmptyTrustPath;
-use function count;
-use function is_array;
-use function is_string;
 
 final class NoneAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

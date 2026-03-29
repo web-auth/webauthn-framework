@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\ClientDataCollector;
 
+use function in_array;
+use function sprintf;
 use Webauthn\AuthenticatorResponse;
 use Webauthn\CollectedClientData;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredentialOptions;
-use function in_array;
-use function sprintf;
 
 final class WebauthnAuthenticationCollector implements ClientDataCollector
 {
