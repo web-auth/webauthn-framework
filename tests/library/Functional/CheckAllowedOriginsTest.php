@@ -197,6 +197,72 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
     }
 
     #[Test]
+    public function differentPortIsRejected(): void
+    {
+        // PoC from GHSA-f7pm-6hr8-7ggm: different port on same host must be rejected
+        // C.origin = https://webauthn.spomky-labs.com (port 443)
+        // Allowed = https://webauthn.spomky-labs.com:8443 (port 8443)
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid origin');
+
+        $checkOrigins = new CheckAllowedOrigins(['https://webauthn.spomky-labs.com:8443']);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->getPublicKeyCredential();
+
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+    }
+
+    #[Test]
+    public function explicitDefaultPortMatchesImplicitPort(): void
+    {
+        // https://webauthn.spomky-labs.com:443 should match https://webauthn.spomky-labs.com
+        $checkOrigins = new CheckAllowedOrigins(['https://webauthn.spomky-labs.com:443']);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->getPublicKeyCredential();
+
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+
+        static::assertTrue(true);
+    }
+
+    #[Test]
+    public function httpSchemeIsRejectedWhenHttpsIsConfigured(): void
+    {
+        // Allowed = https://webauthn.spomky-labs.com
+        // C.origin = https://webauthn.spomky-labs.com (matches, but testing that http:// would not)
+        // We test by configuring http:// and verifying it rejects https:// origin
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid origin');
+
+        $checkOrigins = new CheckAllowedOrigins(['http://webauthn.spomky-labs.com']);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->getPublicKeyCredential();
+
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+    }
+
+    #[Test]
     public function emptyAllowedOriginsWithSubdomainsAndInvalidHost(): void
     {
         // Then

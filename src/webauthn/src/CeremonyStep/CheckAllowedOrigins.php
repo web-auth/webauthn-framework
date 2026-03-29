@@ -23,40 +23,35 @@ use Webauthn\PublicKeyCredentialSource;
 final readonly class CheckAllowedOrigins implements CeremonyStep
 {
     /**
-     * Full origin entries (scheme://host[:port]) from allowed origins that include a scheme.
+     * Full origin entries (scheme://host[:port]) from allowed origins.
      *
      * @var string[]
      */
     private array $fullOrigins;
 
     /**
-     * Host-only entries from allowed origins without a scheme (backward compatibility).
-     *
-     * @var string[]
-     */
-    private array $hostOrigins;
-
-    /**
      * @param string[] $allowedOrigins
+     * @param string[] $securedRelyingPartyId RP IDs that are allowed to use HTTP (e.g. localhost for development)
      */
     public function __construct(
         array $allowedOrigins,
-        private bool $allowSubdomains = false
+        private bool $allowSubdomains = false,
+        private array $securedRelyingPartyId = [],
     ) {
         $fullOrigins = [];
-        $hostOrigins = [];
         foreach ($allowedOrigins as $allowedOrigin) {
             $parsed = parse_url($allowedOrigin);
             $parsed !== false || throw new InvalidArgumentException(sprintf('Invalid origin: %s', $allowedOrigin));
             if (isset($parsed['scheme'], $parsed['host'])) {
                 $fullOrigins[] = self::buildOrigin($parsed['scheme'], $parsed['host'], $parsed['port'] ?? null);
             } else {
-                $hostOrigins[] = $parsed['host'] ?? $allowedOrigin;
+                // Host-only entries are normalized to https:// since WebAuthn requires TLS
+                $host = $parsed['host'] ?? $allowedOrigin;
+                $fullOrigins[] = self::buildOrigin('https', $host, null);
             }
         }
 
         $this->fullOrigins = array_unique($fullOrigins);
-        $this->hostOrigins = array_unique($hostOrigins);
     }
 
     public function process(
@@ -83,7 +78,7 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         );
         $originHost = $parsedOrigin['host'] ?? $C->origin;
 
-        $hasAllowedOrigins = count($this->fullOrigins) !== 0 || count($this->hostOrigins) !== 0;
+        $hasAllowedOrigins = count($this->fullOrigins) !== 0;
 
         if ($hasAllowedOrigins) {
             // Full origin match (scheme + host + port)
@@ -98,15 +93,8 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
                 }
             }
 
-            // Host-only match (backward compatibility for entries without scheme)
-            if (in_array($originHost, $this->hostOrigins, true)) {
-                return;
-            }
-
             // Subdomain matching
-            $isFullOriginSubdomain = $this->isSubdomainOfFullOrigins($parsedOrigin);
-            $isHostSubdomain = $this->isSubdomain($this->hostOrigins, $originHost);
-            $isSubDomain = $isFullOriginSubdomain || $isHostSubdomain;
+            $isSubDomain = $this->isSubdomainOfFullOrigins($parsedOrigin);
 
             if ($this->allowSubdomains && $isSubDomain) {
                 return;
@@ -121,6 +109,13 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
 
         $rpId = $publicKeyCredentialOptions->rpId ?? $publicKeyCredentialOptions->rp->id ?? $host;
         $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData->extensions);
+
+        if (! in_array($facetId, $this->securedRelyingPartyId, true)) {
+            $scheme = $parsedOrigin['scheme'] ?? '';
+            $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
+                'Invalid scheme. HTTPS required.'
+            );
+        }
         $facetId !== '' || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to determine the facet ID.'
         );
@@ -134,11 +129,7 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         if (! $this->allowSubdomains && $isSubDomains) {
             throw AuthenticatorResponseVerificationException::create('Invalid origin. Subdomains are not allowed.');
         }
-
-        $scheme = $parsedOrigin['scheme'] ?? '';
-        $scheme === 'https' || throw AuthenticatorResponseVerificationException::create(
-            'Invalid scheme. HTTPS required.'
-        );
+        throw AuthenticatorResponseVerificationException::create('Invalid origin.');
     }
 
     /**
@@ -216,18 +207,5 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
             ->value;
 
         return (is_string($appId) && $wasUsed === true) ? $appId : $rpId;
-    }
-
-    /**
-     * @param string[] $origins
-     */
-    private function isSubdomain(array $origins, string $domain): bool
-    {
-        foreach ($origins as $allowedOrigin) {
-            if ($this->isSubdomainOf($domain, $allowedOrigin)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
