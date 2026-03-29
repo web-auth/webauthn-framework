@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\MapObject;
 use Cose\Algorithms;
@@ -12,9 +11,7 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\OkpKey;
 use Cose\Key\RsaKey;
-use function count;
 use DateTimeImmutable;
-use function openssl_verify;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -24,9 +21,7 @@ use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
 use SpomkyLabs\Pki\X509\Certificate\TBSCertificate;
-use function sprintf;
 use Symfony\Component\Clock\NativeClock;
-use function unpack;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -37,6 +32,11 @@ use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function openssl_verify;
+use function sprintf;
+use function unpack;
 
 final class TPMAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

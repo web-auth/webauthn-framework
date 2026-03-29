@@ -6,7 +6,6 @@ namespace Webauthn\Bundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use LogicException;
-use function realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +23,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
+use function realpath;
 
 final class WebauthnBundle extends Bundle
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
-use function assert;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -22,6 +21,7 @@ use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\SimpleFakeCredentialGenerator;
+use function assert;
 
 final readonly class Configuration implements ConfigurationInterface
 {

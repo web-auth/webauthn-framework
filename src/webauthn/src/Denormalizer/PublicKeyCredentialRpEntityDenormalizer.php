@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use function assert;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\PublicKeyCredentialRpEntity;
+use function assert;
 
 final class PublicKeyCredentialRpEntityDenormalizer implements NormalizerInterface
 {

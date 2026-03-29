@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Storage;
 
 use Psr\Cache\CacheItemPoolInterface;
-use function sprintf;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use function sprintf;
 
 final readonly class CacheStorage implements OptionsStorage
 {

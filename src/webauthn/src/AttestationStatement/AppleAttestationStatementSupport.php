@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use function count;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
@@ -28,6 +26,8 @@ use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
 
 final class AppleAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

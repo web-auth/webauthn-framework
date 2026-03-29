@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional\Firewall;
 
 use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
-use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +15,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Functional\CustomSessionStorage;
 use Webauthn\Tests\Bundle\Functional\WebauthnTestCase;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

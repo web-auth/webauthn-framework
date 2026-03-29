@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Factory\Security;
 
-use function assert;
-use function sprintf;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
@@ -40,6 +38,8 @@ use Webauthn\Bundle\Security\Storage\SessionStorage;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\FakeCredentialGenerator;
+use function assert;
+use function sprintf;
 
 final readonly class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {

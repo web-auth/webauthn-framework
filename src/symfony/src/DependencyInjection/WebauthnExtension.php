@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection;
 
-use function array_key_exists;
 use Cose\Algorithm\Algorithm;
-use function count;
-use function is_array;
-use function sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -57,6 +53,10 @@ use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function sprintf;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn;
 
-use function in_array;
 use InvalidArgumentException;
+use function in_array;
 
 class AuthenticatorSelectionCriteria
 {

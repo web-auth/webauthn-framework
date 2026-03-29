@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
-use function count;
-use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 use SpomkyLabs\Pki\ASN1\Type\Primitive\OctetString;
@@ -20,7 +17,6 @@ use SpomkyLabs\Pki\ASN1\Type\Tagged\ExplicitTagging;
 use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
-use function sprintf;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -31,6 +27,10 @@ use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use function array_key_exists;
+use function count;
+use function openssl_verify;
+use function sprintf;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {

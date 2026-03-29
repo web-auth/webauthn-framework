@@ -8,7 +8,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
-use function trigger_deprecation;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationFailedEvent;
 use Webauthn\Event\AuthenticatorAssertionResponseValidationSucceededEvent;
@@ -18,6 +17,7 @@ use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
+use function trigger_deprecation;
 
 class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatchEvents
 {

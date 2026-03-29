@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Authentication;
 
-use function assert;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -12,6 +11,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorData;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
+use function assert;
 
 abstract class WebauthnAuthenticator extends AbstractLoginFormAuthenticator
 {

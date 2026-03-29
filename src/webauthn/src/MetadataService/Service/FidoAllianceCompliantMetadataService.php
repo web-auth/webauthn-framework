@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\Service;
 
-use function array_key_exists;
-use function is_array;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -14,7 +12,6 @@ use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function sprintf;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -30,6 +27,9 @@ use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
+use function array_key_exists;
+use function is_array;
+use function sprintf;
 
 final class FidoAllianceCompliantMetadataService implements MetadataService, CanDispatchEvents
 {

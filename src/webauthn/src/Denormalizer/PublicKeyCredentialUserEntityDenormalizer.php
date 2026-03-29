@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use function array_key_exists;
-use function assert;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Util\Base64;
+use function array_key_exists;
+use function assert;
 
 final class PublicKeyCredentialUserEntityDenormalizer implements DenormalizerInterface, NormalizerInterface
 {

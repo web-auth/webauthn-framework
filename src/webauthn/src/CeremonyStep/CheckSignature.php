@@ -11,8 +11,6 @@ use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
-use function is_array;
-use function trigger_deprecation;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
@@ -23,6 +21,8 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\StringStream;
 use Webauthn\U2FPublicKey;
 use Webauthn\Util\CoseSignatureFixer;
+use function is_array;
+use function trigger_deprecation;
 
 final readonly class CheckSignature implements CeremonyStep
 {

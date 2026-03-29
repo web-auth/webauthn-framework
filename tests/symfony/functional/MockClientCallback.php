@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Functional;
 
 use RuntimeException;
-use function sprintf;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use function sprintf;
 
 /**
  * @internal

@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService;
 
-use function is_array;
-use const JSON_ERROR_NONE;
 use JsonException;
 use LogicException;
-use const PHP_QUERY_RFC3986;
 use Psr\Http\Client\ClientInterface as Psr18ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface as Psr17RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface as Psr17ResponseInterface;
@@ -16,6 +13,9 @@ use Psr\Http\Message\StreamFactoryInterface as Psr17StreamFactoryInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
+use function is_array;
+use const JSON_ERROR_NONE;
+use const PHP_QUERY_RFC3986;
 
 class Psr18HttpClient implements HttpClientInterface
 {

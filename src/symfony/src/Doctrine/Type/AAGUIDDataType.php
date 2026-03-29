@@ -6,8 +6,8 @@ namespace Webauthn\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function is_string;
 use Symfony\Component\Uid\Uuid;
+use function is_string;
 
 final class AAGUIDDataType extends Type
 {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Compiler;
 
-use function count;
-use function is_array;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -19,6 +17,8 @@ use Webauthn\CeremonyStep\TopOriginValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use function count;
+use function is_array;
 
 final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterface
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional;
 
-use function sprintf;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use function sprintf;
 
 final readonly class UserProvider implements UserProviderInterface
 {

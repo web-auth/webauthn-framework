@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use function assert;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\Signal\UnknownCredential;
+use function assert;
 
 class SignalUnknownCredentialDenormalizer implements NormalizerInterface, NormalizerAwareInterface
 {

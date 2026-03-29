@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Authentication;
 
 use LogicException;
-use function sprintf;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -13,6 +12,7 @@ use Webauthn\AuthenticatorResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function sprintf;
 
 final class WebauthnBadge extends UserBadge
 {

@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use function array_key_exists;
-use function gettype;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function sprintf;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -20,6 +17,9 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use function array_key_exists;
+use function gettype;
+use function sprintf;
 
 final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEvents
 {

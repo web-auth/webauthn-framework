@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\AttestationStatement;
 
-use function array_key_exists;
-use function count;
 use InvalidArgumentException;
-use function is_array;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function sprintf;
 use Throwable;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -19,6 +15,10 @@ use Webauthn\Exception\AttestationStatementLoadingException;
 use Webauthn\Exception\AttestationStatementVerificationException;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\TrustPath\EmptyTrustPath;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function sprintf;
 
 /**
  * Compound Attestation Statement Support

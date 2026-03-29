@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use function array_key_exists;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
@@ -13,6 +12,7 @@ use Webauthn\AuthenticatorResponse;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\Util\Base64;
+use function array_key_exists;
 
 final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
