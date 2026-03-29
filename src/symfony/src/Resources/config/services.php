@@ -82,7 +82,12 @@ return static function (ContainerConfigurator $container): void {
         ->factory([service(CeremonyStepManagerFactory::class), 'conditionalCreateCeremony'])
     ;
 
-    $service->set(SimpleFakeCredentialGenerator::class);
+    $service->set(SimpleFakeCredentialGenerator::class)
+        ->args([
+            null,
+            param('kernel.secret'),
+        ])
+    ;
 
     $service
         ->set('webauthn.ceremony_step_manager.request')
