@@ -6,6 +6,8 @@ namespace Webauthn;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Request;
+use function count;
+use function ord;
 
 final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGenerator
 {
@@ -60,7 +62,7 @@ final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGene
             $transportCount = (ord($credSeed[0]) % 2) + 1;
             $selectedTransports = [];
             for ($j = 0; $j < $transportCount; $j++) {
-                $index = ord($credSeed[$j + 1]) % \count($transports);
+                $index = ord($credSeed[$j + 1]) % count($transports);
                 $selectedTransports[] = $transports[$index];
             }
             $selectedTransports = array_values(array_unique($selectedTransports));
