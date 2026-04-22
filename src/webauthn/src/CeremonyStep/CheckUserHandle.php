@@ -35,13 +35,14 @@ final class CheckUserHandle implements CeremonyStep
         }
         $credentialUserHandle = $credentialRecord->userHandle;
         $responseUserHandle = $authenticatorResponse->userHandle;
-        if ($userHandle !== null) { //If the user was identified before the authentication ceremony was initiated,
+        if ($userHandle !== null) { // If the user was identified before the authentication ceremony was initiated,
             hash_equals($credentialUserHandle, $userHandle) || throw InvalidUserHandleException::create();
             if ($responseUserHandle !== null && $responseUserHandle !== '') {
                 hash_equals($credentialUserHandle, $responseUserHandle) || throw InvalidUserHandleException::create();
             }
         } else {
-            ($responseUserHandle !== '' && hash_equals($credentialUserHandle, $responseUserHandle)) || throw InvalidUserHandleException::create();
+            ($responseUserHandle !== null && $responseUserHandle !== '' && hash_equals($credentialUserHandle, $responseUserHandle))
+                || throw InvalidUserHandleException::create();
         }
     }
 }
