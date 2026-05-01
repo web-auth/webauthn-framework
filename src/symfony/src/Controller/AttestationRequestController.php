@@ -40,7 +40,8 @@ final readonly class AttestationRequestController
 
             $response = $this->creationOptionsHandler->onCreationOptions(
                 $publicKeyCredentialCreationOptions,
-                $userEntity
+                $userEntity,
+                $request,
             );
             $this->optionsStorage->store(Item::create($publicKeyCredentialCreationOptions, $userEntity));
 

@@ -16,6 +16,7 @@ use Webauthn\Bundle\Controller\AllowedOriginsController;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CeremonyStep\TopOriginValidator;
+use Webauthn\ClientDataCollector\ClientDataCollectorManager;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
@@ -30,6 +31,7 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $definition = $container->getDefinition(CeremonyStepManagerFactory::class);
         $this->setAttestationStatementSupportManager($container, $definition);
         $this->setExtensionOutputCheckerHandler($container, $definition);
+        $this->setClientDataCollectorManager($container, $definition);
         $this->enableMetadataStatementSupport($container, $definition);
         $this->enableCertificateChainValidator($container, $definition);
         $this->setAlgorithmManager($container, $definition);
@@ -59,6 +61,18 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $definition->addMethodCall(
             'setExtensionOutputCheckerHandler',
             [new Reference(ExtensionOutputCheckerHandler::class)]
+        );
+    }
+
+    private function setClientDataCollectorManager(ContainerBuilder $container, Definition $definition): void
+    {
+        if (! $container->hasDefinition(ClientDataCollectorManager::class)) {
+            return;
+        }
+
+        $definition->addMethodCall(
+            'setClientDataCollectorManager',
+            [new Reference(ClientDataCollectorManager::class)]
         );
     }
 

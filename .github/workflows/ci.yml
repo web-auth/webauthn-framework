@@ -21,7 +21,13 @@ jobs:
 
       - name: "Check file permissions"
         run: |
-          NON_EXECUTABLE=$(find . -type f -not -path './.git/*' -not -path './bin/console' -not -path './frankenphp/docker-entrypoint.sh' -not -path './link' -executable)
+          NON_EXECUTABLE=$(find . -type f \
+            -not -path './.git/*' \
+            -not -path './bin/console' \
+            -not -path './frankenphp/docker-entrypoint.sh' \
+            -not -path './link' \
+            -not -name '*.sh' \
+            -executable)
           if [[ -n "$NON_EXECUTABLE" ]]; then
             echo "Found non-executable files with executable permission:"
             echo "$NON_EXECUTABLE"

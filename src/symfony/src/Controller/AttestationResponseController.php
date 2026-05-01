@@ -83,7 +83,12 @@ final readonly class AttestationResponseController
                     PublicKeyCredentialSource::fromCredentialRecord($credentialSource)
                 );
             }
-            return $this->successHandler->onSuccess($request);
+            return $this->successHandler->onSuccess(
+                $request,
+                $publicKeyCredential,
+                $publicKeyCredentialCreationOptions,
+                $userEntity
+            );
         } catch (Throwable $throwable) {
             if ($throwable instanceof MissingFeatureException) {
                 throw new HttpNotImplementedException($throwable->getMessage(), $throwable);

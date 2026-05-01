@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPC Demo</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 640px; margin: 40px auto; padding: 20px; color: #1f2937; }
+        h1 { font-size: 1.7rem; }
+        ol { line-height: 1.7; }
+        a.button { display: inline-block; padding: 0.6rem 1rem; border-radius: 6px; color: #fff; text-decoration: none; margin-right: 0.5rem; }
+        .reg { background: #2563eb; }
+        .pay { background: #16a34a; }
+        code { background: #f3f4f6; padding: 0.1em 0.3em; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<h1>Secure Payment Confirmation — minimal demo</h1>
+
+<p>
+    This demo runs the two W3C Secure Payment Confirmation ceremonies end-to-end
+    against a relying party powered by <a href="https://github.com/web-auth/webauthn-framework">web-auth/webauthn-lib</a>:
+</p>
+
+<ol>
+    <li>
+        <strong>Register</strong> a credential with the
+        <code>payment: { isPayment: true }</code> extension via
+        <code>navigator.credentials.create()</code>.
+    </li>
+    <li>
+        <strong>Authenticate a payment</strong> with the Payment Request API:
+        <code>new PaymentRequest([{ supportedMethods: 'secure-payment-confirmation', data: {…} }]).show()</code>.
+        The relying party server validates the signed
+        <code>clientDataJSON.payment</code> via
+        <code>PaymentClientDataCollector</code>.
+    </li>
+</ol>
+
+<p>
+    <a class="button reg" href="/register.html">1. Register a credential</a>
+    <a class="button pay" href="/checkout.html">2. Pay with SPC</a>
+</p>
+
+<p>
+    Browser support: SPC is available in Chromium-based browsers (Chrome, Edge,
+    Opera) on platforms with a built-in user-verifying authenticator. On other
+    browsers the checkout page will report that <code>PaymentRequest</code> is
+    not implemented.
+</p>
+</body>
+</html>

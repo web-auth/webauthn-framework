@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FakeMerchant</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 20px; color: #1f2937; }
+        h1 { font-size: 1.6rem; }
+        .badge { display: inline-block; background: #16a34a; color: #fff; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+        a.button { display: inline-block; padding: 0.6rem 1rem; border-radius: 6px; background: #16a34a; color: #fff; text-decoration: none; }
+        code { background: #f3f4f6; padding: 0.1em 0.3em; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<p><span class="badge">merchant.localhost:8002</span></p>
+<h1>FakeMerchant — checkout</h1>
+
+<p>
+    A separate origin from FakeBank. The checkout page initiates the SPC
+    payment via <code>PaymentRequest</code>, then forwards the resulting
+    WebAuthn artefacts to FakeBank's ACS at
+    <code>http://localhost:8001/api/acs/verify</code> (cross-origin POST,
+    CORS-enabled on the bank). The bank's ACS re-verifies the assertion
+    against the credential's public key it stored at enrolment and returns
+    a 3DS-style ARes payload (transStatus, eci, CAVV).
+</p>
+
+<p>
+    Make sure you have first <a href="http://localhost:8001/register.html">enrolled
+    a credential at FakeBank</a>.
+</p>
+
+<p>
+    <a class="button" href="/checkout.html">Pay with SPC</a>
+</p>
+</body>
+</html>

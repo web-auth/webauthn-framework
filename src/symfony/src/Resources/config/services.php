@@ -13,6 +13,7 @@ use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\AuthenticationExtensions\PaymentExtensionOutputChecker;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Controller\AssertionControllerFactory;
@@ -28,6 +29,9 @@ use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
+use Webauthn\ClientDataCollector\ClientDataCollectorManager;
+use Webauthn\ClientDataCollector\PaymentClientDataCollector;
+use Webauthn\ClientDataCollector\WebauthnAuthenticationCollector;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\Denormalizer\AttestationObjectDenormalizer;
 use Webauthn\Denormalizer\AttestationStatementDenormalizer;
@@ -38,8 +42,15 @@ use Webauthn\Denormalizer\AuthenticatorAssertionResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorDataDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorResponseDenormalizer;
+use Webauthn\Denormalizer\BrowserBoundPublicKeyDenormalizer;
+use Webauthn\Denormalizer\BrowserBoundSignatureDenormalizer;
+use Webauthn\Denormalizer\CollectedClientAdditionalPaymentDataDenormalizer;
 use Webauthn\Denormalizer\CollectedClientDataDenormalizer;
+use Webauthn\Denormalizer\CollectedClientPaymentDataDenormalizer;
 use Webauthn\Denormalizer\ExtensionDescriptorDenormalizer;
+use Webauthn\Denormalizer\PaymentCredentialInstrumentDenormalizer;
+use Webauthn\Denormalizer\PaymentCurrencyAmountDenormalizer;
+use Webauthn\Denormalizer\PaymentEntityLogoDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
@@ -117,6 +128,16 @@ return static function (ContainerConfigurator $container): void {
         ->public();
 
     $service->set(ExtensionOutputCheckerHandler::class);
+    $service->set(PaymentExtensionOutputChecker::class);
+
+    // SPC: collectors that validate clientDataJSON depending on its `type`
+    // ("webauthn.get"/"webauthn.create" vs "payment.get").
+    $service->set(WebauthnAuthenticationCollector::class);
+    $service->set(PaymentClientDataCollector::class);
+    $service
+        ->set(ClientDataCollectorManager::class)
+        ->args([[service(WebauthnAuthenticationCollector::class), service(PaymentClientDataCollector::class)]]);
+
     $service->set(AttestationObjectLoader::class);
     $service->set(AttestationStatementSupportManager::class);
     $service->set(NoneAttestationStatementSupport::class);
@@ -258,6 +279,41 @@ return static function (ContainerConfigurator $container): void {
         ]);
     $service
         ->set(SignalUnknownCredentialDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(CollectedClientPaymentDataDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(CollectedClientAdditionalPaymentDataDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(PaymentCurrencyAmountDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(PaymentCredentialInstrumentDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(PaymentEntityLogoDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(BrowserBoundSignatureDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(BrowserBoundPublicKeyDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
