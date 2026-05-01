@@ -34,8 +34,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Bump npm to a Trusted-Publisher-capable version
+        # Node 22 ships npm 10.x by default; OIDC trusted publishing needs npm >= 11.5.1.
+        run: npm install --global npm@latest
 
       - name: Extract version
         id: get_version
@@ -65,10 +69,12 @@ jobs:
           echo "Updated package.json to version ${{ steps.get_version.outputs.version }}"
 
       - name: Publish to NPM
+        # Authenticates via npm Trusted Publisher (OIDC). The job's
+        # `id-token: write` permission and the matching trusted-publisher
+        # configuration on npmjs (web-auth/webauthn-framework +
+        # npm-publish.yml) are all that is needed — no NPM token.
         working-directory: ./src/stimulus/assets
         run: npm publish --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: actions/github-script@v9
