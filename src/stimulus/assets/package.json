@@ -72,7 +72,10 @@
         "symfony-ux",
         "authentication",
         "passkey",
-        "passwordless"
+        "passwordless",
+        "secure-payment-confirmation",
+        "payment",
+        "spc"
     ],
     "author": {
         "name": "Florent Morselli",

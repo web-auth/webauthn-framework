@@ -71,7 +71,12 @@ final readonly class AssertionResponseController
                 $request->getHost(),
                 $userEntity?->id,
             );
-            return $this->successHandler->onSuccess($request);
+            return $this->successHandler->onSuccess(
+                $request,
+                $publicKeyCredential,
+                $publicKeyCredentialRequestOptions,
+                $userEntity
+            );
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred during the assertion ceremony', [
                 'exception' => $throwable,

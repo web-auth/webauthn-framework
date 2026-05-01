@@ -10,11 +10,13 @@ use Cose\Algorithm\Signature\RSA\RS256;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\ClientDataCollector\ClientDataCollectorManager;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use Webauthn\SecurePaymentConfirmation\BrowserBoundSignatureVerifier;
 
 final class CeremonyStepManagerFactory
 {
@@ -45,6 +47,8 @@ final class CeremonyStepManagerFactory
     private AttestationStatementSupportManager $attestationStatementSupportManager;
 
     private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
+
+    private null|ClientDataCollectorManager $clientDataCollectorManager = null;
 
     public function __construct()
     {
@@ -84,6 +88,11 @@ final class CeremonyStepManagerFactory
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
     }
 
+    public function setClientDataCollectorManager(ClientDataCollectorManager $clientDataCollectorManager): void
+    {
+        $this->clientDataCollectorManager = $clientDataCollectorManager;
+    }
+
     public function setAttestationStatementSupportManager(
         AttestationStatementSupportManager $attestationStatementSupportManager
     ): void {
@@ -121,7 +130,7 @@ final class CeremonyStepManagerFactory
         return new CeremonyStepManager([
             new CheckAllowedCredentialList(),
             new CheckUserHandle(),
-            new CheckClientDataCollectorType(),
+            new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
             $this->allowedOrigins === null ? new CheckOrigin(
                 $this->securedRelyingPartyId ?? []
@@ -137,6 +146,7 @@ final class CeremonyStepManagerFactory
             new CheckBackupBitsAreConsistent(),
             new CheckExtensions($this->extensionOutputCheckerHandler),
             new CheckSignature($this->algorithmManager),
+            new CheckBrowserBoundSignature(new BrowserBoundSignatureVerifier($this->algorithmManager)),
             new CheckCounter($this->counterChecker),
         ]);
     }
@@ -176,7 +186,7 @@ final class CeremonyStepManagerFactory
 
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential */
         return new CeremonyStepManager([
-            new CheckClientDataCollectorType(),
+            new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
             $this->allowedOrigins === null ? new CheckOrigin(
                 $this->securedRelyingPartyId ?? []

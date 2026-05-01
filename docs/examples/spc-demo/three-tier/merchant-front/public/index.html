@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FakeMerchant — three-tier</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 20px; color: #1f2937; }
+        h1 { font-size: 1.6rem; }
+        .badge { display: inline-block; background: #16a34a; color: #fff; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+        a.button { display: inline-block; padding: 0.6rem 1rem; border-radius: 6px; background: #16a34a; color: #fff; text-decoration: none; }
+        code { background: #f3f4f6; padding: 0.1em 0.3em; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<p><span class="badge">merchant-front.localhost:8002</span></p>
+<h1>FakeMerchant — three-tier checkout</h1>
+
+<p>
+    The browser only ever talks to the merchant backend
+    (<code>localhost:8003</code>), exactly like a real shop. The merchant
+    backend in turn talks to the bank/ACS (<code>localhost:8001</code>) on
+    its own time over a back channel — the browser polls a
+    <code>/status</code> endpoint until the bank has answered.
+</p>
+
+<p>
+    Make sure you have first
+    <a href="http://localhost:8001/register.html">enrolled a credential at FakeBank</a>.
+</p>
+
+<p>
+    <a class="button" href="/checkout.html">Pay with SPC (async back-channel)</a>
+</p>
+</body>
+</html>

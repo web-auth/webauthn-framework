@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPC Demo — Register</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 640px; margin: 40px auto; padding: 20px; color: #1f2937; }
+        h1 { font-size: 1.5rem; }
+        p { line-height: 1.5; }
+        label { display: block; margin: 0.5rem 0 0.25rem; font-weight: 500; }
+        input, button { padding: 0.6rem 0.8rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; }
+        input { width: 100%; box-sizing: border-box; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 400px; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+    </style>
+</head>
+<body>
+<nav><a href="/">← Demo home</a><a href="/checkout.html">Checkout →</a></nav>
+
+<h1>1. Register a credential (Relying Party origin)</h1>
+
+<p>
+    The relying party page calls <code>navigator.credentials.create()</code> with the
+    <code>payment</code> extension set to <code>{ isPayment: true }</code>. This binds the
+    new credential to <a href="https://www.w3.org/TR/secure-payment-confirmation/" target="_blank" rel="noopener">Secure
+    Payment Confirmation</a> so it can later be used for cross-origin payment authentication.
+</p>
+
+<form id="register-form">
+    <label for="username">Username (email)</label>
+    <input id="username" name="username" type="email" required value="jane.doe@example.com">
+    <p><button type="submit">Register</button></p>
+</form>
+
+<h2>Output</h2>
+<pre id="output">Submit the form to start a registration ceremony.</pre>
+
+<script type="module">
+    const out = document.getElementById('output');
+    const form = document.getElementById('register-form');
+
+    const b64uToBuffer = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/').padEnd(s.length + (4 - s.length % 4) % 4, '=')), c => c.charCodeAt(0)).buffer;
+    const bufferToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    const log = (msg, cls = '') => {
+        const stamp = new Date().toISOString().slice(11, 19);
+        out.innerHTML += `\n<span class="${cls}">[${stamp}] ${msg}</span>`;
+    };
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        out.textContent = '';
+        const username = form.username.value.trim();
+        try {
+            log(`Requesting creation options for ${username}…`);
+            const optsRes = await fetch('/api/register/options', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username }),
+            });
+            if (!optsRes.ok) throw new Error(`options endpoint returned ${optsRes.status}`);
+            const optsJson = await optsRes.json();
+
+            // The lib serialises buffers as base64url strings — convert back for the WebAuthn API.
+            const publicKey = {
+                ...optsJson,
+                challenge: b64uToBuffer(optsJson.challenge),
+                user: { ...optsJson.user, id: b64uToBuffer(optsJson.user.id) },
+                excludeCredentials: (optsJson.excludeCredentials || []).map(c => ({
+                    ...c,
+                    id: b64uToBuffer(c.id),
+                })),
+            };
+            log('Calling navigator.credentials.create() — confirm with the platform authenticator…');
+
+            const credential = await navigator.credentials.create({ publicKey });
+            log('Credential created — sending to /api/register/verify…', 'ok');
+
+            const payload = {
+                id: credential.id,
+                rawId: bufferToB64u(credential.rawId),
+                type: credential.type,
+                response: {
+                    clientDataJSON: bufferToB64u(credential.response.clientDataJSON),
+                    attestationObject: bufferToB64u(credential.response.attestationObject),
+                },
+                clientExtensionResults: credential.getClientExtensionResults(),
+            };
+
+            const verifyRes = await fetch('/api/register/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const verifyJson = await verifyRes.json();
+            if (!verifyRes.ok) throw new Error(verifyJson.error || `verify returned ${verifyRes.status}`);
+            log(`✔ Registration verified. credentialId=${verifyJson.credentialId}`, 'ok');
+            log('You can now go to /checkout.html and pay with this credential.', 'ok');
+        } catch (e) {
+            log(`✗ ${e.message}`, 'err');
+            console.error(e);
+        }
+    });
+</script>
+</body>
+</html>
