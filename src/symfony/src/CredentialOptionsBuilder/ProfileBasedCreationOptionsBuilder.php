@@ -52,6 +52,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         $authenticatorSelection = $this->buildAuthenticatorSelectionCriteria($optionsRequest);
         $attestation = $this->getEffectiveAttestation($optionsRequest);
         $extensions = $this->getEffectiveExtensions($optionsRequest);
+        $mediation = $this->getEffectiveMediation($optionsRequest);
 
         return $this->publicKeyCredentialCreationOptionsFactory->create(
             $this->profile,
@@ -59,8 +60,15 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
             $excludedCredentials,
             $authenticatorSelection,
             $attestation,
-            $extensions
+            $extensions,
+            $mediation,
         );
+    }
+
+    private function getEffectiveMediation(PublicKeyCredentialCreationOptionsRequest $optionsRequest): ?string
+    {
+        /** @var string|null */
+        return $this->overridePolicy->getEffectiveValue('mediation', $optionsRequest->mediation, null);
     }
 
     private function buildAuthenticatorSelectionCriteria(

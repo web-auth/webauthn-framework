@@ -215,6 +215,24 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end()
+            ->arrayNode('mediation')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')
+            ->defaultFalse()
+            ->info('Whether to allow client requests to request the conditional mediation flow (auto-register).')
+            ->end()
+            ->arrayNode('allowed_values')
+            ->defaultValue([
+                PublicKeyCredentialCreationOptions::MEDIATION_DEFAULT,
+                PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL,
+            ])
+            ->scalarPrototype()
+            ->end()
+            ->info('List of allowed mediation values')
+            ->end()
+            ->end()
+            ->end()
             ->end()
             ->end()
             ->end();

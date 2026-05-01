@@ -26,7 +26,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     private EventDispatcherInterface $eventDispatcher;
 
     /**
-     * @param array<string, array{rp: array{name: string, id: ?string}, challenge_length: int, timeout?: ?int, attestation_conveyance?: ?string, authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>}> $profiles
+     * @param array<string, array{rp: array{name: string, id: ?string}, challenge_length: int, timeout?: ?int, attestation_conveyance?: ?string, authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool}> $profiles
      */
     public function __construct(
         private readonly array $profiles,
@@ -48,7 +48,8 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         array $excludeCredentials = [],
         null|AuthenticatorSelectionCriteria $authenticatorSelection = null,
         null|string $attestationConveyance = null,
-        null|AuthenticationExtensions $AuthenticationExtensions = null
+        null|AuthenticationExtensions $AuthenticationExtensions = null,
+        null|string $mediation = null,
     ): PublicKeyCredentialCreationOptions {
         array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
             'The profile with key "%s" does not exist.',
@@ -64,6 +65,14 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         ));
         $attestation = $attestationConveyance ?? $profile['attestation_conveyance'] ?? null;
 
+        // The legacy `conditional_create: true` profile flag stays as a shortcut and feeds the new
+        // `mediation` mechanism: an explicit per-request mediation always wins, otherwise the profile
+        // default applies.
+        $effectiveMediation = $mediation
+            ?? (($profile['conditional_create'] ?? false) === true
+                ? PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL
+                : null);
+
         /** @var int<1, max> $challengeLength */
         $challengeLength = $profile['challenge_length'];
         $options = PublicKeyCredentialCreationOptions
@@ -78,7 +87,8 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 attestation: $attestation,
                 excludeCredentials: $excludeCredentials,
                 timeout: $timeout,
-                extensions: $AuthenticationExtensions ?? $this->createExtensions($profile)
+                extensions: $AuthenticationExtensions ?? $this->createExtensions($profile),
+                mediation: $effectiveMediation,
             );
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
