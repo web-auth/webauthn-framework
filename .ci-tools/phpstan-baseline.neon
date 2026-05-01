@@ -175,12 +175,6 @@ parameters:
 			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
 
 		-
-			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AuthenticatorDataLoader.php
-
-		-
 			rawMessage: '''
 				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
@@ -377,12 +371,6 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
-
-		-
-			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
 			rawMessage: '''
