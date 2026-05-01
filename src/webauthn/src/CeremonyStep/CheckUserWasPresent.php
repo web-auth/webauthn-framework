@@ -14,10 +14,13 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
 /**
- * Conditional check for user presence
+ * Conditional check for user presence.
  *
- * This step allows user presence to be false for Conditional Create scenarios
- * where mediation: 'conditional' is used (e.g., auto-register after password login).
+ * The User Presence (UP) bit MUST be set unless the ceremony explicitly opts out via the
+ * Conditional Create flow (e.g. SimpleWebAuthn `useAutoRegister: true`). The opt-out is
+ * controlled at runtime by `PublicKeyCredentialCreationOptions::$mediation`, which the
+ * options builder sets from the configured policy. The constructor flag remains a static
+ * fallback used by `CeremonyStepManagerFactory::conditionalCreateCeremony()`.
  *
  * @see https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create
  */
@@ -43,7 +46,7 @@ final readonly class CheckUserWasPresent implements CeremonyStep
                 self::class
             );
         }
-        if (! $this->requireUserPresence) {
+        if (! $this->isUserPresenceRequired($publicKeyCredentialOptions)) {
             return;
         }
 
@@ -54,5 +57,16 @@ final readonly class CheckUserWasPresent implements CeremonyStep
         $authData->isUserPresent() || throw AuthenticatorResponseVerificationException::create(
             'User was not present'
         );
+    }
+
+    private function isUserPresenceRequired(
+        PublicKeyCredentialRequestOptions|PublicKeyCredentialCreationOptions $publicKeyCredentialOptions
+    ): bool {
+        if ($publicKeyCredentialOptions instanceof PublicKeyCredentialCreationOptions
+            && $publicKeyCredentialOptions->mediation === PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL) {
+            return false;
+        }
+
+        return $this->requireUserPresence;
     }
 }

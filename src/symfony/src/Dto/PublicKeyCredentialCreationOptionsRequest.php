@@ -44,6 +44,13 @@ class PublicKeyCredentialCreationOptionsRequest
     ])]
     public ?string $authenticatorAttachment = null;
 
+    #[NotBlank(allowNull: true)]
+    #[Choice(choices: [
+        PublicKeyCredentialCreationOptions::MEDIATION_DEFAULT,
+        PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL,
+    ])]
+    public ?string $mediation = null;
+
     /**
      * @var array<string, mixed>|null
      */

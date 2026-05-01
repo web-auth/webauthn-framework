@@ -29,6 +29,25 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         self::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
     ];
 
+    public const MEDIATION_DEFAULT = 'default';
+
+    public const MEDIATION_CONDITIONAL = 'conditional';
+
+    public const MEDIATIONS = [self::MEDIATION_DEFAULT, self::MEDIATION_CONDITIONAL];
+
+    /**
+     * Server-side mediation hint. Mirrors the JS `mediation` option of `navigator.credentials.create()`
+     * but is *not* sent to the browser — it controls how the framework validates the response.
+     *
+     * - `MEDIATION_DEFAULT` (default) — full ceremony validation, including User Presence (UP) bit.
+     * - `MEDIATION_CONDITIONAL` — auto-register flow (e.g. SimpleWebAuthn `useAutoRegister: true`):
+     *   the UP bit is allowed to be false because the user already authenticated through another
+     *   factor (typically password). All other checks remain.
+     *
+     * @see https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create
+     */
+    public null|string $mediation = null;
+
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
@@ -46,6 +65,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         null|int $timeout = null,
         null|AuthenticationExtensions $extensions = null,
         array $hints = [],
+        null|string $mediation = null,
     ) {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
             $pubKeyCredParam instanceof PublicKeyCredentialParameters || throw new InvalidArgumentException(
@@ -61,6 +81,12 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             $attestation,
             'Invalid attestation conveyance mode'
         );
+        $mediation === null || in_array($mediation, self::MEDIATIONS, true) || throw InvalidDataException::create(
+            $mediation,
+            'Invalid mediation requirement'
+        );
+
+        $this->mediation = $mediation;
 
         parent::__construct($challenge, $timeout, $extensions, $hints);
     }
@@ -82,6 +108,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         null|int $timeout = null,
         null|AuthenticationExtensions $extensions = null,
         array $hints = [],
+        null|string $mediation = null,
     ): self {
         return new self(
             $rp,
@@ -93,7 +120,8 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             $excludeCredentials,
             $timeout,
             $extensions,
-            $hints
+            $hints,
+            $mediation,
         );
     }
 }

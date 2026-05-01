@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Unit;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -197,5 +198,80 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
 
         // Then
         static::assertSame([], $options->hints);
+    }
+
+    #[Test]
+    public function mediationDefaultsToNull(): void
+    {
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+        );
+
+        static::assertNull($options->mediation);
+    }
+
+    #[Test]
+    public function conditionalMediationIsAcceptedAndStored(): void
+    {
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            mediation: PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL,
+        );
+
+        static::assertSame(PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL, $options->mediation);
+    }
+
+    #[Test]
+    public function invalidMediationIsRejected(): void
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid mediation requirement');
+
+        PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            mediation: 'invalid',
+        );
+    }
+
+    #[Test]
+    public function mediationIsNotEmittedInTheJsonSentToTheBrowser(): void
+    {
+        // The browser receives `mediation` via the JS API, not via the server-side options dictionary.
+        // Leaking it in the JSON would pollute the payload without any client-side effect.
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            mediation: PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL,
+        );
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json');
+
+        static::assertStringNotContainsString('mediation', $json);
+    }
+
+    #[Test]
+    public function mediationSurvivesPhpNativeSerializationRoundTrip(): void
+    {
+        // The bundle's OptionsStorage uses PHP native serialize/unserialize to persist
+        // the options between the request and response phases.
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            mediation: PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL,
+        );
+
+        /** @var PublicKeyCredentialCreationOptions $restored */
+        $restored = unserialize(serialize($options));
+
+        static::assertSame(PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL, $restored->mediation);
     }
 }
