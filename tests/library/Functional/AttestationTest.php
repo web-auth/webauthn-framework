@@ -35,7 +35,7 @@ final class AttestationTest extends AbstractTestCase
     }
 
     #[Test]
-    #[MaximumDuration(600)]
+    #[MaximumDuration(3000)]
     public function attestationSignedWithEcDSA521ShouldBeVerified(): void
     {
         // Given

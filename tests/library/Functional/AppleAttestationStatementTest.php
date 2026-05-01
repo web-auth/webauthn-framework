@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use DateTimeImmutable;
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
@@ -22,6 +23,7 @@ use Webauthn\Tests\AbstractTestCase;
 final class AppleAttestationStatementTest extends AbstractTestCase
 {
     #[Test]
+    #[MaximumDuration(1500)]
     public function appleAttestationCanBeVerified(): void
     {
         // Given

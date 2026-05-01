@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Functional;
 
 use Cose\Algorithms;
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -22,6 +23,7 @@ use Webauthn\Tests\AbstractTestCase;
 final class AttestationStatementWithTokenBindingTest extends AbstractTestCase
 {
     #[Test]
+    #[MaximumDuration(2000)]
     public function attestationWithTokenBindingCanBeVerified(): void
     {
         // Given

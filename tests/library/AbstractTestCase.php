@@ -66,6 +66,8 @@ abstract class AbstractTestCase extends TestCase
 
     private null|CeremonyStepManagerFactory $ceremonyStepManagerFactory = null;
 
+    private ?AttestationStatementSupportManager $attestationStatementSupportManager = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -165,18 +167,20 @@ abstract class AbstractTestCase extends TestCase
 
     private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
     {
-        $attestationStatementSupportManager = new AttestationStatementSupportManager();
-        $attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
-        $attestationStatementSupportManager->add(AndroidKeyAttestationStatementSupport::create());
-        $attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
-        $attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
-            $this->getAlgorithmManager()
-        ));
-        $attestationStatementSupportManager->add(CompoundAttestationStatementSupport::create());
-        $attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock));
+        if ($this->attestationStatementSupportManager === null) {
+            $this->attestationStatementSupportManager = new AttestationStatementSupportManager();
+            $this->attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
+            $this->attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
+            $this->attestationStatementSupportManager->add(AndroidKeyAttestationStatementSupport::create());
+            $this->attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport());
+            $this->attestationStatementSupportManager->add(new PackedAttestationStatementSupport(
+                $this->getAlgorithmManager()
+            ));
+            $this->attestationStatementSupportManager->add(CompoundAttestationStatementSupport::create());
+            $this->attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock));
+        }
 
-        return $attestationStatementSupportManager;
+        return $this->attestationStatementSupportManager;
     }
 
     private function getAlgorithmManager(): Manager

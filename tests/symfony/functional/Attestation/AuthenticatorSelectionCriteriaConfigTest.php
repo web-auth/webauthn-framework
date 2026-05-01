@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Attestation;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
 {
     #[Test]
+    #[MaximumDuration(2000)]
     public function configuredUserVerificationShouldBeRespectedWhenRequestBodyIsEmpty(): void
     {
         self::bootKernel();

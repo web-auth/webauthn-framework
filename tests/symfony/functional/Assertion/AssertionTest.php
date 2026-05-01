@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\Assertion;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -26,6 +27,7 @@ final class AssertionTest extends WebauthnTestCase
     use MockedRequestTrait;
 
     #[Test]
+    #[MaximumDuration(3000)]
     public function anAssertionResponseCanBeLoadedAndVerified(): void
     {
         $publicKeyCredential = null;

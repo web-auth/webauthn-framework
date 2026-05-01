@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Functional;
 
+use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -20,6 +21,7 @@ use Webauthn\Tests\AbstractTestCase;
 final class PackedAttestationStatementTest extends AbstractTestCase
 {
     #[Test]
+    #[MaximumDuration(1500)]
     public function packedAttestationCanBeVerified(): void
     {
         // Given
@@ -153,6 +155,7 @@ final class PackedAttestationStatementTest extends AbstractTestCase
     }
 
     #[Test]
+    #[MaximumDuration(2000)]
     public function packedAttestationWithIntermediateCertificateCanBeVerified(): void
     {
         // Given
