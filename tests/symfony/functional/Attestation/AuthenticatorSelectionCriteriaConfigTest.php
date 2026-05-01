@@ -32,7 +32,6 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         $emptyRequest = Request::create('/test', Request::METHOD_POST, [], [], [], [], '{}');
         $emptyRequest->headers->set('Content-Type', 'application/json');
 
-        /** @var ProfileBasedCreationOptionsBuilder $builder */
         $builder = new ProfileBasedCreationOptionsBuilder(
             self::getContainer()->get('serializer'),
             self::getContainer()->get('validator'),
@@ -52,7 +51,7 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         $authenticatorSelection = $options->authenticatorSelection;
 
         static::assertNotNull($authenticatorSelection, 'AuthenticatorSelection should not be null');
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $authenticatorSelection->userVerification,
             'User verification should match the configured value from test config'
@@ -67,7 +66,6 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         /** @var PublicKeyCredentialCreationOptionsFactory $factory */
         $factory = self::getContainer()->get(PublicKeyCredentialCreationOptionsFactory::class);
 
-        /** @var ProfileBasedCreationOptionsBuilder $builder */
         $builder = new ProfileBasedCreationOptionsBuilder(
             self::getContainer()->get('serializer'),
             self::getContainer()->get('validator'),
@@ -97,7 +95,7 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         static::assertNotNull($authenticatorSelection);
 
         // Profile configuration should have priority over explicit request values
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $authenticatorSelection->userVerification,
             'Profile configuration should override explicit request values'
@@ -112,7 +110,6 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         /** @var PublicKeyCredentialCreationOptionsFactory $factory */
         $factory = self::getContainer()->get(PublicKeyCredentialCreationOptionsFactory::class);
 
-        /** @var ProfileBasedCreationOptionsBuilder $builder */
         $builder = new ProfileBasedCreationOptionsBuilder(
             self::getContainer()->get('serializer'),
             self::getContainer()->get('validator'),
@@ -142,14 +139,14 @@ final class AuthenticatorSelectionCriteriaConfigTest extends KernelTestCase
         static::assertNotNull($authenticatorSelection);
 
         // Profile configuration should always be used, ignoring request values
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $authenticatorSelection->userVerification,
             'Profile userVerification should override request value'
         );
 
         // Profile should also override authenticatorAttachment (config has 'no preference')
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
             $authenticatorSelection->authenticatorAttachment,
             'Profile authenticatorAttachment should override request value'

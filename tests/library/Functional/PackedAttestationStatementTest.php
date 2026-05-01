@@ -7,7 +7,6 @@ namespace Webauthn\Tests\Functional;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -70,7 +69,6 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame([], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response->attestationObject->authData;
         static::assertSame(
             hex2bin('49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763'),
@@ -137,7 +135,6 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame([], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
             ->authData;
@@ -196,7 +193,6 @@ final class PackedAttestationStatementTest extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame([], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
             ->authData;

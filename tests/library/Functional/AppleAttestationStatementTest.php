@@ -9,7 +9,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -66,11 +65,9 @@ final class AppleAttestationStatementTest extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame([], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
             ->authData;
-        /** @var AttestationStatement $attestationStatement */
         $attestationStatement = $publicKeyCredential->response
             ->attestationObject
             ->attStmt;

@@ -41,7 +41,10 @@ final class CheckUserHandle implements CeremonyStep
                 hash_equals($credentialUserHandle, $responseUserHandle) || throw InvalidUserHandleException::create();
             }
         } else {
-            ($responseUserHandle !== null && $responseUserHandle !== '' && hash_equals($credentialUserHandle, $responseUserHandle))
+            ($responseUserHandle !== null && $responseUserHandle !== '' && hash_equals(
+                $credentialUserHandle,
+                $responseUserHandle
+            ))
                 || throw InvalidUserHandleException::create();
         }
     }

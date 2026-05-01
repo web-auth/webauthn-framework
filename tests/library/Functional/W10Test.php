@@ -10,7 +10,6 @@ use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -57,7 +56,6 @@ final class W10Test extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame([], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
             ->authData;

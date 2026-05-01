@@ -9,7 +9,6 @@ use PHPUnit\Framework\Attributes\Test;
 use RangeException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -75,7 +74,6 @@ final class AttestationTest extends AbstractTestCase
             $publicKeyCredentialDescriptor->type
         );
         static::assertSame(['usb'], $publicKeyCredentialDescriptor->transports);
-        /** @var AuthenticatorData $authenticatorData */
         $authenticatorData = $publicKeyCredential->response
             ->attestationObject
             ->authData;

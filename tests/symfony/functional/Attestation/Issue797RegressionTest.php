@@ -50,7 +50,6 @@ final class Issue797RegressionTest extends KernelTestCase
 
         // Create a ProfileBasedCreationOptionsBuilder using the 'default' profile
         // which has user_verification: preferred in the test config
-        /** @var ProfileBasedCreationOptionsBuilder $builder */
         $builder = new ProfileBasedCreationOptionsBuilder(
             self::getContainer()->get('serializer'),
             self::getContainer()->get('validator'),
@@ -75,7 +74,7 @@ final class Issue797RegressionTest extends KernelTestCase
 
         // The test configuration in config.yml sets user_verification to 'preferred' for the default profile
         // So this should match the configured value, not the hardcoded 'preferred' fallback
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $authenticatorSelection->userVerification,
             'userVerification should match the configured value from profile, not hardcoded default'
@@ -96,7 +95,6 @@ final class Issue797RegressionTest extends KernelTestCase
         /** @var PublicKeyCredentialCreationOptionsFactory $factory */
         $factory = self::getContainer()->get(PublicKeyCredentialCreationOptionsFactory::class);
 
-        /** @var ProfileBasedCreationOptionsBuilder $builder */
         $builder = new ProfileBasedCreationOptionsBuilder(
             self::getContainer()->get('serializer'),
             self::getContainer()->get('validator'),
@@ -126,7 +124,7 @@ final class Issue797RegressionTest extends KernelTestCase
         static::assertNotNull($authenticatorSelection);
 
         // Profile configuration should override request values
-        static::assertEquals(
+        static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             $authenticatorSelection->userVerification,
             'Profile configuration should override explicit request values'
