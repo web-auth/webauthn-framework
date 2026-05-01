@@ -59,13 +59,26 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Skip if version already on npm
+        id: already_published
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          if npm view "@web-auth/webauthn-stimulus@${VERSION}" version >/dev/null 2>&1; then
+            echo "@web-auth/webauthn-stimulus@${VERSION} is already on npm — skipping publish."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Update package version
+        if: steps.already_published.outputs.skip == 'false'
         working-directory: ./src/stimulus/assets
         run: |
           npm version ${{ steps.get_version.outputs.version }} --no-git-tag-version
           echo "Updated package.json to version ${{ steps.get_version.outputs.version }}"
 
       - name: Publish to NPM
+        if: steps.already_published.outputs.skip == 'false'
         # Authenticates via npm Trusted Publisher (OIDC). The job's
         # `id-token: write` permission and the matching trusted-publisher
         # configuration on npmjs (web-auth/webauthn-framework +
