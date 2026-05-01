@@ -32,14 +32,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Node.js
+        # Node 24 ships npm >= 11.5.1, required for Trusted Publisher (OIDC).
         uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Bump npm to a Trusted-Publisher-capable version
-        # Node 22 ships npm 10.x by default; OIDC trusted publishing needs npm >= 11.5.1.
-        run: npm install --global npm@latest
 
       - name: Extract version
         id: get_version
