@@ -24,8 +24,8 @@ jobs:
   publish-npm:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: write   # to create/update the GitHub Release
+      id-token: write   # for npm Trusted Publisher (OIDC)
 
     steps:
       - name: Checkout repository
@@ -73,19 +73,46 @@ jobs:
         working-directory: ./src/stimulus/assets
         run: npm publish --provenance
 
-      - name: Create GitHub Release
+      - name: Ensure GitHub Release exists
+        # Idempotent: a release for this tag may already exist (created when
+        # the milestone was closed, or on a previous workflow_dispatch
+        # backfill). In that case we simply append a note about the npm
+        # publish to the existing body.
         uses: actions/github-script@v9
         with:
           script: |
-            const tag = context.ref.replace('refs/tags/', '');
-            const version = tag.replace(/^v/, '');
+            const version = '${{ steps.get_version.outputs.version }}';
+            const tag = version;
+            const npmNote = `Published @web-auth/webauthn-stimulus to NPM: https://www.npmjs.com/package/@web-auth/webauthn-stimulus/v/${version}`;
+            const isPrerelease = version.includes('-');
 
-            await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: tag,
-              name: `@web-auth/webauthn-stimulus v${version}`,
-              body: `Published version ${version} to NPM: https://www.npmjs.com/package/@web-auth/webauthn-stimulus/v/${version}`,
-              draft: false,
-              prerelease: version.includes('-')
-            });
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tag,
+                name: `@web-auth/webauthn-stimulus v${version}`,
+                body: npmNote,
+                draft: false,
+                prerelease: isPrerelease,
+              });
+              core.info(`Created release for ${tag}`);
+            } catch (err) {
+              if (err.status !== 422) throw err;
+              const existing = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+              if ((existing.data.body || '').includes(npmNote)) {
+                core.info(`Release ${tag} already mentions the npm publish — nothing to do.`);
+                return;
+              }
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: existing.data.id,
+                body: `${existing.data.body || ''}\n\n${npmNote}`.trim(),
+              });
+              core.info(`Appended npm-publish note to existing release ${tag}`);
+            }
