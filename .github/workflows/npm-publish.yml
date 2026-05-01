@@ -51,7 +51,9 @@ jobs:
           echo "Publishing version: $VERSION"
 
       - name: Install dependencies
-        run: npm ci
+        # npm install (not npm ci) — package-lock.json is gitignored so the
+        # lock file does not exist in CI.
+        run: npm install --no-audit --no-fund
 
       - name: Run tests
         run: npm test
