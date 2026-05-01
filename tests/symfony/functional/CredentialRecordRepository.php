@@ -8,15 +8,18 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\Bundle\Repository\CanSaveCredentialSource;
+use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
-final readonly class CredentialRecordRepository implements CredentialRecordRepositoryInterface, CanSaveCredentialSource
+/**
+ * 5.3 forward-compatible repository: implements only the new interfaces, with
+ * saveCredentialRecord(CredentialRecord) — used to verify issue #827 is fixed.
+ */
+final readonly class CredentialRecordRepository implements CredentialRecordRepositoryInterface, CanSaveCredentialRecord
 {
     public function __construct(
         private CacheItemPoolInterface $cacheItemPool
@@ -38,7 +41,7 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
             'foo',
             100
         );
-        $this->saveCredentialSource($credentialRecord1);
+        $this->saveCredentialRecord($credentialRecord1);
         $credentialRecord2 = CredentialRecord::create(
             base64_decode(
                 'Ac8zKrpVWv9UCwxY1FyMqkESz2lV4CNwTk2+Hp19LgKbvh5uQ2/i6AMbTbTz1zcNapCEeiLJPlAAVM4L7AIow6I=',
@@ -56,7 +59,7 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
             '929fba2f-2361-4bc6-a917-bb76aa14c7f9',
             100
         );
-        $this->saveCredentialSource($credentialRecord2);
+        $this->saveCredentialRecord($credentialRecord2);
     }
 
     public function ensureCredentialNotExist(string $publicKeyCredentialId): void
@@ -64,9 +67,8 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
         $this->cacheItemPool->deleteItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
     }
 
-    public function findOneByCredentialId(
-        string $publicKeyCredentialId
-    ): CredentialRecord|PublicKeyCredentialSource|null {
+    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
+    {
         $item = $this->cacheItemPool->getItem('pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialId));
         if (! $item->isHit()) {
             return null;
@@ -92,7 +94,7 @@ final readonly class CredentialRecordRepository implements CredentialRecordRepos
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(CredentialRecord|PublicKeyCredentialSource $credentialRecord): void
+    public function saveCredentialRecord(CredentialRecord $credentialRecord): void
     {
         $item = $this->cacheItemPool->getItem(
             'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)

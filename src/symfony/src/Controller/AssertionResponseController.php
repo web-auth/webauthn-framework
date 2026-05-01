@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -31,7 +31,7 @@ final readonly class AssertionResponseController
         private OptionsStorage $optionsStorage,
         private SuccessHandler $successHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
+        private CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
     }
 

@@ -2,57 +2,21 @@ parameters:
 	ignoreErrors:
 		-
 			rawMessage: '''
-				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AssertionControllerFactory::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
 			'''
-			identifier: parameter.deprecatedInterface
+			identifier: staticMethod.deprecatedClass
 			count: 1
-			path: ../src/symfony/src/Controller/AssertionControllerFactory.php
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
 			rawMessage: '''
-				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
 			'''
-			identifier: property.deprecatedInterface
+			identifier: method.deprecatedInterface
 			count: 1
-			path: ../src/symfony/src/Controller/AssertionControllerFactory.php
-
-		-
-			rawMessage: '''
-				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AssertionResponseController::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AssertionResponseController.php
-
-		-
-			rawMessage: '''
-				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AssertionResponseController.php
-
-		-
-			rawMessage: '''
-				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Controller\AttestationControllerFactory::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AttestationControllerFactory.php
-
-		-
-			rawMessage: '''
-				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AttestationControllerFactory.php
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
 			rawMessage: '''
@@ -60,62 +24,8 @@ parameters:
 				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
 			'''
 			identifier: instanceof.deprecatedInterface
-			count: 1
+			count: 2
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
-
-		-
-			rawMessage: '''
-				Parameter $credentialSourceRepository of method Webauthn\Bundle\Controller\AttestationResponseController::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AttestationResponseController.php
-
-		-
-			rawMessage: '''
-				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Controller/AttestationResponseController.php
-
-		-
-			rawMessage: '''
-				Parameter $credentialSourceRepository of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
-
-		-
-			rawMessage: '''
-				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedCreationOptionsBuilder.php
-
-		-
-			rawMessage: '''
-				Parameter $credentialSourceRepository of method Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
-
-		-
-			rawMessage: '''
-				Property $credentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
 
 		-
 			rawMessage: '''
@@ -125,15 +35,6 @@ parameters:
 			identifier: method.deprecated
 			count: 1
 			path: ../src/symfony/src/DependencyInjection/Compiler/CeremonyStepManagerFactoryCompilerPass.php
-
-		-
-			rawMessage: '''
-				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: classConstant.deprecatedInterface
-			count: 2
-			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
 			rawMessage: 'Parameter #3 $config (array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}) of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticator() should be contravariant with parameter $config (array<string, mixed>) of method Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface::createAuthenticator()'
@@ -147,7 +48,7 @@ parameters:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
 			'''
 			identifier: classConstant.deprecatedInterface
-			count: 3
+			count: 1
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -158,15 +59,6 @@ parameters:
 			identifier: class.implementsDeprecatedInterface
 			count: 1
 			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
-
-		-
-			rawMessage: '''
-				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: classConstant.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Resources/config/security.php
 
 		-
 			rawMessage: 'Parameter #1 $data (array{Webauthn\PublicKeyCredentialUserEntity, Webauthn\PublicKeyCredentialDescriptor, Webauthn\PublicKeyCredentialOptions, bool, bool, bool, bool, int, ...}) of method Webauthn\Bundle\Security\Authentication\Token\WebauthnToken::__unserialize() should be contravariant with parameter $data (array) of method Symfony\Component\Security\Core\Authentication\Token\AbstractToken::__unserialize()'
@@ -200,29 +92,29 @@ parameters:
 
 		-
 			rawMessage: '''
+				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: staticMethod.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
+			rawMessage: '''
 				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
 				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
 			'''
 			identifier: instanceof.deprecatedInterface
 			count: 2
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
-
-		-
-			rawMessage: '''
-				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
-
-		-
-			rawMessage: '''
-				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
@@ -242,29 +134,29 @@ parameters:
 
 		-
 			rawMessage: '''
+				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
+				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: staticMethod.deprecatedClass
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
+				Call to method saveCredentialSource() of deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
+				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
+			'''
+			identifier: method.deprecatedInterface
+			count: 1
+			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: '''
 				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
 				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
 			'''
 			identifier: instanceof.deprecatedInterface
 			count: 2
-			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
-
-		-
-			rawMessage: '''
-				Parameter $publicKeyCredentialSourceRepository of method Webauthn\Bundle\Security\Http\Authenticator\WebauthnAuthenticator::__construct() has typehint with deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: parameter.deprecatedInterface
-			count: 1
-			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
-
-		-
-			rawMessage: '''
-				Property $publicKeyCredentialSourceRepository references deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface in its type:
-				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
-			'''
-			identifier: property.deprecatedInterface
-			count: 1
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
@@ -281,6 +173,12 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
+
+		-
+			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
 			rawMessage: '''
@@ -479,6 +377,12 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
+
+		-
+			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
 			rawMessage: '''

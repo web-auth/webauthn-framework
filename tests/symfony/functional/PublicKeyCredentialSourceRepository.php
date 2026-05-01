@@ -16,6 +16,11 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 
+/**
+ * 5.2.x-style legacy repository used to verify the BC bridge in the bundle.
+ * Implements only the deprecated interfaces and uses the deprecated saveCredentialSource(PublicKeyCredentialSource)
+ * signature to mimic what existing user code looks like.
+ */
 final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
 {
     public function __construct(
@@ -91,22 +96,22 @@ final readonly class PublicKeyCredentialSourceRepository implements PublicKeyCre
         $this->cacheItemPool->clear();
     }
 
-    public function saveCredentialSource(CredentialRecord $credentialRecord): void
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
         $item = $this->cacheItemPool->getItem(
-            'pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->publicKeyCredentialId)
+            'pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->publicKeyCredentialId)
         );
-        $item->set($credentialRecord);
+        $item->set($publicKeyCredentialSource);
         $this->cacheItemPool->save($item);
 
         $item = $this->cacheItemPool->getItem(
-            'user-pks-' . Base64UrlSafe::encodeUnpadded($credentialRecord->userHandle)
+            'user-pks-' . Base64UrlSafe::encodeUnpadded($publicKeyCredentialSource->userHandle)
         );
         $pks = [];
         if ($item->isHit()) {
             $pks = $item->get();
         }
-        $pks[] = $credentialRecord;
+        $pks[] = $publicKeyCredentialSource;
         $item->set($pks);
         $this->cacheItemPool->save($item);
     }

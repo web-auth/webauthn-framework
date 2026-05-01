@@ -17,7 +17,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -29,7 +29,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
     public function __construct(
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
-        private PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private CredentialRecordRepositoryInterface $credentialSourceRepository,
         private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
         private string $profile,
         private ClientOverridePolicy $overridePolicy = new ClientOverridePolicy(),
