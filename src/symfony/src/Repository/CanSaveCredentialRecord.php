@@ -11,5 +11,5 @@ use Webauthn\CredentialRecord;
  */
 interface CanSaveCredentialRecord
 {
-    public function saveCredentialSource(CredentialRecord $credentialRecord): void;
+    public function saveCredentialRecord(CredentialRecord $credentialRecord): void;
 }

@@ -8,7 +8,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialCreationOptionsBuilder;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\CreationOptionsHandler;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
@@ -21,7 +21,7 @@ final readonly class AttestationControllerFactory
         private OptionsStorage $optionStorage,
         private SerializerInterface $serializer,
         private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository
+        private CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository
     ) {
     }
 

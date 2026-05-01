@@ -42,6 +42,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerP
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -102,6 +103,9 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias('webauthn.logger', $config['logger']);
 
         $container->setAlias(FakeCredentialGenerator::class, $config['fake_credential_generator']);
+        $container->setAlias(CredentialRecordRepositoryInterface::class, $config['credential_repository']);
+        // @deprecated Will be removed in 6.0.0. Kept for BC: code still type-hinting the legacy interface
+        // resolves to the same service when the configured repository implements it.
         $container->setAlias(PublicKeyCredentialSourceRepositoryInterface::class, $config['credential_repository']);
         $container->setAlias(PublicKeyCredentialUserEntityRepositoryInterface::class, $config['user_repository']);
 
@@ -201,7 +205,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     ->setArguments([
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
-                        new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
+                        new Reference(CredentialRecordRepositoryInterface::class),
                         new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                         $creationConfig['profile'],
                         new Reference(ClientOverridePolicy::class),
@@ -294,7 +298,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                         new Reference(SerializerInterface::class),
                         new Reference(ValidatorInterface::class),
                         new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
-                        new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
+                        new Reference(CredentialRecordRepositoryInterface::class),
                         new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                         $requestConfig['profile'],
                         new Reference(FakeCredentialGenerator::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),

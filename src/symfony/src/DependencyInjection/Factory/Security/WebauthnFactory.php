@@ -28,7 +28,7 @@ use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedCreationOptionsBuilder;
 use Webauthn\Bundle\CredentialOptionsBuilder\ProfileBasedRequestOptionsBuilder;
 use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser;
 use Webauthn\Bundle\Security\Handler\DefaultCreationOptionsHandler;
@@ -493,7 +493,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
                 new Reference(PublicKeyCredentialUserEntityRepositoryInterface::class),
-                new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
+                new Reference(CredentialRecordRepositoryInterface::class),
                 new Reference(PublicKeyCredentialRequestOptionsFactory::class),
                 $config['profile'],
                 new Reference(FakeCredentialGenerator::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
@@ -521,7 +521,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->setArguments([
                 new Reference(SerializerInterface::class),
                 new Reference(ValidatorInterface::class),
-                new Reference(PublicKeyCredentialSourceRepositoryInterface::class),
+                new Reference(CredentialRecordRepositoryInterface::class),
                 new Reference(PublicKeyCredentialCreationOptionsFactory::class),
                 $config['profile'],
                 new Reference(ClientOverridePolicy::class),

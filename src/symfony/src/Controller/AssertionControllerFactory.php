@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\Bundle\CredentialOptionsBuilder\PublicKeyCredentialRequestOptionsBuilder;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
@@ -25,7 +25,7 @@ final class AssertionControllerFactory implements CanLogData
         private readonly SerializerInterface $serializer,
         private readonly OptionsStorage $optionStorage,
         private readonly AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
-        private readonly PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
+        private readonly CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository,
     ) {
         $this->logger = new NullLogger();
     }

@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use function sprintf;
 use Webauthn\CredentialRecord;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -17,7 +18,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  *
  * @deprecated since 5.2.0, to be removed in 6.0.0. Please create your own doctrine-based repository.
  */
-class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource
+class DoctrineCredentialSourceRepository extends ServiceEntityRepository implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialRecord, CanSaveCredentialSource
 {
     /**
      * @var class-string
@@ -40,12 +41,24 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
         parent::__construct($registry, $class);
     }
 
-    public function saveCredentialSource(CredentialRecord $credentialRecord): void
+    public function saveCredentialRecord(CredentialRecord $credentialRecord): void
     {
-        $this->getEntityManager()
-            ->persist($credentialRecord);
-        $this->getEntityManager()
-            ->flush();
+        // Route PublicKeyCredentialSource through the legacy saveCredentialSource()
+        // so that user subclasses overriding it (5.2.x style) keep being invoked.
+        // BC promise: legacy override is honored until 6.0.
+        if ($credentialRecord instanceof PublicKeyCredentialSource) {
+            $this->saveCredentialSource($credentialRecord);
+            return;
+        }
+        $this->persistCredentialRecord($credentialRecord);
+    }
+
+    /**
+     * @deprecated since 5.3, use saveCredentialRecord() instead. Will be removed in 6.0.
+     */
+    public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
+    {
+        $this->persistCredentialRecord($publicKeyCredentialSource);
     }
 
     /**
@@ -76,5 +89,13 @@ class DoctrineCredentialSourceRepository extends ServiceEntityRepository impleme
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    private function persistCredentialRecord(CredentialRecord $credentialRecord): void
+    {
+        $this->getEntityManager()
+            ->persist($credentialRecord);
+        $this->getEntityManager()
+            ->flush();
     }
 }

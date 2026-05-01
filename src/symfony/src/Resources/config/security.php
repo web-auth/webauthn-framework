@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
@@ -48,7 +48,7 @@ return static function (ContainerConfigurator $container): void {
             abstract_arg('Success handler'),
             abstract_arg('Failure handler'),
             abstract_arg('Options Storage'),
-            service(PublicKeyCredentialSourceRepositoryInterface::class),
+            service(CredentialRecordRepositoryInterface::class),
             service(PublicKeyCredentialUserEntityRepositoryInterface::class),
             service(SerializerInterface::class),
             abstract_arg('Authenticator Assertion Response Validator'),
@@ -61,5 +61,7 @@ return static function (ContainerConfigurator $container): void {
 
     $service->set(CurrentUserEntityGuesser::class);
     $service->set(RequestBodyUserEntityGuesser::class);
-    $service->set(WebauthnBadgeListener::class);
+    $service->set(WebauthnBadgeListener::class)
+        ->arg('$userProvider', service('security.user_providers'))
+    ;
 };

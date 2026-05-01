@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
+use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
@@ -23,14 +24,19 @@ use Webauthn\TrustPath\EmptyTrustPath;
 final class RepositoryCompatibilityTest extends AbstractTestCase
 {
     #[Test]
-    public function publicKeyCredentialSourceRepositoryCanHandleCredentialRecord(): void
+    public function legacyRepositoryStoresPublicKeyCredentialSource(): void
     {
+        // 5.2.x-style repository: implements only the deprecated interfaces and only accepts
+        // PublicKeyCredentialSource — that signature must keep working under the BC promise.
         $repository = new class() implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource {
+            /**
+             * @var array<string, PublicKeyCredentialSource>
+             */
             private array $storage = [];
 
-            public function saveCredentialSource(CredentialRecord $credentialRecord): void
+            public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
             {
-                $this->storage[$credentialRecord->publicKeyCredentialId] = $credentialRecord;
+                $this->storage[$publicKeyCredentialSource->publicKeyCredentialId] = $publicKeyCredentialSource;
             }
 
             public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
@@ -42,59 +48,13 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             {
                 return array_filter(
                     $this->storage,
-                    fn ($credential) => $credential->userHandle === $publicKeyCredentialUserEntity->id
-                );
-            }
-        };
-
-        $credentialRecord = CredentialRecord::create(
-            'test-id',
-            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            [],
-            'none',
-            EmptyTrustPath::create(),
-            Uuid::v4(),
-            'public-key',
-            'user-handle',
-            10
-        );
-
-        // Should be able to save a CredentialRecord
-        $repository->saveCredentialSource($credentialRecord);
-
-        // Should be able to retrieve it
-        $retrieved = $repository->findOneByCredentialId('test-id');
-        static::assertInstanceOf(CredentialRecord::class, $retrieved);
-        static::assertSame('test-id', $retrieved->publicKeyCredentialId);
-    }
-
-    #[Test]
-    public function publicKeyCredentialSourceRepositoryCanHandlePublicKeyCredentialSource(): void
-    {
-        $repository = new class() implements PublicKeyCredentialSourceRepositoryInterface, CanSaveCredentialSource {
-            private array $storage = [];
-
-            public function saveCredentialSource(CredentialRecord $credentialRecord): void
-            {
-                $this->storage[$credentialRecord->publicKeyCredentialId] = $credentialRecord;
-            }
-
-            public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
-            {
-                return $this->storage[$publicKeyCredentialId] ?? null;
-            }
-
-            public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
-            {
-                return array_filter(
-                    $this->storage,
-                    fn ($credential) => $credential->userHandle === $publicKeyCredentialUserEntity->id
+                    static fn (CredentialRecord $credential): bool => $credential->userHandle === $publicKeyCredentialUserEntity->id
                 );
             }
         };
 
         $pkcs = new PublicKeyCredentialSource(
-            'test-id-2',
+            'legacy-id',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
             'none',
@@ -105,22 +65,25 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             10
         );
 
-        // Should be able to save a PublicKeyCredentialSource (extends CredentialRecord)
         $repository->saveCredentialSource($pkcs);
 
-        // Should be able to retrieve it
-        $retrieved = $repository->findOneByCredentialId('test-id-2');
+        $retrieved = $repository->findOneByCredentialId('legacy-id');
         static::assertInstanceOf(PublicKeyCredentialSource::class, $retrieved);
-        static::assertSame('test-id-2', $retrieved->publicKeyCredentialId);
+        static::assertSame('legacy-id', $retrieved->publicKeyCredentialId);
     }
 
     #[Test]
-    public function credentialRecordRepositoryCanHandleBothTypes(): void
+    public function newRepositoryStoresAnyCredentialRecord(): void
     {
+        // New 5.3 repository: implements only the new interfaces with the new method name,
+        // and accepts both raw CredentialRecord and PublicKeyCredentialSource (since PKCS extends CR).
         $repository = new class() implements CredentialRecordRepositoryInterface, CanSaveCredentialRecord {
+            /**
+             * @var array<string, CredentialRecord>
+             */
             private array $storage = [];
 
-            public function saveCredentialSource(CredentialRecord $credentialRecord): void
+            public function saveCredentialRecord(CredentialRecord $credentialRecord): void
             {
                 $this->storage[$credentialRecord->publicKeyCredentialId] = $credentialRecord;
             }
@@ -134,7 +97,7 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             {
                 return array_filter(
                     $this->storage,
-                    fn ($credential) => $credential->userHandle === $publicKeyCredentialUserEntity->id
+                    static fn (CredentialRecord $credential): bool => $credential->userHandle === $publicKeyCredentialUserEntity->id
                 );
             }
         };
@@ -163,59 +126,11 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             20
         );
 
-        // Should handle both types (PKCS extends CR)
-        $repository->saveCredentialSource($credentialRecord);
-        $repository->saveCredentialSource($pkcs);
+        $repository->saveCredentialRecord($credentialRecord);
+        $repository->saveCredentialRecord($pkcs);
 
-        $retrievedCr = $repository->findOneByCredentialId('cr-id');
-        $retrievedPkcs = $repository->findOneByCredentialId('pkcs-id');
-
-        static::assertInstanceOf(CredentialRecord::class, $retrievedCr);
-        static::assertInstanceOf(PublicKeyCredentialSource::class, $retrievedPkcs);
-        // PKCS now extends CR
-        static::assertInstanceOf(CredentialRecord::class, $retrievedPkcs);
-    }
-
-    #[Test]
-    public function repositoryImplementationCanStoreBothTypesInSameStorage(): void
-    {
-        // This test verifies that a single repository can handle both types
-        $storage = [];
-
-        $credentialRecord = CredentialRecord::create(
-            'cr-1',
-            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            [],
-            'none',
-            EmptyTrustPath::create(),
-            Uuid::v4(),
-            'key-1',
-            'user-handle',
-            10
-        );
-
-        $pkcs = new PublicKeyCredentialSource(
-            'pkcs-1',
-            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-            [],
-            'none',
-            EmptyTrustPath::create(),
-            Uuid::v4(),
-            'key-2',
-            'user-handle',
-            20
-        );
-
-        // Both types can be stored in the same array
-        $storage[] = $credentialRecord;
-        $storage[] = $pkcs;
-
-        static::assertCount(2, $storage);
-        static::assertInstanceOf(CredentialRecord::class, $storage[0]);
-        static::assertInstanceOf(PublicKeyCredentialSource::class, $storage[1]);
-        // PKCS extends CredentialRecord, so it's also a CredentialRecord
-        static::assertInstanceOf(CredentialRecord::class, $storage[1]);
-        static::assertNotInstanceOf(PublicKeyCredentialSource::class, $storage[0]);
+        static::assertInstanceOf(CredentialRecord::class, $repository->findOneByCredentialId('cr-id'));
+        static::assertInstanceOf(PublicKeyCredentialSource::class, $repository->findOneByCredentialId('pkcs-id'));
     }
 
     #[Test]
@@ -232,7 +147,6 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             'user-handle',
             10
         );
-
         $cr = CredentialRecord::create(
             'test-id-2',
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
@@ -245,19 +159,15 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             20
         );
 
-        // PublicKeyCredentialSource now extends CredentialRecord
-        static::assertInstanceOf(PublicKeyCredentialSource::class, $pkcs);
         static::assertInstanceOf(CredentialRecord::class, $pkcs);
-
-        static::assertInstanceOf(CredentialRecord::class, $cr);
         static::assertNotInstanceOf(PublicKeyCredentialSource::class, $cr);
     }
 
     #[Test]
-    public function bothRepositoryInterfacesAcceptCredentialRecord(): void
+    public function deprecatedRepositoryInterfaceExtendsNewOne(): void
     {
-        // This test verifies that the type signatures are compatible
-        // PublicKeyCredentialSourceRepositoryInterface extends CredentialRecordRepositoryInterface
+        // Composer-level guarantee: a 5.2 repository injected where the bundle now requires
+        // CredentialRecordRepositoryInterface still satisfies the type-hint.
         $pkcsRepo = new class() implements PublicKeyCredentialSourceRepositoryInterface {
             public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
             {
@@ -270,21 +180,17 @@ final class RepositoryCompatibilityTest extends AbstractTestCase
             }
         };
 
-        $crRepo = new class() implements CredentialRecordRepositoryInterface {
-            public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
-            {
-                return null;
-            }
-
-            public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
-            {
-                return [];
-            }
-        };
-
-        static::assertInstanceOf(PublicKeyCredentialSourceRepositoryInterface::class, $pkcsRepo);
-        static::assertInstanceOf(CredentialRecordRepositoryInterface::class, $crRepo);
-        // PKCS interface extends CR interface
         static::assertInstanceOf(CredentialRecordRepositoryInterface::class, $pkcsRepo);
+    }
+
+    #[Test]
+    public function deprecatedSaverInterfaceIsIndependentFromNewOne(): void
+    {
+        // Implementing CanSaveCredentialSource alone must NOT force implementing the new
+        // CanSaveCredentialRecord — that was the LSP trap fixed for issue #832.
+        static::assertFalse(
+            (new ReflectionClass(CanSaveCredentialSource::class))
+                ->implementsInterface(CanSaveCredentialRecord::class)
+        );
     }
 }

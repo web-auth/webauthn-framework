@@ -16,15 +16,18 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Repository\CanRegisterUserEntity;
+use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\CredentialRecord;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\Exception\UnsupportedFeatureException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final readonly class WebauthnBadgeListener
@@ -36,7 +39,7 @@ final readonly class WebauthnBadgeListener
         private OptionsStorage $optionsStorage,
         private SerializerInterface $publicKeyCredentialLoader,
         private PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
-        private PublicKeyCredentialSourceRepositoryInterface $publicKeyCredentialSourceRepository,
+        private CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository,
         private AuthenticatorAssertionResponseValidator $assertionResponseValidator,
         private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
         private UserProviderInterface $userProvider,
@@ -118,9 +121,7 @@ final readonly class WebauthnBadgeListener
         if (! $userEntity instanceof PublicKeyCredentialUserEntity) {
             throw InvalidDataException::create($userEntity, 'Invalid user entity');
         }
-        if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
-            $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
-        }
+        $this->saveCredential($publicKeyCredentialSource);
 
         $badge->markResolved(
             $response,
@@ -139,7 +140,8 @@ final readonly class WebauthnBadgeListener
         if (! $this->credentialUserEntityRepository instanceof CanRegisterUserEntity) {
             throw UnsupportedFeatureException::create('The user entity repository does not support registration.');
         }
-        if (! $this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
+        if (! $this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialRecord
+            && ! $this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
             throw UnsupportedFeatureException::create(
                 'The credential source repository does not support registration.'
             );
@@ -161,7 +163,7 @@ final readonly class WebauthnBadgeListener
             throw InvalidDataException::create($publicKeyCredentialSource, 'The credentials already exists');
         }
         $this->credentialUserEntityRepository->saveUserEntity($userEntity);
-        $this->publicKeyCredentialSourceRepository->saveCredentialSource($publicKeyCredentialSource);
+        $this->saveCredential($publicKeyCredentialSource);
 
         $badge->markResolved(
             $response,
@@ -169,5 +171,18 @@ final readonly class WebauthnBadgeListener
             $userEntity,
             $publicKeyCredentialSource,
         );
+    }
+
+    private function saveCredential(CredentialRecord $credentialRecord): void
+    {
+        if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialRecord) {
+            $this->publicKeyCredentialSourceRepository->saveCredentialRecord($credentialRecord);
+            return;
+        }
+        if ($this->publicKeyCredentialSourceRepository instanceof CanSaveCredentialSource) {
+            $this->publicKeyCredentialSourceRepository->saveCredentialSource(
+                PublicKeyCredentialSource::fromCredentialRecord($credentialRecord)
+            );
+        }
     }
 }

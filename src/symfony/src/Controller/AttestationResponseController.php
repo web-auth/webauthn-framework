@@ -15,13 +15,15 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\Bundle\Exception\HttpNotImplementedException;
 use Webauthn\Bundle\Exception\MissingFeatureException;
+use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Handler\SuccessHandler;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 final readonly class AttestationResponseController
@@ -29,7 +31,7 @@ final readonly class AttestationResponseController
     public function __construct(
         private SerializerInterface $publicKeyCredentialLoader,
         private AuthenticatorAttestationResponseValidator $attestationResponseValidator,
-        private PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private CredentialRecordRepositoryInterface $credentialSourceRepository,
         private OptionsStorage $optionStorage,
         private SuccessHandler $successHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
@@ -39,7 +41,8 @@ final readonly class AttestationResponseController
     public function __invoke(Request $request): Response
     {
         try {
-            if (! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
+            if (! $this->credentialSourceRepository instanceof CanSaveCredentialRecord
+                && ! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
                 throw MissingFeatureException::create('Unable to register the credential.');
             }
             $format = $request->getContentTypeFormat();
@@ -73,7 +76,13 @@ final readonly class AttestationResponseController
             ) !== null) {
                 throw new BadRequestHttpException('The credentials already exists');
             }
-            $this->credentialSourceRepository->saveCredentialSource($credentialSource);
+            if ($this->credentialSourceRepository instanceof CanSaveCredentialRecord) {
+                $this->credentialSourceRepository->saveCredentialRecord($credentialSource);
+            } elseif ($this->credentialSourceRepository instanceof CanSaveCredentialSource) {
+                $this->credentialSourceRepository->saveCredentialSource(
+                    PublicKeyCredentialSource::fromCredentialRecord($credentialSource)
+                );
+            }
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
             if ($throwable instanceof MissingFeatureException) {

@@ -1,6 +1,7 @@
 * text=auto
 
 /CLAUDE.md export-ignore
+/.claude export-ignore
 /.ci-tools export-ignore
 /.github export-ignore
 /bin export-ignore

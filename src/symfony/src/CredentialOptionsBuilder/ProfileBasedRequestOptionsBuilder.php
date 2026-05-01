@@ -16,7 +16,7 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
-use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\CredentialRecord;
@@ -31,7 +31,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
-        private PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private CredentialRecordRepositoryInterface $credentialSourceRepository,
         private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
         private string $profile,
         private null|FakeCredentialGenerator $fakeCredentialGenerator = null,

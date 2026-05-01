@@ -63,12 +63,13 @@ final class RepositoryFunctionalTest extends KernelTestCase
     }
 
     #[Test]
-    public function publicKeyCredentialSourceRepositoryCanSaveAndRetrieveCredentialRecord(): void
+    public function publicKeyCredentialSourceRepositoryCanSaveAndRetrievePublicKeyCredentialSourceWrapper(): void
     {
-        // Given
+        // Legacy CanSaveCredentialSource repositories only accept PublicKeyCredentialSource,
+        // not arbitrary CredentialRecord — that is the BC contract restored for issue #832.
         $repository = new PublicKeyCredentialSourceRepository($this->cache);
 
-        $credentialRecord = CredentialRecord::create(
+        $publicKeyCredentialSource = new PublicKeyCredentialSource(
             base64_decode('test456', true),
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             [],
@@ -80,12 +81,11 @@ final class RepositoryFunctionalTest extends KernelTestCase
             200
         );
 
-        // When
-        $repository->saveCredentialSource($credentialRecord);
+        $repository->saveCredentialSource($publicKeyCredentialSource);
         $retrieved = $repository->findOneByCredentialId(base64_decode('test456', true));
 
-        // Then
         static::assertInstanceOf(CredentialRecord::class, $retrieved);
+        static::assertInstanceOf(PublicKeyCredentialSource::class, $retrieved);
         static::assertSame('test-user-2', $retrieved->userHandle);
         static::assertSame(200, $retrieved->counter);
     }
@@ -109,7 +109,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
         );
 
         // When
-        $repository->saveCredentialSource($credentialRecord);
+        $repository->saveCredentialRecord($credentialRecord);
         $retrieved = $repository->findOneByCredentialId('cr789');
 
         // Then
@@ -137,7 +137,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
         );
 
         // When
-        $repository->saveCredentialSource($publicKeyCredentialSource);
+        $repository->saveCredentialRecord($publicKeyCredentialSource);
         $retrieved = $repository->findOneByCredentialId(base64_decode('pkcs999', true));
 
         // Then - PublicKeyCredentialSource extends CredentialRecord, so it's both
@@ -150,8 +150,9 @@ final class RepositoryFunctionalTest extends KernelTestCase
     #[Test]
     public function repositoryCanStoreBothTypesAndRetrieveThemForSameUser(): void
     {
-        // Given
-        $repository = new PublicKeyCredentialSourceRepository($this->cache);
+        // Mixed types are only meaningful on a CanSaveCredentialRecord-style repository:
+        // a legacy CanSaveCredentialSource repository contractually only accepts PublicKeyCredentialSource.
+        $repository = new CredentialRecordRepository($this->cache);
 
         $userId = 'multi-user';
 
@@ -179,9 +180,8 @@ final class RepositoryFunctionalTest extends KernelTestCase
             200
         );
 
-        // When
-        $repository->saveCredentialSource($credentialRecord);
-        $repository->saveCredentialSource($publicKeyCredentialSource);
+        $repository->saveCredentialRecord($credentialRecord);
+        $repository->saveCredentialRecord($publicKeyCredentialSource);
 
         $userEntity = PublicKeyCredentialUserEntity::create($userId, $userId, 'Multi User');
         $allCredentials = $repository->findAllForUserEntity($userEntity);
@@ -237,8 +237,7 @@ final class RepositoryFunctionalTest extends KernelTestCase
     #[Test]
     public function repositoryCanUpdateExistingCredential(): void
     {
-        // Given
-        $repository = new PublicKeyCredentialSourceRepository($this->cache);
+        $repository = new CredentialRecordRepository($this->cache);
 
         $credentialId = 'update-test';
 
@@ -254,9 +253,8 @@ final class RepositoryFunctionalTest extends KernelTestCase
             100
         );
 
-        $repository->saveCredentialSource($original);
+        $repository->saveCredentialRecord($original);
 
-        // When - save updated version with different counter
         $updated = CredentialRecord::create(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
@@ -266,14 +264,13 @@ final class RepositoryFunctionalTest extends KernelTestCase
             Uuid::fromBinary(base64_decode('AAAAAAAAAAAAAAAAAAAAAA==', true)),
             'originalkey',
             'update-user',
-            150  // Updated counter
+            150
         );
 
-        $repository->saveCredentialSource($updated);
+        $repository->saveCredentialRecord($updated);
 
         $retrieved = $repository->findOneByCredentialId($credentialId);
 
-        // Then - should have updated counter
         static::assertInstanceOf(CredentialRecord::class, $retrieved);
         static::assertSame(150, $retrieved->counter);
     }
