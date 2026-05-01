@@ -178,8 +178,16 @@ security:
   providers:
     default:
       id: 'Webauthn\Tests\Bundle\Functional\UserProvider'
+    # Second (unused) provider declared on purpose: it reproduces the multi-providers scenario
+    # from issue #833. With more than one provider, Symfony does not autowire UserProviderInterface,
+    # so WebauthnBadgeListener must keep its explicit `$userProvider => security.user_providers`
+    # argument to load.
+    secondary:
+      memory:
+        users: { }
   firewalls:
     main:
+      provider: default
       custom_authenticator: 'Webauthn\Tests\Bundle\Functional\WebauthnAuthenticator'
       webauthn:
         failure_handler: 'Webauthn\Tests\Bundle\Functional\FailureHandler'
