@@ -1,10 +1,24 @@
 name: Publish NPM Package
 
 on:
+  # `push.tags` does NOT fire when the tag is created through GitHub's
+  # "Create a release" UI (only `release.*` events do). We subscribe to
+  # both so the package is published whether the tag is pushed from a
+  # git client or created via a milestone-driven release.
   push:
     tags:
       - 'v*.*.*'
       - '[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types: [published]
+  # Manual fallback: backfill a missed publish or republish a specific
+  # version. The `version` input wins over GITHUB_REF when set.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver to publish (e.g. 5.3.0). Defaults to GITHUB_REF when empty."
+        required: false
+        type: string
 
 jobs:
   publish-npm:
@@ -23,12 +37,16 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Extract version from tag
+      - name: Extract version
         id: get_version
         run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          # Remove 'v' prefix if present
-          VERSION="${TAG_NAME#v}"
+          INPUT_VERSION="${{ inputs.version }}"
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            VERSION="${TAG_NAME#v}"
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Publishing version: $VERSION"
 
