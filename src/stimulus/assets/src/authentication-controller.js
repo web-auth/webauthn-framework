@@ -157,22 +157,40 @@ export default class extends BaseController {
      */
     async _processAuthentication(credentialRequestOptions, startAuthenticationOptions = {}) {
         try {
-            const processedOptions = this._processExtensionsInput(credentialRequestOptions);
-            const uiMode = this._extractUiMode(processedOptions);
+            // We mutate options here (uiMode pop). Native path needs the
+            // un-pre-processed JSON so we can pass it through
+            // parseRequestOptionsFromJSON intact.
+            const uiMode = this._extractUiMode(credentialRequestOptions);
 
             let credential;
-            if (uiMode === 'immediate') {
-                // SimpleWebAuthn 13.x has no native `uiMode` support yet, so
-                // we call `navigator.credentials.get()` directly and rely on
-                // PublicKeyCredential.toJSON() for the response shape.
-                credential = await this._getCredentialWithUiMode(processedOptions, uiMode);
+            if (this._supportsNativeJsonHelpers()) {
+                // WebAuthn L3 §5.1.14: parseRequestOptionsFromJSON converts
+                // every standard field including known extensions, so no
+                // _processExtensionsInput pass is needed on this path.
+                const nativeExtras = uiMode === null ? {} : { uiMode };
+                if (startAuthenticationOptions.useBrowserAutofill === true) {
+                    nativeExtras.mediation = 'conditional';
+                }
+                credential = await this._nativeGet(credentialRequestOptions, nativeExtras);
             } else {
-                credential = await startAuthentication({
-                    optionsJSON: processedOptions,
-                    ...startAuthenticationOptions,
-                });
+                const processedOptions = this._processExtensionsInput(credentialRequestOptions);
+                if (uiMode === 'immediate') {
+                    // SimpleWebAuthn 13.x has no native `uiMode` support yet,
+                    // so we call `navigator.credentials.get()` directly and
+                    // rely on PublicKeyCredential.toJSON() for the response shape.
+                    credential = await this._getCredentialWithUiMode(processedOptions, uiMode);
+                } else {
+                    credential = await startAuthentication({
+                        optionsJSON: processedOptions,
+                        ...startAuthenticationOptions,
+                    });
+                }
             }
 
+            // Run on both paths: subclasses (e.g. payment-controller) hook
+            // here for non-WebAuthn-L3 extensions like SPC's `payment` that
+            // PublicKeyCredential.toJSON() may not encode. The base helpers
+            // are idempotent so values already encoded by toJSON() pass through.
             credential = this._processExtensionsOutput(credential);
             this._dispatchEvent('webauthn:authentication:credential', { credential });
 
