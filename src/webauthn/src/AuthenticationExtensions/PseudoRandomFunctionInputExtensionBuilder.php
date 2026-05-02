@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\AuthenticationExtensions;
 
 use function array_key_exists;
+use function count;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\Exception\AuthenticationExtensionException;
 
@@ -24,6 +25,23 @@ use Webauthn\Exception\AuthenticationExtensionException;
  *     ->withInputs($salt) // 32 random bytes from your KMS / generated per user
  *     ->build();
  * ```
+ *
+ * ## CTAP2.2 `hmac-secret-mc`
+ *
+ * PRF maps to the CTAP authenticator extension `hmac-secret`. CTAP2.2 added a
+ * variant `hmac-secret-mc` that lifts two limitations of the original:
+ *
+ *  - PRF results can be returned during `navigator.credentials.create()` (so
+ *    the relying party can derive a key at registration time, not just at
+ *    authentication).
+ *  - `evalByCredential` may target more than one credential in a single
+ *    `navigator.credentials.get()` ceremony.
+ *
+ * The wire format does not change — the user agent picks `hmac-secret` vs
+ * `hmac-secret-mc` based on what the inputs require. {@see self::requiresHmacSecretMc()}
+ * lets callers introspect whether the configured inputs definitely require an
+ * `hmac-secret-mc`-capable authenticator (the multi-credential case detectable
+ * from the builder state).
  *
  * @see https://www.w3.org/TR/webauthn-3/#prf-extension
  */
@@ -69,10 +87,13 @@ final class PseudoRandomFunctionInputExtensionBuilder
      * credential can be queried with its own salt (e.g. a salt rotated alongside
      * a re-encrypted blob).
      *
-     * @param string $credentialId Raw credential id bytes (the same bytes that appear in
-     *                              {@see \Webauthn\PublicKeyCredentialDescriptor::$id}); the W3C spec
-     *                              expects the key to be a base64url string. Pre-encode if you only
-     *                              hold the base64url form.
+     * Calling this twice with two distinct credential ids puts the ceremony in
+     * the multi-credential case, which requires the authenticator to support
+     * the CTAP2.2 `hmac-secret-mc` extension — see the class docblock.
+     *
+     * @param string $credentialId Base64url-encoded credential id (same encoding used as the
+     *                              JSON key on the wire). If you hold the raw bytes, pre-encode
+     *                              with `Base64UrlSafe::encodeUnpadded()` first.
      * @param string $first  Raw salt bytes for this credential.
      * @param string|null $second Optional second raw salt bytes.
      */
@@ -90,6 +111,27 @@ final class PseudoRandomFunctionInputExtensionBuilder
         $this->values['evalByCredential'][$credentialId] = $eval;
 
         return $this;
+    }
+
+    /**
+     * Whether the configured inputs require an authenticator that implements the
+     * CTAP2.2 `hmac-secret-mc` extension (as opposed to plain `hmac-secret`).
+     *
+     * Returns `true` when `evalByCredential` carries inputs for more than one
+     * credential — i.e. the multi-credential case `hmac-secret-mc` was
+     * introduced for. Returns `false` for the single-credential / `eval`-only
+     * configurations, which a regular `hmac-secret` authenticator can serve at
+     * `navigator.credentials.get()` time.
+     *
+     * Note: the spec also requires `hmac-secret-mc` whenever PRF results are
+     * requested at `navigator.credentials.create()` time. The builder cannot
+     * tell which ceremony its output will be attached to, so callers using
+     * {@see self::withInputs()} during registration are responsible for
+     * remembering that constraint themselves.
+     */
+    public function requiresHmacSecretMc(): bool
+    {
+        return count($this->values['evalByCredential'] ?? []) > 1;
     }
 
     /**

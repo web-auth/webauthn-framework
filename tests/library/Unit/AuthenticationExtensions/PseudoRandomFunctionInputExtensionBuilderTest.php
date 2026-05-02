@@ -125,6 +125,44 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
     }
 
     #[Test]
+    public function singleCredentialEvalDoesNotRequireHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function multipleCredentialEvalRequiresHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-B', 'salt-B');
+
+        static::assertTrue($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function repeatedCallsForSameCredentialDoNotInflateCount(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-A', 'replacement-salt');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function evalOnlyDoesNotRequireHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('default-salt');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
     public function buildingWithoutAnyInputThrows(): void
     {
         $this->expectException(AuthenticationExtensionException::class);
