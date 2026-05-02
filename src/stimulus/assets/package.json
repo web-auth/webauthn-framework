@@ -31,6 +31,7 @@
         "importmap": {
             "@hotwired/stimulus": "^3.0.0",
             "@simplewebauthn/browser": "^13.2.0",
+            "@web-auth/webauthn-stimulus": "path:%PACKAGE%/src/index.js",
             "@web-auth/webauthn-stimulus/webauthn": "path:%PACKAGE%/src/controller.js",
             "@web-auth/webauthn-stimulus/authentication": "path:%PACKAGE%/src/authentication-controller.js",
             "@web-auth/webauthn-stimulus/registration": "path:%PACKAGE%/src/registration-controller.js"
