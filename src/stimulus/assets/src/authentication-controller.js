@@ -1,6 +1,7 @@
 'use strict';
 
 import {
+    base64URLStringToBuffer,
     browserSupportsWebAuthn,
     browserSupportsWebAuthnAutofill,
     startAuthentication,
@@ -9,6 +10,16 @@ import {
     platformAuthenticatorIsAvailable,
 } from '@simplewebauthn/browser';
 import BaseController from './base-controller.js';
+
+/**
+ * Allowed `CredentialUiMode` values per the W3C Credential Management spec
+ * (editor's draft, §2.3.3). Kept narrow on purpose: forwarding an unknown
+ * value to `navigator.credentials.get()` would silently degrade to default
+ * UA behaviour, which is harder to debug than a controller-side rejection.
+ *
+ * @see https://w3c.github.io/webappsec-credential-management/#enumdef-credentialuimode
+ */
+const ALLOWED_UI_MODES = ['auto', 'immediate'];
 
 /**
  * Stimulus controller for WebAuthn authentication (sign-in)
@@ -143,11 +154,20 @@ export default class extends BaseController {
     async _processAuthentication(credentialRequestOptions, startAuthenticationOptions = {}) {
         try {
             const processedOptions = this._processExtensionsInput(credentialRequestOptions);
+            const uiMode = this._extractUiMode(processedOptions);
 
-            let credential = await startAuthentication({
-                optionsJSON: processedOptions,
-                ...startAuthenticationOptions,
-            });
+            let credential;
+            if (uiMode === 'immediate') {
+                // SimpleWebAuthn 13.x has no native `uiMode` support yet, so
+                // we call `navigator.credentials.get()` directly and rely on
+                // PublicKeyCredential.toJSON() for the response shape.
+                credential = await this._getCredentialWithUiMode(processedOptions, uiMode);
+            } else {
+                credential = await startAuthentication({
+                    optionsJSON: processedOptions,
+                    ...startAuthenticationOptions,
+                });
+            }
 
             credential = this._processExtensionsOutput(credential);
             this._dispatchEvent('webauthn:authentication:credential', { credential });
@@ -181,5 +201,56 @@ export default class extends BaseController {
                 this._dispatchEvent('webauthn:authentication:error', { error });
             }
         }
+    }
+
+    /**
+     * Pop `uiMode` off the options JSON and validate it.
+     * @private
+     * @param {Object} optionsJSON - WebAuthn credential request options (mutated)
+     * @returns {string|null} A validated `CredentialUiMode` value, or null if absent
+     */
+    _extractUiMode(optionsJSON) {
+        if (!optionsJSON || typeof optionsJSON.uiMode === 'undefined' || optionsJSON.uiMode === null) {
+            return null;
+        }
+        const uiMode = optionsJSON.uiMode;
+        delete optionsJSON.uiMode;
+
+        if (typeof uiMode !== 'string' || !ALLOWED_UI_MODES.includes(uiMode)) {
+            throw new TypeError(`Invalid uiMode "${uiMode}". Allowed values: ${ALLOWED_UI_MODES.join(', ')}.`);
+        }
+        return uiMode;
+    }
+
+    /**
+     * Call `navigator.credentials.get()` directly with a `uiMode` option.
+     * Used when SimpleWebAuthn does not natively forward the option.
+     * @private
+     * @param {Object} optionsJSON - WebAuthn credential request options (uiMode already removed)
+     * @param {string} uiMode - Validated CredentialUiMode value
+     * @returns {Promise<Object>} JSON-serialised credential
+     */
+    async _getCredentialWithUiMode(optionsJSON, uiMode) {
+        const publicKey = {
+            ...optionsJSON,
+            challenge: base64URLStringToBuffer(optionsJSON.challenge),
+        };
+        if (Array.isArray(optionsJSON.allowCredentials)) {
+            publicKey.allowCredentials = optionsJSON.allowCredentials.map((descriptor) => ({
+                ...descriptor,
+                id: base64URLStringToBuffer(descriptor.id),
+            }));
+        }
+
+        const credential = await navigator.credentials.get({
+            publicKey,
+            uiMode,
+            signal: WebAuthnAbortService.createNewAbortSignal(),
+        });
+
+        if (credential === null) {
+            throw new Error('navigator.credentials.get() returned null');
+        }
+        return credential.toJSON();
     }
 }

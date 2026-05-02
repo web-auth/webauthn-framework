@@ -16,7 +16,10 @@ jest.mock('@simplewebauthn/browser', () => {
         browserSupportsWebAuthnAutofill: jest.fn(),
         platformAuthenticatorIsAvailable: jest.fn(),
         startAuthentication: jest.fn(),
-        WebAuthnAbortService: { cancelCeremony: jest.fn() },
+        WebAuthnAbortService: {
+            cancelCeremony: jest.fn(),
+            createNewAbortSignal: jest.fn(() => new AbortController().signal),
+        },
     };
 });
 
@@ -554,8 +557,10 @@ describe('AuthenticationController', () => {
                 expect(SimpleWebAuthnBrowser.startAuthentication).toHaveBeenCalled();
             });
 
-            const passed = SimpleWebAuthnBrowser.startAuthentication.mock.calls[0][0].optionsJSON
-                .extensions.prf.evalByCredential['credential-id-base64url'];
+            const passed =
+                SimpleWebAuthnBrowser.startAuthentication.mock.calls[0][0].optionsJSON.extensions.prf.evalByCredential[
+                    'credential-id-base64url'
+                ];
             expect(passed.first).toBeInstanceOf(ArrayBuffer);
             expect(passed.first.byteLength).toBe(32);
         });
@@ -622,6 +627,136 @@ describe('AuthenticationController', () => {
                 expect(credentialEvents).toHaveLength(1);
             });
             expect(credentialEvents[0].clientExtensionResults).toEqual({});
+        });
+    });
+
+    describe('uiMode (Credential Management ED §2.3.3)', () => {
+        // Per spec, when uiMode === "immediate" the user agent must return a
+        // credential immediately available locally or fail with NotAllowedError.
+        // SimpleWebAuthn 13.x has no native support for this option, so the
+        // controller must bypass startAuthentication() and call
+        // navigator.credentials.get() directly.
+
+        let originalNavigator;
+
+        beforeEach(() => {
+            originalNavigator = globalThis.navigator;
+        });
+
+        afterEach(() => {
+            if (originalNavigator) {
+                Object.defineProperty(globalThis, 'navigator', {
+                    value: originalNavigator,
+                    configurable: true,
+                });
+            }
+        });
+
+        it('forwards uiMode "immediate" to navigator.credentials.get() and bypasses SimpleWebAuthn', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            // base64url("hello") => "aGVsbG8"
+            const challengeB64 = 'aGVsbG8';
+            // base64url("cred-id") => "Y3JlZC1pZA"
+            const credentialIdB64 = 'Y3JlZC1pZA';
+
+            const credentialJson = {
+                id: credentialIdB64,
+                rawId: credentialIdB64,
+                response: { clientDataJSON: 'data', authenticatorData: 'auth', signature: 'sig' },
+                type: 'public-key',
+            };
+            const credentialsGetMock = jest.fn().mockResolvedValue({
+                toJSON: () => credentialJson,
+            });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { get: credentialsGetMock } },
+                configurable: true,
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({
+                        challenge: challengeB64,
+                        rpId: 'example.com',
+                        allowCredentials: [{ type: 'public-key', id: credentialIdB64 }],
+                        uiMode: 'immediate',
+                    }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            let credentialEvent = null;
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvent = e.detail;
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(credentialsGetMock).toHaveBeenCalledTimes(1);
+            });
+
+            const callArg = credentialsGetMock.mock.calls[0][0];
+            expect(callArg.uiMode).toBe('immediate');
+            expect(callArg.publicKey.uiMode).toBeUndefined();
+            expect(callArg.publicKey.challenge).toBeInstanceOf(ArrayBuffer);
+            expect(callArg.publicKey.allowCredentials[0].id).toBeInstanceOf(ArrayBuffer);
+            expect(callArg.signal).toBeInstanceOf(AbortSignal);
+
+            expect(SimpleWebAuthnBrowser.startAuthentication).not.toHaveBeenCalled();
+            expect(credentialEvent.credential).toEqual(credentialJson);
+        });
+
+        it('rejects an unknown uiMode value before reaching the browser', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            fetchMock.mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ challenge: 'test', uiMode: 'silent' }),
+            });
+
+            let errorDetail = null;
+            form.addEventListener('webauthn:authentication:error', (e) => {
+                errorDetail = e.detail;
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(errorDetail).not.toBeNull();
+            });
+            expect(errorDetail.error).toBeInstanceOf(TypeError);
+            expect(errorDetail.error.message).toContain('Invalid uiMode "silent"');
+            expect(SimpleWebAuthnBrowser.startAuthentication).not.toHaveBeenCalled();
+        });
+
+        it('falls back to startAuthentication when uiMode is absent', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({ id: 'cred' });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(SimpleWebAuthnBrowser.startAuthentication).toHaveBeenCalledTimes(1);
+            });
+            const startCall = SimpleWebAuthnBrowser.startAuthentication.mock.calls[0][0];
+            expect(startCall.optionsJSON).toEqual({ challenge: 'test' });
+            expect(startCall.optionsJSON.uiMode).toBeUndefined();
         });
     });
 });

@@ -27,6 +27,27 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
     ];
 
     /**
+     * `CredentialUiMode` values for `navigator.credentials.get()`. Defined by
+     * the WHATWG/W3C Credential Management spec (editor's draft, §2.3.3).
+     *
+     * - {@see UI_MODE_AUTO} (default) — usual UA flow.
+     * - {@see UI_MODE_IMMEDIATE} — synchronous attempt: the user agent must
+     *   either return a credential immediately available locally or fail
+     *   with `NotAllowedError`. Useful for silent re-auth.
+     *
+     * `uiMode` is a separate dictionary member from `mediation`. It does NOT
+     * belong to `CredentialMediationRequirement` (which stays
+     * `silent | optional | conditional | required`).
+     *
+     * @see https://w3c.github.io/webappsec-credential-management/#enumdef-credentialuimode
+     */
+    public const UI_MODE_AUTO = 'auto';
+
+    public const UI_MODE_IMMEDIATE = 'immediate';
+
+    public const UI_MODES = [self::UI_MODE_AUTO, self::UI_MODE_IMMEDIATE];
+
+    /**
      * @param PublicKeyCredentialDescriptor[] $allowCredentials
      * @param null|AuthenticationExtensions|array<array-key, AuthenticationExtension> $extensions
      * @param string[] $hints
@@ -39,10 +60,15 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         null|int $timeout = null,
         null|array|AuthenticationExtensions $extensions = null,
         array $hints = [],
+        public null|string $uiMode = null,
     ) {
         in_array($userVerification, self::USER_VERIFICATION_REQUIREMENTS, true) || throw InvalidDataException::create(
             $userVerification,
             'Invalid user verification requirement'
+        );
+        $uiMode === null || in_array($uiMode, self::UI_MODES, true) || throw InvalidDataException::create(
+            $uiMode,
+            'Invalid UI mode'
         );
         parent::__construct(
             $challenge,
@@ -66,7 +92,17 @@ final class PublicKeyCredentialRequestOptions extends PublicKeyCredentialOptions
         null|int $timeout = null,
         null|array|AuthenticationExtensions $extensions = null,
         array $hints = [],
+        null|string $uiMode = null,
     ): self {
-        return new self($challenge, $rpId, $allowCredentials, $userVerification, $timeout, $extensions, $hints);
+        return new self(
+            $challenge,
+            $rpId,
+            $allowCredentials,
+            $userVerification,
+            $timeout,
+            $extensions,
+            $hints,
+            $uiMode,
+        );
     }
 }
