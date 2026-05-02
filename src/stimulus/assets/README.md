@@ -119,6 +119,12 @@ Combined controller for backward compatibility. Handles both registration and au
 </form>
 ```
 
+> **Deprecated since 5.3.x**: importing this controller as `@web-auth/webauthn-stimulus/webauthn` is deprecated and will be removed in 6.0. Use the canonical name `@web-auth/webauthn-stimulus` and pull the `WebauthnController` named export instead:
+>
+> ```javascript
+> import { WebauthnController } from '@web-auth/webauthn-stimulus';
+> ```
+
 ## Configuration Values
 
 ### Common Values (all controllers)
