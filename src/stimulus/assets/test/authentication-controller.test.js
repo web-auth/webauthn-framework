@@ -6,8 +6,19 @@ import { clearDOM, mountDOM } from '@symfony/stimulus-testing';
 import * as SimpleWebAuthnBrowser from '@simplewebauthn/browser';
 import AuthenticationController from '../src/authentication-controller';
 
-// Mock @simplewebauthn/browser
-jest.mock('@simplewebauthn/browser');
+// Mock @simplewebauthn/browser but keep base64 helpers + WebAuthnError real so PRF
+// processing in BaseController and `instanceof WebAuthnError` checks behave normally.
+jest.mock('@simplewebauthn/browser', () => {
+    const actual = jest.requireActual('@simplewebauthn/browser');
+    return {
+        ...actual,
+        browserSupportsWebAuthn: jest.fn(),
+        browserSupportsWebAuthnAutofill: jest.fn(),
+        platformAuthenticatorIsAvailable: jest.fn(),
+        startAuthentication: jest.fn(),
+        WebAuthnAbortService: { cancelCeremony: jest.fn() },
+    };
+});
 
 const startStimulus = () => {
     const application = Application.start();
@@ -506,6 +517,111 @@ describe('AuthenticationController', () => {
                     'verify:success',
                 ]);
             });
+        });
+    });
+
+    describe('PRF extension', () => {
+        const PRF_SALT_BYTES = new Uint8Array(32).fill(0x41).buffer;
+        const PRF_SALT_B64 = SimpleWebAuthnBrowser.bufferToBase64URLString(PRF_SALT_BYTES);
+
+        it('decodes evalByCredential salts to ArrayBuffer before calling startAuthentication', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({
+                        challenge: 'test',
+                        extensions: {
+                            prf: {
+                                evalByCredential: {
+                                    'credential-id-base64url': { first: PRF_SALT_B64 },
+                                },
+                            },
+                        },
+                    }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({ id: 'cred' });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(SimpleWebAuthnBrowser.startAuthentication).toHaveBeenCalled();
+            });
+
+            const passed = SimpleWebAuthnBrowser.startAuthentication.mock.calls[0][0].optionsJSON
+                .extensions.prf.evalByCredential['credential-id-base64url'];
+            expect(passed.first).toBeInstanceOf(ArrayBuffer);
+            expect(passed.first.byteLength).toBe(32);
+        });
+
+        it('exposes PRF results as base64url on the dispatched credential event', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            const credentialEvents = [];
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvents.push(e.detail.credential);
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({
+                        challenge: 'test',
+                        extensions: { prf: { eval: { first: PRF_SALT_B64 } } },
+                    }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({
+                id: 'cred',
+                clientExtensionResults: {
+                    prf: { results: { first: PRF_SALT_BYTES } },
+                },
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(credentialEvents).toHaveLength(1);
+            });
+            expect(credentialEvents[0].clientExtensionResults.prf.results.first).toBe(PRF_SALT_B64);
+        });
+
+        it('passes through credentials that do not use PRF', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            const credentialEvents = [];
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvents.push(e.detail.credential);
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({
+                id: 'cred',
+                clientExtensionResults: {},
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(credentialEvents).toHaveLength(1);
+            });
+            expect(credentialEvents[0].clientExtensionResults).toEqual({});
         });
     });
 });
