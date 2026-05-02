@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PRF Demo — Offline vault (no server)</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 760px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.5; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.15rem; margin-top: 1.5rem; }
+        label { display: block; margin: 0.55rem 0 0.2rem; font-weight: 500; }
+        input, textarea, button { padding: 0.5rem 0.75rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; font-family: inherit; }
+        input, textarea { width: 100%; }
+        textarea { min-height: 80px; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button.danger { background: #b91c1c; }
+        button.muted { background: #6b7280; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 220px; white-space: pre-wrap; word-break: break-all; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        .item { border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 8px; margin-bottom: 12px; }
+        .item header { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+        .item .label { font-weight: 600; }
+        .item .meta { font-size: 0.85rem; color: #6b7280; }
+        .item .ciphertext { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.8rem; color: #6b7280; word-break: break-all; margin-top: 6px; }
+        .item .plaintext { background: #ecfdf5; border: 1px solid #10b981; padding: 8px 10px; border-radius: 6px; margin-top: 8px; font-size: 0.95rem; }
+        .mac-badge { font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; background: #f3f4f6; color: #6b7280; }
+        .mac-ok { background: #d1fae5; color: #047857; }
+        .mac-bad { background: #fee2e2; color: #991b1b; }
+        .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        .hidden { display: none; }
+        .empty { color: #6b7280; font-style: italic; }
+        .warning { background: #fef3c7; border-left: 4px solid #d97706; padding: 12px 16px; border-radius: 6px; margin: 1.2rem 0; font-size: 0.95rem; }
+        .warning strong { color: #92400e; }
+        .net-status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.85rem; }
+        .net-online { background: #d1fae5; color: #047857; }
+        .net-offline { background: #e0e7ff; color: #1e3a8a; }
+    </style>
+</head>
+<body>
+<nav><a href="/">← Home</a><a href="/register.html">Register (online)</a><a href="/vault.html">Vault (online)</a></nav>
+
+<h1>Offline vault — no fetch after first load <span id="net-status" class="net-status"></span></h1>
+
+<p>
+    This page does <strong>not</strong> register passkeys. The credential id and
+    the two PRF salts must already be in this browser's <code>localStorage</code> —
+    which is the case as soon as you have completed
+    <a href="/register.html">/register.html</a> on this same browser (that page
+    mirrors <code>{credId, prfSalt, prfSalt2}</code> into <code>localStorage</code>
+    automatically after a successful register).
+</p>
+<p>
+    From there everything happens client-side: <code>navigator.credentials.get()</code>
+    runs with a locally-generated challenge against
+    <code>rpId = location.hostname</code>, the two PRF outputs become an AES-GCM
+    key and an HMAC-SHA256 key, and ciphertexts live in <code>localStorage</code>.
+    A service worker caches the page on first load, so you can disconnect (or hit
+    airplane mode) and reload — everything keeps working.
+</p>
+
+<div class="warning">
+    <strong>⚠ If you delete the passkey or clear the site data, your encrypted
+    items are gone forever.</strong> See the home page for the full caveat. This
+    page is a learning aid, not a production design.
+</div>
+
+<section id="setup-section" class="hidden">
+    <h2>This browser is not set up yet</h2>
+    <p>
+        No credential id or salts found in <code>localStorage</code>. Visit
+        <a href="/register.html">/register.html</a> first — it registers a passkey
+        through the relying-party server <em>and</em> mirrors the credential id +
+        both salts into the same <code>localStorage</code> keys this page reads
+        from. Then come back here and reload.
+    </p>
+    <p class="row">
+        <a href="/register.html"><button type="button">Go to /register.html</button></a>
+    </p>
+</section>
+
+<section id="locked-section" class="hidden">
+    <h2>2. Unlock the offline vault</h2>
+    <p>
+        Reads <code>{credId, prfSalt, prfSalt2}</code> from
+        <code>localStorage</code>, calls
+        <code>navigator.credentials.get()</code> with a locally-generated
+        challenge, derives the AES-GCM and HMAC keys from the two PRF outputs,
+        keeps both keys in this tab's memory.
+    </p>
+    <button id="unlock-btn">Authenticate &amp; unlock</button>
+    <button type="button" id="reset-btn" class="danger">Reset everything (forget local data)</button>
+</section>
+
+<section id="vault-section" class="hidden">
+    <h2>3. Encrypt a new item (writes to localStorage)</h2>
+    <form id="add-form">
+        <label for="label">Label (in clear, used to find items)</label>
+        <input id="label" name="label" required placeholder="API token, recovery codes, …">
+        <label for="plaintext">Plaintext (encrypted before localStorage write)</label>
+        <textarea id="plaintext" name="plaintext" required placeholder="anything you want to seal"></textarea>
+        <p><button type="submit" id="add-btn">Encrypt &amp; save (offline)</button></p>
+    </form>
+
+    <h2>4. Stored items <span id="item-count" class="meta"></span></h2>
+    <p class="row">
+        <button type="button" id="reveal-all" class="muted">Decrypt all</button>
+        <button type="button" id="hide-all" class="muted">Hide plaintexts</button>
+        <button type="button" id="lock-btn" class="danger">Lock vault (forget keys)</button>
+    </p>
+    <div id="items-list"></div>
+</section>
+
+<h2>Output</h2>
+<pre id="output">Loading…</pre>
+
+<script type="module">
+    const $ = (id) => document.getElementById(id);
+    const setupSection = $('setup-section');
+    const lockedSection = $('locked-section');
+    const vaultSection = $('vault-section');
+    const unlockBtn = $('unlock-btn');
+    const resetBtn = $('reset-btn');
+    const addForm = $('add-form');
+    const addBtn = $('add-btn');
+    const itemsList = $('items-list');
+    const itemCount = $('item-count');
+    const output = $('output');
+    const netStatus = $('net-status');
+
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    const b64u = {
+        encode: (buf) => {
+            const bytes = new Uint8Array(buf);
+            let str = '';
+            for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+        decode: (s) => {
+            s = s.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (s.length % 4)) % 4;
+            s += '='.repeat(pad);
+            const bin = atob(s);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+            return out;
+        },
+    };
+
+    const STORAGE_KEYS = {
+        credId:   'prf-offline:credId',
+        salt:     'prf-offline:prfSalt',
+        salt2:    'prf-offline:prfSalt2',
+        items:    'prf-offline:items',
+    };
+
+    const loadItems = () => JSON.parse(localStorage.getItem(STORAGE_KEYS.items) || '[]');
+    const saveItems = (arr) => localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(arr));
+
+    const updateNetStatus = () => {
+        const online = navigator.onLine;
+        netStatus.textContent = online ? 'online (but unused)' : 'offline';
+        netStatus.className = `net-status ${online ? 'net-online' : 'net-offline'}`;
+    };
+    updateNetStatus();
+    window.addEventListener('online', updateNetStatus);
+    window.addEventListener('offline', updateNetStatus);
+
+    const isSetup = () =>
+        localStorage.getItem(STORAGE_KEYS.credId) &&
+        localStorage.getItem(STORAGE_KEYS.salt) &&
+        localStorage.getItem(STORAGE_KEYS.salt2);
+
+    const showInitialSection = () => {
+        if (isSetup()) {
+            setupSection.classList.add('hidden');
+            lockedSection.classList.remove('hidden');
+        } else {
+            setupSection.classList.remove('hidden');
+            lockedSection.classList.add('hidden');
+        }
+        vaultSection.classList.add('hidden');
+    };
+
+    /** Register the SW so the page is reachable in airplane mode after first load. */
+    const registerServiceWorker = async () => {
+        if (!('serviceWorker' in navigator)) {
+            log('⚠ Service workers are not available — the page itself will still need network on reload.', 'err');
+            return;
+        }
+        try {
+            const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            log(`✓ Service worker registered (scope: ${reg.scope}). Next reload works offline.`, 'ok');
+        } catch (e) {
+            log(`⚠ Service worker registration failed: ${e.message}`, 'err');
+        }
+    };
+
+    /** HKDF-derive an AES-GCM key from the raw PRF output. */
+    const deriveAesKey = async (prfBytes) => {
+        const ikm = await crypto.subtle.importKey('raw', prfBytes, 'HKDF', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+            { name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(), info: new TextEncoder().encode('webauthn-prf-demo:aes') },
+            ikm,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['encrypt', 'decrypt'],
+        );
+    };
+
+    /** HKDF-derive an HMAC-SHA256 key from the raw PRF output. */
+    const deriveHmacKey = async (prfBytes) => {
+        const ikm = await crypto.subtle.importKey('raw', prfBytes, 'HKDF', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+            { name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(), info: new TextEncoder().encode('webauthn-prf-demo:hmac') },
+            ikm,
+            { name: 'HMAC', hash: 'SHA-256', length: 256 },
+            false,
+            ['sign', 'verify'],
+        );
+    };
+
+    /** Canonical bytes the HMAC is computed over. Same shape as vault.html. */
+    const macBytesFor = (label, ivB64Url, ciphertextB64Url) => {
+        const enc = new TextEncoder();
+        const labelBytes = enc.encode(label);
+        const ivBytes = b64u.decode(ivB64Url);
+        const ctBytes = b64u.decode(ciphertextB64Url);
+        const out = new Uint8Array(2 + 4 + labelBytes.length + ivBytes.length + ctBytes.length);
+        out[0] = 0x76; out[1] = 0x31;
+        new DataView(out.buffer).setUint32(2, labelBytes.length, false);
+        out.set(labelBytes, 6);
+        out.set(ivBytes, 6 + labelBytes.length);
+        out.set(ctBytes, 6 + labelBytes.length + ivBytes.length);
+        return out;
+    };
+
+    // In-memory state — never persisted.
+    let aesKey = null;
+    let hmacKey = null;
+    let items = [];
+
+    const renderItems = () => {
+        itemsList.innerHTML = '';
+        itemCount.textContent = items.length === 0 ? '' : `(${items.length})`;
+        if (items.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'empty';
+            empty.textContent = 'Vault is empty. Add an item above.';
+            itemsList.appendChild(empty);
+            return;
+        }
+        for (const item of items) {
+            const node = document.createElement('div');
+            node.className = 'item';
+            node.dataset.id = item.id;
+            node.innerHTML = `
+                <header>
+                    <span class="label"></span>
+                    <span class="row">
+                        <span class="mac-badge"></span>
+                        <button type="button" class="reveal">Decrypt</button>
+                        <button type="button" class="hide hidden muted">Hide</button>
+                        <button type="button" class="del danger">Delete</button>
+                    </span>
+                </header>
+                <div class="meta"></div>
+                <div class="ciphertext"></div>
+                <div class="plaintext hidden"></div>
+            `;
+            node.querySelector('.label').textContent = item.label;
+            node.querySelector('.meta').textContent = `id ${item.id}`;
+            node.querySelector('.ciphertext').textContent = `ct: ${item.ciphertext}`;
+            const badge = node.querySelector('.mac-badge');
+            if (item.macStatus === 'ok') { badge.textContent = '✓ HMAC valid'; badge.className = 'mac-badge mac-ok'; }
+            else if (item.macStatus === 'bad') { badge.textContent = '✗ HMAC mismatch'; badge.className = 'mac-badge mac-bad'; }
+            else { badge.textContent = '… verifying'; badge.className = 'mac-badge'; }
+            node.querySelector('.reveal').addEventListener('click', () => decryptOne(item.id));
+            node.querySelector('.hide').addEventListener('click', () => hideOne(item.id));
+            node.querySelector('.del').addEventListener('click', () => deleteOne(item.id));
+            itemsList.appendChild(node);
+        }
+    };
+
+    const verifyAllMacs = async () => {
+        if (!hmacKey) return;
+        for (const item of items) {
+            try {
+                const ok = await crypto.subtle.verify(
+                    'HMAC',
+                    hmacKey,
+                    b64u.decode(item.mac),
+                    macBytesFor(item.label, item.iv, item.ciphertext),
+                );
+                item.macStatus = ok ? 'ok' : 'bad';
+            } catch (_e) {
+                item.macStatus = 'bad';
+            }
+        }
+        renderItems();
+    };
+
+    const decryptOne = async (id) => {
+        const item = items.find((it) => it.id === id);
+        if (!item || !aesKey) return;
+        try {
+            const buf = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: b64u.decode(item.iv) },
+                aesKey,
+                b64u.decode(item.ciphertext),
+            );
+            const node = itemsList.querySelector(`[data-id="${CSS.escape(id)}"]`);
+            const pt = node.querySelector('.plaintext');
+            pt.textContent = new TextDecoder().decode(buf);
+            pt.classList.remove('hidden');
+            node.querySelector('.reveal').classList.add('hidden');
+            node.querySelector('.hide').classList.remove('hidden');
+        } catch (e) {
+            log(`✗ Decrypt failed for ${id}: ${e.message}`, 'err');
+        }
+    };
+
+    const hideOne = (id) => {
+        const node = itemsList.querySelector(`[data-id="${CSS.escape(id)}"]`);
+        if (!node) return;
+        const pt = node.querySelector('.plaintext');
+        pt.textContent = '';
+        pt.classList.add('hidden');
+        node.querySelector('.reveal').classList.remove('hidden');
+        node.querySelector('.hide').classList.add('hidden');
+    };
+
+    const decryptAll = async () => { for (const item of items) await decryptOne(item.id); };
+    const hideAll = () => { for (const item of items) hideOne(item.id); };
+
+    const deleteOne = (id) => {
+        if (!confirm('Delete this item from localStorage?')) return;
+        items = items.filter((it) => it.id !== id);
+        saveItems(items);
+        renderItems();
+        log(`✓ removed ${id} from localStorage`, 'ok');
+    };
+
+    const lockVault = () => {
+        aesKey = null;
+        hmacKey = null;
+        items = [];
+        renderItems();
+        showInitialSection();
+        log('▶ Vault locked. AES + HMAC keys forgotten; localStorage data still on disk.', 'ok');
+    };
+
+    unlockBtn.addEventListener('click', async () => {
+        unlockBtn.disabled = true;
+        try {
+            const credId = b64u.decode(localStorage.getItem(STORAGE_KEYS.credId));
+            const salt   = b64u.decode(localStorage.getItem(STORAGE_KEYS.salt));
+            const salt2  = b64u.decode(localStorage.getItem(STORAGE_KEYS.salt2));
+
+            log('▶ Calling navigator.credentials.get({extensions:{prf}}) — challenge generated locally, no fetch…');
+            const credential = await navigator.credentials.get({
+                publicKey: {
+                    challenge: crypto.getRandomValues(new Uint8Array(32)),
+                    rpId: location.hostname,
+                    allowCredentials: [{ type: 'public-key', id: credId }],
+                    userVerification: 'required',
+                    extensions: { prf: { eval: { first: salt, second: salt2 } } },
+                },
+            });
+            const ext = credential.getClientExtensionResults();
+            const prfBytes  = ext?.prf?.results?.first;
+            const prfBytes2 = ext?.prf?.results?.second;
+            if (!prfBytes) throw new Error('No prf.results.first on the assertion.');
+            log(`✓ assertion done. prf.results.first = ${prfBytes.byteLength} bytes (AES key)`, 'ok');
+            if (prfBytes2) log(`              prf.results.second = ${prfBytes2.byteLength} bytes (HMAC key)`, 'ok');
+
+            aesKey = await deriveAesKey(new Uint8Array(prfBytes));
+            hmacKey = prfBytes2 ? await deriveHmacKey(new Uint8Array(prfBytes2)) : null;
+
+            items = loadItems();
+            renderItems();
+            await verifyAllMacs();
+
+            lockedSection.classList.add('hidden');
+            vaultSection.classList.remove('hidden');
+            log('✓ Vault unlocked. No network call has happened during the unlock.', 'ok');
+        } catch (err) {
+            log(`✗ ${err.message}`, 'err');
+        } finally {
+            unlockBtn.disabled = false;
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        if (!confirm('Forget the credId and the salts in localStorage? You will have to re-create a passkey, and any encrypted items become unrecoverable.')) return;
+        for (const k of Object.values(STORAGE_KEYS)) localStorage.removeItem(k);
+        aesKey = null; hmacKey = null; items = [];
+        log('✓ localStorage wiped.', 'ok');
+        showInitialSection();
+    });
+
+    addForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!aesKey || !hmacKey) {
+            log('✗ Vault is locked.', 'err');
+            return;
+        }
+        addBtn.disabled = true;
+        try {
+            const label = addForm.label.value.trim();
+            const plaintext = addForm.plaintext.value;
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const ciphertext = new Uint8Array(await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv }, aesKey, new TextEncoder().encode(plaintext),
+            ));
+            const ivB64 = b64u.encode(iv);
+            const ctB64 = b64u.encode(ciphertext);
+            const macBytes = new Uint8Array(await crypto.subtle.sign(
+                'HMAC', hmacKey, macBytesFor(label, ivB64, ctB64),
+            ));
+            const item = {
+                id: crypto.randomUUID().slice(0, 16),
+                label,
+                ciphertext: ctB64,
+                iv: ivB64,
+                mac: b64u.encode(macBytes),
+                createdAt: Date.now(),
+                macStatus: 'ok',
+            };
+            items = [...items, item];
+            saveItems(items);
+            renderItems();
+            addForm.reset();
+            log(`✓ encrypted & saved item ${item.id} to localStorage (no fetch). HMAC ✓`, 'ok');
+        } catch (err) {
+            log(`✗ ${err.message}`, 'err');
+        } finally {
+            addBtn.disabled = false;
+        }
+    });
+
+    $('reveal-all').addEventListener('click', decryptAll);
+    $('hide-all').addEventListener('click', hideAll);
+    $('lock-btn').addEventListener('click', lockVault);
+
+    // Boot
+    output.textContent = '';
+    log(`▶ Page loaded. ${isSetup() ? 'credId + salts found in localStorage (mirrored from a previous /register.html visit). Click "Authenticate & unlock".' : 'No credId/salts in localStorage — visit /register.html first.'}`);
+    showInitialSection();
+    registerServiceWorker();
+</script>
+</body>
+</html>
