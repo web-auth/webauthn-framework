@@ -31,19 +31,15 @@ These are listed as peer dependencies and should be installed in your project.
 
 ### Usage with Module Bundlers
 
-If you're using a module bundler (webpack, Vite, etc.) without Symfony UX, you can import controllers directly:
+With any module bundler (webpack, Vite, esbuild…), import controllers from the package entry point and register them yourself:
 
 ```javascript
-// Import individual controllers
+import { Application } from '@hotwired/stimulus';
 import { AuthenticationController, RegistrationController } from '@web-auth/webauthn-stimulus';
 
-// Or import specific ones
-import AuthenticationController from '@web-auth/webauthn-stimulus/src/authentication-controller.js';
-
-// Register with Stimulus
-import { Application } from '@hotwired/stimulus';
 const app = Application.start();
 app.register('webauthn--authentication', AuthenticationController);
+app.register('webauthn--registration', RegistrationController);
 ```
 
 ## Available Controllers
@@ -199,13 +195,28 @@ See [@simplewebauthn/server](https://simplewebauthn.dev/docs/packages/server) fo
 
 ## Symfony Integration
 
-This package is designed to work seamlessly with the [web-auth/webauthn-framework](https://github.com/web-auth/webauthn-framework) Symfony bundle:
+The recommended path for Symfony applications is to install this npm package straight from your asset pipeline. The package ships a `symfony.importmap` configuration so Symfony AssetMapper resolves the canonical sub-paths (`/authentication`, `/registration`, `/webauthn`) out of the box.
+
+### With Symfony AssetMapper (recommended)
 
 ```bash
-composer require web-auth/webauthn-stimulus
+php bin/console importmap:require @web-auth/webauthn-stimulus
 ```
 
-When installed via Composer with Symfony Flex, the controllers are automatically registered and available in your Twig templates:
+Then enable the controllers you want in `assets/controllers.json`:
+
+```json
+{
+    "controllers": {
+        "@web-auth/webauthn-stimulus": {
+            "authentication": { "enabled": true, "fetch": "eager" },
+            "registration": { "enabled": true, "fetch": "eager" }
+        }
+    }
+}
+```
+
+You can now use the `stimulus_controller()` Twig helper:
 
 ```twig
 <form {{ stimulus_controller('@web-auth/webauthn-stimulus/authentication') }}>
@@ -213,10 +224,15 @@ When installed via Composer with Symfony Flex, the controllers are automatically
 </form>
 ```
 
-For detailed Symfony integration documentation, visit:
+### With Webpack Encore / Vite / any other bundler
 
-- [Bundle documentation](https://github.com/web-auth/webauthn-framework/tree/5.3.x/src/stimulus)
-- [Main framework repository](https://github.com/web-auth/webauthn-framework)
+Install the package and register the controllers yourself — see [Usage with Module Bundlers](#usage-with-module-bundlers) above.
+
+### Deprecated: the `web-auth/webauthn-stimulus` Composer package
+
+> **Deprecated since 5.3.x — removed in 6.0.0.** The PHP wrapper `web-auth/webauthn-stimulus` is no longer needed: this npm package is the canonical and only maintained source going forward. New projects should not install it; existing projects should migrate to `importmap:require` (or `npm install`) before upgrading to 6.0.0.
+
+For more context and migration steps, see the [project documentation](https://webauthn-doc.spomky-labs.com/).
 
 ## Browser Support
 
