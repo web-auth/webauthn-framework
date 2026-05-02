@@ -3,7 +3,6 @@
 import {
     base64URLStringToBuffer,
     browserSupportsWebAuthn,
-    browserSupportsWebAuthnAutofill,
     startAuthentication,
     WebAuthnAbortService,
     WebAuthnError,
@@ -69,18 +68,23 @@ export default class extends BaseController {
     };
 
     async connect() {
+        const capabilities = await this._getClientCapabilities();
         this._dispatchEvent('webauthn:authentication:connect', {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
             supportsPlatformAuthenticator: await platformAuthenticatorIsAvailable(),
+            capabilities,
         });
 
         if (!this.conditionalUiValue) {
             return;
         }
 
-        const supportsAutofill = await browserSupportsWebAuthnAutofill();
-        if (supportsAutofill) {
+        // WebAuthn L3 §5.1.7: prefer the native capability map over the
+        // deprecated isConditionalMediationAvailable / browserSupportsWebAuthnAutofill
+        // wrapper. _getClientCapabilities falls back to the legacy detector
+        // on user agents that have not shipped getClientCapabilities yet.
+        if (capabilities.conditionalGet === true) {
             await this._startAuthenticationWithConditionalUi();
         }
     }

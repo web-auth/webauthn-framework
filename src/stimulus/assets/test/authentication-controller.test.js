@@ -790,4 +790,122 @@ describe('AuthenticationController', () => {
             expect(credentialEvents[0].clientExtensionResults.credBlob).toBe('aGkh');
         });
     });
+
+    describe('getClientCapabilities (WebAuthn L3 §5.1.7)', () => {
+        let originalPublicKeyCredential;
+
+        beforeEach(() => {
+            originalPublicKeyCredential = globalThis.PublicKeyCredential;
+        });
+
+        afterEach(() => {
+            if (originalPublicKeyCredential === undefined) {
+                delete globalThis.PublicKeyCredential;
+            } else {
+                Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                    value: originalPublicKeyCredential,
+                    configurable: true,
+                });
+            }
+        });
+
+        it('exposes the native capability map on the connect event when available', async () => {
+            const form = getByTestId(container, 'authentication-form');
+            const nativeCaps = {
+                conditionalGet: true,
+                conditionalCreate: false,
+                relatedOrigins: true,
+            };
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: { getClientCapabilities: jest.fn().mockResolvedValue(nativeCaps) },
+                configurable: true,
+            });
+
+            let connectDetail = null;
+            form.addEventListener('webauthn:authentication:connect', (e) => {
+                connectDetail = e.detail;
+            });
+            application = startStimulus();
+
+            await waitFor(() => expect(connectDetail).not.toBeNull());
+            expect(connectDetail.capabilities).toEqual(nativeCaps);
+        });
+
+        it('falls back to a synthetic map when the native API is missing', async () => {
+            // jsdom default state: no PublicKeyCredential, browserSupportsWebAuthnAutofill
+            // is mocked at file scope to resolve false.
+            delete globalThis.PublicKeyCredential;
+
+            const form = getByTestId(container, 'authentication-form');
+            let connectDetail = null;
+            form.addEventListener('webauthn:authentication:connect', (e) => {
+                connectDetail = e.detail;
+            });
+            application = startStimulus();
+
+            await waitFor(() => expect(connectDetail).not.toBeNull());
+            expect(connectDetail.capabilities).toEqual({ conditionalGet: false });
+        });
+
+        it('skips conditional UI when capabilities.conditionalGet is false even if requested', async () => {
+            container = mountDOM(`
+                <form
+                    data-testid="capabilities-cond-form"
+                    data-controller="webauthn--authentication"
+                    data-action="submit->webauthn--authentication#authenticate"
+                    data-webauthn--authentication-conditional-ui-value="true"
+                    data-webauthn--authentication-options-url-value="/auth/options"
+                    data-webauthn--authentication-result-url-value="/auth/verify"
+                >
+                </form>
+            `);
+
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    getClientCapabilities: jest.fn().mockResolvedValue({ conditionalGet: false }),
+                },
+                configurable: true,
+            });
+
+            const form = getByTestId(container, 'capabilities-cond-form');
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            // Give the post-connect conditional-UI branch a tick to no-op.
+            await new Promise((r) => setTimeout(r, 0));
+
+            expect(fetchMock).not.toHaveBeenCalled();
+            expect(SimpleWebAuthnBrowser.startAuthentication).not.toHaveBeenCalled();
+        });
+
+        it('starts conditional UI when capabilities.conditionalGet is true', async () => {
+            container = mountDOM(`
+                <form
+                    data-testid="capabilities-cond-form-on"
+                    data-controller="webauthn--authentication"
+                    data-action="submit->webauthn--authentication#authenticate"
+                    data-webauthn--authentication-conditional-ui-value="true"
+                    data-webauthn--authentication-options-url-value="/auth/options"
+                    data-webauthn--authentication-result-url-value="/auth/verify"
+                >
+                </form>
+            `);
+
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    getClientCapabilities: jest.fn().mockResolvedValue({ conditionalGet: true }),
+                },
+                configurable: true,
+            });
+            fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'c' }) });
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({ id: 'cred' });
+
+            application = startStimulus();
+
+            await waitFor(() => {
+                expect(SimpleWebAuthnBrowser.startAuthentication).toHaveBeenCalled();
+            });
+        });
+    });
 });
