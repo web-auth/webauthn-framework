@@ -147,6 +147,13 @@ export default class extends Controller {
             options.extensions.prf = this._processPrfInput(options.extensions.prf);
         }
 
+        // CTAP 2.1 §12.2: credBlob ships as base64url over JSON, but the
+        // browser expects a BufferSource. The string form is what
+        // CredentialBlobInputExtension produces server-side.
+        if (typeof options.extensions.credBlob === 'string') {
+            options.extensions.credBlob = base64URLStringToBuffer(options.extensions.credBlob);
+        }
+
         return options;
     }
 
@@ -195,6 +202,15 @@ export default class extends Controller {
 
         if (credential.clientExtensionResults.prf) {
             credential.clientExtensionResults.prf = this._processPrfOutput(credential.clientExtensionResults.prf);
+        }
+
+        // CTAP 2.1 §12.2: getCredBlob assertion output is an ArrayBuffer of
+        // raw bytes — encode to base64url so the JSON we POST back to the
+        // server is round-trippable through CredentialBlobAssertionOutput.
+        if (credential.clientExtensionResults.credBlob instanceof ArrayBuffer) {
+            credential.clientExtensionResults.credBlob = bufferToBase64URLString(
+                credential.clientExtensionResults.credBlob
+            );
         }
 
         return credential;
