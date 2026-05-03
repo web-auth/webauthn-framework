@@ -200,6 +200,10 @@ function handleRegistrationOptions(Container $container): array
 function handleRegistrationResult(Container $container): array
 {
     $body = readRawBody();
+    $bodyData = json_decode($body, true);
+    if (! is_array($bodyData)) {
+        throw new RuntimeException('Invalid JSON body.');
+    }
     $serialized = $_SESSION['register']['options'] ?? null;
     if ($serialized === null) {
         throw new RuntimeException('No registration in progress.');
@@ -217,9 +221,11 @@ function handleRegistrationResult(Container $container): array
 
     $record = $container->attestationValidator->check($response, $options, $container->relyingPartyId);
 
-    // Parse what the user agent actually returned for each extension we requested.
-    $clientExt = $body['clientExtensionResults'] ?? [];
-    $clientExtAssoc = is_array($clientExt) ? $clientExt : [];
+    // Parse what the user agent actually returned for each extension we
+    // requested. NB: $body is the raw JSON STRING — read clientExtensionResults
+    // off the decoded array, not the string (PHP 8 silently drops the
+    // string-key access on a string and we lose every extension output).
+    $clientExtAssoc = is_array($bodyData['clientExtensionResults'] ?? null) ? $bodyData['clientExtensionResults'] : [];
 
     $clientExtensions = AuthenticationExtensions::create(array_map(
         static fn (string $name, mixed $value): AuthenticationExtension => AuthenticationExtension::create($name, $value),
