@@ -11,6 +11,5 @@ yarn-error.log
 /.castor.stub.php
 /tmp*
 /.ci-tools/coverage
-/package-lock.json
 .grepai/
 .claude/
