@@ -263,8 +263,12 @@ describe('AuthenticationController', () => {
                 </form>
             `);
 
-            delete window.location;
-            window.location = { replace: jest.fn() };
+            // jsdom marks window.location as non-configurable. The
+            // controller exposes _redirect() so tests can spy on it on the
+            // prototype without fighting jsdom.
+            const redirectSpy = jest
+                .spyOn(AuthenticationController.prototype, '_redirect')
+                .mockImplementation(() => {});
 
             fetchMock
                 .mockResolvedValueOnce({
@@ -285,9 +289,13 @@ describe('AuthenticationController', () => {
 
             submitForm(form);
 
-            await waitFor(() => {
-                expect(window.location.replace).toHaveBeenCalledWith('/dashboard');
-            });
+            try {
+                await waitFor(() => {
+                    expect(redirectSpy).toHaveBeenCalledWith('/dashboard');
+                });
+            } finally {
+                redirectSpy.mockRestore();
+            }
         });
     });
 

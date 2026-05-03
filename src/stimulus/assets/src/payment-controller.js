@@ -58,9 +58,7 @@ export default class extends AuthenticationController {
 
         const payment = credential?.clientExtensionResults?.payment;
         if (payment?.browserBoundSignature?.signature instanceof ArrayBuffer) {
-            payment.browserBoundSignature.signature = bufferToBase64URLString(
-                payment.browserBoundSignature.signature
-            );
+            payment.browserBoundSignature.signature = bufferToBase64URLString(payment.browserBoundSignature.signature);
         }
 
         return credential;

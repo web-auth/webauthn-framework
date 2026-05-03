@@ -229,6 +229,25 @@ jobs:
       - name: Execute Infection
         run: castor infect
 
+  js_quality:
+    name: "9️⃣ JavaScript (lint, format, tests)"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Run Prettier check
+        run: npm run format
+      - name: Run ESLint check
+        run: npm run lint
+      - name: Run Jest tests
+        run: npm test
+
   exported_files:
     name: "8️⃣ Exported Files Check"
     needs: [prepare_dependencies]

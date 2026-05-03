@@ -171,7 +171,7 @@ export default class extends BaseController {
             );
 
             if (verificationResult && this.hasSuccessRedirectUriValue) {
-                window.location.replace(this.successRedirectUriValue);
+                this._redirect(this.successRedirectUriValue);
             }
         } catch (error) {
             // Check if this is a WebAuthn-specific error
