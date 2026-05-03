@@ -96,7 +96,13 @@ Note where each one lives:
 - **`credProtect` + `enforce`**: with `enforce: true`, an authenticator that
   does not implement `credProtect` will fail registration outright instead of
   silently downgrading. The applied-policy column in the result table lets you
-  spot a downgrade if you remove `enforce`.
+  spot a downgrade if you remove `enforce`. The router only sets
+  `enforce: true` for levels 2 and 3 — pairing it with level 1
+  (`userVerificationOptional`) makes modern passkey-capable authenticators
+  (iCloud Keychain, Windows Hello, Android) refuse with *"Requested
+  protection policy is inconsistent or incongruent with other requested
+  parameters"*: they default to creating a discoverable credential, which
+  forces credProtect ≥ level 2, incompatible with enforcing level 1.
 - **`credProtect` requires consistent `authenticatorSelection`** (CTAP 2.1
   §12.1). The router attaches it automatically:
   - `userVerificationOptionalWithCredentialIDList` → `residentKey: required`

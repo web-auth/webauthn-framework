@@ -33,7 +33,6 @@ use Webauthn\AuthenticationExtensions\MinPinLengthOutput;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\Exception\WebauthnException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -135,8 +134,17 @@ function handleRegistrationOptions(Container $container): array
             CredentialProtectionInputExtension::POLICY_USER_VERIFICATION_OPTIONAL_WITH_CREDENTIAL_ID_LIST => CredentialProtectionInputExtension::userVerificationOptionalWithCredentialIDList(),
             CredentialProtectionInputExtension::POLICY_USER_VERIFICATION_REQUIRED => CredentialProtectionInputExtension::userVerificationRequired(),
         };
-        // Ask the UA to fail registration rather than silently downgrade.
-        $extensions[] = CredentialProtectionInputExtension::enforce();
+        // Only ask the UA to fail-rather-than-downgrade when we requested a
+        // policy STRONGER than the spec default (level 1). With level 1 +
+        // enforce, modern passkey-capable authenticators (iCloud Keychain,
+        // Windows Hello, Android) refuse with "Requested protection policy
+        // is inconsistent or incongruent with other requested parameters",
+        // because they create a discoverable credential by default and that
+        // requires credProtect ≥ level 2 — incompatible with our enforce on
+        // level 1.
+        if ($policy !== CredentialProtectionInputExtension::POLICY_USER_VERIFICATION_OPTIONAL) {
+            $extensions[] = CredentialProtectionInputExtension::enforce();
+        }
     }
 
     if ($blob !== '') {
