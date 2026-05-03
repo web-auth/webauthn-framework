@@ -97,6 +97,12 @@ Note where each one lives:
   does not implement `credProtect` will fail registration outright instead of
   silently downgrading. The applied-policy column in the result table lets you
   spot a downgrade if you remove `enforce`.
+- **`credProtect` requires consistent `authenticatorSelection`** (CTAP 2.1
+  §12.1). The router attaches it automatically:
+  - `userVerificationOptionalWithCredentialIDList` → `residentKey: required`
+  - `userVerificationRequired` → `residentKey: required` + `userVerification: required`
+  Without these, the authenticator returns *"Requested protection policy is
+  inconsistent or incongruent with other requested parameters."*
 - **Demo storage** is a JSON file under `var/credentials.json` — persistent
   across `./run.sh` invocations but trivially resettable (just delete the
   file). Production code MUST go through

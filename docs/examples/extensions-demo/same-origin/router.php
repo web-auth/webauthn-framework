@@ -32,6 +32,7 @@ use Webauthn\AuthenticationExtensions\MinPinLengthInputExtension;
 use Webauthn\AuthenticationExtensions\MinPinLengthOutput;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
+use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Exception\WebauthnException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -112,6 +113,11 @@ function handleRegistrationOptions(Container $container): array
     $policy = $body['credProtect'] ?? null; // userVerificationOptional | userVerificationOptionalWithCredentialIDList | userVerificationRequired
     $blob = (string) ($body['credBlob'] ?? '');
 
+    // Defensive: another demo on http://localhost may have stored a different
+    // shape under the same session cookie. Reset if it isn't an array.
+    if (! isset($_SESSION['userHandle']) || ! is_array($_SESSION['userHandle'])) {
+        $_SESSION['userHandle'] = [];
+    }
     $userHandle = $_SESSION['userHandle'][$username] ?? random_bytes(16);
     $_SESSION['userHandle'][$username] = $userHandle;
 
@@ -138,6 +144,23 @@ function handleRegistrationOptions(Container $container): array
         $extensions[] = CredentialBlobInputExtension::withBlob($blob);
     }
 
+    // CTAP 2.1 §12.1 — the requested credProtect policy MUST be consistent with
+    // the AuthenticatorSelectionCriteria, otherwise the authenticator returns
+    // CTAP2_ERR_REQUEST_TOO_LARGE / "Requested protection policy is inconsistent":
+    //   - userVerificationOptionalWithCredentialIDList → resident key required
+    //   - userVerificationRequired                     → resident key required + UV required
+    $authenticatorSelection = match ($policy) {
+        CredentialProtectionInputExtension::POLICY_USER_VERIFICATION_OPTIONAL_WITH_CREDENTIAL_ID_LIST => AuthenticatorSelectionCriteria::create(
+            userVerification: AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+            residentKey: AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ),
+        CredentialProtectionInputExtension::POLICY_USER_VERIFICATION_REQUIRED => AuthenticatorSelectionCriteria::create(
+            userVerification: AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            residentKey: AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ),
+        default => null,
+    };
+
     $options = PublicKeyCredentialCreationOptions::create(
         rp: PublicKeyCredentialRpEntity::create($container->relyingPartyName, $container->relyingPartyId),
         user: PublicKeyCredentialUserEntity::create($username, $userHandle, $username),
@@ -146,6 +169,7 @@ function handleRegistrationOptions(Container $container): array
             PublicKeyCredentialParameters::create('public-key', -7),  // ES256
             PublicKeyCredentialParameters::create('public-key', -257), // RS256
         ],
+        authenticatorSelection: $authenticatorSelection,
         attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
         extensions: AuthenticationExtensions::create($extensions),
     );
