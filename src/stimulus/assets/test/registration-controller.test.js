@@ -782,8 +782,10 @@ describe('RegistrationController', () => {
             await waitFor(() => {
                 expect(SimpleWebAuthnBrowser.startRegistration).toHaveBeenCalled();
             });
-            const inputs = SimpleWebAuthnBrowser.startRegistration.mock.calls[0][0].optionsJSON
-                .extensions.prf.evalByCredential['cred-1'];
+            const inputs =
+                SimpleWebAuthnBrowser.startRegistration.mock.calls[0][0].optionsJSON.extensions.prf.evalByCredential[
+                    'cred-1'
+                ];
             expect(inputs.first).toBeInstanceOf(ArrayBuffer);
             expect(inputs.second).toBeInstanceOf(ArrayBuffer);
         });
@@ -817,6 +819,39 @@ describe('RegistrationController', () => {
                 expect(credentialEvents).toHaveLength(1);
             });
             expect(credentialEvents[0].clientExtensionResults).toEqual({});
+        });
+    });
+
+    describe('credBlob extension (CTAP 2.1 §12.2)', () => {
+        it('decodes the credBlob input from base64url to ArrayBuffer before calling startRegistration', async () => {
+            const form = getByTestId(container, 'registration-form');
+            // base64url("hi!") = "aGkh"
+            const blobB64 = 'aGkh';
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({
+                        challenge: 'test',
+                        rp: {},
+                        user: {},
+                        extensions: { credBlob: blobB64 },
+                    }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startRegistration.mockResolvedValue({ id: 'cred' });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(SimpleWebAuthnBrowser.startRegistration).toHaveBeenCalled();
+            });
+            const credBlob = SimpleWebAuthnBrowser.startRegistration.mock.calls[0][0].optionsJSON.extensions.credBlob;
+            expect(credBlob).toBeInstanceOf(ArrayBuffer);
         });
     });
 });

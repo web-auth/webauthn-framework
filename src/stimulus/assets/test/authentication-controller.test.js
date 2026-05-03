@@ -759,4 +759,35 @@ describe('AuthenticationController', () => {
             expect(startCall.optionsJSON.uiMode).toBeUndefined();
         });
     });
+
+    describe('credBlob extension (CTAP 2.1 §12.2)', () => {
+        it('encodes the credBlob assertion output ArrayBuffer back to base64url before dispatch', async () => {
+            const form = getByTestId(container, 'authentication-form');
+            const blobBytes = new Uint8Array([0x68, 0x69, 0x21]).buffer; // base64url("hi!") = "aGkh"
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({
+                id: 'cred',
+                clientExtensionResults: { credBlob: blobBytes },
+            });
+
+            const credentialEvents = [];
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvents.push(e.detail.credential);
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(credentialEvents).toHaveLength(1);
+            });
+            expect(credentialEvents[0].clientExtensionResults.credBlob).toBe('aGkh');
+        });
+    });
 });
