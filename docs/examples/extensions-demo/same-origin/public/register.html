@@ -22,6 +22,9 @@
         th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; vertical-align: top; }
         th { background: #f9fafb; font-weight: 600; }
         td.muted { color: #6b7280; font-style: italic; }
+        details { margin-top: 1rem; }
+        summary { cursor: pointer; color: #2563eb; }
+        pre { background: #f3f4f6; padding: 12px 14px; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -60,6 +63,15 @@
         <thead><tr><th>Extension</th><th>Value</th></tr></thead>
         <tbody id="resultRows"></tbody>
     </table>
+
+    <details>
+        <summary>Raw extension bags as the authenticator and user agent emitted them</summary>
+        <h3><code>authData.extensions</code> (from the authenticator)</h3>
+        <pre id="rawAuth"></pre>
+        <h3><code>clientExtensionResults</code> (from the user agent)</h3>
+        <pre id="rawClient"></pre>
+        <p class="hint">Most platform authenticators (Touch ID, Windows Hello, Android, iCloud Keychain) only return <code>credProps</code> — sometimes nothing on the authenticator side at all. Hardware FIDO2 keys (YubiKey 5 with recent firmware, SoloKey) do echo <code>credProtect</code> and <code>credBlob</code>.</p>
+    </details>
 </div>
 
 <script type="module">
@@ -118,14 +130,18 @@
             clientExtensionResults: cred.getClientExtensionResults?.() ?? {},
         };
     }
-    function row(name, value) {
+    function row(name, value, requested) {
         const tr = document.createElement('tr');
         const th = document.createElement('td');
         th.innerHTML = `<code>${name}</code>`;
         const td = document.createElement('td');
         if (value === null || value === undefined) {
             td.className = 'muted';
-            td.textContent = 'absent (not returned by the authenticator)';
+            if (requested === false || requested === null) {
+                td.textContent = 'not requested';
+            } else {
+                td.textContent = 'requested but the authenticator / UA did not return it';
+            }
         } else {
             td.textContent = typeof value === 'string' ? value : JSON.stringify(value);
         }
@@ -175,13 +191,20 @@
             setStatus(`✓ Registered. Credential id: ${result.credentialId}`, true);
 
             const ext = result.extensionOutputs ?? {};
+            const requested = result.requested ?? {};
             resultRows.innerHTML = '';
             const credProps = ext.credProps ?? null;
-            resultRows.appendChild(row('credProps.rk', credProps?.rk));
-            resultRows.appendChild(row('credProps.authenticatorDisplayName', credProps?.authenticatorDisplayName));
-            resultRows.appendChild(row('credProtect (applied policy)', ext.credProtect));
-            resultRows.appendChild(row('credBlob (stored on authenticator)', ext.credBlob));
-            resultRows.appendChild(row('minPinLength', ext.minPinLength));
+            resultRows.appendChild(row('credProps.rk', credProps?.rk, requested.credProps));
+            resultRows.appendChild(row('credProps.authenticatorDisplayName', credProps?.authenticatorDisplayName, requested.credProps));
+            resultRows.appendChild(row('credProtect (applied policy)', ext.credProtect, requested.credProtect));
+            resultRows.appendChild(row('credBlob (stored on authenticator)', ext.credBlob, requested.credBlob));
+            resultRows.appendChild(row('minPinLength', ext.minPinLength, requested.minPinLength));
+
+            // Raw debug dump so the user can see what really came back from
+            // the authenticator (authData.extensions) and the user agent
+            // (clientExtensionResults).
+            document.getElementById('rawAuth').textContent = JSON.stringify(result.rawAuthenticatorExtensions ?? {}, null, 2);
+            document.getElementById('rawClient').textContent = JSON.stringify(result.rawClientExtensions ?? {}, null, 2);
             resultsEl.hidden = false;
         } catch (err) {
             setStatus(`✗ ${err.message}`, false);

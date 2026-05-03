@@ -259,12 +259,33 @@ function handleRegistrationResult(Container $container): array
         $registrationOutputs,
     );
 
+    // What we actually asked the user agent for (so the result page can
+    // distinguish "not requested" from "requested but the authenticator
+    // declined to return it").
+    $requested = [
+        'credProps' => true,
+        'minPinLength' => true,
+        'credProtect' => $_SESSION['register']['requestedCredProtect'],
+        'credBlob' => $_SESSION['register']['credBlob'] !== '',
+    ];
+
+    // Raw extension bags as the authenticator / user agent emitted them.
+    // Surfaced verbatim so the user can see what really came back vs what
+    // the typed value objects parsed.
+    $rawAuthenticator = [];
+    foreach ($authenticatorExtensions as $name => $extension) {
+        $rawAuthenticator[$name] = $extension->value;
+    }
+
     unset($_SESSION['register']);
 
     return [
         'verified' => true,
         'credentialId' => Base64UrlSafe::encodeUnpadded($record->publicKeyCredentialId),
         'extensionOutputs' => $registrationOutputs,
+        'requested' => $requested,
+        'rawAuthenticatorExtensions' => $rawAuthenticator,
+        'rawClientExtensions' => $clientExtAssoc,
     ];
 }
 
