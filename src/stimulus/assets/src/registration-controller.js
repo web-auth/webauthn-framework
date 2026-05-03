@@ -74,6 +74,7 @@ export default class extends BaseController {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
             supportsPlatformAuthenticator: await platformAuthenticatorIsAvailable(),
+            capabilities: await this._getClientCapabilities(),
         });
     }
 

@@ -1,7 +1,11 @@
 'use strict';
 
 import { Controller } from '@hotwired/stimulus';
-import { base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
+import {
+    base64URLStringToBuffer,
+    browserSupportsWebAuthnAutofill,
+    bufferToBase64URLString,
+} from '@simplewebauthn/browser';
 
 /**
  * Base controller for WebAuthn operations
@@ -251,5 +255,48 @@ export default class extends Controller {
      */
     _dispatchEvent(name, payload) {
         this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
+    }
+
+    /**
+     * Read the WebAuthn L3 §5.1.7 client capability map for the current
+     * user agent. Memoised per controller instance.
+     *
+     * On user agents that do not implement
+     * `PublicKeyCredential.getClientCapabilities()` (everything pre-L3) this
+     * returns a synthetic plain object built from the legacy feature
+     * detectors we still depend on:
+     *
+     *  - `conditionalGet` ← `browserSupportsWebAuthnAutofill()` (which
+     *    itself wraps the deprecated `isConditionalMediationAvailable()`).
+     *
+     * Other capabilities are reported as `false` on the fallback path —
+     * callers that depend on them should treat absence as "unsupported"
+     * rather than "unknown" and either skip the optional behaviour or
+     * surface it to the user.
+     *
+     * @returns {Promise<Object<string, boolean>>}
+     */
+    async _getClientCapabilities() {
+        if (this._clientCapabilitiesCache !== undefined) {
+            return this._clientCapabilitiesCache;
+        }
+
+        if (
+            typeof PublicKeyCredential !== 'undefined' &&
+            typeof PublicKeyCredential.getClientCapabilities === 'function'
+        ) {
+            const native = await PublicKeyCredential.getClientCapabilities();
+            // The spec returns a MapLike. Normalise to a plain object so
+            // callers can treat it like any other JSON payload.
+            this._clientCapabilitiesCache =
+                native instanceof Map ? Object.fromEntries(native.entries()) : { ...native };
+            return this._clientCapabilitiesCache;
+        }
+
+        const supportsAutofill = await browserSupportsWebAuthnAutofill();
+        this._clientCapabilitiesCache = {
+            conditionalGet: supportsAutofill,
+        };
+        return this._clientCapabilitiesCache;
     }
 }
