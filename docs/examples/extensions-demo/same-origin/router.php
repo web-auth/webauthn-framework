@@ -47,10 +47,21 @@ require_once __DIR__ . '/../src/bootstrap.php';
 $container = new Container();
 $container->allowedOrigins = ['http://localhost:8000', 'https://localhost:8000'];
 
-// Let the built-in server serve static files directly.
+// Let the built-in server serve static files directly. Map "/" → "/index.html"
+// so the landing page works without a redirect, and let it handle any other
+// existing file under public/.
 $path = parse_url($_SERVER['REQUEST_URI'], \PHP_URL_PATH);
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && is_file(__DIR__ . '/public' . $path)) {
-    return false;
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $resolved = $path === '/' || str_ends_with($path, '/') ? rtrim($path, '/') . '/index.html' : $path;
+    if (is_file(__DIR__ . '/public' . $resolved)) {
+        if ($resolved !== $path) {
+            // Have the built-in server serve the resolved file by rewriting
+            // the request before returning false.
+            $_SERVER['REQUEST_URI'] = $resolved;
+            $_SERVER['SCRIPT_NAME'] = $resolved;
+        }
+        return false;
+    }
 }
 
 session_start();
