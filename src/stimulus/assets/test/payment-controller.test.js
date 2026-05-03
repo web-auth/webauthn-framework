@@ -238,7 +238,7 @@ describe('PaymentController', () => {
                 configurable: true,
             });
             SimpleWebAuthnBrowser.WebAuthnAbortService.createNewAbortSignal = jest.fn(
-                () => new AbortController().signal,
+                () => new AbortController().signal
             );
 
             fetchMock

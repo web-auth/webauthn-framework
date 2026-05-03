@@ -266,6 +266,18 @@ export default class extends Controller {
     }
 
     /**
+     * Navigate to the given URI on a successful ceremony when
+     * `successRedirectUri` is configured. Extracted from the consumers so
+     * tests can spy on this method without having to redefine `window.location`
+     * (which jsdom marks as non-configurable).
+     *
+     * @param {string} uri
+     */
+    _redirect(uri) {
+        window.location.replace(uri);
+    }
+
+    /**
      * Read the WebAuthn L3 §5.1.7 client capability map for the current
      * user agent. Memoised per controller instance.
      *
