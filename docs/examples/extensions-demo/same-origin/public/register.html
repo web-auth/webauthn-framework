@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Extensions Demo — Register</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 760px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.6rem; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        label { display: block; margin: 1rem 0 0.3rem; font-weight: 600; }
+        input[type=text], select { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+        input[type=text]:focus, select:focus { outline: 2px solid #2563eb; outline-offset: -1px; }
+        button { margin-top: 1.5rem; padding: 10px 18px; background: #2563eb; color: white; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .hint { font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem; }
+        code { background: #f3f4f6; padding: 2px 5px; border-radius: 4px; }
+        #status { margin-top: 1.5rem; padding: 12px 16px; border-radius: 6px; }
+        #status.ok { background: #ecfdf5; border-left: 4px solid #10b981; }
+        #status.err { background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; vertical-align: top; }
+        th { background: #f9fafb; font-weight: 600; }
+        td.muted { color: #6b7280; font-style: italic; }
+    </style>
+</head>
+<body>
+<h1>Register a credential with extensions</h1>
+
+<nav><a href="index.html">← home</a> | <a href="assert.html">→ assert.html</a></nav>
+
+<form id="form">
+    <label for="username">Username</label>
+    <input id="username" type="text" value="alice" required>
+
+    <label for="credProtect">credProtect policy (optional)</label>
+    <select id="credProtect">
+        <option value="">(do not request)</option>
+        <option value="userVerificationOptional">userVerificationOptional</option>
+        <option value="userVerificationOptionalWithCredentialIDList">userVerificationOptionalWithCredentialIDList</option>
+        <option value="userVerificationRequired">userVerificationRequired</option>
+    </select>
+    <p class="hint">Sent with <code>enforceCredentialProtectionPolicy: true</code>. The
+        authenticator returns the policy actually applied — compare them in the result table
+        below.</p>
+
+    <label for="credBlob">credBlob payload (optional, ≤32 bytes UTF-8)</label>
+    <input id="credBlob" type="text" maxlength="32" placeholder="e.g. session-id-or-flag">
+    <p class="hint">Stored on the authenticator. Retrieved during the assertion via
+        <code>getCredBlob</code>.</p>
+
+    <button id="submit" type="submit">Register</button>
+</form>
+
+<div id="status"></div>
+
+<div id="results" hidden>
+    <h2>Server-parsed extension outputs</h2>
+    <table>
+        <thead><tr><th>Extension</th><th>Value</th></tr></thead>
+        <tbody id="resultRows"></tbody>
+    </table>
+</div>
+
+<script type="module">
+    const form = document.getElementById('form');
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submit');
+    const resultsEl = document.getElementById('results');
+    const resultRows = document.getElementById('resultRows');
+
+    function setStatus(msg, ok) {
+        statusEl.textContent = msg;
+        statusEl.className = ok ? 'ok' : 'err';
+    }
+
+    function b64urlToBuffer(s) {
+        const pad = '='.repeat((4 - (s.length % 4)) % 4);
+        const b64 = (s + pad).replace(/-/g, '+').replace(/_/g, '/');
+        const bin = atob(b64);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out.buffer;
+    }
+    function bufferToB64url(buf) {
+        const bytes = new Uint8Array(buf);
+        let s = '';
+        for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+        return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+    function hydrateOptions(json) {
+        const o = { ...json };
+        o.challenge = b64urlToBuffer(json.challenge);
+        if (Array.isArray(json.user?.id)) {
+            o.user = { ...json.user, id: new Uint8Array(json.user.id).buffer };
+        } else if (typeof json.user?.id === 'string') {
+            o.user = { ...json.user, id: b64urlToBuffer(json.user.id) };
+        }
+        if (Array.isArray(json.excludeCredentials)) {
+            o.excludeCredentials = json.excludeCredentials.map((c) => ({ ...c, id: b64urlToBuffer(c.id) }));
+        }
+        // Convert credBlob to ArrayBuffer for the browser.
+        if (typeof json.extensions?.credBlob === 'string') {
+            o.extensions = { ...json.extensions, credBlob: b64urlToBuffer(json.extensions.credBlob) };
+        }
+        return o;
+    }
+    function dehydrateCredential(cred) {
+        if (typeof cred.toJSON === 'function') return cred.toJSON();
+        return {
+            id: cred.id,
+            rawId: bufferToB64url(cred.rawId),
+            type: cred.type,
+            response: {
+                clientDataJSON: bufferToB64url(cred.response.clientDataJSON),
+                attestationObject: bufferToB64url(cred.response.attestationObject),
+            },
+            clientExtensionResults: cred.getClientExtensionResults?.() ?? {},
+        };
+    }
+    function row(name, value) {
+        const tr = document.createElement('tr');
+        const th = document.createElement('td');
+        th.innerHTML = `<code>${name}</code>`;
+        const td = document.createElement('td');
+        if (value === null || value === undefined) {
+            td.className = 'muted';
+            td.textContent = 'absent (not returned by the authenticator)';
+        } else {
+            td.textContent = typeof value === 'string' ? value : JSON.stringify(value);
+        }
+        tr.appendChild(th);
+        tr.appendChild(td);
+        return tr;
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!('credentials' in navigator)) {
+            setStatus('navigator.credentials is unavailable in this context.', false);
+            return;
+        }
+        submitBtn.disabled = true;
+        setStatus('Requesting options…', true);
+        resultsEl.hidden = true;
+
+        const payload = {
+            username: document.getElementById('username').value.trim(),
+            credProtect: document.getElementById('credProtect').value || null,
+            credBlob: document.getElementById('credBlob').value || '',
+        };
+
+        try {
+            const optsRes = await fetch('/register/options', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!optsRes.ok) throw new Error(`Options HTTP ${optsRes.status}`);
+            const { options } = await optsRes.json();
+
+            setStatus('Calling navigator.credentials.create()…', true);
+            const credential = await navigator.credentials.create({ publicKey: hydrateOptions(options) });
+            const credJson = dehydrateCredential(credential);
+
+            setStatus('Verifying with the relying party…', true);
+            const resultRes = await fetch('/register/result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credJson),
+            });
+            const result = await resultRes.json();
+            if (!resultRes.ok || result.error) throw new Error(result.error ?? `Result HTTP ${resultRes.status}`);
+
+            setStatus(`✓ Registered. Credential id: ${result.credentialId}`, true);
+
+            const ext = result.extensionOutputs ?? {};
+            resultRows.innerHTML = '';
+            const credProps = ext.credProps ?? null;
+            resultRows.appendChild(row('credProps.rk', credProps?.rk));
+            resultRows.appendChild(row('credProps.authenticatorDisplayName', credProps?.authenticatorDisplayName));
+            resultRows.appendChild(row('credProtect (applied policy)', ext.credProtect));
+            resultRows.appendChild(row('credBlob (stored on authenticator)', ext.credBlob));
+            resultRows.appendChild(row('minPinLength', ext.minPinLength));
+            resultsEl.hidden = false;
+        } catch (err) {
+            setStatus(`✗ ${err.message}`, false);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
