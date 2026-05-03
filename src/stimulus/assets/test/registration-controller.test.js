@@ -15,7 +15,10 @@ jest.mock('@simplewebauthn/browser', () => {
         browserSupportsWebAuthn: jest.fn(),
         platformAuthenticatorIsAvailable: jest.fn(),
         startRegistration: jest.fn(),
-        WebAuthnAbortService: { cancelCeremony: jest.fn() },
+        WebAuthnAbortService: {
+            cancelCeremony: jest.fn(),
+            createNewAbortSignal: jest.fn(() => new AbortController().signal),
+        },
     };
 });
 
@@ -852,6 +855,131 @@ describe('RegistrationController', () => {
             });
             const credBlob = SimpleWebAuthnBrowser.startRegistration.mock.calls[0][0].optionsJSON.extensions.credBlob;
             expect(credBlob).toBeInstanceOf(ArrayBuffer);
+        });
+    });
+
+    describe('native L3 JSON helpers (parseCreationOptionsFromJSON / toJSON)', () => {
+        // jsdom does not ship the L3 helpers; the AuthenticationController test
+        // suite already exercises the SimpleWebAuthn fallback path. Here we
+        // explicitly install the natives and check that the controller prefers
+        // them when available, bypassing SimpleWebAuthn entirely.
+
+        let originalPublicKeyCredential;
+        let originalNavigator;
+
+        beforeEach(() => {
+            originalPublicKeyCredential = globalThis.PublicKeyCredential;
+            originalNavigator = globalThis.navigator;
+        });
+
+        afterEach(() => {
+            if (originalPublicKeyCredential === undefined) {
+                delete globalThis.PublicKeyCredential;
+            } else {
+                Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                    value: originalPublicKeyCredential,
+                    configurable: true,
+                });
+            }
+            if (originalNavigator) {
+                Object.defineProperty(globalThis, 'navigator', {
+                    value: originalNavigator,
+                    configurable: true,
+                });
+            }
+        });
+
+        it('uses parseCreationOptionsFromJSON + navigator.credentials.create() when available', async () => {
+            const form = getByTestId(container, 'registration-form');
+
+            const parseSpy = jest.fn((json) => ({ __parsed: json }));
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    parseCreationOptionsFromJSON: parseSpy,
+                    parseRequestOptionsFromJSON: jest.fn(),
+                },
+                configurable: true,
+            });
+            const credentialJson = {
+                id: 'native-cred',
+                type: 'public-key',
+                rawId: 'native-cred',
+                response: { clientDataJSON: 'd', attestationObject: 'a' },
+                clientExtensionResults: {},
+            };
+            const createMock = jest.fn().mockResolvedValue({ toJSON: () => credentialJson });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { create: createMock } },
+                configurable: true,
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ challenge: 'test', rp: {}, user: {} }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            const credentialEvents = [];
+            form.addEventListener('webauthn:registration:credential', (e) => {
+                credentialEvents.push(e.detail.credential);
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(createMock).toHaveBeenCalledTimes(1);
+            });
+            expect(parseSpy).toHaveBeenCalledTimes(1);
+            expect(SimpleWebAuthnBrowser.startRegistration).not.toHaveBeenCalled();
+            const callArg = createMock.mock.calls[0][0];
+            expect(callArg.publicKey).toEqual({ __parsed: { challenge: 'test', rp: {}, user: {} } });
+            expect(callArg.signal).toBeInstanceOf(AbortSignal);
+            expect(credentialEvents[0]).toEqual(credentialJson);
+        });
+
+        it('forwards mediation: "conditional" on the native path when autoRegister is enabled', async () => {
+            container = mountDOM(`
+                <form
+                    data-testid="auto-register-form"
+                    data-controller="webauthn--registration"
+                    data-action="submit->webauthn--registration#register"
+                    data-webauthn--registration-options-url-value="/register/options"
+                    data-webauthn--registration-auto-register-value="true"
+                >
+                </form>
+            `);
+            const form = getByTestId(container, 'auto-register-form');
+
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    parseCreationOptionsFromJSON: (json) => json,
+                    parseRequestOptionsFromJSON: jest.fn(),
+                },
+                configurable: true,
+            });
+            const createMock = jest.fn().mockResolvedValue({ toJSON: () => ({ id: 'cred' }) });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { create: createMock } },
+                configurable: true,
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'x' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(createMock).toHaveBeenCalledTimes(1);
+            });
+            expect(createMock.mock.calls[0][0].mediation).toBe('conditional');
         });
     });
 });

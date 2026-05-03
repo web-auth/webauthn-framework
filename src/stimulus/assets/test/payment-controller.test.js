@@ -179,4 +179,89 @@ describe('PaymentController', () => {
         await waitFor(() => expect(credentialEvent).not.toBeNull());
         expect(credentialEvent.credential.clientExtensionResults.payment).toBeUndefined();
     });
+
+    describe('SPC on the native L3 path', () => {
+        // The W3C SPC `payment` extension is not part of WebAuthn L3, so
+        // PublicKeyCredential.toJSON() may leave its
+        // `browserBoundSignature.signature` as an ArrayBuffer. The base
+        // controller must therefore call _processExtensionsOutput on the
+        // native path so this subclass override still runs.
+
+        let originalPublicKeyCredential;
+        let originalNavigator;
+
+        beforeEach(() => {
+            originalPublicKeyCredential = globalThis.PublicKeyCredential;
+            originalNavigator = globalThis.navigator;
+        });
+
+        afterEach(() => {
+            if (originalPublicKeyCredential === undefined) {
+                delete globalThis.PublicKeyCredential;
+            } else {
+                Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                    value: originalPublicKeyCredential,
+                    configurable: true,
+                });
+            }
+            if (originalNavigator) {
+                Object.defineProperty(globalThis, 'navigator', {
+                    value: originalNavigator,
+                    configurable: true,
+                });
+            }
+        });
+
+        it('still encodes browserBoundSignature ArrayBuffer when the native helpers are used', async () => {
+            const form = getByTestId(container, 'payment-form');
+            const signatureBytes = new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f]).buffer;
+            const credentialJson = {
+                id: 'cred',
+                rawId: 'raw',
+                response: { clientDataJSON: 'data', authenticatorData: 'auth', signature: 'sig' },
+                type: 'public-key',
+                clientExtensionResults: {
+                    payment: { browserBoundSignature: { signature: signatureBytes } },
+                },
+            };
+
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    parseCreationOptionsFromJSON: jest.fn(),
+                    parseRequestOptionsFromJSON: (json) => json,
+                },
+                configurable: true,
+            });
+            const getMock = jest.fn().mockResolvedValue({ toJSON: () => credentialJson });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { get: getMock } },
+                configurable: true,
+            });
+            SimpleWebAuthnBrowser.WebAuthnAbortService.createNewAbortSignal = jest.fn(
+                () => new AbortController().signal,
+            );
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'c' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            let credentialEvent = null;
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvent = e.detail;
+            });
+
+            application = startStimulus();
+            await waitFor(() => expect(form).toBeTruthy());
+            submitForm(form);
+
+            await waitFor(() => expect(credentialEvent).not.toBeNull());
+
+            expect(getMock).toHaveBeenCalledTimes(1);
+            expect(SimpleWebAuthnBrowser.startAuthentication).not.toHaveBeenCalled();
+            const transportedSignature =
+                credentialEvent.credential.clientExtensionResults.payment.browserBoundSignature.signature;
+            expect(typeof transportedSignature).toBe('string');
+            expect(transportedSignature).toBe('aGVsbG8');
+        });
+    });
 });

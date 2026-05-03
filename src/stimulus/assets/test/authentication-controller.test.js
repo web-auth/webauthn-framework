@@ -908,4 +908,116 @@ describe('AuthenticationController', () => {
             });
         });
     });
+
+    describe('native L3 JSON helpers (parseRequestOptionsFromJSON / toJSON)', () => {
+        let originalPublicKeyCredential;
+        let originalNavigator;
+
+        beforeEach(() => {
+            originalPublicKeyCredential = globalThis.PublicKeyCredential;
+            originalNavigator = globalThis.navigator;
+        });
+
+        afterEach(() => {
+            if (originalPublicKeyCredential === undefined) {
+                delete globalThis.PublicKeyCredential;
+            } else {
+                Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                    value: originalPublicKeyCredential,
+                    configurable: true,
+                });
+            }
+            if (originalNavigator) {
+                Object.defineProperty(globalThis, 'navigator', {
+                    value: originalNavigator,
+                    configurable: true,
+                });
+            }
+        });
+
+        it('uses parseRequestOptionsFromJSON + navigator.credentials.get() when available', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            const parseSpy = jest.fn((json) => ({ __parsed: json }));
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    parseCreationOptionsFromJSON: jest.fn(),
+                    parseRequestOptionsFromJSON: parseSpy,
+                },
+                configurable: true,
+            });
+            const credentialJson = {
+                id: 'native-cred',
+                type: 'public-key',
+                rawId: 'native-cred',
+                response: { clientDataJSON: 'd', authenticatorData: 'a', signature: 's' },
+                clientExtensionResults: {},
+            };
+            const getMock = jest.fn().mockResolvedValue({ toJSON: () => credentialJson });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { get: getMock } },
+                configurable: true,
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test' }) })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            const credentialEvents = [];
+            form.addEventListener('webauthn:authentication:credential', (e) => {
+                credentialEvents.push(e.detail.credential);
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(getMock).toHaveBeenCalledTimes(1);
+            });
+            expect(parseSpy).toHaveBeenCalledTimes(1);
+            expect(SimpleWebAuthnBrowser.startAuthentication).not.toHaveBeenCalled();
+            const callArg = getMock.mock.calls[0][0];
+            expect(callArg.publicKey).toEqual({ __parsed: { challenge: 'test' } });
+            expect(callArg.signal).toBeInstanceOf(AbortSignal);
+            expect(credentialEvents[0]).toEqual(credentialJson);
+        });
+
+        it('forwards uiMode "immediate" through navigator.credentials.get() on the native path', async () => {
+            const form = getByTestId(container, 'authentication-form');
+
+            Object.defineProperty(globalThis, 'PublicKeyCredential', {
+                value: {
+                    parseCreationOptionsFromJSON: jest.fn(),
+                    parseRequestOptionsFromJSON: (json) => json,
+                },
+                configurable: true,
+            });
+            const getMock = jest.fn().mockResolvedValue({ toJSON: () => ({ id: 'cred' }) });
+            Object.defineProperty(globalThis, 'navigator', {
+                value: { credentials: { get: getMock } },
+                configurable: true,
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ challenge: 'test', uiMode: 'immediate' }),
+                })
+                .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(getMock).toHaveBeenCalledTimes(1);
+            });
+            const callArg = getMock.mock.calls[0][0];
+            expect(callArg.uiMode).toBe('immediate');
+            expect(callArg.publicKey.uiMode).toBeUndefined();
+        });
+    });
 });

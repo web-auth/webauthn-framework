@@ -5,6 +5,7 @@ import {
     base64URLStringToBuffer,
     browserSupportsWebAuthnAutofill,
     bufferToBase64URLString,
+    WebAuthnAbortService,
 } from '@simplewebauthn/browser';
 
 /**
@@ -181,14 +182,17 @@ export default class extends Controller {
     }
 
     /**
-     * Import PRF values from base64url strings to ArrayBuffer
+     * Import PRF values from base64url strings to ArrayBuffer.
+     * Idempotent: values that are already ArrayBuffers are passed through.
      * @param {Object} values - PRF values with base64url strings
      * @returns {Object} PRF values with ArrayBuffers
      */
     _importPrfValues(values) {
         const result = { ...values };
-        result.first = base64URLStringToBuffer(values.first);
-        if (values.second) {
+        if (typeof values.first === 'string') {
+            result.first = base64URLStringToBuffer(values.first);
+        }
+        if (typeof values.second === 'string') {
             result.second = base64URLStringToBuffer(values.second);
         }
         return result;
@@ -235,14 +239,18 @@ export default class extends Controller {
     }
 
     /**
-     * Export PRF values from ArrayBuffer to base64url strings
+     * Export PRF values from ArrayBuffer to base64url strings.
+     * Idempotent: values that are already strings (typically because the
+     * native L3 `toJSON()` already encoded them) are passed through unchanged.
      * @param {Object} values - PRF values with ArrayBuffers
      * @returns {Object} PRF values with base64url strings
      */
     _exportPrfValues(values) {
         const result = { ...values };
-        result.first = bufferToBase64URLString(values.first);
-        if (values.second) {
+        if (values.first instanceof ArrayBuffer) {
+            result.first = bufferToBase64URLString(values.first);
+        }
+        if (values.second instanceof ArrayBuffer) {
             result.second = bufferToBase64URLString(values.second);
         }
         return result;
@@ -298,5 +306,70 @@ export default class extends Controller {
             conditionalGet: supportsAutofill,
         };
         return this._clientCapabilitiesCache;
+    }
+
+    /**
+     * Whether the user agent ships the WebAuthn L3 §5.1.13–14 JSON helpers
+     * (`PublicKeyCredential.parseCreationOptionsFromJSON`,
+     * `parseRequestOptionsFromJSON`, `credential.toJSON()`). When true the
+     * controllers call `navigator.credentials.{create,get}()` directly —
+     * the native parser converts every standard field, including known
+     * extensions, so the manual `_processExtensionsInput`/`Output` passes
+     * are unnecessary on this code path.
+     *
+     * Caveat: a controller method that depends on `toJSON()` should also
+     * check that the returned credential exposes it, since some user agents
+     * may ship the parser without the serializer or vice-versa.
+     *
+     * @returns {boolean}
+     */
+    _supportsNativeJsonHelpers() {
+        return (
+            typeof PublicKeyCredential !== 'undefined' &&
+            typeof PublicKeyCredential.parseCreationOptionsFromJSON === 'function' &&
+            typeof PublicKeyCredential.parseRequestOptionsFromJSON === 'function'
+        );
+    }
+
+    /**
+     * Run a registration ceremony via the native WebAuthn L3 helpers.
+     * Caller must have checked {@see _supportsNativeJsonHelpers} first.
+     *
+     * @param {Object} optionsJSON - WebAuthn credential creation options (canonical JSON shape)
+     * @param {Object} extras - Extra options forwarded to navigator.credentials.create()
+     * @returns {Promise<Object>} JSON-serialised credential (via credential.toJSON())
+     */
+    async _nativeCreate(optionsJSON, extras = {}) {
+        const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(optionsJSON);
+        const credential = await navigator.credentials.create({
+            publicKey,
+            signal: WebAuthnAbortService.createNewAbortSignal(),
+            ...extras,
+        });
+        if (credential === null) {
+            throw new Error('navigator.credentials.create() returned null');
+        }
+        return credential.toJSON();
+    }
+
+    /**
+     * Run an assertion ceremony via the native WebAuthn L3 helpers.
+     * Caller must have checked {@see _supportsNativeJsonHelpers} first.
+     *
+     * @param {Object} optionsJSON - WebAuthn credential request options (canonical JSON shape)
+     * @param {Object} extras - Extra options forwarded to navigator.credentials.get()
+     * @returns {Promise<Object>} JSON-serialised credential (via credential.toJSON())
+     */
+    async _nativeGet(optionsJSON, extras = {}) {
+        const publicKey = PublicKeyCredential.parseRequestOptionsFromJSON(optionsJSON);
+        const credential = await navigator.credentials.get({
+            publicKey,
+            signal: WebAuthnAbortService.createNewAbortSignal(),
+            ...extras,
+        });
+        if (credential === null) {
+            throw new Error('navigator.credentials.get() returned null');
+        }
+        return credential.toJSON();
     }
 }
