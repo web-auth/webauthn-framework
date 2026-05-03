@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authenticator Extensions Demo — Home</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 760px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.6rem; }
+        h2 { font-size: 1.2rem; margin-top: 1.6rem; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        code { background: #f3f4f6; padding: 2px 5px; border-radius: 4px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; vertical-align: top; }
+        th { background: #f9fafb; font-weight: 600; }
+        td.muted { color: #6b7280; font-style: italic; }
+    </style>
+</head>
+<body>
+<h1>WebAuthn / CTAP authenticator extensions — playground</h1>
+
+<p>
+    A minimal end-to-end demo for four extensions <code>web-auth/webauthn-lib</code> exposes:
+    <code>credProps</code>, <code>credProtect</code>, <code>credBlob</code> /
+    <code>getCredBlob</code>, and <code>minPinLength</code>. The
+    <a href="register.html">registration page</a> lets you toggle each one and shows what the
+    user agent / authenticator actually returned. The
+    <a href="assert.html">assertion page</a> exercises <code>getCredBlob</code> to retrieve
+    the bytes you stored at registration.
+</p>
+
+<table>
+    <thead>
+        <tr><th>Extension</th><th>Spec</th><th>What it does</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>credProps</code></td>
+            <td>WebAuthn L3 §10.1.3</td>
+            <td>The user agent reports back <code>rk</code> (true if a discoverable
+                credential / passkey was created) and an optional
+                <code>authenticatorDisplayName</code> hint.</td>
+        </tr>
+        <tr>
+            <td><code>credProtect</code></td>
+            <td>CTAP 2.1 §12.1</td>
+            <td>Pin one of three protection policies on the credential. The authenticator
+                returns the policy it actually applied, so you can detect silent downgrades.
+                Use <code>enforce</code> to fail registration rather than downgrade.</td>
+        </tr>
+        <tr>
+            <td><code>credBlob</code> / <code>getCredBlob</code></td>
+            <td>CTAP 2.1 §12.2</td>
+            <td>Store ≤32 bytes of opaque data alongside the credential at registration time
+                and ask for them back during a later assertion.</td>
+        </tr>
+        <tr>
+            <td><code>minPinLength</code></td>
+            <td>CTAP 2.1 §12.4</td>
+            <td>Retrieve the minimum PIN length configured on the authenticator (only
+                returned when the relying party id is on the authenticator's enterprise
+                allow-list — otherwise <span class="muted">absent</span>).</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Walk-through</h2>
+<ol>
+    <li>Open the <a href="register.html">registration page</a>.</li>
+    <li>Pick a username, optionally pick a credProtect policy, and optionally type a credBlob
+        payload (≤32 bytes). All four extensions are requested at the same time; the table at
+        the top of the page summarises what came back.</li>
+    <li>Open the <a href="assert.html">assertion page</a>. Pick the credential you just
+        registered. The authenticator returns the credBlob bytes, decoded and shown as
+        base64url + UTF-8 (when the bytes are valid UTF-8).</li>
+</ol>
+
+<h2>Why a single demo</h2>
+<p>
+    Each of these extensions is a few-line addition to a registration ceremony — a separate
+    demo per extension would mostly duplicate the other one's plumbing. They also pair
+    naturally: <code>credProps.rk</code> tells you whether your <code>credProtect</code>
+    policy is actually meaningful (a non-discoverable credential cannot be enumerated, so
+    <code>userVerificationOptionalWithCredentialIDList</code> is moot), and
+    <code>minPinLength</code> is the only one a relying party can rely on without provisioning
+    additional state.
+</p>
+
+<nav>
+    <a href="register.html">→ register.html</a>
+    <a href="assert.html">→ assert.html</a>
+</nav>
+</body>
+</html>
