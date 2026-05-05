@@ -7,6 +7,7 @@ namespace Webauthn\Tests\Bundle\Unit\Service;
 use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Uid\Uuid;
@@ -21,6 +22,7 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\WebauthnOptionsResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -250,15 +252,85 @@ final class WebauthnOptionsResponseTest extends TestCase
         static::assertNotSame($base, $derived);
     }
 
+    #[Test]
+    public function forRequestUsesTheFakeCredentialGeneratorWhenAUsernameDoesNotResolveToAUser(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $fakeDescriptor = PublicKeyCredentialDescriptor::create('public-key', 'fake-cred');
+        $generator = new class($fakeDescriptor) implements FakeCredentialGenerator {
+            public function __construct(
+                private readonly PublicKeyCredentialDescriptor $descriptor,
+            ) {
+            }
+
+            public function generate(Request $request, string $username): array
+            {
+                return [$this->descriptor];
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('fake-cred', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestProducesEmptyAllowCredentialsWhenTheBodyIsUserlessEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked when no username is posted.');
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest('{}'));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
+    #[Test]
+    public function withFakeCredentialGeneratorNullOptsOutOfTheAntiEnumerationProtection(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked once opted out.');
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->withFakeCredentialGenerator(null)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
     private function helper(
         ?OptionsStorage $storage = null,
         ?CredentialRecordRepositoryInterface $repository = null,
+        ?FakeCredentialGenerator $fakeCredentialGenerator = null,
     ): WebauthnOptionsResponse {
         return new WebauthnOptionsResponse(
             $storage ?? new InMemoryOptionsStorage(),
             $this->serializer(),
             Validation::createValidator(),
             $repository ?? new InMemoryCredentialRepository(),
+            $fakeCredentialGenerator,
         );
     }
 

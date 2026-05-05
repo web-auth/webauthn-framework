@@ -28,6 +28,7 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\WebauthnAssertionVerifier;
 use Webauthn\Bundle\Service\WebauthnAttestationVerifier;
 use Webauthn\Bundle\Service\WebauthnResponseVerifier;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CollectedClientData;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
@@ -302,6 +303,55 @@ final class WebauthnResponseVerifierTest extends TestCase
     }
 
     #[Test]
+    public function withAllowedOriginsBuildsAFreshValidatorAndBypassesTheInjectedOne(): void
+    {
+        $rawId = 'cred-id';
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::never())
+            ->method('check');
+
+        // Real factory: when withAllowedOrigins() is set the verifier asks it
+        // to produce a fresh CSM, then instantiates a fresh validator on top.
+        // That fresh validator runs against the synthetic credential built in
+        // the test fixture and rejects it (challenge mismatch / etc.), which
+        // gets wrapped in WebauthnAuthenticationFailureException.
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAttestationCredential($rawId)),
+            storage: $this->storageWith($this->creationOptions()),
+            attestationValidator: $standardValidator,
+            factory: new CeremonyStepManagerFactory(),
+        )
+            ->forAttestation('example.com')
+            ->withAllowedOrigins('https://app.example.com')
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withAllowedOriginsOnAssertionBypassesTheInjectedValidator(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions()),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+            factory: new CeremonyStepManagerFactory(),
+        )
+            ->forAssertion('example.com')
+            ->withAllowedOrigins('https://app.example.com')
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
     public function forAttestationReturnsAttestationVerifier(): void
     {
         static::assertInstanceOf(
@@ -324,6 +374,7 @@ final class WebauthnResponseVerifierTest extends TestCase
         ?AuthenticatorAttestationResponseValidator $attestationValidator = null,
         ?AuthenticatorAttestationResponseValidator $conditionalAttestationValidator = null,
         ?AuthenticatorAssertionResponseValidator $assertionValidator = null,
+        ?CeremonyStepManagerFactory $factory = null,
     ): WebauthnResponseVerifier {
         return new WebauthnResponseVerifier(
             $serializer ?? $this->realSerializer(),
@@ -332,6 +383,7 @@ final class WebauthnResponseVerifierTest extends TestCase
             $attestationValidator ?? static::createStub(AuthenticatorAttestationResponseValidator::class),
             $conditionalAttestationValidator ?? static::createStub(AuthenticatorAttestationResponseValidator::class),
             $assertionValidator ?? static::createStub(AuthenticatorAssertionResponseValidator::class),
+            $factory ?? new CeremonyStepManagerFactory(),
         );
     }
 

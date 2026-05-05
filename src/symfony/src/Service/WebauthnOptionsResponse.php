@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -47,6 +48,7 @@ final readonly class WebauthnOptionsResponse
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private CredentialRecordRepositoryInterface $credentialRepository,
+        private ?FakeCredentialGenerator $fakeCredentialGenerator = null,
     ) {
     }
 
@@ -72,6 +74,7 @@ final readonly class WebauthnOptionsResponse
             $this->validator,
             $this->credentialRepository,
             $rpId,
+            $this->fakeCredentialGenerator,
         );
     }
 }
