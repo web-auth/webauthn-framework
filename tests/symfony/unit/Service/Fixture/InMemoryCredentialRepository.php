@@ -8,13 +8,13 @@ use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class InMemoryCredentialRepository implements CredentialRecordRepositoryInterface
+final readonly class InMemoryCredentialRepository implements CredentialRecordRepositoryInterface
 {
     /**
      * @param list<CredentialRecord> $records
      */
     public function __construct(
-        private readonly array $records = [],
+        private array $records = [],
     ) {
     }
 

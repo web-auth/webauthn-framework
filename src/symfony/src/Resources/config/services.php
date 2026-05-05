@@ -28,6 +28,7 @@ use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
 use Webauthn\Bundle\Service\WebauthnOptionsResponse;
+use Webauthn\Bundle\Service\WebauthnResponseVerifier;
 use Webauthn\Bundle\Service\WebauthnSignalFactory;
 use Webauthn\Bundle\Service\WebauthnSignalResponse;
 use Webauthn\CeremonyStep\CeremonyStepManager;
@@ -330,6 +331,14 @@ return static function (ContainerConfigurator $container): void {
     $service->set(WebauthnSignalResponse::class)->public();
 
     $service->set(WebauthnOptionsResponse::class)->public();
+
+    $service
+        ->set(WebauthnResponseVerifier::class)
+        ->arg(
+            '$conditionalAttestationValidator',
+            service('webauthn.authenticator_attestation_response_validator.conditional_creation')
+        )
+        ->public();
 
     $service
         ->set(ClientOverridePolicy::class)

@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\FailureHandler::onFailure() invoked with 5 parameters, 1-2 required.'
+			identifier: arguments.count
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionResponseController.php
+
+		-
 			rawMessage: '''
 				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
@@ -25,6 +31,12 @@ parameters:
 			'''
 			identifier: instanceof.deprecatedInterface
 			count: 2
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\FailureHandler::onFailure() invoked with 5 parameters, 1-2 required.'
+			identifier: arguments.count
+			count: 1
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
@@ -109,6 +121,12 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
+			rawMessage: Instanceof between Webauthn\AuthenticatorAssertionResponse|Webauthn\AuthenticatorAttestationResponse and Webauthn\AuthenticatorResponse will always evaluate to true.
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
 			rawMessage: '''
 				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
 				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
@@ -160,6 +178,51 @@ parameters:
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\Service\AbstractWebauthnOptionsBuilder::parseDto() should return T of object but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/Service/AbstractWebauthnOptionsBuilder.php
+
+		-
+			rawMessage: '''
+				Fetching deprecated class constant COSE_ALGORITHM_EdDSA of class Cose\Algorithms:
+				since v4.0.6. Please use COSE_ALGORITHM_EDDSA instead. Will be removed in v5.0.0
+			'''
+			identifier: classConstant.deprecated
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter $timeout of static method Webauthn\PublicKeyCredentialCreationOptions::create() expects int<1, max>|null, int|null given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\WebauthnRequestOptionsBuilder::resolveAllowCredentials() should return list<Webauthn\PublicKeyCredentialDescriptor> but returns array<Webauthn\PublicKeyCredentialDescriptor>.'
+			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter $timeout of static method Webauthn\PublicKeyCredentialRequestOptions::create() expects int<1, max>|null, int|null given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
+
+		-
 			rawMessage: 'Parameter #2 $attStmt of static method Webauthn\AttestationStatement\AttestationStatement::create() expects array<string, mixed>, list<Webauthn\AttestationStatement\AttestationStatement> given.'
 			identifier: argument.type
 			count: 1
@@ -173,12 +236,6 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/AuthenticatorAssertionResponseValidator.php
-
-		-
-			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/AuthenticatorDataLoader.php
 
 		-
 			rawMessage: '''
@@ -383,12 +440,6 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
-
-		-
-			rawMessage: 'Parameter #1 $codepoint of function chr expects int<0, 255>, int given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/AuthenticatorDataDenormalizer.php
 
 		-
 			rawMessage: 'Parameter #3 $context of method Webauthn\Denormalizer\CollectedClientAdditionalPaymentDataDenormalizer::denormalizeLogo() expects array<string, mixed>, array<mixed> given.'

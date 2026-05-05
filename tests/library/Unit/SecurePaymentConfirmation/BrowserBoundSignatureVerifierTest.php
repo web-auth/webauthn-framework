@@ -49,8 +49,8 @@ final class BrowserBoundSignatureVerifierTest extends TestCase
             ->add(UnsignedIntegerObject::create(1), UnsignedIntegerObject::create(2))    // kty: EC2
             ->add(UnsignedIntegerObject::create(3), NegativeIntegerObject::create(-7))   // alg: ES256
             ->add(NegativeIntegerObject::create(-1), UnsignedIntegerObject::create(1))   // crv: P-256
-            ->add(NegativeIntegerObject::create(-2), ByteStringObject::create($details['ec']['x']))
-            ->add(NegativeIntegerObject::create(-3), ByteStringObject::create($details['ec']['y']));
+            ->add(NegativeIntegerObject::create(-2), ByteStringObject::create(self::pad32($details['ec']['x'])))
+            ->add(NegativeIntegerObject::create(-3), ByteStringObject::create(self::pad32($details['ec']['y'])));
 
         $verifier = new BrowserBoundSignatureVerifier(Manager::create()->add(ES256::create()));
 
@@ -79,8 +79,8 @@ final class BrowserBoundSignatureVerifierTest extends TestCase
             ->add(UnsignedIntegerObject::create(1), UnsignedIntegerObject::create(2))
             ->add(UnsignedIntegerObject::create(3), NegativeIntegerObject::create(-7))
             ->add(NegativeIntegerObject::create(-1), UnsignedIntegerObject::create(1))
-            ->add(NegativeIntegerObject::create(-2), ByteStringObject::create($details['ec']['x']))
-            ->add(NegativeIntegerObject::create(-3), ByteStringObject::create($details['ec']['y']));
+            ->add(NegativeIntegerObject::create(-2), ByteStringObject::create(self::pad32($details['ec']['x'])))
+            ->add(NegativeIntegerObject::create(-3), ByteStringObject::create(self::pad32($details['ec']['y'])));
 
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('browserBoundSignature verification failed');
@@ -147,5 +147,16 @@ final class BrowserBoundSignatureVerifierTest extends TestCase
         $s = ltrim($s, "\x00");
 
         return str_pad($r, 32, "\x00", STR_PAD_LEFT) . str_pad($s, 32, "\x00", STR_PAD_LEFT);
+    }
+
+    /**
+     * Left-pad a P-256 coordinate to 32 bytes. {@see openssl_pkey_get_details()}
+     * returns `ec.x` / `ec.y` as raw bigint bytes with leading zeros stripped, so
+     * roughly one key out of 256 has a 31-byte coordinate that {@see Ec2Key} then
+     * rejects with "Invalid length for x coordinate".
+     */
+    private static function pad32(string $coordinate): string
+    {
+        return str_pad($coordinate, 32, "\x00", STR_PAD_LEFT);
     }
 }
