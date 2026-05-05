@@ -40,6 +40,10 @@ final readonly class AttestationResponseController
 
     public function __invoke(Request $request): Response
     {
+        $publicKeyCredential = null;
+        $publicKeyCredentialCreationOptions = null;
+        $userEntity = null;
+
         try {
             if (! $this->credentialSourceRepository instanceof CanSaveCredentialRecord
                 && ! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
@@ -97,7 +101,15 @@ final readonly class AttestationResponseController
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure($request, $exception);
             }
-            return $this->failureHandler->onFailure($request, $exception);
+            // PHPDoc-only optional args on FailureHandler::onFailure (will be required in 6.0).
+            // Implementations that haven't updated their signature ignore the extras silently.
+            return $this->failureHandler->onFailure(
+                $request,
+                $exception,
+                $publicKeyCredential,
+                $publicKeyCredentialCreationOptions,
+                $userEntity,
+            );
         }
     }
 }
