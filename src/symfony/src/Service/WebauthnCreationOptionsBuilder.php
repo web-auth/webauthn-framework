@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
+use Cose\Algorithms;
 use LogicException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -18,55 +23,36 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * Profile-free, fluent builder for `PublicKeyCredentialCreationOptions` responses.
+ * Fluent builder for `PublicKeyCredentialCreationOptions` responses, returned by
+ * {@see WebauthnOptionsResponse::forCreation()}.
  *
- * The application composes the ceremony defaults with `with…()` setters then
- * calls `build($request)` from inside its own controller. The terminal step
- * resolves the user entity through the configured guesser, optionally merges
- * any client-supplied overrides allowed by a {@see \Webauthn\Bundle\Policy\ClientOverridePolicy},
- * persists the options through the bundle's `OptionsStorage`, and serialises
- * the result as a `JsonResponse`.
- *
- * Each `with…()` call returns a clone so the helper stays safe to autowire as a
- * shared service: callers cannot accidentally leak state across requests.
- *
- * Required setters: `withRp()` and `withEntityGuesser()`. All other setters are
- * optional. If `withClientOverrides()` is not called, the options are produced
- * exactly as the defaults describe: no client field can influence them.
- *
- * @see https://www.w3.org/TR/webauthn-3/
+ * Required pieces (`rpId` and either a `PublicKeyCredentialUserEntity` or a
+ * {@see UserEntityGuesser}) are passed straight to the constructor by the
+ * factory; everything else is optional and has a sensible default.
  */
-final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsResponse
+final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilder
 {
-    private ?PublicKeyCredentialRpEntity $rp = null;
-
-    private ?UserEntityGuesser $entityGuesser = null;
-
     private ?AuthenticatorSelectionCriteria $authenticatorSelection = null;
 
     /**
-     * @var list<PublicKeyCredentialParameters>|null
+     * @var list<PublicKeyCredentialParameters>
      */
-    private ?array $pubKeyCredParams = null;
+    private array $pubKeyCredParams;
 
     private ?string $mediation = null;
 
     private bool $hideExistingCredentials = false;
 
-    public function withRp(PublicKeyCredentialRpEntity $rp): static
-    {
-        $clone = clone $this;
-        $clone->rp = $rp;
-
-        return $clone;
-    }
-
-    public function withEntityGuesser(UserEntityGuesser $entityGuesser): static
-    {
-        $clone = clone $this;
-        $clone->entityGuesser = $entityGuesser;
-
-        return $clone;
+    public function __construct(
+        OptionsStorage $storage,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        CredentialRecordRepositoryInterface $credentialRepository,
+        private readonly string $rpId,
+        private readonly PublicKeyCredentialUserEntity|UserEntityGuesser $userOrGuesser,
+    ) {
+        parent::__construct($storage, $serializer, $validator, $credentialRepository);
+        $this->pubKeyCredParams = self::defaultPubKeyCredParams();
     }
 
     public function withAuthenticatorSelectionCriteria(AuthenticatorSelectionCriteria $authenticatorSelection): static
@@ -103,11 +89,9 @@ final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsRespo
 
     protected function resolveUserEntity(Request $request): PublicKeyCredentialUserEntity
     {
-        $guesser = $this->entityGuesser ?? throw new LogicException(
-            'withEntityGuesser() must be called before build().'
-        );
+        $userEntity = self::resolveStaticOrGuessed($this->userOrGuesser, $request);
 
-        return $guesser->findUserEntity($request);
+        return $userEntity ?? throw new LogicException('A user entity is required for creation options.');
     }
 
     protected function parseClientRequest(Request $request): PublicKeyCredentialCreationOptionsRequest
@@ -120,7 +104,6 @@ final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsRespo
         ?PublicKeyCredentialUserEntity $userEntity,
         ?object $optionsRequest,
     ): PublicKeyCredentialOptions {
-        $rp = $this->rp ?? throw new LogicException('withRp() must be called before build().');
         $userEntity ?? throw new LogicException('A user entity is required for creation options.');
 
         $excludeCredentials = $this->hideExistingCredentials ? [] : array_map(
@@ -152,15 +135,15 @@ final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsRespo
 
             $extensions = $this->mergeExtensions(
                 $optionsRequest->extensions,
-                $this->clientOverridePolicy
+                $this->clientOverridePolicy,
             ) ?? $extensions;
         }
 
         return PublicKeyCredentialCreationOptions::create(
-            rp: $rp,
+            rp: PublicKeyCredentialRpEntity::create(id: $this->rpId),
             user: $userEntity,
             challenge: random_bytes($this->challengeLength),
-            pubKeyCredParams: $this->pubKeyCredParams ?? [],
+            pubKeyCredParams: $this->pubKeyCredParams,
             authenticatorSelection: $authenticatorSelection,
             attestation: $attestation,
             excludeCredentials: $excludeCredentials,
@@ -170,6 +153,23 @@ final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsRespo
             mediation: $mediation,
             attestationFormats: $this->attestationFormats,
         );
+    }
+
+    /**
+     * @return list<PublicKeyCredentialParameters>
+     */
+    private static function defaultPubKeyCredParams(): array
+    {
+        return [
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_RS256),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_EdDSA),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES384),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES512),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_PS256),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_RS384),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_RS512),
+        ];
     }
 
     private function mergeAuthenticatorSelection(
@@ -194,7 +194,7 @@ final class WebauthnCreationOptionsResponse extends AbstractWebauthnOptionsRespo
         $authenticatorAttachment = $policy->getEffectiveValue(
             'authenticator_attachment',
             $optionsRequest->authenticatorAttachment,
-            null
+            null,
         );
         /** @var ?string $residentKey */
         $residentKey = $policy->getEffectiveValue('resident_key', $optionsRequest->residentKey, null);

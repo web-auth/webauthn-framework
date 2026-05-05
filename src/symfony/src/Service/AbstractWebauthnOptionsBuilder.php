@@ -18,29 +18,21 @@ use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
+use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * Common skeleton shared by {@see WebauthnCreationOptionsResponse} and
- * {@see WebauthnRequestOptionsResponse}. Holds the state and the build pipeline
+ * Common skeleton shared by {@see WebauthnCreationOptionsBuilder} and
+ * {@see WebauthnRequestOptionsBuilder}. Holds the state and the build pipeline
  * pieces that do not depend on whether the ceremony is registration or
  * assertion: challenge length, timeout, attestation conveyance, attestation
  * formats, extensions, hints, the optional client override policy, the option
  * storage and the JSON serialization step.
- *
- * Subclasses implement three template hooks:
- *  - `resolveUserEntity()` for the user-entity guessing strategy that differs
- *    between registration (mandatory) and assertion (optional, sometimes
- *    absent for usernameless flows);
- *  - `parseClientRequest()` for picking the matching request DTO and running
- *    its validation;
- *  - `assembleOptions()` for producing the actual `PublicKeyCredentialOptions`
- *    object once everything is resolved.
  */
-abstract class AbstractWebauthnOptionsResponse
+abstract class AbstractWebauthnOptionsBuilder
 {
     protected ?string $attestation = null;
 
@@ -154,8 +146,20 @@ abstract class AbstractWebauthnOptionsResponse
     ): PublicKeyCredentialOptions;
 
     /**
-     * Deserialize and validate the request body into the given DTO class.
-     *
+     * Normalises an `entity-or-guesser` constructor argument: a `UserEntityGuesser`
+     * is invoked against the current request, anything else (entity or null) is
+     * returned as-is.
+     */
+    final protected static function resolveStaticOrGuessed(
+        PublicKeyCredentialUserEntity|UserEntityGuesser|null $userOrGuesser,
+        Request $request,
+    ): ?PublicKeyCredentialUserEntity {
+        return $userOrGuesser instanceof UserEntityGuesser
+            ? $userOrGuesser->findUserEntity($request)
+            : $userOrGuesser;
+    }
+
+    /**
      * @template T of object
      *
      * @param class-string<T> $dtoClass
@@ -188,10 +192,6 @@ abstract class AbstractWebauthnOptionsResponse
     }
 
     /**
-     * Build the `AuthenticationExtensions` collection from the client-side
-     * request bag, gated by the override policy. Returns `null` when the
-     * policy disables `extensions` overrides or the body did not carry any.
-     *
      * @param array<string, mixed>|null $clientExtensions
      */
     final protected function mergeExtensions(

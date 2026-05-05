@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
-use LogicException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
@@ -15,33 +18,17 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
- * Profile-free, fluent builder for `PublicKeyCredentialRequestOptions` responses.
+ * Fluent builder for `PublicKeyCredentialRequestOptions` responses, returned by
+ * {@see WebauthnOptionsResponse::forRequest()}.
  *
- * Mirror of {@see WebauthnCreationOptionsResponse} for the assertion ceremony.
- * The application composes the ceremony defaults with `with…()` setters then
- * calls `build($request)` from inside its own controller.
- *
- * Differences with the creation builder:
- *  - the user entity is optional (assertion can be userless, e.g.
- *    usernameless authentication);
- *  - `withRpId()` takes a string (not an `RpEntity`);
- *  - `allowCredentials` is derived from the credential repository when a user
- *    entity is resolved and `withDeriveAllowCredentialsFromUser()` is on
- *    (default), or honours the descriptor list set explicitly via
- *    `withAllowCredentials()`.
- *
- * Each `with…()` returns a clone so the helper stays safe to autowire as a
- * shared service. Required setter: `withRpId()`. Everything else is
- * optional.
- *
- * @see https://www.w3.org/TR/webauthn-3/
+ * Required: `rpId`. The user entity is optional (assertion can be userless,
+ * e.g. usernameless authentication via discoverable credentials). When a user
+ * entity is resolved, `allowCredentials` is derived from the credential
+ * repository unless an explicit list is provided through
+ * {@see self::withAllowCredentials()}.
  */
-final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsResponse
+final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
 {
-    private ?string $rpId = null;
-
-    private ?UserEntityGuesser $entityGuesser = null;
-
     private ?string $userVerification = null;
 
     private ?string $uiMode = null;
@@ -53,20 +40,15 @@ final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsRespon
      */
     private ?array $allowCredentials = null;
 
-    public function withRpId(string $rpId): static
-    {
-        $clone = clone $this;
-        $clone->rpId = $rpId;
-
-        return $clone;
-    }
-
-    public function withEntityGuesser(?UserEntityGuesser $entityGuesser): static
-    {
-        $clone = clone $this;
-        $clone->entityGuesser = $entityGuesser;
-
-        return $clone;
+    public function __construct(
+        OptionsStorage $storage,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        CredentialRecordRepositoryInterface $credentialRepository,
+        private readonly string $rpId,
+        private readonly PublicKeyCredentialUserEntity|UserEntityGuesser|null $userOrGuesser = null,
+    ) {
+        parent::__construct($storage, $serializer, $validator, $credentialRepository);
     }
 
     public function withUserVerification(?string $userVerification): static
@@ -85,12 +67,6 @@ final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsRespon
         return $clone;
     }
 
-    /**
-     * When `true` (default) and a user entity is resolved, `allowCredentials`
-     * is built from {@see \Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface::findAllForUserEntity()}.
-     * Set to `false` for usernameless authentication or when explicitly
-     * controlling the descriptor list via {@see self::withAllowCredentials()}.
-     */
     public function withDeriveAllowCredentialsFromUser(bool $derive = true): static
     {
         $clone = clone $this;
@@ -110,7 +86,7 @@ final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsRespon
 
     protected function resolveUserEntity(Request $request): ?PublicKeyCredentialUserEntity
     {
-        return $this->entityGuesser?->findUserEntity($request);
+        return self::resolveStaticOrGuessed($this->userOrGuesser, $request);
     }
 
     protected function parseClientRequest(Request $request): ServerPublicKeyCredentialRequestOptionsRequest
@@ -123,8 +99,6 @@ final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsRespon
         ?PublicKeyCredentialUserEntity $userEntity,
         ?object $optionsRequest,
     ): PublicKeyCredentialOptions {
-        $rpId = $this->rpId ?? throw new LogicException('withRpId() must be called before build().');
-
         $allowCredentials = $this->resolveAllowCredentials($userEntity);
 
         $userVerification = $this->userVerification;
@@ -140,13 +114,13 @@ final class WebauthnRequestOptionsResponse extends AbstractWebauthnOptionsRespon
 
             $extensions = $this->mergeExtensions(
                 $optionsRequest->extensions,
-                $this->clientOverridePolicy
+                $this->clientOverridePolicy,
             ) ?? $extensions;
         }
 
         return PublicKeyCredentialRequestOptions::create(
             challenge: random_bytes($this->challengeLength),
-            rpId: $rpId,
+            rpId: $this->rpId,
             allowCredentials: $allowCredentials,
             userVerification: $userVerification,
             timeout: $this->timeout,
