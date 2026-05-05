@@ -124,21 +124,21 @@ final class CeremonyStepManagerFactory
         $this->topOriginValidator = $topOriginValidator;
     }
 
-    public function requestCeremony(): CeremonyStepManager
-    {
+    /**
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     *                                              Pass `null` to fall back to whatever was set on the factory.
+     */
+    public function requestCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion */
         return new CeremonyStepManager([
             new CheckAllowedCredentialList(),
             new CheckUserHandle(),
             new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
-            $this->allowedOrigins === null ? new CheckOrigin(
-                $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins(
-                $this->allowedOrigins,
-                $this->allowSubdomains,
-                $this->securedRelyingPartyId ?? []
-            ),
+            $this->buildOriginCheck($allowedOriginsOverride, $allowSubdomainsOverride),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
@@ -151,9 +151,14 @@ final class CeremonyStepManagerFactory
         ]);
     }
 
-    public function creationCeremony(): CeremonyStepManager
-    {
-        return $this->buildCreationCeremony(true);
+    /**
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     */
+    public function creationCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
+        return $this->buildCreationCeremony(true, $allowedOriginsOverride, $allowSubdomainsOverride);
     }
 
     /**
@@ -162,16 +167,26 @@ final class CeremonyStepManagerFactory
      * Use this when creating credentials with mediation: 'conditional',
      * where user presence may be false after password authentication.
      *
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     *
      * @see https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create
      * @see https://github.com/web-auth/webauthn-framework/issues/719
      */
-    public function conditionalCreateCeremony(): CeremonyStepManager
-    {
-        return $this->buildCreationCeremony(false);
+    public function conditionalCreateCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
+        return $this->buildCreationCeremony(false, $allowedOriginsOverride, $allowSubdomainsOverride);
     }
 
-    private function buildCreationCeremony(bool $requireUserPresence): CeremonyStepManager
-    {
+    /**
+     * @param null|string[] $allowedOriginsOverride
+     */
+    private function buildCreationCeremony(
+        bool $requireUserPresence,
+        ?array $allowedOriginsOverride,
+        bool $allowSubdomainsOverride,
+    ): CeremonyStepManager {
         $metadataStatementChecker = new CheckMetadataStatement();
         if ($this->certificateChainValidator !== null) {
             $metadataStatementChecker->enableCertificateChainValidator($this->certificateChainValidator);
@@ -188,13 +203,7 @@ final class CeremonyStepManagerFactory
         return new CeremonyStepManager([
             new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
-            $this->allowedOrigins === null ? new CheckOrigin(
-                $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins(
-                $this->allowedOrigins,
-                $this->allowSubdomains,
-                $this->securedRelyingPartyId ?? []
-            ),
+            $this->buildOriginCheck($allowedOriginsOverride, $allowSubdomainsOverride),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent($requireUserPresence),
@@ -207,5 +216,31 @@ final class CeremonyStepManagerFactory
             $metadataStatementChecker,
             new CheckCredentialId(),
         ]);
+    }
+
+    /**
+     * @param null|string[] $allowedOriginsOverride
+     */
+    private function buildOriginCheck(
+        ?array $allowedOriginsOverride,
+        bool $allowSubdomainsOverride,
+    ): CheckOrigin|CheckAllowedOrigins {
+        if ($allowedOriginsOverride !== null) {
+            return new CheckAllowedOrigins(
+                $allowedOriginsOverride,
+                $allowSubdomainsOverride,
+                $this->securedRelyingPartyId ?? [],
+            );
+        }
+
+        if ($this->allowedOrigins === null) {
+            return new CheckOrigin($this->securedRelyingPartyId ?? []);
+        }
+
+        return new CheckAllowedOrigins(
+            $this->allowedOrigins,
+            $this->allowSubdomains,
+            $this->securedRelyingPartyId ?? [],
+        );
     }
 }
