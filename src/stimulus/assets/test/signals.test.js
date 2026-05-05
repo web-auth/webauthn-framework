@@ -75,9 +75,7 @@ describe('signals.js, WebAuthn L3 §5.1.10 dispatchers', () => {
 
     test('dispatchers swallow SecurityError (RP-ID mismatch) without rejecting', async () => {
         const securityError = Object.assign(new Error('RP-ID does not match'), { name: 'SecurityError' });
-        globalThis.PublicKeyCredential.signalAllAcceptedCredentials = jest
-            .fn()
-            .mockRejectedValueOnce(securityError);
+        globalThis.PublicKeyCredential.signalAllAcceptedCredentials = jest.fn().mockRejectedValueOnce(securityError);
 
         await expect(
             dispatchAllAcceptedCredentials({ rpId: 'wrong', userId: 'y', allAcceptedCredentialIds: [] })

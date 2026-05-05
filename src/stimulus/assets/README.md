@@ -235,11 +235,7 @@ Then register the controllers in your Stimulus bootstrap (typically `assets/boot
 
 ```javascript
 import { Application } from '@hotwired/stimulus';
-import {
-    AuthenticationController,
-    RegistrationController,
-    WebauthnController,
-} from '@web-auth/webauthn-stimulus';
+import { AuthenticationController, RegistrationController, WebauthnController } from '@web-auth/webauthn-stimulus';
 
 const app = Application.start();
 app.register('web-auth--webauthn-stimulus--authentication', AuthenticationController);

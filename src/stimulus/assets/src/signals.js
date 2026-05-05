@@ -93,6 +93,6 @@ export const dispatchSignals = async (envelope) => {
                 return undefined;
             }
             return dispatch(method, options);
-        }),
+        })
     );
 };
