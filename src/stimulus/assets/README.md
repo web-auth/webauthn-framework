@@ -195,7 +195,7 @@ See [@simplewebauthn/server](https://simplewebauthn.dev/docs/packages/server) fo
 
 ## Symfony Integration
 
-The recommended path for Symfony applications is to install this npm package straight from your asset pipeline. The package ships a `symfony.importmap` configuration so Symfony AssetMapper resolves the canonical sub-paths (`/authentication`, `/registration`, `/webauthn`) out of the box.
+This npm package is the canonical and only maintained source for the Stimulus controllers — install it from your asset pipeline and register the controllers from your JavaScript code. The package ships a `symfony.importmap` configuration so Symfony AssetMapper resolves the canonical sub-paths (`/authentication`, `/registration`, `/webauthn`) out of the box.
 
 ### With Symfony AssetMapper (recommended)
 
@@ -203,20 +203,23 @@ The recommended path for Symfony applications is to install this npm package str
 php bin/console importmap:require @web-auth/webauthn-stimulus
 ```
 
-Then enable the controllers you want in `assets/controllers.json`:
+Then register the controllers in your Stimulus bootstrap (typically `assets/bootstrap.js` with the default AssetMapper recipe). Use the same `--`-separated identifiers that `stimulus_controller('@web-auth/webauthn-stimulus/...')` produces, so existing Twig helpers keep working unchanged:
 
-```json
-{
-    "controllers": {
-        "@web-auth/webauthn-stimulus": {
-            "authentication": { "enabled": true, "fetch": "eager" },
-            "registration": { "enabled": true, "fetch": "eager" }
-        }
-    }
-}
+```javascript
+import { Application } from '@hotwired/stimulus';
+import {
+    AuthenticationController,
+    RegistrationController,
+    WebauthnController,
+} from '@web-auth/webauthn-stimulus';
+
+const app = Application.start();
+app.register('web-auth--webauthn-stimulus--authentication', AuthenticationController);
+app.register('web-auth--webauthn-stimulus--registration', RegistrationController);
+app.register('web-auth--webauthn-stimulus', WebauthnController);
 ```
 
-You can now use the `stimulus_controller()` Twig helper:
+You can now use the `stimulus_controller()` Twig helper as usual:
 
 ```twig
 <form {{ stimulus_controller('@web-auth/webauthn-stimulus/authentication') }}>
@@ -224,13 +227,18 @@ You can now use the `stimulus_controller()` Twig helper:
 </form>
 ```
 
+> ⚠️ **Do not declare `@web-auth/webauthn-stimulus` in `assets/controllers.json`.**
+> Symfony UX `StimulusBundle` resolves every `controllers.json` entry against an installed Composer package, so adding the npm package there throws
+> `Could not find package "web-auth/webauthn-stimulus" referred to from controllers.json.`
+> as soon as the deprecated Composer wrapper is removed (the very thing we want). Always register from JavaScript as shown above.
+
 ### With Webpack Encore / Vite / any other bundler
 
-Install the package and register the controllers yourself — see [Usage with Module Bundlers](#usage-with-module-bundlers) above.
+Install the package and register the controllers yourself — see [Usage with Module Bundlers](#usage-with-module-bundlers) above. The same `app.register(...)` snippet applies; your bundler will resolve the package via its own module graph.
 
 ### Deprecated: the `web-auth/webauthn-stimulus` Composer package
 
-> **Deprecated since 5.3.x — removed in 6.0.0.** The PHP wrapper `web-auth/webauthn-stimulus` is no longer needed: this npm package is the canonical and only maintained source going forward. New projects should not install it; existing projects should migrate to `importmap:require` (or `npm install`) before upgrading to 6.0.0.
+> **Deprecated since 5.3.x — removed in 6.0.0.** The PHP wrapper `web-auth/webauthn-stimulus` is no longer needed: this npm package is the canonical and only maintained source going forward. New projects should not install it; existing projects should migrate to `importmap:require` (or `npm install`) plus the JS-side `app.register(...)` shown above before upgrading to 6.0.0.
 
 For more context and migration steps, see the [project documentation](https://webauthn-doc.spomky-labs.com/).
 
