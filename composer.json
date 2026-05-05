@@ -37,6 +37,7 @@
                 "tests/library/"
             ],
             "Webauthn\\Tests\\Bundle\\Functional\\": "tests/symfony/functional/",
+            "Webauthn\\Tests\\Bundle\\Unit\\": "tests/symfony/unit/",
             "Webauthn\\Tests\\MetadataService\\": "tests/MDS/"
         }
     },
