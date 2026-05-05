@@ -64,7 +64,7 @@ final class SignalHelpersTest extends TestCase
         $credential = new PublicKeyCredential(
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             'rawCredentialIdBytes',
-            $this->createMock(AuthenticatorResponse::class),
+            static::createStub(AuthenticatorResponse::class),
         );
         $exception = new WebauthnAuthenticationFailureException(
             'Credential ID is invalid.',
