@@ -14,11 +14,14 @@ use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
+use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\Bundle\Service\WebauthnSignalFactory;
 use Webauthn\Bundle\Service\WebauthnSignalResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Signal\Signal;
@@ -52,6 +55,36 @@ final class SignalHelpersTest extends TestCase
                 ],
             ],
         ], $payload['signals']);
+    }
+
+    #[Test]
+    public function unknownCredentialFromExceptionExtractsTheDescriptorFromTheCarriedCredential(): void
+    {
+        $factory = new WebauthnSignalFactory($this->emptyRepository());
+        $credential = new PublicKeyCredential(
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            'rawCredentialIdBytes',
+            $this->createMock(AuthenticatorResponse::class),
+        );
+        $exception = new WebauthnAuthenticationFailureException(
+            'Credential ID is invalid.',
+            publicKeyCredential: $credential,
+        );
+
+        $signal = $factory->forUnknownCredentialFromException('example.com', $exception);
+
+        static::assertNotNull($signal);
+        static::assertSame('example.com', $signal->rp->id);
+        static::assertSame('rawCredentialIdBytes', $signal->credential->id);
+    }
+
+    #[Test]
+    public function unknownCredentialFromExceptionReturnsNullWhenNoCredentialIsCarried(): void
+    {
+        $factory = new WebauthnSignalFactory($this->emptyRepository());
+        $exception = new WebauthnAuthenticationFailureException('Credential ID is invalid.');
+
+        static::assertNull($factory->forUnknownCredentialFromException('example.com', $exception));
     }
 
     #[Test]

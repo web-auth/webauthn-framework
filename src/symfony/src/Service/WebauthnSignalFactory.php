@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
+use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRpEntity;
@@ -41,6 +42,28 @@ final readonly class WebauthnSignalFactory
     public function forUnknownCredential(string $rpId, PublicKeyCredentialDescriptor $credential): UnknownCredential
     {
         return new UnknownCredential($this->rpEntity($rpId), $credential);
+    }
+
+    /**
+     * Convenience companion to {@see self::forUnknownCredential()} for the
+     * Authenticator/Passport/Badge flow: builds the signal from a
+     * {@see WebauthnAuthenticationFailureException} raised by
+     * {@see \Webauthn\Bundle\Security\Authentication\WebauthnBadgeListener}.
+     *
+     * Returns `null` when the exception does not carry a deserialized
+     * credential (e.g. the failure happened before deserialization could
+     * recover the presented `rawId`).
+     */
+    public function forUnknownCredentialFromException(
+        string $rpId,
+        WebauthnAuthenticationFailureException $exception,
+    ): ?UnknownCredential {
+        $credential = $exception->publicKeyCredential;
+        if ($credential === null) {
+            return null;
+        }
+
+        return $this->forUnknownCredential($rpId, $credential->getPublicKeyCredentialDescriptor());
     }
 
     /**

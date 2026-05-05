@@ -91,8 +91,6 @@ final readonly class AssertionResponseController
                     new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
                 );
             }
-            // PHPDoc-only optional args on FailureHandler::onFailure (will be required in 6.0).
-            // Implementations that haven't updated their signature ignore the extras silently.
             return $this->failureHandler->onFailure(
                 $request,
                 $throwable,

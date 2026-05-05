@@ -101,8 +101,6 @@ final readonly class AttestationResponseController
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure($request, $exception);
             }
-            // PHPDoc-only optional args on FailureHandler::onFailure (will be required in 6.0).
-            // Implementations that haven't updated their signature ignore the extras silently.
             return $this->failureHandler->onFailure(
                 $request,
                 $exception,
