@@ -24,7 +24,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  *
  * Examples:
  *
- *     // Registration (most explicit)
+ *     // Registration (user is required, passed positionally)
  *     return $this->options
  *         ->forCreation('example.com', $this->newUserGuesser)
  *         ->build($request);
@@ -34,9 +34,10 @@ use Webauthn\PublicKeyCredentialUserEntity;
  *         ->forRequest('example.com')
  *         ->build($request);
  *
- *     // Authentication, user already known
+ *     // Authentication, user already known: attach via withUser()
  *     return $this->options
- *         ->forRequest('example.com', $userEntity)
+ *         ->forRequest('example.com')
+ *         ->withUser($userEntity)
  *         ->build($request);
  */
 final readonly class WebauthnOptionsResponse
@@ -63,17 +64,14 @@ final readonly class WebauthnOptionsResponse
         );
     }
 
-    public function forRequest(
-        string $rpId,
-        PublicKeyCredentialUserEntity|UserEntityGuesser|null $user = null,
-    ): WebauthnRequestOptionsBuilder {
+    public function forRequest(string $rpId): WebauthnRequestOptionsBuilder
+    {
         return new WebauthnRequestOptionsBuilder(
             $this->storage,
             $this->serializer,
             $this->validator,
             $this->credentialRepository,
             $rpId,
-            $user,
         );
     }
 }

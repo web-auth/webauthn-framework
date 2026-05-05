@@ -145,7 +145,8 @@ final class WebauthnOptionsResponseTest extends TestCase
         $repository = new InMemoryCredentialRepository([$this->record('cred-A'), $this->record('cred-B')]);
 
         $this->helper(storage: $storage, repository: $repository)
-            ->forRequest('example.com', $userEntity)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
             ->build($this->jsonRequest());
 
         $options = $storage->last()
@@ -162,7 +163,8 @@ final class WebauthnOptionsResponseTest extends TestCase
         $repository = new InMemoryCredentialRepository([$this->record('cred-A')]);
 
         $this->helper(storage: $storage, repository: $repository)
-            ->forRequest('example.com', new FixedUserEntityGuesser($userEntity))
+            ->forRequest('example.com')
+            ->withUser(new FixedUserEntityGuesser($userEntity))
             ->build($this->jsonRequest());
 
         static::assertCount(1, $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
@@ -176,7 +178,8 @@ final class WebauthnOptionsResponseTest extends TestCase
         $repository = new InMemoryCredentialRepository([$this->record('repo-cred')]);
 
         $this->helper(storage: $storage, repository: $repository)
-            ->forRequest('example.com', $userEntity)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
             ->withAllowCredentials(PublicKeyCredentialDescriptor::create('public-key', 'explicit-cred'))
             ->build($this->jsonRequest());
 
