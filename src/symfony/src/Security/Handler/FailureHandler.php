@@ -11,9 +11,9 @@ use Throwable;
 interface FailureHandler
 {
     /**
-     * Three additional arguments — `?PublicKeyCredential $publicKeyCredential = null`,
+     * Three additional arguments (`?PublicKeyCredential $publicKeyCredential = null`,
      * `?PublicKeyCredentialOptions $publicKeyCredentialOptions = null` and
-     * `?PublicKeyCredentialUserEntity $userEntity = null` — are passed by the bundle's
+     * `?PublicKeyCredentialUserEntity $userEntity = null`) are passed by the bundle's
      * Assertion/Attestation response controllers when they have those values in scope
      * at the failure point (typically: deserialization succeeded but validation failed).
      *

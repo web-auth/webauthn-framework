@@ -35,7 +35,7 @@ final readonly class WebauthnSignalFactory
      * Build a {@see UnknownCredential} signal for an assertion that referenced a credential
      * the relying party no longer recognises (e.g. it was deleted server-side).
      *
-     * Per W3C §14.6.3 this signal is safe to expose to an unauthenticated caller — the
+     * Per W3C §14.6.3 this signal is safe to expose to an unauthenticated caller: the
      * credential id is one the caller already presented, so no PII leaks.
      */
     public function forUnknownCredential(string $rpId, PublicKeyCredentialDescriptor $credential): UnknownCredential
@@ -50,7 +50,7 @@ final readonly class WebauthnSignalFactory
      * *"potentially irreversible"* deletion warning of W3C §5.1.10.3 (credentials missing
      * from the list are removed/hidden by the authenticator).
      *
-     * Per W3C §14.6.3 this signal MUST only be emitted to an authenticated user — the
+     * Per W3C §14.6.3 this signal MUST only be emitted to an authenticated user: the
      * full credential id list is PII.
      */
     public function forAllAccepted(string $rpId, PublicKeyCredentialUserEntity $user): AllAcceptedCredentials
@@ -67,7 +67,7 @@ final readonly class WebauthnSignalFactory
      * Build a {@see CurrentUserDetails} signal carrying the user's current `name` and
      * `displayName` so the password manager can refresh its passkey label.
      *
-     * Per W3C §14.6.3 this signal MUST only be emitted to an authenticated user —
+     * Per W3C §14.6.3 this signal MUST only be emitted to an authenticated user:
      * the user handle plus display strings are PII.
      */
     public function forCurrentUser(string $rpId, PublicKeyCredentialUserEntity $user): CurrentUserDetails

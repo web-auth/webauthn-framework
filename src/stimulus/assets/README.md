@@ -121,6 +121,34 @@ Combined controller for backward compatibility. Handles both registration and au
 > import { WebauthnController } from '@web-auth/webauthn-stimulus';
 > ```
 
+## Signal API helpers (since 5.4)
+
+Three small helpers wrap the [WebAuthn L3 §5.1.10](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods) signal methods. Each one feature-detects the matching `PublicKeyCredential.signalXxx()` static method, silently no-ops on user agents that do not ship it (Firefox, older Safari) and swallows the spec-defined `TypeError` / `SecurityError` so the application flow never breaks.
+
+```javascript
+import {
+    dispatchUnknownCredential,
+    dispatchAllAcceptedCredentials,
+    dispatchCurrentUserDetails,
+    dispatchSignals,
+} from '@web-auth/webauthn-stimulus';
+
+// One-shot dispatch for a single signal:
+await dispatchUnknownCredential({ rpId: 'example.com', credentialId: 'aabbcc' });
+
+// Or dispatch a `signals: [{type, options}]` envelope produced server-side
+// by `Webauthn\Bundle\Service\WebauthnSignalResponse::withSignals(...)`.
+// The Authentication / Registration controllers call this automatically on
+// the success response of the `resultUrl` endpoint, so you usually do not
+// need to invoke it yourself.
+await dispatchSignals(serverResponse);
+```
+
+`AuthenticationController`, `RegistrationController` and `WebauthnController` all auto-pickup the `signals` envelope after a successful verify call. Privacy gates per W3C §14.6.3:
+
+- `dispatchUnknownCredential` is safe to expose to an unauthenticated caller (the credential id is one the caller already presented).
+- `dispatchAllAcceptedCredentials` and `dispatchCurrentUserDetails` carry PII (full credential id list, user handle plus display strings) and MUST only be emitted for an authenticated user.
+
 ## Configuration Values
 
 ### Common Values (all controllers)

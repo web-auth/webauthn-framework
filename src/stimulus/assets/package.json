@@ -34,7 +34,8 @@
             "@web-auth/webauthn-stimulus": "path:%PACKAGE%/src/index.js",
             "@web-auth/webauthn-stimulus/webauthn": "path:%PACKAGE%/src/controller.js",
             "@web-auth/webauthn-stimulus/authentication": "path:%PACKAGE%/src/authentication-controller.js",
-            "@web-auth/webauthn-stimulus/registration": "path:%PACKAGE%/src/registration-controller.js"
+            "@web-auth/webauthn-stimulus/registration": "path:%PACKAGE%/src/registration-controller.js",
+            "@web-auth/webauthn-stimulus/signals": "path:%PACKAGE%/src/signals.js"
         }
     },
     "peerDependencies": {

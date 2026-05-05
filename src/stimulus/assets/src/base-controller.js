@@ -8,6 +8,8 @@ import {
     WebAuthnAbortService,
 } from '@simplewebauthn/browser';
 
+import { dispatchSignals } from './signals.js';
+
 /**
  * Base controller for WebAuthn operations
  * Contains shared logic for authentication and registration controllers
@@ -82,6 +84,12 @@ export default class extends Controller {
 
             const result = await response.json();
             this._dispatchEvent(`${eventPrefix}:verify:success`, { result });
+
+            // WebAuthn L3 §5.1.10: when the server response carries a
+            // `signals: [{type, options}]` envelope, forward each entry to
+            // the matching `PublicKeyCredential.signalXxx()` JS API.
+            // Fire-and-forget; failures never break the application flow.
+            await dispatchSignals(result);
 
             return result;
         } catch (error) {

@@ -32,7 +32,7 @@ use Webauthn\Signal\UnknownCredential;
  * }
  * ```
  *
- * The application controls *when* to emit signals — typically from a custom
+ * The application controls *when* to emit signals, typically from a custom
  * {@see \Webauthn\Bundle\Security\Handler\SuccessHandler}.
  *
  * @see https://www.w3.org/TR/webauthn-3/#sctn-signal-methods
@@ -52,7 +52,7 @@ final readonly class WebauthnSignalResponse
         $payload['signals'] = array_map(
             fn (Signal $signal): array => [
                 'type' => $this->typeOf($signal),
-                /** @phpstan-ignore-next-line — normalize() returns array<string, mixed> for our signal denormalizers. */
+                /** @phpstan-ignore-next-line normalize() returns array<string, mixed> for our signal denormalizers. */
                 'options' => $this->normalizer->normalize($signal, 'json', [
                     AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
                 ]),
