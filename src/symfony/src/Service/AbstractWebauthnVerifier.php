@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Service;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -12,6 +15,9 @@ use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CredentialRecord;
+use Webauthn\Event\CanDispatchEvents;
+use Webauthn\Event\NullEventDispatcher;
+use Webauthn\MetadataService\CanLogData;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -30,13 +36,65 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * {@see WebauthnAuthenticationFailureException} so the controller can build a
  * contextual response (e.g. a Signal API payload to drop a stale credential
  * from the platform UI).
+ *
+ * Implements {@see CanLogData} and {@see CanDispatchEvents} so the bundle's
+ * autoconfiguration tags propagate the configured logger and event dispatcher
+ * here. Both are forwarded to any one-off validator the verifier may
+ * instantiate when {@see self::withAllowedOrigins()} is set.
  */
-abstract class AbstractWebauthnVerifier
+abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
 {
+    /**
+     * @var list<string>|null
+     */
+    protected ?array $allowedOriginsOverride = null;
+
+    protected bool $allowSubdomainsOverride = false;
+
+    protected LoggerInterface $logger;
+
+    protected EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
         protected readonly SerializerInterface $serializer,
         protected readonly OptionsStorage $storage,
     ) {
+        $this->logger = new NullLogger();
+        $this->eventDispatcher = new NullEventDispatcher();
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * Override the set of accepted origins for this single verification.
+     * Equivalent to the global `webauthn.allowed_origins` configuration but
+     * scoped to the current verifier instance: the underlying
+     * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory} is asked to
+     * produce a fresh {@see \Webauthn\CeremonyStep\CeremonyStepManager} that
+     * uses these origins, without mutating the factory's global state.
+     */
+    public function withAllowedOrigins(string ...$origins): static
+    {
+        $clone = clone $this;
+        $clone->allowedOriginsOverride = array_values($origins);
+
+        return $clone;
+    }
+
+    public function withAllowSubdomains(bool $allow = true): static
+    {
+        $clone = clone $this;
+        $clone->allowSubdomainsOverride = $allow;
+
+        return $clone;
     }
 
     public function verify(Request $request): WebauthnVerificationResult

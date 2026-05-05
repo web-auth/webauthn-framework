@@ -15,6 +15,7 @@ use Webauthn\Bundle\Exception\MissingFeatureException;
 use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -34,6 +35,11 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * If the stored creation options carry the W3C `mediation: conditional` flag,
  * the verifier automatically uses the conditional creation ceremony manager
  * (which relaxes the User Verification check, per the spec).
+ *
+ * Per-verifier origin overrides are supported through
+ * {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}: when
+ * set, a fresh validator is built on top of a scoped ceremony step manager so
+ * the global `webauthn.allowed_origins` configuration is unaffected.
  */
 final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
 {
@@ -45,6 +51,7 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         private readonly AuthenticatorAttestationResponseValidator $validator,
         private readonly AuthenticatorAttestationResponseValidator $conditionalValidator,
         private readonly CredentialRecordRepositoryInterface $repository,
+        private readonly CeremonyStepManagerFactory $ceremonyStepManagerFactory,
         private readonly string $rpId,
     ) {
         parent::__construct($serializer, $storage);
@@ -86,9 +93,8 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         assert($response instanceof AuthenticatorAttestationResponse);
         assert($options instanceof PublicKeyCredentialCreationOptions);
 
-        $validator = $options->mediation === PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL
-            ? $this->conditionalValidator
-            : $this->validator;
+        $isConditional = $options->mediation === PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL;
+        $validator = $this->resolveValidator($isConditional);
 
         $credentialRecord = $validator->check($response, $options, $request->getHost());
 
@@ -97,6 +103,29 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         }
 
         return $credentialRecord;
+    }
+
+    private function resolveValidator(bool $isConditional): AuthenticatorAttestationResponseValidator
+    {
+        if ($this->allowedOriginsOverride === null) {
+            return $isConditional ? $this->conditionalValidator : $this->validator;
+        }
+
+        $csm = $isConditional
+            ? $this->ceremonyStepManagerFactory->conditionalCreateCeremony(
+                $this->allowedOriginsOverride,
+                $this->allowSubdomainsOverride,
+            )
+            : $this->ceremonyStepManagerFactory->creationCeremony(
+                $this->allowedOriginsOverride,
+                $this->allowSubdomainsOverride,
+            );
+
+        $scoped = new AuthenticatorAttestationResponseValidator($csm);
+        $scoped->setLogger($this->logger);
+        $scoped->setEventDispatcher($this->eventDispatcher);
+
+        return $scoped;
     }
 
     private function persist(CredentialRecord $credentialRecord): void

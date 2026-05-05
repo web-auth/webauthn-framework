@@ -13,6 +13,7 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CredentialRecord;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredential;
@@ -31,6 +32,11 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * of these updates is left to the repository implementation, mirroring the
  * legacy {@see \Webauthn\Bundle\Controller\AssertionResponseController}: Doctrine
  * repositories flush automatically through the unit of work.
+ *
+ * Per-verifier origin overrides are supported through
+ * {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}: when
+ * set, a fresh validator is built on top of a scoped ceremony step manager so
+ * the global `webauthn.allowed_origins` configuration is unaffected.
  */
 final class WebauthnAssertionVerifier extends AbstractWebauthnVerifier
 {
@@ -39,6 +45,7 @@ final class WebauthnAssertionVerifier extends AbstractWebauthnVerifier
         OptionsStorage $storage,
         private readonly AuthenticatorAssertionResponseValidator $validator,
         private readonly CredentialRecordRepositoryInterface $repository,
+        private readonly CeremonyStepManagerFactory $ceremonyStepManagerFactory,
         private readonly string $rpId,
     ) {
         parent::__construct($serializer, $storage);
@@ -75,12 +82,25 @@ final class WebauthnAssertionVerifier extends AbstractWebauthnVerifier
         $credentialRecord = $this->repository->findOneByCredentialId($publicKeyCredential->rawId)
             ?? throw AuthenticatorResponseVerificationException::create('The credential ID is invalid.');
 
-        return $this->validator->check(
-            $credentialRecord,
-            $response,
-            $options,
-            $request->getHost(),
-            $userEntity?->id,
+        return $this->resolveValidator()
+            ->check($credentialRecord, $response, $options, $request->getHost(), $userEntity?->id);
+    }
+
+    private function resolveValidator(): AuthenticatorAssertionResponseValidator
+    {
+        if ($this->allowedOriginsOverride === null) {
+            return $this->validator;
+        }
+
+        $csm = $this->ceremonyStepManagerFactory->requestCeremony(
+            $this->allowedOriginsOverride,
+            $this->allowSubdomainsOverride,
         );
+
+        $scoped = new AuthenticatorAssertionResponseValidator($csm);
+        $scoped->setLogger($this->logger);
+        $scoped->setEventDispatcher($this->eventDispatcher);
+
+        return $scoped;
     }
 }

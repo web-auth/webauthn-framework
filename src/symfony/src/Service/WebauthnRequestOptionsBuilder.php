@@ -12,6 +12,7 @@ use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CredentialRecord;
+use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
@@ -26,6 +27,13 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * through {@see self::withUser()} when known. When a user entity is resolved,
  * `allowCredentials` is derived from the credential repository unless an
  * explicit list is provided through {@see self::withAllowCredentials()}.
+ *
+ * When user resolution fails but the JSON body carried a `username` (e.g. a
+ * login form posted `{"username":"alice"}`), the builder consults the autowired
+ * {@see FakeCredentialGenerator} to produce **fake** `allowCredentials`. This
+ * prevents username enumeration: the response shape is identical whether or
+ * not the username matches a real user. Disable with
+ * {@see self::withFakeCredentialGenerator()} (pass `null`).
  */
 final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
 {
@@ -48,6 +56,7 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
         ValidatorInterface $validator,
         CredentialRecordRepositoryInterface $credentialRepository,
         private readonly string $rpId,
+        private ?FakeCredentialGenerator $fakeCredentialGenerator = null,
     ) {
         parent::__construct($storage, $serializer, $validator, $credentialRepository);
     }
@@ -93,6 +102,19 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
+    /**
+     * Swap the fake credential generator used for username-enumeration
+     * protection. Pass `null` to opt out (response will carry empty
+     * `allowCredentials` when the username does not resolve to a known user).
+     */
+    public function withFakeCredentialGenerator(?FakeCredentialGenerator $generator): static
+    {
+        $clone = clone $this;
+        $clone->fakeCredentialGenerator = $generator;
+
+        return $clone;
+    }
+
     protected function resolveUserEntity(Request $request): ?PublicKeyCredentialUserEntity
     {
         return self::resolveStaticOrGuessed($this->userOrGuesser, $request);
@@ -103,12 +125,17 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
         return $this->parseDto($request, ServerPublicKeyCredentialRequestOptionsRequest::class);
     }
 
+    protected function shouldParseClientRequest(): bool
+    {
+        return parent::shouldParseClientRequest() || $this->fakeCredentialGenerator !== null;
+    }
+
     protected function assembleOptions(
         Request $request,
         ?PublicKeyCredentialUserEntity $userEntity,
         ?object $optionsRequest,
     ): PublicKeyCredentialOptions {
-        $allowCredentials = $this->resolveAllowCredentials($userEntity);
+        $allowCredentials = $this->resolveAllowCredentials($request, $userEntity, $optionsRequest);
 
         $userVerification = $this->userVerification;
         $extensions = $this->extensions;
@@ -144,19 +171,31 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
     /**
      * @return list<PublicKeyCredentialDescriptor>
      */
-    private function resolveAllowCredentials(?PublicKeyCredentialUserEntity $userEntity): array
-    {
+    private function resolveAllowCredentials(
+        Request $request,
+        ?PublicKeyCredentialUserEntity $userEntity,
+        ?object $optionsRequest,
+    ): array {
         if ($this->allowCredentials !== null) {
             return $this->allowCredentials;
         }
 
-        if (! $this->deriveAllowCredentialsFromUser || $userEntity === null) {
-            return [];
+        if ($userEntity !== null && $this->deriveAllowCredentialsFromUser) {
+            return array_map(
+                static fn (CredentialRecord $record): PublicKeyCredentialDescriptor => $record->getPublicKeyCredentialDescriptor(),
+                $this->credentialRepository->findAllForUserEntity($userEntity),
+            );
         }
 
-        return array_map(
-            static fn (CredentialRecord $record): PublicKeyCredentialDescriptor => $record->getPublicKeyCredentialDescriptor(),
-            $this->credentialRepository->findAllForUserEntity($userEntity),
-        );
+        if ($userEntity === null
+            && $this->fakeCredentialGenerator !== null
+            && $optionsRequest instanceof ServerPublicKeyCredentialRequestOptionsRequest
+            && $optionsRequest->username !== null
+            && $optionsRequest->username !== ''
+        ) {
+            return array_values($this->fakeCredentialGenerator->generate($request, $optionsRequest->username));
+        }
+
+        return [];
     }
 }

@@ -122,7 +122,7 @@ abstract class AbstractWebauthnOptionsBuilder
     public function build(Request $request): JsonResponse
     {
         $userEntity = $this->resolveUserEntity($request);
-        $optionsRequest = $this->clientOverridePolicy !== null ? $this->parseClientRequest($request) : null;
+        $optionsRequest = $this->shouldParseClientRequest() ? $this->parseClientRequest($request) : null;
         $options = $this->assembleOptions($request, $userEntity, $optionsRequest);
 
         $this->storage->store(Item::create($options, $userEntity));
@@ -133,6 +133,18 @@ abstract class AbstractWebauthnOptionsBuilder
             ]),
             json: true,
         );
+    }
+
+    /**
+     * Hook used by {@see self::build()} to decide whether the request body is
+     * worth parsing into the ceremony-specific DTO. Returns `true` when a
+     * client override policy is attached; subclasses can override to opt in
+     * for additional reasons (e.g. anti-enumeration via a fake credential
+     * generator on the request side).
+     */
+    protected function shouldParseClientRequest(): bool
+    {
+        return $this->clientOverridePolicy !== null;
     }
 
     abstract protected function resolveUserEntity(Request $request): ?PublicKeyCredentialUserEntity;
