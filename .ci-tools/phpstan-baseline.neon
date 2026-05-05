@@ -252,7 +252,7 @@ parameters:
 				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
 			'''
 			identifier: method.deprecatedClass
-			count: 2
+			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
 
 		-
@@ -261,7 +261,16 @@ parameters:
 				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
 			'''
 			identifier: new.deprecatedClass
-			count: 2
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\CeremonyStep\CeremonyStepManagerFactory::buildOriginCheck() has typehint with deprecated class Webauthn\CeremonyStep\CheckOrigin:
+				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
+			'''
+			identifier: return.deprecatedClass
+			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
 
 		-
