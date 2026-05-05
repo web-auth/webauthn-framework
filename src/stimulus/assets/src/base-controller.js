@@ -8,6 +8,8 @@ import {
     WebAuthnAbortService,
 } from '@simplewebauthn/browser';
 
+import { dispatchSignals } from './signals.js';
+
 /**
  * Base controller for WebAuthn operations
  * Contains shared logic for authentication and registration controllers
@@ -82,6 +84,8 @@ export default class extends Controller {
 
             const result = await response.json();
             this._dispatchEvent(`${eventPrefix}:verify:success`, { result });
+
+            await dispatchSignals(result);
 
             return result;
         } catch (error) {

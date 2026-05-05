@@ -37,6 +37,10 @@ final readonly class AssertionResponseController
 
     public function __invoke(Request $request): Response
     {
+        $publicKeyCredential = null;
+        $publicKeyCredentialRequestOptions = null;
+        $userEntity = null;
+
         try {
             $format = $request->getContentTypeFormat();
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
@@ -87,7 +91,13 @@ final readonly class AssertionResponseController
                     new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
                 );
             }
-            return $this->failureHandler->onFailure($request, $throwable);
+            return $this->failureHandler->onFailure(
+                $request,
+                $throwable,
+                $publicKeyCredential,
+                $publicKeyCredentialRequestOptions,
+                $userEntity,
+            );
         }
     }
 }

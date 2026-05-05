@@ -27,6 +27,8 @@ use Webauthn\Bundle\Service\DefaultFailureHandler;
 use Webauthn\Bundle\Service\DefaultSuccessHandler;
 use Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory;
 use Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory;
+use Webauthn\Bundle\Service\WebauthnSignalFactory;
+use Webauthn\Bundle\Service\WebauthnSignalResponse;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\ClientDataCollector\ClientDataCollectorManager;
@@ -320,6 +322,11 @@ return static function (ContainerConfigurator $container): void {
     $service->set(WebauthnSerializerFactory::class);
     $service->set(DefaultFailureHandler::class);
     $service->set(DefaultSuccessHandler::class);
+
+    // WebAuthn L3 §5.1.10 signal helpers — autowired so applications can
+    // request them from a custom SuccessHandler / controller.
+    $service->set(WebauthnSignalFactory::class)->public();
+    $service->set(WebauthnSignalResponse::class)->public();
 
     $service
         ->set(ClientOverridePolicy::class)
