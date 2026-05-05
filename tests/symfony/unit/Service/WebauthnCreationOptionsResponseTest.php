@@ -8,7 +8,6 @@ use const JSON_THROW_ON_ERROR;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validation;
@@ -16,16 +15,15 @@ use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
-use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
-use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
-use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\Bundle\Service\WebauthnCreationOptionsResponse;
-use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\FixedUserEntityGuesser;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryCredentialRepository;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryOptionsStorage;
 
 /**
  * @internal
@@ -33,12 +31,14 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class WebauthnCreationOptionsResponseTest extends TestCase
 {
     #[Test]
-    public function buildRequiresRpAndEntityGuesser(): void
+    public function buildRequiresEntityGuesser(): void
     {
         $helper = $this->helper();
 
         $this->expectException(LogicException::class);
-        $helper->build(new Request());
+        $helper->build(new Request(content: '{}', server: [
+            'CONTENT_TYPE' => 'application/json',
+        ]));
     }
 
     #[Test]
@@ -49,7 +49,7 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
 
         $helper = $this->helper(storage: $storage)
             ->withRp(PublicKeyCredentialRpEntity::create(id: 'example.com'))
-            ->withEntityGuesser($this->fixedGuesser($userEntity))
+            ->withEntityGuesser(new FixedUserEntityGuesser($userEntity))
             ->withAuthenticatorSelectionCriteria(
                 AuthenticatorSelectionCriteria::create(
                     userVerification: AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
@@ -61,19 +61,18 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
             'CONTENT_TYPE' => 'application/json',
         ]));
 
-        $stored = $storage->last();
-        static::assertInstanceOf(PublicKeyCredentialCreationOptions::class, $stored->getPublicKeyCredentialOptions());
-        static::assertSame('example.com', $stored->getPublicKeyCredentialOptions()->rp->id);
-        static::assertSame('user-handle', $stored->getPublicKeyCredentialOptions()->user->id);
+        $stored = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialCreationOptions::class, $stored);
+        static::assertSame('example.com', $stored->rp->id);
+        static::assertSame('user-handle', $stored->user->id);
         static::assertSame(
             AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            $stored->getPublicKeyCredentialOptions()
-                ->authenticatorSelection?->userVerification,
+            $stored->authenticatorSelection?->userVerification,
         );
         static::assertSame(
             PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
-            $stored->getPublicKeyCredentialOptions()
-                ->attestation,
+            $stored->attestation,
         );
 
         $payload = json_decode($response->getContent() ?: '', true, flags: JSON_THROW_ON_ERROR);
@@ -83,12 +82,13 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
     #[Test]
     public function withoutClientOverridesAllRequestFieldsAreIgnored(): void
     {
-        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
         $storage = new InMemoryOptionsStorage();
 
         $helper = $this->helper(storage: $storage)
             ->withRp(PublicKeyCredentialRpEntity::create(id: 'example.com'))
-            ->withEntityGuesser($this->fixedGuesser($userEntity))
+            ->withEntityGuesser(new FixedUserEntityGuesser(
+                PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'),
+            ))
             ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE);
 
         $clientPayload = json_encode([
@@ -110,12 +110,13 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
     #[Test]
     public function withClientOverridesAppliesAllowedFieldsFromTheRequestBody(): void
     {
-        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
         $storage = new InMemoryOptionsStorage();
 
         $helper = $this->helper(storage: $storage)
             ->withRp(PublicKeyCredentialRpEntity::create(id: 'example.com'))
-            ->withEntityGuesser($this->fixedGuesser($userEntity))
+            ->withEntityGuesser(new FixedUserEntityGuesser(
+                PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'),
+            ))
             ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
             ->withClientOverrides(new ClientOverridePolicy([
                 'attestation_conveyance' => [
@@ -146,12 +147,13 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
     #[Test]
     public function withClientOverridesRejectsValuesOutsideTheAllowedList(): void
     {
-        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
         $storage = new InMemoryOptionsStorage();
 
         $helper = $this->helper(storage: $storage)
             ->withRp(PublicKeyCredentialRpEntity::create(id: 'example.com'))
-            ->withEntityGuesser($this->fixedGuesser($userEntity))
+            ->withEntityGuesser(new FixedUserEntityGuesser(
+                PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'),
+            ))
             ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
             ->withClientOverrides(new ClientOverridePolicy([
                 'attestation_conveyance' => [
@@ -180,9 +182,8 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
     public function eachWithMethodReturnsACloneAndDoesNotMutateTheCallee(): void
     {
         $original = $this->helper();
-        $rp = PublicKeyCredentialRpEntity::create(id: 'example.com');
 
-        $derived = $original->withRp($rp);
+        $derived = $original->withRp(PublicKeyCredentialRpEntity::create(id: 'example.com'));
 
         static::assertNotSame($original, $derived);
     }
@@ -193,7 +194,7 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
             $storage ?? new InMemoryOptionsStorage(),
             $this->serializer(),
             Validation::createValidator(),
-            new EmptyCredentialRepository(),
+            new InMemoryCredentialRepository(),
         );
     }
 
@@ -203,56 +204,5 @@ final class WebauthnCreationOptionsResponseTest extends TestCase
         $manager->add(NoneAttestationStatementSupport::create());
 
         return (new WebauthnSerializerFactory($manager))->create();
-    }
-
-    private function fixedGuesser(PublicKeyCredentialUserEntity $userEntity): UserEntityGuesser
-    {
-        return new class($userEntity) implements UserEntityGuesser {
-            public function __construct(
-                private readonly PublicKeyCredentialUserEntity $userEntity,
-            ) {
-            }
-
-            public function findUserEntity(Request $request): PublicKeyCredentialUserEntity
-            {
-                return $this->userEntity;
-            }
-        };
-    }
-}
-
-final class InMemoryOptionsStorage implements OptionsStorage
-{
-    private ?Item $last = null;
-
-    public function store(Item $item): void
-    {
-        $this->last = $item;
-    }
-
-    public function get(string $challenge): Item
-    {
-        return $this->last ?? throw new RuntimeException('No item stored.');
-    }
-
-    public function last(): Item
-    {
-        return $this->last ?? throw new RuntimeException('No item stored.');
-    }
-}
-
-final class EmptyCredentialRepository implements CredentialRecordRepositoryInterface
-{
-    public function findOneByCredentialId(string $publicKeyCredentialId): ?CredentialRecord
-    {
-        return null;
-    }
-
-    /**
-     * @return array<CredentialRecord>
-     */
-    public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
-    {
-        return [];
     }
 }
