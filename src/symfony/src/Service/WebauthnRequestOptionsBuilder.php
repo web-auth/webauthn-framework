@@ -22,10 +22,10 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * {@see WebauthnOptionsResponse::forRequest()}.
  *
  * Required: `rpId`. The user entity is optional (assertion can be userless,
- * e.g. usernameless authentication via discoverable credentials). When a user
- * entity is resolved, `allowCredentials` is derived from the credential
- * repository unless an explicit list is provided through
- * {@see self::withAllowCredentials()}.
+ * e.g. usernameless authentication via discoverable credentials) and is set
+ * through {@see self::withUser()} when known. When a user entity is resolved,
+ * `allowCredentials` is derived from the credential repository unless an
+ * explicit list is provided through {@see self::withAllowCredentials()}.
  */
 final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
 {
@@ -40,15 +40,24 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
      */
     private ?array $allowCredentials = null;
 
+    private PublicKeyCredentialUserEntity|UserEntityGuesser|null $userOrGuesser = null;
+
     public function __construct(
         OptionsStorage $storage,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         CredentialRecordRepositoryInterface $credentialRepository,
         private readonly string $rpId,
-        private readonly PublicKeyCredentialUserEntity|UserEntityGuesser|null $userOrGuesser = null,
     ) {
         parent::__construct($storage, $serializer, $validator, $credentialRepository);
+    }
+
+    public function withUser(PublicKeyCredentialUserEntity|UserEntityGuesser $user): static
+    {
+        $clone = clone $this;
+        $clone->userOrGuesser = $user;
+
+        return $clone;
     }
 
     public function withUserVerification(?string $userVerification): static
