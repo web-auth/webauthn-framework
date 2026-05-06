@@ -107,10 +107,13 @@ abstract class AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
-    public function withExtensions(AuthenticationExtensions $extensions): static
+    /**
+     * @param list<AuthenticationExtension> $extensions
+     */
+    public function withExtensions(array $extensions): static
     {
         $clone = clone $this;
-        $clone->extensions = $extensions;
+        $clone->extensions = AuthenticationExtensions::create($extensions);
 
         return $clone;
     }
