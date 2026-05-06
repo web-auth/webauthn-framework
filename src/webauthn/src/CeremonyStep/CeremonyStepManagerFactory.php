@@ -137,6 +137,17 @@ final class CeremonyStepManagerFactory
     }
 
     /**
+     * Reset the top-origin validator back to disabled. Symmetric of
+     * {@see self::enableTopOriginValidator()}, useful when cloning a
+     * globally-configured factory to scope a single ceremony out of
+     * cross-origin top-origin validation.
+     */
+    public function disableTopOriginValidator(): void
+    {
+        $this->topOriginValidator = null;
+    }
+
+    /**
      * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
      *                                              Pass `null` to fall back to whatever was set on the factory.
      */

@@ -14,6 +14,7 @@ use Throwable;
 use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\CeremonyStep\TopOriginValidator;
 use Webauthn\CredentialRecord;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
@@ -51,13 +52,17 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
 
     protected bool $allowSubdomainsOverride = false;
 
+    protected ?TopOriginValidator $topOriginValidatorOverride = null;
+
+    protected bool $topOriginValidatorIsOverridden = false;
+
     protected LoggerInterface $logger;
 
     protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         protected readonly SerializerInterface $serializer,
-        protected readonly OptionsStorage $storage,
+        protected OptionsStorage $storage,
     ) {
         $this->logger = new NullLogger();
         $this->eventDispatcher = new NullEventDispatcher();
@@ -93,6 +98,35 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
     {
         $clone = clone $this;
         $clone->allowSubdomainsOverride = $allow;
+
+        return $clone;
+    }
+
+    /**
+     * Override the top-origin validator used by `CheckTopOrigin` for this single
+     * verification. Pass `null` to explicitly disable cross-origin top-origin
+     * validation per call (e.g. when the global `top_origin_validator` config
+     * is set but a specific endpoint should not enforce it). Triggers the
+     * factory-clone path so the global state stays untouched.
+     */
+    public function withTopOriginValidator(?TopOriginValidator $topOriginValidator): static
+    {
+        $clone = clone $this;
+        $clone->topOriginValidatorOverride = $topOriginValidator;
+        $clone->topOriginValidatorIsOverridden = true;
+
+        return $clone;
+    }
+
+    /**
+     * Override the bundle's `OptionsStorage` for this single verification.
+     * Useful for multi-tenant setups where some routes read/write challenges
+     * to a different cache than the global default.
+     */
+    public function withOptionsStorage(OptionsStorage $storage): static
+    {
+        $clone = clone $this;
+        $clone->storage = $storage;
 
         return $clone;
     }
