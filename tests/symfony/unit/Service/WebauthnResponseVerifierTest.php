@@ -29,7 +29,9 @@ use Webauthn\Bundle\Service\WebauthnAssertionVerifier;
 use Webauthn\Bundle\Service\WebauthnAttestationVerifier;
 use Webauthn\Bundle\Service\WebauthnResponseVerifier;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
+use Webauthn\CeremonyStep\TopOriginValidator;
 use Webauthn\CollectedClientData;
+use Webauthn\Counter\CounterChecker;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
@@ -414,6 +416,104 @@ final class WebauthnResponseVerifierTest extends TestCase
             ->forAttestation('example.com')
             ->withoutMetadata()
             ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withTopOriginValidatorBuildsAFreshAttestationValidator(): void
+    {
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAttestationCredential('cred-id')),
+            storage: $this->storageWith($this->creationOptions()),
+            attestationValidator: $standardValidator,
+            factory: new CeremonyStepManagerFactory(),
+        )
+            ->forAttestation('example.com')
+            ->withTopOriginValidator(static::createStub(TopOriginValidator::class))
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withCounterCheckerBuildsAFreshAssertionValidator(): void
+    {
+        $stored = $this->record('cred-id');
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential('cred-id')),
+            storage: $this->storageWith($this->requestOptions()),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+            factory: new CeremonyStepManagerFactory(),
+        )
+            ->forAssertion('example.com')
+            ->withCounterChecker(static::createStub(CounterChecker::class))
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withOptionsStorageOverridesTheLookupForThisVerification(): void
+    {
+        $alternative = new InMemoryOptionsStorage();
+        $alternative->store(Item::create($this->creationOptions(), null));
+
+        $rawId = 'cred-id';
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($this->record($rawId));
+        $repository = new SaveableInMemoryCredentialRepository();
+
+        // The default storage is empty; without the override the verifier
+        // would fail the storage lookup and bubble up a BadRequest. With the
+        // override, the alternative storage hands back valid options and the
+        // verification proceeds normally.
+        $result = $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAttestationCredential($rawId)),
+            storage: new InMemoryOptionsStorage(),
+            repository: $repository,
+            attestationValidator: $standardValidator,
+        )
+            ->forAttestation('example.com')
+            ->withOptionsStorage($alternative)
+            ->verify($this->jsonRequest());
+
+        static::assertSame($rawId, $result->credentialRecord->publicKeyCredentialId);
+    }
+
+    #[Test]
+    public function withCredentialRepositoryOverridesTheLookupForAssertion(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $emptyRepo = new InMemoryCredentialRepository();
+        $alternativeRepo = new InMemoryCredentialRepository([$stored]);
+
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $result = $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions()),
+            repository: $emptyRepo,
+            assertionValidator: $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->withCredentialRepository($alternativeRepo)
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
     }
 
     #[Test]

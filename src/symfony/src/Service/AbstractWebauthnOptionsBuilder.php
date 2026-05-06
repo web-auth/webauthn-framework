@@ -55,11 +55,37 @@ abstract class AbstractWebauthnOptionsBuilder
     protected ?ClientOverridePolicy $clientOverridePolicy = null;
 
     public function __construct(
-        protected readonly OptionsStorage $storage,
+        protected OptionsStorage $storage,
         protected readonly SerializerInterface $serializer,
         protected readonly ValidatorInterface $validator,
-        protected readonly CredentialRecordRepositoryInterface $credentialRepository,
+        protected CredentialRecordRepositoryInterface $credentialRepository,
     ) {
+    }
+
+    /**
+     * Override the bundle's `OptionsStorage` for this single options build.
+     * Useful for multi-tenant setups where some routes write challenges to a
+     * different cache than the global default.
+     */
+    public function withOptionsStorage(OptionsStorage $storage): static
+    {
+        $clone = clone $this;
+        $clone->storage = $storage;
+
+        return $clone;
+    }
+
+    /**
+     * Override the bundle's `CredentialRecordRepositoryInterface` for this
+     * single options build (e.g. multi-tenant lookup of a user's existing
+     * credentials from a tenant-scoped store).
+     */
+    public function withCredentialRepository(CredentialRecordRepositoryInterface $repository): static
+    {
+        $clone = clone $this;
+        $clone->credentialRepository = $repository;
+
+        return $clone;
     }
 
     public function withAttestation(?string $attestation): static

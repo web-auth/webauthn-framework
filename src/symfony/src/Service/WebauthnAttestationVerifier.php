@@ -65,7 +65,7 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         OptionsStorage $storage,
         private readonly AuthenticatorAttestationResponseValidator $validator,
         private readonly AuthenticatorAttestationResponseValidator $conditionalValidator,
-        private readonly CredentialRecordRepositoryInterface $repository,
+        private CredentialRecordRepositoryInterface $repository,
         private readonly CeremonyStepManagerFactory $ceremonyStepManagerFactory,
         private readonly string $rpId,
     ) {
@@ -76,6 +76,19 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
     {
         $clone = clone $this;
         $clone->saveCredential = $save;
+
+        return $clone;
+    }
+
+    /**
+     * Override the bundle's `CredentialRecordRepositoryInterface` for this single
+     * verification (e.g. multi-tenant setups where each route writes to its own
+     * credential store).
+     */
+    public function withCredentialRepository(CredentialRecordRepositoryInterface $repository): static
+    {
+        $clone = clone $this;
+        $clone->repository = $repository;
 
         return $clone;
     }
@@ -180,6 +193,11 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
                 $this->certificateChainValidator,
             );
         }
+        if ($this->topOriginValidatorIsOverridden) {
+            $this->topOriginValidatorOverride === null
+                ? $factory->disableTopOriginValidator()
+                : $factory->enableTopOriginValidator($this->topOriginValidatorOverride);
+        }
 
         $csm = $isConditional
             ? $factory->conditionalCreateCeremony($this->allowedOriginsOverride, $this->allowSubdomainsOverride)
@@ -196,7 +214,8 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
     {
         return $this->allowedOriginsOverride !== null
             || $this->metadataStatementRepository !== null
-            || $this->metadataDisabled;
+            || $this->metadataDisabled
+            || $this->topOriginValidatorIsOverridden;
     }
 
     private function persist(CredentialRecord $credentialRecord): void

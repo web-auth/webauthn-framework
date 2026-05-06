@@ -14,6 +14,7 @@ use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
+use Webauthn\Counter\CounterChecker;
 use Webauthn\CredentialRecord;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\PublicKeyCredential;
@@ -33,22 +34,59 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * legacy {@see \Webauthn\Bundle\Controller\AssertionResponseController}: Doctrine
  * repositories flush automatically through the unit of work.
  *
- * Per-verifier origin overrides are supported through
- * {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}: when
- * set, a fresh validator is built on top of a scoped ceremony step manager so
- * the global `webauthn.allowed_origins` configuration is unaffected.
+ * Per-verifier overrides supported through fluent setters (build a fresh
+ * {@see \Webauthn\CeremonyStep\CeremonyStepManager} on top of a clone of the
+ * autowired factory, so the factory's global state stays unchanged):
+ *
+ *   - {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}
+ *   - {@see self::withTopOriginValidator()}
+ *   - {@see self::withCounterChecker()}
+ *
+ * Plus property-direct overrides:
+ *
+ *   - {@see self::withOptionsStorage()}
+ *   - {@see self::withCredentialRepository()}
  */
 final class WebauthnAssertionVerifier extends AbstractWebauthnVerifier
 {
+    private ?CounterChecker $counterCheckerOverride = null;
+
     public function __construct(
         SerializerInterface $serializer,
         OptionsStorage $storage,
         private readonly AuthenticatorAssertionResponseValidator $validator,
-        private readonly CredentialRecordRepositoryInterface $repository,
+        private CredentialRecordRepositoryInterface $repository,
         private readonly CeremonyStepManagerFactory $ceremonyStepManagerFactory,
         private readonly string $rpId,
     ) {
         parent::__construct($serializer, $storage);
+    }
+
+    /**
+     * Override the bundle's `CredentialRecordRepositoryInterface` for this single
+     * verification (e.g. multi-tenant setups where each route reads from its own
+     * credential store).
+     */
+    public function withCredentialRepository(CredentialRecordRepositoryInterface $repository): static
+    {
+        $clone = clone $this;
+        $clone->repository = $repository;
+
+        return $clone;
+    }
+
+    /**
+     * Override the bundle's signature counter checker for this single
+     * verification. Useful e.g. for a permissive admin endpoint that wants to
+     * accept counter rollbacks while the rest of the application enforces strict
+     * counter monotonicity.
+     */
+    public function withCounterChecker(CounterChecker $counterChecker): static
+    {
+        $clone = clone $this;
+        $clone->counterCheckerOverride = $counterChecker;
+
+        return $clone;
     }
 
     protected function ensureResponseMatches(AuthenticatorResponse $response): void
@@ -88,19 +126,33 @@ final class WebauthnAssertionVerifier extends AbstractWebauthnVerifier
 
     private function resolveValidator(): AuthenticatorAssertionResponseValidator
     {
-        if ($this->allowedOriginsOverride === null) {
+        if (! $this->hasOverrides()) {
             return $this->validator;
         }
 
-        $csm = $this->ceremonyStepManagerFactory->requestCeremony(
-            $this->allowedOriginsOverride,
-            $this->allowSubdomainsOverride,
-        );
+        $factory = clone $this->ceremonyStepManagerFactory;
+        if ($this->topOriginValidatorIsOverridden) {
+            $this->topOriginValidatorOverride === null
+                ? $factory->disableTopOriginValidator()
+                : $factory->enableTopOriginValidator($this->topOriginValidatorOverride);
+        }
+        if ($this->counterCheckerOverride !== null) {
+            $factory->setCounterChecker($this->counterCheckerOverride);
+        }
+
+        $csm = $factory->requestCeremony($this->allowedOriginsOverride, $this->allowSubdomainsOverride);
 
         $scoped = new AuthenticatorAssertionResponseValidator($csm);
         $scoped->setLogger($this->logger);
         $scoped->setEventDispatcher($this->eventDispatcher);
 
         return $scoped;
+    }
+
+    private function hasOverrides(): bool
+    {
+        return $this->allowedOriginsOverride !== null
+            || $this->topOriginValidatorIsOverridden
+            || $this->counterCheckerOverride !== null;
     }
 }
