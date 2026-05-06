@@ -46,8 +46,9 @@ final readonly class WebauthnSignalResponse
 
     /**
      * @param array<string, mixed> $payload
+     * @param list<Signal>         $signals
      */
-    public function withSignals(array $payload, Signal ...$signals): JsonResponse
+    public function withSignals(array $payload, array $signals): JsonResponse
     {
         $payload['signals'] = array_map(
             fn (Signal $signal): array => [

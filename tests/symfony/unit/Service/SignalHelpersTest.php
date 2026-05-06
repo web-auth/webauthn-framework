@@ -152,8 +152,7 @@ final class SignalHelpersTest extends TestCase
                 'success' => true,
                 'next' => '/dashboard',
             ],
-            $factory->forAllAccepted('example.com', $user),
-            $factory->forCurrentUser('example.com', $user),
+            [$factory->forAllAccepted('example.com', $user), $factory->forCurrentUser('example.com', $user)],
         );
 
         $payload = $this->decode($jsonResponse);
@@ -236,7 +235,7 @@ final class SignalHelpersTest extends TestCase
      */
     private function envelope(Signal $signal): array
     {
-        return $this->decode((new WebauthnSignalResponse($this->serializer()))->withSignals([], $signal));
+        return $this->decode((new WebauthnSignalResponse($this->serializer()))->withSignals([], [$signal]));
     }
 
     /**

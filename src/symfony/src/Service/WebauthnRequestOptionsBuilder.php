@@ -93,7 +93,10 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
-    public function withAllowCredentials(PublicKeyCredentialDescriptor ...$descriptors): static
+    /**
+     * @param list<PublicKeyCredentialDescriptor> $descriptors
+     */
+    public function withAllowCredentials(array $descriptors): static
     {
         $clone = clone $this;
         $clone->allowCredentials = array_values($descriptors);

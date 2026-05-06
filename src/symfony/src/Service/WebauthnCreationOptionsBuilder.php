@@ -63,7 +63,10 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
         return $clone;
     }
 
-    public function withPubKeyCredParams(PublicKeyCredentialParameters ...$params): static
+    /**
+     * @param list<PublicKeyCredentialParameters> $params
+     */
+    public function withPubKeyCredParams(array $params): static
     {
         $clone = clone $this;
         $clone->pubKeyCredParams = array_values($params);
