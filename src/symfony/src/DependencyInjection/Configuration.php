@@ -55,6 +55,11 @@ final readonly class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('fake_credential_generator')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\FakeCredentialGenerator" in your "services.yaml" instead.'
+            )
             ->defaultValue(SimpleFakeCredentialGenerator::class)
             ->cannotBeEmpty()
             ->info(
@@ -62,32 +67,67 @@ final readonly class Configuration implements ConfigurationInterface
             )
             ->end()
             ->scalarNode('clock')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Psr\\Clock\\ClockInterface" in your "services.yaml" instead (or rely on Symfony\'s default autowired clock).'
+            )
             ->defaultValue('webauthn.clock.default')
             ->info('PSR-20 Clock service.')
             ->end()
             ->scalarNode('options_storage')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\Bundle\\Security\\Storage\\OptionsStorage" in your "services.yaml" instead.'
+            )
             ->defaultValue(SessionStorage::class)
             ->info('Service responsible of the options/user entity storage during the ceremony')
             ->end()
             ->scalarNode('event_dispatcher')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "webauthn.event_dispatcher" in your "services.yaml" instead (or rely on the default autowired Psr\\EventDispatcher\\EventDispatcherInterface).'
+            )
             ->defaultValue(EventDispatcherInterface::class)
             ->info('PSR-14 Event Dispatcher service.')
             ->end()
             ->scalarNode('http_client')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "webauthn.http_client" in your "services.yaml" instead (or rely on the default autowired Symfony\\Contracts\\HttpClient\\HttpClientInterface).'
+            )
             ->cannotBeEmpty()
             ->defaultValue('webauthn.http_client.default')
             ->info('A Symfony HTTP client.')
             ->end()
             ->scalarNode('logger')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "webauthn.logger" in your "services.yaml" instead (or rely on the default autowired Psr\\Log\\LoggerInterface).'
+            )
             ->defaultValue('webauthn.logger.default')
             ->info('A PSR-3 logger to receive logs during the processes')
             ->end()
             ->scalarNode('credential_repository')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\Bundle\\Repository\\CredentialRecordRepositoryInterface" in your "services.yaml" instead.'
+            )
             ->cannotBeEmpty()
             ->defaultValue(DummyPublicKeyCredentialSourceRepository::class)
             ->info('This repository is responsible of the credential storage')
             ->end()
             ->scalarNode('user_repository')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\Bundle\\Repository\\PublicKeyCredentialUserEntityRepositoryInterface" in your "services.yaml" instead.'
+            )
             ->cannotBeEmpty()
             ->defaultValue(DummyPublicKeyCredentialUserEntityRepository::class)
             ->info('This repository is responsible of the user storage')
@@ -127,6 +167,11 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->scalarNode('counter_checker')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\Counter\\CounterChecker" in your "services.yaml" instead.'
+            )
             ->defaultValue(ThrowExceptionIfInvalid::class)
             ->cannotBeEmpty()
             ->info(
@@ -134,6 +179,11 @@ final readonly class Configuration implements ConfigurationInterface
             )
             ->end()
             ->scalarNode('top_origin_validator')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Alias "Webauthn\\CeremonyStep\\TopOriginValidator" in your "services.yaml" instead.'
+            )
             ->defaultNull()
             ->info('For cross origin (e.g. iframe), this service will be in charge of verifying the top origin.')
             ->end()
