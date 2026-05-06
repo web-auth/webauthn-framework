@@ -33,6 +33,9 @@ use Webauthn\CollectedClientData;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -348,6 +351,68 @@ final class WebauthnResponseVerifierTest extends TestCase
         )
             ->forAssertion('example.com')
             ->withAllowedOrigins('https://app.example.com')
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withMetadataBuildsAFreshValidatorAndBypassesTheInjectedOne(): void
+    {
+        $rawId = 'cred-id';
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::never())
+            ->method('check');
+
+        // When withMetadata() is set the verifier asks the (cloned) factory to
+        // produce a fresh CSM with CheckMetadataStatement enabled, then runs a
+        // fresh validator on top. That fresh validator rejects our synthetic
+        // credential (challenge mismatch); the failure surfaces as
+        // WebauthnAuthenticationFailureException.
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAttestationCredential($rawId)),
+            storage: $this->storageWith($this->creationOptions()),
+            attestationValidator: $standardValidator,
+            factory: new CeremonyStepManagerFactory(),
+        )
+            ->forAttestation('example.com')
+            ->withMetadata(
+                static::createStub(MetadataStatementRepository::class),
+                static::createStub(StatusReportRepository::class),
+                static::createStub(CertificateChainValidator::class),
+            )
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withoutMetadataBuildsAFreshValidatorWithMetadataSupportDisabled(): void
+    {
+        $rawId = 'cred-id';
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::never())
+            ->method('check');
+
+        // The factory is pre-configured with metadata support enabled globally
+        // (mirrors what `webauthn.metadata` YAML does at boot); withoutMetadata()
+        // must opt this verification out by calling
+        // `disableMetadataStatementSupport()` on the cloned factory.
+        $factory = new CeremonyStepManagerFactory();
+        $factory->enableMetadataStatementSupport(
+            static::createStub(MetadataStatementRepository::class),
+            static::createStub(StatusReportRepository::class),
+            static::createStub(CertificateChainValidator::class),
+        );
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAttestationCredential($rawId)),
+            storage: $this->storageWith($this->creationOptions()),
+            attestationValidator: $standardValidator,
+            factory: $factory,
+        )
+            ->forAttestation('example.com')
+            ->withoutMetadata()
             ->verify($this->jsonRequest());
     }
 

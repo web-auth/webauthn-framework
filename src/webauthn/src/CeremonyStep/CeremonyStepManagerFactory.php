@@ -114,6 +114,18 @@ final class CeremonyStepManagerFactory
         $this->certificateChainValidator = $certificateChainValidator;
     }
 
+    /**
+     * Reset Metadata Statement support back to disabled. Useful when cloning a
+     * globally-configured factory to scope a single ceremony out of the
+     * metadata pipeline.
+     */
+    public function disableMetadataStatementSupport(): void
+    {
+        $this->metadataStatementRepository = null;
+        $this->statusReportRepository = null;
+        $this->certificateChainValidator = null;
+    }
+
     public function enableCertificateChainValidator(CertificateChainValidator $certificateChainValidator): void
     {
         $this->certificateChainValidator = $certificateChainValidator;

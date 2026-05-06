@@ -17,6 +17,9 @@ use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\CredentialRecord;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialOptions;
@@ -36,14 +39,26 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * the verifier automatically uses the conditional creation ceremony manager
  * (which relaxes the User Verification check, per the spec).
  *
- * Per-verifier origin overrides are supported through
- * {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}: when
- * set, a fresh validator is built on top of a scoped ceremony step manager so
- * the global `webauthn.allowed_origins` configuration is unaffected.
+ * Per-verifier overrides supported through fluent setters (build a fresh
+ * {@see CeremonyStepManager} on top of a clone of the autowired factory, so the
+ * factory's global state stays unchanged):
+ *
+ *   - {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}
+ *     to scope the accepted origins for this verification only;
+ *   - {@see self::withMetadata()} to plug Metadata Statement / Status Report /
+ *     Certificate Chain validation services for this verification only.
  */
 final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
 {
     private bool $saveCredential = true;
+
+    private ?MetadataStatementRepository $metadataStatementRepository = null;
+
+    private ?StatusReportRepository $statusReportRepository = null;
+
+    private ?CertificateChainValidator $certificateChainValidator = null;
+
+    private bool $metadataDisabled = false;
 
     public function __construct(
         SerializerInterface $serializer,
@@ -61,6 +76,47 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
     {
         $clone = clone $this;
         $clone->saveCredential = $save;
+
+        return $clone;
+    }
+
+    /**
+     * Override the Metadata Statement support for this verification only. Used
+     * either to swap the globally-configured services (different MDS / Status /
+     * Cert chain validator on a specific endpoint) or to plug metadata
+     * validation on a single endpoint when the global `webauthn.metadata`
+     * config is disabled.
+     *
+     * The autowired {@see CeremonyStepManagerFactory} is cloned and reconfigured
+     * for the call so the singleton's global state stays untouched.
+     */
+    public function withMetadata(
+        MetadataStatementRepository $metadataStatementRepository,
+        StatusReportRepository $statusReportRepository,
+        CertificateChainValidator $certificateChainValidator,
+    ): static {
+        $clone = clone $this;
+        $clone->metadataStatementRepository = $metadataStatementRepository;
+        $clone->statusReportRepository = $statusReportRepository;
+        $clone->certificateChainValidator = $certificateChainValidator;
+        $clone->metadataDisabled = false;
+
+        return $clone;
+    }
+
+    /**
+     * Disable Metadata Statement validation for this verification only. Useful
+     * when the bundle's global `webauthn.metadata` configuration is enabled but
+     * a specific endpoint should NOT enforce metadata checks (e.g. a registration
+     * route open to authenticators that have no published Metadata Statement).
+     */
+    public function withoutMetadata(): static
+    {
+        $clone = clone $this;
+        $clone->metadataStatementRepository = null;
+        $clone->statusReportRepository = null;
+        $clone->certificateChainValidator = null;
+        $clone->metadataDisabled = true;
 
         return $clone;
     }
@@ -107,25 +163,40 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
 
     private function resolveValidator(bool $isConditional): AuthenticatorAttestationResponseValidator
     {
-        if ($this->allowedOriginsOverride === null) {
+        if (! $this->hasOverrides()) {
             return $isConditional ? $this->conditionalValidator : $this->validator;
         }
 
-        $csm = $isConditional
-            ? $this->ceremonyStepManagerFactory->conditionalCreateCeremony(
-                $this->allowedOriginsOverride,
-                $this->allowSubdomainsOverride,
-            )
-            : $this->ceremonyStepManagerFactory->creationCeremony(
-                $this->allowedOriginsOverride,
-                $this->allowSubdomainsOverride,
+        $factory = clone $this->ceremonyStepManagerFactory;
+        if ($this->metadataDisabled) {
+            $factory->disableMetadataStatementSupport();
+        } elseif ($this->metadataStatementRepository !== null
+            && $this->statusReportRepository !== null
+            && $this->certificateChainValidator !== null
+        ) {
+            $factory->enableMetadataStatementSupport(
+                $this->metadataStatementRepository,
+                $this->statusReportRepository,
+                $this->certificateChainValidator,
             );
+        }
+
+        $csm = $isConditional
+            ? $factory->conditionalCreateCeremony($this->allowedOriginsOverride, $this->allowSubdomainsOverride)
+            : $factory->creationCeremony($this->allowedOriginsOverride, $this->allowSubdomainsOverride);
 
         $scoped = new AuthenticatorAttestationResponseValidator($csm);
         $scoped->setLogger($this->logger);
         $scoped->setEventDispatcher($this->eventDispatcher);
 
         return $scoped;
+    }
+
+    private function hasOverrides(): bool
+    {
+        return $this->allowedOriginsOverride !== null
+            || $this->metadataStatementRepository !== null
+            || $this->metadataDisabled;
     }
 
     private function persist(CredentialRecord $credentialRecord): void
