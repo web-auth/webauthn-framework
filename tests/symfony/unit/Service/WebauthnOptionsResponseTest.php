@@ -182,7 +182,7 @@ final class WebauthnOptionsResponseTest extends TestCase
         $this->helper(storage: $storage, repository: $repository)
             ->forRequest('example.com')
             ->withUser($userEntity)
-            ->withAllowCredentials(PublicKeyCredentialDescriptor::create('public-key', 'explicit-cred'))
+            ->withAllowCredentials([PublicKeyCredentialDescriptor::create('public-key', 'explicit-cred')])
             ->build($this->jsonRequest());
 
         $options = $storage->last()
@@ -200,8 +200,8 @@ final class WebauthnOptionsResponseTest extends TestCase
             ->forRequest('example.com')
             ->withUiMode(PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE)
             ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
-            ->withAttestationFormats('packed', 'tpm')
-            ->withHints('client-device', 'hybrid')
+            ->withAttestationFormats(['packed', 'tpm'])
+            ->withHints(['client-device', 'hybrid'])
             ->build($this->jsonRequest());
 
         $options = $storage->last()

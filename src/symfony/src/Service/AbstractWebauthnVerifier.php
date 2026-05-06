@@ -85,8 +85,10 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
      * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory} is asked to
      * produce a fresh {@see \Webauthn\CeremonyStep\CeremonyStepManager} that
      * uses these origins, without mutating the factory's global state.
+     *
+     * @param list<string> $origins
      */
-    public function withAllowedOrigins(string ...$origins): static
+    public function withAllowedOrigins(array $origins): static
     {
         $clone = clone $this;
         $clone->allowedOriginsOverride = array_values($origins);

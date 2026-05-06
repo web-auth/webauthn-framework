@@ -96,7 +96,10 @@ abstract class AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
-    public function withAttestationFormats(string ...$formats): static
+    /**
+     * @param list<string> $formats
+     */
+    public function withAttestationFormats(array $formats): static
     {
         $clone = clone $this;
         $clone->attestationFormats = array_values($formats);
@@ -112,7 +115,10 @@ abstract class AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
-    public function withHints(string ...$hints): static
+    /**
+     * @param list<string> $hints
+     */
+    public function withHints(array $hints): static
     {
         $clone = clone $this;
         $clone->hints = array_values($hints);

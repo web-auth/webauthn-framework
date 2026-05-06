@@ -329,7 +329,7 @@ final class WebauthnResponseVerifierTest extends TestCase
             factory: new CeremonyStepManagerFactory(),
         )
             ->forAttestation('example.com')
-            ->withAllowedOrigins('https://app.example.com')
+            ->withAllowedOrigins(['https://app.example.com'])
             ->verify($this->jsonRequest());
     }
 
@@ -352,7 +352,7 @@ final class WebauthnResponseVerifierTest extends TestCase
             factory: new CeremonyStepManagerFactory(),
         )
             ->forAssertion('example.com')
-            ->withAllowedOrigins('https://app.example.com')
+            ->withAllowedOrigins(['https://app.example.com'])
             ->verify($this->jsonRequest());
     }
 
