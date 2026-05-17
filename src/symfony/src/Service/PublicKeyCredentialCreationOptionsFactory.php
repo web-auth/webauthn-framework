@@ -125,11 +125,22 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
+     * Per W3C IDL, `PublicKeyCredentialEntity.name` is required. When the deprecated
+     * `webauthn.creation_profiles.*.rp.name` node is omitted, the configuration default is an
+     * empty string and SimpleWebAuthn's browser bindings refuse to call
+     * `navigator.credentials.create()`. Falling back to the `id` (a human-readable hostname)
+     * keeps the JSON well-formed for callers that already dropped the deprecated node.
+     *
      * @param array{rp: array{name: string, id: ?string}} $profile
      */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
-        return PublicKeyCredentialRpEntity::create($profile['rp']['name'], $profile['rp']['id']);
+        $name = $profile['rp']['name'];
+        if ($name === '') {
+            $name = (string) $profile['rp']['id'];
+        }
+
+        return PublicKeyCredentialRpEntity::create($name, $profile['rp']['id']);
     }
 
     /**
