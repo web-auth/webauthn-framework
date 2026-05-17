@@ -30,6 +30,13 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
     private array $fullOrigins;
 
     /**
+     * Non-URL facet identifiers (e.g. android:apk-key-hash:...) matched verbatim against clientDataJSON.origin.
+     *
+     * @var string[]
+     */
+    private array $rawOrigins;
+
+    /**
      * @param string[] $allowedOrigins
      * @param string[] $securedRelyingPartyId RP IDs that are allowed to use HTTP (e.g. localhost for development)
      */
@@ -39,11 +46,14 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         private array $securedRelyingPartyId = [],
     ) {
         $fullOrigins = [];
+        $rawOrigins = [];
         foreach ($allowedOrigins as $allowedOrigin) {
             $parsed = parse_url($allowedOrigin);
             $parsed !== false || throw new InvalidArgumentException(sprintf('Invalid origin: %s', $allowedOrigin));
             if (isset($parsed['scheme'], $parsed['host'])) {
                 $fullOrigins[] = self::buildOrigin($parsed['scheme'], $parsed['host'], $parsed['port'] ?? null);
+            } elseif (isset($parsed['scheme'])) {
+                $rawOrigins[] = $allowedOrigin;
             } else {
                 // Host-only entries are normalized to https:// since WebAuthn requires TLS
                 $host = $parsed['host'] ?? $allowedOrigin;
@@ -52,6 +62,7 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         }
 
         $this->fullOrigins = array_unique($fullOrigins);
+        $this->rawOrigins = array_unique($rawOrigins);
     }
 
     public function process(
@@ -72,13 +83,17 @@ final readonly class CheckAllowedOrigins implements CeremonyStep
         $authData = $authenticatorResponse instanceof AuthenticatorAssertionResponse ? $authenticatorResponse->authenticatorData : $authenticatorResponse->attestationObject->authData;
         $C = $authenticatorResponse->clientDataJSON;
 
+        if (in_array($C->origin, $this->rawOrigins, true)) {
+            return;
+        }
+
         $parsedOrigin = parse_url($C->origin);
         is_array($parsedOrigin) || throw AuthenticatorResponseVerificationException::create(
             'Invalid origin. Unable to parse the origin.'
         );
         $originHost = $parsedOrigin['host'] ?? $C->origin;
 
-        $hasAllowedOrigins = count($this->fullOrigins) !== 0;
+        $hasAllowedOrigins = count($this->fullOrigins) !== 0 || count($this->rawOrigins) !== 0;
 
         if ($hasAllowedOrigins) {
             // Full origin match (scheme + host + port)
