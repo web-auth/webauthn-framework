@@ -13,6 +13,7 @@ This package provides ready-to-use [Stimulus](https://stimulus.hotwired.dev/) co
 - 📱 **Platform authenticator detection** (Face ID, Touch ID, Windows Hello)
 - ⚡ **Event-driven architecture** for custom integrations
 - 🎨 **Framework agnostic** (works with any Stimulus-enabled app)
+- 🟦 **TypeScript ready** (ships ambient `.d.ts` declarations, generated from JSDoc)
 
 ## Installation
 
@@ -207,11 +208,7 @@ Then register the controllers in your Stimulus bootstrap (typically `assets/boot
 
 ```javascript
 import { Application } from '@hotwired/stimulus';
-import {
-    AuthenticationController,
-    RegistrationController,
-    WebauthnController,
-} from '@web-auth/webauthn-stimulus';
+import { AuthenticationController, RegistrationController, WebauthnController } from '@web-auth/webauthn-stimulus';
 
 const app = Application.start();
 app.register('web-auth--webauthn-stimulus--authentication', AuthenticationController);

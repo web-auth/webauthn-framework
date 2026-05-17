@@ -4,13 +4,38 @@ import { Controller } from '@hotwired/stimulus';
 import { base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
 
 /**
- * Base controller for WebAuthn operations
- * Contains shared logic for authentication and registration controllers
- *
- * @property {Object} requestHeadersValue - HTTP headers for requests
- * @property {boolean} hasRequestHeadersValue - Whether requestHeaders value is set
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialCreationOptionsJSON} PublicKeyCredentialCreationOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialRequestOptionsJSON} PublicKeyCredentialRequestOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').RegistrationResponseJSON} RegistrationResponseJSON
+ * @typedef {import('@simplewebauthn/browser').AuthenticationResponseJSON} AuthenticationResponseJSON
  */
-export default class extends Controller {
+
+/**
+ * @typedef {Object} FieldTargetMapping
+ * @property {string} name Form data key to extract.
+ * @property {string} targetName Stimulus target name (without the `Target` suffix).
+ */
+
+/**
+ * @typedef {Object} PrfValuesJSON
+ * @property {string} first Base64url-encoded first value.
+ * @property {string} [second] Base64url-encoded second value (optional).
+ */
+
+/**
+ * @typedef {Object} PrfValuesBuffer
+ * @property {ArrayBuffer} first Decoded first value.
+ * @property {ArrayBuffer} [second] Decoded second value (optional).
+ */
+
+/**
+ * Base controller for WebAuthn operations.
+ *
+ * Contains shared logic for authentication and registration controllers.
+ *
+ * @abstract
+ */
+export default class BaseController extends Controller {
     static values = {
         requestHeaders: {
             type: Object,
@@ -22,11 +47,13 @@ export default class extends Controller {
     };
 
     /**
-     * Fetch options from the server
-     * @param {string} url - The URL to fetch options from
-     * @param {Object} formData - The form data to send
-     * @param {string} eventPrefix - Prefix for dispatched events
-     * @returns {Promise<Object|false>} The options object or false on error
+     * Fetch options from the server.
+     *
+     * @template {PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON} T
+     * @param {string} url The URL to fetch options from.
+     * @param {Record<string, unknown>} formData The form data to send as JSON body.
+     * @param {string} eventPrefix Prefix for dispatched events.
+     * @returns {Promise<T|false>} The options object or `false` on error.
      */
     async _fetchOptions(url, formData, eventPrefix) {
         this._dispatchEvent(`${eventPrefix}:options:request`, { data: formData });
@@ -54,11 +81,13 @@ export default class extends Controller {
     }
 
     /**
-     * Verify credential with the server
-     * @param {string} url - The URL to verify credential at
-     * @param {Object} credential - The credential to verify
-     * @param {string} eventPrefix - Prefix for dispatched events
-     * @returns {Promise<Object|false>} The verification result or false on error
+     * Verify credential with the server.
+     *
+     * @template T
+     * @param {string} url The URL to verify credential at.
+     * @param {RegistrationResponseJSON | AuthenticationResponseJSON} credential The credential to verify.
+     * @param {string} eventPrefix Prefix for dispatched events.
+     * @returns {Promise<T|false>} The verification result or `false` on error.
      */
     async _verifyCredential(url, credential, eventPrefix) {
         this._dispatchEvent(`${eventPrefix}:verify:request`, { credential });
@@ -86,9 +115,10 @@ export default class extends Controller {
     }
 
     /**
-     * Get form data and validate
-     * @param {Array<{name: string, targetName: string}>} fieldTargets - Field mappings
-     * @returns {Object|null} Form data or null if invalid
+     * Get form data and validate.
+     *
+     * @param {FieldTargetMapping[]} [fieldTargets] Field mappings.
+     * @returns {Record<string, unknown> | null} Form data, or `null` if the form is invalid.
      */
     _getFormData(fieldTargets = []) {
         if (!(this.element instanceof HTMLFormElement)) {
@@ -123,9 +153,10 @@ export default class extends Controller {
     }
 
     /**
-     * Remove empty values from object
-     * @param {Object} obj - Object to clean
-     * @returns {Object} Cleaned object
+     * Remove empty values from an object recursively.
+     *
+     * @param {Record<string, unknown>} obj Object to clean.
+     * @returns {Record<string, unknown>} Cleaned object.
      */
     _removeEmpty(obj) {
         return Object.entries(obj)
@@ -134,9 +165,11 @@ export default class extends Controller {
     }
 
     /**
-     * Process extensions input (e.g., PRF)
-     * @param {Object} options - WebAuthn options
-     * @returns {Object} Processed options
+     * Process extensions input (e.g., PRF) before passing options to the authenticator.
+     *
+     * @template {PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON} T
+     * @param {T} options WebAuthn options.
+     * @returns {T} Processed options.
      */
     _processExtensionsInput(options) {
         if (!options?.extensions) {
@@ -151,9 +184,10 @@ export default class extends Controller {
     }
 
     /**
-     * Process PRF input
-     * @param {Object} prf - PRF extension object
-     * @returns {Object} Processed PRF object
+     * Process PRF input by decoding base64url strings into ArrayBuffers.
+     *
+     * @param {Record<string, any>} prf PRF extension object.
+     * @returns {Record<string, any>} Processed PRF object.
      */
     _processPrfInput(prf) {
         if (prf.eval) {
@@ -170,9 +204,10 @@ export default class extends Controller {
     }
 
     /**
-     * Import PRF values from base64url strings to ArrayBuffer
-     * @param {Object} values - PRF values with base64url strings
-     * @returns {Object} PRF values with ArrayBuffers
+     * Import PRF values from base64url strings to ArrayBuffer.
+     *
+     * @param {PrfValuesJSON} values PRF values with base64url strings.
+     * @returns {PrfValuesBuffer} PRF values with ArrayBuffers.
      */
     _importPrfValues(values) {
         const result = { ...values };
@@ -184,9 +219,11 @@ export default class extends Controller {
     }
 
     /**
-     * Process extensions output (e.g., PRF)
-     * @param {Object} credential - WebAuthn credential
-     * @returns {Object} Processed credential
+     * Process extensions output (e.g., PRF) after the authenticator answers.
+     *
+     * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
+     * @param {T} credential WebAuthn credential.
+     * @returns {T} Processed credential.
      */
     _processExtensionsOutput(credential) {
         if (!credential?.clientExtensionResults) {
@@ -201,9 +238,10 @@ export default class extends Controller {
     }
 
     /**
-     * Process PRF output
-     * @param {Object} prf - PRF extension result
-     * @returns {Object} Processed PRF result
+     * Process PRF output by encoding ArrayBuffers to base64url strings.
+     *
+     * @param {Record<string, any>} prf PRF extension result.
+     * @returns {Record<string, any>} Processed PRF result.
      */
     _processPrfOutput(prf) {
         if (!prf.results) {
@@ -215,9 +253,10 @@ export default class extends Controller {
     }
 
     /**
-     * Export PRF values from ArrayBuffer to base64url strings
-     * @param {Object} values - PRF values with ArrayBuffers
-     * @returns {Object} PRF values with base64url strings
+     * Export PRF values from ArrayBuffer to base64url strings.
+     *
+     * @param {PrfValuesBuffer} values PRF values with ArrayBuffers.
+     * @returns {PrfValuesJSON} PRF values with base64url strings.
      */
     _exportPrfValues(values) {
         const result = { ...values };
@@ -229,9 +268,10 @@ export default class extends Controller {
     }
 
     /**
-     * Dispatch custom event
-     * @param {string} name - Event name
-     * @param {Object} payload - Event detail payload
+     * Dispatch a bubbling custom event from the controller element.
+     *
+     * @param {string} name Event name.
+     * @param {Record<string, unknown>} payload Event detail payload.
      */
     _dispatchEvent(name, payload) {
         this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
