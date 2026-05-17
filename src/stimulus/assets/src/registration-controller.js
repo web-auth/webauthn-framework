@@ -10,9 +10,15 @@ import {
 import BaseController from './base-controller.js';
 
 /**
- * Stimulus controller for WebAuthn registration (credential creation)
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialCreationOptionsJSON} PublicKeyCredentialCreationOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').RegistrationResponseJSON} RegistrationResponseJSON
+ */
+
+/**
+ * Stimulus controller for WebAuthn registration (credential creation).
  *
  * Usage:
+ * ```html
  * <form data-controller="webauthn--registration"
  *       data-webauthn--registration-options-url-value="/register/options"
  *       data-webauthn--registration-result-url-value="/register/verify"
@@ -25,32 +31,9 @@ import BaseController from './base-controller.js';
  *   <input type="hidden" data-webauthn--registration-target="result">
  *   <button type="submit">Register</button>
  * </form>
- *
- * @property {HTMLInputElement} usernameTarget - Username input element
- * @property {boolean} hasUsernameTarget - Whether username target exists
- * @property {HTMLSelectElement} attestationTarget - Attestation select element
- * @property {boolean} hasAttestationTarget - Whether attestation target exists
- * @property {HTMLSelectElement} residentKeyTarget - Resident key select element
- * @property {boolean} hasResidentKeyTarget - Whether residentKey target exists
- * @property {HTMLSelectElement} userVerificationTarget - User verification select element
- * @property {boolean} hasUserVerificationTarget - Whether userVerification target exists
- * @property {HTMLSelectElement} authenticatorAttachmentTarget - Authenticator attachment select element
- * @property {boolean} hasAuthenticatorAttachmentTarget - Whether authenticatorAttachment target exists
- * @property {HTMLInputElement} resultTarget - Result hidden input element
- * @property {boolean} hasResultTarget - Whether result target exists
- *
- * @property {string} optionsUrlValue - URL to fetch registration options from
- * @property {boolean} hasOptionsUrlValue - Whether optionsUrl value is set
- * @property {string} resultUrlValue - URL to verify registration result at
- * @property {boolean} hasResultUrlValue - Whether resultUrl value is set
- * @property {boolean} submitViaFormValue - Whether to submit credential via form instead of API
- * @property {boolean} hasSubmitViaFormValue - Whether submitViaForm value is set
- * @property {string} successRedirectUriValue - URI to redirect to on success
- * @property {boolean} hasSuccessRedirectUriValue - Whether successRedirectUri value is set
- * @property {boolean} autoRegisterValue - Whether to use auto-register (conditional create)
- * @property {boolean} hasAutoRegisterValue - Whether autoRegister value is set
+ * ```
  */
-export default class extends BaseController {
+export default class RegistrationController extends BaseController {
     static targets = [
         'username',
         'attestation',
@@ -84,8 +67,10 @@ export default class extends BaseController {
     }
 
     /**
-     * Register a new WebAuthn credential
-     * @param {Event} event - Form submit event
+     * Register a new WebAuthn credential.
+     *
+     * @param {Event} event Form submit event.
+     * @returns {Promise<void>}
      */
     async register(event) {
         event.preventDefault();
@@ -99,8 +84,10 @@ export default class extends BaseController {
     }
 
     /**
-     * Start registration process
+     * Start registration process.
+     *
      * @private
+     * @returns {Promise<void>}
      */
     async _startRegistration() {
         const formData = this._getFormData([
@@ -124,9 +111,11 @@ export default class extends BaseController {
     }
 
     /**
-     * Process registration with WebAuthn
+     * Process registration with WebAuthn.
+     *
      * @private
-     * @param {Object} options - WebAuthn credential creation options
+     * @param {PublicKeyCredentialCreationOptionsJSON} options WebAuthn credential creation options.
+     * @returns {Promise<void>}
      */
     async _processRegistration(options) {
         try {

@@ -10,7 +10,23 @@ import {
     bufferToBase64URLString,
 } from '@simplewebauthn/browser';
 
-export default class extends Controller {
+/**
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialCreationOptionsJSON} PublicKeyCredentialCreationOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialRequestOptionsJSON} PublicKeyCredentialRequestOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').RegistrationResponseJSON} RegistrationResponseJSON
+ * @typedef {import('@simplewebauthn/browser').AuthenticationResponseJSON} AuthenticationResponseJSON
+ */
+
+/**
+ * Legacy combined WebAuthn Stimulus controller.
+ *
+ * Handles both registration (`signup`) and authentication (`signin`) on the same element.
+ * New integrations should prefer the dedicated {@link AuthenticationController} and
+ * {@link RegistrationController} controllers.
+ *
+ * @deprecated since 5.3.0, kept for backward compatibility. Will be removed in 6.0.
+ */
+export default class WebauthnController extends Controller {
     static values = {
         requestResultUrl: { type: String, default: '/request' },
         requestOptionsUrl: { type: String, default: '/request/options' },
@@ -62,6 +78,12 @@ export default class extends Controller {
         }
     };
 
+    /**
+     * Authenticate the user (assertion ceremony).
+     *
+     * @param {Event} event Form submit event.
+     * @returns {Promise<void>}
+     */
     async signin(event) {
         if (!browserSupportsWebAuthn()) {
             this._dispatchEvent('webauthn:unsupported', {});
@@ -75,6 +97,12 @@ export default class extends Controller {
         this._processSignin(optionsResponseJson, false);
     }
 
+    /**
+     * @private
+     * @param {PublicKeyCredentialRequestOptionsJSON} optionsResponseJson
+     * @param {boolean} useBrowserAutofill
+     * @returns {Promise<void>}
+     */
     async _processSignin(optionsResponseJson, useBrowserAutofill) {
         try {
             optionsResponseJson = this._processExtensionsInput(optionsResponseJson);
@@ -102,6 +130,12 @@ export default class extends Controller {
         }
     }
 
+    /**
+     * Register a new credential (attestation ceremony).
+     *
+     * @param {Event} event Form submit event.
+     * @returns {Promise<void>}
+     */
     async signup(event) {
         try {
             if (!browserSupportsWebAuthn()) {
@@ -136,10 +170,19 @@ export default class extends Controller {
         }
     }
 
+    /**
+     * @private
+     * @param {string} name
+     * @param {Record<string, unknown>} payload
+     */
     _dispatchEvent(name, payload) {
         this.element.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
     }
 
+    /**
+     * @private
+     * @returns {Record<string, unknown> | undefined}
+     */
     _getData() {
         let data = new FormData();
         try {
@@ -168,14 +211,31 @@ export default class extends Controller {
         });
     }
 
+    /**
+     * @private
+     * @param {Record<string, unknown> | null} formData
+     * @returns {Promise<PublicKeyCredentialRequestOptionsJSON | false>}
+     */
     async _getPublicKeyCredentialRequestOptions(formData) {
         return this._getOptions(this.requestOptionsUrlValue, formData);
     }
 
+    /**
+     * @private
+     * @param {Record<string, unknown> | null} formData
+     * @returns {Promise<PublicKeyCredentialCreationOptionsJSON | false>}
+     */
     async _getPublicKeyCredentialCreationOptions(formData) {
         return this._getOptions(this.creationOptionsUrlValue, formData);
     }
 
+    /**
+     * @private
+     * @template T
+     * @param {string} url
+     * @param {Record<string, unknown> | null} formData
+     * @returns {Promise<T | false>}
+     */
     async _getOptions(url, formData) {
         const data = formData || this._getData();
         if (!data) {
@@ -199,14 +259,28 @@ export default class extends Controller {
         return options;
     }
 
+    /**
+     * @private
+     * @param {RegistrationResponseJSON} authenticatorResponse
+     */
     async _getAttestationResponse(authenticatorResponse) {
         return this._getResult(this.creationResultUrlValue, 'webauthn:attestation:', authenticatorResponse);
     }
 
+    /**
+     * @private
+     * @param {AuthenticationResponseJSON} authenticatorResponse
+     */
     async _getAssertionResponse(authenticatorResponse) {
         return this._getResult(this.requestResultUrlValue, 'webauthn:assertion:', authenticatorResponse);
     }
 
+    /**
+     * @private
+     * @param {string} url
+     * @param {string} eventPrefix
+     * @param {RegistrationResponseJSON | AuthenticationResponseJSON} authenticatorResponse
+     */
     async _getResult(url, eventPrefix, authenticatorResponse) {
         const attestationResponse = await fetch(url, {
             headers: { ...this.requestHeadersValue },
@@ -223,6 +297,12 @@ export default class extends Controller {
         return attestationResponseJSON;
     }
 
+    /**
+     * @private
+     * @template {PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON} T
+     * @param {T} options
+     * @returns {T}
+     */
     _processExtensionsInput(options) {
         if (!options || !options.extensions) {
             return options;
@@ -235,6 +315,11 @@ export default class extends Controller {
         return options;
     }
 
+    /**
+     * @private
+     * @param {Record<string, any>} prf
+     * @returns {Record<string, any>}
+     */
     _processPrfInput(prf) {
         if (prf.eval) {
             prf.eval = this._importPrfValues(eval);
@@ -249,6 +334,11 @@ export default class extends Controller {
         return prf;
     }
 
+    /**
+     * @private
+     * @param {{ first: string, second?: string }} values
+     * @returns {{ first: ArrayBuffer, second?: ArrayBuffer }}
+     */
     _importPrfValues(values) {
         values.first = base64URLStringToBuffer(values.first);
         if (values.second) {
@@ -258,6 +348,12 @@ export default class extends Controller {
         return values;
     }
 
+    /**
+     * @private
+     * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
+     * @param {T} options
+     * @returns {T}
+     */
     _processExtensionsOutput(options) {
         if (!options || !options.extensions) {
             return options;
@@ -270,6 +366,11 @@ export default class extends Controller {
         return options;
     }
 
+    /**
+     * @private
+     * @param {Record<string, any>} prf
+     * @returns {Record<string, any>}
+     */
     _processPrfOutput(prf) {
         if (!prf.result) {
             return prf;
@@ -280,6 +381,11 @@ export default class extends Controller {
         return prf;
     }
 
+    /**
+     * @private
+     * @param {{ first: ArrayBuffer, second?: ArrayBuffer }} values
+     * @returns {{ first: string, second?: string }}
+     */
     _exportPrfValues(values) {
         values.first = bufferToBase64URLString(values.first);
         if (values.second) {
