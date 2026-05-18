@@ -11,6 +11,12 @@ import {
 import BaseController from './base-controller.js';
 
 /**
+ * @typedef {import('@simplewebauthn/browser').PublicKeyCredentialRequestOptionsJSON} PublicKeyCredentialRequestOptionsJSON
+ * @typedef {import('@simplewebauthn/browser').AuthenticationResponseJSON} AuthenticationResponseJSON
+ * @typedef {import('@simplewebauthn/browser').StartAuthenticationOpts} StartAuthenticationOpts
+ */
+
+/**
  * Allowed `CredentialUiMode` values per the W3C Credential Management spec
  * (editor's draft, §2.3.3). Kept narrow on purpose: forwarding an unknown
  * value to `navigator.credentials.get()` would silently degrade to default
@@ -21,9 +27,10 @@ import BaseController from './base-controller.js';
 const ALLOWED_UI_MODES = ['auto', 'immediate'];
 
 /**
- * Stimulus controller for WebAuthn authentication (sign-in)
+ * Stimulus controller for WebAuthn authentication (sign-in).
  *
  * Usage:
+ * ```html
  * <form data-controller="webauthn--authentication"
  *       data-webauthn--authentication-options-url-value="/auth/options"
  *       data-webauthn--authentication-result-url-value="/auth/verify"
@@ -33,28 +40,9 @@ const ALLOWED_UI_MODES = ['auto', 'immediate'];
  *   <input type="hidden" data-webauthn--authentication-target="result">
  *   <button type="submit">Sign In</button>
  * </form>
- *
- * @property {HTMLInputElement} usernameTarget - Username input element
- * @property {boolean} hasUsernameTarget - Whether username target exists
- * @property {HTMLSelectElement} userVerificationTarget - User verification input element
- * @property {boolean} hasUserVerificationTarget - Whether userVerification target exists
- * @property {HTMLInputElement} resultTarget - Result hidden input element
- * @property {boolean} hasResultTarget - Whether result target exists
- *
- * @property {string} optionsUrlValue - URL to fetch authentication options from
- * @property {boolean} hasOptionsUrlValue - Whether optionsUrl value is set
- * @property {string} resultUrlValue - URL to verify authentication result at
- * @property {boolean} hasResultUrlValue - Whether resultUrl value is set
- * @property {boolean} submitViaFormValue - Whether to submit credential via form instead of API
- * @property {boolean} hasSubmitViaFormValue - Whether submitViaForm value is set
- * @property {string} successRedirectUriValue - URI to redirect to on success
- * @property {boolean} hasSuccessRedirectUriValue - Whether successRedirectUri value is set
- * @property {boolean} conditionalUiValue - Whether to enable conditional UI (browser autofill)
- * @property {boolean} hasConditionalUiValue - Whether conditionalUi value is set
- * @property {boolean} verifyAutofillInputValue - Whether to verify autofill input element exists
- * @property {boolean} hasVerifyAutofillInputValue - Whether verifyAutofillInput value is set
+ * ```
  */
-export default class extends BaseController {
+export default class AuthenticationController extends BaseController {
     static targets = ['username', 'userVerification', 'result'];
 
     static values = {
@@ -96,8 +84,10 @@ export default class extends BaseController {
     }
 
     /**
-     * Authenticate user via WebAuthn
-     * @param {Event} event - Form submit event
+     * Authenticate the user via WebAuthn.
+     *
+     * @param {Event} event Form submit event.
+     * @returns {Promise<void>}
      */
     async authenticate(event) {
         event.preventDefault();
@@ -111,8 +101,10 @@ export default class extends BaseController {
     }
 
     /**
-     * Start authentication with conditional UI (browser autofill)
+     * Start authentication with conditional UI (browser autofill).
+     *
      * @private
+     * @returns {Promise<void>}
      */
     async _startAuthenticationWithConditionalUi() {
         const options = await this._fetchOptions(this.optionsUrlValue, {}, 'webauthn:authentication');
@@ -127,9 +119,11 @@ export default class extends BaseController {
     }
 
     /**
-     * Start authentication process
+     * Start authentication process.
+     *
      * @private
-     * @param {Object} options - Additional options for startAuthentication
+     * @param {Partial<StartAuthenticationOpts>} [options] Additional options for startAuthentication.
+     * @returns {Promise<void>}
      */
     async _startAuthentication(options = {}) {
         const formData = this._getFormData([
@@ -150,10 +144,12 @@ export default class extends BaseController {
     }
 
     /**
-     * Process authentication with WebAuthn
+     * Process authentication with WebAuthn.
+     *
      * @private
-     * @param {Object} credentialRequestOptions - WebAuthn credential request options
-     * @param {Object} startAuthenticationOptions - Options for startAuthentication call
+     * @param {PublicKeyCredentialRequestOptionsJSON} credentialRequestOptions WebAuthn credential request options.
+     * @param {Partial<StartAuthenticationOpts>} [startAuthenticationOptions] Options for startAuthentication call.
+     * @returns {Promise<void>}
      */
     async _processAuthentication(credentialRequestOptions, startAuthenticationOptions = {}) {
         try {

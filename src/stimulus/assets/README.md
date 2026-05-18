@@ -13,6 +13,7 @@ This package provides ready-to-use [Stimulus](https://stimulus.hotwired.dev/) co
 - 📱 **Platform authenticator detection** (Face ID, Touch ID, Windows Hello)
 - ⚡ **Event-driven architecture** for custom integrations
 - 🎨 **Framework agnostic** (works with any Stimulus-enabled app)
+- 🟦 **TypeScript ready** (ships ambient `.d.ts` declarations, generated from JSDoc)
 
 ## Installation
 

@@ -331,6 +331,104 @@ final class CheckAllowedOriginsTest extends AbstractTestCase
         );
     }
 
+    #[Test]
+    public function androidApkKeyHashOriginIsAccepted(): void
+    {
+        // Given
+        $apkKeyHash = 'android:apk-key-hash:Lir5oIjf2e6r3KhCJSqlqA64hWHa9JMA-9_8YYRxCdg';
+        $checkOrigins = new CheckAllowedOrigins([$apkKeyHash]);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->createPublicKeyCredentialWithOrigin($apkKeyHash);
+
+        // When
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+
+        // Then
+        static::assertTrue(true);
+    }
+
+    #[Test]
+    public function androidApkKeyHashOriginMixedWithHttpsAcceptsBoth(): void
+    {
+        // Given
+        $apkKeyHash = 'android:apk-key-hash:Lir5oIjf2e6r3KhCJSqlqA64hWHa9JMA-9_8YYRxCdg';
+        $checkOrigins = new CheckAllowedOrigins(['https://webauthn.spomky-labs.com', $apkKeyHash]);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->createPublicKeyCredentialWithOrigin($apkKeyHash);
+
+        // When
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+
+        // Then
+        static::assertTrue(true);
+    }
+
+    #[Test]
+    public function differentApkKeyHashOriginIsRejected(): void
+    {
+        // Then
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid origin');
+
+        // Given
+        $checkOrigins = new CheckAllowedOrigins([
+            'android:apk-key-hash:Lir5oIjf2e6r3KhCJSqlqA64hWHa9JMA-9_8YYRxCdg',
+        ]);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->createPublicKeyCredentialWithOrigin(
+            'android:apk-key-hash:dGhpc0lzQURpZmZlcmVudFNpZ25pbmdLZXlIYXNoVmFsdWU'
+        );
+
+        // When
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+    }
+
+    #[Test]
+    public function httpsOriginIsRejectedWhenOnlyApkKeyHashIsAllowed(): void
+    {
+        // Then
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid origin');
+
+        // Given
+        $checkOrigins = new CheckAllowedOrigins([
+            'android:apk-key-hash:Lir5oIjf2e6r3KhCJSqlqA64hWHa9JMA-9_8YYRxCdg',
+        ]);
+        $publicKeyCredentialSource = $this->getPublicKeyCredentialSource();
+        $publicKeyCredentialRequestOptions = $this->getPublicKeyCredentialRequestOptions();
+        $publicKeyCredential = $this->createPublicKeyCredentialWithOrigin('https://webauthn.spomky-labs.com');
+
+        // When
+        $checkOrigins->process(
+            $publicKeyCredentialSource,
+            $publicKeyCredential->response,
+            $publicKeyCredentialRequestOptions,
+            null,
+            'webauthn.spomky-labs.com',
+        );
+    }
+
     private function createPublicKeyCredentialWithOrigin(string $origin): PublicKeyCredential
     {
         $clientDataJson = json_encode([
