@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Usernameless Demo, Register</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        label { display: block; margin: 0.6rem 0 0.25rem; font-weight: 500; }
+        input, button { padding: 0.55rem 0.75rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; }
+        input { width: 100%; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 360px; white-space: pre-wrap; word-break: break-all; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        .note { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; border-radius: 6px; margin: 1rem 0; font-size: 0.92rem; }
+    </style>
+</head>
+<body>
+<nav><a href="/">&larr; Home</a><a href="/login.html">Sign in &rarr;</a></nav>
+
+<h1>1. Register a discoverable passkey</h1>
+
+<p>
+    The page asks the server for <code>PublicKeyCredentialCreationOptions</code>
+    configured with <code>residentKey: required</code> and
+    <code>userVerification: required</code>. The authenticator stores the user
+    handle locally, which is what makes the later sign-in possible without a
+    username.
+</p>
+
+<div class="note">
+    The username field below is part of <em>this</em> registration step only.
+    Once the passkey is enrolled, the sign-in page does not need it any more.
+</div>
+
+<form id="register-form">
+    <label for="username">Username (email)</label>
+    <input id="username" name="username" type="email" required value="jane.doe@example.com">
+
+    <label for="displayName">Display name</label>
+    <input id="displayName" name="displayName" type="text" value="Jane Doe">
+
+    <label for="label">Passkey label (shown on /account.html)</label>
+    <input id="label" name="label" type="text" placeholder="e.g. My iPhone">
+
+    <p><button type="submit" id="submit">Register</button></p>
+</form>
+
+<h2>Output</h2>
+<pre id="output">Submit the form to start a registration ceremony.</pre>
+
+<script type="module">
+    const form = document.getElementById('register-form');
+    const submit = document.getElementById('submit');
+    const output = document.getElementById('output');
+
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    const b64u = {
+        encode: (buf) => {
+            const bytes = new Uint8Array(buf);
+            let str = '';
+            for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+        decode: (s) => {
+            s = s.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (s.length % 4)) % 4;
+            s += '='.repeat(pad);
+            const bin = atob(s);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+            return out;
+        },
+    };
+
+    const toCreateOptions = (json) => {
+        const o = { ...json };
+        o.challenge = b64u.decode(json.challenge);
+        o.user = { ...json.user, id: b64u.decode(json.user.id) };
+        if (json.excludeCredentials) {
+            o.excludeCredentials = json.excludeCredentials.map((c) => ({
+                ...c,
+                id: b64u.decode(c.id),
+            }));
+        }
+        return o;
+    };
+
+    const credentialToJson = (cred, label) => ({
+        id: cred.id,
+        rawId: b64u.encode(cred.rawId),
+        type: cred.type,
+        response: {
+            clientDataJSON: b64u.encode(cred.response.clientDataJSON),
+            attestationObject: b64u.encode(cred.response.attestationObject),
+        },
+        clientExtensionResults: { demoLabel: label },
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submit.disabled = true;
+        output.textContent = '';
+
+        try {
+            const username = form.username.value;
+            const displayName = form.displayName.value;
+            const label = form.label.value;
+
+            log('Asking server for creation options...');
+            const optResp = await fetch('/api/register/options', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, displayName }),
+            });
+            if (!optResp.ok) throw new Error(`options HTTP ${optResp.status}: ${await optResp.text()}`);
+            const optsJson = await optResp.json();
+            log(`Options received (residentKey=${optsJson.authenticatorSelection?.residentKey}, userVerification=${optsJson.authenticatorSelection?.userVerification}).`, 'ok');
+
+            log('Calling navigator.credentials.create()...');
+            const credential = await navigator.credentials.create({ publicKey: toCreateOptions(optsJson) });
+            log('Credential created by the authenticator (discoverable).', 'ok');
+
+            log('POST /api/register/verify ...');
+            const verifyResp = await fetch('/api/register/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentialToJson(credential, label)),
+            });
+            if (!verifyResp.ok) throw new Error(`verify HTTP ${verifyResp.status}: ${await verifyResp.text()}`);
+            const verified = await verifyResp.json();
+            log(`Stored. credentialId=${verified.credentialId}`, 'ok');
+            log('You are now signed in. Redirecting to /account.html in 1.5s...');
+            setTimeout(() => { window.location.href = '/account.html'; }, 1500);
+        } catch (err) {
+            log(`Error: ${err.message}`, 'err');
+        } finally {
+            submit.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passkey Upgrade Demo, My account</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 860px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.1rem; margin-top: 2rem; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.95rem; margin-right: 0.4rem; }
+        button.ghost { background: transparent; color: #2563eb; border: 1px solid #2563eb; }
+        button.danger { background: #b91c1c; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; font-size: 0.92rem; vertical-align: top; }
+        th { background: #f9fafb; }
+        td.label input { padding: 0.3rem 0.5rem; font-size: 0.9rem; border-radius: 4px; border: 1px solid #d1d5db; width: 100%; box-sizing: border-box; }
+        td.actions { white-space: nowrap; }
+        code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; font-size: 0.85rem; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 200px; white-space: pre-wrap; word-break: break-all; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        .hidden { display: none; }
+        .upgrade { background: #fef3c7; border-left: 4px solid #d97706; padding: 14px 18px; border-radius: 6px; margin: 1.2rem 0; }
+        .upgrade h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/">&larr; Home</a>
+    <a href="/login.html">Sign in as another user</a>
+</nav>
+
+<h1>My account</h1>
+
+<div id="unauthenticated" class="hidden">
+    <p class="err">You are not signed in.</p>
+    <p>
+        <a href="/login.html"><button>Sign in</button></a>
+        <a href="/signup.html"><button class="ghost">Sign up</button></a>
+    </p>
+</div>
+
+<div id="authenticated" class="hidden">
+    <p>
+        Signed in as <strong id="username"></strong> (<span id="displayName"></span>),
+        via <code id="authMethod"></code>.
+        <button id="logout" class="ghost" style="margin-left: 1rem;">Sign out</button>
+    </p>
+
+    <div id="upgrade-cta" class="upgrade hidden">
+        <h3>Speed up your next sign-in</h3>
+        <p>This account has no passkey yet. Enrol one now and you can sign in without typing your password next time.</p>
+        <p><button id="add-passkey">Enrol a passkey</button></p>
+    </div>
+
+    <h2>Sign-in methods</h2>
+    <ul>
+        <li>Password (always available, used to recover when every passkey is lost)</li>
+        <li>Passkeys (one or more, listed below)</li>
+    </ul>
+
+    <h2>Enrolled passkeys</h2>
+    <p>Adding or deleting passkeys never affects the password. <button id="add-passkey-extra" class="ghost">Enrol another passkey</button></p>
+    <table id="passkeys">
+        <thead>
+        <tr>
+            <th>Label</th>
+            <th>Credential ID</th>
+            <th>AAGUID</th>
+            <th>Counter</th>
+            <th>Backup</th>
+            <th>Last used</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<h2>Activity log</h2>
+<pre id="output">Loading account...</pre>
+
+<script type="module">
+    const output = document.getElementById('output');
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    const b64u = {
+        encode: (buf) => {
+            const bytes = new Uint8Array(buf);
+            let str = '';
+            for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+        decode: (s) => {
+            s = s.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (s.length % 4)) % 4;
+            s += '='.repeat(pad);
+            const bin = atob(s);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+            return out;
+        },
+    };
+
+    const toCreateOptions = (json) => {
+        const o = { ...json };
+        o.challenge = b64u.decode(json.challenge);
+        o.user = { ...json.user, id: b64u.decode(json.user.id) };
+        if (json.excludeCredentials) {
+            o.excludeCredentials = json.excludeCredentials.map((c) => ({ ...c, id: b64u.decode(c.id) }));
+        }
+        return o;
+    };
+
+    const credentialToJson = (cred, label) => ({
+        id: cred.id,
+        rawId: b64u.encode(cred.rawId),
+        type: cred.type,
+        response: {
+            clientDataJSON: b64u.encode(cred.response.clientDataJSON),
+            attestationObject: b64u.encode(cred.response.attestationObject),
+        },
+        clientExtensionResults: { demoLabel: label },
+    });
+
+    const formatDate = (ts) => ts ? new Date(ts * 1000).toLocaleString() : 'never';
+    const formatBackup = (eligible, status) => {
+        if (eligible === null || eligible === undefined) return 'unknown';
+        return `${eligible ? 'eligible' : 'not eligible'} / ${status ? 'backed up' : 'local only'}`;
+    };
+
+    const renderPasskeys = (credentials) => {
+        const tbody = document.querySelector('#passkeys tbody');
+        tbody.innerHTML = '';
+        credentials.forEach((c) => {
+            const tr = document.createElement('tr');
+            const credIdShort = c.credentialId.length > 22
+                ? c.credentialId.slice(0, 12) + '...' + c.credentialId.slice(-6)
+                : c.credentialId;
+            tr.innerHTML = `
+                <td class="label"><input type="text" value="${c.label.replace(/"/g, '&quot;')}" data-cred="${c.credentialId}"></td>
+                <td><code title="${c.credentialId}">${credIdShort}</code></td>
+                <td><code>${c.aaguid}</code></td>
+                <td>${c.counter}</td>
+                <td>${formatBackup(c.backupEligible, c.backupStatus)}</td>
+                <td>${formatDate(c.lastUsedAt)}</td>
+                <td class="actions">
+                    <button class="ghost" data-action="rename" data-cred="${c.credentialId}">Rename</button>
+                    <button class="danger" data-action="delete" data-cred="${c.credentialId}">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    };
+
+    const loadMe = async () => {
+        const r = await fetch('/api/me');
+        if (r.status === 401) {
+            document.getElementById('unauthenticated').classList.remove('hidden');
+            log('Not signed in.', 'err');
+            return null;
+        }
+        const me = await r.json();
+        document.getElementById('authenticated').classList.remove('hidden');
+        document.getElementById('username').textContent = me.username;
+        document.getElementById('displayName').textContent = me.displayName ?? '';
+        document.getElementById('authMethod').textContent = me.authMethod ?? 'unknown';
+        renderPasskeys(me.credentials);
+        document.getElementById('upgrade-cta').classList.toggle('hidden', me.credentials.length > 0);
+        log(`Loaded ${me.credentials.length} passkey(s) for ${me.username}.`, 'ok');
+        return me;
+    };
+
+    document.getElementById('logout').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    });
+
+    const enrolPasskey = async (btn) => {
+        btn.disabled = true;
+        try {
+            const label = window.prompt('Label for the new passkey (e.g. "my iPhone"):') ?? '';
+            log('Asking server for add-passkey options...');
+            const optResp = await fetch('/api/account/passkey/add/options', { method: 'POST' });
+            if (!optResp.ok) throw new Error(`options HTTP ${optResp.status}: ${await optResp.text()}`);
+            const optsJson = await optResp.json();
+            log('Options received. Calling navigator.credentials.create()...', 'ok');
+
+            const credential = await navigator.credentials.create({ publicKey: toCreateOptions(optsJson) });
+            log('Credential created. POST /api/account/passkey/add/verify ...', 'ok');
+
+            const verifyResp = await fetch('/api/account/passkey/add/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentialToJson(credential, label)),
+            });
+            if (!verifyResp.ok) throw new Error(`verify HTTP ${verifyResp.status}: ${await verifyResp.text()}`);
+            log('Passkey enrolled. Refreshing list...', 'ok');
+            await loadMe();
+        } catch (err) {
+            log(`Error: ${err.message}`, 'err');
+        } finally {
+            btn.disabled = false;
+        }
+    };
+
+    document.getElementById('add-passkey').addEventListener('click', (e) => enrolPasskey(e.currentTarget));
+    document.getElementById('add-passkey-extra').addEventListener('click', (e) => enrolPasskey(e.currentTarget));
+
+    document.querySelector('#passkeys').addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const credentialId = btn.dataset.cred;
+        const action = btn.dataset.action;
+        try {
+            if (action === 'rename') {
+                const input = document.querySelector(`input[data-cred="${CSS.escape(credentialId)}"]`);
+                const label = input?.value ?? '';
+                if (label.trim() === '') return;
+                const r = await fetch('/api/account/passkey/rename', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credentialId, label }),
+                });
+                if (!r.ok) throw new Error(`rename HTTP ${r.status}: ${await r.text()}`);
+                log(`Renamed to "${label}".`, 'ok');
+            } else if (action === 'delete') {
+                if (!window.confirm('Delete this passkey ? You will still be able to sign in with your password.')) return;
+                const r = await fetch('/api/account/passkey/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credentialId }),
+                });
+                if (!r.ok) throw new Error(`delete HTTP ${r.status}: ${await r.text()}`);
+                log('Passkey deleted. Refreshing list...', 'ok');
+                await loadMe();
+            }
+        } catch (err) {
+            log(`Error: ${err.message}`, 'err');
+        }
+    });
+
+    output.textContent = '';
+    await loadMe();
+</script>
+</body>
+</html>
