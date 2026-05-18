@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Usernameless Demo, Sign in</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        label { display: block; margin: 0.6rem 0 0.25rem; font-weight: 500; }
+        input, button { padding: 0.55rem 0.75rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; }
+        input { width: 100%; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 360px; white-space: pre-wrap; word-break: break-all; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        .note { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; border-radius: 6px; margin: 1rem 0; font-size: 0.92rem; }
+    </style>
+</head>
+<body>
+<nav><a href="/">&larr; Home</a><a href="/register.html">Register a new account</a></nav>
+
+<h1>2. Sign in without a username</h1>
+
+<p>
+    Server-side, the assertion options carry an empty <code>allowCredentials</code>
+    list. Browser-side, the page calls
+    <code>navigator.credentials.get({ mediation: 'conditional', publicKey })</code>
+    so the user agent surfaces a passkey picker as autofill suggestions on the
+    (visually empty) username input. Picking a passkey triggers the assertion.
+</p>
+
+<div class="note">
+    If your browser does not support Conditional UI, click the <em>Sign in
+    manually</em> button below to fall back to a modal passkey picker.
+</div>
+
+<form id="login-form">
+    <label for="username">Username (passkey picker)</label>
+    <input id="username" name="username" type="text" autocomplete="username webauthn" placeholder="Start typing or use the autofill prompt">
+
+    <p>
+        <button type="button" id="manual">Sign in manually</button>
+    </p>
+</form>
+
+<h2>Output</h2>
+<pre id="output">Conditional UI armed. Focus the username field to surface the passkey picker, or click "Sign in manually".</pre>
+
+<script type="module">
+    const form = document.getElementById('login-form');
+    const manualBtn = document.getElementById('manual');
+    const output = document.getElementById('output');
+
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    const b64u = {
+        encode: (buf) => {
+            const bytes = new Uint8Array(buf);
+            let str = '';
+            for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+        decode: (s) => {
+            s = s.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (s.length % 4)) % 4;
+            s += '='.repeat(pad);
+            const bin = atob(s);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+            return out;
+        },
+    };
+
+    const toGetOptions = (json) => {
+        const o = { ...json };
+        o.challenge = b64u.decode(json.challenge);
+        o.allowCredentials = [];
+        return o;
+    };
+
+    const assertionToJson = (cred) => ({
+        id: cred.id,
+        rawId: b64u.encode(cred.rawId),
+        type: cred.type,
+        response: {
+            clientDataJSON: b64u.encode(cred.response.clientDataJSON),
+            authenticatorData: b64u.encode(cred.response.authenticatorData),
+            signature: b64u.encode(cred.response.signature),
+            userHandle: cred.response.userHandle ? b64u.encode(cred.response.userHandle) : null,
+        },
+    });
+
+    const fetchOptions = async () => {
+        const optResp = await fetch('/api/login/options', { method: 'POST' });
+        if (!optResp.ok) throw new Error(`options HTTP ${optResp.status}: ${await optResp.text()}`);
+        return await optResp.json();
+    };
+
+    const verify = async (credential) => {
+        const verifyResp = await fetch('/api/login/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(assertionToJson(credential)),
+        });
+        if (!verifyResp.ok) throw new Error(`verify HTTP ${verifyResp.status}: ${await verifyResp.text()}`);
+        return await verifyResp.json();
+    };
+
+    const runManual = async () => {
+        manualBtn.disabled = true;
+        output.textContent = '';
+        try {
+            log('Asking server for assertion options...');
+            const optsJson = await fetchOptions();
+            log('Options received. Calling navigator.credentials.get()...', 'ok');
+            const credential = await navigator.credentials.get({ publicKey: toGetOptions(optsJson) });
+            log('Assertion produced. POST /api/login/verify ...', 'ok');
+            const verified = await verify(credential);
+            log(`Signed in as ${verified.username}. Redirecting in 1.5s...`, 'ok');
+            setTimeout(() => { window.location.href = '/account.html'; }, 1500);
+        } catch (err) {
+            log(`Error: ${err.message}`, 'err');
+        } finally {
+            manualBtn.disabled = false;
+        }
+    };
+
+    manualBtn.addEventListener('click', runManual);
+
+    const conditionalAvailable = window.PublicKeyCredential
+        && typeof PublicKeyCredential.isConditionalMediationAvailable === 'function'
+        && await PublicKeyCredential.isConditionalMediationAvailable();
+
+    if (conditionalAvailable) {
+        try {
+            log('Conditional UI is supported. Arming background assertion...');
+            const optsJson = await fetchOptions();
+            const credential = await navigator.credentials.get({
+                mediation: 'conditional',
+                publicKey: toGetOptions(optsJson),
+            });
+            log('User picked a passkey. POST /api/login/verify ...', 'ok');
+            const verified = await verify(credential);
+            log(`Signed in as ${verified.username}. Redirecting in 1.5s...`, 'ok');
+            setTimeout(() => { window.location.href = '/account.html'; }, 1500);
+        } catch (err) {
+            if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+                log(`Conditional UI error: ${err.message}`, 'err');
+            }
+        }
+    } else {
+        log('Conditional UI is not available. Use the manual button instead.');
+    }
+</script>
+</body>
+</html>

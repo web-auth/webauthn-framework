@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\SpcDemo;
+namespace App\BasicDemo;
 
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
@@ -10,57 +10,72 @@ use Cose\Algorithm\Signature\RSA\RS256;
 use Symfony\Component\Serializer\Serializer;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
-use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\AuthenticationExtensions\PaymentExtensionOutputChecker;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
-use Webauthn\ClientDataCollector\ClientDataCollectorManager;
-use Webauthn\ClientDataCollector\PaymentClientDataCollector;
-use Webauthn\ClientDataCollector\WebauthnAuthenticationCollector;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 
 $autoload = __DIR__ . '/../vendor/autoload.php';
 if (! is_file($autoload)) {
-    fwrite(\STDERR, "Run `composer install` in docs/examples/spc-demo/ first.\n");
+    fwrite(\STDERR, "Run `composer install` in docs/examples/basic-demo/ first.\n");
     exit(1);
 }
 require_once $autoload;
 
+require_once __DIR__ . '/UserStore.php';
+require_once __DIR__ . '/CredentialStore.php';
+
 /**
- * Wires everything the SPC demo needs:
+ * Minimal service container for the demo.
  *
- *  - The Webauthn serializer (loads every denormalizer the lib ships with,
- *    including the SPC ones for `payment`, `total`, `instrument`, …).
- *  - A `CeremonyStepManagerFactory` configured with a
- *    `ClientDataCollectorManager` that handles BOTH `webauthn.get` /
- *    `webauthn.create` (standard WebAuthn) and `payment.get` (SPC).
- *  - Validators for registration (attestation) and authentication
- *    (assertion).
- *  - A trivial JSON-file storage for credentials so the demo runs
- *    out-of-the-box with `php -S`.
+ * Wires together the four things a pure-PHP relying party needs to run a
+ * WebAuthn ceremony:
+ *
+ *  - A serializer that knows how to (de)serialize the WebAuthn options
+ *    objects sent to the browser and the PublicKeyCredential JSON the
+ *    browser sends back.
+ *  - An attestation statement support manager. The demo accepts the `none`
+ *    format only, which is the default for platform authenticators and the
+ *    safe choice for a passwordless login that does not need attestation.
+ *  - A COSE algorithm manager. ES256 and RS256 cover every authenticator
+ *    in circulation, including platform and roaming.
+ *  - Two validators wired on top of a CeremonyStepManager configured with
+ *    the relying party's allowed origins.
+ *
+ * Persistence is delegated to two demo-only JSON-file stores
+ * (UserStore + CredentialStore). Production code MUST replace them with a
+ * real database behind the framework's repository interfaces.
  */
 final class Container
 {
     public string $relyingPartyId;
+
     public string $relyingPartyName;
+
     /** @var string[] */
     public array $allowedOrigins;
 
     public AttestationStatementSupportManager $attestationManager;
+
     public Manager $algorithmManager;
+
     public CeremonyStepManagerFactory $ceremonyFactory;
+
     public AuthenticatorAttestationResponseValidator $attestationValidator;
+
     public AuthenticatorAssertionResponseValidator $assertionValidator;
+
     public Serializer $serializer;
+
+    public UserStore $userStore;
+
     public CredentialStore $credentialStore;
-    public ChallengeStore $challengeStore;
 
     public function __construct()
     {
         $this->relyingPartyId = $_ENV['RP_ID'] ?? 'localhost';
-        $this->relyingPartyName = 'SPC Demo Bank';
-        $this->allowedOrigins = explode(',', $_ENV['ALLOWED_ORIGINS'] ?? 'http://localhost:8000,http://localhost:8001');
+        $this->relyingPartyName = 'Basic WebAuthn Demo';
+        $this->allowedOrigins = explode(',', $_ENV['ALLOWED_ORIGINS'] ?? 'http://localhost:8000');
 
         $this->attestationManager = new AttestationStatementSupportManager();
         $this->attestationManager->add(new NoneAttestationStatementSupport());
@@ -71,30 +86,20 @@ final class Container
         \assert($serializer instanceof Serializer);
         $this->serializer = $serializer;
 
-        $clientDataManager = new ClientDataCollectorManager([
-            new WebauthnAuthenticationCollector(),
-            new PaymentClientDataCollector($this->serializer),
-        ]);
-
-        $extensionHandler = ExtensionOutputCheckerHandler::create();
-        $extensionHandler->add(new PaymentExtensionOutputChecker());
-
         $this->ceremonyFactory = new CeremonyStepManagerFactory();
         $this->ceremonyFactory->setAttestationStatementSupportManager($this->attestationManager);
         $this->ceremonyFactory->setAlgorithmManager($this->algorithmManager);
-        $this->ceremonyFactory->setExtensionOutputCheckerHandler($extensionHandler);
-        $this->ceremonyFactory->setClientDataCollectorManager($clientDataManager);
         $this->ceremonyFactory->setAllowedOrigins($this->allowedOrigins);
 
         $this->attestationValidator = AuthenticatorAttestationResponseValidator::create(
-            ceremonyStepManager: $this->ceremonyFactory->creationCeremony(),
+            $this->ceremonyFactory->creationCeremony(),
         );
         $this->assertionValidator = AuthenticatorAssertionResponseValidator::create(
-            ceremonyStepManager: $this->ceremonyFactory->requestCeremony(),
+            $this->ceremonyFactory->requestCeremony(),
         );
 
         $varDir = $_ENV['VAR_DIR'] ?? __DIR__ . '/../var';
+        $this->userStore = new UserStore($varDir . '/users.json');
         $this->credentialStore = new CredentialStore($varDir . '/credentials.json', $this->serializer);
-        $this->challengeStore = new ChallengeStore($varDir . '/challenges.json');
     }
 }
