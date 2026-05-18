@@ -16,6 +16,7 @@ use Webauthn\Event\BackupEligibilityChangedEvent;
 use Webauthn\Event\BackupStatusChangedEvent;
 use Webauthn\Event\CanDispatchEvents;
 use Webauthn\Event\NullEventDispatcher;
+use Webauthn\Event\UvInitializedChangedEvent;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
 
@@ -73,9 +74,10 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                 $host
             );
 
-            // Store previous backup state values to detect changes
+            // Store previous state values to detect changes
             $previousBackupEligible = $credentialRecord->backupEligible;
             $previousBackupStatus = $credentialRecord->backupStatus;
+            $previousUvInitialized = $credentialRecord->uvInitialized;
 
             $credentialRecord->counter = $authenticatorAssertionResponse->authenticatorData->signCount; //26.1.
             $credentialRecord->backupEligible = $authenticatorAssertionResponse->authenticatorData->isBackupEligible(); //26.2.
@@ -100,6 +102,15 @@ class AuthenticatorAssertionResponseValidator implements CanLogData, CanDispatch
                         $credentialRecord,
                         $previousBackupStatus,
                         $credentialRecord->backupStatus
+                    )
+                );
+            }
+            if ($previousUvInitialized !== $credentialRecord->uvInitialized) {
+                $this->eventDispatcher->dispatch(
+                    new UvInitializedChangedEvent(
+                        $credentialRecord,
+                        $previousUvInitialized,
+                        $credentialRecord->uvInitialized
                     )
                 );
             }
