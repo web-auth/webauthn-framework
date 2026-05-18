@@ -38,16 +38,19 @@ final class WebauthnAuthenticatorLoggerTest extends TestCase
     #[Test]
     public function successLogContextDoesNotIncludeTheRequestObject(): void
     {
+        // Given an authenticator wired to an in-memory PSR-3 logger
         $logger = new InMemoryLogger();
         $authenticator = $this->createAuthenticator();
         $authenticator->setLogger($logger);
 
+        // When the success hook fires for an authenticated request
         $authenticator->onAuthenticationSuccess(
             Request::create('/login/result', 'POST'),
             $this->stubToken('alice'),
             'webauthn_firewall'
         );
 
+        // Then the log context exposes safe metadata only, never the raw Request object
         $record = $logger->records[0] ?? null;
         static::assertNotNull($record, 'A log record was expected.');
         $context = $record['context'];
@@ -61,15 +64,18 @@ final class WebauthnAuthenticatorLoggerTest extends TestCase
     #[Test]
     public function failureLogContextDoesNotIncludeTheRequestObject(): void
     {
+        // Given an authenticator wired to an in-memory PSR-3 logger
         $logger = new InMemoryLogger();
         $authenticator = $this->createAuthenticator();
         $authenticator->setLogger($logger);
 
+        // When the failure hook fires for a rejected request
         $authenticator->onAuthenticationFailure(
             Request::create('/login/result', 'POST'),
             new AuthenticationException('bad credentials')
         );
 
+        // Then the log context exposes safe metadata plus the exception, never the raw Request object
         $record = $logger->records[0] ?? null;
         static::assertNotNull($record, 'A log record was expected.');
         $context = $record['context'];
@@ -82,6 +88,7 @@ final class WebauthnAuthenticatorLoggerTest extends TestCase
     #[Test]
     public function successLogContextNeverCarriesSensitiveHeaders(): void
     {
+        // Given an authenticator and a Request that carries sensitive headers
         $logger = new InMemoryLogger();
         $authenticator = $this->createAuthenticator();
         $authenticator->setLogger($logger);
@@ -90,8 +97,10 @@ final class WebauthnAuthenticatorLoggerTest extends TestCase
         $request->headers->set('Cookie', 'PHPSESSID=top-secret');
         $request->headers->set('Authorization', 'Bearer top-secret');
 
+        // When the success hook fires for that Request
         $authenticator->onAuthenticationSuccess($request, $this->stubToken('alice'), 'webauthn_firewall');
 
+        // Then no header value, header name or stringified Request can be observed in the captured records
         $serialised = print_r($logger->records, true);
         static::assertStringNotContainsString('top-secret', $serialised);
         static::assertStringNotContainsString('PHPSESSID', $serialised);
