@@ -43,6 +43,8 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
 
     private bool $hideExistingCredentials = false;
 
+    private ?string $rpName = null;
+
     public function __construct(
         OptionsStorage $storage,
         SerializerInterface $serializer,
@@ -59,6 +61,22 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
     {
         $clone = clone $this;
         $clone->authenticatorSelection = $authenticatorSelection;
+
+        return $clone;
+    }
+
+    /**
+     * Override the human-palatable Relying Party name advertised to the user
+     * agent during the creation ceremony. Defaults to the `rpId` passed to
+     * {@see WebauthnOptionsResponse::forCreation()}: per W3C IDL
+     * `PublicKeyCredentialEntity.name` is required, and SimpleWebAuthn's
+     * browser bindings refuse to register when it is missing, even though
+     * recent Chrome / Firefox builds tolerate the absence.
+     */
+    public function withRpName(string $rpName): static
+    {
+        $clone = clone $this;
+        $clone->rpName = $rpName;
 
         return $clone;
     }
@@ -143,7 +161,7 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
         }
 
         return PublicKeyCredentialCreationOptions::create(
-            rp: PublicKeyCredentialRpEntity::create(id: $this->rpId),
+            rp: PublicKeyCredentialRpEntity::create($this->rpName ?? $this->rpId, $this->rpId),
             user: $userEntity,
             challenge: random_bytes($this->challengeLength),
             pubKeyCredParams: $this->pubKeyCredParams,
