@@ -51,7 +51,7 @@
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
         "@simplewebauthn/browser": "^13.2.0",
-        "@babel/core": "^7.0.0",
+        "@babel/core": "^7.29.6",
         "@babel/preset-env": "^7.0.0",
         "@symfony/stimulus-testing": "^2.0.0",
         "@testing-library/dom": "^10.0.0",
