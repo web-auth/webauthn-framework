@@ -188,7 +188,7 @@ final class CeremonyStepManagerFactory
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent($requireUserPresence),
-            new CheckUserVerification(),
+            new CheckUserVerification($requireUserPresence),
             new CheckBackupBitsAreConsistent(),
             new CheckAlgorithm(),
             new CheckExtensions($this->extensionOutputCheckerHandler),
