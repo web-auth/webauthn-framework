@@ -70,12 +70,35 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
 
         static::assertSame([
             'evalByCredential' => [
-                'cred-A' => [
+                Base64UrlSafe::encodeUnpadded('cred-A') => [
                     'first' => Base64UrlSafe::encodeUnpadded('salt-A'),
                 ],
-                'cred-B' => [
+                Base64UrlSafe::encodeUnpadded('cred-B') => [
                     'first' => Base64UrlSafe::encodeUnpadded('salt-B'),
                     'second' => Base64UrlSafe::encodeUnpadded('salt-B-2'),
+                ],
+            ],
+        ], $extension->value);
+    }
+
+    /**
+     * The keys of the `evalByCredential` map must be the base64url encoding of the credential id, otherwise the client
+     * rejects the ceremony with a SyntaxError. Credential ids are held in their raw binary form by a credential record,
+     * so the builder is the one doing the encoding.
+     */
+    #[Test]
+    public function aRawCredentialIdIsUsedAsABase64UrlEncodedKey(): void
+    {
+        $credentialId = hex2bin('0102030405060708090a0b0c0d0e0f10');
+
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs($credentialId, 'first-salt')
+            ->build();
+
+        static::assertSame([
+            'evalByCredential' => [
+                Base64UrlSafe::encodeUnpadded($credentialId) => [
+                    'first' => Base64UrlSafe::encodeUnpadded('first-salt'),
                 ],
             ],
         ], $extension->value);
@@ -94,7 +117,7 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
                 'first' => Base64UrlSafe::encodeUnpadded('default-salt'),
             ],
             'evalByCredential' => [
-                'cred-A' => [
+                Base64UrlSafe::encodeUnpadded('cred-A') => [
                     'first' => Base64UrlSafe::encodeUnpadded('specific-salt'),
                 ],
             ],
@@ -117,7 +140,7 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
                 'second' => Base64UrlSafe::encodeUnpadded('replacement-second'),
             ],
             'evalByCredential' => [
-                'cred' => [
+                Base64UrlSafe::encodeUnpadded('cred') => [
                     'first' => Base64UrlSafe::encodeUnpadded('two'),
                 ],
             ],
@@ -185,7 +208,7 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
             ]);
 
         static::assertJsonStringEqualsJsonString(
-            '{"eval":{"first":"YWFhYQ"},"evalByCredential":{"cred":{"first":"YmJiYg","second":"Y2NjYw"}}}',
+            '{"eval":{"first":"YWFhYQ"},"evalByCredential":{"Y3JlZA":{"first":"YmJiYg","second":"Y2NjYw"}}}',
             $json
         );
     }

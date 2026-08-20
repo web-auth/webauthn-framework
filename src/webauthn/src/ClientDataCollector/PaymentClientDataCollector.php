@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webauthn\ClientDataCollector;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 use function sprintf;
@@ -79,7 +78,6 @@ final readonly class PaymentClientDataCollector implements ClientDataCollector
             $rawPayment,
             CollectedClientAdditionalPaymentData::class,
         );
-        assert($signedPayment instanceof CollectedClientAdditionalPaymentData);
 
         $extensions = $publicKeyCredentialOptions->extensions;
         if (! $extensions->has('payment')) {

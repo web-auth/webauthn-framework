@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\AttestationStatement;
 
 use function array_key_exists;
+use function array_merge;
 use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithms;
@@ -12,6 +13,7 @@ use Cose\Key\Ec2Key;
 use Cose\Key\Key;
 use Cose\Key\RsaKey;
 use function count;
+use function in_array;
 use function openssl_verify;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
@@ -37,10 +39,19 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
     private const OID_ANDROID = '1.3.6.1.4.1.11129.2.1.17';
 
     /**
-     * Tag 600 (allApplications)
-     * @see https://source.android.com/docs/security/features/keystore/attestation#version-1
+     * Tags of the AuthorizationList members that are inspected during the verification procedure.
+     *
+     * @see https://source.android.com/docs/security/features/keystore/attestation#schema
      */
+    private const ANDROID_TAG_PURPOSE = 1;
+
     private const ANDROID_TAG_ALL_APPLICATIONS = 600;
+
+    private const ANDROID_TAG_ORIGIN = 702;
+
+    private const KM_PURPOSE_SIGN = 2;
+
+    private const KM_ORIGIN_GENERATED = 0;
 
     private readonly Decoder $decoder;
 
@@ -116,7 +127,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         $certificates = $trustPath->certificates;
 
-        //Decode leaf attestation certificate
+        // Decode leaf attestation certificate
         $leaf = $certificates[0];
         $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
@@ -138,7 +149,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         string $clientDataHash,
         AuthenticatorData $authenticatorData
     ): void {
-        //Check that authData publicKey matches the public key in the attestation certificate
+        // Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
@@ -164,13 +175,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'Unsupported key type'
         );
 
-        /*---------------------------*/
+        /* --------------------------- */
         /**
          * @see https://w3c.github.io/webauthn/#sctn-key-attstn-cert-requirements
          * @see https://source.android.com/docs/security/features/keystore/attestation#attestation-certificate
          */
         $cert = Certificate::fromPEM(PEM::fromString($certificate));
-        //We check the attested key corresponds to the key in the certificate
+        // We check the attested key corresponds to the key in the certificate
         PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
             ->subjectPublicKeyInfo()
             ->toPEM()
@@ -179,7 +190,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $extensions = $cert->tbsCertificate()
             ->extensions();
 
-        //Find Android KeyStore Extension with OID self::OID_ANDROID in certificate extensions
+        // Find Android KeyStore Extension with OID self::OID_ANDROID in certificate extensions
         $extensions->has(self::OID_ANDROID) || throw AttestationStatementVerificationException::create(
             'The certificate extension "' . self::OID_ANDROID . '" is missing'
         );
@@ -191,7 +202,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
          */
         $extensionAsAsn1 = Sequence::fromDER($androidExtension->extensionValue());
 
-        //Check that attestationChallenge is set to the clientDataHash.
+        // Check that attestationChallenge is set to the clientDataHash.
         $extensionAsAsn1->has(4) || throw AttestationStatementVerificationException::create(
             'The attestationChallenge field is missing'
         );
@@ -204,7 +215,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The client data hash is not valid'
         );
 
-        //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
+        // Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
         $extensionAsAsn1->has(6) || throw AttestationStatementVerificationException::create(
             'The softwareEnforced field is missing'
         );
@@ -225,6 +236,89 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The teeEnforced field must be a Sequence'
         );
         $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
+
+        $this->checkKeyOriginAndPurpose($softwareEnforcedFlags, $teeEnforcedFlags);
+    }
+
+    /**
+     * The union of both authorization lists is used, which is what the specification mandates unless the Relying Party
+     * decides to accept keys from a trusted execution environment only.
+     *
+     * @see https://w3c.github.io/webauthn/#sctn-android-key-attestation
+     */
+    private function checkKeyOriginAndPurpose(Sequence $softwareEnforced, Sequence $teeEnforced): void
+    {
+        $origins = [];
+        $purposes = [];
+        foreach ([$softwareEnforced, $teeEnforced] as $authorizationList) {
+            $origin = $this->findOrigin($authorizationList);
+            if ($origin !== null) {
+                $origins[] = $origin;
+            }
+            $purposes = array_merge($purposes, $this->findPurposes($authorizationList));
+        }
+
+        $origins !== [] || throw AttestationStatementVerificationException::create(
+            'The origin field is missing from the authorization lists'
+        );
+        foreach ($origins as $origin) {
+            $origin === self::KM_ORIGIN_GENERATED || throw AttestationStatementVerificationException::create(
+                'The key was not generated by the authenticator'
+            );
+        }
+
+        $purposes !== [] || throw AttestationStatementVerificationException::create(
+            'The purpose field is missing from the authorization lists'
+        );
+        in_array(self::KM_PURPOSE_SIGN, $purposes, true) || throw AttestationStatementVerificationException::create(
+            'The key is not allowed to sign'
+        );
+    }
+
+    private function findOrigin(Sequence $authorizationList): null|int
+    {
+        $element = $this->findTaggedElement($authorizationList, self::ANDROID_TAG_ORIGIN);
+        if ($element === null) {
+            return null;
+        }
+
+        return $element->explicit()
+            ->asInteger()
+            ->intNumber();
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function findPurposes(Sequence $authorizationList): array
+    {
+        $element = $this->findTaggedElement($authorizationList, self::ANDROID_TAG_PURPOSE);
+        if ($element === null) {
+            return [];
+        }
+
+        $purposes = [];
+        foreach ($element->explicit()->asSet()->elements() as $purpose) {
+            $purposes[] = $purpose->asInteger()
+                ->intNumber();
+        }
+
+        return $purposes;
+    }
+
+    private function findTaggedElement(Sequence $authorizationList, int $tag): null|ExplicitTagging
+    {
+        foreach ($authorizationList->elements() as $item) {
+            $element = $item->asElement();
+            $element instanceof ExplicitTagging || throw AttestationStatementVerificationException::create(
+                'Invalid tag'
+            );
+            if ($element->tag() === $tag) {
+                return $element;
+            }
+        }
+
+        return null;
     }
 
     private function checkAbsenceOfAllApplicationsTag(Sequence $sequence): void

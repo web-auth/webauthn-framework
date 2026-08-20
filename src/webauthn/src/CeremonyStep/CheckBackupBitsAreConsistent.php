@@ -34,7 +34,7 @@ final class CheckBackupBitsAreConsistent implements CeremonyStep
         if ($authData->isBackupEligible()) {
             return;
         }
-        $authData->isBackedUp() !== true || throw AuthenticatorResponseVerificationException::create(
+        ! $authData->isBackedUp() || throw AuthenticatorResponseVerificationException::create(
             'Backup up bit is set but the backup is not eligible.'
         );
     }

@@ -191,8 +191,6 @@ jobs:
           - php-version: '8.3'
           - php-version: '8.4'
           - php-version: '8.5'
-          - php-version: '8.6'
-            experimental: true
     container:
       image: ghcr.io/spomky-labs/phpqa:${{ matrix.php-version }}
     env:
@@ -209,7 +207,13 @@ jobs:
           fi
 
       - name: Run PHPUnit
-        run: castor phpunit
+        run: |
+          composer exec -- phpunit-11 \
+            --coverage-xml .ci-tools/coverage \
+            --log-junit=.ci-tools/coverage/junit.xml \
+            --configuration .ci-tools/phpunit.xml.dist \
+            --display-warnings \
+            --display-deprecations
 
   infection:
     name: "🧬 Mutation Testing"

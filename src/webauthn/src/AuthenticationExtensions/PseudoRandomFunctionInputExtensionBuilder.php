@@ -89,11 +89,11 @@ final class PseudoRandomFunctionInputExtensionBuilder
      *
      * Calling this twice with two distinct credential ids puts the ceremony in
      * the multi-credential case, which requires the authenticator to support
-     * the CTAP2.2 `hmac-secret-mc` extension — see the class docblock.
+     * the CTAP2.2 `hmac-secret-mc` extension, see the class docblock.
      *
-     * @param string $credentialId Base64url-encoded credential id (same encoding used as the
-     *                              JSON key on the wire). If you hold the raw bytes, pre-encode
-     *                              with `Base64UrlSafe::encodeUnpadded()` first.
+     * @param string $credentialId Raw credential id bytes, as stored in a credential record. The specification
+     *                              requires the keys of the `evalByCredential` map to be the base64url encoding of the
+     *                              credential id, so the encoding is done here and MUST NOT be done by the caller.
      * @param string $first  Raw salt bytes for this credential.
      * @param string|null $second Optional second raw salt bytes.
      */
@@ -108,7 +108,7 @@ final class PseudoRandomFunctionInputExtensionBuilder
         if (! array_key_exists('evalByCredential', $this->values)) {
             $this->values['evalByCredential'] = [];
         }
-        $this->values['evalByCredential'][$credentialId] = $eval;
+        $this->values['evalByCredential'][Base64UrlSafe::encodeUnpadded($credentialId)] = $eval;
 
         return $this;
     }

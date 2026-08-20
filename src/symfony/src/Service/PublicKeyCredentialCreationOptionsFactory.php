@@ -69,7 +69,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         // `mediation` mechanism: an explicit per-request mediation always wins, otherwise the profile
         // default applies.
         $effectiveMediation = $mediation
-            ?? (($profile['conditional_create'] ?? false) === true
+            ?? ($profile['conditional_create'] ?? false
                 ? PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL
                 : null);
 

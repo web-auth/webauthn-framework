@@ -47,7 +47,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      *
      * @see https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create
      */
-    public null|string $mediation = null;
+    public null|string $mediation;
 
     /**
      * @param PublicKeyCredentialParameters[] $pubKeyCredParams

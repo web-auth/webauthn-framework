@@ -82,7 +82,6 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
         }
 
         $total = $this->denormalizer->denormalize($data['total'], PaymentCurrencyAmount::class, $format, $context);
-        assert($total instanceof PaymentCurrencyAmount);
 
         $instrument = $this->denormalizer->denormalize(
             $data['instrument'],
@@ -90,7 +89,6 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
             $format,
             $context
         );
-        assert($instrument instanceof PaymentCredentialInstrument);
 
         $logos = [];
         if (array_key_exists('paymentEntitiesLogos', $data)) {
@@ -116,7 +114,6 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
                 $format,
                 $context,
             );
-            assert($browserBoundPublicKey instanceof BrowserBoundPublicKey);
         }
 
         return new CollectedClientAdditionalPaymentData(
@@ -191,9 +188,6 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
      */
     private function denormalizeLogo(mixed $data, ?string $format, array $context): PaymentEntityLogo
     {
-        $logo = $this->denormalizer->denormalize($data, PaymentEntityLogo::class, $format, $context);
-        assert($logo instanceof PaymentEntityLogo);
-
-        return $logo;
+        return $this->denormalizer->denormalize($data, PaymentEntityLogo::class, $format, $context);
     }
 }

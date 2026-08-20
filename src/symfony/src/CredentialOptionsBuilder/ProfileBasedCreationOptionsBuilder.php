@@ -45,7 +45,7 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
 
-        $excludedCredentials = $hideExistingExcludedCredentials === true ? [] : $this->getCredentials($userEntity);
+        $excludedCredentials = $hideExistingExcludedCredentials ? [] : $this->getCredentials($userEntity);
         $optionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
 
         // Apply override policy to determine effective values

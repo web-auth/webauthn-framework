@@ -46,7 +46,6 @@ final class CollectedClientPaymentDataDenormalizer implements DenormalizerInterf
             $format,
             $context
         );
-        assert($payment instanceof CollectedClientAdditionalPaymentData);
 
         return new CollectedClientPaymentData(payment: $payment);
     }

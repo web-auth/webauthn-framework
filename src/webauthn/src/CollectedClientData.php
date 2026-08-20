@@ -69,12 +69,6 @@ class CollectedClientData
         $crossOrigin = $data['crossOrigin'] ?? false;
         $this->crossOrigin = $crossOrigin;
 
-        $tokenBinding = $data['tokenBinding'] ?? null;
-        $tokenBinding === null || is_array($tokenBinding) || throw InvalidDataException::create(
-            $data,
-            'Invalid parameter "tokenBinding". Shall be an object or .'
-        );
-
         $this->data = $data;
     }
 

@@ -529,7 +529,7 @@ final class WebauthnResponseVerifierTest extends TestCase
     #[Test]
     public function forAssertionReturnsAssertionVerifier(): void
     {
-        static::assertInstanceOf(WebauthnAssertionVerifier::class, $this->verifier() ->forAssertion('example.com'));
+        static::assertInstanceOf(WebauthnAssertionVerifier::class, $this->verifier()->forAssertion('example.com'));
     }
 
     private function verifier(

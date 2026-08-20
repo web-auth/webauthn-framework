@@ -26,22 +26,22 @@ final class SecuredAreaTest extends WebauthnTestCase
     #[Test]
     public function aClientIsRedirectedIfUserIsNotAuthenticated(): void
     {
-        //Given
+        // Given
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
 
-        //When
+        // When
         $client->request(Request::METHOD_GET, '/admin');
 
-        //Then
+        // Then
         static::assertResponseRedirects('/login');
     }
 
     #[Test]
     public function aUserCannotBeAuthenticatedInAbsenceOfOptions(): void
     {
-        //Given
+        // Given
         $assertion = '{"id":"eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w","type":"public-key","rawId":"eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==","response":{"authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew","clientDataJSON":"eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ","signature":"MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=","userHandle":null}}';
 
         $client = static::createClient([], [
@@ -50,22 +50,22 @@ final class SecuredAreaTest extends WebauthnTestCase
         $client->disableReboot();
         $crawler = $client->request(Request::METHOD_GET, '/login');
 
-        //When
+        // When
         $form = $crawler->selectButton('login')
             ->form();
         $client->submit($form, [
             '_assertion' => $assertion,
         ]);
 
-        //Then
+        // Then
         static::assertResponseRedirects('/login');
-        //@todo: verify the reason is: No public key credential options available for this session.
+        // @todo: verify the reason is: No public key credential options available for this session.
     }
 
     #[Test]
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
-        //Given
+        // Given
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
@@ -96,19 +96,19 @@ final class SecuredAreaTest extends WebauthnTestCase
 
         $crawler = $client->request(Request::METHOD_GET, '/login');
 
-        //When
+        // When
         $form = $crawler->selectButton('login')
             ->form();
         $client->submit($form, [
             '_assertion' => $assertion,
         ]);
 
-        //Then
+        // Then
         static::assertResponseIsSuccessful();
         static::assertSame('{"success":true}', $client->getResponse()->getContent());
         static::assertTrue($client->getRequest()->getSession()->has('_security_main'));
 
-        //And then
+        // And then
         $client->request(Request::METHOD_GET, '/admin');
         static::assertSame('["Hello admin"]', $client->getResponse()->getContent());
         static::assertResponseIsSuccessful();
@@ -117,7 +117,7 @@ final class SecuredAreaTest extends WebauthnTestCase
     #[Test]
     public function aUserCannotBeRegisteredAsTheUserAlreadyExists(): void
     {
-        //Given
+        // Given
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
@@ -142,21 +142,21 @@ final class SecuredAreaTest extends WebauthnTestCase
 
         $crawler = $client->request(Request::METHOD_GET, '/login');
 
-        //When
+        // When
         $form = $crawler->selectButton('login')
             ->form();
         $client->submit($form, [
             '_assertion' => $assertion,
         ]);
 
-        //Then
+        // Then
         static::assertResponseRedirects('/login');
     }
 
     #[Test]
     public function aUserCanBeRegistered(): void
     {
-        //Given
+        // Given
         $client = static::createClient([], [
             'HTTPS' => 'on',
         ]);
@@ -188,19 +188,19 @@ final class SecuredAreaTest extends WebauthnTestCase
 
         $crawler = $client->request(Request::METHOD_GET, '/login');
 
-        //When
+        // When
         $form = $crawler->selectButton('login')
             ->form();
         $client->submit($form, [
             '_assertion' => $assertion,
         ]);
 
-        //Then
+        // Then
         static::assertResponseIsSuccessful();
         static::assertSame('{"success":true}', $client->getResponse()->getContent());
         static::assertTrue($client->getRequest()->getSession()->has('_security_main'));
 
-        //And then
+        // And then
         $client->request(Request::METHOD_GET, '/admin');
         static::assertResponseStatusCodeSame(403);
     }
