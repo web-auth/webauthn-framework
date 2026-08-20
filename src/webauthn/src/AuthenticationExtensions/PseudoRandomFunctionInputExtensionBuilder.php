@@ -36,6 +36,11 @@ final class PseudoRandomFunctionInputExtensionBuilder
         return $this;
     }
 
+    /**
+     * The credential ID is expected in its raw binary form, as stored in a credential record. The specification requires
+     * the keys of the "evalByCredential" map to be the base64url encoding of the credential ID, so the encoding is done
+     * here and MUST NOT be done by the caller.
+     */
     public function withCredentialInputs(string $credentialId, string $first, null|string $second = null): self
     {
         $eval = [
@@ -47,7 +52,7 @@ final class PseudoRandomFunctionInputExtensionBuilder
         if (! array_key_exists('evalByCredential', $this->values)) {
             $this->values['evalByCredential'] = [];
         }
-        $this->values['evalByCredential'][$credentialId] = $eval;
+        $this->values['evalByCredential'][Base64UrlSafe::encodeUnpadded($credentialId)] = $eval;
 
         return $this;
     }

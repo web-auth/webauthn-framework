@@ -46,4 +46,40 @@ final class AuthenticatorDataTest extends TestCase
         static::assertFalse($authenticatorData->hasExtensions());
         static::assertSame(0, $authenticatorData->extensions->count());
     }
+
+    /**
+     * Bits 3 and 4 were reserved in Webauthn Level 2 and have been assigned to BE and BS in Level 3, so only bit 5 is
+     * still reported as reserved.
+     */
+    #[Test]
+    public function theBackupFlagsAreNotReportedAsReservedForFutureUse(): void
+    {
+        // Given
+        $flags = chr(
+            AuthenticatorData::FLAG_UP | AuthenticatorData::FLAG_UV | AuthenticatorData::FLAG_BE | AuthenticatorData::FLAG_BS
+        );
+
+        // When
+        $authenticatorData = AuthenticatorData::create('auth_data', 'rp_id_hash', $flags, 0);
+
+        // Then
+        static::assertTrue($authenticatorData->isBackupEligible());
+        static::assertTrue($authenticatorData->isBackedUp());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse1());
+        static::assertSame(0, $authenticatorData->getReservedForFutureUse2());
+    }
+
+    #[Test]
+    public function theRemainingReservedBitIsStillReported(): void
+    {
+        // Given
+        $flags = chr(AuthenticatorData::FLAG_UP | AuthenticatorData::FLAG_RFU1 | AuthenticatorData::FLAG_RFU2);
+
+        // When
+        $authenticatorData = AuthenticatorData::create('auth_data', 'rp_id_hash', $flags, 0);
+
+        // Then
+        static::assertSame(AuthenticatorData::FLAG_RFU1, $authenticatorData->getReservedForFutureUse1());
+        static::assertSame(AuthenticatorData::FLAG_RFU2, $authenticatorData->getReservedForFutureUse2());
+    }
 }
