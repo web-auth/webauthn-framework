@@ -150,7 +150,14 @@ final class InMemoryLogger extends AbstractLogger
      */
     public array $records = [];
 
-    public function log($level, string|Stringable $message, array $context = []): void
+    /**
+     * The parameter is deliberately untyped so that the fixture stays compatible with psr/log 1.x, 2.x and 3.x, which
+     * do not declare the same signature.
+     *
+     * @param string|Stringable $message
+     * @param array<string, mixed> $context
+     */
+    public function log($level, $message, array $context = []): void
     {
         $this->records[] = [
             'level' => $level,
