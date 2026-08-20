@@ -46,4 +46,26 @@ final class CollectedClientDataTest extends TestCase
         static::assertTrue($collectedClientData->has('extensions'));
         static::assertSame('extensions', $collectedClientData->get('extensions'));
     }
+
+    /**
+     * The tokenBinding member is [RESERVED] since Webauthn Level 3. It is never read by the Relying Party, so whatever
+     * a client puts under that key must not fail the ceremony.
+     */
+    #[Test]
+    public function aReservedTokenBindingMemberIsNotValidated(): void
+    {
+        // Given
+        $data = [
+            'type' => 'type',
+            'origin' => 'origin',
+            'challenge' => Base64UrlSafe::encodeUnpadded('challenge'),
+            'tokenBinding' => 'supported',
+        ];
+
+        // When
+        $collectedClientData = CollectedClientData::create('raw_data', $data);
+
+        // Then
+        static::assertSame('supported', $collectedClientData->get('tokenBinding'));
+    }
 }
