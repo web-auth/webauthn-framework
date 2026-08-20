@@ -41,22 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
-    outputs:
-      cache-key: ${{ steps.cache-key-generator.outputs.key }}
     steps:
       - uses: actions/checkout@v6
-
-      - id: cache-key-generator
-        run: echo "key=composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v5
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ steps.cache-key-generator.outputs.key }}
-          restore-keys: |
-            composer-${{ runner.os }}-
 
       - uses: ramsey/composer-install@v4
         with:
@@ -87,12 +73,10 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor ecs
 
   rector:
@@ -104,12 +88,10 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor rector
 
   validate:
@@ -120,12 +102,10 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: |
           composer dump-autoload --optimize --strict-psr
           composer validate --strict
@@ -161,12 +141,10 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor deptrac
 
   tests:

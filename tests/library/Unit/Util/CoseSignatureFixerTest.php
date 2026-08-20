@@ -11,6 +11,7 @@ use Cose\Algorithm\Signature\EdDSA\EdDSA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use function strlen;
 use Webauthn\Util\CoseSignatureFixer;
 
 /**
@@ -31,23 +32,23 @@ final class CoseSignatureFixerTest extends TestCase
         yield 'both components padded with a leading zero byte' => [
             '3046'
             . '022100' . str_repeat('ff', 32)
-            . '022100' . '80' . str_repeat('00', 31),
+            . '02210080' . str_repeat('00', 31),
             str_repeat('ff', 32) . '80' . str_repeat('00', 31),
         ];
 
         yield 'both components exactly 32 bytes long' => [
             '3044'
-            . '0220' . '7f' . str_repeat('ff', 31)
-            . '0220' . '01' . str_repeat('00', 31),
+            . '02207f' . str_repeat('ff', 31)
+            . '022001' . str_repeat('00', 31),
             '7f' . str_repeat('ff', 31) . '01' . str_repeat('00', 31),
         ];
 
         yield 'specification example with a 33-byte and a 30-byte component' => [
             '3043'
-            . '022100' . '89909504e14f1e29dba8158fa7c387e888ffbe07d824bb2143205506ab159c3e'
-            . '021e' . '56554fb5819b12845e85be2f78371cf3cb95e387f451cb362b9478d183d2',
+            . '02210089909504e14f1e29dba8158fa7c387e888ffbe07d824bb2143205506ab159c3e'
+            . '021e56554fb5819b12845e85be2f78371cf3cb95e387f451cb362b9478d183d2',
             '89909504e14f1e29dba8158fa7c387e888ffbe07d824bb2143205506ab159c3e'
-            . '0000' . '56554fb5819b12845e85be2f78371cf3cb95e387f451cb362b9478d183d2',
+            . '000056554fb5819b12845e85be2f78371cf3cb95e387f451cb362b9478d183d2',
         ];
     }
 
@@ -85,8 +86,8 @@ final class CoseSignatureFixerTest extends TestCase
         // Given
         $signature = hex2bin(
             '3064'
-            . '0230' . '7f' . str_repeat('ff', 47)
-            . '0230' . '01' . str_repeat('00', 47)
+            . '02307f' . str_repeat('ff', 47)
+            . '023001' . str_repeat('00', 47)
         );
 
         // When
@@ -106,8 +107,8 @@ final class CoseSignatureFixerTest extends TestCase
         // Given
         $signature = hex2bin(
             '308188'
-            . '0242' . '01' . str_repeat('00', 64) . 'ff'
-            . '0242' . '01' . str_repeat('ff', 64) . '00'
+            . '024201' . str_repeat('00', 64) . 'ff'
+            . '024201' . str_repeat('ff', 64) . '00'
         );
 
         // When
@@ -116,7 +117,7 @@ final class CoseSignatureFixerTest extends TestCase
         // Then
         static::assertSame(132, strlen($fixed));
         static::assertSame(
-            '01' . str_repeat('00', 64) . 'ff' . '01' . str_repeat('ff', 64) . '00',
+            '01' . str_repeat('00', 64) . 'ff01' . str_repeat('ff', 64) . '00',
             bin2hex($fixed)
         );
     }
@@ -128,7 +129,7 @@ final class CoseSignatureFixerTest extends TestCase
         $signature = hex2bin(
             '308186'
             . '0241' . str_repeat('11', 65)
-            . '0242' . '01' . str_repeat('22', 65)
+            . '024201' . str_repeat('22', 65)
         );
 
         // When

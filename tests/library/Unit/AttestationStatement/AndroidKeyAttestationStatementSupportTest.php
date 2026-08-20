@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use const JSON_THROW_ON_ERROR;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
