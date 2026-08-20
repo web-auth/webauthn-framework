@@ -37,7 +37,6 @@ return static function (ECSConfig $config): void {
     $config->import(SetList::CLEAN_CODE);
     $config->import(SetList::DOCTRINE_ANNOTATIONS);
     $config->import(SetList::SPACES);
-    $config->import(SetList::PHPUNIT);
     $config->import(SetList::SYMPLIFY);
     $config->import(SetList::ARRAY);
     $config->import(SetList::COMMON);
@@ -45,7 +44,6 @@ return static function (ECSConfig $config): void {
     $config->import(SetList::CONTROL_STRUCTURES);
     $config->import(SetList::DOCBLOCK);
     $config->import(SetList::NAMESPACES);
-    $config->import(SetList::STRICT);
 
     $config->rule(StrictParamFixer::class);
     $config->rule(StrictComparisonFixer::class);
