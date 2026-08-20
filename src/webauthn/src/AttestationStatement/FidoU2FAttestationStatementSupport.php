@@ -120,7 +120,7 @@ final class FidoU2FAttestationStatementSupport implements AttestationStatementSu
         $dataToVerify .= $clientDataJSONHash;
         $dataToVerify .= $authenticatorData->attestedCredentialData
             ->credentialId;
-        $dataToVerify .= $this->extractPublicKey($authenticatorData->attestedCredentialData ->credentialPublicKey);
+        $dataToVerify .= $this->extractPublicKey($authenticatorData->attestedCredentialData->credentialPublicKey);
 
         /** @var string $sig */
         $sig = $attestationStatement->get('sig');

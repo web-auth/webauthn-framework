@@ -28,7 +28,6 @@ abstract class WebauthnAuthenticator extends AbstractLoginFormAuthenticator
             $authData = $response->attestationObject->authData;
         }
         /** @var AuthenticatorData $authData */
-
         $token = new WebauthnToken(
             $webauthnBadge->getPublicKeyCredentialUserEntity(),
             $webauthnBadge->getPublicKeyCredentialOptions(),

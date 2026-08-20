@@ -14,7 +14,7 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 
-final class CheckUserVerification implements CeremonyStep
+final readonly class CheckUserVerification implements CeremonyStep
 {
     public function __construct(
         private bool $requireUserVerification = true

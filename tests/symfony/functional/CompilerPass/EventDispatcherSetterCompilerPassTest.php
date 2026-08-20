@@ -35,7 +35,7 @@ final class EventDispatcherSetterCompilerPassTest extends AbstractCompilerPassTe
     #[DataProvider('getClassList')]
     public function eventDispatcherIsCorrectlySet(string $className): void
     {
-        //Given
+        // Given
         $this->setDefinition('my_event_dispatcher', new Definition());
         $this->container->setAlias('webauthn.event_dispatcher', 'my_event_dispatcher');
 
@@ -43,10 +43,10 @@ final class EventDispatcherSetterCompilerPassTest extends AbstractCompilerPassTe
         $definition->addTag(EventDispatcherSetterCompilerPass::TAG);
         $this->setDefinition($className, $definition);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             $className,
             'setEventDispatcher',

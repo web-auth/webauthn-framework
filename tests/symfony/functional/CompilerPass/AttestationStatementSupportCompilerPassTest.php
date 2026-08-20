@@ -21,17 +21,17 @@ final class AttestationStatementSupportCompilerPassTest extends AbstractCompiler
     #[Test]
     public function aTaggedAttestationStatementSupportServiceIsAddedToTheManager(): void
     {
-        //Given
+        // Given
         $this->setDefinition(AttestationStatementSupportManager::class, new Definition());
 
         $attestationStatementSupportService = new Definition();
         $attestationStatementSupportService->addTag(AttestationStatementSupportCompilerPass::TAG);
         $this->setDefinition('service_1', $attestationStatementSupportService);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             AttestationStatementSupportManager::class,
             'add',

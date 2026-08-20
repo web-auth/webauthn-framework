@@ -20,7 +20,7 @@ final class DynamicRouteCompilerPassTest extends AbstractCompilerPassTestCase
     #[Test]
     public function dynamicRoutesAreAddedToTheLoader(): void
     {
-        //Given
+        // Given
         $this->setDefinition(Loader::class, new Definition());
 
         $route1 = new Definition();
@@ -38,10 +38,10 @@ final class DynamicRouteCompilerPassTest extends AbstractCompilerPassTestCase
         ]);
         $this->setDefinition('route_2', $route2);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             Loader::class,
             'add',

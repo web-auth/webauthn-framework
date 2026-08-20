@@ -21,7 +21,7 @@ final class ExtensionOutputCheckerCompilerPassTest extends AbstractCompilerPassT
     #[Test]
     public function androidSafetyNetApiVerificationIsEnabledWhenAllServicesAndParametersAreSet(): void
     {
-        //Given
+        // Given
         $this->setDefinition(ExtensionOutputCheckerHandler::class, new Definition());
 
         $extension1 = new Definition();
@@ -32,10 +32,10 @@ final class ExtensionOutputCheckerCompilerPassTest extends AbstractCompilerPassT
         $extension2->addTag(ExtensionOutputCheckerCompilerPass::TAG);
         $this->setDefinition('extension_2', $extension2);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             ExtensionOutputCheckerHandler::class,
             'add',

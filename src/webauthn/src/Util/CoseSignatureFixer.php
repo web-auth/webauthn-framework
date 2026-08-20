@@ -39,7 +39,7 @@ final readonly class CoseSignatureFixer
                 return ECSignature::fromAsn1(
                     $signature,
                     self::ES256_SIGNATURE_LENGTH
-                ); //TODO: fix this hardcoded value by adding a dedicated method for the algorithms
+                ); // TODO: fix this hardcoded value by adding a dedicated method for the algorithms
             case ES384::ID:
                 if (strlen($signature) === self::ES384_SIGNATURE_LENGTH) {
                     return $signature;

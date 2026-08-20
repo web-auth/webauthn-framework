@@ -20,7 +20,7 @@ final class CoseAlgorithmCompilerPassTest extends AbstractCompilerPassTestCase
     #[Test]
     public function coseAlgorithmsAreAddedToTHeAlgorithmManager(): void
     {
-        //Given
+        // Given
         $this->setDefinition('webauthn.cose.algorithm.manager', new Definition());
 
         $algorithm1 = new Definition();
@@ -31,10 +31,10 @@ final class CoseAlgorithmCompilerPassTest extends AbstractCompilerPassTestCase
         $algorithm2->addTag(CoseAlgorithmCompilerPass::TAG);
         $this->setDefinition('algorithm_2', $algorithm1);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             'webauthn.cose.algorithm.manager',
             'add',

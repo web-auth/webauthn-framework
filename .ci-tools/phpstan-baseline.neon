@@ -28,6 +28,12 @@ parameters:
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
+			rawMessage: 'Strict comparison using !== between string and null will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
+
+		-
 			rawMessage: '''
 				Call to deprecated method setSecuredRelyingPartyId() of class Webauthn\Bundle\DependencyInjection\Compiler\CeremonyStepManagerFactoryCompilerPass:
 				Will be removed in 6.0.0
@@ -43,12 +49,42 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
 
 		-
+			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAssertionControllersAndRoutes() expects array{options_storage: string|null, failure_handler: string, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}, array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAttestationControllersAndRoutes() expects array{options_storage: string|null, failure_handler: string, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}, array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::getAssertionOptionsBuilderId() expects array{options_builder: string|null, profile: string}, array{enabled: true, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
+			rawMessage: 'Parameter #3 $config of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::getAttestationOptionsBuilderId() expects array{options_builder: string|null, profile: string}, array{enabled: true, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/DependencyInjection/Factory/Security/WebauthnFactory.php
+
+		-
 			rawMessage: '''
 				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
 			'''
 			identifier: classConstant.deprecatedInterface
 			count: 1
+			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
+
+		-
+			rawMessage: Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.
+			identifier: nullCoalesce.unnecessary
+			count: 3
 			path: ../src/symfony/src/DependencyInjection/WebauthnExtension.php
 
 		-
@@ -59,6 +95,12 @@ parameters:
 			identifier: class.implementsDeprecatedInterface
 			count: 1
 			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
+
+		-
+			rawMessage: 'Call to function is_array() with array<mixed> will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/Token/WebauthnToken.php
 
 		-
 			rawMessage: 'Parameter #1 $data (array{Webauthn\PublicKeyCredentialUserEntity, Webauthn\PublicKeyCredentialDescriptor, Webauthn\PublicKeyCredentialOptions, bool, bool, bool, bool, int, ...}) of method Webauthn\Bundle\Security\Authentication\Token\WebauthnToken::__unserialize() should be contravariant with parameter $data (array) of method Symfony\Component\Security\Core\Authentication\Token\AbstractToken::__unserialize()'
@@ -158,6 +200,36 @@ parameters:
 			identifier: instanceof.deprecatedInterface
 			count: 2
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
+
+		-
+			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createAuthenticatorSelectionCriteria() expects array{authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createCredentialParameters() expects array{public_key_credential_parameters: list<int>}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createExtensions() expects array{extensions: array<string, mixed>}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createRpEntity() expects array{rp: array{name: string, id: string|null}}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory::createExtensions() expects array{extensions: array<string, mixed>}, array{challenge_length: int, rp_id?: string|null, timeout?: int|null, user_verification?: string|null, extensions: array<string, mixed>} given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
 			rawMessage: 'Parameter #2 $attStmt of static method Webauthn\AttestationStatement\AttestationStatement::create() expects array<string, mixed>, list<Webauthn\AttestationStatement\AttestationStatement> given.'
@@ -373,6 +445,12 @@ parameters:
 			path: ../src/webauthn/src/Counter/ThrowExceptionIfInvalid.php
 
 		-
+			rawMessage: Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.
+			identifier: nullCoalesce.unnecessary
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+		-
 			rawMessage: '''
 				Access to deprecated property $icon of class Webauthn\PublicKeyCredentialEntity:
 				since 5.1.0 and will be removed in 6.0.0. This value is always null.
@@ -427,13 +505,19 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
 
 		-
+			rawMessage: 'Offset ''type'' on array{type: string} in isset() always exists and is not nullable.'
+			identifier: isset.offset
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/TrustPathDenormalizer.php
+
+		-
 			rawMessage: 'Parameter #1 $options (array<string, string>) of method Webauthn\MetadataService\Psr18HttpClient::withOptions() should be contravariant with parameter $options (array) of method Symfony\Contracts\HttpClient\HttpClientInterface::withOptions()'
 			identifier: method.childParameterType
 			count: 1
 			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php
 
 		-
-			rawMessage: 'Parameter #3 $options (array{base_uri?: string, query?: array<string, string>, body?: string, headers?: array<string, string>}) of method Webauthn\MetadataService\Psr18HttpClient::request() should be contravariant with parameter $options (array) of method Symfony\Contracts\HttpClient\HttpClientInterface::request()'
+			rawMessage: 'Parameter #3 $options (array{base_uri?: string, query?: array<string, string>, body?: string, headers?: array<string, string>, ...}) of method Webauthn\MetadataService\Psr18HttpClient::request() should be contravariant with parameter $options (array) of method Symfony\Contracts\HttpClient\HttpClientInterface::request()'
 			identifier: method.childParameterType
 			count: 1
 			path: ../src/webauthn/src/MetadataService/Psr18HttpClient.php

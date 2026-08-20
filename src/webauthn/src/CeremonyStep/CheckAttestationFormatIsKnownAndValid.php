@@ -48,7 +48,7 @@ final readonly class CheckAttestationFormatIsKnownAndValid implements CeremonySt
         ) || throw AuthenticatorResponseVerificationException::create('Unsupported attestation statement format.');
 
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
-        $clientDataJSONHash = hash('sha256', $authenticatorResponse->clientDataJSON ->rawData, true);
+        $clientDataJSONHash = hash('sha256', $authenticatorResponse->clientDataJSON->rawData, true);
         $attestationStatementSupport->isValid(
             $clientDataJSONHash,
             $attestationObject->attStmt,

@@ -16,15 +16,15 @@ final class AllowedOriginsTest extends WebauthnTestCase
     #[Test]
     public function allowedOriginsAreAvailable(): void
     {
-        //Given
+        // Given
         $client = static::createClient(server: [
             'HTTPS' => 'on',
         ]);
 
-        //When
+        // When
         $client->request(Request::METHOD_GET, '/.well-known/webauthn');
 
-        //Then
+        // Then
         static::assertResponseIsSuccessful();
         static::assertSame(
             '{"origins":["https:\/\/localhost","https:\/\/localhost:8443","https:\/\/bar.acme","https:\/\/webauthn.spomky-labs.com","https:\/\/spomky-webauthn.herokuapp.com"]}',

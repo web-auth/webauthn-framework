@@ -8,6 +8,7 @@ use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\Symfony\Symfony80\Rector\Class_\RemoveEraseCredentialsRector;
 use Rector\ValueObject\PhpVersion;
 
 $builder = RectorConfig::configure();
@@ -21,7 +22,6 @@ $builder->withSets([
     DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
     PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
-    PHPUnitSetList::PHPUNIT_120,
 ]);
 $builder->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true);
 $builder->withPhpVersion(PhpVersion::PHP_82);
@@ -36,6 +36,7 @@ $builder->withPaths(
 );
 $builder->withSkip([
     PreferPHPUnitThisCallRector::class,
+    RemoveEraseCredentialsRector::class,
     __DIR__ . '/../src/Library/Core/JWKSet.php',
     __DIR__ . '/../src/Bundle/JoseFramework/DependencyInjection/Source/KeyManagement/JWKSource.php',
     __DIR__ . '/../src/Bundle/JoseFramework/DependencyInjection/Source/KeyManagement/JWKSetSource.php',

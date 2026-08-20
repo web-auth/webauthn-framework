@@ -42,7 +42,7 @@ final class CheckRelyingPartyIdIdHash implements CeremonyStep
         );
         $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
         $rpId = $publicKeyCredentialOptions->rpId ?? $publicKeyCredentialOptions->rp->id ?? $host;
-        $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData ->extensions);
+        $facetId = $this->getFacetId($rpId, $publicKeyCredentialOptions->extensions, $authData->extensions);
         $rpIdHash = hash('sha256', $isU2F ? $C->origin : $facetId, true);
         hash_equals(
             $rpIdHash,
