@@ -60,7 +60,7 @@ final class AttestationTest extends KernelTestCase
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(AttestationStatement::TYPE_NONE, $response->attestationObject->attStmt->type);
-        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
+        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject->attStmt->trustPath);
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->response,
             $publicKeyCredentialCreationOptions,
@@ -105,7 +105,7 @@ final class AttestationTest extends KernelTestCase
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(AttestationStatement::TYPE_NONE, $response->attestationObject->attStmt->type);
-        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
+        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject->attStmt->trustPath);
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->response,
             $publicKeyCredentialCreationOptions,
@@ -140,8 +140,8 @@ final class AttestationTest extends KernelTestCase
         static::assertSame([], $descriptor->transports);
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertSame(AttestationStatement::TYPE_BASIC, $response->attestationObject ->attStmt ->type);
-        static::assertInstanceOf(CertificateTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
+        static::assertSame(AttestationStatement::TYPE_BASIC, $response->attestationObject->attStmt->type);
+        static::assertInstanceOf(CertificateTrustPath::class, $response->attestationObject->attStmt->trustPath);
         $this->expectException(CertificateChainException::class);
         $this->expectExceptionMessage('Unable to validate the certificate chain.');
 
@@ -197,7 +197,7 @@ final class AttestationTest extends KernelTestCase
         /** @var SerializerInterface $serializer */
         $serializer = self::getContainer()->get(SerializerInterface::class);
 
-        //Then
+        // Then
         $this->expectException(CertificateChainException::class);
         $this->expectExceptionMessage('Unable to validate the certificate chain.');
 
@@ -220,8 +220,8 @@ final class AttestationTest extends KernelTestCase
         static::assertSame([], $descriptor->transports);
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
-        static::assertSame(AttestationStatement::TYPE_BASIC, $response->attestationObject ->attStmt ->type);
-        static::assertInstanceOf(CertificateTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
+        static::assertSame(AttestationStatement::TYPE_BASIC, $response->attestationObject->attStmt->type);
+        static::assertInstanceOf(CertificateTrustPath::class, $response->attestationObject->attStmt->trustPath);
 
         // When
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(

@@ -60,7 +60,6 @@ final class PasskeyEndpointsResponseTest extends AbstractTestCase
         // Given
         $response = PasskeyEndpointsResponse::create(
             enroll: Url::create('https://example.com/enroll'),
-            manage: null,
             prfUsageDetails: Url::create('https://example.com/prf-info')
         );
 

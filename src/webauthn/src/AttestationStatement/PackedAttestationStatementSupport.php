@@ -169,12 +169,12 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $certificate = Certificate::fromPEM(PEM::fromString($attestnCert));
         $tbsCertificate = $certificate->tbsCertificate();
 
-        //Check version (X.509 version 3 is encoded as 2)
+        // Check version (X.509 version 3 is encoded as 2)
         $tbsCertificate->version() === TBSCertificate::VERSION_3 || throw AttestationStatementVerificationException::create(
             'Invalid certificate version'
         );
 
-        //Check subject field
+        // Check subject field
         $subject = $tbsCertificate->subject();
         $subject->countOfType(
             AttributeType::OID_COUNTRY_NAME
@@ -194,10 +194,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
             'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
         );
 
-        //Check extensions
+        // Check extensions
         $extensions = $tbsCertificate->extensions();
 
-        //Check certificate is not a CA cert
+        // Check certificate is not a CA cert
         $extensions->hasBasicConstraints() || throw AttestationStatementVerificationException::create(
             'The Basic Constraints extension must have the CA component set to false'
         );

@@ -108,7 +108,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
 
         $certificates = $trustPath->certificates;
 
-        //Decode leaf attestation certificate
+        // Decode leaf attestation certificate
         $leaf = $certificates[0];
 
         $this->checkCertificateAndGetPublicKey($leaf, $clientDataJSONHash, $authenticatorData);
@@ -124,7 +124,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         string $clientDataHash,
         AuthenticatorData $authenticatorData
     ): void {
-        //Check that authData publicKey matches the public key in the attestation certificate
+        // Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
@@ -150,10 +150,10 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
             'Unsupported key type'
         );
 
-        /*---------------------------*/
+        /* --------------------------- */
         $cert = Certificate::fromPEM(PEM::fromString($certificate));
 
-        //We check the attested key corresponds to the key in the certificate
+        // We check the attested key corresponds to the key in the certificate
         PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
             ->subjectPublicKeyInfo()
             ->toPEM()
@@ -162,7 +162,7 @@ final class AppleAttestationStatementSupport implements AttestationStatementSupp
         $extensions = $cert->tbsCertificate()
             ->extensions();
 
-        //Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
+        // Find Apple Extension with OID "1.2.840.113635.100.8.2" in certificate extensions
         $extensions->has(self::OID_APPLE) || throw AttestationStatementVerificationException::create(
             'The certificate extension "' . self::OID_APPLE . '" is missing'
         );

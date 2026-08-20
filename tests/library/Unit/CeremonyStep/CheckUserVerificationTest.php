@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\CeremonyStep;
 
+use function chr;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Uid\Uuid;
 use Webauthn\AttestationStatement\AttestationObject;
@@ -21,7 +22,6 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\AbstractTestCase;
 use Webauthn\TrustPath\EmptyTrustPath;
-use function chr;
 
 /**
  * Verify the `$requireUserVerification` opt-out and the runtime mediation override on

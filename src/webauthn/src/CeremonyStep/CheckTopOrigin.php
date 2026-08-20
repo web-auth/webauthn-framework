@@ -39,7 +39,7 @@ class CheckTopOrigin implements CeremonyStep
         if ($topOrigin === null) {
             return;
         }
-        if ($authenticatorResponse->clientDataJSON->crossOrigin !== true) {
+        if (! $authenticatorResponse->clientDataJSON->crossOrigin) {
             throw AuthenticatorResponseVerificationException::create('The response is not cross-origin.');
         }
         if ($this->topOriginValidator === null) {

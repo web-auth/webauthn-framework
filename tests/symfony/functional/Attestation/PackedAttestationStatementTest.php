@@ -59,7 +59,7 @@ final class PackedAttestationStatementTest extends KernelTestCase
         $response = $publicKeyCredential->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
         static::assertSame(AttestationStatement::TYPE_SELF, $response->attestationObject->attStmt->type);
-        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject ->attStmt ->trustPath);
+        static::assertInstanceOf(EmptyTrustPath::class, $response->attestationObject->attStmt->trustPath);
         self::$kernel->getContainer()->get(AuthenticatorAttestationResponseValidator::class)->check(
             $publicKeyCredential->response,
             $publicKeyCredentialCreationOptions,

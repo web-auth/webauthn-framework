@@ -29,7 +29,7 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
     #[DataProvider('getClassList')]
     public function loggerIsCorrectlySet(string $className): void
     {
-        //Given
+        // Given
         $this->setDefinition('my_logger', new Definition());
         $this->container->setAlias('webauthn.logger', 'my_logger');
 
@@ -37,12 +37,12 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
         $definition->addTag(LoggerSetterCompilerPass::TAG);
         $this->setDefinition($className, $definition);
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             $className,
             'setLogger',

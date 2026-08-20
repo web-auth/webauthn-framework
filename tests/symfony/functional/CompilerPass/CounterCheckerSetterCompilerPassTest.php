@@ -22,16 +22,16 @@ final class CounterCheckerSetterCompilerPassTest extends AbstractCompilerPassTes
     #[Test]
     public function theCounterCheckerIsCorrectlyAddedIfItExists(): void
     {
-        //Given
+        // Given
         $this->setDefinition(CeremonyStepManagerFactory::class, new Definition());
 
         $this->setDefinition('counter_checker', new Definition());
         $this->container->setAlias(CounterChecker::class, 'counter_checker');
 
-        //When
+        // When
         $this->compile();
 
-        //Then
+        // Then
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             CeremonyStepManagerFactory::class,
             'setCounterChecker',

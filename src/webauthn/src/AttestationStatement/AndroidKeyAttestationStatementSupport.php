@@ -116,7 +116,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         $certificates = $trustPath->certificates;
 
-        //Decode leaf attestation certificate
+        // Decode leaf attestation certificate
         $leaf = $certificates[0];
         $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
@@ -138,7 +138,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         string $clientDataHash,
         AuthenticatorData $authenticatorData
     ): void {
-        //Check that authData publicKey matches the public key in the attestation certificate
+        // Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
             'No attested credential data found'
@@ -164,13 +164,13 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'Unsupported key type'
         );
 
-        /*---------------------------*/
+        /* --------------------------- */
         /**
          * @see https://w3c.github.io/webauthn/#sctn-key-attstn-cert-requirements
          * @see https://source.android.com/docs/security/features/keystore/attestation#attestation-certificate
          */
         $cert = Certificate::fromPEM(PEM::fromString($certificate));
-        //We check the attested key corresponds to the key in the certificate
+        // We check the attested key corresponds to the key in the certificate
         PEM::fromString($publicKey->asPEM())->string() === $cert->tbsCertificate()
             ->subjectPublicKeyInfo()
             ->toPEM()
@@ -179,7 +179,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $extensions = $cert->tbsCertificate()
             ->extensions();
 
-        //Find Android KeyStore Extension with OID self::OID_ANDROID in certificate extensions
+        // Find Android KeyStore Extension with OID self::OID_ANDROID in certificate extensions
         $extensions->has(self::OID_ANDROID) || throw AttestationStatementVerificationException::create(
             'The certificate extension "' . self::OID_ANDROID . '" is missing'
         );
@@ -191,7 +191,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
          */
         $extensionAsAsn1 = Sequence::fromDER($androidExtension->extensionValue());
 
-        //Check that attestationChallenge is set to the clientDataHash.
+        // Check that attestationChallenge is set to the clientDataHash.
         $extensionAsAsn1->has(4) || throw AttestationStatementVerificationException::create(
             'The attestationChallenge field is missing'
         );
@@ -204,7 +204,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
             'The client data hash is not valid'
         );
 
-        //Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
+        // Check that both teeEnforced and softwareEnforced structures don't contain allApplications(600) tag.
         $extensionAsAsn1->has(6) || throw AttestationStatementVerificationException::create(
             'The softwareEnforced field is missing'
         );

@@ -218,13 +218,13 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         /** @var array{1: int} $qualifiedSignerLengthData */
         $qualifiedSignerLengthData = unpack('n', $certInfo->read(2));
-        $qualifiedSigner = $certInfo->read($qualifiedSignerLengthData[1]); //Ignored
+        $qualifiedSigner = $certInfo->read($qualifiedSignerLengthData[1]); // Ignored
 
         /** @var array{1: int} $extraDataLengthData */
         $extraDataLengthData = unpack('n', $certInfo->read(2));
         $extraData = $certInfo->read($extraDataLengthData[1]);
 
-        $clockInfo = $certInfo->read(17); //Ignore
+        $clockInfo = $certInfo->read(17); // Ignore
 
         $firmwareVersion = $certInfo->read(8);
 
@@ -234,7 +234,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
 
         /** @var array{1: int} $attestedQualifiedNameLengthData */
         $attestedQualifiedNameLengthData = unpack('n', $certInfo->read(2));
-        $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLengthData[1]); //Ignore
+        $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLengthData[1]); // Ignore
         $certInfo->isEOF() || throw AttestationStatementVerificationException::create(
             'Invalid certificate information. Presence of extra bytes.'
         );

@@ -170,7 +170,7 @@ final class CompoundAttestationStatementSupport implements AttestationStatementS
                     $countValid++;
                 }
             } catch (Throwable) {
-                //Nothing to do
+                // Nothing to do
             }
         }
 

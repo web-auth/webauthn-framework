@@ -64,7 +64,7 @@ class CheckAlgorithm implements CeremonyStep
     private function getCoseKey(string $credentialPublicKey): Key
     {
         $isU2F = U2FPublicKey::isU2FKey($credentialPublicKey);
-        if ($isU2F === true) {
+        if ($isU2F) {
             $credentialPublicKey = U2FPublicKey::convertToCoseKey($credentialPublicKey);
         }
         $stream = new StringStream($credentialPublicKey);
