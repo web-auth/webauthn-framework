@@ -7,6 +7,7 @@ namespace Webauthn\Bundle\Security\Authentication\Token;
 use function assert;
 use function is_array;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
+use function trigger_deprecation;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserPresentVoter;
 use Webauthn\Bundle\Security\Authorization\Voter\IsUserVerifiedVoter;
@@ -16,6 +17,11 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class WebauthnToken extends AbstractToken
 {
+    /**
+     * The "$reservedForFutureUse1" and "$reservedForFutureUse2" arguments are deprecated since 5.4.0 and will be
+     * removed in 6.0.0, together with the matching getters and their entries in the serialized payload. They are still
+     * stored and returned as-is until then.
+     */
     public function __construct(
         private readonly PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity,
         private readonly PublicKeyCredentialOptions $publicKeyCredentialOptions,
@@ -125,13 +131,35 @@ class WebauthnToken extends AbstractToken
         return $this->isUserVerified;
     }
 
+    /**
+     * @deprecated since 5.4.0 and will be removed in 6.0.0. The RFU1 bit SHALL be set to zero by the authenticator, so
+     * this value is always 0 with a compliant authenticator and cannot be acted upon otherwise.
+     */
     public function getReservedForFutureUse1(): int
     {
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '5.4.0',
+            'The method "%s" is deprecated since 5.4.0 and will be removed in 6.0.0. The RFU1 bit SHALL be set to zero by the authenticator and brings no value to the Relying Party.',
+            __METHOD__
+        );
+
         return $this->reservedForFutureUse1;
     }
 
+    /**
+     * @deprecated since 5.4.0 and will be removed in 6.0.0. The RFU2 bit SHALL be set to zero by the authenticator, so
+     * this value is always 0 with a compliant authenticator and cannot be acted upon otherwise.
+     */
     public function getReservedForFutureUse2(): int
     {
+        trigger_deprecation(
+            'web-auth/webauthn-symfony-bundle',
+            '5.4.0',
+            'The method "%s" is deprecated since 5.4.0 and will be removed in 6.0.0. The RFU2 bit SHALL be set to zero by the authenticator and brings no value to the Relying Party.',
+            __METHOD__
+        );
+
         return $this->reservedForFutureUse2;
     }
 
