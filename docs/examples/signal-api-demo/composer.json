@@ -16,7 +16,6 @@
     ],
     "require": {
         "php": ">=8.2",
-        "ext-json": "*",
         "ext-openssl": "*",
         "web-auth/webauthn-framework": "5.4.x-dev",
         "symfony/clock": "^6.4 || ^7.0",
