@@ -218,9 +218,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '20'
-          cache: 'npm'
       - name: Install npm dependencies
-        run: npm ci
+        # npm install (not npm ci): package-lock.json is not tracked, in line
+        # with composer.lock, so no lock file exists in CI.
+        run: npm install --no-audit --no-fund
       - name: Run Prettier check
         run: npm run format
       - name: Run ESLint check
