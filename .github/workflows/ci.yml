@@ -182,10 +182,13 @@ jobs:
             --display-warnings \
             --display-deprecations
 
+  # Temporarily disabled: Infection runs the initial test suite with vendor/bin/phpunit,
+  # which Composer resolves to PHPUnit 13 while the project is tested with the phpunit-11
+  # binary shipped in the phpqa image. Run it manually with "Run workflow" until fixed.
   infection:
     name: "🧬 Mutation Testing"
     needs: [phpstan, ecs, rector, deptrac, lint]
-    if: endsWith(github.ref_name, '.x')
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4

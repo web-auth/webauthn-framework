@@ -13,6 +13,8 @@ permissions: read-all
 jobs:
   analysis:
     name: Scorecards analysis
+    # The action only supports the default branch, so skip the other maintained branches.
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     permissions:
       # Needed to upload the results to code-scanning dashboard.
