@@ -148,22 +148,22 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
     }
 
     #[Test]
-    public function singleCredentialEvalDoesNotRequireHmacSecretMc(): void
+    public function singleCredentialEvalDoesNotRequireMultipleCredentialEvaluation(): void
     {
         $builder = PseudoRandomFunctionInputExtensionBuilder::create()
             ->withCredentialInputs('cred-A', 'salt-A');
 
-        static::assertFalse($builder->requiresHmacSecretMc());
+        static::assertFalse($builder->requiresMultipleCredentialEvaluation());
     }
 
     #[Test]
-    public function multipleCredentialEvalRequiresHmacSecretMc(): void
+    public function multipleCredentialEvalRequiresMultipleCredentialEvaluation(): void
     {
         $builder = PseudoRandomFunctionInputExtensionBuilder::create()
             ->withCredentialInputs('cred-A', 'salt-A')
             ->withCredentialInputs('cred-B', 'salt-B');
 
-        static::assertTrue($builder->requiresHmacSecretMc());
+        static::assertTrue($builder->requiresMultipleCredentialEvaluation());
     }
 
     #[Test]
@@ -173,16 +173,29 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCa
             ->withCredentialInputs('cred-A', 'salt-A')
             ->withCredentialInputs('cred-A', 'replacement-salt');
 
-        static::assertFalse($builder->requiresHmacSecretMc());
+        static::assertFalse($builder->requiresMultipleCredentialEvaluation());
     }
 
     #[Test]
-    public function evalOnlyDoesNotRequireHmacSecretMc(): void
+    public function evalOnlyDoesNotRequireMultipleCredentialEvaluation(): void
     {
         $builder = PseudoRandomFunctionInputExtensionBuilder::create()
             ->withInputs('default-salt');
 
-        static::assertFalse($builder->requiresHmacSecretMc());
+        static::assertFalse($builder->requiresMultipleCredentialEvaluation());
+    }
+
+    #[Test]
+    public function deprecatedHmacSecretMcAliasStillReportsTheSameResult(): void
+    {
+        $single = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A');
+        $multiple = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-B', 'salt-B');
+
+        static::assertFalse($single->requiresHmacSecretMc());
+        static::assertTrue($multiple->requiresHmacSecretMc());
     }
 
     #[Test]

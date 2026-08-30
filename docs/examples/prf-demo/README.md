@@ -37,8 +37,8 @@ for **client-side encryption**, inspired by Matt Miller's
 > passkey" UX contract the user accepts.
 
 The relying party server hands the browser a per-credential salt at every
-ceremony. The authenticator computes `HMAC-SHA256(credentialBoundKey, salt)` and
-the user agent surfaces the result as
+ceremony. The authenticator evaluates its credential-bound pseudo-random
+function over that salt and the user agent surfaces the result as
 `clientExtensionResults.prf.results.first`. The demo derives an AES-GCM key
 from that PRF output via HKDF and uses it to **encrypt and decrypt arbitrary
 items entirely inside the browser**. The server only ever sees the ciphertexts
@@ -114,7 +114,10 @@ standard packagist `web-auth/webauthn-lib` requirement.
 Open <http://localhost:8000> in a browser that supports the PRF extension:
 
 - A platform authenticator (Touch ID, Windows Hello, Android device unlock) or
-  a hardware key that exposes `hmac-secret`.
+  a hardware key that supports the `prf` extension. The specification is
+  abstract over how the authenticator implements it, so PRF availability is not
+  the same question as CTAP `hmac-secret` support: the client reports the answer
+  through `prf.enabled` and the presence of `prf.results`.
 - A secure context. `localhost` qualifies; otherwise serve over HTTPS.
 - Chrome 116+ / Edge 116+ on the desktop side, recent Safari (iOS 18+ /
   macOS 15+). Firefox is still trailing as of this writing.
@@ -156,9 +159,26 @@ $options->extensions = AuthenticationExtensions::create([$prf->build()]);
 ```
 
 The framework does **not** validate `clientExtensionResults.prf.results`
-server-side, and intentionally so — the PRF output is a secret that lives in
-the browser only. The lib's job is to surface the right inputs in the options
-sent to the browser; the rest is Web Crypto inside the page.
+server-side, and intentionally so: the PRF output is a secret that lives in the
+browser only. The lib's job is to surface the right inputs in the options sent
+to the browser; the rest is Web Crypto inside the page.
+
+That is not just a design choice here, it is what the specification requires.
+W3C WebAuthn Level 3 states that authenticator extension outputs MUST NOT
+contain cleartext PRF outputs, because the authenticator data is signed and the
+client therefore cannot strip anything from it before the credential is posted
+to the relying party server. Two practical rules follow:
+
+- read the results from `getClientExtensionResults().prf.results` and nowhere
+  else, and never post them to your own backend;
+- a readable `prf` entry sitting in the authenticator extension outputs is a
+  red flag, not usable key material. The library ships an opt-in
+  `Webauthn\AuthenticationExtensions\PseudoRandomFunctionOutputChecker` that
+  rejects such a response. It is not registered by default, since turning a
+  previously accepted ceremony into a hard failure does not belong in a minor
+  release. Add it to your `ExtensionOutputCheckerHandler` (or simply declare it
+  as a service in a Symfony application) if you want the requirement
+  enforced.
 
 ## Two PRF salts per ceremony
 
@@ -189,11 +209,11 @@ the example stays readable, but typical use cases for it are:
 
 ## Going fully offline
 
-The PRF computation happens **inside the authenticator** — there is zero network
-involved in `HMAC-SHA256(credentialBoundKey, salt)`, and `navigator.credentials.get()`
-itself does not hit the network. So once a passkey is enrolled and its salt is
-sitting on the device, **the unlock ceremony is 100 % offline**: no fetch, no
-server roundtrip is needed to derive the AES key.
+The PRF computation happens **inside the authenticator**, there is zero network
+involved in evaluating the credential-bound pseudo-random function, and
+`navigator.credentials.get()` itself does not hit the network. So once a passkey
+is enrolled and its salt is sitting on the device, **the unlock ceremony is
+100 % offline**: no fetch, no server roundtrip is needed to derive the AES key.
 
 The server endpoints in this demo (`/api/vault/options`, `/api/vault/verify`,
 `/api/vault/items/*`) exist for two reasons that are **not cryptographic**:
