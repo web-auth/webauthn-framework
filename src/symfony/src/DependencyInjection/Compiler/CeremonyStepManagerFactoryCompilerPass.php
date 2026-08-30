@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\DependencyInjection\Compiler;
 
+use function array_filter;
+use function array_values;
 use function count;
 use function is_array;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -12,6 +14,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\Bundle\CacheWarmer\RelatedOriginsLabelLimitWarmer;
 use Webauthn\Bundle\Controller\AllowedOriginsController;
 use Webauthn\Bundle\Routing\Loader;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
@@ -20,6 +23,7 @@ use Webauthn\ClientDataCollector\ClientDataCollectorManager;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use Webauthn\Util\PublicSuffixResolver;
 
 final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterface
 {
@@ -154,10 +158,13 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
             $container->getParameter('webauthn.allowed_origins'),
             $container->getParameter('webauthn.allow_subdomains'),
         ]);
-        $this->createControllerDefinition($container);
+        $this->createControllerDefinition($container, $allowedOrigins);
     }
 
-    private function createControllerDefinition(ContainerBuilder $container): void
+    /**
+     * @param array<mixed> $allowedOrigins
+     */
+    private function createControllerDefinition(ContainerBuilder $container, array $allowedOrigins): void
     {
         if (! $container->hasDefinition(Loader::class)) {
             return;
@@ -170,5 +177,37 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $controllerDefinition->setPublic(true);
         $definition = $container->getDefinition(Loader::class);
         $definition->addMethodCall('add', ['/.well-known/webauthn', null, AllowedOriginsController::class, 'GET']);
+        $this->registerRelatedOriginsLabelLimitWarmer($container, $allowedOrigins);
+    }
+
+    /**
+     * The label limit is a client-side anti-tracking mitigation, so the warning is only worth emitting when the
+     * "/.well-known/webauthn" endpoint is actually published. Deriving an eTLD+1 label needs a public suffix list,
+     * which the library does not ship: the check is therefore skipped unless the application registered a
+     * {@see PublicSuffixResolver}.
+     *
+     * @param array<mixed> $allowedOrigins
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-related-origins
+     */
+    private function registerRelatedOriginsLabelLimitWarmer(ContainerBuilder $container, array $allowedOrigins): void
+    {
+        if (! $container->hasParameter('webauthn.related_origins.label_limit_check')
+            || $container->getParameter('webauthn.related_origins.label_limit_check') !== true) {
+            return;
+        }
+        if (! $container->hasAlias(PublicSuffixResolver::class) && ! $container->hasDefinition(
+            PublicSuffixResolver::class
+        )) {
+            return;
+        }
+
+        $definition = new Definition(RelatedOriginsLabelLimitWarmer::class, [
+            array_values(array_filter($allowedOrigins, is_string(...))),
+            new Reference(PublicSuffixResolver::class),
+            new Reference('webauthn.logger'),
+        ]);
+        $definition->addTag('kernel.cache_warmer');
+        $container->setDefinition(RelatedOriginsLabelLimitWarmer::class, $definition);
     }
 }

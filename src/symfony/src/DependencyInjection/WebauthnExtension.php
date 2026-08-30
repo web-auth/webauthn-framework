@@ -58,6 +58,7 @@ use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use Webauthn\Util\PublicSuffixResolver;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
@@ -74,7 +75,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, ceremony_origin_pinning: bool, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
+        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, ceremony_origin_pinning: bool, related_origins: array{public_suffix_resolver: string|null, label_limit_check: bool}, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
@@ -95,6 +96,13 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.allowed_origins', $config['allowed_origins']);
         $container->setParameter('webauthn.allow_subdomains', $config['allow_subdomains']);
         $container->setParameter('webauthn.ceremony_origin_pinning', $config['ceremony_origin_pinning']);
+        $container->setParameter(
+            'webauthn.related_origins.label_limit_check',
+            $config['related_origins']['label_limit_check']
+        );
+        if ($config['related_origins']['public_suffix_resolver'] !== null) {
+            $container->setAlias(PublicSuffixResolver::class, $config['related_origins']['public_suffix_resolver']);
+        }
         $container->setAlias('webauthn.event_dispatcher', $config['event_dispatcher']);
         $container->setAlias('webauthn.clock', $config['clock']);
         if ($config['top_origin_validator'] !== null) {
