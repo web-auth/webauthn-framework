@@ -47,22 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
-    outputs:
-      cache-key: ${{ steps.cache-key-generator.outputs.key }}
     steps:
       - uses: actions/checkout@v7
-
-      - id: cache-key-generator
-        run: echo "key=composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v6
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ steps.cache-key-generator.outputs.key }}
-          restore-keys: |
-            composer-${{ runner.os }}-
 
       - uses: ramsey/composer-install@v4
         with:
@@ -72,7 +58,6 @@ jobs:
   phpstan:
     name: "1️⃣ Static Analysis (PHPStan)"
     needs: [pre_checks]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -87,35 +72,29 @@ jobs:
   ecs:
     name: "2️⃣ Coding Standards (ECS)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor ecs
 
   rector:
     name: "3️⃣ Refactoring (Rector)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor rector
 
   validate:
@@ -126,12 +105,10 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: |
           composer dump-autoload --optimize --strict-psr
           composer validate --strict
@@ -140,7 +117,6 @@ jobs:
   lint:
     name: "5️⃣ Syntax Check"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -161,18 +137,15 @@ jobs:
   deptrac:
     name: "7️⃣ Architecture Layer Check (Deptrac)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: ramsey/composer-install@v4
         with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
       - run: castor deptrac
 
   tests:
@@ -215,10 +188,13 @@ jobs:
             --display-warnings \
             --display-deprecations
 
+  # Temporarily disabled: Infection runs the initial test suite with vendor/bin/phpunit,
+  # which Composer resolves to PHPUnit 13 while the project is tested with the phpunit-11
+  # binary shipped in the phpqa image. Run it manually with "Run workflow" until fixed.
   infection:
     name: "🧬 Mutation Testing"
     needs: [phpstan, ecs, rector, deptrac, lint]
-    if: endsWith(github.ref_name, '.x')
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4

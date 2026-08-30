@@ -115,7 +115,8 @@ final class SerializerTest extends AbstractTestCase
         static::assertJsonStringEqualsJsonString(
             '{
                 "rp": {
-                    "id": "example.com"
+                    "id": "example.com",
+                    "name": "example.com"
                 },
                 "user": {
                     "id": "MDEyMzQ1Njc4OQ",

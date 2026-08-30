@@ -7,7 +7,9 @@ namespace Webauthn;
 abstract class PublicKeyCredentialEntity
 {
     /**
-     * @deprecated since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+     * This property is not deprecated as such: the deprecation is scoped to the concrete entities. It is deprecated on
+     * PublicKeyCredentialRpEntity, from which it is removed in 6.0.0, but not on PublicKeyCredentialUserEntity, where
+     * it remains a first-class field.
      */
     public string $name;
 
@@ -22,7 +24,7 @@ abstract class PublicKeyCredentialEntity
             trigger_deprecation(
                 'web-auth/webauthn-lib',
                 '5.3.0',
-                'The parameter "$name" is deprecated since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.'
+                'Setting the "name" field on "PublicKeyCredentialRpEntity" is deprecated since 5.3.0 and will be removed in 6.0.0. The serialized options default rp.name to the Relying Party ID. Please set "" instead.'
             );
         }
         $this->name = $name;

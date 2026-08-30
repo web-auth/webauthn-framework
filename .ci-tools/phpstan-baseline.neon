@@ -55,6 +55,15 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Compiler/CeremonyStepManagerFactoryCompilerPass.php
 
 		-
+			rawMessage: '''
+				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 4
+			path: ../src/symfony/src/DependencyInjection/Compiler/PublicKeyCredentialSourceRepositoryAliasCompilerPass.php
+
+		-
 			rawMessage: 'Parameter #3 $config (array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}) of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticator() should be contravariant with parameter $config (array<string, mixed>) of method Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface::createAuthenticator()'
 			identifier: method.childParameterType
 			count: 1
@@ -128,24 +137,6 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
-
-		-
-			rawMessage: '''
 				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
 			'''
@@ -182,15 +173,6 @@ parameters:
 			identifier: constructor.missingParentCall
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnPassport.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 3
-			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
 			rawMessage: '''
@@ -557,8 +539,8 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialRpEntity:
+				since 5.3.0 and will be removed in 6.0.0. The serialized options default rp.name to the Relying Party ID. Please set "" instead.
 			'''
 			identifier: property.deprecated
 			count: 1
@@ -592,15 +574,6 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
-
-		-
 			rawMessage: 'Offset ''type'' on array{type: string} in isset() always exists and is not nullable.'
 			identifier: isset.offset
 			count: 1
@@ -626,24 +599,6 @@ parameters:
 			identifier: classConstant.deprecated
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/PublicKeyCredentialEntity.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/PublicKeyCredentialUserEntity.php
 
 		-
 			rawMessage: 'Parameter #1 $data of static method Cose\Key\Key::createFromData() expects array<int, mixed>, array<int|string, mixed> given.'
