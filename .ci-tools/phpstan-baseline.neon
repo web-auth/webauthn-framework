@@ -43,6 +43,15 @@ parameters:
 			path: ../src/symfony/src/DependencyInjection/Compiler/CeremonyStepManagerFactoryCompilerPass.php
 
 		-
+			rawMessage: '''
+				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 4
+			path: ../src/symfony/src/DependencyInjection/Compiler/PublicKeyCredentialSourceRepositoryAliasCompilerPass.php
+
+		-
 			rawMessage: 'Parameter #3 $config (array{secured_rp_ids: array<string>, success_handler: string, failure_handler: string, options_storage: string|null, authentication: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}, registration: array{enabled: bool, profile: string, options_builder: string|null, options_handler: string, hide_existing_credentials: bool, routes: array{host: string|null, options_method: string, options_path: string, result_method: string, result_path: string|null}}}) of method Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory::createAuthenticator() should be contravariant with parameter $config (array<string, mixed>) of method Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface::createAuthenticator()'
 			identifier: method.childParameterType
 			count: 1

@@ -21,6 +21,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPa
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\PasskeyEndpointsCompilerPass;
+use Webauthn\Bundle\DependencyInjection\Compiler\PublicKeyCredentialSourceRepositoryAliasCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnServicesFactory;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
@@ -64,6 +65,11 @@ final class WebauthnBundle extends Bundle
             0
         );
         $container->addCompilerPass(new PasskeyEndpointsCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(
+            new PublicKeyCredentialSourceRepositoryAliasCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
 
         $this->registerMappings($container);
 
