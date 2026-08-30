@@ -338,6 +338,7 @@ return static function (ContainerConfigurator $container): void {
             '$conditionalAttestationValidator',
             service('webauthn.authenticator_attestation_response_validator.conditional_creation')
         )
+        ->arg('$ceremonyOriginPinning', param('webauthn.ceremony_origin_pinning'))
         ->public();
 
     $service
