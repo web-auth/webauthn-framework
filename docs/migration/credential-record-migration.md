@@ -133,8 +133,10 @@ The database schema remains the same! Both classes use identical field mappings:
 - `backupEligible` (boolean, nullable)
 - `backupStatus` (boolean, nullable)
 - `uvInitialized` (boolean, nullable)
+- `rpId` (string, nullable, since 5.4)
 
-**No database migration is required!** Simply update your entity class:
+**No database migration is required to switch from `PublicKeyCredentialSource` to `CredentialRecord`!** Simply update
+your entity class:
 
 ```php
 // Before
@@ -143,6 +145,30 @@ class MyCredential extends PublicKeyCredentialSource { }
 // After
 class MyCredential extends CredentialRecord { }
 ```
+
+### New `rpId` column (5.4)
+
+Version 5.4 adds the OPTIONAL `rpId` member of the Credential Record structure
+(see [w3c/webauthn#2258](https://github.com/w3c/webauthn/pull/2258)). It stores the Relying Party ID the credential was
+scoped to during the registration ceremony, which is useful to Relying Parties using Related Origin Requests.
+
+If your credentials are persisted with Doctrine, update your schema. The column is nullable, so existing rows are left
+untouched:
+
+```sql
+ALTER TABLE my_credential ADD rp_id VARCHAR(255) DEFAULT NULL;
+```
+
+Or, with the Doctrine Migrations bundle:
+
+```bash
+bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
+```
+
+Records created before 5.4, and those created from creation options without an explicit `rp.id`, keep `rpId` set to
+`null`. Serialized payloads without the `rpId` key are still accepted, and the member is omitted from the serialized
+output when it is `null`.
 
 ## Testing Both Types
 

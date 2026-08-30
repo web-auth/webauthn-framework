@@ -49,6 +49,7 @@ final class CredentialRecordConverter
             $source->backupEligible,
             $source->backupStatus,
             $source->uvInitialized,
+            $source->rpId,
         );
     }
 
@@ -84,6 +85,7 @@ final class CredentialRecordConverter
             $record->backupEligible,
             $record->backupStatus,
             $record->uvInitialized,
+            $record->rpId,
         );
     }
 

@@ -39,6 +39,7 @@ final class PublicKeyCreationCeremonyTest extends AbstractTestCase
         // Then
         static::assertSame(hex2bin($keyId), $source->publicKeyCredentialId);
         static::assertSame($type, $source->attestationType);
+        static::assertSame($publicKeyCredentialCreationOptions->rp->id, $source->rpId);
     }
 
     public static function getPublicKeyCredentialCreationOptions(): iterable

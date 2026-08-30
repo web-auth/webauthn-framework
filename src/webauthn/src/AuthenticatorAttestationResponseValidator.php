@@ -177,7 +177,7 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
         $userHandle = $publicKeyCredentialCreationOptions->user->id;
         $transports = $authenticatorAttestationResponse->transports;
 
-        return CredentialRecord::create(
+        $credentialRecord = CredentialRecord::create(
             $credentialId,
             PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
             $transports,
@@ -191,5 +191,8 @@ class AuthenticatorAttestationResponseValidator implements CanLogData, CanDispat
             $attestationObject->authData
                 ->signCount,
         );
+        $credentialRecord->rpId = $publicKeyCredentialCreationOptions->rp->id;
+
+        return $credentialRecord;
     }
 }
