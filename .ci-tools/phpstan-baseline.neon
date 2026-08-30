@@ -116,24 +116,6 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadge.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
-
-		-
-			rawMessage: '''
 				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
 			'''
@@ -164,15 +146,6 @@ parameters:
 			identifier: constructor.missingParentCall
 			count: 1
 			path: ../src/symfony/src/Security/Authentication/WebauthnPassport.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 3
-			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
 			rawMessage: '''
@@ -461,8 +434,8 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
+				Access to deprecated property $name of class Webauthn\PublicKeyCredentialRpEntity:
+				since 5.3.0 and will be removed in 6.0.0. The user agent defaults rp.name to the Relying Party ID. Please set "" instead.
 			'''
 			identifier: property.deprecated
 			count: 1
@@ -496,15 +469,6 @@ parameters:
 			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialSourceDenormalizer.php
 
 		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/Denormalizer/PublicKeyCredentialUserEntityDenormalizer.php
-
-		-
 			rawMessage: 'Offset ''type'' on array{type: string} in isset() always exists and is not nullable.'
 			identifier: isset.offset
 			count: 1
@@ -530,24 +494,6 @@ parameters:
 			identifier: classConstant.deprecated
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/PublicKeyCredentialEntity.php
-
-		-
-			rawMessage: '''
-				Access to deprecated property $name of class Webauthn\PublicKeyCredentialEntity:
-				since 5.3.0 and will be removed in 6.0.0. Please set "" and use PublicKeyCredentialUserEntity.name instead.
-			'''
-			identifier: property.deprecated
-			count: 1
-			path: ../src/webauthn/src/PublicKeyCredentialUserEntity.php
 
 		-
 			rawMessage: 'Call to static method fromAsn1() of internal class Cose\Algorithm\Signature\ECDSA\ECSignature from outside its root namespace Cose.'
