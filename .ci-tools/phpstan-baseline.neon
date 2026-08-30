@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\FailureHandler::onFailure() invoked with 5 parameters, 1-2 required.'
+			identifier: arguments.count
+			count: 1
+			path: ../src/symfony/src/Controller/AssertionResponseController.php
+
+		-
 			rawMessage: '''
 				Call to method fromCredentialRecord() of deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
@@ -25,6 +31,12 @@ parameters:
 			'''
 			identifier: instanceof.deprecatedInterface
 			count: 2
+			path: ../src/symfony/src/Controller/AttestationResponseController.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Security\Handler\FailureHandler::onFailure() invoked with 5 parameters, 1-2 required.'
+			identifier: arguments.count
+			count: 1
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
@@ -142,6 +154,12 @@ parameters:
 			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
 
 		-
+			rawMessage: Instanceof between Webauthn\AuthenticatorAssertionResponse|Webauthn\AuthenticatorAttestationResponse and Webauthn\AuthenticatorResponse will always evaluate to true.
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: ../src/symfony/src/Security/Authentication/WebauthnBadgeListener.php
+
+		-
 			rawMessage: '''
 				Instanceof references deprecated interface Webauthn\Bundle\Repository\CanSaveCredentialSource:
 				since 5.3, use CanSaveCredentialRecord instead. Will be removed in 6.0.
@@ -184,6 +202,12 @@ parameters:
 			path: ../src/symfony/src/Security/Http/Authenticator/WebauthnAuthenticator.php
 
 		-
+			rawMessage: 'Method Webauthn\Bundle\Service\AbstractWebauthnOptionsBuilder::parseDto() should return T of object but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/Service/AbstractWebauthnOptionsBuilder.php
+
+		-
 			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createAuthenticatorSelectionCriteria() expects array{authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
 			identifier: argument.type
 			count: 1
@@ -212,6 +236,45 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
+
+		-
+			rawMessage: '''
+				Fetching deprecated class constant COSE_ALGORITHM_EdDSA of class Cose\Algorithms:
+				since v4.0.6. Please use COSE_ALGORITHM_EDDSA instead. Will be removed in v5.0.0
+			'''
+			identifier: classConstant.deprecated
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter $timeout of static method Webauthn\PublicKeyCredentialCreationOptions::create() expects int<1, max>|null, int|null given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
+
+		-
+			rawMessage: 'Method Webauthn\Bundle\Service\WebauthnRequestOptionsBuilder::resolveAllowCredentials() should return list<Webauthn\PublicKeyCredentialDescriptor> but returns array<Webauthn\PublicKeyCredentialDescriptor>.'
+			identifier: return.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
+
+		-
+			rawMessage: 'Parameter $timeout of static method Webauthn\PublicKeyCredentialRequestOptions::create() expects int<1, max>|null, int|null given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/symfony/src/Service/WebauthnRequestOptionsBuilder.php
 
 		-
 			rawMessage: 'Parameter #2 $attStmt of static method Webauthn\AttestationStatement\AttestationStatement::create() expects array<string, mixed>, list<Webauthn\AttestationStatement\AttestationStatement> given.'
@@ -243,7 +306,7 @@ parameters:
 				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
 			'''
 			identifier: method.deprecatedClass
-			count: 2
+			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
 
 		-
@@ -252,7 +315,16 @@ parameters:
 				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
 			'''
 			identifier: new.deprecatedClass
-			count: 2
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
+
+		-
+			rawMessage: '''
+				Return type of method Webauthn\CeremonyStep\CeremonyStepManagerFactory::buildOriginCheck() has typehint with deprecated class Webauthn\CeremonyStep\CheckOrigin:
+				since 5.2.0 and will be removed in 6.0.0. Will be replaced by CheckAllowedOrigins
+			'''
+			identifier: return.deprecatedClass
+			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CeremonyStepManagerFactory.php
 
 		-
@@ -299,6 +371,12 @@ parameters:
 			identifier: instanceof.deprecatedClass
 			count: 1
 			path: ../src/webauthn/src/CeremonyStep/CheckBackupBitsAreConsistent.php
+
+		-
+			rawMessage: Cannot access offset 'signature' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/webauthn/src/CeremonyStep/CheckBrowserBoundSignature.php
 
 		-
 			rawMessage: '''
@@ -418,6 +496,12 @@ parameters:
 			path: ../src/webauthn/src/CeremonyStep/CheckUserWasPresent.php
 
 		-
+			rawMessage: Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.
+			identifier: nullCoalesce.unnecessary
+			count: 1
+			path: ../src/webauthn/src/ClientDataCollector/PaymentClientDataCollector.php
+
+		-
 			rawMessage: '''
 				Instanceof references deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
@@ -431,6 +515,18 @@ parameters:
 			identifier: nullCoalesce.unnecessary
 			count: 1
 			path: ../src/webauthn/src/Denormalizer/AuthenticatorAssertionResponseDenormalizer.php
+
+		-
+			rawMessage: 'Parameter $payeeName of class Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CollectedClientAdditionalPaymentDataDenormalizer.php
+
+		-
+			rawMessage: 'Parameter $payeeOrigin of class Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/Denormalizer/CollectedClientAdditionalPaymentDataDenormalizer.php
 
 		-
 			rawMessage: '''
@@ -503,6 +599,12 @@ parameters:
 			identifier: classConstant.deprecated
 			count: 1
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
+
+		-
+			rawMessage: 'Parameter #1 $data of static method Cose\Key\Key::createFromData() expects array<int, mixed>, array<int|string, mixed> given.'
+			identifier: argument.type
+			count: 1
+			path: ../src/webauthn/src/SecurePaymentConfirmation/BrowserBoundSignatureVerifier.php
 
 		-
 			rawMessage: 'Call to static method fromAsn1() of internal class Cose\Algorithm\Signature\ECDSA\ECSignature from outside its root namespace Cose.'

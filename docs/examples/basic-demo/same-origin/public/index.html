@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic WebAuthn Demo</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.1rem; margin-top: 2rem; }
+        a { color: #2563eb; }
+        .card { background: #f3f4f6; border-radius: 8px; padding: 16px 20px; margin: 1.2rem 0; }
+        .card h3 { margin-top: 0; font-size: 1rem; }
+        nav { margin-bottom: 2rem; }
+        nav a { margin-right: 1rem; }
+        code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; font-size: 0.9rem; }
+        .status { font-size: 0.95rem; padding: 10px 14px; border-radius: 6px; margin: 1rem 0; }
+        .status.logged-in { background: #d1fae5; color: #065f46; }
+        .status.logged-out { background: #fee2e2; color: #991b1b; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.95rem; }
+        button.ghost { background: transparent; color: #2563eb; border: 1px solid #2563eb; }
+    </style>
+</head>
+<body>
+
+<h1>Basic WebAuthn Demo</h1>
+<p>
+    Minimal end-to-end example of a username-based passkey login in pure PHP,
+    using <a href="https://github.com/web-auth/webauthn-framework"><code>web-auth/webauthn-lib</code></a>.
+    The whole demo runs on the built-in PHP web server, no database required.
+</p>
+
+<div id="status" class="status logged-out">Loading session state...</div>
+
+<div class="card">
+    <h3>1. Register a passkey</h3>
+    <p>Create a brand-new account secured by a passkey.</p>
+    <p><a href="/register.html"><button>Register a new account</button></a></p>
+</div>
+
+<div class="card">
+    <h3>2. Sign in</h3>
+    <p>Authenticate as an existing account using one of its registered passkeys.</p>
+    <p><a href="/login.html"><button>Sign in with a passkey</button></a></p>
+</div>
+
+<div class="card">
+    <h3>3. Manage passkeys</h3>
+    <p>Once signed in: list registered credentials, add another passkey (e.g. a second device), rename or delete.</p>
+    <p><a href="/account.html"><button class="ghost">Open my account</button></a></p>
+</div>
+
+<h2>What this demo demonstrates</h2>
+<ul>
+    <li>The four endpoints of a WebAuthn relying party: <code>/api/register/options</code>, <code>/api/register/verify</code>, <code>/api/login/options</code>, <code>/api/login/verify</code>.</li>
+    <li>What to actually store after a successful registration (the <code>CredentialRecord</code> blob plus a user binding).</li>
+    <li>How to update the stored record after every successful sign-in (counter, backup flags).</li>
+    <li>How to enrol additional passkeys on an existing account.</li>
+    <li>Why the relying party MUST refuse to delete the last passkey of an account.</li>
+</ul>
+
+<h2>What this demo deliberately leaves out</h2>
+<ul>
+    <li>A real database. Credentials live in a JSON file under <code>var/</code>.</li>
+    <li>Account recovery. Lose every registered passkey, lose the account.</li>
+    <li>Account email verification, password fallback, rate limiting, CSRF protection, ...</li>
+    <li>Production-grade attestation. The demo accepts the <code>none</code> attestation format only.</li>
+</ul>
+
+<script type="module">
+    const status = document.getElementById('status');
+
+    try {
+        const r = await fetch('/api/me');
+        const me = await r.json();
+        if (me.authenticated) {
+            status.className = 'status logged-in';
+            status.textContent = `Signed in as ${me.username} (${me.credentials.length} passkey(s) registered).`;
+        } else {
+            status.className = 'status logged-out';
+            status.textContent = 'Not signed in.';
+        }
+    } catch (e) {
+        status.className = 'status logged-out';
+        status.textContent = 'Session check failed: ' + e.message;
+    }
+</script>
+
+</body>
+</html>

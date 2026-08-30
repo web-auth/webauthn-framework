@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passkey Upgrade Demo, Sign up</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        label { display: block; margin: 0.6rem 0 0.25rem; font-weight: 500; }
+        input, button { padding: 0.55rem 0.75rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; }
+        input { width: 100%; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 300px; white-space: pre-wrap; word-break: break-all; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+    </style>
+</head>
+<body>
+<nav><a href="/">&larr; Home</a><a href="/login.html">Already have an account ?</a></nav>
+
+<h1>1. Sign up with a password</h1>
+
+<p>
+    The server hashes the password with <code>password_hash(PASSWORD_BCRYPT)</code>
+    and opens a session. No WebAuthn involved at this step; the passkey
+    enrolment happens later, from the account page.
+</p>
+
+<form id="signup-form">
+    <label for="username">Username (email)</label>
+    <input id="username" name="username" type="email" required value="jane.doe@example.com" autocomplete="username">
+
+    <label for="displayName">Display name</label>
+    <input id="displayName" name="displayName" type="text" value="Jane Doe">
+
+    <label for="password">Password (min 8 chars)</label>
+    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password">
+
+    <p><button type="submit" id="submit">Sign up</button></p>
+</form>
+
+<h2>Output</h2>
+<pre id="output">Submit the form to create an account.</pre>
+
+<script type="module">
+    const form = document.getElementById('signup-form');
+    const submit = document.getElementById('submit');
+    const output = document.getElementById('output');
+
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submit.disabled = true;
+        output.textContent = '';
+
+        try {
+            const username = form.username.value;
+            const displayName = form.displayName.value;
+            const password = form.password.value;
+
+            log('POST /api/signup ...');
+            const r = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, displayName, password }),
+            });
+            if (!r.ok) throw new Error(`signup HTTP ${r.status}: ${await r.text()}`);
+            const data = await r.json();
+            log(`Account "${data.username}" created. You are now signed in via password.`, 'ok');
+            log('Redirecting to /account.html in 1.5s, where you can enrol a passkey.');
+            setTimeout(() => { window.location.href = '/account.html'; }, 1500);
+        } catch (err) {
+            log(`Error: ${err.message}`, 'err');
+        } finally {
+            submit.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

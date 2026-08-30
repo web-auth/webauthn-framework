@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PRF Demo — Register</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        label { display: block; margin: 0.6rem 0 0.25rem; font-weight: 500; }
+        input, button { padding: 0.55rem 0.75rem; font-size: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; }
+        input { width: 100%; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 360px; white-space: pre-wrap; word-break: break-all; }
+        .ok { color: #047857; }
+        .err { color: #b91c1c; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        .warning { background: #fef3c7; border-left: 4px solid #d97706; padding: 12px 16px; border-radius: 6px; margin: 1.2rem 0; font-size: 0.95rem; }
+        .warning strong { color: #92400e; }
+    </style>
+</head>
+<body>
+<nav><a href="/">← Home</a><a href="/vault.html">Vault →</a></nav>
+
+<h1>1. Register a credential with PRF support</h1>
+
+<p>
+    The page calls <code>navigator.credentials.create()</code> with the
+    <code>prf</code> extension primed by two server-issued salts. The server stores both
+    salts next to the credential so they can be re-issued on every authentication. No
+    secrets leave the browser; the relying party only ever sees the assertion proof.
+</p>
+
+<div class="warning">
+    <strong>⚠ If you delete this passkey you will permanently lose access to everything you
+    seal under it.</strong> The PRF input-key lives inside the authenticator and a re-created
+    passkey produces a brand-new one — even with the same salt. This demo has no recovery
+    path; a production system needs one (escrowed wrap, second enrolled passkey, …).
+    See the <a href="https://blog.millerti.me/2023/01/22/encrypting-data-in-the-browser-using-webauthn/" target="_blank" rel="noopener">May 2025 update on Matt's blog</a>.
+</div>
+
+<p>
+    Once registered, head to the <a href="/vault.html">vault</a> to encrypt and
+    decrypt items of your choice.
+</p>
+
+<form id="register-form">
+    <label for="username">Username (email)</label>
+    <input id="username" name="username" type="email" required value="jane.doe@example.com">
+
+    <p><button type="submit" id="submit">Register</button></p>
+</form>
+
+<h2>Output</h2>
+<pre id="output">Submit the form to start a registration ceremony.</pre>
+
+<script type="module">
+    const form = document.getElementById('register-form');
+    const submit = document.getElementById('submit');
+    const output = document.getElementById('output');
+
+    const log = (msg, cls = '') => {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        output.appendChild(line);
+    };
+
+    const b64u = {
+        encode: (buf) => {
+            const bytes = new Uint8Array(buf);
+            let str = '';
+            for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+        decode: (s) => {
+            s = s.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (s.length % 4)) % 4;
+            s += '='.repeat(pad);
+            const bin = atob(s);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+            return out;
+        },
+    };
+
+    const toCreateOptions = (json) => {
+        const o = { ...json };
+        o.challenge = b64u.decode(json.challenge);
+        o.user = { ...json.user, id: b64u.decode(json.user.id) };
+        if (json.excludeCredentials) {
+            o.excludeCredentials = json.excludeCredentials.map((c) => ({
+                ...c,
+                id: b64u.decode(c.id),
+            }));
+        }
+        if (json.extensions?.prf?.eval) {
+            o.extensions = {
+                ...json.extensions,
+                prf: {
+                    eval: {
+                        first: b64u.decode(json.extensions.prf.eval.first),
+                        ...(json.extensions.prf.eval.second
+                            ? { second: b64u.decode(json.extensions.prf.eval.second) }
+                            : {}),
+                    },
+                },
+            };
+            const eSecond = json.extensions.prf.eval.second ? ' + second' : '';
+            log(`▶ PRF inputs received from server: first${eSecond}`);
+        }
+        return o;
+    };
+
+    const credentialToJson = (cred) => ({
+        id: cred.id,
+        rawId: b64u.encode(cred.rawId),
+        type: cred.type,
+        response: {
+            clientDataJSON: b64u.encode(cred.response.clientDataJSON),
+            attestationObject: b64u.encode(cred.response.attestationObject),
+        },
+    });
+
+    // Same keys as /offline.html so the offline page can reuse this very passkey
+    // without asking the user to create a second one.
+    const STORAGE_KEYS = {
+        credId: 'prf-offline:credId',
+        salt:   'prf-offline:prfSalt',
+        salt2:  'prf-offline:prfSalt2',
+    };
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submit.disabled = true;
+        output.textContent = '';
+
+        try {
+            const username = form.username.value;
+
+            log('▶ Asking server for creation options…');
+            const optResp = await fetch('/api/register/options', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username }),
+            });
+            if (!optResp.ok) throw new Error(`options HTTP ${optResp.status}: ${await optResp.text()}`);
+            const optsJson = await optResp.json();
+            log('✓ options received (PRF salt is in extensions.prf.eval.first)');
+
+            log('▶ Calling navigator.credentials.create({ extensions: { prf } })…');
+            const credential = await navigator.credentials.create({ publicKey: toCreateOptions(optsJson) });
+            const ext = credential.getClientExtensionResults();
+            const prfEnabled = ext?.prf?.enabled === true;
+            log(`✓ credential created (prf.enabled=${prfEnabled})`, prfEnabled ? 'ok' : 'err');
+            if (!prfEnabled) {
+                log('⚠ Your authenticator does not advertise PRF support. The vault will not be able to derive an encryption key.', 'err');
+            }
+            // Some platforms (Chromium with security keys, Android) also return PRF outputs at
+            // registration time. Most platform authenticators only return them on assertion.
+            const r = ext?.prf?.results;
+            if (r?.first) log(`  prf.results.first  = ${r.first.byteLength} bytes`, 'ok');
+            if (r?.second) log(`  prf.results.second = ${r.second.byteLength} bytes (available for an independent derivation)`, 'ok');
+
+            log('▶ POST /api/register/verify…');
+            const verifyResp = await fetch('/api/register/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentialToJson(credential)),
+            });
+            if (!verifyResp.ok) throw new Error(`verify HTTP ${verifyResp.status}: ${await verifyResp.text()}`);
+            const verified = await verifyResp.json();
+            log(`✓ stored. credentialId=${verified.credentialId}`, 'ok');
+
+            // Mirror the credential id and the two salts into localStorage so /offline.html
+            // can re-use this very passkey instead of asking the user to create a second one.
+            // The salts were generated server-side and arrived in `optsJson.extensions.prf.eval`;
+            // they are not secrets (they travel in clear at every ceremony anyway).
+            if (optsJson.extensions?.prf?.eval) {
+                localStorage.setItem(STORAGE_KEYS.credId, b64u.encode(credential.rawId));
+                localStorage.setItem(STORAGE_KEYS.salt,   optsJson.extensions.prf.eval.first);
+                if (optsJson.extensions.prf.eval.second) {
+                    localStorage.setItem(STORAGE_KEYS.salt2, optsJson.extensions.prf.eval.second);
+                }
+                log(`✓ credId + salts mirrored to localStorage (${Object.values(STORAGE_KEYS).join(', ')}).`, 'ok');
+                log('▶ This browser is now set up for offline use too — open /offline.html anytime, even with no network.', 'ok');
+            }
+
+            log('Open /vault.html to encrypt items with this credential (online), or /offline.html (no server).');
+        } catch (err) {
+            log(`✗ ${err.message}`, 'err');
+        } finally {
+            submit.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebAuthn Signal API Demo</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; color: #1f2937; line-height: 1.55; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.1rem; margin-top: 2rem; }
+        a { color: #2563eb; }
+        .card { background: #f3f4f6; border-radius: 8px; padding: 16px 20px; margin: 1.2rem 0; }
+        .card h3 { margin-top: 0; font-size: 1rem; }
+        code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; font-size: 0.9rem; }
+        .status { font-size: 0.95rem; padding: 10px 14px; border-radius: 6px; margin: 1rem 0; }
+        .status.logged-in { background: #d1fae5; color: #065f46; }
+        .status.logged-out { background: #fee2e2; color: #991b1b; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.95rem; }
+        button.ghost { background: transparent; color: #2563eb; border: 1px solid #2563eb; }
+    </style>
+</head>
+<body>
+
+<h1>WebAuthn Signal API Demo</h1>
+<p>
+    The W3C <a href="https://w3c.github.io/webauthn/#sctn-signal-methods">Signal API</a>
+    lets a relying party tell the user agent that some local passkey-manager
+    state is out of date. Three methods are demonstrated:
+</p>
+
+<ul>
+    <li><code>PublicKeyCredential.signalUnknownCredential</code> after the user deletes a passkey on the server, so the passkey manager can prune the corresponding entry.</li>
+    <li><code>PublicKeyCredential.signalAllAcceptedCredentials</code> after any change, to send the authoritative list of valid credential IDs for the user. The manager prunes anything not in the list.</li>
+    <li><code>PublicKeyCredential.signalCurrentUserDetails</code> after a profile rename, so the manager shows the up-to-date <code>name</code> / <code>displayName</code> the next time the user picks this passkey.</li>
+</ul>
+
+<p>Server-side, the API is just data plumbing: the page asks <code>/api/account/signal-payload</code> for the current authoritative snapshot, then makes the JS calls itself. No new validation runs on the server.</p>
+
+<div id="status" class="status logged-out">Loading session state...</div>
+
+<div class="card">
+    <h3>1. Register a passkey</h3>
+    <p><a href="/register.html"><button>Register a new account</button></a></p>
+</div>
+
+<div class="card">
+    <h3>2. Sign in</h3>
+    <p><a href="/login.html"><button>Sign in</button></a></p>
+</div>
+
+<div class="card">
+    <h3>3. Trigger Signal API calls</h3>
+    <p>The account page has explicit buttons for each Signal method and also fires them automatically on every relevant action (delete, rename, account rename, signin).</p>
+    <p><a href="/account.html"><button class="ghost">Open my account</button></a></p>
+</div>
+
+<h2>Browser support</h2>
+<p>The Signal API is recent. Chrome 132+, Edge 132+, Safari 18+. Firefox is trailing. The account page detects support and reports what each call did.</p>
+
+<script type="module">
+    const status = document.getElementById('status');
+
+    try {
+        const r = await fetch('/api/me');
+        const me = await r.json();
+        if (me.authenticated) {
+            status.className = 'status logged-in';
+            status.textContent = `Signed in as ${me.username} (${me.credentials.length} passkey(s) registered).`;
+        } else {
+            status.className = 'status logged-out';
+            status.textContent = 'Not signed in.';
+        }
+    } catch (e) {
+        status.className = 'status logged-out';
+        status.textContent = 'Session check failed: ' + e.message;
+    }
+</script>
+
+</body>
+</html>

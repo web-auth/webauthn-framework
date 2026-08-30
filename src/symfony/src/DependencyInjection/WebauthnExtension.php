@@ -247,8 +247,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($creationCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), $ceremonyFactoryMethod])
-                // @deprecated Will be removed in 6.0.0
-                ->setArguments([$creationConfig['secured_rp_ids']])
+                ->setArguments(self::resolveOriginOverrideArgs(
+                    $creationConfig['allowed_origins'] ?? [],
+                    $creationConfig['allow_subdomains'] ?? false,
+                    $creationConfig['secured_rp_ids'] ?? [],
+                ))
             ;
 
             $attestationResponseValidatorId = sprintf(
@@ -331,8 +334,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($requestCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'requestCeremony'])
-                // @deprecated Will be removed in 6.0.0
-                ->setArguments([$requestConfig['secured_rp_ids']])
+                ->setArguments(self::resolveOriginOverrideArgs(
+                    $requestConfig['allowed_origins'] ?? [],
+                    $requestConfig['allow_subdomains'] ?? false,
+                    $requestConfig['secured_rp_ids'] ?? [],
+                ))
             ;
 
             $assertionResponseValidatorId = sprintf(
@@ -391,5 +397,37 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.passkey_endpoints.enroll', $config['enroll'] ?? null);
         $container->setParameter('webauthn.passkey_endpoints.manage', $config['manage'] ?? null);
         $container->setParameter('webauthn.passkey_endpoints.prf_usage_details', $config['prf_usage_details'] ?? null);
+    }
+
+    /**
+     * Build the `[allowed_origins, allow_subdomains]` argument list passed to
+     * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory::creationCeremony()}
+     * /
+     * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory::requestCeremony()}
+     * for a per-controller ceremony step manager. Returns `[null, false]` to
+     * fall back to whatever was set globally on the factory.
+     *
+     * `secured_rp_ids` (deprecated) is honoured as a backwards-compatible alias
+     * when `allowed_origins` is empty.
+     *
+     * @param array<string> $allowedOrigins
+     * @param array<string> $securedRpIds
+     *
+     * @return array{0: ?array<string>, 1: bool}
+     */
+    private static function resolveOriginOverrideArgs(
+        array $allowedOrigins,
+        bool $allowSubdomains,
+        array $securedRpIds,
+    ): array {
+        if ($allowedOrigins !== []) {
+            return [$allowedOrigins, $allowSubdomains];
+        }
+
+        if ($securedRpIds !== []) {
+            return [$securedRpIds, $allowSubdomains];
+        }
+
+        return [null, false];
     }
 }

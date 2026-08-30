@@ -35,7 +35,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        /** @var array{challenge?: string, rp?: array<string, mixed>, user?: array<string, mixed>, pubKeyCredParams?: list<array<string, mixed>>, authenticatorSelection?: array<string, mixed>, attestation?: string, excludeCredentials?: list<array{id: string, type?: string, transports?: list<string>}>, allowCredentials?: list<array{id: string, type?: string, transports?: list<string>}>, timeout?: int<1, max>, extensions?: array<string, mixed>, hints?: list<string>, rpId?: string, userVerification?: string} $data */
+        /** @var array{challenge?: string, rp?: array<string, mixed>, user?: array<string, mixed>, pubKeyCredParams?: list<array<string, mixed>>, authenticatorSelection?: array<string, mixed>, attestation?: string, excludeCredentials?: list<array{id: string, type?: string, transports?: list<string>}>, allowCredentials?: list<array{id: string, type?: string, transports?: list<string>}>, timeout?: int<1, max>, extensions?: array<string, mixed>, hints?: list<string>, rpId?: string, userVerification?: string, uiMode?: string, attestationFormats?: list<string>} $data */
         if (array_key_exists('challenge', $data)) {
             $data['challenge'] = Base64UrlSafe::decodeNoPadding($data['challenge']);
         }
@@ -104,6 +104,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 $data['timeout'] ?? null,
                 $extensions,
                 $data['hints'] ?? [],
+                attestationFormats: $data['attestationFormats'] ?? [],
             );
         }
         if ($type === PublicKeyCredentialRequestOptions::class) {
@@ -130,6 +131,9 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 $data['timeout'] ?? null,
                 $extensions,
                 $data['hints'] ?? [],
+                $data['uiMode'] ?? null,
+                $data['attestation'] ?? null,
+                $data['attestationFormats'] ?? [],
             );
         }
         throw new BadMethodCallException('Unsupported type');
@@ -199,6 +203,7 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                     $context
                 ),
                 'attestation' => $object->attestation,
+                'attestationFormats' => count($object->attestationFormats) === 0 ? null : $object->attestationFormats,
                 'excludeCredentials' => $this->normalizer->normalize($object->excludeCredentials, $format, $context),
             ];
         }
@@ -208,6 +213,9 @@ final class PublicKeyCredentialOptionsDenormalizer implements DenormalizerInterf
                 'rpId' => $object->rpId,
                 'allowCredentials' => $this->normalizer->normalize($object->allowCredentials, $format, $context),
                 'userVerification' => $object->userVerification,
+                'uiMode' => $object->uiMode,
+                'attestation' => $object->attestation,
+                'attestationFormats' => count($object->attestationFormats) === 0 ? null : $object->attestationFormats,
             ];
         }
 

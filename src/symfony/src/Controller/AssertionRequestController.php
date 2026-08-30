@@ -32,7 +32,11 @@ final readonly class AssertionRequestController
         try {
             $userEntity = null;
             $publicKeyCredentialRequestOptions = $this->optionsBuilder->getFromRequest($request, $userEntity);
-            $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
+            $response = $this->optionsHandler->onRequestOptions(
+                $publicKeyCredentialRequestOptions,
+                $userEntity,
+                $request
+            );
             $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity));
 
             return $response;

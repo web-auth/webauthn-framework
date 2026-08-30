@@ -17,11 +17,17 @@ jobs:
     name: "0️⃣ Pre-checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: "Check file permissions"
         run: |
-          NON_EXECUTABLE=$(find . -type f -not -path './.git/*' -not -path './bin/console' -not -path './frankenphp/docker-entrypoint.sh' -not -path './link' -executable)
+          NON_EXECUTABLE=$(find . -type f \
+            -not -path './.git/*' \
+            -not -path './bin/console' \
+            -not -path './frankenphp/docker-entrypoint.sh' \
+            -not -path './link' \
+            -not -name '*.sh' \
+            -executable)
           if [[ -n "$NON_EXECUTABLE" ]]; then
             echo "Found non-executable files with executable permission:"
             echo "$NON_EXECUTABLE"
@@ -42,7 +48,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ramsey/composer-install@v4
         with:
@@ -56,7 +62,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
@@ -70,7 +76,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
@@ -84,7 +90,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
@@ -98,7 +104,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
@@ -115,7 +121,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: composer exec -- parallel-lint src tests
 
   check_licenses:
@@ -125,7 +131,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: castor check-licenses
 
   deptrac:
@@ -135,7 +141,7 @@ jobs:
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
@@ -164,7 +170,7 @@ jobs:
       XDEBUG_MODE: coverage
       PHP_VERSION: ${{ matrix.php-version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install dependencies
         run: |
           if [ "${{ matrix.lowest-deps || 'false' }}" = "true" ]; then
@@ -195,7 +201,7 @@ jobs:
     env:
       XDEBUG_MODE: coverage
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
       - name: Run PHPUnit
@@ -203,12 +209,31 @@ jobs:
       - name: Execute Infection
         run: castor infect
 
+  js_quality:
+    name: "9️⃣ JavaScript (lint, format, tests)"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Run Prettier check
+        run: npm run format
+      - name: Run ESLint check
+        run: npm run lint
+      - name: Run Jest tests
+        run: npm test
+
   exported_files:
     name: "8️⃣ Exported Files Check"
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Check exported files
         run: |
           EXPECTED="CODE_OF_CONDUCT.md,LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json"

@@ -92,6 +92,11 @@ final readonly class Configuration implements ConfigurationInterface
             ->info('This repository is responsible of the user storage')
             ->end()
             ->arrayNode('allowed_origins')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowedOrigins(...)" / "WebauthnAssertionVerifier::withAllowedOrigins(...)" on the helper instead. Multi-origin apps can spread a Symfony parameter into the call. Single-origin apps can omit the call entirely: the verifier falls back to the W3C-recommended same-origin check against the request host.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -100,6 +105,11 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowSubdomains()" / "WebauthnAssertionVerifier::withAllowSubdomains()" on the helper instead.'
+            )
             ->defaultFalse()
             ->end()
             ->arrayNode('secured_rp_ids')
@@ -142,6 +152,11 @@ final readonly class Configuration implements ConfigurationInterface
     {
         $rootNode->children()
             ->arrayNode('client_override_policy')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Build a "Webauthn\\Bundle\\Policy\\ClientOverridePolicy" inline in your controller and attach it to the helper via "WebauthnCreationOptionsBuilder::withClientOverrides()" / "WebauthnRequestOptionsBuilder::withClientOverrides()".'
+            )
             ->addDefaultsIfNotSet()
             ->info('Configuration for allowing client request values to override profile configuration')
             ->children()
@@ -250,6 +265,11 @@ final readonly class Configuration implements ConfigurationInterface
         ];
         $rootNode->children()
             ->arrayNode('creation_profiles')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Use the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse::forCreation()" helper from a controller of your own; see the "Options Helpers" documentation.'
+            )
             ->treatFalseLike($defaultCreationProfiles)
             ->treatNullLike($defaultCreationProfiles)
             ->treatTrueLike($defaultCreationProfiles)
@@ -382,6 +402,11 @@ final readonly class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->arrayNode('request_profiles')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Use the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse::forRequest()" helper from a controller of your own; see the "Options Helpers" documentation.'
+            )
             ->treatFalseLike($defaultRequestProfiles)
             ->treatTrueLike($defaultRequestProfiles)
             ->treatNullLike($defaultRequestProfiles)
@@ -421,6 +446,11 @@ final readonly class Configuration implements ConfigurationInterface
     {
         $rootNode->children()
             ->arrayNode('controllers')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Write your own controllers using the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse" and "Webauthn\\Bundle\\Service\\WebauthnResponseVerifier" helpers; see the "Options Helpers" and "Verification Helpers" documentation.'
+            )
             ->canBeEnabled()
             ->children()
             ->arrayNode('creation')

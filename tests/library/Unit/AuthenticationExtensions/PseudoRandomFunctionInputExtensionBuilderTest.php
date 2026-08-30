@@ -6,68 +6,95 @@ namespace Webauthn\Tests\Unit\AuthenticationExtensions;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Webauthn\AuthenticationExtensions\PseudoRandomFunctionInputExtension;
 use Webauthn\AuthenticationExtensions\PseudoRandomFunctionInputExtensionBuilder;
+use Webauthn\Exception\AuthenticationExtensionException;
+use Webauthn\Tests\AbstractTestCase;
 
 /**
  * @internal
  */
-final class PseudoRandomFunctionInputExtensionBuilderTest extends TestCase
+final class PseudoRandomFunctionInputExtensionBuilderTest extends AbstractTestCase
 {
     #[Test]
-    public function theInputsAreBase64UrlEncoded(): void
+    public function builderProducesPrfExtensionNamedPrf(): void
     {
-        // Given
-        $builder = PseudoRandomFunctionInputExtensionBuilder::create();
-
-        // When
-        $extension = $builder->withInputs('first-salt', 'second-salt')
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('salt-bytes')
             ->build();
 
-        // Then
+        static::assertInstanceOf(PseudoRandomFunctionInputExtension::class, $extension);
         static::assertSame('prf', $extension->name);
+    }
+
+    #[Test]
+    public function singleInputIsBase64UrlEncodedUnderEvalFirst(): void
+    {
+        $raw = "\x00\x01\x02\x03salty";
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs($raw)
+            ->build();
+
         static::assertSame([
             'eval' => [
-                'first' => Base64UrlSafe::encodeUnpadded('first-salt'),
-                'second' => Base64UrlSafe::encodeUnpadded('second-salt'),
+                'first' => Base64UrlSafe::encodeUnpadded($raw),
             ],
         ], $extension->value);
     }
 
     #[Test]
-    public function theSecondInputIsOmittedWhenNotProvided(): void
+    public function bothEvalInputsAreEncoded(): void
     {
-        // Given
-        $builder = PseudoRandomFunctionInputExtensionBuilder::create();
-
-        // When
-        $extension = $builder->withInputs('first-salt')
+        $first = 'first-salt';
+        $second = 'second-salt';
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs($first, $second)
             ->build();
 
-        // Then
         static::assertSame([
             'eval' => [
-                'first' => Base64UrlSafe::encodeUnpadded('first-salt'),
+                'first' => Base64UrlSafe::encodeUnpadded($first),
+                'second' => Base64UrlSafe::encodeUnpadded($second),
+            ],
+        ], $extension->value);
+    }
+
+    #[Test]
+    public function withCredentialInputsKeyedByCredentialId(): void
+    {
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-B', 'salt-B', 'salt-B-2')
+            ->build();
+
+        static::assertSame([
+            'evalByCredential' => [
+                Base64UrlSafe::encodeUnpadded('cred-A') => [
+                    'first' => Base64UrlSafe::encodeUnpadded('salt-A'),
+                ],
+                Base64UrlSafe::encodeUnpadded('cred-B') => [
+                    'first' => Base64UrlSafe::encodeUnpadded('salt-B'),
+                    'second' => Base64UrlSafe::encodeUnpadded('salt-B-2'),
+                ],
             ],
         ], $extension->value);
     }
 
     /**
-     * The keys of the "evalByCredential" map must be the base64url encoding of the credential ID, otherwise the client
-     * rejects the ceremony with a SyntaxError.
+     * The keys of the `evalByCredential` map must be the base64url encoding of the credential id, otherwise the client
+     * rejects the ceremony with a SyntaxError. Credential ids are held in their raw binary form by a credential record,
+     * so the builder is the one doing the encoding.
      */
     #[Test]
-    public function theCredentialIdIsUsedAsABase64UrlEncodedKey(): void
+    public function aRawCredentialIdIsUsedAsABase64UrlEncodedKey(): void
     {
-        // Given
         $credentialId = hex2bin('0102030405060708090a0b0c0d0e0f10');
-        $builder = PseudoRandomFunctionInputExtensionBuilder::create();
 
-        // When
-        $extension = $builder->withCredentialInputs($credentialId, 'first-salt')
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs($credentialId, 'first-salt')
             ->build();
 
-        // Then
         static::assertSame([
             'evalByCredential' => [
                 Base64UrlSafe::encodeUnpadded($credentialId) => [
@@ -78,29 +105,111 @@ final class PseudoRandomFunctionInputExtensionBuilderTest extends TestCase
     }
 
     #[Test]
-    public function severalCredentialsCanBeEvaluated(): void
+    public function evalAndEvalByCredentialCanCoexist(): void
     {
-        // Given
-        $firstCredentialId = hex2bin('aabb');
-        $secondCredentialId = hex2bin('ccdd');
-        $builder = PseudoRandomFunctionInputExtensionBuilder::create();
-
-        // When
-        $extension = $builder->withCredentialInputs($firstCredentialId, 'first-salt')
-            ->withCredentialInputs($secondCredentialId, 'other-salt', 'second-salt')
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('default-salt')
+            ->withCredentialInputs('cred-A', 'specific-salt')
             ->build();
 
-        // Then
         static::assertSame([
+            'eval' => [
+                'first' => Base64UrlSafe::encodeUnpadded('default-salt'),
+            ],
             'evalByCredential' => [
-                Base64UrlSafe::encodeUnpadded($firstCredentialId) => [
-                    'first' => Base64UrlSafe::encodeUnpadded('first-salt'),
-                ],
-                Base64UrlSafe::encodeUnpadded($secondCredentialId) => [
-                    'first' => Base64UrlSafe::encodeUnpadded('other-salt'),
-                    'second' => Base64UrlSafe::encodeUnpadded('second-salt'),
+                Base64UrlSafe::encodeUnpadded('cred-A') => [
+                    'first' => Base64UrlSafe::encodeUnpadded('specific-salt'),
                 ],
             ],
         ], $extension->value);
+    }
+
+    #[Test]
+    public function lastWriteWinsForRepeatedCalls(): void
+    {
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('first-salt')
+            ->withInputs('replacement-salt', 'replacement-second')
+            ->withCredentialInputs('cred', 'one')
+            ->withCredentialInputs('cred', 'two')
+            ->build();
+
+        static::assertSame([
+            'eval' => [
+                'first' => Base64UrlSafe::encodeUnpadded('replacement-salt'),
+                'second' => Base64UrlSafe::encodeUnpadded('replacement-second'),
+            ],
+            'evalByCredential' => [
+                Base64UrlSafe::encodeUnpadded('cred') => [
+                    'first' => Base64UrlSafe::encodeUnpadded('two'),
+                ],
+            ],
+        ], $extension->value);
+    }
+
+    #[Test]
+    public function singleCredentialEvalDoesNotRequireHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function multipleCredentialEvalRequiresHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-B', 'salt-B');
+
+        static::assertTrue($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function repeatedCallsForSameCredentialDoNotInflateCount(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withCredentialInputs('cred-A', 'salt-A')
+            ->withCredentialInputs('cred-A', 'replacement-salt');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function evalOnlyDoesNotRequireHmacSecretMc(): void
+    {
+        $builder = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('default-salt');
+
+        static::assertFalse($builder->requiresHmacSecretMc());
+    }
+
+    #[Test]
+    public function buildingWithoutAnyInputThrows(): void
+    {
+        $this->expectException(AuthenticationExtensionException::class);
+        $this->expectExceptionMessage('Cannot build a PRF extension without any input');
+
+        PseudoRandomFunctionInputExtensionBuilder::create()->build();
+    }
+
+    #[Test]
+    public function extensionSerializesToTheJsonShapeExpectedByTheBrowser(): void
+    {
+        $extension = PseudoRandomFunctionInputExtensionBuilder::create()
+            ->withInputs('aaaa')
+            ->withCredentialInputs('cred', 'bbbb', 'cccc')
+            ->build();
+
+        $json = $this->getSerializer()
+            ->serialize($extension, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertJsonStringEqualsJsonString(
+            '{"eval":{"first":"YWFhYQ"},"evalByCredential":{"Y3JlZA":{"first":"YmJiYg","second":"Y2NjYw"}}}',
+            $json
+        );
     }
 }
