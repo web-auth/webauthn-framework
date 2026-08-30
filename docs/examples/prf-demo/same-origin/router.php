@@ -89,7 +89,9 @@ function registerOptions(Container $container): void
     // The PRF salts are per-credential, generated at registration and persisted by the
     // server so they can be re-issued at every authentication. The salts are NOT secrets
     // (they are sent to the browser in plaintext on every ceremony); the secret is the
-    // PRF *output* the authenticator computes from (salt, credential-bound HMAC key).
+    // PRF *output* the authenticator derives from the salt and the credential-bound
+    // secret it holds. That output stays in the browser: the spec forbids authenticator
+    // extension outputs from carrying cleartext PRF results.
     //
     // The spec lets you pass two salts per ceremony — `first` and `second`. The
     // authenticator computes the PRF over both in a single round-trip, the page gets
