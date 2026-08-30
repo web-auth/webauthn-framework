@@ -52,7 +52,6 @@ jobs:
   phpstan:
     name: "1️⃣ Static Analysis (PHPStan)"
     needs: [pre_checks]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -67,7 +66,6 @@ jobs:
   ecs:
     name: "2️⃣ Coding Standards (ECS)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -82,7 +80,6 @@ jobs:
   rector:
     name: "3️⃣ Refactoring (Rector)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -114,7 +111,6 @@ jobs:
   lint:
     name: "5️⃣ Syntax Check"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
@@ -135,7 +131,6 @@ jobs:
   deptrac:
     name: "7️⃣ Architecture Layer Check (Deptrac)"
     needs: [prepare_dependencies]
-    if: endsWith(github.ref_name, '.x')
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/spomky-labs/phpqa:8.4
