@@ -23,7 +23,7 @@ $builder->withSets([
     PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
 ]);
-$builder->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true);
+$builder->withComposerBased(twig: true, doctrine: true, symfony: true);
 $builder->withPhpVersion(PhpVersion::PHP_82);
 $builder->withPaths(
     [
