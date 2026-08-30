@@ -7,7 +7,7 @@ namespace Webauthn;
 class PublicKeyCredentialRpEntity extends PublicKeyCredentialEntity
 {
     /**
-     * @deprecated since 5.3.0 and will be removed in 6.0.0. The user agent defaults rp.name to the Relying Party ID. Please set "" instead.
+     * @deprecated since 5.3.0 and will be removed in 6.0.0. The serialized options default rp.name to the Relying Party ID. Please set "" instead.
      */
     public string $name = '';
 

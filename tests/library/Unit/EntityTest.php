@@ -53,7 +53,40 @@ final class EntityTest extends AbstractTestCase
         // Then
         static::assertSame('', $rp->name);
         static::assertSame('id', $rp->id);
-        static::assertSame('{"id":"id"}', $serialized);
+        static::assertSame('{"id":"id","name":"id"}', $serialized);
+    }
+
+    #[Test]
+    #[Group('legacy')]
+    public function theSerializedRelyingPartyNameIsPreservedWhenItIsSet(): void
+    {
+        // Given
+        $rp = $this->createRelyingPartyEntityWithName('My Application', 'id');
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($rp, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
+        static::assertSame('{"id":"id","name":"My Application"}', $serialized);
+    }
+
+    #[Test]
+    public function theSerializedRelyingPartyIsEmptyWhenNeitherNameNorIdIsSet(): void
+    {
+        // Given
+        $rp = PublicKeyCredentialRpEntity::create();
+
+        // When
+        $serialized = $this->getSerializer()
+            ->serialize($rp, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        // Then
+        static::assertSame('null', $serialized);
     }
 
     #[Test]
@@ -140,10 +173,21 @@ final class EntityTest extends AbstractTestCase
         // Then
         static::assertCount(1, $messages);
         static::assertStringContainsString(
-            'The user agent defaults rp.name to the Relying Party ID',
+            'The serialized options default rp.name to the Relying Party ID',
             $messages[0]
         );
         static::assertStringNotContainsString('PublicKeyCredentialUserEntity', $messages[0]);
+    }
+
+    private function createRelyingPartyEntityWithName(string $name, ?string $id): PublicKeyCredentialRpEntity
+    {
+        set_error_handler(static fn (): bool => true, E_USER_DEPRECATED);
+
+        try {
+            return PublicKeyCredentialRpEntity::create($name, $id);
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**
