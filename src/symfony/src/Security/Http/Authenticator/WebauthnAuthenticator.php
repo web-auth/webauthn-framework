@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle\Security\Http\Authenticator;
 
+use function ord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\AuthenticatorData;
 use Webauthn\Bundle\Exception\HttpNotImplementedException;
 use Webauthn\Bundle\Exception\MissingFeatureException;
 use Webauthn\Bundle\Exception\MissingUserEntityException;
@@ -101,6 +103,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         return $this->processWithAttestation($request);
     }
 
+    /**
+     * The RFU flags are read from the raw flags byte instead of the deprecated AuthenticatorData accessors, so that the
+     * deprecated WebauthnToken arguments keep receiving the very same values without emitting a deprecation notice.
+     */
     public function createToken(Passport $passport, string $firewallName): TokenInterface
     {
         $credentialsBadge = $passport->getBadge(WebauthnCredentials::class);
@@ -120,6 +126,7 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         }
         $userEntity = $credentialsBadge->getPublicKeyCredentialUserEntity();
         $userEntity !== null || throw new MissingUserEntityException('The user entity is missing');
+        $flags = ord($authData->flags);
         $token = new WebauthnToken(
             $userEntity,
             $credentialsBadge->getPublicKeyCredentialOptions(),
@@ -127,8 +134,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 ->getPublicKeyCredentialDescriptor(),
             $authData->isUserPresent(),
             $authData->isUserVerified(),
-            $authData->getReservedForFutureUse1(),
-            $authData->getReservedForFutureUse2(),
+            $flags & AuthenticatorData::FLAG_RFU1,
+            $flags & AuthenticatorData::FLAG_RFU2,
             $authData->signCount,
             $authData->extensions,
             $credentialsBadge->getFirewallName(),
