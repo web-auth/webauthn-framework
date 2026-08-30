@@ -36,6 +36,7 @@ class PublicKeyCredentialSource extends CredentialRecord
             $credentialRecord->backupEligible,
             $credentialRecord->backupStatus,
             $credentialRecord->uvInitialized,
+            $credentialRecord->rpId,
         );
     }
 }
