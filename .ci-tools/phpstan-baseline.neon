@@ -444,7 +444,7 @@ parameters:
 		-
 			rawMessage: '''
 				Access to deprecated property $name of class Webauthn\PublicKeyCredentialRpEntity:
-				since 5.3.0 and will be removed in 6.0.0. The user agent defaults rp.name to the Relying Party ID. Please set "" instead.
+				since 5.3.0 and will be removed in 6.0.0. The serialized options default rp.name to the Relying Party ID. Please set "" instead.
 			'''
 			identifier: property.deprecated
 			count: 1

@@ -24,7 +24,7 @@ abstract class PublicKeyCredentialEntity
             trigger_deprecation(
                 'web-auth/webauthn-lib',
                 '5.3.0',
-                'Setting the "name" field on "PublicKeyCredentialRpEntity" is deprecated since 5.3.0 and will be removed in 6.0.0. The user agent defaults rp.name to the Relying Party ID. Please set "" instead.'
+                'Setting the "name" field on "PublicKeyCredentialRpEntity" is deprecated since 5.3.0 and will be removed in 6.0.0. The serialized options default rp.name to the Relying Party ID. Please set "" instead.'
             );
         }
         $this->name = $name;
