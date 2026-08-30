@@ -17,7 +17,6 @@ use Cose\Algorithm\Signature\FullySpecified\ESP512;
 use Cose\Algorithm\Signature\RSA\PS256;
 use Cose\Algorithm\Signature\RSA\PS384;
 use Cose\Algorithm\Signature\RSA\PS512;
-use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
@@ -32,10 +31,6 @@ return static function (ContainerConfigurator $container): void {
     $service
         ->set('webauthn.cose.algorithm.manager')
         ->class(Manager::class);
-
-    $service
-        ->set('webauthn.cose.algorithm.RS1')
-        ->class(RS1::class);
 
     $service
         ->set('webauthn.cose.algorithm.RS256')
