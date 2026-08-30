@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Functional\CompilerPass;
 
+use function class_exists;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Compiler\CheckAliasValidityPass;
@@ -19,7 +20,8 @@ use Webauthn\Tests\Bundle\Functional\PublicKeyCredentialSourceRepository;
 /**
  * Issue #938: the deprecated interface is aliased to the configured credential repository. Symfony refuses an
  * interface alias whose target does not implement it, so the alias must be dropped for repositories that only
- * implement CredentialRecordRepositoryInterface.
+ * implement CredentialRecordRepositoryInterface. CheckAliasValidityPass only exists since Symfony 7.1, hence the
+ * conditional registration.
  *
  * @internal
  */
@@ -81,7 +83,9 @@ final class PublicKeyCredentialSourceRepositoryAliasCompilerPassTest extends Abs
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             0
         );
-        $container->addCompilerPass(new CheckAliasValidityPass(), PassConfig::TYPE_BEFORE_REMOVING, -100);
+        if (class_exists(CheckAliasValidityPass::class)) {
+            $container->addCompilerPass(new CheckAliasValidityPass(), PassConfig::TYPE_BEFORE_REMOVING, -100);
+        }
     }
 
     private function registerRepository(string $class): void
