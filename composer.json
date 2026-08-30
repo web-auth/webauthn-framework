@@ -83,6 +83,7 @@
         }
     },
     "suggest": {
+        "jeremykendall/php-domain-parser": "Recommended to check the Related Origin Requests eTLD+1 labels limit",
         "psr/log-implementation": "Recommended to receive logs from the library",
         "symfony/event-dispatcher": "Recommended to use dispatched events",
         "web-token/jwt-library": "Mandatory for fetching Metadata Statement from distant sources",
@@ -93,6 +94,7 @@
         "doctrine/doctrine-bundle": "^2.18.1|^3.0",
         "doctrine/orm": "^2.14|^3.0",
         "doctrine/persistence": "^3.1|^4.0",
+        "jeremykendall/php-domain-parser": "^6.4",
         "matthiasnoback/symfony-dependency-injection-test": "^5.1|^6.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.1",

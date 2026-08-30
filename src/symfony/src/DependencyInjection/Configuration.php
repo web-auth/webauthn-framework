@@ -124,6 +124,24 @@ final readonly class Configuration implements ConfigurationInterface
             )
             ->defaultFalse()
             ->end()
+            ->arrayNode('related_origins')
+            ->addDefaultsIfNotSet()
+            ->info('Related Origin Requests (WebAuthn Level 3) settings, applied to the "/.well-known/webauthn" endpoint.')
+            ->children()
+            ->scalarNode('public_suffix_resolver')
+            ->defaultNull()
+            ->info(
+                'Service implementing Webauthn\\Util\\PublicSuffixResolver, used to derive the eTLD+1 label of the published origins. Without it the label limit cannot be checked. "Webauthn\\Util\\PdpPublicSuffixResolver" adapts "jeremykendall/php-domain-parser".'
+            )
+            ->end()
+            ->booleanNode('label_limit_check')
+            ->defaultTrue()
+            ->info(
+                'Warns when the published origins resolve to more than 5 distinct eTLD+1 labels: clients silently ignore the extra ones. Set to false to opt out of the check.'
+            )
+            ->end()
+            ->end()
+            ->end()
             ->arrayNode('secured_rp_ids')
             ->setDeprecated(
                 'web-auth/webauthn-symfony-bundle',
