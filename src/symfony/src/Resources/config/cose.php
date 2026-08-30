@@ -10,6 +10,10 @@ use Cose\Algorithm\Signature\ECDSA\ES512;
 use Cose\Algorithm\Signature\EdDSA\Ed25519;
 use Cose\Algorithm\Signature\EdDSA\Ed256;
 use Cose\Algorithm\Signature\EdDSA\Ed512;
+use Cose\Algorithm\Signature\FullySpecified\Ed25519 as FullySpecifiedEd25519;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
+use Cose\Algorithm\Signature\FullySpecified\ESP384;
+use Cose\Algorithm\Signature\FullySpecified\ESP512;
 use Cose\Algorithm\Signature\RSA\PS256;
 use Cose\Algorithm\Signature\RSA\PS384;
 use Cose\Algorithm\Signature\RSA\PS512;
@@ -84,4 +88,20 @@ return static function (ContainerConfigurator $container): void {
     $service
         ->set('webauthn.cose.algorithm.Ed25519ph')
         ->class(Ed25519::class);
+
+    $service
+        ->set('webauthn.cose.algorithm.ESP256')
+        ->class(ESP256::class);
+
+    $service
+        ->set('webauthn.cose.algorithm.ESP384')
+        ->class(ESP384::class);
+
+    $service
+        ->set('webauthn.cose.algorithm.ESP512')
+        ->class(ESP512::class);
+
+    $service
+        ->set('webauthn.cose.algorithm.Ed25519')
+        ->class(FullySpecifiedEd25519::class);
 };
