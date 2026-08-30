@@ -37,7 +37,9 @@ final readonly class AssertionRequestController
                 $userEntity,
                 $request
             );
-            $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity));
+            $this->optionsStorage->store(
+                Item::create($publicKeyCredentialRequestOptions, $userEntity, $request->getSchemeAndHttpHost())
+            );
 
             return $response;
         } catch (Throwable $throwable) {

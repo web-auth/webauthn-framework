@@ -43,7 +43,9 @@ final readonly class AttestationRequestController
                 $userEntity,
                 $request,
             );
-            $this->optionsStorage->store(Item::create($publicKeyCredentialCreationOptions, $userEntity));
+            $this->optionsStorage->store(
+                Item::create($publicKeyCredentialCreationOptions, $userEntity, $request->getSchemeAndHttpHost())
+            );
 
             return $response;
         } catch (Throwable $throwable) {

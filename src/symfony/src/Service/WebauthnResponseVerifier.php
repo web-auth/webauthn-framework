@@ -46,7 +46,15 @@ use Webauthn\MetadataService\CanLogData;
  *     // controllers[].allowed_origins YAML option)
  *     $result = $this->verifier
  *         ->forAttestation('example.com')
- *         ->withAllowedOrigins('https://app.example.com')
+ *         ->withAllowedOrigins(['https://app.example.com'])
+ *         ->verify($request);
+ *
+ *     // Accept only the origin the ceremony was started on, on top of the
+ *     // configured allow list. Enabled globally with
+ *     // `webauthn.ceremony_origin_pinning: true`.
+ *     $result = $this->verifier
+ *         ->forAssertion('example.com')
+ *         ->withCeremonyOriginPinning()
  *         ->verify($request);
  */
 final class WebauthnResponseVerifier implements CanLogData, CanDispatchEvents
@@ -63,6 +71,7 @@ final class WebauthnResponseVerifier implements CanLogData, CanDispatchEvents
         private readonly AuthenticatorAttestationResponseValidator $conditionalAttestationValidator,
         private readonly AuthenticatorAssertionResponseValidator $assertionValidator,
         private readonly CeremonyStepManagerFactory $ceremonyStepManagerFactory,
+        private readonly bool $ceremonyOriginPinning = false,
     ) {
         $this->logger = new NullLogger();
         $this->eventDispatcher = new NullEventDispatcher();
@@ -92,7 +101,7 @@ final class WebauthnResponseVerifier implements CanLogData, CanDispatchEvents
         $verifier->setLogger($this->logger);
         $verifier->setEventDispatcher($this->eventDispatcher);
 
-        return $verifier;
+        return $verifier->withCeremonyOriginPinning($this->ceremonyOriginPinning);
     }
 
     public function forAssertion(string $rpId): WebauthnAssertionVerifier
@@ -108,6 +117,6 @@ final class WebauthnResponseVerifier implements CanLogData, CanDispatchEvents
         $verifier->setLogger($this->logger);
         $verifier->setEventDispatcher($this->eventDispatcher);
 
-        return $verifier;
+        return $verifier->withCeremonyOriginPinning($this->ceremonyOriginPinning);
     }
 }

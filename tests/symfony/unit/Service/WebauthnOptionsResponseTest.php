@@ -320,6 +320,24 @@ final class WebauthnOptionsResponseTest extends TestCase
         static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
     }
 
+    #[Test]
+    public function theOriginTheCeremonyIsStartedOnIsStoredAlongsideTheOptions(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $request = new Request(content: '{}', server: [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTPS' => 'on',
+            'HTTP_HOST' => 'portal.example.com',
+        ]);
+
+        $this->helper(storage: $storage)
+            ->forCreation('example.com', $userEntity)
+            ->build($request);
+
+        static::assertSame('https://portal.example.com', $storage->last()->getCeremonyOrigin());
+    }
+
     private function helper(
         ?OptionsStorage $storage = null,
         ?CredentialRecordRepositoryInterface $repository = null,

@@ -532,6 +532,151 @@ final class WebauthnResponseVerifierTest extends TestCase
         static::assertInstanceOf(WebauthnAssertionVerifier::class, $this->verifier()->forAssertion('example.com'));
     }
 
+    /**
+     * The ceremony is started on the control panel and the assertion comes from
+     * another origin of the same allow list: the replay described by
+     * w3c/webauthn#2466.
+     */
+    #[Test]
+    public function ceremonyOriginPinningRejectsAResponseProducedOnAnotherAllowedOrigin(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions(), null, 'https://portal.example.com'),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->withCeremonyOriginPinning()
+            ->verify($this->jsonRequest());
+    }
+
+    /**
+     * The default port and the host case are normalised on both sides before
+     * the comparison.
+     */
+    #[Test]
+    public function ceremonyOriginPinningAcceptsTheOriginTheCeremonyWasStartedOn(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $result = $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions(), null, 'https://Example.com:443'),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->withCeremonyOriginPinning()
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
+    }
+
+    #[Test]
+    public function ceremonyOriginPinningFailsClosedWhenTheStoredCeremonyHasNoOrigin(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions()),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->withCeremonyOriginPinning()
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function ceremonyOriginPinningIsDisabledByDefault(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $result = $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions(), null, 'https://portal.example.com'),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
+    }
+
+    #[Test]
+    public function ceremonyOriginPinningCanBeTurnedOnGloballyAndOffPerVerification(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $verifier = $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions(), null, 'https://portal.example.com'),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+            ceremonyOriginPinning: true,
+        );
+
+        $result = $verifier->forAssertion('example.com')
+            ->withCeremonyOriginPinning(false)
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
+    }
+
+    #[Test]
+    public function ceremonyOriginPinningTurnedOnGloballyAppliesWithoutAPerVerificationCall(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $this->verifier(
+            serializer: $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            storage: $this->storageWith($this->requestOptions(), null, 'https://portal.example.com'),
+            repository: new InMemoryCredentialRepository([$stored]),
+            assertionValidator: $assertionValidator,
+            ceremonyOriginPinning: true,
+        )
+            ->forAssertion('example.com')
+            ->verify($this->jsonRequest());
+    }
+
     private function verifier(
         ?SerializerInterface $serializer = null,
         ?OptionsStorage $storage = null,
@@ -540,6 +685,7 @@ final class WebauthnResponseVerifierTest extends TestCase
         ?AuthenticatorAttestationResponseValidator $conditionalAttestationValidator = null,
         ?AuthenticatorAssertionResponseValidator $assertionValidator = null,
         ?CeremonyStepManagerFactory $factory = null,
+        bool $ceremonyOriginPinning = false,
     ): WebauthnResponseVerifier {
         return new WebauthnResponseVerifier(
             $serializer ?? $this->realSerializer(),
@@ -549,6 +695,7 @@ final class WebauthnResponseVerifierTest extends TestCase
             $conditionalAttestationValidator ?? static::createStub(AuthenticatorAttestationResponseValidator::class),
             $assertionValidator ?? static::createStub(AuthenticatorAssertionResponseValidator::class),
             $factory ?? new CeremonyStepManagerFactory(),
+            $ceremonyOriginPinning,
         );
     }
 
@@ -579,9 +726,10 @@ final class WebauthnResponseVerifierTest extends TestCase
     private function storageWith(
         PublicKeyCredentialCreationOptions|PublicKeyCredentialRequestOptions $options,
         ?PublicKeyCredentialUserEntity $user = null,
+        ?string $ceremonyOrigin = null,
     ): OptionsStorage {
         $storage = new InMemoryOptionsStorage();
-        $storage->store(Item::create($options, $user));
+        $storage->store(Item::create($options, $user, $ceremonyOrigin));
 
         return $storage;
     }

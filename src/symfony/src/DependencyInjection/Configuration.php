@@ -97,6 +97,9 @@ final readonly class Configuration implements ConfigurationInterface
                 '5.4.0',
                 'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowedOrigins(...)" / "WebauthnAssertionVerifier::withAllowedOrigins(...)" on the helper instead. Multi-origin apps can spread a Symfony parameter into the call. Single-origin apps can omit the call entirely: the verifier falls back to the W3C-recommended same-origin check against the request host.'
             )
+            ->info(
+                'Origins accepted for every ceremony. Security: origins sharing a Relying Party ID rarely share a trust level, and any response produced on any entry of this list is accepted for any ceremony. List only the origins that share the trust level of the endpoint, and prefer several narrow lists (per controller, or per verifier through the helpers) over a single broad one. See webauthn.ceremony_origin_pinning to also require the response to come from the origin the ceremony was started on.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -109,6 +112,15 @@ final readonly class Configuration implements ConfigurationInterface
                 'web-auth/webauthn-symfony-bundle',
                 '5.4.0',
                 'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowSubdomains()" / "WebauthnAssertionVerifier::withAllowSubdomains()" on the helper instead.'
+            )
+            ->info(
+                'Accept any subdomain of every allowed origin. Security: MUST stay false whenever a subdomain can be controlled by a third party (customer-provisioned hostnames, user content, staging hosts), since an assertion obtained on such a subdomain would then be accepted on the high-trust origin.'
+            )
+            ->defaultFalse()
+            ->end()
+            ->booleanNode('ceremony_origin_pinning')
+            ->info(
+                'Require the authenticator response to be produced on the very origin the ceremony was started on, on top of the allow list. Defaults to the value passed to WebauthnAttestationVerifier::withCeremonyOriginPinning() / WebauthnAssertionVerifier::withCeremonyOriginPinning(). Fails closed: ceremonies stored without an origin are rejected, so keep it disabled for native app facets (android:apk-key-hash:...) and for flows whose options request and ceremony do not share an origin. See https://github.com/w3c/webauthn/issues/2466'
             )
             ->defaultFalse()
             ->end()
@@ -513,6 +525,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(DefaultCreationOptionsHandler::class)
             ->end()
             ->arrayNode('allowed_origins')
+            ->info(
+                'Origins accepted by this controller only. Overrides the global "webauthn.allowed_origins" list. Security: list only the origins that share the trust level of this endpoint, so that a response produced on a lower-trust origin of the global list cannot be replayed here.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -521,6 +536,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->info(
+                'Accept any subdomain of this controller allowed origins. Security: MUST stay false whenever a subdomain can be controlled by a third party.'
+            )
             ->defaultFalse()
             ->end()
             ->arrayNode('secured_rp_ids')
@@ -590,6 +608,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(DefaultRequestOptionsHandler::class)
             ->end()
             ->arrayNode('allowed_origins')
+            ->info(
+                'Origins accepted by this controller only. Overrides the global "webauthn.allowed_origins" list. Security: list only the origins that share the trust level of this endpoint, so that a response produced on a lower-trust origin of the global list cannot be replayed here.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -598,6 +619,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->info(
+                'Accept any subdomain of this controller allowed origins. Security: MUST stay false whenever a subdomain can be controlled by a third party.'
+            )
             ->defaultFalse()
             ->end()
             ->arrayNode('secured_rp_ids')

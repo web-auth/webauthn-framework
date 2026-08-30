@@ -160,7 +160,7 @@ abstract class AbstractWebauthnOptionsBuilder
         $optionsRequest = $this->shouldParseClientRequest() ? $this->parseClientRequest($request) : null;
         $options = $this->assembleOptions($request, $userEntity, $optionsRequest);
 
-        $this->storage->store(Item::create($options, $userEntity));
+        $this->storage->store(Item::create($options, $userEntity, $request->getSchemeAndHttpHost()));
 
         return new JsonResponse(
             $this->serializer->serialize($options, JsonEncoder::FORMAT, [
