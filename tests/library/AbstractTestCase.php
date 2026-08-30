@@ -9,6 +9,10 @@ use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES384;
 use Cose\Algorithm\Signature\ECDSA\ES512;
 use Cose\Algorithm\Signature\EdDSA\EdDSA;
+use Cose\Algorithm\Signature\FullySpecified\Ed25519;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
+use Cose\Algorithm\Signature\FullySpecified\ESP384;
+use Cose\Algorithm\Signature\FullySpecified\ESP512;
 use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
@@ -195,6 +199,10 @@ abstract class AbstractTestCase extends TestCase
             $this->algorithmManager->add(new RS384());
             $this->algorithmManager->add(new RS512());
             $this->algorithmManager->add(new EdDSA());
+            $this->algorithmManager->add(new ESP256());
+            $this->algorithmManager->add(new ESP384());
+            $this->algorithmManager->add(new ESP512());
+            $this->algorithmManager->add(new Ed25519());
         }
 
         return $this->algorithmManager;

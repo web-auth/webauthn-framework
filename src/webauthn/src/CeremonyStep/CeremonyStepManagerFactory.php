@@ -6,6 +6,7 @@ namespace Webauthn\CeremonyStep;
 
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -53,7 +54,7 @@ final class CeremonyStepManagerFactory
     public function __construct()
     {
         $this->counterChecker = new ThrowExceptionIfInvalid();
-        $this->algorithmManager = Manager::create()->add(ES256::create(), RS256::create());
+        $this->algorithmManager = Manager::create()->add(ES256::create(), ESP256::create(), RS256::create());
         $this->attestationStatementSupportManager = new AttestationStatementSupportManager([
             new NoneAttestationStatementSupport(),
         ]);

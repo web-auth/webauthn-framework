@@ -66,7 +66,7 @@
         "symfony/service-contracts": "^3.0",
         "symfony/uid": "^6.4|^7.0|^8.0",
         "symfony/validator": "^6.4|^7.0|^8.0",
-        "web-auth/cose-lib": "^4.2.3"
+        "web-auth/cose-lib": "^4.7"
     },
     "replace": {
         "web-auth/webauthn-lib": "self.version",
