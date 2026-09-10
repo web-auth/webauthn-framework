@@ -184,7 +184,7 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
         return [
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256),
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_RS256),
-            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_EdDSA),
+            PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_EDDSA),
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES384),
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES512),
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_PS256),
