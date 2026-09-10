@@ -238,15 +238,6 @@ parameters:
 			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
-			rawMessage: '''
-				Fetching deprecated class constant COSE_ALGORITHM_EdDSA of class Cose\Algorithms:
-				since v4.0.6. Please use COSE_ALGORITHM_EDDSA instead. Will be removed in v5.0.0
-			'''
-			identifier: classConstant.deprecated
-			count: 1
-			path: ../src/symfony/src/Service/WebauthnCreationOptionsBuilder.php
-
-		-
 			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'
 			identifier: argument.type
 			count: 1
