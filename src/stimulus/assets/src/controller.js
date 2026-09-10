@@ -322,7 +322,7 @@ export default class WebauthnController extends Controller {
      */
     _processPrfInput(prf) {
         if (prf.eval) {
-            prf.eval = this._importPrfValues(eval);
+            prf.eval = this._importPrfValues(prf.eval);
         }
 
         if (prf.evalByCredential) {
@@ -340,30 +340,31 @@ export default class WebauthnController extends Controller {
      * @returns {{ first: ArrayBuffer, second?: ArrayBuffer }}
      */
     _importPrfValues(values) {
-        values.first = base64URLStringToBuffer(values.first);
+        const result = { ...values };
+        result.first = base64URLStringToBuffer(values.first);
         if (values.second) {
-            values.second = base64URLStringToBuffer(values.second);
+            result.second = base64URLStringToBuffer(values.second);
         }
 
-        return values;
+        return result;
     }
 
     /**
      * @private
      * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
-     * @param {T} options
+     * @param {T} credential
      * @returns {T}
      */
-    _processExtensionsOutput(options) {
-        if (!options || !options.extensions) {
-            return options;
+    _processExtensionsOutput(credential) {
+        if (!credential || !credential.clientExtensionResults) {
+            return credential;
         }
 
-        if (options.extensions.prf) {
-            options.extensions.prf = this._processPrfOutput(options.extensions.prf);
+        if (credential.clientExtensionResults.prf) {
+            credential.clientExtensionResults.prf = this._processPrfOutput(credential.clientExtensionResults.prf);
         }
 
-        return options;
+        return credential;
     }
 
     /**
@@ -372,11 +373,11 @@ export default class WebauthnController extends Controller {
      * @returns {Record<string, any>}
      */
     _processPrfOutput(prf) {
-        if (!prf.result) {
+        if (!prf.results) {
             return prf;
         }
 
-        prf.result = this._exportPrfValues(prf.result);
+        prf.results = this._exportPrfValues(prf.results);
 
         return prf;
     }
@@ -387,11 +388,12 @@ export default class WebauthnController extends Controller {
      * @returns {{ first: string, second?: string }}
      */
     _exportPrfValues(values) {
-        values.first = bufferToBase64URLString(values.first);
+        const result = { ...values };
+        result.first = bufferToBase64URLString(values.first);
         if (values.second) {
-            values.second = bufferToBase64URLString(values.second);
+            result.second = bufferToBase64URLString(values.second);
         }
 
-        return values;
+        return result;
     }
 }

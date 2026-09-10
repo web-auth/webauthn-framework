@@ -13,7 +13,17 @@ const jestScoped = compat
             'src/*/assets/test/**/*.js',
             '**/__tests__/**/*.js',
             '**/test/**/*.js'
-        ]
+        ],
+        // Tests run in Jest under jsdom but still have access to Node globals
+        // (e.g. Buffer, used as a base64url helper in payment-controller.test.js).
+        languageOptions: {
+            ...c.languageOptions,
+            globals: {
+                ...(c.languageOptions?.globals ?? {}),
+                ...globals.node,
+                ...globals.jest
+            }
+        }
     }));
 
 export default [

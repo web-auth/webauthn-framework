@@ -27,6 +27,7 @@ deptrac:
         - { type: classLike, value: '^SpomkyLabs\\Pki\\' }
         - { type: classLike, value: '^CBOR\\' }
         - { type: classLike, value: '^Lcobucci\\' }
+        - { type: classLike, value: '^Pdp\\' }
         - { type: classLike, value: '^ParagonIE\\' }
         - { type: classLike, value: '^Safe\\' }
         - { type: classLike, value: '^Doctrine\\' }

@@ -92,6 +92,14 @@ final readonly class Configuration implements ConfigurationInterface
             ->info('This repository is responsible of the user storage')
             ->end()
             ->arrayNode('allowed_origins')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowedOrigins(...)" / "WebauthnAssertionVerifier::withAllowedOrigins(...)" on the helper instead. Multi-origin apps can spread a Symfony parameter into the call. Single-origin apps can omit the call entirely: the verifier falls back to the W3C-recommended same-origin check against the request host.'
+            )
+            ->info(
+                'Origins accepted for every ceremony. Security: origins sharing a Relying Party ID rarely share a trust level, and any response produced on any entry of this list is accepted for any ceremony. List only the origins that share the trust level of the endpoint, and prefer several narrow lists (per controller, or per verifier through the helpers) over a single broad one. See webauthn.ceremony_origin_pinning to also require the response to come from the origin the ceremony was started on.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -100,7 +108,39 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML node is deprecated and will be removed in 6.0. Call "WebauthnAttestationVerifier::withAllowSubdomains()" / "WebauthnAssertionVerifier::withAllowSubdomains()" on the helper instead.'
+            )
+            ->info(
+                'Accept any subdomain of every allowed origin. Security: MUST stay false whenever a subdomain can be controlled by a third party (customer-provisioned hostnames, user content, staging hosts), since an assertion obtained on such a subdomain would then be accepted on the high-trust origin.'
+            )
             ->defaultFalse()
+            ->end()
+            ->booleanNode('ceremony_origin_pinning')
+            ->info(
+                'Require the authenticator response to be produced on the very origin the ceremony was started on, on top of the allow list. Defaults to the value passed to WebauthnAttestationVerifier::withCeremonyOriginPinning() / WebauthnAssertionVerifier::withCeremonyOriginPinning(). Fails closed: ceremonies stored without an origin are rejected, so keep it disabled for native app facets (android:apk-key-hash:...) and for flows whose options request and ceremony do not share an origin. See https://github.com/w3c/webauthn/issues/2466'
+            )
+            ->defaultFalse()
+            ->end()
+            ->arrayNode('related_origins')
+            ->addDefaultsIfNotSet()
+            ->info('Related Origin Requests (WebAuthn Level 3) settings, applied to the "/.well-known/webauthn" endpoint.')
+            ->children()
+            ->scalarNode('public_suffix_resolver')
+            ->defaultNull()
+            ->info(
+                'Service implementing Webauthn\\Util\\PublicSuffixResolver, used to derive the eTLD+1 label of the published origins. Without it the label limit cannot be checked. "Webauthn\\Util\\PdpPublicSuffixResolver" adapts "jeremykendall/php-domain-parser".'
+            )
+            ->end()
+            ->booleanNode('label_limit_check')
+            ->defaultTrue()
+            ->info(
+                'Warns when the published origins resolve to more than 5 distinct eTLD+1 labels: clients silently ignore the extra ones. Set to false to opt out of the check.'
+            )
+            ->end()
+            ->end()
             ->end()
             ->arrayNode('secured_rp_ids')
             ->setDeprecated(
@@ -142,6 +182,11 @@ final readonly class Configuration implements ConfigurationInterface
     {
         $rootNode->children()
             ->arrayNode('client_override_policy')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Build a "Webauthn\\Bundle\\Policy\\ClientOverridePolicy" inline in your controller and attach it to the helper via "WebauthnCreationOptionsBuilder::withClientOverrides()" / "WebauthnRequestOptionsBuilder::withClientOverrides()".'
+            )
             ->addDefaultsIfNotSet()
             ->info('Configuration for allowing client request values to override profile configuration')
             ->children()
@@ -250,6 +295,11 @@ final readonly class Configuration implements ConfigurationInterface
         ];
         $rootNode->children()
             ->arrayNode('creation_profiles')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Use the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse::forCreation()" helper from a controller of your own; see the "Options Helpers" documentation.'
+            )
             ->treatFalseLike($defaultCreationProfiles)
             ->treatNullLike($defaultCreationProfiles)
             ->treatTrueLike($defaultCreationProfiles)
@@ -382,6 +432,11 @@ final readonly class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->arrayNode('request_profiles')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Use the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse::forRequest()" helper from a controller of your own; see the "Options Helpers" documentation.'
+            )
             ->treatFalseLike($defaultRequestProfiles)
             ->treatTrueLike($defaultRequestProfiles)
             ->treatNullLike($defaultRequestProfiles)
@@ -421,6 +476,11 @@ final readonly class Configuration implements ConfigurationInterface
     {
         $rootNode->children()
             ->arrayNode('controllers')
+            ->setDeprecated(
+                'web-auth/webauthn-symfony-bundle',
+                '5.4.0',
+                'The "%node%" YAML section is deprecated and will be removed in 6.0. Write your own controllers using the autowired "Webauthn\\Bundle\\Service\\WebauthnOptionsResponse" and "Webauthn\\Bundle\\Service\\WebauthnResponseVerifier" helpers; see the "Options Helpers" and "Verification Helpers" documentation.'
+            )
             ->canBeEnabled()
             ->children()
             ->arrayNode('creation')
@@ -483,6 +543,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(DefaultCreationOptionsHandler::class)
             ->end()
             ->arrayNode('allowed_origins')
+            ->info(
+                'Origins accepted by this controller only. Overrides the global "webauthn.allowed_origins" list. Security: list only the origins that share the trust level of this endpoint, so that a response produced on a lower-trust origin of the global list cannot be replayed here.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -491,6 +554,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->info(
+                'Accept any subdomain of this controller allowed origins. Security: MUST stay false whenever a subdomain can be controlled by a third party.'
+            )
             ->defaultFalse()
             ->end()
             ->arrayNode('secured_rp_ids')
@@ -560,6 +626,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(DefaultRequestOptionsHandler::class)
             ->end()
             ->arrayNode('allowed_origins')
+            ->info(
+                'Origins accepted by this controller only. Overrides the global "webauthn.allowed_origins" list. Security: list only the origins that share the trust level of this endpoint, so that a response produced on a lower-trust origin of the global list cannot be replayed here.'
+            )
             ->treatFalseLike([])
             ->treatTrueLike([])
             ->treatNullLike([])
@@ -568,6 +637,9 @@ final readonly class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->booleanNode('allow_subdomains')
+            ->info(
+                'Accept any subdomain of this controller allowed origins. Security: MUST stay false whenever a subdomain can be controlled by a third party.'
+            )
             ->defaultFalse()
             ->end()
             ->arrayNode('secured_rp_ids')

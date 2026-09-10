@@ -74,7 +74,8 @@ final class CredentialRecordTest extends AbstractTestCase
             null,
             true,
             false,
-            true
+            true,
+            'example.com'
         );
 
         $json = $this->getSerializer()
@@ -92,6 +93,44 @@ final class CredentialRecordTest extends AbstractTestCase
         static::assertTrue($deserialized->backupEligible);
         static::assertFalse($deserialized->backupStatus);
         static::assertTrue($deserialized->uvInitialized);
+        static::assertSame('example.com', $deserialized->rpId);
+    }
+
+    #[Test]
+    public function aCredentialRecordHasNoRpIdByDefault(): void
+    {
+        $credentialRecord = CredentialRecord::create(
+            'credential-id',
+            PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            [],
+            'none',
+            EmptyTrustPath::create(),
+            Uuid::v4(),
+            'public-key',
+            'user-handle',
+            10
+        );
+
+        static::assertNull($credentialRecord->rpId);
+
+        $json = $this->getSerializer()
+            ->serialize($credentialRecord, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertStringNotContainsString('rpId', $json);
+    }
+
+    #[Test]
+    public function aCredentialRecordSerializedBeforeTheRpIdMemberCanStillBeDeserialized(): void
+    {
+        $json = '{"publicKeyCredentialId":"Y3JlZGVudGlhbC1pZA","type":"public-key","transports":[],"attestationType":"none","trustPath":[],"aaguid":"00000000-0000-0000-0000-000000000000","credentialPublicKey":"cHVibGljLWtleS1kYXRh","userHandle":"dXNlci1oYW5kbGU","counter":10}';
+
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, CredentialRecord::class, 'json');
+
+        static::assertInstanceOf(CredentialRecord::class, $deserialized);
+        static::assertNull($deserialized->rpId);
     }
 
     #[Test]

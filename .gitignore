@@ -13,3 +13,4 @@ yarn-error.log
 /.ci-tools/coverage
 /package-lock.json
 .grepai/
+.claude/

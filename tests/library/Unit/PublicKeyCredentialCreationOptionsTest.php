@@ -274,4 +274,61 @@ final class PublicKeyCredentialCreationOptionsTest extends AbstractTestCase
 
         static::assertSame(PublicKeyCredentialCreationOptions::MEDIATION_CONDITIONAL, $restored->mediation);
     }
+
+    #[Test]
+    public function attestationFormatsRoundTripToJson(): void
+    {
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            attestationFormats: ['packed', 'fido-u2f'],
+        );
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertSame(['packed', 'fido-u2f'], $options->attestationFormats);
+        static::assertStringContainsString('"attestationFormats":["packed","fido-u2f"]', $json);
+
+        /** @var PublicKeyCredentialCreationOptions $deserialized */
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialCreationOptions::class, 'json');
+        static::assertSame(['packed', 'fido-u2f'], $deserialized->attestationFormats);
+    }
+
+    #[Test]
+    public function emptyAttestationFormatsAreOmittedFromJson(): void
+    {
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+        );
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertSame([], $options->attestationFormats);
+        static::assertStringNotContainsString('attestationFormats', $json);
+    }
+
+    #[Test]
+    public function attestationFormatsRejectsNonStringEntries(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('each entry must be a string');
+
+        /** @phpstan-ignore-next-line */
+        PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create('Test'),
+            PublicKeyCredentialUserEntity::create('alice', 'uid', 'Alice'),
+            'challenge',
+            attestationFormats: ['packed', 42],
+        );
+    }
 }

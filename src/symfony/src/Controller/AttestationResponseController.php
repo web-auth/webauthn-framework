@@ -40,6 +40,10 @@ final readonly class AttestationResponseController
 
     public function __invoke(Request $request): Response
     {
+        $publicKeyCredential = null;
+        $publicKeyCredentialCreationOptions = null;
+        $userEntity = null;
+
         try {
             if (! $this->credentialSourceRepository instanceof CanSaveCredentialRecord
                 && ! $this->credentialSourceRepository instanceof CanSaveCredentialSource) {
@@ -83,7 +87,12 @@ final readonly class AttestationResponseController
                     PublicKeyCredentialSource::fromCredentialRecord($credentialSource)
                 );
             }
-            return $this->successHandler->onSuccess($request);
+            return $this->successHandler->onSuccess(
+                $request,
+                $publicKeyCredential,
+                $publicKeyCredentialCreationOptions,
+                $userEntity
+            );
         } catch (Throwable $throwable) {
             if ($throwable instanceof MissingFeatureException) {
                 throw new HttpNotImplementedException($throwable->getMessage(), $throwable);
@@ -92,7 +101,13 @@ final readonly class AttestationResponseController
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure($request, $exception);
             }
-            return $this->failureHandler->onFailure($request, $exception);
+            return $this->failureHandler->onFailure(
+                $request,
+                $exception,
+                $publicKeyCredential,
+                $publicKeyCredentialCreationOptions,
+                $userEntity,
+            );
         }
     }
 }
