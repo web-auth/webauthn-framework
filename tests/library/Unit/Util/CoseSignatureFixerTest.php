@@ -131,7 +131,7 @@ final class CoseSignatureFixerTest extends TestCase
     {
         // Given
         $signature = hex2bin(
-            '308186'
+            '308187'
             . '0241' . str_repeat('11', 65)
             . '024201' . str_repeat('22', 65)
         );

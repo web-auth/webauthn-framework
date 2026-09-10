@@ -601,12 +601,6 @@ parameters:
 			path: ../src/webauthn/src/PublicKeyCredentialDescriptor.php
 
 		-
-			rawMessage: 'Parameter #1 $data of static method Cose\Key\Key::createFromData() expects array<int, mixed>, array<int|string, mixed> given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/webauthn/src/SecurePaymentConfirmation/BrowserBoundSignatureVerifier.php
-
-		-
 			rawMessage: 'Call to static method fromAsn1() of internal class Cose\Algorithm\Signature\ECDSA\ECSignature from outside its root namespace Cose.'
 			identifier: staticMethod.internalClass
 			count: 3
