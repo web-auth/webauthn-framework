@@ -28,7 +28,7 @@
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.0|^2.0|^3.0",
-        "spomky-labs/cbor-php": "^3.0",
+        "spomky-labs/cbor-php": "^3.4",
         "symfony/clock": "^6.4|^7.0|^8.0",
         "symfony/uid": "^6.4|^7.0|^8.0",
         "spomky-labs/pki-framework": "^1.0",
@@ -36,7 +36,7 @@
         "symfony/property-access": "^6.4|^7.0|^8.0",
         "symfony/serializer": "^6.4|^7.0|^8.0",
         "symfony/deprecation-contracts": "^3.2",
-        "web-auth/cose-lib": "^4.2.3"
+        "web-auth/cose-lib": "^4.8"
     },
     "autoload": {
         "psr-4": {
