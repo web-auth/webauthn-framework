@@ -3,7 +3,7 @@
   <img alt="WebAuthn Framework" width="418" height="48" src="https://raw.githubusercontent.com/Spomky-Labs/brand/main/4-Web/svg/marques-de-projet/marque-webauthn-framework-couleur.svg">
 </picture>
 
-# Webauthn Framework
+WebAuthn and passkeys for PHP and Symfony.
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Integrate/badge.svg)
 
