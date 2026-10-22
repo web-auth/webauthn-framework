@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -211,5 +212,19 @@ final class SerializerTest extends AbstractTestCase
             '{"rpId":"rp.example.com","userId":"dXNlci0x","name":"john.doe","displayName":"John Doe"}',
             $json
         );
+    }
+
+    #[Test]
+    public function metadataStatementWithoutUserVerificationDetailsCanBeDeserialized(): void
+    {
+        // Given
+        $json = '{"description":"Authenticator","authenticatorVersion":1,"protocolFamily":"fido2","schema":3,"upv":[{"major":1,"minor":0}],"authenticationAlgorithms":["secp256r1_ecdsa_sha256_raw"],"publicKeyAlgAndEncodings":["cose"],"attestationTypes":["none"],"matcherProtection":["software"],"tcDisplay":[],"attestationRootCertificates":[]}';
+
+        // When
+        $statement = $this->getSerializer()
+            ->deserialize($json, MetadataStatement::class, 'json');
+
+        // Then
+        static::assertSame([], $statement->userVerificationDetails);
     }
 }
