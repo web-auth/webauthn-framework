@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use function Castor\context;
@@ -211,20 +212,53 @@ function lint(): void
     phpqa(['composer', 'exec', '--', 'parallel-lint', 'src', 'tests']);
 }
 
+/**
+ * Infection never runs the test suite itself. It reads the XML coverage and the JUnit report that "castor phpunit"
+ * writes to .ci-tools/coverage, and runs each mutant against the test cases covering its line with the phpunit-11
+ * binary of the phpqa image (see infection.json.dist), not with the PHPUnit 13 that Composer resolves in vendor/bin.
+ *
+ * With --diff, only the lines added or modified since the merge base with --base are mutated. Infection runs
+ * "git diff" on the source directories of infection.json.dist as they are written, which is why that file sits at
+ * the root of the repository and not in .ci-tools. A diff that touches no source file is a success.
+ */
 #[AsTask(description: 'Run Infection for mutation testing')]
-function infect($minMsi = 0, $minCoveredMsi = 0): void
-{
-    phpqa([
-        'composer', 'exec', '--', 'infection',
-        '--coverage=coverage',
+function infect(
+    int $minMsi = 0,
+    int $minCoveredMsi = 0,
+    #[AsOption(description: 'Mutate only the lines added or modified since --base, committed or not')]
+    bool $diff = false,
+    #[AsOption(
+        description: 'The branch or commit the diff of --diff is taken from; Infection narrows it to the merge base with HEAD'
+    )]
+    string $base = 'origin/HEAD',
+    #[AsOption(
+        description: 'Reuse the coverage of the last "castor phpunit" in .ci-tools/coverage instead of running the tests again'
+    )]
+    bool $reuseCoverage = false,
+): void {
+    if (! $reuseCoverage) {
+        phpunit();
+    } elseif (! is_file('.ci-tools/coverage/index.xml') || ! is_file('.ci-tools/coverage/junit.xml')) {
+        io()->error('No coverage to reuse in .ci-tools/coverage: run "castor phpunit" first, or drop --reuse-coverage.');
+        exit(1);
+    }
+
+    $options = [
+        '--coverage=.ci-tools/coverage',
+        '--skip-initial-tests',
         sprintf('--min-msi=%d', $minMsi),
         sprintf('--min-covered-msi=%d', $minCoveredMsi),
         '--threads=max',
         '--logger-github',
         '-s',
-        '--filter=src/',
-        '--configuration=.ci-tools/infection.json.dist',
-    ], ['-e', 'XDEBUG_MODE=coverage']);
+        '--only-covering-test-cases',
+    ];
+    if ($diff) {
+        $options[] = '--git-diff-lines';
+        $options[] = '--git-diff-base=' . $base;
+    }
+
+    phpqa(['composer', 'exec', '--', 'infection', ...$options]);
 }
 
 #[AsTask(description: 'Run JS tests')]
