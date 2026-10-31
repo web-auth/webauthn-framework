@@ -10,6 +10,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Exception\InvalidDataException;
+use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
@@ -81,6 +84,41 @@ final class SerializerTest extends AbstractTestCase
 
         // Then
         static::assertEquals($trustPath, $deserialized);
+    }
+
+    public static function providePublicKeyCredentialMember(): iterable
+    {
+        yield ['id'];
+        yield ['rawId'];
+        yield ['type'];
+        yield ['response'];
+    }
+
+    #[Test]
+    #[DataProvider('providePublicKeyCredentialMember')]
+    public function publicKeyCredentialWithAMissingMemberIsRejected(string $member): void
+    {
+        // Given
+        $data = [
+            'id' => 'eHouz_Zi7-BmByHjJ_tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp_B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB-w',
+            'type' => 'public-key',
+            'rawId' => 'eHouz/Zi7+BmByHjJ/tx9h4a1WZsK4IzUmgGjkhyOodPGAyUqUp/B9yUkflXY3yHWsNtsrgCXQ3HjAIFUeZB+w==',
+            'response' => [
+                'authenticatorData' => 'SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAew',
+                'clientDataJSON' => 'eyJjaGFsbGVuZ2UiOiJHMEpiTExuZGVmM2EwSXkzUzJzU1FBOHVPNFNPX3plNkZaTUF1UEk2LXhJIiwiY2xpZW50RXh0ZW5zaW9ucyI6e30sImhhc2hBbGdvcml0aG0iOiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0MyIsInR5cGUiOiJ3ZWJhdXRobi5nZXQifQ',
+                'signature' => 'MEUCIEY/vcNkbo/LdMTfLa24ZYLlMMVMRd8zXguHBvqud9AJAiEAwCwpZpvcMaqCrwv85w/8RGiZzE+gOM61ffxmgEDeyhM=',
+                'userHandle' => null,
+            ],
+        ];
+        unset($data[$member]);
+
+        // Then
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Missing ' . $member);
+
+        // When
+        $this->getSerializer()
+            ->deserialize(json_encode($data, JSON_THROW_ON_ERROR), PublicKeyCredential::class, 'json');
     }
 
     #[Test]
@@ -211,5 +249,19 @@ final class SerializerTest extends AbstractTestCase
             '{"rpId":"rp.example.com","userId":"dXNlci0x","name":"john.doe","displayName":"John Doe"}',
             $json
         );
+    }
+
+    #[Test]
+    public function metadataStatementWithoutUserVerificationDetailsCanBeDeserialized(): void
+    {
+        // Given
+        $json = '{"description":"Authenticator","authenticatorVersion":1,"protocolFamily":"fido2","schema":3,"upv":[{"major":1,"minor":0}],"authenticationAlgorithms":["secp256r1_ecdsa_sha256_raw"],"publicKeyAlgAndEncodings":["cose"],"attestationTypes":["none"],"matcherProtection":["software"],"tcDisplay":[],"attestationRootCertificates":[]}';
+
+        // When
+        $statement = $this->getSerializer()
+            ->deserialize($json, MetadataStatement::class, 'json');
+
+        // Then
+        static::assertSame([], $statement->userVerificationDetails);
     }
 }

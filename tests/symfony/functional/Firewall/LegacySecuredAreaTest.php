@@ -82,6 +82,21 @@ final class LegacySecuredAreaTest extends WebauthnTestCase
     }
 
     #[Test]
+    public function aUserCannotBeAuthenticatedWithAnIncompleteCredential(): void
+    {
+        $client = static::createClient([], [
+            'HTTPS' => 'on',
+        ]);
+        $client->request(Request::METHOD_POST, '/api/login', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_HOST' => 'test.com',
+        ], '{}');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        static::assertSame('{"status":"error","errorMessage":"Missing id"}', $client->getResponse()->getContent());
+    }
+
+    #[Test]
     public function aUserCanBeAuthenticatedAndAccessToTheProtectedResource(): void
     {
         $client = static::createClient([], [

@@ -171,6 +171,7 @@ final class CeremonyStepManagerFactory
             new CheckExtensions($this->extensionOutputCheckerHandler),
             new CheckSignature($this->algorithmManager),
             new CheckBrowserBoundSignature(new BrowserBoundSignatureVerifier($this->algorithmManager)),
+            new CheckBackupEligibilityIsUnchanged(),
             new CheckCounter($this->counterChecker),
         ]);
     }
