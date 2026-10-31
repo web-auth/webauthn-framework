@@ -52,15 +52,7 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
             $optionsRequest->username
         );
 
-        $allowedCredentials = match (true) {
-            $userEntity === null && $optionsRequest->username === null, $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator === null => [],
-            $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator !== null => $this->fakeCredentialGenerator->generate(
-                $request,
-                $optionsRequest->username
-            ),
-            $userEntity !== null => $this->getCredentials($userEntity),
-            default => [],
-        };
+        $allowedCredentials = $this->getAllowedCredentials($request, $optionsRequest->username, $userEntity);
 
         // Apply override policy to determine effective values
         /** @var ?string $userVerification */
@@ -93,6 +85,25 @@ final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCrede
         }
 
         return AuthenticationExtensions::create($extensions);
+    }
+
+    /**
+     * An unknown username and an account without any registered credential both get the decoys of the
+     * fake credential generator: an empty list would reveal that the account exists.
+     *
+     * @return PublicKeyCredentialDescriptor[]
+     */
+    private function getAllowedCredentials(
+        Request $request,
+        ?string $username,
+        ?PublicKeyCredentialUserEntity $userEntity
+    ): array {
+        $credentials = $userEntity === null ? [] : $this->getCredentials($userEntity);
+        if ($credentials !== [] || $username === null || $this->fakeCredentialGenerator === null) {
+            return $credentials;
+        }
+
+        return $this->fakeCredentialGenerator->generate($request, $username);
     }
 
     /**
