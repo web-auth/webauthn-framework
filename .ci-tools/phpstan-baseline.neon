@@ -40,12 +40,6 @@ parameters:
 			path: ../src/symfony/src/Controller/AttestationResponseController.php
 
 		-
-			rawMessage: 'Strict comparison using !== between string and null will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: ../src/symfony/src/CredentialOptionsBuilder/ProfileBasedRequestOptionsBuilder.php
-
-		-
 			rawMessage: '''
 				Call to deprecated method setSecuredRelyingPartyId() of class Webauthn\Bundle\DependencyInjection\Compiler\CeremonyStepManagerFactoryCompilerPass:
 				Will be removed in 6.0.0

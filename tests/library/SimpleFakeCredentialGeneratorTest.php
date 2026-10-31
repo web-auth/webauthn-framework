@@ -10,6 +10,8 @@ use function ord;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use function strlen;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\SimpleFakeCredentialGenerator;
@@ -43,6 +45,54 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
         $bob = $generator->generate($request, 'bob@example.com');
 
         static::assertNotEquals($alice, $bob);
+    }
+
+    /**
+     * Security non-regression for GHSA-8gvp-8vj9-p3q7: authenticators return credential IDs as raw
+     * bytes. A fake ID spelled as a hex string stands out once the allowCredentials entries are
+     * base64url decoded, whatever the secret, and tells an unknown username from a registered one.
+     */
+    #[Test]
+    public function fakeCredentialIdsAreRawBytesAndNotHexStrings(): void
+    {
+        $generator = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret');
+        $request = Request::create('https://example.com');
+
+        $descriptors = $generator->generate($request, 'alice@example.com');
+
+        static::assertNotEmpty($descriptors);
+        foreach ($descriptors as $descriptor) {
+            static::assertSame(32, strlen($descriptor->id));
+            static::assertFalse(ctype_xdigit($descriptor->id), 'A fake credential ID must not be a hex string.');
+        }
+    }
+
+    /**
+     * Lists cached by the versions affected by GHSA-8gvp-8vj9-p3q7 hold hex IDs and are stored without
+     * expiration: they must not be served anymore once the generator emits raw bytes.
+     */
+    #[Test]
+    public function aListCachedByAnAffectedVersionIsNotServed(): void
+    {
+        $username = 'alice@example.com';
+        $request = Request::create('https://example.com');
+        $cache = new ArrayAdapter();
+        $legacyItem = $cache->getItem('fake_credentials_' . hash('xxh128', $username));
+        $legacyItem->set([
+            PublicKeyCredentialDescriptor::create(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                hash('sha256', $username)
+            ),
+        ]);
+        $cache->save($legacyItem);
+
+        $withCache = new SimpleFakeCredentialGenerator($cache, 'a-deployment-secret');
+        $withoutCache = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret');
+
+        static::assertEquals(
+            $withoutCache->generate($request, $username),
+            $withCache->generate($request, $username)
+        );
     }
 
     /**
@@ -177,7 +227,7 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
             }
             $credentials[] = [
                 'type' => PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                'id' => hash('sha256', $credentialSeed . $username),
+                'id' => hash('sha256', $credentialSeed . $username, true),
                 'transports' => array_values(array_unique($selectedTransports)),
             ];
         }
