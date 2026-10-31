@@ -106,12 +106,6 @@ parameters:
 			path: ../src/symfony/src/Repository/DummyPublicKeyCredentialSourceRepository.php
 
 		-
-			rawMessage: 'Call to function is_array() with array<mixed> will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../src/symfony/src/Security/Authentication/Token/WebauthnToken.php
-
-		-
 			rawMessage: 'Parameter #1 $data (array{Webauthn\PublicKeyCredentialUserEntity, Webauthn\PublicKeyCredentialDescriptor, Webauthn\PublicKeyCredentialOptions, bool, bool, bool, bool, int, ...}) of method Webauthn\Bundle\Security\Authentication\Token\WebauthnToken::__unserialize() should be contravariant with parameter $data (array) of method Symfony\Component\Security\Core\Authentication\Token\AbstractToken::__unserialize()'
 			identifier: method.childParameterType
 			count: 1

@@ -63,7 +63,7 @@ final class AdditionalAuthenticatorTest extends WebauthnTestCase
             static::assertArrayHasKey($expectedKey, $data);
         }
         static::assertSame('ok', $data['status']);
-        static::assertSame($data['excludeCredentials'], []); // username enumeration prevention is enabled
+        static::assertSame([], $data['excludeCredentials']); // username enumeration prevention is enabled
     }
 
     #[Test]
