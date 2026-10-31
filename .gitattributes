@@ -12,6 +12,7 @@
 /.gitignore export-ignore
 /.gitsplit.yml export-ignore
 /castor.php export-ignore
+/infection.json.dist export-ignore
 
 /link export-ignore
 /babel.config.cjs export-ignore

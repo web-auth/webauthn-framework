@@ -81,12 +81,10 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getAuthenticatorAttestationResponseValidator(): AuthenticatorAttestationResponseValidator
     {
-        if ($this->authenticatorAttestationResponseValidator === null) {
-            $this->authenticatorAttestationResponseValidator = AuthenticatorAttestationResponseValidator::create(
-                ceremonyStepManager: $this->getCeremonyStepManagerFactory()
-                    ->creationCeremony()
-            );
-        }
+        $this->authenticatorAttestationResponseValidator ??= AuthenticatorAttestationResponseValidator::create(
+            ceremonyStepManager: $this->getCeremonyStepManagerFactory()
+                ->creationCeremony()
+        );
 
         return $this->authenticatorAttestationResponseValidator;
     }
@@ -125,12 +123,10 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getAuthenticatorAssertionResponseValidator(): AuthenticatorAssertionResponseValidator
     {
-        if ($this->authenticatorAssertionResponseValidator === null) {
-            $this->authenticatorAssertionResponseValidator = AuthenticatorAssertionResponseValidator::create(
-                ceremonyStepManager: $this->getCeremonyStepManagerFactory()
-                    ->requestCeremony()
-            );
-        }
+        $this->authenticatorAssertionResponseValidator ??= AuthenticatorAssertionResponseValidator::create(
+            ceremonyStepManager: $this->getCeremonyStepManagerFactory()
+                ->requestCeremony()
+        );
 
         return $this->authenticatorAssertionResponseValidator;
     }
@@ -159,11 +155,9 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getSerializer(): SerializerInterface
     {
-        if ($this->webauthnSerializer === null) {
-            $this->webauthnSerializer = (new WebauthnSerializerFactory(
-                $this->getAttestationStatementSupportManager()
-            ))->create();
-        }
+        $this->webauthnSerializer ??= (new WebauthnSerializerFactory(
+            $this->getAttestationStatementSupportManager()
+        ))->create();
 
         return $this->webauthnSerializer;
     }
@@ -240,18 +234,14 @@ abstract class AbstractTestCase extends TestCase
 
     private function getCertificateChainValidator(): CertificateChainValidator
     {
-        if ($this->certificateChainValidator === null) {
-            $this->certificateChainValidator = PhpCertificateChainValidator::create($this->client, $this->clock);
-        }
+        $this->certificateChainValidator ??= PhpCertificateChainValidator::create($this->client, $this->clock);
 
         return $this->certificateChainValidator;
     }
 
     private function getStatusReportRepository(): StatusReportRepository
     {
-        if ($this->statusReportRepository === null) {
-            $this->statusReportRepository = new StatusReportRepository();
-        }
+        $this->statusReportRepository ??= new StatusReportRepository();
 
         return $this->statusReportRepository;
     }
