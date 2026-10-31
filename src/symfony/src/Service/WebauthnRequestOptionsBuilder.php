@@ -28,12 +28,13 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * `allowCredentials` is derived from the credential repository unless an
  * explicit list is provided through {@see self::withAllowCredentials()}.
  *
- * When user resolution fails but the JSON body carried a `username` (e.g. a
- * login form posted `{"username":"alice"}`), the builder consults the autowired
- * {@see FakeCredentialGenerator} to produce **fake** `allowCredentials`. This
- * prevents username enumeration: the response shape is identical whether or
- * not the username matches a real user. Disable with
- * {@see self::withFakeCredentialGenerator()} (pass `null`).
+ * When the JSON body carried a `username` (e.g. a login form posted
+ * `{"username":"alice"}`) but no credential can be listed for it, because user
+ * resolution fails or because the resolved user has no registered credential,
+ * the builder consults the autowired {@see FakeCredentialGenerator} to produce
+ * **fake** `allowCredentials`. This prevents username enumeration: the response
+ * shape is identical whether or not the username matches a real user. Disable
+ * with {@see self::withFakeCredentialGenerator()} (pass `null`).
  */
 final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
 {
@@ -85,6 +86,11 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
+    /**
+     * With `false`, `allowCredentials` stays empty whether or not the user is
+     * known: the fake credential generator is not consulted either, so that the
+     * response does not tell a known username from an unknown one.
+     */
     public function withDeriveAllowCredentialsFromUser(bool $derive = true): static
     {
         $clone = clone $this;
@@ -108,7 +114,7 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
     /**
      * Swap the fake credential generator used for username-enumeration
      * protection. Pass `null` to opt out (response will carry empty
-     * `allowCredentials` when the username does not resolve to a known user).
+     * `allowCredentials` when no credential can be listed for the username).
      */
     public function withFakeCredentialGenerator(?FakeCredentialGenerator $generator): static
     {
@@ -183,14 +189,16 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
             return $this->allowCredentials;
         }
 
-        if ($userEntity !== null && $this->deriveAllowCredentialsFromUser) {
-            return array_map(
-                static fn (CredentialRecord $record): PublicKeyCredentialDescriptor => $record->getPublicKeyCredentialDescriptor(),
-                $this->credentialRepository->findAllForUserEntity($userEntity),
-            );
+        if (! $this->deriveAllowCredentialsFromUser) {
+            return [];
         }
 
-        if ($userEntity === null
+        $allowCredentials = $userEntity === null ? [] : array_map(
+            static fn (CredentialRecord $record): PublicKeyCredentialDescriptor => $record->getPublicKeyCredentialDescriptor(),
+            $this->credentialRepository->findAllForUserEntity($userEntity),
+        );
+
+        if ($allowCredentials === []
             && $this->fakeCredentialGenerator !== null
             && $optionsRequest instanceof ServerPublicKeyCredentialRequestOptionsRequest
             && $optionsRequest->username !== null
@@ -199,6 +207,6 @@ final class WebauthnRequestOptionsBuilder extends AbstractWebauthnOptionsBuilder
             return array_values($this->fakeCredentialGenerator->generate($request, $optionsRequest->username));
         }
 
-        return [];
+        return $allowCredentials;
     }
 }

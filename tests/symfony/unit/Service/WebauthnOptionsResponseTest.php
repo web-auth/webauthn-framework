@@ -320,6 +320,81 @@ final class WebauthnOptionsResponseTest extends TestCase
         static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
     }
 
+    /**
+     * Security non-regression for GHSA-pm4w-cq4x-rv8q: a user without any registered credential got an empty
+     * allowCredentials list while an unknown username got fake credentials, which revealed that the account exists.
+     */
+    #[Test]
+    public function forRequestUsesTheFakeCredentialGeneratorWhenTheResolvedUserHasNoCredential(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                return [PublicKeyCredentialDescriptor::create('public-key', 'fake-cred-for-' . $username)];
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository(), $generator)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'alice',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('fake-cred-for-alice', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestKeepsTheCredentialsOfTheResolvedUserEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked for a user with credentials.');
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository([$this->record('cred-A')]), $generator)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'alice',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('cred-A', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestProducesEmptyAllowCredentialsWhenDerivationIsDisabledEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked when derivation is disabled.');
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository(), $generator)
+            ->forRequest('example.com')
+            ->withDeriveAllowCredentialsFromUser(false)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
     #[Test]
     public function theOriginTheCeremonyIsStartedOnIsStoredAlongsideTheOptions(): void
     {
