@@ -21,6 +21,10 @@ use Webauthn\Tests\AbstractTestCase;
  */
 final class BackupStateEventsTest extends AbstractTestCase
 {
+    /**
+     * The authenticator data of the assertion has the BE and BS flags clear: the BE flag is recorded because the
+     * credential record has no value yet, and the BS flag changes from the stored true.
+     */
     #[Test]
     public function backupStateEventsAreDispatchedWhenChanged(): void
     {
@@ -79,9 +83,6 @@ final class BackupStateEventsTest extends AbstractTestCase
             )
         );
 
-        // Set initial backup state values different from what's in the authenticatorData
-        // The authenticatorData has BE=false and BS=false, so we set them to true to trigger a change
-        $publicKeyCredentialSource->backupEligible = true;
         $publicKeyCredentialSource->backupStatus = true;
 
         $validator = $this->getAuthenticatorAssertionResponseValidator();
@@ -118,7 +119,7 @@ final class BackupStateEventsTest extends AbstractTestCase
         // Verify BackupEligibilityChangedEvent
         static::assertCount(1, $backupEligibilityEvents, 'One BackupEligibilityChangedEvent should be dispatched');
         $eligibilityEvent = $backupEligibilityEvents[0];
-        static::assertTrue($eligibilityEvent->previousValue);
+        static::assertNull($eligibilityEvent->previousValue);
         static::assertFalse($eligibilityEvent->newValue);
         static::assertSame($publicKeyCredentialSource, $eligibilityEvent->credentialRecord);
 
@@ -187,7 +188,6 @@ final class BackupStateEventsTest extends AbstractTestCase
             )
         );
 
-        $publicKeyCredentialSource->backupEligible = true;
         $publicKeyCredentialSource->backupStatus = true;
 
         $validator = $this->getAuthenticatorAssertionResponseValidator();
