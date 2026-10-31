@@ -82,6 +82,12 @@ final class WebauthnBundle extends Bundle
         }
     }
 
+    /**
+     * The XSD validation flag is passed by name on purpose. DoctrineBundle 3.2 removed the `$aliasMap` parameter that
+     * used to precede it, so no positional call is accepted by every supported DoctrineBundle version: passing the
+     * empty alias map triggers a deprecation from 3.2.2 onwards (a TypeError in 3.2.0 and 3.2.1), and omitting it is
+     * rejected by DoctrineBundle 2.x, 3.0 and 3.1.
+     */
     private function registerMappings(ContainerBuilder $container): void
     {
         $realPath = realpath(__DIR__ . '/Resources/config/doctrine-mapping');
@@ -93,7 +99,7 @@ final class WebauthnBundle extends Bundle
         ];
         if (class_exists(DoctrineOrmMappingsPass::class)) {
             $container->addCompilerPass(
-                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], false, [], true),
+                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, enableXsdValidation: true),
                 PassConfig::TYPE_BEFORE_OPTIMIZATION,
                 0
             );
