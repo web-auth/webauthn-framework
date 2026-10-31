@@ -23,9 +23,10 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        /** @var array{id?: string, rawId: string, type: string, response: array<string, mixed>} $data */
-        if (! array_key_exists('id', $data)) {
-            return $data;
+        /** @var array{id: string, rawId: string, type: string, response: array<string, mixed>} $data */
+        $keys = ['id', 'rawId', 'type', 'response'];
+        foreach ($keys as $key) {
+            array_key_exists($key, $data) || throw InvalidDataException::create($data, 'Missing ' . $key);
         }
         $id = Base64UrlSafe::decodeNoPadding($data['id']);
         $rawId = Base64::decode($data['rawId']);
