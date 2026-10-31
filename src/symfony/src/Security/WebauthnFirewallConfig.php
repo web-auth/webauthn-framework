@@ -72,7 +72,7 @@ final readonly class WebauthnFirewallConfig
 
     public function getFailureHandler(): string
     {
-        return $this->options['success_handler'] ?? WebauthnFactory::DEFAULT_FAILURE_HANDLER_SERVICE;
+        return $this->options['failure_handler'] ?? WebauthnFactory::DEFAULT_FAILURE_HANDLER_SERVICE;
     }
 
     public function isAuthenticationEnabled(): bool
@@ -127,7 +127,7 @@ final readonly class WebauthnFirewallConfig
 
     public function getRegistrationOptionsHandler(): string
     {
-        return $this->options['registration']['options_handler'] ?? WebauthnFactory::DEFAULT_REQUEST_OPTIONS_HANDLER_SERVICE;
+        return $this->options['registration']['options_handler'] ?? WebauthnFactory::DEFAULT_CREATION_OPTIONS_HANDLER_SERVICE;
     }
 
     public function getRegistrationHost(): ?string
