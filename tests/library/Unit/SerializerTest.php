@@ -123,6 +123,66 @@ final class SerializerTest extends AbstractTestCase
     }
 
     /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideTypeOtherThanPublicKey(): iterable
+    {
+        yield 'unknown type' => ['undefined'];
+        yield 'type in upper case' => ['PUBLIC-KEY'];
+        yield 'empty type' => [''];
+    }
+
+    #[Test]
+    #[DataProvider('provideTypeOtherThanPublicKey')]
+    public function publicKeyCredentialOfAnotherTypeIsRejected(string $type): void
+    {
+        // Given
+        $data = self::assertionCredential();
+        $data['type'] = $type;
+
+        // Then
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid parameter "type". Shall be "public-key".');
+
+        // When
+        $this->getSerializer()
+            ->deserialize(json_encode($data, JSON_THROW_ON_ERROR), PublicKeyCredential::class, 'json');
+    }
+
+    #[Test]
+    public function publicKeyCredentialOfTypePublicKeyIsDeserialized(): void
+    {
+        // Given
+        $json = json_encode(self::assertionCredential(), JSON_THROW_ON_ERROR);
+
+        // When
+        $publicKeyCredential = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredential::class, 'json');
+
+        // Then
+        static::assertSame(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $publicKeyCredential->type);
+    }
+
+    /**
+     * The identifiers of the credential differ and its response is of no known kind: decoding them first would fail
+     * with "Invalid ID" or "Unable to create the response object".
+     */
+    #[Test]
+    public function publicKeyCredentialOfAnotherTypeIsRejectedBeforeItsMembersAreDecoded(): void
+    {
+        // Given
+        $json = '{"id":"AAAA","rawId":"BBBB","type":"other","response":{}}';
+
+        // Then
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid parameter "type". Shall be "public-key".');
+
+        // When
+        $this->getSerializer()
+            ->deserialize($json, PublicKeyCredential::class, 'json');
+    }
+
+    /**
      * @return iterable<string, array{string, string}>
      */
     public static function provideAssertionResponseMemberThatIsNotBase64Url(): iterable
