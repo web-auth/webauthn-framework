@@ -68,6 +68,13 @@ final readonly class WebauthnSerializerFactory
             new SignalCurrentUserDetailsDenormalizer(),
             new SignalUnknownCredentialDenormalizer(),
             new TrustPathDenormalizer(),
+            new PaymentCurrencyAmountDenormalizer(),
+            new PaymentCredentialInstrumentDenormalizer(),
+            new PaymentEntityLogoDenormalizer(),
+            new BrowserBoundSignatureDenormalizer(),
+            new BrowserBoundPublicKeyDenormalizer(),
+            new CollectedClientAdditionalPaymentDataDenormalizer(),
+            new CollectedClientPaymentDataDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
             new ObjectNormalizer(

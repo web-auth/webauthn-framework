@@ -9,6 +9,9 @@ use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES256K;
 use Cose\Algorithm\Signature\ECDSA\ES384;
 use Cose\Algorithm\Signature\ECDSA\ES512;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
+use Cose\Algorithm\Signature\FullySpecified\ESP384;
+use Cose\Algorithm\Signature\FullySpecified\ESP512;
 use Cose\Algorithm\Signature\Signature;
 use function strlen;
 
@@ -32,6 +35,7 @@ final readonly class CoseSignatureFixer
         switch ($algorithm::identifier()) {
             case ES256K::ID:
             case ES256::ID:
+            case ESP256::ID:
                 if (strlen($signature) === self::ES256_SIGNATURE_LENGTH) {
                     return $signature;
                 }
@@ -41,12 +45,14 @@ final readonly class CoseSignatureFixer
                     self::ES256_SIGNATURE_LENGTH
                 ); // TODO: fix this hardcoded value by adding a dedicated method for the algorithms
             case ES384::ID:
+            case ESP384::ID:
                 if (strlen($signature) === self::ES384_SIGNATURE_LENGTH) {
                     return $signature;
                 }
 
                 return ECSignature::fromAsn1($signature, self::ES384_SIGNATURE_LENGTH);
             case ES512::ID:
+            case ESP512::ID:
                 if (strlen($signature) === self::ES512_SIGNATURE_LENGTH) {
                     return $signature;
                 }

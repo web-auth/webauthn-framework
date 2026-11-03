@@ -15,11 +15,13 @@ use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\AuthenticatorResponse;
 use Webauthn\Bundle\Repository\CanRegisterUserEntity;
 use Webauthn\Bundle\Repository\CanSaveCredentialRecord;
 use Webauthn\Bundle\Repository\CanSaveCredentialSource;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
+use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CredentialRecord;
 use Webauthn\Exception\InvalidDataException;
@@ -46,6 +48,17 @@ final readonly class WebauthnBadgeListener
     ) {
     }
 
+    /**
+     * The pre-deserialization phase keeps the historical silent-fail behaviour
+     * so other authenticators on the same firewall stay free to handle a
+     * request that turns out not to be a WebAuthn ceremony.
+     *
+     * Once we know the badge IS a WebAuthn ceremony, validation failures are
+     * surfaced through {@see WebauthnAuthenticationFailureException}, which
+     * carries the deserialized credential and options so an Authenticator's
+     * `onAuthenticationFailure()` can build a contextual response (e.g. a W3C
+     * §5.1.10 `signalUnknownCredential` payload).
+     */
     #[AsEventListener(priority: 512)]
     public function checkPassport(CheckPassportEvent $event): void
     {
@@ -73,7 +86,11 @@ final readonly class WebauthnBadgeListener
             $data = $this->optionsStorage->get($response->clientDataJSON->challenge);
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             $userEntity = $data->getPublicKeyCredentialUserEntity();
+        } catch (Throwable) {
+            return;
+        }
 
+        try {
             switch (true) {
                 case $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions && $response instanceof AuthenticatorAssertionResponse:
                     $this->processRequest(
@@ -90,8 +107,17 @@ final readonly class WebauthnBadgeListener
                 default:
                     return;
             }
-        } catch (Throwable) {
-            return;
+        } catch (WebauthnAuthenticationFailureException $exception) {
+            throw $exception;
+        } catch (Throwable $throwable) {
+            throw new WebauthnAuthenticationFailureException(
+                $throwable->getMessage(),
+                publicKeyCredential: $publicKeyCredential,
+                authenticatorResponse: $response instanceof AuthenticatorResponse ? $response : null,
+                publicKeyCredentialOptions: $publicKeyCredentialRequestOptions,
+                userEntity: $userEntity,
+                previous: $throwable,
+            );
         }
     }
 

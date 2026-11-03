@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\Tests\AbstractTestCase;
@@ -162,6 +163,130 @@ final class PublicKeyCredentialRequestOptionsTest extends AbstractTestCase
 
         // Then
         static::assertSame([], $publicKeyCredentialRequestOptions->hints);
+    }
+
+    #[Test]
+    public function publicKeyCredentialRequestOptionsWithUiModeImmediateRoundTrips(): void
+    {
+        $options = PublicKeyCredentialRequestOptions::create(
+            'challenge',
+            uiMode: PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE,
+        );
+
+        static::assertSame(PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE, $options->uiMode);
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertJsonStringEqualsJsonString(
+            '{"challenge":"Y2hhbGxlbmdl","allowCredentials":[],"uiMode":"immediate"}',
+            $json,
+        );
+
+        /** @var PublicKeyCredentialRequestOptions $deserialized */
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialRequestOptions::class, 'json');
+        static::assertSame(PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE, $deserialized->uiMode);
+    }
+
+    #[Test]
+    public function publicKeyCredentialRequestOptionsWithoutUiModeDoesNotEmitField(): void
+    {
+        $options = PublicKeyCredentialRequestOptions::create('challenge');
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertNull($options->uiMode);
+        static::assertStringNotContainsString('uiMode', $json);
+    }
+
+    #[Test]
+    public function creatingPublicKeyCredentialRequestOptionsWithInvalidUiModeThrowsException(): void
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid UI mode');
+
+        PublicKeyCredentialRequestOptions::create('challenge', uiMode: 'silent');
+    }
+
+    #[Test]
+    public function attestationFieldRoundTripsToJson(): void
+    {
+        $options = PublicKeyCredentialRequestOptions::create('challenge', attestation: 'direct');
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertSame('direct', $options->attestation);
+        static::assertJsonStringEqualsJsonString(
+            '{"challenge":"Y2hhbGxlbmdl","allowCredentials":[],"attestation":"direct"}',
+            $json,
+        );
+
+        /** @var PublicKeyCredentialRequestOptions $deserialized */
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialRequestOptions::class, 'json');
+        static::assertSame('direct', $deserialized->attestation);
+    }
+
+    #[Test]
+    public function attestationFieldRejectsUnknownValue(): void
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid attestation conveyance mode');
+
+        PublicKeyCredentialRequestOptions::create('challenge', attestation: 'bogus');
+    }
+
+    #[Test]
+    public function attestationFormatsRoundTripToJson(): void
+    {
+        $options = PublicKeyCredentialRequestOptions::create('challenge', attestationFormats: ['packed', 'tpm']);
+
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertSame(['packed', 'tpm'], $options->attestationFormats);
+        static::assertJsonStringEqualsJsonString(
+            '{"challenge":"Y2hhbGxlbmdl","allowCredentials":[],"attestationFormats":["packed","tpm"]}',
+            $json,
+        );
+
+        /** @var PublicKeyCredentialRequestOptions $deserialized */
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, PublicKeyCredentialRequestOptions::class, 'json');
+        static::assertSame(['packed', 'tpm'], $deserialized->attestationFormats);
+    }
+
+    #[Test]
+    public function emptyAttestationFormatsAreOmittedFromJson(): void
+    {
+        $options = PublicKeyCredentialRequestOptions::create('challenge');
+        $json = $this->getSerializer()
+            ->serialize($options, 'json', [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ]);
+
+        static::assertSame([], $options->attestationFormats);
+        static::assertStringNotContainsString('attestationFormats', $json);
+    }
+
+    #[Test]
+    public function attestationFormatsRejectsNonStringEntries(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('each entry must be a string');
+
+        /** @phpstan-ignore-next-line */
+        PublicKeyCredentialRequestOptions::create('challenge', attestationFormats: ['packed', 42]);
     }
 
     #[Test]

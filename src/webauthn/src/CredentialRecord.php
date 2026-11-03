@@ -11,6 +11,10 @@ use Webauthn\TrustPath\TrustPath;
  * Credential Record represents a stored credential on the server side.
  * It contains all the necessary data for validating authentication assertions.
  *
+ * The OPTIONAL rpId member holds the Relying Party identifier the credential was scoped to during the registration
+ * ceremony. It is populated from the creation options and is mainly useful to Relying Parties relying on Related
+ * Origin Requests. It is null for records created before version 5.4.
+ *
  * @see https://www.w3.org/TR/webauthn-3/#credential-record
  */
 class CredentialRecord
@@ -33,6 +37,7 @@ class CredentialRecord
         public ?bool $backupEligible = null,
         public ?bool $backupStatus = null,
         public ?bool $uvInitialized = null,
+        public ?string $rpId = null,
     ) {
     }
 
@@ -54,6 +59,7 @@ class CredentialRecord
         ?bool $backupEligible = null,
         ?bool $backupStatus = null,
         ?bool $uvInitialized = null,
+        ?string $rpId = null,
     ): self {
         return new self(
             $publicKeyCredentialId,
@@ -68,7 +74,8 @@ class CredentialRecord
             $otherUI,
             $backupEligible,
             $backupStatus,
-            $uvInitialized
+            $uvInitialized,
+            $rpId
         );
     }
 
