@@ -8,6 +8,7 @@ use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\Symfony\CodeQuality\Rector\Class_\EventSubscriberToAttributeRector;
 use Rector\Symfony\Symfony80\Rector\Class_\RemoveEraseCredentialsRector;
 use Rector\ValueObject\PhpVersion;
 
@@ -35,6 +36,7 @@ $builder->withPaths(
     ]
 );
 $builder->withSkip([
+    EventSubscriberToAttributeRector::class,
     PreferPHPUnitThisCallRector::class,
     RemoveEraseCredentialsRector::class,
     __DIR__ . '/../src/Library/Core/JWKSet.php',
