@@ -607,6 +607,12 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(PhpCertificateChainValidator::class)
             ->info('A Certificate Chain checker.')
             ->end()
+            ->booleanNode('tpm_acknowledge_insecure_algorithm')
+            ->defaultFalse()
+            ->info(
+                'Acknowledge that RS1 (RSASSA-PKCS1-v1_5 with SHA-1) is insecure and verify the TPM attestation statements signed with it. Without this acknowledgement, verifying such a statement emits a warning, which the Symfony error handler turns into an exception in debug mode and which cose-lib v5 will replace with an exception. Enable it only when the application has to keep registering these TPMs, for instance to pass the platform attestation tests of the FIDO Conformance Tools.'
+            )
+            ->end()
             ->end()
             ->end()
             ->end();

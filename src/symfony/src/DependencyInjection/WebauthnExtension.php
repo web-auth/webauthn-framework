@@ -74,7 +74,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
+        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, tpm_acknowledge_insecure_algorithm: bool}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
@@ -369,7 +369,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string} $config
+     * @param array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, tpm_acknowledge_insecure_algorithm: bool} $config
      */
     private function loadMetadataServices(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
@@ -379,6 +379,10 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(MetadataStatementRepository::class, $config['mds_repository']);
         $container->setAlias(StatusReportRepository::class, $config['status_report_repository']);
         $container->setAlias(CertificateChainValidator::class, $config['certificate_chain_checker']);
+        $container->setParameter(
+            'webauthn.metadata.tpm_acknowledge_insecure_algorithm',
+            $config['tpm_acknowledge_insecure_algorithm']
+        );
         $loader->load('metadata_statement_supports.php');
     }
 
