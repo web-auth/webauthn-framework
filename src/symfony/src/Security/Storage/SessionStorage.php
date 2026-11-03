@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Security\Storage;
 
 use function array_key_exists;
 use function is_array;
+use function is_string;
 use function sprintf;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -32,6 +33,7 @@ final readonly class SessionStorage implements OptionsStorage
         $session->set($key, [
             'options' => $item->getPublicKeyCredentialOptions(),
             'userEntity' => $item->getPublicKeyCredentialUserEntity(),
+            'ceremonyOrigin' => $item->getCeremonyOrigin(),
         ]);
     }
 
@@ -49,6 +51,7 @@ final readonly class SessionStorage implements OptionsStorage
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
+        $ceremonyOrigin = $sessionValue['ceremonyOrigin'] ?? null;
 
         if (! $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
@@ -57,6 +60,10 @@ final readonly class SessionStorage implements OptionsStorage
             throw new BadRequestHttpException('No user entity available for this session.');
         }
 
-        return Item::create($publicKeyCredentialRequestOptions, $userEntity);
+        is_string($ceremonyOrigin) || $ceremonyOrigin === null || throw new BadRequestHttpException(
+            'No valid ceremony origin available for this session.'
+        );
+
+        return Item::create($publicKeyCredentialRequestOptions, $userEntity, $ceremonyOrigin);
     }
 }

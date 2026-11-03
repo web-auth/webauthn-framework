@@ -135,14 +135,20 @@ webauthn:
         options_path: '/devices/add/options'
         result_path: '/devices/add'
         user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
-        secured_rp_ids:
-          - 'localhost'
+        # Per-controller override of the root `allowed_origins`, scoped to this
+        # controller only. Its presence is asserted by ControllersConfigOriginOverrideTest.
+        allowed_origins:
+          - 'https://creation-test.example'
+        allow_subdomains: true
     request:
       test:
         options_path: '/devices/test/options'
         result_path: '/devices/test'
-        secured_rp_ids:
-          - 'localhost'
+        # Per-controller override of the root `allowed_origins`, scoped to this
+        # controller only. Its presence is asserted by ControllersConfigOriginOverrideTest.
+        allowed_origins:
+          - 'https://request-test.example'
+        allow_subdomains: false
   creation_profiles:
     default:
       rp:

@@ -35,7 +35,8 @@
             "@web-auth/webauthn-stimulus": "path:%PACKAGE%/src/index.js",
             "@web-auth/webauthn-stimulus/webauthn": "path:%PACKAGE%/src/controller.js",
             "@web-auth/webauthn-stimulus/authentication": "path:%PACKAGE%/src/authentication-controller.js",
-            "@web-auth/webauthn-stimulus/registration": "path:%PACKAGE%/src/registration-controller.js"
+            "@web-auth/webauthn-stimulus/registration": "path:%PACKAGE%/src/registration-controller.js",
+            "@web-auth/webauthn-stimulus/signals": "path:%PACKAGE%/src/signals.js"
         }
     },
     "peerDependencies": {
@@ -50,7 +51,7 @@
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
         "@simplewebauthn/browser": "^13.2.0",
-        "@babel/core": "^7.0.0",
+        "@babel/core": "^7.29.6",
         "@babel/preset-env": "^7.0.0",
         "@symfony/stimulus-testing": "^2.0.0",
         "@testing-library/dom": "^10.0.0",
@@ -77,7 +78,10 @@
         "symfony-ux",
         "authentication",
         "passkey",
-        "passwordless"
+        "passwordless",
+        "secure-payment-confirmation",
+        "payment",
+        "spc"
     ],
     "author": {
         "name": "Florent Morselli",

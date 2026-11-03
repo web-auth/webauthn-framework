@@ -25,6 +25,27 @@ use Webauthn\U2FPublicKey;
 
 class CheckAlgorithm implements CeremonyStep
 {
+    /**
+     * Within Webauthn, the fully-specified identifiers introduced by RFC 9864 designate exactly the same algorithm as
+     * their legacy counterpart. They are NOT RECOMMENDED in "pubKeyCredParams", but an authenticator is free to return
+     * a credential public key that uses either form, so a Relying Party asking for one of them accepts the other.
+     *
+     * @var array<int, int>
+     *
+     * @see https://w3c.github.io/webauthn/#sctn-alg-identifier
+     * @see https://www.rfc-editor.org/rfc/rfc9864.html
+     */
+    private const FULLY_SPECIFIED_EQUIVALENCES = [
+        Algorithms::COSE_ALGORITHM_ES256 => Algorithms::COSE_ALGORITHM_ESP256,
+        Algorithms::COSE_ALGORITHM_ESP256 => Algorithms::COSE_ALGORITHM_ES256,
+        Algorithms::COSE_ALGORITHM_ES384 => Algorithms::COSE_ALGORITHM_ESP384,
+        Algorithms::COSE_ALGORITHM_ESP384 => Algorithms::COSE_ALGORITHM_ES384,
+        Algorithms::COSE_ALGORITHM_ES512 => Algorithms::COSE_ALGORITHM_ESP512,
+        Algorithms::COSE_ALGORITHM_ESP512 => Algorithms::COSE_ALGORITHM_ES512,
+        Algorithms::COSE_ALGORITHM_EDDSA => Algorithms::COSE_ALGORITHM_ED25519,
+        Algorithms::COSE_ALGORITHM_ED25519 => Algorithms::COSE_ALGORITHM_EDDSA,
+    ];
+
     public function process(
         CredentialRecord $credentialRecord,
         AuthenticatorAssertionResponse|AuthenticatorAttestationResponse $authenticatorResponse,
@@ -56,9 +77,32 @@ class CheckAlgorithm implements CeremonyStep
             $algorithms = [Algorithms::COSE_ALGORITHM_ES256, Algorithms::COSE_ALGORITHM_RS256];
         }
         $coseKey = $this->getCoseKey($credentialPublicKey);
-        in_array($coseKey->alg(), $algorithms, true) || throw AuthenticatorResponseVerificationException::create(
+        $acceptedAlgorithms = $this->addFullySpecifiedEquivalences($algorithms);
+        in_array(
+            $coseKey->alg(),
+            $acceptedAlgorithms,
+            true
+        ) || throw AuthenticatorResponseVerificationException::create(
             sprintf('Invalid algorithm. Expected one of %s but got %d', implode(', ', $algorithms), $coseKey->alg())
         );
+    }
+
+    /**
+     * @param int[] $algorithms
+     *
+     * @return int[]
+     */
+    private function addFullySpecifiedEquivalences(array $algorithms): array
+    {
+        $acceptedAlgorithms = $algorithms;
+        foreach ($algorithms as $algorithm) {
+            $equivalence = self::FULLY_SPECIFIED_EQUIVALENCES[$algorithm] ?? null;
+            if ($equivalence !== null) {
+                $acceptedAlgorithms[] = $equivalence;
+            }
+        }
+
+        return array_values(array_unique($acceptedAlgorithms));
     }
 
     private function getCoseKey(string $credentialPublicKey): Key

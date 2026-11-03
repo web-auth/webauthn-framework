@@ -14,7 +14,7 @@
         "format": "npm exec -ws -- prettier \"src/**/*.js\" \"test/**/*.js\" \"**/*.{json,md}\" --no-write --check"
     },
     "devDependencies": {
-        "@babel/core": "^7.15.8",
+        "@babel/core": "^7.29.6",
         "@babel/preset-env": "^7.15.8",
         "@babel/preset-react": "^7.15.8",
         "@symfony/stimulus-testing": "^2.0.1",

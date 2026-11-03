@@ -59,6 +59,7 @@ class AuthenticatorAssertionResponseValidationFailedEvent
             $this->credentialRecord->backupEligible,
             $this->credentialRecord->backupStatus,
             $this->credentialRecord->uvInitialized,
+            $this->credentialRecord->rpId,
         );
     }
 }

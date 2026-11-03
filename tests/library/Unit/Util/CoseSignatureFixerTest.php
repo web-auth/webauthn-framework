@@ -8,6 +8,10 @@ use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES384;
 use Cose\Algorithm\Signature\ECDSA\ES512;
 use Cose\Algorithm\Signature\EdDSA\EdDSA;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
+use Cose\Algorithm\Signature\FullySpecified\ESP384;
+use Cose\Algorithm\Signature\FullySpecified\ESP512;
+use Cose\Algorithm\Signature\Signature;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -151,6 +155,74 @@ final class CoseSignatureFixerTest extends TestCase
 
         // When
         $fixed = CoseSignatureFixer::fix($signature, new EdDSA());
+
+        // Then
+        static::assertSame($signature, $fixed);
+    }
+
+    /**
+     * The identifiers introduced by RFC 9864 designate the very same ECDSA algorithms, so their signatures have the
+     * same encoding and the same raw length.
+     *
+     * @return iterable<string, array{Signature, string, string, int}>
+     */
+    public static function fullySpecifiedSignatures(): iterable
+    {
+        yield 'ESP256' => [
+            new ESP256(),
+            '3044'
+            . '02207f' . str_repeat('ff', 31)
+            . '022001' . str_repeat('00', 31),
+            '7f' . str_repeat('ff', 31) . '01' . str_repeat('00', 31),
+            64,
+        ];
+
+        yield 'ESP384' => [
+            new ESP384(),
+            '3064'
+            . '02307f' . str_repeat('ff', 47)
+            . '023001' . str_repeat('00', 47),
+            '7f' . str_repeat('ff', 47) . '01' . str_repeat('00', 47),
+            96,
+        ];
+
+        yield 'ESP512' => [
+            new ESP512(),
+            '308188'
+            . '024201' . str_repeat('00', 64) . 'ff'
+            . '024201' . str_repeat('ff', 64) . '00',
+            '01' . str_repeat('00', 64) . 'ff01' . str_repeat('ff', 64) . '00',
+            132,
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('fullySpecifiedSignatures')]
+    public function aFullySpecifiedDerSignatureIsConvertedIntoItsRawForm(
+        Signature $algorithm,
+        string $der,
+        string $expected,
+        int $length
+    ): void {
+        // Given
+        $signature = hex2bin($der);
+
+        // When
+        $fixed = CoseSignatureFixer::fix($signature, $algorithm);
+
+        // Then
+        static::assertSame($length, strlen($fixed));
+        static::assertSame($expected, bin2hex($fixed));
+    }
+
+    #[Test]
+    public function aFullySpecifiedRawSignatureIsLeftUntouched(): void
+    {
+        // Given
+        $signature = hex2bin(str_repeat('ab', 64));
+
+        // When
+        $fixed = CoseSignatureFixer::fix($signature, new ESP256());
 
         // Then
         static::assertSame($signature, $fixed);
