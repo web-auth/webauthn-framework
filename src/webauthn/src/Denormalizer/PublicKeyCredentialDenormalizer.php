@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\AuthenticatorResponse;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredential;
+use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\Util\Base64;
 
 final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
@@ -44,6 +45,10 @@ final class PublicKeyCredentialDenormalizer implements DenormalizerInterface, De
         is_array($data['response']) || throw InvalidDataException::create(
             $data,
             'Invalid parameter "response". Shall be an object.'
+        );
+        $data['type'] === PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY || throw InvalidDataException::create(
+            $data,
+            'Invalid parameter "type". Shall be "public-key".'
         );
         $id = Base64UrlSafe::decodeNoPadding($data['id']);
         $rawId = Base64::decode($data['rawId']);

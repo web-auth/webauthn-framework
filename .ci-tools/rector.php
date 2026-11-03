@@ -12,6 +12,7 @@ use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\Symfony\CodeQuality\Rector\Class_\EventSubscriberToAttributeRector;
 use Rector\Symfony\Symfony80\Rector\Class_\RemoveEraseCredentialsRector;
 use Rector\ValueObject\PhpVersion;
 
@@ -43,6 +44,7 @@ $builder->withPaths(
 // usable object. See the class docblock.
 $itemStorage = [__DIR__ . '/../src/symfony/src/Security/Storage/Item.php'];
 $builder->withSkip([
+    EventSubscriberToAttributeRector::class,
     PreferPHPUnitThisCallRector::class,
     RemoveEraseCredentialsRector::class,
     ClassPropertyAssignToConstructorPromotionRector::class => $itemStorage,
