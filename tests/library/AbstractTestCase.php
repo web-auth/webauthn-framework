@@ -158,6 +158,10 @@ abstract class AbstractTestCase extends TestCase
         return $this->webauthnSerializer;
     }
 
+    /**
+     * The TPM fixture of TPMAttestationStatementSupportTest is signed with RS1: the TPM support acknowledges the
+     * algorithm, as an application that has to keep registering these authenticators does.
+     */
     private function getAttestationStatementSupportManager(): AttestationStatementSupportManager
     {
         if ($this->attestationStatementSupportManager === null) {
@@ -170,7 +174,7 @@ abstract class AbstractTestCase extends TestCase
                 $this->getAlgorithmManager()
             ));
             $this->attestationStatementSupportManager->add(CompoundAttestationStatementSupport::create());
-            $this->attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock));
+            $this->attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->clock, true));
         }
 
         return $this->attestationStatementSupportManager;

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
@@ -22,7 +23,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(AppleAttestationStatementSupport::class);
     $service
         ->set(TPMAttestationStatementSupport::class)
-        ->args([service('webauthn.clock')])
+        ->args([service('webauthn.clock'), param('webauthn.metadata.tpm_acknowledge_insecure_algorithm')])
     ;
     $service
         ->set(FidoU2FAttestationStatementSupport::class);
