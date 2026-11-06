@@ -20,7 +20,12 @@ into their web applications.
 
 # Documentation
 
-The documentation can be read on the following website: https://webauthn-doc.spomky-labs.com/
+The documentation is at **<https://docs.spomky-labs.com/webauthn/>**, one version per maintained branch.
+
+* [Installation](https://docs.spomky-labs.com/webauthn/latest/the-project/installation/)
+* [Ceremonies](https://docs.spomky-labs.com/webauthn/latest/webauthn-in-a-nutshell/ceremonies/) — registration and authentication, in plain terms.
+* [The relying party](https://docs.spomky-labs.com/webauthn/latest/prerequisites/the-relying-party/) — what your application must settle first.
+* [Browser support](https://docs.spomky-labs.com/webauthn/latest/the-project/web-browser-support/)
 
 # Support
 
