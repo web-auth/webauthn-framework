@@ -685,6 +685,14 @@ final readonly class Configuration implements ConfigurationInterface
                 'Acknowledge that RS1 (RSASSA-PKCS1-v1_5 with SHA-1) is insecure and verify the TPM attestation statements signed with it. Without this acknowledgement, verifying such a statement emits a warning, which the Symfony error handler turns into an exception in debug mode and which cose-lib v5 will replace with an exception. Enable it only when the application has to keep registering these TPMs, for instance to pass the platform attestation tests of the FIDO Conformance Tools.'
             )
             ->end()
+            ->arrayNode('enterprise_attestation_trust_anchors')
+            ->scalarPrototype()
+            ->cannotBeEmpty()
+            ->end()
+            ->info(
+                'Trust anchors of the enterprise attestations, as PEM or Base64-encoded DER certificates. When the creation options ask for the "enterprise" attestation conveyance preference, a full attestation must chain up to one of them, whether its AAGUID has a Metadata Statement or not: the root certificates of the Metadata Statements do not count. The status reports of the AAGUID still apply.'
+            )
+            ->end()
             ->end()
             ->end()
             ->end();

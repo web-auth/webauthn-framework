@@ -36,6 +36,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
     private null|CertificateChainValidator $certificateChainValidator = null;
 
+    /**
+     * @var string[]
+     */
+    private array $enterpriseAttestationTrustAnchors = [];
+
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -54,6 +59,20 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
     public function enableCertificateChainValidator(CertificateChainValidator $certificateChainValidator): void
     {
         $this->certificateChainValidator = $certificateChainValidator;
+    }
+
+    /**
+     * Under the "enterprise" attestation conveyance preference, a full attestation is verified up to these trust
+     * anchors only, PEM or Base64-encoded DER certificates, whether its AAGUID has a metadata statement or not. The
+     * status reports of the AAGUID still apply.
+     *
+     * @param string[] $trustAnchors
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#dom-attestationconveyancepreference-enterprise
+     */
+    public function setEnterpriseAttestationTrustAnchors(array $trustAnchors): void
+    {
+        $this->enterpriseAttestationTrustAnchors = $trustAnchors;
     }
 
     public function setLogger(LoggerInterface $logger): void
@@ -102,6 +121,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
+        if ($this->isPinnedEnterpriseAttestation($publicKeyCredentialOptions, $attestationStatement)) {
+            $this->processPinnedEnterpriseAttestation($attestationStatement, $aaguid);
+            return;
+        }
+
         if ($this->isNullAaguid($aaguid)) {
             $this->logger->debug('Null AAGUID detected. Skipping metadata verification.', [
                 'reason' => 'Privacy placeholder or U2F device',
@@ -135,6 +159,41 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
             $publicKeyCredentialOptions->attestation,
             [null, PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE],
             true
+        );
+    }
+
+    private function isPinnedEnterpriseAttestation(
+        PublicKeyCredentialCreationOptions $publicKeyCredentialOptions,
+        AttestationStatement $attestationStatement
+    ): bool {
+        return $this->enterpriseAttestationTrustAnchors !== []
+            && $publicKeyCredentialOptions->attestation === PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE
+            && in_array($attestationStatement->type, [
+                AttestationStatement::TYPE_BASIC,
+                AttestationStatement::TYPE_ATTCA,
+                AttestationStatement::TYPE_ANONCA,
+            ], true);
+    }
+
+    private function processPinnedEnterpriseAttestation(
+        AttestationStatement $attestationStatement,
+        string $aaguid
+    ): void {
+        $certificateChainValidator = $this->certificateChainValidator ?? throw AuthenticatorResponseVerificationException::create(
+            'The Certificate Chain Validator is mandatory when trust anchors are pinned for enterprise attestations.'
+        );
+        $this->logger->debug('Enterprise attestation. Verifying it up to the pinned trust anchors.');
+
+        $this->checkStatusReport($aaguid);
+        $trustPath = $attestationStatement->trustPath;
+        if (! $trustPath instanceof CertificateTrustPath) {
+            throw AuthenticatorResponseVerificationException::create(
+                'Certificate trust path is required for attestation verification'
+            );
+        }
+        $certificateChainValidator->check(
+            $trustPath->certificates,
+            CertificateToolbox::fixPEMStructures($this->enterpriseAttestationTrustAnchors)
         );
     }
 
