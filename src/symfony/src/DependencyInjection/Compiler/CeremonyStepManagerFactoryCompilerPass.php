@@ -38,6 +38,7 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $this->setClientDataCollectorManager($container, $definition);
         $this->enableMetadataStatementSupport($container, $definition);
         $this->enableCertificateChainValidator($container, $definition);
+        $this->setEnterpriseAttestationTrustAnchors($container, $definition);
         $this->setAlgorithmManager($container, $definition);
         $this->enableTopOriginValidator($container, $definition);
         $this->setSecuredRelyingPartyId($container, $definition);
@@ -106,6 +107,19 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
         $definition->addMethodCall('enableCertificateChainValidator', [
             new Reference(CertificateChainValidator::class),
         ]);
+    }
+
+    private function setEnterpriseAttestationTrustAnchors(ContainerBuilder $container, Definition $definition): void
+    {
+        if (! $container->hasParameter('webauthn.metadata.enterprise_attestation_trust_anchors')) {
+            return;
+        }
+        $trustAnchors = $container->getParameter('webauthn.metadata.enterprise_attestation_trust_anchors');
+        if ($trustAnchors === []) {
+            return;
+        }
+
+        $definition->addMethodCall('setEnterpriseAttestationTrustAnchors', [$trustAnchors]);
     }
 
     private function enableTopOriginValidator(ContainerBuilder $container, Definition $definition): void

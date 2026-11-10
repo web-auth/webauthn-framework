@@ -8,6 +8,8 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -36,17 +38,20 @@ use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
+use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryCredentialRepository;
 use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryOptionsStorage;
 use Webauthn\Tests\Bundle\Unit\Service\Fixture\SaveableInMemoryCredentialRepository;
+use Webauthn\Tests\PackedAttestationFixture;
 use Webauthn\TrustPath\EmptyTrustPath;
 
 /**
@@ -416,6 +421,57 @@ final class WebauthnResponseVerifierTest extends TestCase
             ->forAttestation('example.com')
             ->withoutMetadata()
             ->verify($this->jsonRequest());
+    }
+
+    /**
+     * Issue #1003: a multi-tenant application pins the trust anchors of the organization the registration belongs to,
+     * for this verification only. The autowired factory keeps verifying without them.
+     */
+    #[Test]
+    public function withEnterpriseAttestationTrustAnchorsVerifiesAnEnterpriseAttestationUpToThem(): void
+    {
+        $challenge = random_bytes(32);
+        $factory = new CeremonyStepManagerFactory();
+        $factory->setAttestationStatementSupportManager(PackedAttestationFixture::attestationStatementSupportManager());
+        $factory->setAllowedOrigins(['https://localhost']);
+        $factory->enableCertificateChainValidator(
+            PhpCertificateChainValidator::create(new MockHttpClient(), new MockClock('2027-06-01'))
+        );
+        $verifier = $this->verifier(
+            serializer: $this->serializerReturning(
+                PackedAttestationFixture::credential(
+                    PackedAttestationFixture::ORGANIZATION,
+                    PackedAttestationFixture::MANAGED_DEVICE_AAGUID,
+                    $challenge
+                )
+            ),
+            storage: $this->storageWith(PublicKeyCredentialCreationOptions::create(
+                rp: PublicKeyCredentialRpEntity::create('', 'localhost'),
+                user: PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'),
+                challenge: $challenge,
+                pubKeyCredParams: [PublicKeyCredentialParameters::createPk(-7)],
+                attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE,
+            )),
+            attestationValidator: AuthenticatorAttestationResponseValidator::create($factory->creationCeremony()),
+            factory: $factory,
+        )
+            ->forAttestation('localhost')
+            ->withSaveCredential(false);
+
+        $result = $verifier
+            ->withEnterpriseAttestationTrustAnchors([
+                PackedAttestationFixture::rootCertificate(PackedAttestationFixture::ORGANIZATION),
+            ])
+            ->verify($this->jsonRequest());
+
+        static::assertSame(
+            PackedAttestationFixture::MANAGED_DEVICE_AAGUID,
+            $result->credentialRecord->aaguid->toRfc4122()
+        );
+
+        $this->expectException(WebauthnAuthenticationFailureException::class);
+
+        $verifier->verify($this->jsonRequest());
     }
 
     #[Test]

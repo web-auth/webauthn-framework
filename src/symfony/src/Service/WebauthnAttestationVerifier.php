@@ -46,7 +46,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
  *   - {@see self::withAllowedOrigins()} / {@see self::withAllowSubdomains()}
  *     to scope the accepted origins for this verification only;
  *   - {@see self::withMetadata()} to plug Metadata Statement / Status Report /
- *     Certificate Chain validation services for this verification only.
+ *     Certificate Chain validation services for this verification only;
+ *   - {@see self::withEnterpriseAttestationTrustAnchors()} to pin the trust
+ *     anchors of the enterprise attestations for this verification only.
  */
 final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
 {
@@ -59,6 +61,11 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
     private ?CertificateChainValidator $certificateChainValidator = null;
 
     private bool $metadataDisabled = false;
+
+    /**
+     * @var null|string[]
+     */
+    private ?array $enterpriseAttestationTrustAnchors = null;
 
     public function __construct(
         SerializerInterface $serializer,
@@ -134,6 +141,23 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         return $clone;
     }
 
+    /**
+     * Pin the trust anchors of the enterprise attestations for this verification
+     * only, e.g. those of the organization a registration belongs to in a
+     * multi-tenant application.
+     *
+     * @param string[] $trustAnchors PEM or Base64-encoded DER certificates
+     *
+     * @see CeremonyStepManagerFactory::setEnterpriseAttestationTrustAnchors()
+     */
+    public function withEnterpriseAttestationTrustAnchors(array $trustAnchors): static
+    {
+        $clone = clone $this;
+        $clone->enterpriseAttestationTrustAnchors = $trustAnchors;
+
+        return $clone;
+    }
+
     protected function ensureResponseMatches(AuthenticatorResponse $response): void
     {
         $response instanceof AuthenticatorAttestationResponse || throw new BadRequestHttpException(
@@ -193,6 +217,9 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
                 $this->certificateChainValidator,
             );
         }
+        if ($this->enterpriseAttestationTrustAnchors !== null) {
+            $factory->setEnterpriseAttestationTrustAnchors($this->enterpriseAttestationTrustAnchors);
+        }
         if ($this->topOriginValidatorIsOverridden) {
             $this->topOriginValidatorOverride === null
                 ? $factory->disableTopOriginValidator()
@@ -215,6 +242,7 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
         return $this->allowedOriginsOverride !== null
             || $this->metadataStatementRepository !== null
             || $this->metadataDisabled
+            || $this->enterpriseAttestationTrustAnchors !== null
             || $this->topOriginValidatorIsOverridden;
     }
 
