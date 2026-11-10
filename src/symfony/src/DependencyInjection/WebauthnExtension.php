@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection;
 
 use function array_key_exists;
+use function class_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use function is_array;
 use function sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -41,6 +43,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPa
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
+use Webauthn\Bundle\Doctrine\UnmappedEntityListener;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
@@ -133,6 +136,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
         $loader->load('cose.php');
         $loader->load('security.php');
+        $this->loadUnmappedEntityGuard($container);
 
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
@@ -381,6 +385,21 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $assertionResponseController->addTag('controller.service_arguments');
             $container->setDefinition($assertionResponseControllerId, $assertionResponseController);
         }
+    }
+
+    /**
+     * Without Doctrine ORM, there is no entity to check. Without DoctrineBundle, the tag is ignored and the unused
+     * service is removed.
+     */
+    private function loadUnmappedEntityGuard(ContainerBuilder $container): void
+    {
+        if (! class_exists(LoadClassMetadataEventArgs::class)) {
+            return;
+        }
+        $container->register(UnmappedEntityListener::class, UnmappedEntityListener::class)
+            ->addTag('doctrine.event_listener', [
+                'event' => 'loadClassMetadata',
+            ]);
     }
 
     /**
