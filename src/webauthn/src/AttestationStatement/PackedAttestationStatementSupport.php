@@ -23,6 +23,7 @@ use SpomkyLabs\Pki\X501\ASN1\AttributeType;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
 use SpomkyLabs\Pki\X509\Certificate\TBSCertificate;
+use function trigger_deprecation;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
 use Webauthn\Event\CanDispatchEvents;
@@ -40,6 +41,8 @@ use Webauthn\Util\CoseSignatureFixer;
 final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private const OID_FIDO_GEN_CE_AAGUID = '1.3.6.1.4.1.45724.1.1.4';
+
+    private const OID_FIDO_GEN_CE_SERNUM = '1.3.6.1.4.1.45724.1.1.2';
 
     private readonly Decoder $decoder;
 
@@ -164,9 +167,9 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
     }
 
     // https://www.w3.org/TR/webauthn-3/#sctn-packed-attestation-cert-requirements
-    private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
+    private function checkCertificate(CertificateTrustPath $trustPath, AuthenticatorData $authenticatorData): void
     {
-        $certificate = Certificate::fromPEM(PEM::fromString($attestnCert));
+        $certificate = Certificate::fromPEM(PEM::fromString($trustPath->certificates[0]));
         $tbsCertificate = $certificate->tbsCertificate();
 
         // Check version (X.509 version 3 is encoded as 2)
@@ -232,6 +235,16 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
                 'The value of the "aaguid" does not match with the certificate extension ' . self::OID_FIDO_GEN_CE_AAGUID
             );
         }
+
+        if ($extensions->has(self::OID_FIDO_GEN_CE_SERNUM) && $trustPath->authenticatorSerialNumber() === null) {
+            trigger_deprecation(
+                'web-auth/webauthn-lib',
+                '5.4.0',
+                'Verifying a packed attestation whose certificate carries the serial number extension (%s) marked critical or with a value that is not an OCTET STRING is deprecated and "%s" will refuse it in 6.0.0. Until then, the extension is ignored.',
+                self::OID_FIDO_GEN_CE_SERNUM,
+                self::class
+            );
+        }
     }
 
     private function processWithCertificate(
@@ -243,7 +256,7 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         $certificates = $trustPath->certificates;
 
         // Check leaf certificate
-        $this->checkCertificate($certificates[0], $authenticatorData);
+        $this->checkCertificate($trustPath, $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
         /** @var int|string $algRaw */
