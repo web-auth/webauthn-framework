@@ -7,16 +7,16 @@ namespace Webauthn\Tests\Bundle\Functional\ServiceDefinition;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\Bundle\DependencyInjection\WebauthnExtension;
-use Webauthn\Bundle\Doctrine\DeprecatedMappingListener;
+use Webauthn\Bundle\Doctrine\UnmappedEntityListener;
 
 /**
  * @internal
  */
-final class DeprecatedMappingListenerServiceTest extends AbstractExtensionTestCase
+final class UnmappedEntityListenerServiceTest extends AbstractExtensionTestCase
 {
     /**
-     * The listener reports the entities relying on the Doctrine mapping provided by the bundle. It has to be called
-     * whenever Doctrine loads the metadata of an entity.
+     * The listener refuses the entities expecting the Doctrine mapping removed in 6.0.0. It has to be called whenever
+     * Doctrine loads the metadata of an entity.
      *
      * @see https://github.com/web-auth/webauthn-framework/issues/1007
      */
@@ -30,7 +30,7 @@ final class DeprecatedMappingListenerServiceTest extends AbstractExtensionTestCa
 
         // Then
         $this->assertContainerBuilderHasServiceDefinitionWithTag(
-            DeprecatedMappingListener::class,
+            UnmappedEntityListener::class,
             'doctrine.event_listener',
             [
                 'event' => 'loadClassMetadata',

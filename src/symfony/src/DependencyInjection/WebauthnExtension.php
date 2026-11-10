@@ -8,7 +8,7 @@ use function array_key_exists;
 use function class_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use function is_array;
 use function sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -42,8 +42,8 @@ use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
-use Webauthn\Bundle\Doctrine\DeprecatedMappingListener;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
+use Webauthn\Bundle\Doctrine\UnmappedEntityListener;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
@@ -136,7 +136,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
         $loader->load('cose.php');
         $loader->load('security.php');
-        $this->loadDoctrineMappingDeprecation($container);
+        $this->loadUnmappedEntityGuard($container);
 
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
@@ -388,15 +388,15 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * The listener is registered under the condition the bundle uses to register its Doctrine mapping, so that the
-     * deprecation is only reported when that mapping exists.
+     * Without Doctrine ORM, there is no entity to check. Without DoctrineBundle, the tag is ignored and the unused
+     * service is removed.
      */
-    private function loadDoctrineMappingDeprecation(ContainerBuilder $container): void
+    private function loadUnmappedEntityGuard(ContainerBuilder $container): void
     {
-        if (! class_exists(DoctrineOrmMappingsPass::class)) {
+        if (! class_exists(LoadClassMetadataEventArgs::class)) {
             return;
         }
-        $container->register(DeprecatedMappingListener::class, DeprecatedMappingListener::class)
+        $container->register(UnmappedEntityListener::class, UnmappedEntityListener::class)
             ->addTag('doctrine.event_listener', [
                 'event' => 'loadClassMetadata',
             ]);

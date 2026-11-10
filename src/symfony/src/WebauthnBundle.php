@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\Bundle;
 
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use LogicException;
-use function realpath;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -71,38 +69,12 @@ final class WebauthnBundle extends Bundle
             0
         );
 
-        $this->registerMappings($container);
-
         if ($container->hasExtension('security')) {
             $extension = $container->getExtension('security');
             $extension instanceof SecurityExtension || throw new LogicException(
                 'The security extension is missing or invalid'
             );
             $extension->addAuthenticatorFactory(new WebauthnFactory(new WebauthnServicesFactory()));
-        }
-    }
-
-    /**
-     * The XSD validation flag is passed by name on purpose. DoctrineBundle 3.2 removed the `$aliasMap` parameter that
-     * used to precede it, so no positional call is accepted by every supported DoctrineBundle version: passing the
-     * empty alias map triggers a deprecation from 3.2.2 onwards (a TypeError in 3.2.0 and 3.2.1), and omitting it is
-     * rejected by DoctrineBundle 2.x, 3.0 and 3.1.
-     */
-    private function registerMappings(ContainerBuilder $container): void
-    {
-        $realPath = realpath(__DIR__ . '/Resources/config/doctrine-mapping');
-        if ($realPath === false) {
-            return;
-        }
-        $mappings = [
-            $realPath => 'Webauthn',
-        ];
-        if (class_exists(DoctrineOrmMappingsPass::class)) {
-            $container->addCompilerPass(
-                DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, enableXsdValidation: true),
-                PassConfig::TYPE_BEFORE_OPTIMIZATION,
-                0
-            );
         }
     }
 }
