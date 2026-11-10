@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Unit;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use const E_USER_DEPRECATED;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +25,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * Issue #1007: the Doctrine mapping provided by the bundle declared the signature counter as a signed 32-bit integer,
  * while the authenticators send an unsigned 32-bit value. An application extending `CredentialRecord` cannot widen the
  * column itself: Doctrine ORM 3 refuses an attribute override changing the type of an inherited field, and the
- * `unsigned` option is ignored by PostgreSQL.
+ * `unsigned` option is ignored by PostgreSQL. The mapping now declares a `bigint` column.
  *
  * That mapping only served `DoctrineCredentialSourceRepository`, deprecated since 5.2.0: applications are expected to
  * map an entity of their own. The bundle reports the entities still relying on it, and only those.
@@ -33,7 +35,24 @@ use Webauthn\PublicKeyCredentialUserEntity;
  */
 final class Issue1007RegressionTest extends TestCase
 {
+    private const MAPPING_DIRECTORY = __DIR__ . '/../../../src/symfony/src/Resources/config/doctrine-mapping';
+
     private const DEPRECATION = 'Since web-auth/webauthn-symfony-bundle 5.4.0: The entity "%s" extends "%s" and relies on the Doctrine mapping provided by the bundle. This mapping is deprecated and will be removed in 6.0.0. Map an entity of your application and convert it from and to "%s" in your repository instead.';
+
+    #[Test]
+    public function theBundleMappingStoresTheWholeSignatureCounterRange(): void
+    {
+        // Given
+        $metadata = new ClassMetadata(CredentialRecord::class);
+
+        // When
+        (new SimplifiedXmlDriver([
+            self::MAPPING_DIRECTORY => 'Webauthn',
+        ], SimplifiedXmlDriver::DEFAULT_FILE_EXTENSION, true))->loadMetadataForClass(CredentialRecord::class, $metadata);
+
+        // Then
+        static::assertSame(Types::BIGINT, $metadata->getTypeOfField('counter'));
+    }
 
     #[Test]
     public function anEntityExtendingTheCredentialRecordIsReported(): void
