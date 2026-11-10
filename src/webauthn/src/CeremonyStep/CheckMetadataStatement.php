@@ -186,9 +186,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
         $this->checkStatusReport($aaguid);
         $trustPath = $attestationStatement->trustPath;
-        $trustPath instanceof CertificateTrustPath || throw AuthenticatorResponseVerificationException::create(
-            'Certificate trust path is required for attestation verification'
-        );
+        if (! $trustPath instanceof CertificateTrustPath) {
+            throw AuthenticatorResponseVerificationException::create(
+                'Certificate trust path is required for attestation verification'
+            );
+        }
         $certificateChainValidator->check(
             $trustPath->certificates,
             CertificateToolbox::fixPEMStructures($this->enterpriseAttestationTrustAnchors)
