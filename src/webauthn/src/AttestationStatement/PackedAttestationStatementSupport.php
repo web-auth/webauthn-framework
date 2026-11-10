@@ -22,6 +22,7 @@ use SpomkyLabs\Pki\CryptoEncoding\PEM;
 use SpomkyLabs\Pki\X501\ASN1\AttributeType;
 use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use SpomkyLabs\Pki\X509\Certificate\Extension\UnknownExtension;
+use SpomkyLabs\Pki\X509\Certificate\Extensions;
 use SpomkyLabs\Pki\X509\Certificate\TBSCertificate;
 use Webauthn\AuthenticatorData;
 use Webauthn\Event\AttestationStatementLoaded;
@@ -40,6 +41,8 @@ use Webauthn\Util\CoseSignatureFixer;
 final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
     private const OID_FIDO_GEN_CE_AAGUID = '1.3.6.1.4.1.45724.1.1.4';
+
+    private const OID_FIDO_GEN_CE_SERNUM = '1.3.6.1.4.1.45724.1.1.2';
 
     private readonly Decoder $decoder;
 
@@ -190,9 +193,11 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         ) > 0 || throw AttestationStatementVerificationException::create('Certificate Subject-CN must be set');
         $ouValue = $subject->firstValueOf('OU')
             ->stringValue();
-        $ouValue === 'Authenticator Attestation' || throw AttestationStatementVerificationException::create(
-            'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
-        );
+        if (! $this->isOrganizationUnitAccepted($ouValue, $tbsCertificate->extensions())) {
+            throw AttestationStatementVerificationException::create(
+                'Invalid certificate name. The Subject Organization Unit must be "Authenticator Attestation"'
+            );
+        }
 
         // Check extensions
         $extensions = $tbsCertificate->extensions();
@@ -232,6 +237,17 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
                 'The value of the "aaguid" does not match with the certificate extension ' . self::OID_FIDO_GEN_CE_AAGUID
             );
         }
+    }
+
+    /**
+     * Yubico documents the certificates of its enterprise attestations with the Organization Unit "Enterprise
+     * Attestation". It is accepted on a certificate that carries the serial number extension of an enterprise
+     * attestation.
+     */
+    private function isOrganizationUnitAccepted(string $ouValue, Extensions $extensions): bool
+    {
+        return $ouValue === 'Authenticator Attestation'
+            || ($ouValue === 'Enterprise Attestation' && $extensions->has(self::OID_FIDO_GEN_CE_SERNUM));
     }
 
     private function processWithCertificate(
