@@ -40,7 +40,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
  * @see https://github.com/web-auth/webauthn-framework/issues/1003
  * @internal
  */
-final class CheckMetadataStatementTest extends TestCase
+final class EnterpriseAttestationTrustAnchorsTest extends TestCase
 {
     private const NULL_AAGUID = '00000000-0000-0000-0000-000000000000';
 
