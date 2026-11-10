@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
@@ -26,6 +27,7 @@ use Webauthn\Bundle\Doctrine\UnmappedEntityListener;
 use Webauthn\Bundle\WebauthnBundle;
 use Webauthn\CredentialRecord;
 use Webauthn\PublicKeyCredentialEntity;
+use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -35,8 +37,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * their own and convert it from and to `CredentialRecord` in their repository.
  *
  * Such an entity declares its columns with the DBAL types of the bundle, which stay registered. An entity still
- * extending `CredentialRecord` or `PublicKeyCredentialEntity` without mapping their properties is refused: Doctrine
- * would only know its own properties, and a schema update would drop the columns of the credential records.
+ * extending `CredentialRecord`, `PublicKeyCredentialUserEntity` or `PublicKeyCredentialEntity` without mapping their
+ * properties is refused: Doctrine would only know its own properties, and a schema update would drop the columns of
+ * the credential records or the users. The message names the most specific of these classes the entity extends.
  *
  * @see https://github.com/web-auth/webauthn-framework/issues/1007
  * @internal
@@ -107,8 +110,8 @@ final class Issue1007RegressionTest extends TestCase
             sprintf(
                 self::REFUSAL,
                 Issue1007UserEntity::class,
-                PublicKeyCredentialEntity::class,
-                PublicKeyCredentialEntity::class
+                PublicKeyCredentialUserEntity::class,
+                PublicKeyCredentialUserEntity::class
             )
         );
 
@@ -116,24 +119,73 @@ final class Issue1007RegressionTest extends TestCase
         $this->loadClassMetadata(new ClassMetadata(Issue1007UserEntity::class));
     }
 
+    /**
+     * @param list<string> $mappedProperties
+     */
+    #[Test]
+    #[DataProvider('userEntitiesMappingOneOfTheInheritedProperties')]
+    public function anEntityExtendingTheUserEntityMappingOnlyOneOfItsPropertiesIsRefused(array $mappedProperties): void
+    {
+        // Given
+        $metadata = $this->mapFields(new ClassMetadata(Issue1007UserEntity::class), $mappedProperties);
+
+        // Then
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                self::REFUSAL,
+                Issue1007UserEntity::class,
+                PublicKeyCredentialUserEntity::class,
+                PublicKeyCredentialUserEntity::class
+            )
+        );
+
+        // When
+        $this->loadClassMetadata($metadata);
+    }
+
+    /**
+     * @return iterable<string, array{list<string>}>
+     */
+    public static function userEntitiesMappingOneOfTheInheritedProperties(): iterable
+    {
+        yield 'name only' => [['name']];
+        yield 'display name only' => [['displayName']];
+    }
+
+    #[Test]
+    public function anEntityExtendingTheRelyingPartyEntityWithoutMappingItIsRefused(): void
+    {
+        // Then
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                self::REFUSAL,
+                Issue1007RelyingPartyEntity::class,
+                PublicKeyCredentialEntity::class,
+                PublicKeyCredentialEntity::class
+            )
+        );
+
+        // When
+        $this->loadClassMetadata(new ClassMetadata(Issue1007RelyingPartyEntity::class));
+    }
+
     #[Test]
     public function anEntityMappingTheInheritedPropertiesIsAccepted(): void
     {
         // Given
-        $credentialRecord = new ClassMetadata(Issue1007CredentialRecordEntity::class);
-        $credentialRecord->mapField([
-            'fieldName' => 'publicKeyCredentialId',
-            'type' => Types::STRING,
-        ]);
-        $userEntity = new ClassMetadata(Issue1007UserEntity::class);
-        $userEntity->mapField([
-            'fieldName' => 'name',
-            'type' => Types::STRING,
-        ]);
+        $credentialRecord = $this->mapFields(
+            new ClassMetadata(Issue1007CredentialRecordEntity::class),
+            ['publicKeyCredentialId']
+        );
+        $userEntity = $this->mapFields(new ClassMetadata(Issue1007UserEntity::class), ['name', 'displayName']);
+        $relyingPartyEntity = $this->mapFields(new ClassMetadata(Issue1007RelyingPartyEntity::class), ['name']);
 
         // When
         $this->loadClassMetadata($credentialRecord);
         $this->loadClassMetadata($userEntity);
+        $this->loadClassMetadata($relyingPartyEntity);
 
         // Then
         $this->addToAssertionCount(1);
@@ -172,6 +224,24 @@ final class Issue1007RegressionTest extends TestCase
             new LoadClassMetadataEventArgs($metadata, static::createStub(EntityManagerInterface::class))
         );
     }
+
+    /**
+     * @template T of object
+     * @param ClassMetadata<T> $metadata
+     * @param list<string> $properties
+     * @return ClassMetadata<T>
+     */
+    private function mapFields(ClassMetadata $metadata, array $properties): ClassMetadata
+    {
+        foreach ($properties as $property) {
+            $metadata->mapField([
+                'fieldName' => $property,
+                'type' => Types::STRING,
+            ]);
+        }
+
+        return $metadata;
+    }
 }
 
 /**
@@ -187,6 +257,13 @@ final class Issue1007CredentialRecordEntity extends CredentialRecord
  * @internal
  */
 final class Issue1007UserEntity extends PublicKeyCredentialUserEntity
+{
+}
+
+/**
+ * @internal
+ */
+final class Issue1007RelyingPartyEntity extends PublicKeyCredentialRpEntity
 {
 }
 
