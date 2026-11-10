@@ -33,8 +33,8 @@ npm install @web-auth/webauthn-stimulus
 ```html
 <form data-controller="webauthn--payment"
       data-action="submit->webauthn--payment#authenticate"
-      data-webauthn--payment-options-url-value="/payment/options"
-      data-webauthn--payment-result-url-value="/payment/verify">
+      data-webauthn--payment-options-url-value="/payment/<?= htmlspecialchars($transaction->getId()) ?>/options"
+      data-webauthn--payment-result-url-value="/payment/<?= htmlspecialchars($transaction->getId()) ?>/verify">
 
     <!-- Display payment info from server-side data -->
     <p>Amount: <?= htmlspecialchars($transaction->getFormattedAmount()) ?></p>
@@ -47,6 +47,11 @@ npm install @web-auth/webauthn-stimulus
 The `webauthn--payment-options-url-value` endpoint must return a JSON
 `PublicKeyCredentialRequestOptions` whose `extensions.payment` field is the
 serialised `PaymentExtension::authenticate(...)` produced server-side.
+
+The controller has no value for the transaction: it only posts the
+`username` and `userVerification` fields of the form to the options URL.
+The transaction ID is therefore part of the URL, and the server looks the
+transaction up from it.
 
 ## Configuration
 
@@ -94,8 +99,8 @@ A standard `AuthenticatorAssertionResponseValidator->check(...)` call
 therefore performs full SPC validation:
 
 ```php
-$publicKeyCredentialSource = $this->authenticatorAssertionResponseValidator->check(
-    publicKeyCredentialSource: $credentialSource,
+$credentialRecord = $this->authenticatorAssertionResponseValidator->check(
+    credentialRecord: $storedCredentialRecord,
     authenticatorAssertionResponse: $credential->response,
     publicKeyCredentialRequestOptions: $storedOptions,
     host: 'example.com',
@@ -105,4 +110,5 @@ $publicKeyCredentialSource = $this->authenticatorAssertionResponseValidator->che
 
 For full server documentation including the request-side
 `PaymentExtension::authenticate(...)` builder and the data-structure
-catalogue, see [docs/secure-payment-confirmation.md](../../docs/secure-payment-confirmation.md).
+catalogue, see [Secure payment confirmation](https://docs.spomky-labs.com/webauthn/latest/pure-php/advanced-behaviours/secure-payment-confirmation/)
+in the documentation.
