@@ -45,7 +45,7 @@ use Webauthn\TrustPath\CertificateTrustPath;
  *
  * @internal
  */
-final class EnterpriseAttestationTest extends AbstractTestCase
+final class EnterpriseAttestationSerialNumberTest extends AbstractTestCase
 {
     use PackedAttestationTrait;
 
