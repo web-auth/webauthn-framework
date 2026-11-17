@@ -102,9 +102,9 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
-        if ($this->isNullAaguid($aaguid)) {
-            $this->logger->debug('Null AAGUID detected. Skipping metadata verification.', [
-                'reason' => 'Privacy placeholder or U2F device',
+        if ($this->isNullAaguid($aaguid) && $attestationStatement->type === AttestationStatement::TYPE_SELF) {
+            $this->logger->debug('Null AAGUID detected with self attestation. Skipping metadata verification.', [
+                'reason' => 'Privacy placeholder',
             ]);
             return;
         }
@@ -146,6 +146,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
      * 2) U2F device cannot provide useful AAGUID.
      *
      * So Metadata Statement lookup by AAGUID not possible.
+     *
+     * The verification is only skipped for self attestation, which has no trust path to verify. The AAGUID is written
+     * by the authenticator: a full attestation (Basic, AttCA, AnonCA) under the null AAGUID still has to chain to the
+     * trust anchors of a Metadata Statement, the one the repository returns for the null AAGUID (e.g. with the Apple
+     * WebAuthn Root CA or the U2F vendor roots), or it is refused.
      *
      * @see https://www.w3.org/TR/webauthn-3/#sctn-createCredential
      * @see https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html#u2f-authenticatorMakeCredential-interoperability
