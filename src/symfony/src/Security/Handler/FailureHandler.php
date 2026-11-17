@@ -28,7 +28,7 @@ interface FailureHandler
         Request $request,
         ?Throwable $exception = null,
         /* ?PublicKeyCredential $publicKeyCredential = null,
-           ?PublicKeyCredentialOptions $publicKeyCredentialOptions = null,
-           ?PublicKeyCredentialUserEntity $userEntity = null, */
+         * ?PublicKeyCredentialOptions $publicKeyCredentialOptions = null,
+         * ?PublicKeyCredentialUserEntity $userEntity = null, */
     ): Response;
 }
