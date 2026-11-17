@@ -129,7 +129,7 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
 
         // Decode leaf attestation certificate
         $leaf = $certificates[0];
-        $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
+        $certificate = $this->checkCertificate($leaf, $clientDataJSONHash, $authenticatorData);
 
         $signedData = $authenticatorData->authData . $clientDataJSONHash;
         /** @var int|string $algRaw */
@@ -138,17 +138,28 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         /** @var string $sig */
         $sig = $attestationStatement->get('sig');
 
-        return openssl_verify($signedData, $sig, $leaf, Algorithms::getOpensslAlgorithmFor($alg)) === 1;
+        return openssl_verify(
+            $signedData,
+            $sig,
+            $certificate->tbsCertificate()
+                ->subjectPublicKeyInfo()
+                ->toPEM()
+                ->string(),
+            Algorithms::getOpensslAlgorithmFor($alg)
+        ) === 1;
     }
 
     /**
+     * Returns the certificate that has been checked, so that the signature is verified with its public key and never
+     * with the text of the trust path itself.
+     *
      * @see https://www.w3.org/TR/webauthn-3/#sctn-android-key-attestation
      */
     private function checkCertificate(
         string $certificate,
         string $clientDataHash,
         AuthenticatorData $authenticatorData
-    ): void {
+    ): Certificate {
         // Check that authData publicKey matches the public key in the attestation certificate
         $attestedCredentialData = $authenticatorData->attestedCredentialData;
         $attestedCredentialData !== null || throw AttestationStatementVerificationException::create(
@@ -238,6 +249,8 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
         $this->checkAbsenceOfAllApplicationsTag($teeEnforcedFlags);
 
         $this->checkKeyOriginAndPurpose($softwareEnforcedFlags, $teeEnforcedFlags);
+
+        return $cert;
     }
 
     /**

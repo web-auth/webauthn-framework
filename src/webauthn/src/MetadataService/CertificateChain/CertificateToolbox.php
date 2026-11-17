@@ -33,12 +33,15 @@ final readonly class CertificateToolbox
         return $pem . (self::PEM_FOOTER . $type . '-----' . PHP_EOL);
     }
 
+    /**
+     * Encodes DER data, such as an entry of the "x5c" member of an attestation statement, as a single PEM block.
+     *
+     * The input is always treated as DER, even when it already looks like PEM text. Returning such text as is would let
+     * the client that sent it choose what the PEM parser and the OpenSSL functions read: several PEM blocks that the two
+     * readers resolve to different certificates, or a "file://" path that OpenSSL opens.
+     */
     public static function convertDERToPEM(string $data, string $type = 'CERTIFICATE'): string
     {
-        if (str_contains($data, self::PEM_HEADER)) {
-            return $data;
-        }
-
         return self::fixPEMStructure(base64_encode($data), $type);
     }
 
