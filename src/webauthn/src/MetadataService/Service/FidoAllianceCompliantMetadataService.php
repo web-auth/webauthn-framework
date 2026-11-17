@@ -7,6 +7,7 @@ namespace Webauthn\MetadataService\Service;
 use function array_key_exists;
 use InvalidArgumentException;
 use function is_array;
+use function is_string;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -15,6 +16,8 @@ use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SpomkyLabs\Pki\CryptoEncoding\PEM;
+use SpomkyLabs\Pki\X509\Certificate\Certificate;
 use function sprintf;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -28,7 +31,6 @@ use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\MetadataStatementLoadingException;
 use Webauthn\Exception\MissingMetadataStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
-use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\Statement\MetadataStatement;
 use Webauthn\MetadataService\Statement\StatusReport;
 
@@ -159,10 +161,8 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
         }
 
         $content = $this->fetch($this->uri, $this->additionalHeaderParameters);
-        $jwtCertificates = [];
         try {
-            $payload = $this->getJwsPayload($content, $jwtCertificates);
-            $this->validateCertificates(...$jwtCertificates);
+            $payload = $this->getJwsPayload($content);
             /** @var MetadataBLOBPayload $blob */
             $blob = $this->serializer->deserialize($payload, MetadataBLOBPayload::class, JsonEncoder::FORMAT);
             foreach ($blob->entries as $entry) {
@@ -201,51 +201,87 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
     }
 
     /**
-     * @param string[] $rootCertificates
+     * The certificates of the "x5c" header are decoded once, from the strict base64 encoding of their DER that RFC
+     * 7515 (section 4.1.6) requires. The chain validator receives PEM built from those bytes, and the signature is
+     * verified with the public key that pki-framework reads from the same bytes of the first certificate. An entry
+     * that holds anything else, such as PEM text with several blocks, is refused, so it cannot show one certificate
+     * to the chain validation and another one to the signature verification.
      */
-    private function getJwsPayload(string $token, array &$rootCertificates): string
+    private function getJwsPayload(string $token): string
     {
         $jws = (new CompactSerializer())->unserialize($token);
         $jws->countSignatures() === 1 || throw MetadataStatementLoadingException::create(
             'Invalid response from the metadata service. Only one signature shall be present.'
         );
-        $signature = $jws->getSignature(0);
         $payload = $jws->getPayload();
-        $payload !== '' || throw MetadataStatementLoadingException::create(
+        ($payload !== null && $payload !== '') || throw MetadataStatementLoadingException::create(
             'Invalid response from the metadata service. The token payload is empty.'
         );
-        $header = $signature->getProtectedHeader();
+        $header = $jws->getSignature(0)
+            ->getProtectedHeader();
         array_key_exists('alg', $header) || throw MetadataStatementLoadingException::create(
             'The "alg" parameter is missing.'
         );
         array_key_exists('x5c', $header) || throw MetadataStatementLoadingException::create(
             'The "x5c" parameter is missing.'
         );
-        is_array($header['x5c']) || throw MetadataStatementLoadingException::create(
-            'The "x5c" parameter should be an array.'
-        );
-        /** @var string[] $x5c */
-        $x5c = $header['x5c'];
-        $key = JWKFactory::createFromX5C($x5c);
-        $rootCertificates = $x5c;
+        (is_array($header['x5c']) && $header['x5c'] !== [] && array_is_list(
+            $header['x5c']
+        )) || throw MetadataStatementLoadingException::create('The "x5c" parameter should be a non-empty list.');
+        $certificates = array_map(self::decodeCertificate(...), $header['x5c']);
 
-        $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
-        $isValid = $verifier->verifyWithKey($jws, $key, 0);
-        $isValid || throw MetadataStatementLoadingException::create(
-            'Invalid response from the metadata service. The token signature is invalid.'
+        $this->certificateChainValidator->check(
+            array_map(
+                static fn (string $certificate): string => PEM::create(PEM::TYPE_CERTIFICATE, $certificate)->string(),
+                $certificates
+            ),
+            [$this->getRootCertificate()]
         );
-        $payload = $jws->getPayload();
-        $payload !== null || throw MetadataStatementLoadingException::create(
-            'Invalid response from the metadata service. The payload is missing.'
+
+        $key = JWKFactory::createFromKey(
+            Certificate::fromDER($certificates[0])->tbsCertificate()->subjectPublicKeyInfo()->toPEM()->string()
+        );
+        $verifier = new JWSVerifier(new AlgorithmManager([new ES256(), new RS256()]));
+        $verifier->verifyWithKey($jws, $key, 0) || throw MetadataStatementLoadingException::create(
+            'Invalid response from the metadata service. The token signature is invalid.'
         );
 
         return $payload;
     }
 
-    private function validateCertificates(string ...$untrustedCertificates): void
+    /**
+     * Returns the DER of a certificate of the "x5c" header, which must be its base64 encoding and nothing else.
+     */
+    private static function decodeCertificate(mixed $encodedCertificate): string
     {
-        $untrustedCertificates = CertificateToolbox::fixPEMStructures($untrustedCertificates);
-        $rootCertificate = CertificateToolbox::convertDERToPEM($this->fetch($this->rootCertificateUri, []));
-        $this->certificateChainValidator->check($untrustedCertificates, [$rootCertificate]);
+        is_string($encodedCertificate) || throw MetadataStatementLoadingException::create(
+            'Invalid response from the metadata service. The "x5c" parameter shall only contain strings.'
+        );
+        $certificate = base64_decode($encodedCertificate, true);
+        ($certificate !== false && $certificate !== '' && base64_encode(
+            $certificate
+        ) === $encodedCertificate) || throw MetadataStatementLoadingException::create(
+            'Invalid response from the metadata service. Each "x5c" entry shall be a base64-encoded DER certificate.'
+        );
+
+        return $certificate;
+    }
+
+    /**
+     * The root certificate is served either as DER, as GlobalSign does for the FIDO Alliance Metadata Service, or as
+     * a PEM block, possibly preceded by text. Its DER is extracted and handed over in a PEM block built from it.
+     */
+    private function getRootCertificate(): string
+    {
+        $rootCertificate = $this->fetch($this->rootCertificateUri, []);
+        if (str_contains($rootCertificate, '-----BEGIN ')) {
+            $pem = PEM::fromString($rootCertificate);
+            $pem->type() === PEM::TYPE_CERTIFICATE || throw MetadataStatementLoadingException::create(
+                'The root certificate of the metadata service is not a certificate.'
+            );
+            $rootCertificate = $pem->data();
+        }
+
+        return PEM::create(PEM::TYPE_CERTIFICATE, $rootCertificate)->string();
     }
 }
