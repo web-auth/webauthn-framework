@@ -8,6 +8,7 @@ use CBOR\Decoder;
 use CBOR\Normalizable;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\Signature;
 use Cose\Key\Key;
@@ -30,7 +31,7 @@ final readonly class CheckSignature implements CeremonyStep
 
     public function __construct(null|Manager $algorithmManager = null)
     {
-        $this->algorithmManager = $algorithmManager ?? Manager::create()->add(ES256::create(), RS256::create());
+        $this->algorithmManager = $algorithmManager ?? Manager::create()->add(ES256::create(), ESP256::create(), RS256::create());
     }
 
     public function process(

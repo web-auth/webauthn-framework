@@ -1,4 +1,9 @@
-# Webauthn Framework
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Spomky-Labs/brand/main/4-Web/svg/marques-de-projet/marque-webauthn-framework-inverse.svg">
+  <img alt="WebAuthn Framework" width="418" height="48" src="https://raw.githubusercontent.com/Spomky-Labs/brand/main/4-Web/svg/marques-de-projet/marque-webauthn-framework-couleur.svg">
+</picture>
+
+WebAuthn and passkeys for PHP and Symfony.
 
 ![Build Status](https://github.com/web-auth/webauthn-framework/workflows/Integrate/badge.svg)
 
@@ -15,12 +20,12 @@ into their web applications.
 
 # Documentation
 
-The documentation can be read on the following website: https://webauthn-doc.spomky-labs.com/
+The documentation is at **<https://docs.spomky-labs.com/webauthn/>**, one version per maintained branch.
 
-# Partnership
-
-This project is tested with BrowserStack (https://www.browserstack.com/) 🎉.
-BrowserStack is an amazing tool that helps in testing apps and browsers. It is especially useful here for debugging or validating features with multiple browsers and platform versions.
+* [Installation](https://docs.spomky-labs.com/webauthn/latest/the-project/installation/)
+* [Ceremonies](https://docs.spomky-labs.com/webauthn/latest/webauthn-in-a-nutshell/ceremonies/) — registration and authentication, in plain terms.
+* [The relying party](https://docs.spomky-labs.com/webauthn/latest/prerequisites/the-relying-party/) — what your application must settle first.
+* [Browser support](https://docs.spomky-labs.com/webauthn/latest/the-project/web-browser-support/)
 
 # Support
 

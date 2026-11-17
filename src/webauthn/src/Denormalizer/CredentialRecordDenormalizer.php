@@ -32,7 +32,7 @@ class CredentialRecordDenormalizer implements DenormalizerInterface, Denormalize
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        /** @var array{publicKeyCredentialId: string, credentialPublicKey: string, userHandle: string, type: string, transports: string[], attestationType: string, trustPath: array<string, mixed>, aaguid: string, counter: int, otherUI?: ?array<string, mixed>, backupEligible?: ?bool, backupStatus?: ?bool, uvInitialized?: ?bool} $data */
+        /** @var array{publicKeyCredentialId: string, credentialPublicKey: string, userHandle: string, type: string, transports: string[], attestationType: string, trustPath: array<string, mixed>, aaguid: string, counter: int, otherUI?: ?array<string, mixed>, backupEligible?: ?bool, backupStatus?: ?bool, uvInitialized?: ?bool, rpId?: ?string} $data */
         $keys = ['publicKeyCredentialId', 'credentialPublicKey', 'userHandle'];
         foreach ($keys as $key) {
             array_key_exists($key, $data) || throw InvalidDataException::create($data, 'Missing ' . $key);
@@ -53,6 +53,7 @@ class CredentialRecordDenormalizer implements DenormalizerInterface, Denormalize
             $data['backupEligible'] ?? null,
             $data['backupStatus'] ?? null,
             $data['uvInitialized'] ?? null,
+            $data['rpId'] ?? null,
         );
     }
 
@@ -95,6 +96,7 @@ class CredentialRecordDenormalizer implements DenormalizerInterface, Denormalize
             'backupEligible' => $data->backupEligible,
             'backupStatus' => $data->backupStatus,
             'uvInitialized' => $data->uvInitialized,
+            'rpId' => $data->rpId,
         ];
 
         return array_filter($result, static fn ($value): bool => $value !== null);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use function ord;
+use function trigger_deprecation;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 /**
@@ -80,13 +81,35 @@ class AuthenticatorData
         return 0 !== (ord($this->flags) & self::FLAG_ED);
     }
 
+    /**
+     * @deprecated since 5.4.0 and will be removed in 6.0.0. The RFU1 bit SHALL be set to zero by the authenticator, so
+     * this value is always 0 with a compliant authenticator and cannot be acted upon otherwise.
+     */
     public function getReservedForFutureUse1(): int
     {
+        trigger_deprecation(
+            'web-auth/webauthn-lib',
+            '5.4.0',
+            'The method "%s" is deprecated since 5.4.0 and will be removed in 6.0.0. The RFU1 bit SHALL be set to zero by the authenticator and brings no value to the Relying Party.',
+            __METHOD__
+        );
+
         return ord($this->flags) & self::FLAG_RFU1;
     }
 
+    /**
+     * @deprecated since 5.4.0 and will be removed in 6.0.0. The RFU2 bit SHALL be set to zero by the authenticator, so
+     * this value is always 0 with a compliant authenticator and cannot be acted upon otherwise.
+     */
     public function getReservedForFutureUse2(): int
     {
+        trigger_deprecation(
+            'web-auth/webauthn-lib',
+            '5.4.0',
+            'The method "%s" is deprecated since 5.4.0 and will be removed in 6.0.0. The RFU2 bit SHALL be set to zero by the authenticator and brings no value to the Relying Party.',
+            __METHOD__
+        );
+
         return ord($this->flags) & self::FLAG_RFU2;
     }
 }

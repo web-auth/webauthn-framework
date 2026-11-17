@@ -19,6 +19,24 @@ use Webauthn\PublicKeyCredentialUserEntity;
 final class ItemTest extends TestCase
 {
     #[Test]
+    public function theCeremonyOriginIsOptional(): void
+    {
+        $item = Item::create($this->options(), null);
+
+        static::assertNull($item->getCeremonyOrigin());
+    }
+
+    #[Test]
+    public function theCeremonyOriginIsCarriedAlongsideTheOptions(): void
+    {
+        $user = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $item = Item::create($this->options(), $user, 'https://portal.example.com');
+
+        static::assertSame('https://portal.example.com', $item->getCeremonyOrigin());
+        static::assertSame($user, $item->getPublicKeyCredentialUserEntity());
+    }
+
+    #[Test]
     public function anItemHasNoScopeByDefault(): void
     {
         $item = Item::create($this->options(), null);
@@ -30,7 +48,7 @@ final class ItemTest extends TestCase
     public function theScopeIsSetOnACopy(): void
     {
         $user = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
-        $item = Item::create($this->options(), $user);
+        $item = Item::create($this->options(), $user, 'https://portal.example.com');
 
         $scopedItem = $item->withScope('controllers.request.step_up');
 
@@ -38,6 +56,7 @@ final class ItemTest extends TestCase
         static::assertSame('controllers.request.step_up', $scopedItem->getScope());
         static::assertSame($item->getPublicKeyCredentialOptions(), $scopedItem->getPublicKeyCredentialOptions());
         static::assertSame($user, $scopedItem->getPublicKeyCredentialUserEntity());
+        static::assertSame('https://portal.example.com', $scopedItem->getCeremonyOrigin());
     }
 
     #[Test]
@@ -66,11 +85,14 @@ final class ItemTest extends TestCase
     }
 
     #[Test]
-    public function theScopeSurvivesARoundTripThroughSerialization(): void
+    public function anItemSurvivesARoundTripThroughSerialization(): void
     {
-        $item = unserialize(serialize(Item::create($this->options(), null)->withScope('firewall.main')));
+        $item = unserialize(serialize(
+            Item::create($this->options(), null, 'https://portal.example.com')->withScope('firewall.main')
+        ));
 
         static::assertInstanceOf(Item::class, $item);
+        static::assertSame('https://portal.example.com', $item->getCeremonyOrigin());
         static::assertSame('firewall.main', $item->getScope());
     }
 
@@ -79,11 +101,12 @@ final class ItemTest extends TestCase
      * after a deployment.
      */
     #[Test]
-    public function anItemSerializedBeforeTheScopeExistedStillUnserializes(): void
+    public function anItemSerializedBeforeTheCeremonyOriginAndTheScopeExistedStillUnserializes(): void
     {
         $item = unserialize($this->legacyPayload());
 
         static::assertInstanceOf(Item::class, $item);
+        static::assertNull($item->getCeremonyOrigin());
         static::assertNull($item->getScope());
         static::assertTrue($item->isRedeemableBy('firewall.main'));
         static::assertInstanceOf(PublicKeyCredentialRequestOptions::class, $item->getPublicKeyCredentialOptions());

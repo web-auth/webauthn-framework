@@ -41,10 +41,15 @@ final readonly class AttestationRequestController
 
             $response = $this->creationOptionsHandler->onCreationOptions(
                 $publicKeyCredentialCreationOptions,
-                $userEntity
+                $userEntity,
+                $request,
             );
             $this->optionsStorage->store(
-                Item::create($publicKeyCredentialCreationOptions, $userEntity)->withScope($this->optionsScope)
+                Item::create(
+                    $publicKeyCredentialCreationOptions,
+                    $userEntity,
+                    $request->getSchemeAndHttpHost()
+                )->withScope($this->optionsScope)
             );
 
             return $response;

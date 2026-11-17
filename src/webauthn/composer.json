@@ -21,7 +21,6 @@
     ],
     "require": {
         "php": ">=8.2",
-        "ext-json": "*",
         "ext-openssl": "*",
         "paragonie/constant_time_encoding": "^2.6|^3.0",
         "phpdocumentor/reflection-docblock": "^5.3|^6.0",
