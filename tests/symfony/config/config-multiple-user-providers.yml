@@ -1,0 +1,7 @@
+security:
+  providers:
+    staff:
+      memory:
+        users:
+          root: { roles: [ 'ROLE_ADMIN' ] }
+          admin: { roles: [ ] }
