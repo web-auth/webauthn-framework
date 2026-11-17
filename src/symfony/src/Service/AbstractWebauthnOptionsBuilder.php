@@ -31,9 +31,19 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * assertion: challenge length, timeout, attestation conveyance, attestation
  * formats, extensions, hints, the optional client override policy, the option
  * storage and the JSON serialization step.
+ *
+ * The stored options carry a scope, {@see self::DEFAULT_SCOPE} unless
+ * {@see self::withScope()} narrows it, and only a verifier bound to the same
+ * scope redeems them. The endpoints of the firewall and of the `controllers`
+ * section refuse them, and the verifiers refuse the options issued by those
+ * endpoints, so that a challenge obtained from one endpoint cannot be
+ * redeemed against the requirements of another (user verification,
+ * attestation conveyance, allowed credentials).
  */
 abstract class AbstractWebauthnOptionsBuilder
 {
+    public const DEFAULT_SCOPE = 'helpers';
+
     protected ?string $attestation = null;
 
     /**
@@ -53,6 +63,8 @@ abstract class AbstractWebauthnOptionsBuilder
     protected int $challengeLength = 32;
 
     protected ?ClientOverridePolicy $clientOverridePolicy = null;
+
+    protected string $scope = self::DEFAULT_SCOPE;
 
     public function __construct(
         protected OptionsStorage $storage,
@@ -154,13 +166,31 @@ abstract class AbstractWebauthnOptionsBuilder
         return $clone;
     }
 
+    /**
+     * Binds the stored options to the scope of this endpoint. The verifier of
+     * the matching result endpoint must be given the same scope, see
+     * {@see AbstractWebauthnVerifier::withScope()}. Give each pair of endpoints
+     * whose requirements differ a scope of its own: two pairs that share a
+     * scope accept each other's challenges.
+     */
+    public function withScope(string $scope): static
+    {
+        $scope !== '' || throw new LogicException('The scope must not be empty.');
+        $clone = clone $this;
+        $clone->scope = $scope;
+
+        return $clone;
+    }
+
     public function build(Request $request): JsonResponse
     {
         $userEntity = $this->resolveUserEntity($request);
         $optionsRequest = $this->shouldParseClientRequest() ? $this->parseClientRequest($request) : null;
         $options = $this->assembleOptions($request, $userEntity, $optionsRequest);
 
-        $this->storage->store(Item::create($options, $userEntity, $request->getSchemeAndHttpHost()));
+        $this->storage->store(
+            Item::create($options, $userEntity, $request->getSchemeAndHttpHost())->withScope($this->scope)
+        );
 
         return new JsonResponse(
             $this->serializer->serialize($options, JsonEncoder::FORMAT, [
