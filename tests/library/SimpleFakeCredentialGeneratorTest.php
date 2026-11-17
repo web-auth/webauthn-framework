@@ -6,15 +6,20 @@ namespace Webauthn\Tests;
 
 use function count;
 use const E_USER_DEPRECATED;
+use const JSON_THROW_ON_ERROR;
 use function ord;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use function sprintf;
 use function strlen;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
+use Webauthn\FakeCredentialShape;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\SimpleFakeCredentialGenerator;
+use Webauthn\UsernameNormalizer;
 
 /**
  * @internal
@@ -62,26 +67,119 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
 
         static::assertNotEmpty($descriptors);
         foreach ($descriptors as $descriptor) {
-            static::assertSame(32, strlen($descriptor->id));
+            static::assertContains(strlen($descriptor->id), [20, 32, 64]);
             static::assertFalse(ctype_xdigit($descriptor->id), 'A fake credential ID must not be a hex string.');
         }
     }
 
     /**
-     * Lists cached by the versions affected by GHSA-8gvp-8vj9-p3q7 hold hex IDs and are stored without
-     * expiration: they must not be served anymore once the generator emits raw bytes.
+     * Security non-regression for GHSA-8gvp-8vj9-p3q7: a decoy that always had a 32-byte ID and
+     * transports drawn at random (smart-card or BLE, lists out of lexicographic order, never empty)
+     * stood apart from the credentials that real authenticators produce. Every decoy now takes one
+     * of the shapes of a real credential, and every default shape is used.
      */
     #[Test]
-    public function aListCachedByAnAffectedVersionIsNotServed(): void
+    public function everyDecoyTakesTheShapeOfARealCredential(): void
+    {
+        $generator = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret');
+        $request = Request::create('https://example.com');
+        $occurrences = [
+            '20:["hybrid","internal"]' => 0,
+            '32:["internal"]' => 0,
+            '64:["nfc","usb"]' => 0,
+            '64:["usb"]' => 0,
+            '64:[]' => 0,
+        ];
+
+        for ($i = 0; $i < 200; $i++) {
+            foreach ($generator->generate($request, sprintf('user%d@example.com', $i)) as $descriptor) {
+                $shape = strlen($descriptor->id) . ':' . json_encode($descriptor->transports, JSON_THROW_ON_ERROR);
+                static::assertArrayHasKey($shape, $occurrences, 'A decoy must take the shape of a real credential.');
+                ++$occurrences[$shape];
+            }
+        }
+
+        static::assertNotContains(0, $occurrences, 'Every default shape must be used.');
+    }
+
+    #[Test]
+    public function theShapesGivenToTheGeneratorReplaceTheDefaultOnes(): void
+    {
+        $generator = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret', null, [
+            FakeCredentialShape::create(48, ['usb', 'nfc']),
+        ]);
+        $request = Request::create('https://example.com');
+
+        for ($i = 0; $i < 50; $i++) {
+            foreach ($generator->generate($request, sprintf('user%d@example.com', $i)) as $descriptor) {
+                static::assertSame(48, strlen($descriptor->id));
+                static::assertSame(['nfc', 'usb'], $descriptor->transports);
+            }
+        }
+    }
+
+    /**
+     * Security non-regression for GHSA-8gvp-8vj9-p3q7: when the user entity repository finds an
+     * account whatever the case of its username, two spellings of a registered username get the
+     * same credentials. Two spellings of an unknown username must then get the same decoys,
+     * otherwise comparing them reveals which usernames are registered.
+     */
+    #[Test]
+    public function twoSpellingsThatTheNormalizerMergesGetTheSameDecoys(): void
+    {
+        $normalizer = new class() implements UsernameNormalizer {
+            public function normalize(string $username): string
+            {
+                return mb_strtolower($username);
+            }
+        };
+        $request = Request::create('https://example.com');
+        $withoutNormalizer = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret');
+        $withNormalizer = new SimpleFakeCredentialGenerator(new ArrayAdapter(), 'a-deployment-secret', $normalizer);
+
+        static::assertNotEquals(
+            $withoutNormalizer->generate($request, 'alice@example.com'),
+            $withoutNormalizer->generate($request, 'Alice@Example.com')
+        );
+        static::assertEquals(
+            $withNormalizer->generate($request, 'alice@example.com'),
+            $withNormalizer->generate($request, 'Alice@Example.com')
+        );
+        static::assertEquals(
+            $withoutNormalizer->generate($request, 'alice@example.com'),
+            $withNormalizer->generate($request, 'Alice@Example.com')
+        );
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function listsCachedByAffectedVersions(): iterable
+    {
+        yield 'hex IDs, up to 5.3.9' => ['fake_credentials_', hash('sha256', 'alice@example.com')];
+        yield '32-byte IDs, from 5.3.10 to 5.3.12' => [
+            'fake_credentials_v2_',
+            hash('sha256', 'alice@example.com', true),
+        ];
+    }
+
+    /**
+     * Lists cached by the versions affected by GHSA-8gvp-8vj9-p3q7 are stored without expiration:
+     * they must not be served anymore once the generator emits decoys shaped like real credentials.
+     */
+    #[Test]
+    #[DataProvider('listsCachedByAffectedVersions')]
+    public function aListCachedByAnAffectedVersionIsNotServed(string $cacheKeyPrefix, string $legacyId): void
     {
         $username = 'alice@example.com';
         $request = Request::create('https://example.com');
         $cache = new ArrayAdapter();
-        $legacyItem = $cache->getItem('fake_credentials_' . hash('xxh128', $username));
+        $legacyItem = $cache->getItem($cacheKeyPrefix . hash('xxh128', $username));
         $legacyItem->set([
             PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                hash('sha256', $username)
+                $legacyId,
+                [PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_SMART_CARD]
             ),
         ]);
         $cache->save($legacyItem);
@@ -108,7 +206,7 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
         $username = 'alice@example.com';
 
         $withSecret = new SimpleFakeCredentialGenerator(null, 'a-deployment-secret');
-        $serverList = $this->shape($withSecret->generate($request, $username));
+        $serverList = $this->asArrays($withSecret->generate($request, $username));
 
         $attackerList = $this->recomputeAssumingEmptySecret($username);
 
@@ -134,7 +232,7 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
         $generator = $this->withSuppressedDeprecations(
             static fn (): SimpleFakeCredentialGenerator => new SimpleFakeCredentialGenerator()
         );
-        $serverList = $this->shape($generator->generate($request, $username));
+        $serverList = $this->asArrays($generator->generate($request, $username));
 
         $attackerList = $this->recomputeAssumingEmptySecret($username);
 
@@ -186,7 +284,7 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
      *
      * @return array<int, array{type: string, id: string, transports: string[]}>
      */
-    private function shape(array $descriptors): array
+    private function asArrays(array $descriptors): array
     {
         return array_map(
             static fn (PublicKeyCredentialDescriptor $descriptor): array => [
@@ -206,13 +304,12 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
      */
     private function recomputeAssumingEmptySecret(string $username): array
     {
-        $transports = [
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_HYBRID,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_SMART_CARD,
+        $shapes = [
+            [20, ['hybrid', 'internal']],
+            [32, ['internal']],
+            [64, ['nfc', 'usb']],
+            [64, ['usb']],
+            [64, []],
         ];
         $seed = hash('sha256', $username . '', true);
         $credentialCount = (ord($seed[0]) % 3) + 1;
@@ -220,15 +317,11 @@ final class SimpleFakeCredentialGeneratorTest extends TestCase
         $credentials = [];
         for ($i = 0; $i < $credentialCount; $i++) {
             $credentialSeed = hash('sha256', $seed . pack('N', $i), true);
-            $transportCount = (ord($credentialSeed[0]) % 2) + 1;
-            $selectedTransports = [];
-            for ($j = 0; $j < $transportCount; $j++) {
-                $selectedTransports[] = $transports[ord($credentialSeed[$j + 1]) % count($transports)];
-            }
+            [$length, $transports] = $shapes[ord($credentialSeed[0]) % count($shapes)];
             $credentials[] = [
                 'type' => PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                'id' => hash('sha256', $credentialSeed . $username, true),
-                'transports' => array_values(array_unique($selectedTransports)),
+                'id' => hash_hkdf('sha256', $credentialSeed, $length, 'fake credential ID'),
+                'transports' => $transports,
             ];
         }
 
