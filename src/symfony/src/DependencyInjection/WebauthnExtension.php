@@ -210,6 +210,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadCreationControllersSupport(ContainerBuilder $container, array $config): void
     {
         foreach ($config as $name => $creationConfig) {
+            $optionsScope = sprintf('controllers.creation.%s', $name);
             if ($creationConfig['options_builder'] !== null) {
                 $creationOptionsBuilderId = $creationConfig['options_builder'];
             } else {
@@ -236,6 +237,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     new Reference($creationConfig['options_handler']),
                     new Reference($creationConfig['failure_handler']),
                     $creationConfig['hide_existing_credentials'] ?? false,
+                    $optionsScope,
                 ])
                 ->addTag(DynamicRouteCompilerPass::TAG, [
                     'method' => $creationConfig['options_method'],
@@ -285,6 +287,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($creationConfig['success_handler']),
                 new Reference($creationConfig['failure_handler']),
                 null,
+                $optionsScope,
                 new Reference($attestationResponseValidatorId),
             ]);
             if ($creationConfig['result_path'] !== null) {
@@ -305,6 +308,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     private function loadRequestControllersSupport(ContainerBuilder $container, array $config): void
     {
         foreach ($config as $name => $requestConfig) {
+            $optionsScope = sprintf('controllers.request.%s', $name);
             if ($requestConfig['options_builder'] !== null) {
                 $assertionOptionsBuilderId = $requestConfig['options_builder'];
             } else {
@@ -331,6 +335,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     new Reference($requestConfig['options_storage'] ?? OptionsStorage::class),
                     new Reference($requestConfig['options_handler']),
                     new Reference($requestConfig['failure_handler']),
+                    $optionsScope,
                 ])
                 ->addTag(DynamicRouteCompilerPass::TAG, [
                     'method' => $requestConfig['options_method'],
@@ -373,6 +378,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 new Reference($requestConfig['success_handler']),
                 new Reference($requestConfig['failure_handler']),
                 null,
+                $optionsScope,
                 new Reference($assertionResponseValidatorId),
             ]);
             if ($requestConfig['result_path'] !== null) {

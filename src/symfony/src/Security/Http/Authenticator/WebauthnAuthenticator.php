@@ -67,7 +67,8 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
         private readonly PublicKeyCredentialUserEntityRepositoryInterface $credentialUserEntityRepository,
         private readonly SerializerInterface $publicKeyCredentialLoader,
         private readonly AuthenticatorAssertionResponseValidator $assertionResponseValidator,
-        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator
+        private readonly AuthenticatorAttestationResponseValidator $attestationResponseValidator,
+        private readonly ?string $optionsScope = null,
     ) {
         $this->logger = new NullLogger();
     }
@@ -191,6 +192,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Invalid response'
             );
             $data = $this->optionsStorage->get($response->clientDataJSON->challenge);
+            $data->isRedeemableBy($this->optionsScope) || throw InvalidDataException::create(
+                $data->getScope(),
+                'The options were not issued by this firewall.'
+            );
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw InvalidDataException::create(
                 $publicKeyCredentialRequestOptions,
@@ -257,6 +262,10 @@ final class WebauthnAuthenticator implements AuthenticatorInterface, Interactive
                 'Invalid response'
             );
             $storedData = $this->optionsStorage->get($response->clientDataJSON->challenge);
+            $storedData->isRedeemableBy($this->optionsScope) || throw InvalidDataException::create(
+                $storedData->getScope(),
+                'The options were not issued by this firewall.'
+            );
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw InvalidDataException::create(
                 $publicKeyCredentialCreationOptions,

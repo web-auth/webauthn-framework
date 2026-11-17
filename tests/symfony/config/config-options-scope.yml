@@ -1,0 +1,19 @@
+webauthn:
+  options_storage: 'Webauthn\Bundle\Security\Storage\SessionStorage'
+  request_profiles:
+    default:
+      rp_id: 'localhost'
+      challenge_length: 32
+      user_verification: 'required'
+    lax:
+      rp_id: 'localhost'
+      user_verification: 'preferred'
+  controllers:
+    request:
+      lax:
+        profile: 'lax'
+        options_path: '/lax/options'
+        result_path: '/lax'
+      step_up:
+        options_path: '/step-up/options'
+        result_path: '/step-up'

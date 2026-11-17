@@ -10,11 +10,35 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Request;
 use function trigger_deprecation;
 
+/**
+ * Generates a stable list of decoy credentials for a username, so that the assertion options of an unknown username
+ * look like the ones of a registered account.
+ *
+ * Each decoy takes the shape of a credential that real authenticators produce: the length of its credential ID and its
+ * transports come from a list of shapes, and its ID is derived from the username and the secret. The default shapes
+ * follow synced platform passkeys (20-byte IDs, hybrid and internal transports), Windows Hello (32 bytes, internal) and
+ * security keys (64 bytes, USB with or without NFC, or no transports when the client did not report them). An
+ * application whose users register other authenticators should pass the shapes found in its own credential records,
+ * and a UsernameNormalizer when its user entity repository does not compare usernames byte for byte.
+ *
+ * The decoys remain a best effort: the response time or the number of credentials can still differ from a registered
+ * account, and only usernameless authentication fully hides whether an account exists.
+ */
 final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGenerator
 {
+    /**
+     * @var list<FakeCredentialShape>
+     */
+    private array $shapes;
+
+    /**
+     * @param FakeCredentialShape[] $shapes
+     */
     public function __construct(
         private null|CacheItemPoolInterface $cache = null,
         private string $secret = '',
+        private null|UsernameNormalizer $usernameNormalizer = null,
+        array $shapes = [],
     ) {
         if ($secret === '') {
             trigger_deprecation(
@@ -24,6 +48,7 @@ final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGene
                 self::class
             );
         }
+        $this->shapes = $shapes === [] ? self::defaultShapes() : array_values($shapes);
     }
 
     /**
@@ -31,11 +56,12 @@ final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGene
      */
     public function generate(Request $request, string $username): array
     {
+        $username = $this->usernameNormalizer?->normalize($username) ?? $username;
         if ($this->cache === null) {
             return $this->generateCredentials($username);
         }
 
-        $cacheKey = 'fake_credentials_v2_' . hash('xxh128', $username);
+        $cacheKey = 'fake_credentials_v3_' . hash('xxh128', $username);
         $cacheItem = $this->cache->getItem($cacheKey);
         if ($cacheItem->isHit()) {
             /** @var PublicKeyCredentialDescriptor[] */
@@ -54,34 +80,43 @@ final readonly class SimpleFakeCredentialGenerator implements FakeCredentialGene
      */
     private function generateCredentials(string $username): array
     {
-        $transports = [
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_HYBRID,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-            PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_SMART_CARD,
-        ];
         $seed = hash('sha256', $username . $this->secret, true);
         $count = (ord($seed[0]) % 3) + 1;
 
         $credentials = [];
         for ($i = 0; $i < $count; $i++) {
             $credSeed = hash('sha256', $seed . pack('N', $i), true);
-            $transportCount = (ord($credSeed[0]) % 2) + 1;
-            $selectedTransports = [];
-            for ($j = 0; $j < $transportCount; $j++) {
-                $index = ord($credSeed[$j + 1]) % count($transports);
-                $selectedTransports[] = $transports[$index];
-            }
-            $selectedTransports = array_values(array_unique($selectedTransports));
+            $shape = $this->shapes[ord($credSeed[0]) % count($this->shapes)];
             $credentials[] = PublicKeyCredentialDescriptor::create(
                 PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                hash('sha256', $credSeed . $username, true),
-                $selectedTransports
+                hash_hkdf('sha256', $credSeed, $shape->credentialIdLength, 'fake credential ID'),
+                $shape->transports
             );
         }
 
         return $credentials;
+    }
+
+    /**
+     * Shapes observed on registration responses of real authenticators, the test fixtures of this repository included:
+     * Apple platform passkeys, Windows Hello, and security keys such as the YubiKey 5 or U2F keys.
+     *
+     * @return list<FakeCredentialShape>
+     */
+    private static function defaultShapes(): array
+    {
+        return [
+            FakeCredentialShape::create(20, [
+                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_HYBRID,
+                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+            ]),
+            FakeCredentialShape::create(32, [PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL]),
+            FakeCredentialShape::create(64, [
+                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+                PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+            ]),
+            FakeCredentialShape::create(64, [PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB]),
+            FakeCredentialShape::create(64),
+        ];
     }
 }

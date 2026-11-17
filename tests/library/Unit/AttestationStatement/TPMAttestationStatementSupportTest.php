@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Unit\AttestationStatement;
 
+use CBOR\ByteStringObject;
+use CBOR\Decoder;
+use CBOR\ListObject;
+use CBOR\MapObject;
+use CBOR\NegativeIntegerObject;
+use CBOR\StringStream;
+use CBOR\TextStringObject;
 use Closure;
 use Cose\Algorithm\Signature\RSA\RS1;
 use DateTimeImmutable;
 use const E_USER_WARNING;
 use Ergebnis\PHPUnit\SlowTestDetector\Attribute\MaximumDuration;
+use const JSON_THROW_ON_ERROR;
+use const OPENSSL_ALGO_SHA1;
+use const OPENSSL_KEYTYPE_RSA;
+use ParagonIE\ConstantTime\Base64UrlSafe;
+use const PHP_EOL;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Clock\ClockInterface;
+use Throwable;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -106,6 +119,34 @@ final class TPMAttestationStatementSupportTest extends AbstractTestCase
     }
 
     /**
+     * The first entry of "x5c" holds two PEM blocks: a certificate the attacker issued to itself, with a space after its
+     * BEGIN line, then the genuine AIK certificate of the fixture, whose key the attacker does not have. "certInfo" is
+     * signed again with the key of the attacker. The certificate checks and the chain validation used to read the
+     * genuine certificate while OpenSSL verified the signature with the key of the other one, so the statement was
+     * accepted.
+     */
+    #[Test]
+    #[MaximumDuration(3000)]
+    public function aStatementSignedWithAnotherKeyThanItsAttestationCertificateIsRejected(): void
+    {
+        $response = $this->getSerializer()
+            ->deserialize(self::forgeRegistrationWithTwoCertificatesInOneEntry(), PublicKeyCredential::class, 'json');
+        $options = PublicKeyCredentialCreationOptions::create(
+            PublicKeyCredentialRpEntity::create(),
+            PublicKeyCredentialUserEntity::create('j.d', '0123456789', 'John Doe'),
+            base64_decode('E2YebMmG9992XialpFL1lkPptOIBPeKsphNkt1JcbKk', true),
+            [],
+            null,
+            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+        );
+
+        $this->expectException(Throwable::class);
+
+        $this->getAuthenticatorAttestationResponseValidator()
+            ->check($response->response, $options, 'webauthn.firstyear.id.au');
+    }
+
+    /**
      * Without the acknowledgement, the statement is verified as before and cose-lib emits its RS1 warning, which
      * cose-lib v5.0.0 will replace with an exception.
      *
@@ -166,5 +207,67 @@ final class TPMAttestationStatementSupportTest extends AbstractTestCase
         static::assertTrue($isValid);
 
         return $warnings;
+    }
+
+    /**
+     * Returns the registration of the fixture where the first entry of "x5c" is replaced with the PEM text of a
+     * certificate issued by the attacker followed by the genuine AIK certificate, and "sig" with the signature of
+     * "certInfo" made with the key of the attacker.
+     */
+    private static function forgeRegistrationWithTwoCertificatesInOneEntry(): string
+    {
+        $registration = json_decode(self::SHA1_TPM_REGISTRATION, true, 512, JSON_THROW_ON_ERROR);
+        $attestationObject = Decoder::create()
+            ->decode(StringStream::create(
+                Base64UrlSafe::decodeNoPadding($registration['response']['attestationObject'])
+            ))
+            ->normalize();
+        $attStmt = $attestationObject['attStmt'];
+
+        $attackerKey = openssl_pkey_new([
+            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            'private_key_bits' => 2048,
+        ]);
+        $attackerCertificate = openssl_csr_sign(
+            openssl_csr_new([
+                'commonName' => 'Attacker',
+            ], $attackerKey),
+            null,
+            $attackerKey,
+            1
+        );
+        openssl_x509_export($attackerCertificate, $attackerPem);
+        openssl_sign($attStmt['certInfo'], $signature, $attackerKey, OPENSSL_ALGO_SHA1);
+        $genuinePem = '-----BEGIN CERTIFICATE-----' . PHP_EOL . chunk_split(
+            base64_encode($attStmt['x5c'][0]),
+            64,
+            PHP_EOL
+        ) . '-----END CERTIFICATE-----' . PHP_EOL;
+        $twoCertificates = str_replace(
+            '-----BEGIN CERTIFICATE-----',
+            '-----BEGIN CERTIFICATE----- ',
+            $attackerPem
+        ) . $genuinePem;
+
+        $forgedStatement = MapObject::create()
+            ->add(TextStringObject::create('ver'), TextStringObject::create($attStmt['ver']))
+            ->add(TextStringObject::create('alg'), NegativeIntegerObject::create((int) $attStmt['alg']))
+            ->add(
+                TextStringObject::create('x5c'),
+                ListObject::create([
+                    ByteStringObject::create($twoCertificates),
+                    ByteStringObject::create($attStmt['x5c'][1]),
+                ])
+            )
+            ->add(TextStringObject::create('sig'), ByteStringObject::create($signature))
+            ->add(TextStringObject::create('certInfo'), ByteStringObject::create($attStmt['certInfo']))
+            ->add(TextStringObject::create('pubArea'), ByteStringObject::create($attStmt['pubArea']));
+        $forgedObject = MapObject::create()
+            ->add(TextStringObject::create('fmt'), TextStringObject::create('tpm'))
+            ->add(TextStringObject::create('attStmt'), $forgedStatement)
+            ->add(TextStringObject::create('authData'), ByteStringObject::create($attestationObject['authData']));
+        $registration['response']['attestationObject'] = Base64UrlSafe::encodeUnpadded((string) $forgedObject);
+
+        return json_encode($registration, JSON_THROW_ON_ERROR);
     }
 }

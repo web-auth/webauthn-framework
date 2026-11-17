@@ -102,9 +102,9 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
-        if ($this->isNullAaguid($aaguid)) {
-            $this->logger->debug('Null AAGUID detected. Skipping metadata verification.', [
-                'reason' => 'Privacy placeholder or U2F device',
+        if ($this->isNullAaguid($aaguid) && $attestationStatement->type === AttestationStatement::TYPE_SELF) {
+            $this->logger->debug('Null AAGUID detected with self attestation. Skipping metadata verification.', [
+                'reason' => 'Privacy placeholder',
             ]);
             return;
         }
@@ -146,6 +146,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
      * 2) U2F device cannot provide useful AAGUID.
      *
      * So Metadata Statement lookup by AAGUID not possible.
+     *
+     * The verification is only skipped for self attestation, which has no trust path to verify. The AAGUID is written
+     * by the authenticator: a full attestation (Basic, AttCA, AnonCA) under the null AAGUID still has to chain to the
+     * trust anchors of a Metadata Statement, the one the repository returns for the null AAGUID (e.g. with the Apple
+     * WebAuthn Root CA or the U2F vendor roots), or it is refused.
      *
      * @see https://www.w3.org/TR/webauthn-3/#sctn-createCredential
      * @see https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html#u2f-authenticatorMakeCredential-interoperability
@@ -251,6 +256,16 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
         };
     }
 
+    /**
+     * Refuses the authenticator model as soon as one of its status reports is a compromise or a revocation.
+     *
+     * Every report is read, wherever it sits in the list. The FIDO Metadata Service BLOB does not keep the reports
+     * of an entry in chronological order (most entries list the newest first), so the last element of the array is
+     * not the current status. A later report, such as an update or a new certification, does not clear a compromise
+     * or a revocation either: the attestation does not tell whether the registering authenticator received the fix.
+     *
+     * @see https://fidoalliance.org/specs/mds/fido-metadata-service-v3.1.1-ps-20260105.html#sctn-stat-rep
+     */
     private function checkStatusReport(string $aaguid): void
     {
         $statusReports = $this->statusReportRepository?->findStatusReportsByAAGUID($aaguid) ?? [];
@@ -261,20 +276,21 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
             return;
         }
 
-        $lastStatusReport = end($statusReports);
-        $this->logger->debug('Status report found.', [
-            'aaguid' => $aaguid,
-            'status' => $lastStatusReport->status,
-        ]);
-
-        if ($lastStatusReport->isCompromised()) {
-            $this->logger->warning('Authenticator is marked as compromised in MDS.', [
+        foreach ($statusReports as $statusReport) {
+            $this->logger->debug('Status report found.', [
                 'aaguid' => $aaguid,
-                'status' => $lastStatusReport->status,
+                'status' => $statusReport->status,
             ]);
-            throw AuthenticatorResponseVerificationException::create(
-                'The authenticator is compromised and cannot be used'
-            );
+
+            if ($statusReport->isCompromised()) {
+                $this->logger->warning('Authenticator is marked as compromised or revoked in MDS.', [
+                    'aaguid' => $aaguid,
+                    'status' => $statusReport->status,
+                ]);
+                throw AuthenticatorResponseVerificationException::create(
+                    'The authenticator is compromised and cannot be used'
+                );
+            }
         }
     }
 

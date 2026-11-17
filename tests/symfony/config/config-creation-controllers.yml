@@ -1,0 +1,14 @@
+webauthn:
+  options_storage: 'Webauthn\Bundle\Security\Storage\SessionStorage'
+  controllers:
+    enabled: true
+    creation:
+      add_passkey:
+        options_path: '/devices/add/passkey/options'
+        result_path: '/devices/add/passkey'
+        user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\CurrentUserEntityGuesser'
+      signup:
+        options_path: '/signup/options'
+        result_path: '/signup'
+        user_entity_guesser: 'Webauthn\Bundle\Security\Guesser\RequestBodyUserEntityGuesser'
+        hide_existing_credentials: true

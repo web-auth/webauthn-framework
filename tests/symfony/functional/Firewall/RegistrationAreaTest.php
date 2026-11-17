@@ -9,6 +9,7 @@ use Cose\Algorithms;
 use function json_decode;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\Request;
 use Webauthn\Bundle\Security\Storage\Item;
@@ -190,6 +191,10 @@ final class RegistrationAreaTest extends WebauthnTestCase
         ], $data['authenticatorSelection']);
     }
 
+    /**
+     * The options are accepted for a username that is already taken, but they are issued for a new user entity: the
+     * request is not authenticated, so it must not obtain the user handle or the stored display name of that account.
+     */
     #[Test]
     public function aRegistrationOptionsRequestCanBeAcceptedForExistingUsers(): void
     {
@@ -210,6 +215,9 @@ final class RegistrationAreaTest extends WebauthnTestCase
         static::assertArrayHasKey('status', $data);
         static::assertSame('ok', $data['status']);
         static::assertResponseIsSuccessful();
+        static::assertSame('admin', $data['user']['name']);
+        static::assertSame('Admin', $data['user']['displayName']);
+        static::assertNotSame(Base64UrlSafe::encodeUnpadded('foo'), $data['user']['id']);
     }
 
     #[Test]

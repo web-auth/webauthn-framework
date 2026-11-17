@@ -68,6 +68,7 @@ use Webauthn\Denormalizer\UrlNormalizer;
 use Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\SimpleFakeCredentialGenerator;
+use Webauthn\UsernameNormalizer;
 
 return static function (ContainerConfigurator $container): void {
     $service = $container->services()
@@ -99,7 +100,11 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $service->set(SimpleFakeCredentialGenerator::class)
-        ->args([service(CacheItemPoolInterface::class)->nullOnInvalid(), param('kernel.secret')])
+        ->args([
+            service(CacheItemPoolInterface::class)->nullOnInvalid(),
+            param('kernel.secret'),
+            service(UsernameNormalizer::class)->nullOnInvalid(),
+        ])
     ;
 
     $service

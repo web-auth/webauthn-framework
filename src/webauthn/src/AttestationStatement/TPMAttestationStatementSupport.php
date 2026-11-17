@@ -379,6 +379,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         };
     }
 
+    /**
+     * The signature is verified with the public key of the certificate checked by checkCertificate(), which is also
+     * the one the certificate chain validator reads, never with the text of the trust path itself.
+     */
     private function processWithCertificate(
         AttestationStatement $attestationStatement,
         AuthenticatorData $authenticatorData
@@ -391,7 +395,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $certificates = $trustPath->certificates;
 
         // Check certificate CA chain and returns the Attestation Certificate
-        $this->checkCertificate($certificates[0], $authenticatorData);
+        $certificate = $this->checkCertificate($certificates[0], $authenticatorData);
 
         // Get the COSE algorithm identifier and the corresponding OpenSSL one
         /** @var int|string $algRaw */
@@ -406,13 +410,25 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
         $certInfo = $attestationStatement->get('certInfo');
         /** @var string $sig */
         $sig = $attestationStatement->get('sig');
-        $result = openssl_verify($certInfo, $sig, $certificates[0], $opensslAlgorithmIdentifier);
+        $result = openssl_verify(
+            $certInfo,
+            $sig,
+            $certificate->tbsCertificate()
+                ->subjectPublicKeyInfo()
+                ->toPEM()
+                ->string(),
+            $opensslAlgorithmIdentifier
+        );
 
         return $result === 1;
     }
 
-    // https://www.w3.org/TR/webauthn-3/#sctn-tpm-cert-requirements
-    private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): void
+    /**
+     * Returns the certificate that has been checked, so that the signature is verified with its public key.
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-tpm-cert-requirements
+     */
+    private function checkCertificate(string $attestnCert, AuthenticatorData $authenticatorData): Certificate
     {
         $certificate = Certificate::fromPEM(PEM::fromString($attestnCert));
         $tbsCertificate = $certificate->tbsCertificate();
@@ -481,5 +497,7 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 'The value of the "aaguid" does not match with the certificate'
             );
         }
+
+        return $certificate;
     }
 }

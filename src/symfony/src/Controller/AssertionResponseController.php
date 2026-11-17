@@ -31,7 +31,8 @@ final readonly class AssertionResponseController
         private OptionsStorage $optionsStorage,
         private SuccessHandler $successHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository
+        private CredentialRecordRepositoryInterface $publicKeyCredentialSourceRepository,
+        private ?string $optionsScope = null,
     ) {
     }
 
@@ -56,6 +57,9 @@ final readonly class AssertionResponseController
                 'Invalid response'
             );
             $data = $this->optionsStorage->get($response->clientDataJSON->challenge);
+            $data->isRedeemableBy($this->optionsScope) || throw new BadRequestHttpException(
+                'The options were not issued by this endpoint.'
+            );
             $publicKeyCredentialRequestOptions = $data->getPublicKeyCredentialOptions();
             $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions || throw new BadRequestHttpException(
                 'Invalid response'

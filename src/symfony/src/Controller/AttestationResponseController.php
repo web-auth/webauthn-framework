@@ -35,6 +35,7 @@ final readonly class AttestationResponseController
         private OptionsStorage $optionStorage,
         private SuccessHandler $successHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private ?string $optionsScope = null,
     ) {
     }
 
@@ -62,6 +63,9 @@ final readonly class AttestationResponseController
                 'Invalid response'
             );
             $storedData = $this->optionStorage->get($response->clientDataJSON->challenge);
+            $storedData->isRedeemableBy($this->optionsScope) || throw new BadRequestHttpException(
+                'The options were not issued by this endpoint.'
+            );
             $publicKeyCredentialCreationOptions = $storedData->getPublicKeyCredentialOptions();
             $publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions || throw new BadRequestHttpException(
                 'Unable to find the public key credential creation options'

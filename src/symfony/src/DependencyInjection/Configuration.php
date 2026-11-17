@@ -239,10 +239,12 @@ final readonly class Configuration implements ConfigurationInterface
             ->info('Whether to allow client requests to override the attestation conveyance preference')
             ->end()
             ->arrayNode('allowed_values')
-            ->defaultValue(['none', 'indirect', 'direct', 'enterprise'])
+            ->defaultValue(['indirect', 'direct', 'enterprise'])
             ->scalarPrototype()
             ->end()
-            ->info('List of allowed values for attestation conveyance')
+            ->info(
+                'List of allowed values for attestation conveyance. Allowing "none" lets the client waive the attestation verification the profile requests'
+            )
             ->end()
             ->end()
             ->end()

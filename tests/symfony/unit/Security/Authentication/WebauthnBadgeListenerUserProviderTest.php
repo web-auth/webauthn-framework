@@ -14,7 +14,9 @@ use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Event\CheckPassportEvent;
+use Symfony\Component\Security\Http\EventListener\UserProviderListener;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -27,12 +29,15 @@ use Webauthn\Bundle\Security\Storage\OptionsStorage;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 
 /**
- * Documents the three user-provider resolution paths that the bundle exposes (issue #833 follow-up).
+ * Documents the four user-provider resolution paths that the bundle exposes (issue #833 follow-up).
  *
  * Path 1: badge created with an explicit `userLoader` callback → priority over anything else.
  * Path 2: built-in `webauthn:` firewall → uses the firewall's `provider:` config (covered by a
  *         dedicated integration test on the security factory wiring, see WebauthnFactoryFirewallProviderTest).
- * Path 3: badge created without `userLoader` → listener falls back to the injected
+ * Path 3: badge created without `userLoader` → the passport also registers the badge as its `UserBadge`,
+ *         so the `UserProviderListener` of the firewall installs the firewall's `provider:` (end to end in
+ *         MultipleUserProvidersTest).
+ * Path 4: no loader installed by then → listener falls back to the injected
  *         `UserProviderInterface` (currently `security.user_providers`).
  *
  * @internal
@@ -71,6 +76,29 @@ final class WebauthnBadgeListenerUserProviderTest extends TestCase
         $loader = $badge->getUserLoader();
         static::assertNotNull($loader, 'The listener must install a user loader when none was provided.');
         static::assertSame($expectedUser, $loader('alice'));
+    }
+
+    /**
+     * The `UserProviderListener` of the firewall (priority 2048) runs before the WebauthnBadgeListener (512).
+     */
+    #[Test]
+    public function firewallUserProviderTakesPriorityOverListenerFallback(): void
+    {
+        $badge = new WebauthnBadge('localhost', '{}');
+        $event = $this->makeEvent($badge);
+        static::assertSame($badge, $event->getPassport()->getBadge(UserBadge::class));
+
+        $firewallUser = new InMemoryUser('from-firewall-provider', null);
+        (new UserProviderListener($this->capturingUserProvider($firewallUser)))->checkPassport($event);
+        $this->createListener(
+            $this->failingUserProvider(
+                'Listener fallback should not be invoked when the firewall provider is already installed.'
+            ),
+        )->checkPassport($event);
+
+        $loader = $badge->getUserLoader();
+        static::assertNotNull($loader);
+        static::assertSame($firewallUser, $loader('alice'));
     }
 
     #[Test]

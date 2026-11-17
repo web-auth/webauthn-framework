@@ -36,11 +36,23 @@ final class StringStream implements Stream
         $this->data = $resource;
     }
 
+    /**
+     * The length often comes from the data itself: a CBOR head can declare a byte string of up to PHP_INT_MAX bytes.
+     * fread() allocates a buffer of the requested length before reading anything, so the length is checked against
+     * the bytes left first. Without that check, a few bytes declaring a huge length end in an uncatchable "Allowed
+     * memory size exhausted" fatal error instead of an InvalidDataException.
+     */
     public function read(int $length): string
     {
         if ($length <= 0) {
             return '';
         }
+        $available = $this->length - $this->totalRead;
+        $length <= $available || throw InvalidDataException::create(null, sprintf(
+            'Out of range. Expected: %d, read: %d.',
+            $length,
+            $available
+        ));
         $read = fread($this->data, $length);
         assert($read !== false, 'The data could not be read.');
         $bytesRead = strlen($read);

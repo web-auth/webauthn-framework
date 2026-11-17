@@ -31,7 +31,8 @@ final readonly class AttestationControllerFactory
         null|OptionsStorage $optionStorage,
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        bool $hideExistingExcludedCredentials = false
+        bool $hideExistingExcludedCredentials = false,
+        ?string $optionsScope = null,
     ): AttestationRequestController {
         if ($optionStorage !== null) {
             trigger_deprecation(
@@ -46,7 +47,8 @@ final readonly class AttestationControllerFactory
             $optionStorage ?? $this->optionStorage,
             $creationOptionsHandler,
             $failureHandler,
-            $hideExistingExcludedCredentials
+            $hideExistingExcludedCredentials,
+            $optionsScope,
         );
     }
 
@@ -55,6 +57,7 @@ final readonly class AttestationControllerFactory
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         null|AuthenticatorAttestationResponseValidator $attestationResponseValidator = null,
+        ?string $optionsScope = null,
     ): AttestationResponseController {
         if ($optionStorage !== null) {
             trigger_deprecation(
@@ -70,6 +73,7 @@ final readonly class AttestationControllerFactory
             $optionStorage ?? $this->optionStorage,
             $successHandler,
             $failureHandler,
+            $optionsScope,
         );
     }
 }
