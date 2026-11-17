@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Service;
 
 use function is_array;
+use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -42,6 +43,13 @@ use Webauthn\PublicKeyCredentialUserEntity;
  * contextual response (e.g. a Signal API payload to drop a stale credential
  * from the platform UI).
  *
+ * The stored options are only redeemed when they were issued under the scope of
+ * this verifier, {@see AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE} unless
+ * {@see self::withScope()} narrows it. Options issued by the endpoints of the
+ * firewall or of the `controllers` section are refused, and so are the options
+ * of a helper bound to another scope. Options stored without scope by
+ * application code are accepted.
+ *
  * Implements {@see CanLogData} and {@see CanDispatchEvents} so the bundle's
  * autoconfiguration tags propagate the configured logger and event dispatcher
  * here. Both are forwarded to any one-off validator the verifier may
@@ -61,6 +69,8 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
     protected ?TopOriginValidator $topOriginValidatorOverride = null;
 
     protected bool $topOriginValidatorIsOverridden = false;
+
+    protected string $scope = AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE;
 
     protected LoggerInterface $logger;
 
@@ -169,6 +179,19 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
         return $clone;
     }
 
+    /**
+     * Only redeems the options issued under this scope, see
+     * {@see AbstractWebauthnOptionsBuilder::withScope()}.
+     */
+    public function withScope(string $scope): static
+    {
+        $scope !== '' || throw new LogicException('The scope must not be empty.');
+        $clone = clone $this;
+        $clone->scope = $scope;
+
+        return $clone;
+    }
+
     public function verify(Request $request): WebauthnVerificationResult
     {
         [$publicKeyCredential, $authenticatorResponse] = $this->loadCredential($request);
@@ -243,6 +266,9 @@ abstract class AbstractWebauthnVerifier implements CanLogData, CanDispatchEvents
             throw new BadRequestHttpException('No options found for the given challenge', $throwable);
         }
 
+        $item->isRedeemableBy($this->scope) || throw new BadRequestHttpException(
+            'The options were not issued by this endpoint.'
+        );
         $options = $item->getPublicKeyCredentialOptions();
         $this->ensureOptionsMatch($options);
 

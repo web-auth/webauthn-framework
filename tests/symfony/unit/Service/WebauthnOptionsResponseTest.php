@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Bundle\Unit\Service;
 
 use const JSON_THROW_ON_ERROR;
+use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -19,6 +20,7 @@ use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Bundle\Service\AbstractWebauthnOptionsBuilder;
 use Webauthn\Bundle\Service\WebauthnOptionsResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
@@ -411,6 +413,46 @@ final class WebauthnOptionsResponseTest extends TestCase
             ->build($request);
 
         static::assertSame('https://portal.example.com', $storage->last()->getCeremonyOrigin());
+    }
+
+    #[Test]
+    public function theStoredOptionsAreBoundToTheScopeOfTheHelpersByDefault(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest());
+
+        $item = $storage->last();
+        static::assertSame(AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE, $item->getScope());
+        static::assertTrue($item->isRedeemableBy(AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE));
+        static::assertFalse($item->isRedeemableBy('firewall.main'));
+        static::assertFalse($item->isRedeemableBy('controllers.request.default'));
+    }
+
+    #[Test]
+    public function withScopeBindsTheStoredOptionsToTheGivenScope(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $this->helper($storage)
+            ->forCreation('example.com', $userEntity)
+            ->withScope('step_up')
+            ->build($this->jsonRequest());
+
+        static::assertSame('step_up', $storage->last()->getScope());
+    }
+
+    #[Test]
+    public function withScopeRefusesAnEmptyScope(): void
+    {
+        $this->expectException(LogicException::class);
+
+        $this->helper()
+            ->forRequest('example.com')
+            ->withScope('');
     }
 
     private function helper(

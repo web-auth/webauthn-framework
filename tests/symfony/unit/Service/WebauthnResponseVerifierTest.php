@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Webauthn\Tests\Bundle\Unit\Service;
 
+use LogicException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +27,7 @@ use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Authentication\Exception\WebauthnAuthenticationFailureException;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Bundle\Service\AbstractWebauthnOptionsBuilder;
 use Webauthn\Bundle\Service\WebauthnAssertionVerifier;
 use Webauthn\Bundle\Service\WebauthnAttestationVerifier;
 use Webauthn\Bundle\Service\WebauthnResponseVerifier;
@@ -677,6 +680,129 @@ final class WebauthnResponseVerifierTest extends TestCase
             ->verify($this->jsonRequest());
     }
 
+    #[Test]
+    public function aVerifierRedeemsTheOptionsOfTheHelpersByDefault(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $result = $this->verifier(
+            $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            $this->scopedStorageWith($this->requestOptions(), AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE),
+            new InMemoryCredentialRepository([$stored]),
+            null,
+            null,
+            $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
+    }
+
+    #[Test]
+    public function aVerifierBoundToAScopeRedeemsTheOptionsIssuedUnderThatScope(): void
+    {
+        $rawId = 'cred-id';
+        $stored = $this->record($rawId);
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::once())
+            ->method('check')
+            ->willReturn($stored);
+
+        $result = $this->verifier(
+            $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            $this->scopedStorageWith($this->requestOptions(), 'step_up'),
+            new InMemoryCredentialRepository([$stored]),
+            null,
+            null,
+            $assertionValidator,
+        )
+            ->forAssertion('example.com')
+            ->withScope('step_up')
+            ->verify($this->jsonRequest());
+
+        static::assertSame($stored, $result->credentialRecord);
+    }
+
+    /**
+     * A challenge obtained from an endpoint with weaker requirements (user
+     * verification preferred instead of required, for instance) must not be
+     * redeemed at another one.
+     */
+    #[Test]
+    #[DataProvider('foreignScopes')]
+    public function aVerifierRefusesTheOptionsIssuedUnderAnotherScope(string $itemScope, ?string $verifierScope): void
+    {
+        $rawId = 'cred-id';
+        $assertionValidator = $this->createMock(AuthenticatorAssertionResponseValidator::class);
+        $assertionValidator->expects(static::never())
+            ->method('check');
+
+        $verifier = $this->verifier(
+            $this->serializerReturning($this->fakeAssertionCredential($rawId)),
+            $this->scopedStorageWith($this->requestOptions(), $itemScope),
+            new InMemoryCredentialRepository([$this->record($rawId)]),
+            null,
+            null,
+            $assertionValidator,
+        )
+            ->forAssertion('example.com');
+        if ($verifierScope !== null) {
+            $verifier = $verifier->withScope($verifierScope);
+        }
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('The options were not issued by this endpoint.');
+
+        $verifier->verify($this->jsonRequest());
+    }
+
+    /**
+     * @return iterable<string, array{string, ?string}>
+     */
+    public static function foreignScopes(): iterable
+    {
+        yield 'a firewall' => ['firewall.main', null];
+        yield 'a request controller' => ['controllers.request.default', null];
+        yield 'the default scope of the helpers' => [AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE, 'step_up'];
+        yield 'another scope of the helpers' => ['checkout', 'step_up'];
+    }
+
+    #[Test]
+    public function forAttestationRefusesTheOptionsIssuedByACreationController(): void
+    {
+        $standardValidator = $this->createMock(AuthenticatorAttestationResponseValidator::class);
+        $standardValidator->expects(static::never())
+            ->method('check');
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('The options were not issued by this endpoint.');
+
+        $this->verifier(
+            $this->serializerReturning($this->fakeAttestationCredential('cred-id')),
+            $this->scopedStorageWith($this->creationOptions(), 'controllers.creation.default'),
+            new SaveableInMemoryCredentialRepository(),
+            $standardValidator,
+        )
+            ->forAttestation('example.com')
+            ->verify($this->jsonRequest());
+    }
+
+    #[Test]
+    public function withScopeRefusesAnEmptyScopeOnAVerifier(): void
+    {
+        $this->expectException(LogicException::class);
+
+        $this->verifier()
+            ->forAssertion('example.com')
+            ->withScope('');
+    }
+
     private function verifier(
         ?SerializerInterface $serializer = null,
         ?OptionsStorage $storage = null,
@@ -730,6 +856,16 @@ final class WebauthnResponseVerifierTest extends TestCase
     ): OptionsStorage {
         $storage = new InMemoryOptionsStorage();
         $storage->store(Item::create($options, $user, $ceremonyOrigin));
+
+        return $storage;
+    }
+
+    private function scopedStorageWith(
+        PublicKeyCredentialCreationOptions|PublicKeyCredentialRequestOptions $options,
+        string $scope,
+    ): OptionsStorage {
+        $storage = new InMemoryOptionsStorage();
+        $storage->store(Item::create($options, null)->withScope($scope));
 
         return $storage;
     }
