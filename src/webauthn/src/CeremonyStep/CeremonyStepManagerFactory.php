@@ -31,6 +31,11 @@ final class CeremonyStepManagerFactory
 
     private null|CertificateChainValidator $certificateChainValidator = null;
 
+    /**
+     * @var string[]
+     */
+    private array $enterpriseAttestationTrustAnchors = [];
+
     private null|TopOriginValidator $topOriginValidator = null;
 
     /**
@@ -132,6 +137,16 @@ final class CeremonyStepManagerFactory
         $this->certificateChainValidator = $certificateChainValidator;
     }
 
+    /**
+     * @param string[] $trustAnchors
+     *
+     * @see CheckMetadataStatement::setEnterpriseAttestationTrustAnchors()
+     */
+    public function setEnterpriseAttestationTrustAnchors(array $trustAnchors): void
+    {
+        $this->enterpriseAttestationTrustAnchors = $trustAnchors;
+    }
+
     public function enableTopOriginValidator(TopOriginValidator $topOriginValidator): void
     {
         $this->topOriginValidator = $topOriginValidator;
@@ -223,6 +238,7 @@ final class CeremonyStepManagerFactory
                 $this->certificateChainValidator,
             );
         }
+        $metadataStatementChecker->setEnterpriseAttestationTrustAnchors($this->enterpriseAttestationTrustAnchors);
 
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential */
         return new CeremonyStepManager([
