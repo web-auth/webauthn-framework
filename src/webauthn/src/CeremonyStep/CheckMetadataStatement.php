@@ -256,6 +256,16 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
         };
     }
 
+    /**
+     * Refuses the authenticator model as soon as one of its status reports is a compromise or a revocation.
+     *
+     * Every report is read, wherever it sits in the list. The FIDO Metadata Service BLOB does not keep the reports
+     * of an entry in chronological order (most entries list the newest first), so the last element of the array is
+     * not the current status. A later report, such as an update or a new certification, does not clear a compromise
+     * or a revocation either: the attestation does not tell whether the registering authenticator received the fix.
+     *
+     * @see https://fidoalliance.org/specs/mds/fido-metadata-service-v3.1.1-ps-20260105.html#sctn-stat-rep
+     */
     private function checkStatusReport(string $aaguid): void
     {
         $statusReports = $this->statusReportRepository?->findStatusReportsByAAGUID($aaguid) ?? [];
@@ -266,20 +276,21 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
             return;
         }
 
-        $lastStatusReport = end($statusReports);
-        $this->logger->debug('Status report found.', [
-            'aaguid' => $aaguid,
-            'status' => $lastStatusReport->status,
-        ]);
-
-        if ($lastStatusReport->isCompromised()) {
-            $this->logger->warning('Authenticator is marked as compromised in MDS.', [
+        foreach ($statusReports as $statusReport) {
+            $this->logger->debug('Status report found.', [
                 'aaguid' => $aaguid,
-                'status' => $lastStatusReport->status,
+                'status' => $statusReport->status,
             ]);
-            throw AuthenticatorResponseVerificationException::create(
-                'The authenticator is compromised and cannot be used'
-            );
+
+            if ($statusReport->isCompromised()) {
+                $this->logger->warning('Authenticator is marked as compromised or revoked in MDS.', [
+                    'aaguid' => $aaguid,
+                    'status' => $statusReport->status,
+                ]);
+                throw AuthenticatorResponseVerificationException::create(
+                    'The authenticator is compromised and cannot be used'
+                );
+            }
         }
     }
 

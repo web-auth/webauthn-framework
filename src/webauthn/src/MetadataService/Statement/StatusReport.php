@@ -49,6 +49,12 @@ readonly class StatusReport
         );
     }
 
+    /**
+     * Whether the status tells relying parties to stop trusting the authenticator model: one of the security
+     * notification statuses, or REVOKED, after which relying parties should reject any future registration.
+     *
+     * @see https://fidoalliance.org/specs/mds/fido-metadata-service-v3.1.1-ps-20260105.html#sctn-authnr-stat
+     */
     public function isCompromised(): bool
     {
         return in_array($this->status, [
@@ -56,6 +62,7 @@ readonly class StatusReport
             AuthenticatorStatus::USER_KEY_PHYSICAL_COMPROMISE,
             AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE,
             AuthenticatorStatus::USER_VERIFICATION_BYPASS,
+            AuthenticatorStatus::REVOKED,
         ], true);
     }
 }
