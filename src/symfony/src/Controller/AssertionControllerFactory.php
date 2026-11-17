@@ -39,7 +39,8 @@ final class AssertionControllerFactory implements CanLogData
         PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
         null|OptionsStorage $optionStorage,
         RequestOptionsHandler $optionsHandler,
-        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler
+        FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        ?string $optionsScope = null,
     ): AssertionRequestController {
         if ($optionStorage !== null) {
             trigger_deprecation(
@@ -54,6 +55,7 @@ final class AssertionControllerFactory implements CanLogData
             $optionsHandler,
             $failureHandler,
             $this->logger,
+            $optionsScope,
         );
     }
 
@@ -62,6 +64,7 @@ final class AssertionControllerFactory implements CanLogData
         SuccessHandler $successHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         null|AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator = null,
+        ?string $optionsScope = null,
     ): AssertionResponseController {
         if ($optionStorage !== null) {
             trigger_deprecation(
@@ -77,7 +80,8 @@ final class AssertionControllerFactory implements CanLogData
             $optionStorage ?? $this->optionStorage,
             $successHandler,
             $failureHandler,
-            $this->publicKeyCredentialSourceRepository
+            $this->publicKeyCredentialSourceRepository,
+            $optionsScope,
         );
     }
 }

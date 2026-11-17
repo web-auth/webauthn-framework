@@ -24,6 +24,7 @@ final readonly class AssertionRequestController
         private RequestOptionsHandler $optionsHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private LoggerInterface $logger,
+        private ?string $optionsScope = null,
     ) {
     }
 
@@ -33,7 +34,9 @@ final readonly class AssertionRequestController
             $userEntity = null;
             $publicKeyCredentialRequestOptions = $this->optionsBuilder->getFromRequest($request, $userEntity);
             $response = $this->optionsHandler->onRequestOptions($publicKeyCredentialRequestOptions, $userEntity);
-            $this->optionsStorage->store(Item::create($publicKeyCredentialRequestOptions, $userEntity));
+            $this->optionsStorage->store(
+                Item::create($publicKeyCredentialRequestOptions, $userEntity)->withScope($this->optionsScope)
+            );
 
             return $response;
         } catch (Throwable $throwable) {

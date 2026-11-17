@@ -53,6 +53,7 @@ return static function (ContainerConfigurator $container): void {
             service(SerializerInterface::class),
             abstract_arg('Authenticator Assertion Response Validator'),
             abstract_arg('Authenticator Attestation Response Validator'),
+            abstract_arg('Options scope'),
         ]);
     $service
         ->set(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID, WebauthnFirewallConfig::class)

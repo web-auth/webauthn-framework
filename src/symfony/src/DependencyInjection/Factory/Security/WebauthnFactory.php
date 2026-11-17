@@ -286,6 +286,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
             ->replaceArgument(4, new Reference($optionsStorageId ?? OptionsStorage::class))
             ->replaceArgument(8, new Reference($authenticatorAssertionResponseValidatorId))
             ->replaceArgument(9, new Reference($authenticatorAttestationResponseValidatorId))
+            ->replaceArgument(10, self::getOptionsScope($firewallName))
             ->addMethodCall('setLogger', [new Reference('webauthn.logger')]);
 
         return $authenticatorId;
@@ -382,6 +383,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference($optionsStorageId ?? OptionsStorage::class),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
+                self::getOptionsScope($firewallName),
             ]);
         $this->createControllerAndRoute(
             $container,
@@ -416,6 +418,7 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
                 $hideExistingCredentials,
+                self::getOptionsScope($firewallName),
             ]);
         $this->createControllerAndRoute(
             $container,
@@ -529,5 +532,14 @@ final readonly class WebauthnFactory implements FirewallListenerFactoryInterface
         $container->setDefinition($optionsBuilderId, $optionsBuilder);
 
         return $optionsBuilderId;
+    }
+
+    /**
+     * Scope stamped on the options issued by the options endpoints of the firewall, so that its authenticator refuses
+     * the options issued by any other endpoint.
+     */
+    private static function getOptionsScope(string $firewallName): string
+    {
+        return sprintf('firewall.%s', $firewallName);
     }
 }

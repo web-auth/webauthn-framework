@@ -25,6 +25,7 @@ final readonly class AttestationRequestController
         private CreationOptionsHandler $creationOptionsHandler,
         private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
         private bool $hideExistingExcludedCredentials = false,
+        private ?string $optionsScope = null,
     ) {
     }
 
@@ -42,7 +43,9 @@ final readonly class AttestationRequestController
                 $publicKeyCredentialCreationOptions,
                 $userEntity
             );
-            $this->optionsStorage->store(Item::create($publicKeyCredentialCreationOptions, $userEntity));
+            $this->optionsStorage->store(
+                Item::create($publicKeyCredentialCreationOptions, $userEntity)->withScope($this->optionsScope)
+            );
 
             return $response;
         } catch (Throwable $throwable) {

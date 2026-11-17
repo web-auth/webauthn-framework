@@ -6,6 +6,7 @@ namespace Webauthn\Bundle\Security\Storage;
 
 use function array_key_exists;
 use function is_array;
+use function is_string;
 use function sprintf;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -32,6 +33,7 @@ final readonly class SessionStorage implements OptionsStorage
         $session->set($key, [
             'options' => $item->getPublicKeyCredentialOptions(),
             'userEntity' => $item->getPublicKeyCredentialUserEntity(),
+            'scope' => $item->getScope(),
         ]);
     }
 
@@ -49,6 +51,7 @@ final readonly class SessionStorage implements OptionsStorage
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
+        $scope = $sessionValue['scope'] ?? null;
 
         if (! $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
             throw new BadRequestHttpException('No public key credential options available for this session.');
@@ -56,7 +59,10 @@ final readonly class SessionStorage implements OptionsStorage
         if ($userEntity !== null && ! $userEntity instanceof PublicKeyCredentialUserEntity) {
             throw new BadRequestHttpException('No user entity available for this session.');
         }
+        if ($scope !== null && ! is_string($scope)) {
+            throw new BadRequestHttpException('No valid options scope available for this session.');
+        }
 
-        return Item::create($publicKeyCredentialRequestOptions, $userEntity);
+        return Item::create($publicKeyCredentialRequestOptions, $userEntity)->withScope($scope);
     }
 }
