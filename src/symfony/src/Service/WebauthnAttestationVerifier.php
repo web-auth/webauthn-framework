@@ -60,6 +60,8 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
 
     private ?CertificateChainValidator $certificateChainValidator = null;
 
+    private bool $requireStatement = true;
+
     private bool $metadataDisabled = false;
 
     /**
@@ -109,16 +111,21 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
      *
      * The autowired {@see CeremonyStepManagerFactory} is cloned and reconfigured
      * for the call so the singleton's global state stays untouched.
+     *
+     * With `$requireStatement` set to false, a full attestation whose AAGUID has
+     * no Metadata Statement passes unverified instead of being refused.
      */
     public function withMetadata(
         MetadataStatementRepository $metadataStatementRepository,
         StatusReportRepository $statusReportRepository,
         CertificateChainValidator $certificateChainValidator,
+        bool $requireStatement = true,
     ): static {
         $clone = clone $this;
         $clone->metadataStatementRepository = $metadataStatementRepository;
         $clone->statusReportRepository = $statusReportRepository;
         $clone->certificateChainValidator = $certificateChainValidator;
+        $clone->requireStatement = $requireStatement;
         $clone->metadataDisabled = false;
 
         return $clone;
@@ -215,6 +222,7 @@ final class WebauthnAttestationVerifier extends AbstractWebauthnVerifier
                 $this->metadataStatementRepository,
                 $this->statusReportRepository,
                 $this->certificateChainValidator,
+                $this->requireStatement,
             );
         }
         if ($this->enterpriseAttestationTrustAnchors !== null) {

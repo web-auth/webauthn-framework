@@ -6,6 +6,7 @@ namespace Webauthn\CeremonyStep;
 
 use function count;
 use function in_array;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function sprintf;
@@ -14,27 +15,35 @@ use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
+use Webauthn\Event\AttestationCheckedAgainstMetadata;
+use Webauthn\Event\CanDispatchEvents;
+use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\Statement\MetadataStatement;
+use Webauthn\MetadataService\Statement\StatusReport;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\CertificateTrustPath;
 
-final class CheckMetadataStatement implements CeremonyStep, CanLogData
+final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispatchEvents
 {
     private LoggerInterface $logger;
+
+    private EventDispatcherInterface $eventDispatcher;
 
     private null|MetadataStatementRepository $metadataStatementRepository = null;
 
     private null|StatusReportRepository $statusReportRepository = null;
 
     private null|CertificateChainValidator $certificateChainValidator = null;
+
+    private bool $requireStatement = true;
 
     /**
      * @var string[]
@@ -44,16 +53,28 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
     public function __construct()
     {
         $this->logger = new NullLogger();
+        $this->eventDispatcher = new NullEventDispatcher();
     }
 
+    /**
+     * When $requireStatement is false, a full attestation (basic, AttCA or AnonCA) whose AAGUID has no Metadata
+     * Statement, the null AAGUID included, passes without its certificate chain being verified instead of being
+     * refused. WebAuthn Level 3 lets a Relying Party register such a credential and treat it as one with self
+     * attestation. The status reports of the AAGUID still apply, and {@see AttestationCheckedAgainstMetadata} tells
+     * the application whether the authenticator model was verified or only declared.
+     *
+     * @see https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
+     */
     public function enableMetadataStatementSupport(
         MetadataStatementRepository $metadataStatementRepository,
         StatusReportRepository $statusReportRepository,
-        CertificateChainValidator $certificateChainValidator
+        CertificateChainValidator $certificateChainValidator,
+        bool $requireStatement = true,
     ): void {
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->statusReportRepository = $statusReportRepository;
         $this->certificateChainValidator = $certificateChainValidator;
+        $this->requireStatement = $requireStatement;
     }
 
     public function enableCertificateChainValidator(CertificateChainValidator $certificateChainValidator): void
@@ -78,6 +99,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function process(
@@ -145,7 +171,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
             'type' => $attestationStatement->type,
             'aaguid' => $aaguid,
         ]);
-        $this->processWithMetadata($attestationStatement, $aaguid);
+        $this->processWithMetadata($credentialRecord, $attestationStatement, $aaguid);
     }
 
     /**
@@ -209,7 +235,8 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
      * The verification is only skipped for self attestation, which has no trust path to verify. The AAGUID is written
      * by the authenticator: a full attestation (Basic, AttCA, AnonCA) under the null AAGUID still has to chain to the
      * trust anchors of a Metadata Statement, the one the repository returns for the null AAGUID (e.g. with the Apple
-     * WebAuthn Root CA or the U2F vendor roots), or it is refused.
+     * WebAuthn Root CA or the U2F vendor roots), or it is refused. When the metadata support does not require a
+     * statement, it passes unverified instead, like the full attestation of any other AAGUID the metadata do not know.
      *
      * @see https://www.w3.org/TR/webauthn-3/#sctn-createCredential
      * @see https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html#u2f-authenticatorMakeCredential-interoperability
@@ -249,22 +276,26 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
     /**
      * Process attestation with full metadata validation (Basic, AttCA, AnonCA).
      */
-    private function processWithMetadata(AttestationStatement $attestationStatement, string $aaguid): void
-    {
+    private function processWithMetadata(
+        CredentialRecord $credentialRecord,
+        AttestationStatement $attestationStatement,
+        string $aaguid
+    ): void {
         $this->metadataStatementRepository !== null || throw AuthenticatorResponseVerificationException::create(
             'The Metadata Statement Repository is mandatory when requesting attestation objects.'
         );
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
-        $metadataStatement !== null || throw AuthenticatorResponseVerificationException::create(
-            sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
-        );
+        if ($metadataStatement === null) {
+            $this->processWithoutMetadataStatement($credentialRecord, $aaguid);
+            return;
+        }
 
         $this->logger->debug('Metadata statement found. Starting validation.', [
             'aaguid' => $aaguid,
             'attestation_type' => $attestationStatement->type,
         ]);
 
-        $this->checkStatusReport($aaguid);
+        $statusReports = $this->checkStatusReport($aaguid);
         $this->logger->debug('Status report verification completed.');
 
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
@@ -272,6 +303,30 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
 
         $this->checkAttestationTypeIsAllowed($attestationStatement, $metadataStatement);
         $this->logger->debug('Attestation type verification completed.');
+
+        $this->eventDispatcher->dispatch(
+            new AttestationCheckedAgainstMetadata($credentialRecord, $metadataStatement, $statusReports)
+        );
+    }
+
+    /**
+     * The status reports of the AAGUID still apply: a compromised authenticator is refused.
+     *
+     * @see self::enableMetadataStatementSupport()
+     */
+    private function processWithoutMetadataStatement(CredentialRecord $credentialRecord, string $aaguid): void
+    {
+        if ($this->requireStatement) {
+            throw AuthenticatorResponseVerificationException::create(
+                sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid)
+            );
+        }
+
+        $statusReports = $this->checkStatusReport($aaguid);
+        $this->logger->info('No metadata statement found. The attestation is accepted unverified.', [
+            'aaguid' => $aaguid,
+        ]);
+        $this->eventDispatcher->dispatch(new AttestationCheckedAgainstMetadata($credentialRecord, null, $statusReports));
     }
 
     /**
@@ -323,16 +378,18 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
      * not the current status. A later report, such as an update or a new certification, does not clear a compromise
      * or a revocation either: the attestation does not tell whether the registering authenticator received the fix.
      *
+     * @return StatusReport[]
+     *
      * @see https://fidoalliance.org/specs/mds/fido-metadata-service-v3.1.1-ps-20260105.html#sctn-stat-rep
      */
-    private function checkStatusReport(string $aaguid): void
+    private function checkStatusReport(string $aaguid): array
     {
         $statusReports = $this->statusReportRepository?->findStatusReportsByAAGUID($aaguid) ?? [];
         if (count($statusReports) === 0) {
             $this->logger->debug('No status reports found for authenticator.', [
                 'aaguid' => $aaguid,
             ]);
-            return;
+            return [];
         }
 
         foreach ($statusReports as $statusReport) {
@@ -351,6 +408,8 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData
                 );
             }
         }
+
+        return $statusReports;
     }
 
     private function checkCertificateChain(
