@@ -17,6 +17,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CredentialRecord;
 use Webauthn\Event\AttestationCheckedAgainstMetadata;
 use Webauthn\Event\CanDispatchEvents;
+use Webauthn\Event\CompromisedAuthenticatorDetected;
 use Webauthn\Event\NullEventDispatcher;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CanLogData;
@@ -148,7 +149,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
         $aaguid = $attestedCredentialData->aaguid
             ->__toString();
         if ($this->isPinnedEnterpriseAttestation($publicKeyCredentialOptions, $attestationStatement)) {
-            $this->processPinnedEnterpriseAttestation($attestationStatement, $aaguid);
+            $this->processPinnedEnterpriseAttestation($credentialRecord, $attestationStatement, $aaguid);
             return;
         }
 
@@ -163,7 +164,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
             $this->logger->debug('Self attestation detected.', [
                 'aaguid' => $aaguid,
             ]);
-            $this->processSelfAttestation($aaguid);
+            $this->processSelfAttestation($credentialRecord, $aaguid);
             return;
         }
 
@@ -202,6 +203,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
     }
 
     private function processPinnedEnterpriseAttestation(
+        CredentialRecord $credentialRecord,
         AttestationStatement $attestationStatement,
         string $aaguid
     ): void {
@@ -210,7 +212,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
         );
         $this->logger->debug('Enterprise attestation. Verifying it up to the pinned trust anchors.');
 
-        $this->checkStatusReport($aaguid);
+        $this->checkStatusReport($credentialRecord, $aaguid, null);
         $trustPath = $attestationStatement->trustPath;
         if (! $trustPath instanceof CertificateTrustPath) {
             throw AuthenticatorResponseVerificationException::create(
@@ -254,7 +256,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
      *
      * @see https://www.w3.org/TR/webauthn-3/#self
      */
-    private function processSelfAttestation(string $aaguid): void
+    private function processSelfAttestation(CredentialRecord $credentialRecord, string $aaguid): void
     {
         $metadataStatement = $this->metadataStatementRepository?->findOneByAAGUID($aaguid);
         if ($metadataStatement === null) {
@@ -267,7 +269,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
         $this->logger->debug('Metadata statement found for self attestation. Checking status reports.', [
             'aaguid' => $aaguid,
         ]);
-        $this->checkStatusReport($aaguid);
+        $this->checkStatusReport($credentialRecord, $aaguid, $metadataStatement);
         // Note: We do NOT check attestationTypes for self attestation as the authenticator
         // is using its credential key (not attestation certificate), which may differ from
         // the declared attestation types in metadata (which describe certificate-based attestation).
@@ -295,7 +297,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
             'attestation_type' => $attestationStatement->type,
         ]);
 
-        $statusReports = $this->checkStatusReport($aaguid);
+        $statusReports = $this->checkStatusReport($credentialRecord, $aaguid, $metadataStatement);
         $this->logger->debug('Status report verification completed.');
 
         $this->checkCertificateChain($attestationStatement, $metadataStatement);
@@ -310,7 +312,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
     }
 
     /**
-     * The status reports of the AAGUID still apply: a compromised authenticator is refused.
+     * The status reports of the AAGUID still apply: a compromised authenticator is refused unless a listener admits it.
      *
      * @see self::enableMetadataStatementSupport()
      */
@@ -322,7 +324,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
             );
         }
 
-        $statusReports = $this->checkStatusReport($aaguid);
+        $statusReports = $this->checkStatusReport($credentialRecord, $aaguid, null);
         $this->logger->info('No metadata statement found. The attestation is accepted unverified.', [
             'aaguid' => $aaguid,
         ]);
@@ -371,7 +373,8 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
     }
 
     /**
-     * Refuses the authenticator model as soon as one of its status reports is a compromise or a revocation.
+     * Refuses the authenticator model as soon as one of its status reports is a compromise or a revocation, unless a
+     * listener of {@see CompromisedAuthenticatorDetected} admits it.
      *
      * Every report is read, wherever it sits in the list. The FIDO Metadata Service BLOB does not keep the reports
      * of an entry in chronological order (most entries list the newest first), so the last element of the array is
@@ -382,8 +385,11 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
      *
      * @see https://fidoalliance.org/specs/mds/fido-metadata-service-v3.1.1-ps-20260105.html#sctn-stat-rep
      */
-    private function checkStatusReport(string $aaguid): array
-    {
+    private function checkStatusReport(
+        CredentialRecord $credentialRecord,
+        string $aaguid,
+        ?MetadataStatement $metadataStatement
+    ): array {
         $statusReports = $this->statusReportRepository?->findStatusReportsByAAGUID($aaguid) ?? [];
         if (count($statusReports) === 0) {
             $this->logger->debug('No status reports found for authenticator.', [
@@ -392,6 +398,7 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
             return [];
         }
 
+        $compromised = false;
         foreach ($statusReports as $statusReport) {
             $this->logger->debug('Status report found.', [
                 'aaguid' => $aaguid,
@@ -403,11 +410,23 @@ final class CheckMetadataStatement implements CeremonyStep, CanLogData, CanDispa
                     'aaguid' => $aaguid,
                     'status' => $statusReport->status,
                 ]);
-                throw AuthenticatorResponseVerificationException::create(
-                    'The authenticator is compromised and cannot be used'
-                );
+                $compromised = true;
             }
         }
+        if (! $compromised) {
+            return $statusReports;
+        }
+
+        $event = new CompromisedAuthenticatorDetected($credentialRecord, $metadataStatement, $statusReports);
+        $this->eventDispatcher->dispatch($event);
+        if (! $event->isAdmitted()) {
+            throw AuthenticatorResponseVerificationException::create(
+                'The authenticator is compromised and cannot be used'
+            );
+        }
+        $this->logger->warning('The compromised authenticator is admitted by the application.', [
+            'aaguid' => $aaguid,
+        ]);
 
         return $statusReports;
     }

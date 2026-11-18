@@ -21,6 +21,7 @@ use Webauthn\CollectedClientData;
 use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Event\AttestationCheckedAgainstMetadata;
+use Webauthn\Event\CompromisedAuthenticatorDetected;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\Exception\CertificateChainException;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
@@ -40,7 +41,7 @@ use Webauthn\TrustPath\EmptyTrustPath;
 /**
  * A full attestation (basic, AttCA, AnonCA) whose AAGUID has no Metadata Statement is refused, unless the metadata
  * support does not require a statement: it then passes unverified. The outcome and the status reports reach the
- * application through an event.
+ * application through events, and a listener may admit a compromised authenticator.
  *
  * @see https://github.com/web-auth/webauthn-framework/issues/1002
  * @internal
@@ -230,6 +231,7 @@ final class CheckMetadataStatementTest extends TestCase
 
         $this->process($step, AttestationStatement::TYPE_SELF, self::UNKNOWN_AAGUID);
 
+        static::assertSame([], $events->compromised);
         static::assertSame([], $events->checked);
     }
 
@@ -275,6 +277,7 @@ final class CheckMetadataStatementTest extends TestCase
             PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE
         );
 
+        static::assertSame([], $events->compromised);
         static::assertSame([], $events->checked);
     }
 
@@ -339,6 +342,99 @@ final class CheckMetadataStatementTest extends TestCase
     }
 
     #[Test]
+    public function aCompromisedAuthenticatorIsRefusedWhenNoListenerAdmitsIt(): void
+    {
+        $statusReports = [
+            $this->statusReport(AuthenticatorStatus::USER_VERIFICATION_BYPASS),
+            $this->statusReport(AuthenticatorStatus::FIDO_CERTIFIED),
+        ];
+        $statementRepository = $this->statementRepository();
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $statementRepository,
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => $statusReports,
+            ]),
+            static::createStub(CertificateChainValidator::class),
+        );
+        $events = $this->recordEvents($step);
+        $credentialRecord = $this->credentialRecord(self::KNOWN_AAGUID);
+
+        try {
+            $this->process($step, AttestationStatement::TYPE_BASIC, self::KNOWN_AAGUID, $credentialRecord);
+            static::fail('The compromised authenticator should have been refused.');
+        } catch (AuthenticatorResponseVerificationException $exception) {
+            static::assertSame('The authenticator is compromised and cannot be used', $exception->getMessage());
+        }
+        static::assertCount(1, $events->compromised);
+        static::assertSame($credentialRecord, $events->compromised[0]->credentialRecord);
+        static::assertSame($statusReports, $events->compromised[0]->statusReports);
+        static::assertSame([$statusReports[0]], $events->compromised[0]->compromisedStatusReports());
+        static::assertSame(
+            $statementRepository->findOneByAAGUID(self::KNOWN_AAGUID),
+            $events->compromised[0]->metadataStatement
+        );
+        static::assertFalse($events->compromised[0]->isAdmitted());
+        static::assertSame([], $events->checked);
+    }
+
+    #[Test]
+    public function theApplicationDecidesOnceForEveryReportThatFlagsTheAuthenticator(): void
+    {
+        $statusReports = [
+            $this->statusReport(AuthenticatorStatus::REVOKED),
+            $this->statusReport(AuthenticatorStatus::UPDATE_AVAILABLE),
+            $this->statusReport(AuthenticatorStatus::ATTESTATION_KEY_COMPROMISE),
+            $this->statusReport(AuthenticatorStatus::FIDO_CERTIFIED),
+        ];
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => $statusReports,
+            ]),
+            static::createStub(CertificateChainValidator::class),
+        );
+        $events = $this->recordEvents($step, true);
+
+        $this->process($step, AttestationStatement::TYPE_BASIC, self::KNOWN_AAGUID);
+
+        static::assertCount(1, $events->compromised);
+        static::assertSame(
+            [$statusReports[0], $statusReports[2]],
+            $events->compromised[0]->compromisedStatusReports()
+        );
+        static::assertCount(1, $events->checked);
+        static::assertSame($statusReports, $events->checked[0]->statusReports);
+    }
+
+    #[Test]
+    public function aListenerCanAdmitACompromisedAuthenticator(): void
+    {
+        $statusReports = [$this->statusReport(AuthenticatorStatus::ATTESTATION_KEY_COMPROMISE)];
+        $certificateChainValidator = $this->createMock(CertificateChainValidator::class);
+        $certificateChainValidator->expects(static::once())
+            ->method('check');
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => $statusReports,
+            ]),
+            $certificateChainValidator,
+        );
+        $events = $this->recordEvents($step, true);
+
+        $this->process($step, AttestationStatement::TYPE_BASIC, self::KNOWN_AAGUID);
+
+        static::assertCount(1, $events->compromised);
+        static::assertTrue($events->compromised[0]->isAdmitted());
+        static::assertCount(1, $events->checked);
+        static::assertTrue($events->checked[0]->isVerified());
+        static::assertSame($statusReports, $events->checked[0]->statusReports);
+    }
+
+    #[Test]
     public function anUnknownAuthenticatorReportedAsCompromisedIsRefusedWhenNoStatementIsRequired(): void
     {
         $step = new CheckMetadataStatement();
@@ -358,6 +454,115 @@ final class CheckMetadataStatementTest extends TestCase
         } catch (AuthenticatorResponseVerificationException $exception) {
             static::assertSame('The authenticator is compromised and cannot be used', $exception->getMessage());
         }
+        static::assertCount(1, $events->compromised);
+        static::assertNull($events->compromised[0]->metadataStatement);
+        static::assertSame([], $events->checked);
+    }
+
+    #[Test]
+    public function aListenerCanAdmitAnUnknownAuthenticatorReportedAsCompromisedWhenNoStatementIsRequired(): void
+    {
+        $statusReports = [$this->statusReport(AuthenticatorStatus::USER_KEY_REMOTE_COMPROMISE)];
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::UNKNOWN_AAGUID => $statusReports,
+            ]),
+            static::createStub(CertificateChainValidator::class),
+            false,
+        );
+        $events = $this->recordEvents($step, true);
+
+        $this->process($step, AttestationStatement::TYPE_BASIC, self::UNKNOWN_AAGUID);
+
+        static::assertCount(1, $events->compromised);
+        static::assertCount(1, $events->checked);
+        static::assertFalse($events->checked[0]->isVerified());
+        static::assertSame($statusReports, $events->checked[0]->statusReports);
+    }
+
+    #[Test]
+    public function aListenerCanAdmitACompromisedAuthenticatorThatUsesSelfAttestation(): void
+    {
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => [$this->statusReport(AuthenticatorStatus::USER_KEY_PHYSICAL_COMPROMISE)],
+            ]),
+            static::createStub(CertificateChainValidator::class),
+        );
+        $events = $this->recordEvents($step, true);
+
+        $this->process($step, AttestationStatement::TYPE_SELF, self::KNOWN_AAGUID);
+
+        static::assertCount(1, $events->compromised);
+        static::assertTrue($events->compromised[0]->isAdmitted());
+        static::assertSame([], $events->checked);
+    }
+
+    #[Test]
+    public function aCompromisedAuthenticatorVerifiedUpToThePinnedTrustAnchorsIsRefusedWhenNoListenerAdmitsIt(): void
+    {
+        $certificateChainValidator = $this->createMock(CertificateChainValidator::class);
+        $certificateChainValidator->expects(static::never())
+            ->method('check');
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => [$this->statusReport(AuthenticatorStatus::REVOKED)],
+            ]),
+            $certificateChainValidator,
+        );
+        $step->setEnterpriseAttestationTrustAnchors([self::PINNED_TRUST_ANCHOR]);
+        $events = $this->recordEvents($step);
+
+        try {
+            $this->process(
+                $step,
+                AttestationStatement::TYPE_BASIC,
+                self::KNOWN_AAGUID,
+                null,
+                PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE
+            );
+            static::fail('The compromised authenticator should have been refused.');
+        } catch (AuthenticatorResponseVerificationException $exception) {
+            static::assertSame('The authenticator is compromised and cannot be used', $exception->getMessage());
+        }
+        static::assertCount(1, $events->compromised);
+        static::assertNull($events->compromised[0]->metadataStatement);
+    }
+
+    #[Test]
+    public function aListenerCanAdmitACompromisedAuthenticatorVerifiedUpToThePinnedTrustAnchors(): void
+    {
+        $certificateChainValidator = $this->createMock(CertificateChainValidator::class);
+        $certificateChainValidator->expects(static::once())
+            ->method('check')
+            ->with([self::LEAF_CERTIFICATE], CertificateToolbox::fixPEMStructures([self::PINNED_TRUST_ANCHOR]));
+        $step = new CheckMetadataStatement();
+        $step->enableMetadataStatementSupport(
+            $this->statementRepository(),
+            $this->statusReportRepository([
+                self::KNOWN_AAGUID => [$this->statusReport(AuthenticatorStatus::REVOKED)],
+            ]),
+            $certificateChainValidator,
+        );
+        $step->setEnterpriseAttestationTrustAnchors([self::PINNED_TRUST_ANCHOR]);
+        $events = $this->recordEvents($step, true);
+
+        $this->process(
+            $step,
+            AttestationStatement::TYPE_BASIC,
+            self::KNOWN_AAGUID,
+            null,
+            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_ENTERPRISE
+        );
+
+        static::assertCount(1, $events->compromised);
+        static::assertTrue($events->compromised[0]->isAdmitted());
         static::assertSame([], $events->checked);
     }
 
@@ -474,21 +679,35 @@ final class CheckMetadataStatementTest extends TestCase
     }
 
     /**
-     * @return object{checked: AttestationCheckedAgainstMetadata[]}
+     * @return object{checked: AttestationCheckedAgainstMetadata[], compromised: CompromisedAuthenticatorDetected[]}
      */
-    private function recordEvents(CheckMetadataStatement $step): object
+    private function recordEvents(CheckMetadataStatement $step, bool $admit = false): object
     {
         $events = new class() {
             /**
              * @var AttestationCheckedAgainstMetadata[]
              */
             public array $checked = [];
+
+            /**
+             * @var CompromisedAuthenticatorDetected[]
+             */
+            public array $compromised = [];
         };
         $eventDispatcher = new EventDispatcher();
         $eventDispatcher->addListener(
             AttestationCheckedAgainstMetadata::class,
             static function (AttestationCheckedAgainstMetadata $event) use ($events): void {
                 $events->checked[] = $event;
+            }
+        );
+        $eventDispatcher->addListener(
+            CompromisedAuthenticatorDetected::class,
+            static function (CompromisedAuthenticatorDetected $event) use ($events, $admit): void {
+                if ($admit) {
+                    $event->admit();
+                }
+                $events->compromised[] = $event;
             }
         );
         $step->setEventDispatcher($eventDispatcher);
