@@ -81,7 +81,7 @@ final class FidoAllianceCompliantMetadataService implements MetadataService, Can
             'A certificate chain validator is required to verify the metadata BLOB against its root certificate.'
         );
         $rootCertificateUri !== null || throw new InvalidArgumentException(
-            'The root certificate URI is required to verify the metadata BLOB. For the FIDO Alliance Metadata Service, it is "https://secure.globalsign.com/cacert/root-r3.crt".'
+            'The root certificate URI is required to verify the metadata BLOB. For the FIDO Alliance Metadata Service, it is "https://secure.globalsign.com/cacert/rootr46.crt".'
         );
         $this->certificateChainValidator = $certificateChainValidator;
         $this->rootCertificateUri = $rootCertificateUri;

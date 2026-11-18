@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webauthn\MetadataService\CertificateChain;
 
+use function array_slice;
 use function count;
 use function in_array;
 use function parse_url;
@@ -117,14 +118,13 @@ final class PhpCertificateChainValidator implements CertificateChainValidator, C
             'Invalid certificate chain with duplicated certificates.'
         );
 
-        if (! $this->validateCertificates($trustedCertificateObject, ...$untrustedCertificateObjects)) {
+        $path = $this->findCertificationPath($trustedCertificateObject, $untrustedCertificateObjects);
+        if ($path === null) {
             return false;
         }
 
-        $certificates = [$trustedCertificateObject, ...$untrustedCertificateObjects];
-        $numCerts = count($certificates);
-        for ($i = 1; $i < $numCerts; $i++) {
-            if ($this->isRevoked($certificates[$i])) {
+        foreach ($path as $certificate) {
+            if ($this->isRevoked($certificate)) {
                 throw CertificateChainException::create(
                     $untrustedCertificates,
                     [$trustedCertificate],
@@ -134,6 +134,39 @@ final class PhpCertificateChainValidator implements CertificateChainValidator, C
         }
 
         return true;
+    }
+
+    /**
+     * Returns the certification path that leads from the trust anchor to the end-entity certificate, or null when
+     * the chain holds none.
+     *
+     * RFC 5280 makes the trust anchor an input of the path validation, not a certificate of the path, and a chain may
+     * carry certificates above the one the trust anchor issued. The "x5c" of the FIDO Alliance metadata BLOB ends with
+     * GlobalSign Root R46 cross-signed by GlobalSign Root CA - R3: the path stops below that cross-certificate when
+     * the trust anchor is the self-signed R46, and goes through it when the trust anchor is R3. Each tail of the chain
+     * is therefore tried in turn, from the end-entity certificate alone up to the whole chain. The first tail that
+     * validates is the path: the certificates above it take part neither in the validation nor in the revocation
+     * checks.
+     *
+     * The chain is walked in the order RFC 7515 and the attestation formats prescribe for "x5c", each certificate
+     * followed by its issuer, and no path is built out of another order: a chain the client controls costs one attempt
+     * per certificate, where a path builder would explore the combinations of its certificates.
+     *
+     * @param Certificate[] $certificates The chain from its topmost certificate down to the end-entity certificate
+     *
+     * @return Certificate[]|null
+     */
+    private function findCertificationPath(Certificate $trustAnchor, array $certificates): ?array
+    {
+        $numCerts = count($certificates);
+        for ($length = 1; $length <= $numCerts; $length++) {
+            $path = array_slice($certificates, -$length);
+            if ($this->validateCertificates($trustAnchor, ...$path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 
     private function isRevoked(Certificate $subject): bool
