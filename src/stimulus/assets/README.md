@@ -182,18 +182,20 @@ The controllers dispatch custom events on their element. The events bubble, so a
 
 The authentication controller prefixes its events with `webauthn:authentication:`, the registration controller with `webauthn:registration:`.
 
-| Event                     | Detail                                                     | Dispatched                                                   |
-| ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| `<prefix>connect`         | `optionsUrl`, `resultUrl`, `supportsPlatformAuthenticator` | When the controller connects                                 |
-| `<prefix>options:request` | `data`                                                     | Before the options are requested from `optionsUrl`           |
-| `<prefix>options:success` | `options`                                                  | When the options are received                                |
-| `<prefix>options:error`   | `response` or `error`                                      | When the options request fails                               |
-| `<prefix>credential`      | `credential`                                               | When the authenticator answers, before anything is sent      |
-| `<prefix>verify:request`  | `credential`, as it is sent to `resultUrl`                 | Before the credential is sent                                |
-| `<prefix>verify:success`  | `result`                                                   | When `resultUrl` accepts the credential                      |
-| `<prefix>verify:error`    | `response` or `error`                                      | When `resultUrl` refuses the credential or cannot be reached |
-| `<prefix>error`           | `error`, plus `code` and `name` for a WebAuthn error       | When the ceremony fails                                      |
-| `webauthn:unsupported`    | none                                                       | When the ceremony is started in a browser without WebAuthn   |
+| Event                     | Detail                                                                     | Dispatched                                                   |
+| ------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `<prefix>connect`         | `optionsUrl`, `resultUrl`, `supportsPlatformAuthenticator`, `capabilities` | When the controller connects                                 |
+| `<prefix>options:request` | `data`                                                                     | Before the options are requested from `optionsUrl`           |
+| `<prefix>options:success` | `options`                                                                  | When the options are received                                |
+| `<prefix>options:error`   | `response` or `error`                                                      | When the options request fails                               |
+| `<prefix>credential`      | `credential`                                                               | When the authenticator answers, before anything is sent      |
+| `<prefix>verify:request`  | `credential`, as it is sent to `resultUrl`                                 | Before the credential is sent                                |
+| `<prefix>verify:success`  | `result`                                                                   | When `resultUrl` accepts the credential                      |
+| `<prefix>verify:error`    | `response` or `error`                                                      | When `resultUrl` refuses the credential or cannot be reached |
+| `<prefix>error`           | `error`, plus `code` and `name` for a WebAuthn error                       | When the ceremony fails                                      |
+| `webauthn:unsupported`    | none                                                                       | When the ceremony is started in a browser without WebAuthn   |
+
+`capabilities` is the client capability map of `PublicKeyCredential.getClientCapabilities()`. In a browser without that method, it is built from feature detection: `conditionalGet` tells whether conditional mediation is available, and the other capabilities are reported as `false`.
 
 When `submitViaForm` is enabled and the controller has a `result` target, the form is submitted instead of the verify request, so the three `verify` events are not dispatched.
 
