@@ -38,6 +38,7 @@ use Webauthn\ClientDataCollector\PaymentClientDataCollector;
 use Webauthn\ClientDataCollector\WebauthnAuthenticationCollector;
 use Webauthn\CredentialRecord;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
+use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -178,6 +179,30 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
 
         $this->expectException(AuthenticatorResponseVerificationException::class);
         $this->expectExceptionMessage('the client data carries no browser-bound public key');
+
+        $this->checkPayment($credential);
+    }
+
+    #[Test]
+    public function aBrowserBoundPublicKeyThatIsNotAStringIsRejected(): void
+    {
+        $credential = $this->payment(true, null);
+        $clientData = json_decode(
+            Base64UrlSafe::decodeNoPadding($credential['response']['clientDataJSON']),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        $clientData['payment']['browserBoundPublicKey'] = [
+            'publicKey' => $clientData['payment']['browserBoundPublicKey'],
+            'algorithm' => -7,
+        ];
+        $credential['response']['clientDataJSON'] = Base64UrlSafe::encodeUnpadded(
+            json_encode($clientData, JSON_THROW_ON_ERROR)
+        );
+
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('Invalid browserBoundPublicKey');
 
         $this->checkPayment($credential);
     }
