@@ -300,6 +300,136 @@ describe('RegistrationController', () => {
         });
     });
 
+    describe('PRF extension results', () => {
+        const prfFirst = new Uint8Array([1, 2, 3]).buffer;
+        const prfSecond = new Uint8Array([4, 5, 6]).buffer;
+
+        beforeEach(() => {
+            if (jest.isMockFunction(SimpleWebAuthnBrowser.bufferToBase64URLString)) {
+                SimpleWebAuthnBrowser.bufferToBase64URLString.mockImplementation(
+                    jest.requireActual('@simplewebauthn/browser').bufferToBase64URLString
+                );
+            }
+        });
+
+        it('keeps the PRF results out of the verification request', async () => {
+            const form = getByTestId(container, 'registration-form');
+            let credentialEvent = null;
+            let verifyRequestEvent = null;
+            form.addEventListener('webauthn:registration:credential', (e) => {
+                credentialEvent = e.detail;
+            });
+            form.addEventListener('webauthn:registration:verify:request', (e) => {
+                verifyRequestEvent = e.detail;
+            });
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ challenge: 'test', rp: {}, user: {} }),
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ verified: true }),
+                });
+
+            SimpleWebAuthnBrowser.startRegistration.mockResolvedValue({
+                id: 'credential-id',
+                rawId: 'credential-raw-id',
+                response: { clientDataJSON: 'data', attestationObject: 'attestation' },
+                type: 'public-key',
+                clientExtensionResults: {
+                    credProps: { rk: true },
+                    prf: { enabled: true, results: { first: prfFirst, second: prfSecond } },
+                },
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(fetchMock).toHaveBeenCalledTimes(2);
+            });
+
+            const [url, request] = fetchMock.mock.calls[1];
+            expect(url).toBe('/register/verify');
+            expect(JSON.parse(request.body)).toEqual({
+                id: 'credential-id',
+                rawId: 'credential-raw-id',
+                response: { clientDataJSON: 'data', attestationObject: 'attestation' },
+                type: 'public-key',
+                clientExtensionResults: {
+                    credProps: { rk: true },
+                    prf: { enabled: true },
+                },
+            });
+            expect(JSON.stringify(verifyRequestEvent.credential)).toBe(request.body);
+            expect(credentialEvent.credential.clientExtensionResults.prf).toEqual({
+                enabled: true,
+                results: { first: 'AQID', second: 'BAUG' },
+            });
+        });
+
+        it('keeps the PRF results out of the result field', async () => {
+            container = mountDOM(`
+                <form
+                    data-testid="prf-form-submit"
+                    data-controller="webauthn--registration"
+                    data-action="submit->webauthn--registration#register"
+                    data-webauthn--registration-options-url-value="/register/options"
+                    data-webauthn--registration-submit-via-form-value="true"
+                >
+                    <input type="text" name="username" value="newuser">
+                    <input type="hidden" data-webauthn--registration-target="result">
+                    <button type="submit">Register</button>
+                </form>
+            `);
+
+            const form = getByTestId(container, 'prf-form-submit');
+            let credentialEvent = null;
+            form.addEventListener('webauthn:registration:credential', (e) => {
+                credentialEvent = e.detail;
+            });
+
+            fetchMock.mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ challenge: 'test', rp: {}, user: {} }),
+            });
+
+            SimpleWebAuthnBrowser.startRegistration.mockResolvedValue({
+                id: 'credential-id',
+                type: 'public-key',
+                clientExtensionResults: { prf: { enabled: true, results: { first: prfFirst } } },
+            });
+
+            const submitSpy = jest.spyOn(form, 'submit').mockImplementation(() => {});
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(submitSpy).toHaveBeenCalled();
+            });
+
+            const resultInput = form.querySelector('[data-webauthn--registration-target="result"]');
+            expect(JSON.parse(resultInput.value)).toEqual({
+                id: 'credential-id',
+                type: 'public-key',
+                clientExtensionResults: { prf: { enabled: true } },
+            });
+            expect(credentialEvent.credential.clientExtensionResults.prf).toEqual({
+                enabled: true,
+                results: { first: 'AQID' },
+            });
+        });
+    });
+
     describe('Error handling', () => {
         it('dispatches unsupported event when browser does not support WebAuthn', async () => {
             SimpleWebAuthnBrowser.browserSupportsWebAuthn.mockReturnValue(false);

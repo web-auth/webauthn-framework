@@ -131,7 +131,7 @@ export default class RegistrationController extends BaseController {
 
             // Submit via form if using result target
             if (this.submitViaFormValue && this.hasResultTarget) {
-                this.resultTarget.value = JSON.stringify(credential);
+                this.resultTarget.value = JSON.stringify(this._credentialForServer(credential));
                 this.element.submit();
                 return;
             }
