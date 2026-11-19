@@ -176,9 +176,45 @@ await dispatchSignals(serverResponse);
 
 ## Events
 
-All controllers dispatch custom events for integration:
+The controllers dispatch custom events on their element. The events bubble, so a listener on `document` receives them.
 
-### Success Events
+### Authentication and Registration Controllers
+
+The authentication controller prefixes its events with `webauthn:authentication:`, the registration controller with `webauthn:registration:`.
+
+| Event                     | Detail                                                     | Dispatched                                                   |
+| ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| `<prefix>connect`         | `optionsUrl`, `resultUrl`, `supportsPlatformAuthenticator` | When the controller connects                                 |
+| `<prefix>options:request` | `data`                                                     | Before the options are requested from `optionsUrl`           |
+| `<prefix>options:success` | `options`                                                  | When the options are received                                |
+| `<prefix>options:error`   | `response` or `error`                                      | When the options request fails                               |
+| `<prefix>credential`      | `credential`                                               | When the authenticator answers, before anything is sent      |
+| `<prefix>verify:request`  | `credential`, as it is sent to `resultUrl`                 | Before the credential is sent                                |
+| `<prefix>verify:success`  | `result`                                                   | When `resultUrl` accepts the credential                      |
+| `<prefix>verify:error`    | `response` or `error`                                      | When `resultUrl` refuses the credential or cannot be reached |
+| `<prefix>error`           | `error`, plus `code` and `name` for a WebAuthn error       | When the ceremony fails                                      |
+| `webauthn:unsupported`    | none                                                       | When the ceremony is started in a browser without WebAuthn   |
+
+When `submitViaForm` is enabled and the controller has a `result` target, the form is submitted instead of the verify request, so the three `verify` events are not dispatched.
+
+### PRF Results
+
+When the options carry the `prf` extension, `clientExtensionResults.prf.results.first` (and `second`) are encoded as base64url strings on the credential of the `credential` event. They are secrets meant to stay in the browser: since 5.3.15, the controllers leave them out of the request body, of the `result` field and of the `verify:request` event ([GHSA-79w9-wmw2-9hh3](https://github.com/web-auth/webauthn-framework/security/advisories/GHSA-79w9-wmw2-9hh3)). Read them from the `credential` event:
+
+```javascript
+document.addEventListener('webauthn:authentication:credential', (event) => {
+    const results = event.detail.credential.clientExtensionResults?.prf?.results;
+    if (results !== undefined) {
+        unlockVault(results.first, results.second);
+    }
+});
+```
+
+`unlockVault()` stands for your own code, typically a base64url decoding followed by HKDF with Web Crypto. The legacy controller does not send the PRF results either.
+
+### Legacy Controller
+
+#### Success Events
 
 - `webauthn:connect` - Controller connected
 - `webauthn:options:request` - Options requested
@@ -187,14 +223,14 @@ All controllers dispatch custom events for integration:
 - `webauthn:attestation:success` - Registration successful
 - `webauthn:assertion:success` - Authentication successful
 
-### Error Events
+#### Error Events
 
 - `webauthn:unsupported` - WebAuthn not supported
 - `webauthn:options:failure` - Failed to get options
 - `webauthn:attestation:failure` - Registration failed
 - `webauthn:assertion:failure` - Authentication failed
 
-### Event Handling Example
+#### Event Handling Example
 
 ```javascript
 document.addEventListener('webauthn:assertion:success', (event) => {
