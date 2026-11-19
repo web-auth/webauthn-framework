@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Webauthn\AttestationStatement\AttestationObject;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorassertionresponse
@@ -17,8 +18,9 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         public readonly string $signature,
         public readonly ?string $userHandle,
         public readonly null|AttestationObject $attestationObject = null,
+        null|AuthenticationExtensions $clientExtensionResults = null,
     ) {
-        parent::__construct($clientDataJSON);
+        parent::__construct($clientDataJSON, $clientExtensionResults);
     }
 
     public static function create(
@@ -27,7 +29,15 @@ class AuthenticatorAssertionResponse extends AuthenticatorResponse
         string $signature,
         ?string $userHandle = null,
         null|AttestationObject $attestationObject = null,
+        null|AuthenticationExtensions $clientExtensionResults = null,
     ): self {
-        return new self($clientDataJSON, $authenticatorData, $signature, $userHandle, $attestationObject);
+        return new self(
+            $clientDataJSON,
+            $authenticatorData,
+            $signature,
+            $userHandle,
+            $attestationObject,
+            $clientExtensionResults
+        );
     }
 }

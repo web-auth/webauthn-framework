@@ -185,7 +185,7 @@ describe('PaymentController', () => {
         // PublicKeyCredential.toJSON() may leave its
         // `browserBoundSignature.signature` as an ArrayBuffer. The base
         // controller must therefore call _processExtensionsOutput on the
-        // native path so this subclass override still runs.
+        // native path so that it still encodes the signature.
 
         let originalPublicKeyCredential;
         let originalNavigator;

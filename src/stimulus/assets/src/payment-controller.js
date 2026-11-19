@@ -1,6 +1,5 @@
 'use strict';
 
-import { bufferToBase64URLString } from '@simplewebauthn/browser';
 import AuthenticationController from './authentication-controller.js';
 
 /**
@@ -18,8 +17,9 @@ import AuthenticationController from './authentication-controller.js';
  * `payeeOrigin`, optional `paymentEntitiesLogos`, optional
  * `browserBoundPubKeyCredParams`) — already JSON-serialisable, so no input
  * conversion is required. On the way back, `clientExtensionResults.payment`
- * carries `browserBoundSignature.signature` as an ArrayBuffer that we encode
- * to base64url for transport to the verifier.
+ * carries `browserBoundSignature.signature` as an ArrayBuffer: the base
+ * controller encodes it to base64url, and the server verifies it against the
+ * browser-bound public key found in `clientDataJSON.payment`.
  *
  * Usage:
  * <form data-controller="webauthn--payment"
@@ -45,22 +45,5 @@ export default class extends AuthenticationController {
      */
     _processExtensionsInput(options) {
         return super._processExtensionsInput(options);
-    }
-
-    /**
-     * Decode the SPC `browserBoundSignature.signature` ArrayBuffer to base64url
-     * so the credential is JSON-serialisable for transport to the relying party.
-     * @param {Object} credential - WebAuthn credential
-     * @returns {Object} credential
-     */
-    _processExtensionsOutput(credential) {
-        credential = super._processExtensionsOutput(credential);
-
-        const payment = credential?.clientExtensionResults?.payment;
-        if (payment?.browserBoundSignature?.signature instanceof ArrayBuffer) {
-            payment.browserBoundSignature.signature = bufferToBase64URLString(payment.browserBoundSignature.signature);
-        }
-
-        return credential;
     }
 }

@@ -13,72 +13,47 @@ use Webauthn\AuthenticationExtensions\PaymentExtensionOutputChecker;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 
 /**
+ * The checker receives the AUTHENTICATOR extension outputs. The `payment` extension has none: its output is a client
+ * extension result, verified by CheckBrowserBoundSignature.
+ *
  * @internal
  */
 final class PaymentExtensionOutputCheckerTest extends TestCase
 {
     #[Test]
-    public function paymentExtensionNotRequestedShouldPass(): void
+    public function authenticatorOutputsWithoutPaymentEntryArePassedEvenWhenThePaymentWasRequested(): void
     {
         (new PaymentExtensionOutputChecker())->check(
-            new AuthenticationExtensions([]),
-            new AuthenticationExtensions([]),
+            new AuthenticationExtensions([PaymentExtension::register()]),
+            new AuthenticationExtensions([AuthenticationExtension::create('credProtect', 2)]),
         );
+
         $this->expectNotToPerformAssertions();
     }
 
     #[Test]
-    public function paymentExtensionRequestedButNotReturnedShouldFail(): void
+    public function emptyAuthenticatorOutputsArePassed(): void
     {
-        $this->expectException(AuthenticatorResponseVerificationException::class);
-        $this->expectExceptionMessage('not returned in the response');
-
         (new PaymentExtensionOutputChecker())->check(
             new AuthenticationExtensions([PaymentExtension::register()]),
-            new AuthenticationExtensions([]),
+            new AuthenticationExtensions(),
         );
+
+        $this->expectNotToPerformAssertions();
     }
 
     #[Test]
-    public function nonArrayOutputShouldFail(): void
+    public function aPaymentEntryInTheAuthenticatorOutputsIsRejected(): void
     {
         $this->expectException(AuthenticatorResponseVerificationException::class);
-        $this->expectExceptionMessage('Invalid payment extension output format');
-
-        (new PaymentExtensionOutputChecker())->check(
-            new AuthenticationExtensions([PaymentExtension::register()]),
-            new AuthenticationExtensions([AuthenticationExtension::create('payment', 'plain-string')]),
-        );
-    }
-
-    #[Test]
-    public function missingBrowserBoundSignatureShouldFail(): void
-    {
-        $this->expectException(AuthenticatorResponseVerificationException::class);
-        $this->expectExceptionMessage('"browserBoundSignature"');
-
-        (new PaymentExtensionOutputChecker())->check(
-            new AuthenticationExtensions([PaymentExtension::register()]),
-            new AuthenticationExtensions([
-                AuthenticationExtension::create('payment', [
-                    'somethingElse' => true,
-                ]),
-            ]),
-        );
-    }
-
-    #[Test]
-    public function emptySignatureShouldFail(): void
-    {
-        $this->expectException(AuthenticatorResponseVerificationException::class);
-        $this->expectExceptionMessage('missing or empty');
+        $this->expectExceptionMessage('must not contain a "payment" entry');
 
         (new PaymentExtensionOutputChecker())->check(
             new AuthenticationExtensions([PaymentExtension::register()]),
             new AuthenticationExtensions([
                 AuthenticationExtension::create('payment', [
                     'browserBoundSignature' => [
-                        'signature' => '',
+                        'signature' => 'c2lnbmF0dXJl',
                     ],
                 ]),
             ]),
@@ -86,19 +61,14 @@ final class PaymentExtensionOutputCheckerTest extends TestCase
     }
 
     #[Test]
-    public function validBrowserBoundSignatureShouldPass(): void
+    public function aPaymentEntryInTheAuthenticatorOutputsIsRejectedWhenThePaymentWasNotRequested(): void
     {
-        // base64url("hello") = aGVsbG8
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('must not contain a "payment" entry');
+
         (new PaymentExtensionOutputChecker())->check(
-            new AuthenticationExtensions([PaymentExtension::register()]),
-            new AuthenticationExtensions([
-                AuthenticationExtension::create('payment', [
-                    'browserBoundSignature' => [
-                        'signature' => 'aGVsbG8',
-                    ],
-                ]),
-            ]),
+            new AuthenticationExtensions(),
+            new AuthenticationExtensions([AuthenticationExtension::create('payment', [])]),
         );
-        $this->expectNotToPerformAssertions();
     }
 }

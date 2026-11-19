@@ -276,6 +276,7 @@ final class CeremonyStepManagerFactory implements CanDispatchEvents
             new CheckAlgorithm(),
             new CheckExtensions($this->extensionOutputCheckerHandler),
             new CheckAttestationFormatIsKnownAndValid($this->attestationStatementSupportManager),
+            new CheckBrowserBoundSignature(new BrowserBoundSignatureVerifier($this->algorithmManager)),
             new CheckHasAttestedCredentialData(),
             $metadataStatementChecker,
             new CheckCredentialId(),
