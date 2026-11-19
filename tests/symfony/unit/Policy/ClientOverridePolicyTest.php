@@ -6,6 +6,8 @@ namespace Webauthn\Tests\Bundle\Unit\Policy;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Policy\ClientOverrideRule;
 
@@ -127,5 +129,69 @@ final class ClientOverridePolicyTest extends TestCase
         static::assertTrue($policy->canOverride('user_verification'));
         static::assertTrue($policy->canOverride('extensions'));
         static::assertFalse($policy->canOverride('mediation'));
+    }
+
+    #[Test]
+    public function theServerExtensionsAreKeptWhenTheClientSendsAnEmptyObject(): void
+    {
+        $server = self::serverExtensions();
+
+        $effective = (new ClientOverridePolicy([
+            'extensions' => [
+                'enabled' => true,
+            ],
+        ]))->getEffectiveExtensions([], $server);
+
+        static::assertSame(['payment', 'credProps'], array_keys($effective->extensions));
+        static::assertSame($server->get('payment')->value, $effective->get('payment')->value);
+    }
+
+    #[Test]
+    public function theClientCanAddExtensionsButNeitherRemoveNorReplaceTheServerOnes(): void
+    {
+        $effective = (new ClientOverridePolicy([
+            'extensions' => [
+                'enabled' => true,
+            ],
+        ]))->getEffectiveExtensions([
+            'payment' => [
+                'isPayment' => false,
+            ],
+            'credProps' => false,
+            'uvm' => true,
+            0 => 'not an extension identifier',
+        ], self::serverExtensions());
+
+        static::assertSame(['payment', 'credProps', 'uvm'], array_keys($effective->extensions));
+        static::assertSame([
+            'isPayment' => true,
+        ], $effective->get('payment')->value);
+        static::assertTrue($effective->get('credProps')->value);
+        static::assertTrue($effective->get('uvm')->value);
+    }
+
+    #[Test]
+    public function theServerExtensionsAreKeptWhenTheExtensionsAreNotOverridable(): void
+    {
+        $server = self::serverExtensions();
+
+        static::assertSame($server, (new ClientOverridePolicy())->getEffectiveExtensions([
+            'uvm' => true,
+        ], $server));
+        static::assertSame($server, (new ClientOverridePolicy([
+            'extensions' => [
+                'enabled' => true,
+            ],
+        ]))->getEffectiveExtensions(null, $server));
+    }
+
+    private static function serverExtensions(): AuthenticationExtensions
+    {
+        return AuthenticationExtensions::create([
+            AuthenticationExtension::create('payment', [
+                'isPayment' => true,
+            ]),
+            AuthenticationExtension::create('credProps', true),
+        ]);
     }
 }

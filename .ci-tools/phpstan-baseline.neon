@@ -208,22 +208,10 @@ parameters:
 			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
 
 		-
-			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createExtensions() expects array{extensions: array<string, mixed>}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-		-
 			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialCreationOptionsFactory::createRpEntity() expects array{rp: array{name: string, id: string|null}}, array{rp: array{name: string, id: string|null}, challenge_length: int, timeout?: int|null, attestation_conveyance?: string|null, authenticator_selection_criteria: array{authenticator_attachment: string|null, user_verification: string|null, resident_key: string|null}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool} given.'
 			identifier: argument.type
 			count: 1
 			path: ../src/symfony/src/Service/PublicKeyCredentialCreationOptionsFactory.php
-
-		-
-			rawMessage: 'Parameter #1 $profile of method Webauthn\Bundle\Service\PublicKeyCredentialRequestOptionsFactory::createExtensions() expects array{extensions: array<string, mixed>}, array{challenge_length: int, rp_id?: string|null, timeout?: int|null, user_verification?: string|null, extensions: array<string, mixed>} given.'
-			identifier: argument.type
-			count: 1
-			path: ../src/symfony/src/Service/PublicKeyCredentialRequestOptionsFactory.php
 
 		-
 			rawMessage: 'Parameter #1 $length of function random_bytes expects int<1, max>, int given.'

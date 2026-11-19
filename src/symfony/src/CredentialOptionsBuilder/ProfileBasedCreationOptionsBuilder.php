@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
@@ -117,19 +116,21 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         );
     }
 
+    /**
+     * The extensions of the profile are kept as they are: the client may only add extensions the profile does not
+     * set, see {@see ClientOverridePolicy::getEffectiveExtensions()}.
+     */
     private function getEffectiveExtensions(
         PublicKeyCredentialCreationOptionsRequest $optionsRequest
     ): ?AuthenticationExtensions {
         if (! $this->overridePolicy->canOverride('extensions') || ! is_array($optionsRequest->extensions)) {
-            return null; // Use profile extensions
+            return null;
         }
 
-        $extensions = [];
-        foreach ($optionsRequest->extensions as $name => $data) {
-            $extensions[] = AuthenticationExtension::create($name, $data);
-        }
-
-        return AuthenticationExtensions::create($extensions);
+        return $this->overridePolicy->getEffectiveExtensions(
+            $optionsRequest->extensions,
+            $this->publicKeyCredentialCreationOptionsFactory->getExtensions($this->profile)
+        );
     }
 
     /**
