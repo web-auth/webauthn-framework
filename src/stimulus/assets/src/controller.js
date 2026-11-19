@@ -355,6 +355,9 @@ export default class WebauthnController extends Controller {
      * The PRF results are encoded as base64url strings for the listeners of the
      * `webauthn:authenticator:response` event. They never reach the server: see `_credentialForServer()`.
      *
+     * The Secure Payment Confirmation browser-bound signature, returned at registration and at
+     * authentication, is encoded as a base64url string too: the server verifies it.
+     *
      * @private
      * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
      * @param {T} credential
@@ -367,6 +370,11 @@ export default class WebauthnController extends Controller {
 
         if (credential.clientExtensionResults.prf) {
             credential.clientExtensionResults.prf = this._processPrfOutput(credential.clientExtensionResults.prf);
+        }
+
+        const browserBoundSignature = credential.clientExtensionResults.payment?.browserBoundSignature;
+        if (browserBoundSignature?.signature instanceof ArrayBuffer) {
+            browserBoundSignature.signature = bufferToBase64URLString(browserBoundSignature.signature);
         }
 
         return credential;
