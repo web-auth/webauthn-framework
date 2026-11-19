@@ -51,11 +51,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         null|AuthenticationExtensions $AuthenticationExtensions = null,
         null|string $mediation = null,
     ): PublicKeyCredentialCreationOptions {
-        array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
-            'The profile with key "%s" does not exist.',
-            $key
-        ));
-        $profile = $this->profiles[$key];
+        $profile = $this->getProfile($key);
 
         $timeout = $profile['timeout'] ?? null;
         $timeout === null || $timeout > 1 || throw new InvalidArgumentException(sprintf(
@@ -81,9 +77,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
                 $userEntity,
                 random_bytes($challengeLength),
                 $this->createCredentialParameters($profile),
-                authenticatorSelection: $authenticatorSelection ?? $this->createAuthenticatorSelectionCriteria(
-                    $profile
-                ),
+                authenticatorSelection: $authenticatorSelection ?? $this->getAuthenticatorSelectionCriteria($key),
                 attestation: $attestation,
                 excludeCredentials: $excludeCredentials,
                 timeout: $timeout,
@@ -93,6 +87,29 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
         $this->eventDispatcher->dispatch(PublicKeyCredentialCreationOptionsCreatedEvent::create($options));
 
         return $options;
+    }
+
+    /**
+     * Authenticator selection criteria configured for the profile, before any value sent by the client. A caller that
+     * lets the client override some members starts from these criteria, so that the other members keep the value of
+     * the profile.
+     */
+    public function getAuthenticatorSelectionCriteria(string $key): AuthenticatorSelectionCriteria
+    {
+        return $this->createAuthenticatorSelectionCriteria($this->getProfile($key));
+    }
+
+    /**
+     * @return array{rp: array{name: string, id: ?string}, challenge_length: int, timeout?: ?int, attestation_conveyance?: ?string, authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool}
+     */
+    private function getProfile(string $key): array
+    {
+        array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" does not exist.',
+            $key
+        ));
+
+        return $this->profiles[$key];
     }
 
     /**

@@ -71,46 +71,40 @@ final readonly class ProfileBasedCreationOptionsBuilder implements PublicKeyCred
         return $this->overridePolicy->getEffectiveValue('mediation', $optionsRequest->mediation, null);
     }
 
+    /**
+     * Each member of the criteria keeps the value of the profile, unless the client sent a value that the override
+     * policy allows for that very member. Overriding the authenticator attachment or the resident key therefore never
+     * resets the user verification requirement of the profile.
+     */
     private function buildAuthenticatorSelectionCriteria(
         PublicKeyCredentialCreationOptionsRequest $optionsRequest
-    ): ?AuthenticatorSelectionCriteria {
-        // Check if any authenticator selection override is allowed
-        $hasOverrides = $this->overridePolicy->canOverride('user_verification') ||
-                       $this->overridePolicy->canOverride('authenticator_attachment') ||
-                       $this->overridePolicy->canOverride('resident_key');
-
-        if (! $hasOverrides) {
-            return null; // Use profile configuration
-        }
-
-        // Build criteria considering override policy
-        /** @var ?string $userVerification */
-        $userVerification = $this->overridePolicy->getEffectiveValue(
-            'user_verification',
-            $optionsRequest->userVerification,
-            null // Will be handled by factory fallback to profile
+    ): AuthenticatorSelectionCriteria {
+        $profileCriteria = $this->publicKeyCredentialCreationOptionsFactory->getAuthenticatorSelectionCriteria(
+            $this->profile
         );
 
         /** @var ?string $authenticatorAttachment */
         $authenticatorAttachment = $this->overridePolicy->getEffectiveValue(
             'authenticator_attachment',
             $optionsRequest->authenticatorAttachment,
-            null
+            $profileCriteria->authenticatorAttachment
+        );
+
+        /** @var string $userVerification */
+        $userVerification = $this->overridePolicy->getEffectiveValue(
+            'user_verification',
+            $optionsRequest->userVerification,
+            $profileCriteria->userVerification
         );
 
         /** @var ?string $residentKey */
-        $residentKey = $this->overridePolicy->getEffectiveValue('resident_key', $optionsRequest->residentKey, null);
+        $residentKey = $this->overridePolicy->getEffectiveValue(
+            'resident_key',
+            $optionsRequest->residentKey,
+            $profileCriteria->residentKey
+        );
 
-        // Only create if we have at least one override value
-        if ($userVerification !== null || $authenticatorAttachment !== null || $residentKey !== null) {
-            return AuthenticatorSelectionCriteria::create(
-                $authenticatorAttachment,
-                $userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-                $residentKey,
-            );
-        }
-
-        return null; // Use profile configuration
+        return AuthenticatorSelectionCriteria::create($authenticatorAttachment, $userVerification, $residentKey);
     }
 
     private function getEffectiveAttestation(PublicKeyCredentialCreationOptionsRequest $optionsRequest): ?string

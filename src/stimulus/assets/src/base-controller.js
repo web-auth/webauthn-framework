@@ -90,6 +90,9 @@ export default class BaseController extends Controller {
     /**
      * Verify credential with the server.
      *
+     * The PRF results are removed before the request is built (see `_credentialForServer()`): the
+     * `verify:request` event carries the credential exactly as it is sent, without them.
+     *
      * @template T
      * @param {string} url The URL to verify credential at.
      * @param {RegistrationResponseJSON | AuthenticationResponseJSON} credential The credential to verify.
@@ -97,13 +100,14 @@ export default class BaseController extends Controller {
      * @returns {Promise<T|false>} The verification result or `false` on error.
      */
     async _verifyCredential(url, credential, eventPrefix) {
-        this._dispatchEvent(`${eventPrefix}:verify:request`, { credential });
+        const serverCredential = this._credentialForServer(credential);
+        this._dispatchEvent(`${eventPrefix}:verify:request`, { credential: serverCredential });
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: this.requestHeadersValue,
-                body: JSON.stringify(credential),
+                body: JSON.stringify(serverCredential),
             });
 
             if (!response.ok) {
@@ -241,6 +245,9 @@ export default class BaseController extends Controller {
     /**
      * Process extensions output (e.g., PRF) after the authenticator answers.
      *
+     * The PRF results are encoded as base64url strings for the listeners of the `credential` event.
+     * They never reach the server: see `_credentialForServer()`.
+     *
      * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
      * @param {T} credential WebAuthn credential.
      * @returns {T} Processed credential.
@@ -299,6 +306,38 @@ export default class BaseController extends Controller {
             result.second = bufferToBase64URLString(values.second);
         }
         return result;
+    }
+
+    /**
+     * Credential to send to the server: the given one without its PRF results.
+     *
+     * The PRF results are secrets derived by the authenticator, typically used to derive a client-side
+     * encryption key that the server must never know. The server does not need them to verify the ceremony,
+     * so they are only exposed to the application through the `credential` event, and are removed from the
+     * request body and from the `result` field. Non-secret PRF outputs, such as `enabled`, are kept.
+     *
+     * The given credential is not modified, so listeners that keep a reference to it still read the results.
+     *
+     * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
+     * @param {T} credential WebAuthn credential.
+     * @returns {T} The credential itself when it carries no PRF results, otherwise a copy without them.
+     */
+    _credentialForServer(credential) {
+        const prf = credential?.clientExtensionResults?.prf;
+        if (prf?.results === undefined) {
+            return credential;
+        }
+
+        const serverPrf = { ...prf };
+        delete serverPrf.results;
+
+        return {
+            ...credential,
+            clientExtensionResults: {
+                ...credential.clientExtensionResults,
+                prf: serverPrf,
+            },
+        };
     }
 
     /**
