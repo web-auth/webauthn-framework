@@ -6,6 +6,7 @@ namespace Webauthn\Tests\Bundle\Unit\Service;
 
 use const JSON_THROW_ON_ERROR;
 use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -123,6 +124,149 @@ final class WebauthnOptionsResponseTest extends TestCase
                 ->getPublicKeyCredentialOptions()
                 ->attestation,
         );
+    }
+
+    /**
+     * @return iterable<string, array{string, ?string, string, ?string}>
+     */
+    public static function creationRequestsOverridingOneMember(): iterable
+    {
+        yield 'authenticator attachment' => [
+            '{"authenticatorAttachment": "cross-platform"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ];
+        yield 'resident key' => [
+            '{"residentKey": "discouraged"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
+        ];
+        yield 'user verification, not overridable' => [
+            '{"userVerification": "discouraged"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ];
+    }
+
+    /**
+     * Overriding one member of the authenticator selection criteria must not reset the others: before the fix, the
+     * criteria were rebuilt from the client values alone and user verification fell back to "preferred"
+     * (GHSA-2989-5cjp-qc2p).
+     */
+    #[Test]
+    #[DataProvider('creationRequestsOverridingOneMember')]
+    public function forCreationClientOverridesOnlyChangeTheMembersTheyCarry(
+        string $body,
+        ?string $expectedAuthenticatorAttachment,
+        string $expectedUserVerification,
+        ?string $expectedResidentKey,
+    ): void {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria(self::serverCriteria())
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+                'resident_key' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest($body));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame($expectedAuthenticatorAttachment, $criteria->authenticatorAttachment);
+        static::assertSame($expectedUserVerification, $criteria->userVerification);
+        static::assertSame($expectedResidentKey, $criteria->residentKey);
+    }
+
+    #[Test]
+    public function forCreationAppliesAnAllowedUserVerificationOverride(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria(self::serverCriteria())
+            ->withClientOverrides(new ClientOverridePolicy([
+                'user_verification' => [
+                    'enabled' => true,
+                    'allowed_values' => [
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                    ],
+                ],
+            ]))
+            ->build($this->jsonRequest('{"userVerification": "preferred"}'));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM, $criteria->authenticatorAttachment);
+        static::assertSame(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED, $criteria->userVerification);
+        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $criteria->residentKey);
+    }
+
+    #[Test]
+    public function forCreationKeepsTheServerCriteriaWhenTheClientChangesNoMember(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $serverCriteria = self::serverCriteria();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria($serverCriteria)
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"userVerification": "discouraged", "authenticatorAttachment": "platform"}'));
+
+        static::assertSame($serverCriteria, self::storedCreationOptions($storage)->authenticatorSelection);
+    }
+
+    #[Test]
+    public function forCreationWithoutServerCriteriaSetsNoneWhenTheClientChangesNoMember(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"residentKey": "required"}'));
+
+        static::assertNull(self::storedCreationOptions($storage)->authenticatorSelection);
+    }
+
+    #[Test]
+    public function forCreationWithoutServerCriteriaStartsFromTheWebauthnDefaults(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"authenticatorAttachment": "platform"}'));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM, $criteria->authenticatorAttachment);
+        static::assertSame(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED, $criteria->userVerification);
+        static::assertNull($criteria->residentKey);
     }
 
     #[Test]
@@ -467,6 +611,24 @@ final class WebauthnOptionsResponseTest extends TestCase
             $repository ?? new InMemoryCredentialRepository(),
             $fakeCredentialGenerator,
         );
+    }
+
+    private static function serverCriteria(): AuthenticatorSelectionCriteria
+    {
+        return AuthenticatorSelectionCriteria::create(
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
+        );
+    }
+
+    private static function storedCreationOptions(InMemoryOptionsStorage $storage): PublicKeyCredentialCreationOptions
+    {
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialCreationOptions::class, $options);
+
+        return $options;
     }
 
     private function serializer(): Serializer

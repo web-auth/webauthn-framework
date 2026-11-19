@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Dto\PublicKeyCredentialCreationOptionsRequest;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
 use Webauthn\Bundle\Security\Guesser\UserEntityGuesser;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
@@ -138,7 +139,7 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
         $mediation = $this->mediation;
 
         if ($this->clientOverridePolicy !== null && $optionsRequest instanceof PublicKeyCredentialCreationOptionsRequest) {
-            $authenticatorSelection = $this->mergeAuthenticatorSelection($optionsRequest) ?? $authenticatorSelection;
+            $authenticatorSelection = $this->mergeAuthenticatorSelection($optionsRequest, $this->clientOverridePolicy);
 
             /** @var ?string $attestation */
             $attestation = $this->clientOverridePolicy->getEffectiveValue(
@@ -193,41 +194,44 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
         ];
     }
 
+    /**
+     * Each member keeps the value set with {@see self::withAuthenticatorSelectionCriteria()}, or the WebAuthn default
+     * when no criteria were set, unless the client sent a value that the override policy allows for that very member.
+     * Overriding the authenticator attachment or the resident key therefore never resets the user verification
+     * requirement of the server. When the client changes no member, the criteria of the server are kept as they are.
+     */
     private function mergeAuthenticatorSelection(
         PublicKeyCredentialCreationOptionsRequest $optionsRequest,
+        ClientOverridePolicy $policy,
     ): ?AuthenticatorSelectionCriteria {
-        $policy = $this->clientOverridePolicy;
-        if ($policy === null) {
-            return null;
-        }
+        $serverCriteria = $this->authenticatorSelection ?? AuthenticatorSelectionCriteria::create();
 
-        $hasAny = $policy->canOverride('user_verification')
-            || $policy->canOverride('authenticator_attachment')
-            || $policy->canOverride('resident_key');
-
-        if (! $hasAny) {
-            return null;
-        }
-
-        /** @var ?string $userVerification */
-        $userVerification = $policy->getEffectiveValue('user_verification', $optionsRequest->userVerification, null);
         /** @var ?string $authenticatorAttachment */
         $authenticatorAttachment = $policy->getEffectiveValue(
             'authenticator_attachment',
             $optionsRequest->authenticatorAttachment,
-            null,
+            $serverCriteria->authenticatorAttachment,
+        );
+        /** @var string $userVerification */
+        $userVerification = $policy->getEffectiveValue(
+            'user_verification',
+            $optionsRequest->userVerification,
+            $serverCriteria->userVerification,
         );
         /** @var ?string $residentKey */
-        $residentKey = $policy->getEffectiveValue('resident_key', $optionsRequest->residentKey, null);
+        $residentKey = $policy->getEffectiveValue(
+            'resident_key',
+            $optionsRequest->residentKey,
+            $serverCriteria->residentKey,
+        );
 
-        if ($userVerification === null && $authenticatorAttachment === null && $residentKey === null) {
-            return null;
+        if ($authenticatorAttachment === $serverCriteria->authenticatorAttachment
+            && $userVerification === $serverCriteria->userVerification
+            && $residentKey === $serverCriteria->residentKey
+        ) {
+            return $this->authenticatorSelection;
         }
 
-        return AuthenticatorSelectionCriteria::create(
-            authenticatorAttachment: $authenticatorAttachment,
-            userVerification: $userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-            residentKey: $residentKey,
-        );
+        return AuthenticatorSelectionCriteria::create($authenticatorAttachment, $userVerification, $residentKey);
     }
 }
