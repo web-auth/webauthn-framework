@@ -681,6 +681,12 @@ final readonly class Configuration implements ConfigurationInterface
             ->defaultValue(PhpCertificateChainValidator::class)
             ->info('A Certificate Chain checker.')
             ->end()
+            ->booleanNode('require_statement')
+            ->defaultTrue()
+            ->info(
+                'Refuse a full attestation (basic, AttCA or AnonCA) whose AAGUID, the null AAGUID included, has no Metadata Statement. When false, such an attestation is accepted without its certificate chain being verified, and the "Webauthn\\Event\\AttestationCheckedAgainstMetadata" event tells whether the authenticator model was verified or only declared. The status reports of the AAGUID still apply.'
+            )
+            ->end()
             ->booleanNode('tpm_acknowledge_insecure_algorithm')
             ->defaultFalse()
             ->info(

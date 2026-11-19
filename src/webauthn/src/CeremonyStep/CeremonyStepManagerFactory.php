@@ -8,18 +8,21 @@ use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\FullySpecified\ESP256;
 use Cose\Algorithm\Signature\RSA\RS256;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\ClientDataCollector\ClientDataCollectorManager;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Event\CanDispatchEvents;
+use Webauthn\Event\NullEventDispatcher;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\SecurePaymentConfirmation\BrowserBoundSignatureVerifier;
 
-final class CeremonyStepManagerFactory
+final class CeremonyStepManagerFactory implements CanDispatchEvents
 {
     private CounterChecker $counterChecker;
 
@@ -30,6 +33,8 @@ final class CeremonyStepManagerFactory
     private null|StatusReportRepository $statusReportRepository = null;
 
     private null|CertificateChainValidator $certificateChainValidator = null;
+
+    private bool $requireStatement = true;
 
     /**
      * @var string[]
@@ -56,6 +61,8 @@ final class CeremonyStepManagerFactory
 
     private null|ClientDataCollectorManager $clientDataCollectorManager = null;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct()
     {
         $this->counterChecker = new ThrowExceptionIfInvalid();
@@ -64,11 +71,20 @@ final class CeremonyStepManagerFactory
             new NoneAttestationStatementSupport(),
         ]);
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+        $this->eventDispatcher = new NullEventDispatcher();
     }
 
     public function setCounterChecker(CounterChecker $counterChecker): void
     {
         $this->counterChecker = $counterChecker;
+    }
+
+    /**
+     * The creation ceremonies built afterwards dispatch the events of {@see CheckMetadataStatement} with it.
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -110,14 +126,19 @@ final class CeremonyStepManagerFactory
         $this->algorithmManager = $algorithmManager;
     }
 
+    /**
+     * @see CheckMetadataStatement::enableMetadataStatementSupport()
+     */
     public function enableMetadataStatementSupport(
         MetadataStatementRepository $metadataStatementRepository,
         StatusReportRepository $statusReportRepository,
-        CertificateChainValidator $certificateChainValidator
+        CertificateChainValidator $certificateChainValidator,
+        bool $requireStatement = true,
     ): void {
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->statusReportRepository = $statusReportRepository;
         $this->certificateChainValidator = $certificateChainValidator;
+        $this->requireStatement = $requireStatement;
     }
 
     /**
@@ -228,6 +249,7 @@ final class CeremonyStepManagerFactory
         bool $allowSubdomainsOverride,
     ): CeremonyStepManager {
         $metadataStatementChecker = new CheckMetadataStatement();
+        $metadataStatementChecker->setEventDispatcher($this->eventDispatcher);
         if ($this->certificateChainValidator !== null) {
             $metadataStatementChecker->enableCertificateChainValidator($this->certificateChainValidator);
         }
@@ -236,6 +258,7 @@ final class CeremonyStepManagerFactory
                 $this->metadataStatementRepository,
                 $this->statusReportRepository,
                 $this->certificateChainValidator,
+                $this->requireStatement,
             );
         }
         $metadataStatementChecker->setEnterpriseAttestationTrustAnchors($this->enterpriseAttestationTrustAnchors);

@@ -95,6 +95,9 @@ final class CeremonyStepManagerFactoryCompilerPass implements CompilerPassInterf
             new Reference(MetadataStatementRepository::class),
             new Reference(StatusReportRepository::class),
             new Reference(CertificateChainValidator::class),
+            $container->hasParameter('webauthn.metadata.require_statement')
+                ? '%webauthn.metadata.require_statement%'
+                : true,
         ]);
     }
 
