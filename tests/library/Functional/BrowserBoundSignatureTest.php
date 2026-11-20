@@ -46,6 +46,9 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData;
+use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentRegistrationData;
+use Webauthn\SecurePaymentConfirmation\CollectedClientPaymentData;
 use Webauthn\SecurePaymentConfirmation\PaymentCredentialInstrument;
 use Webauthn\SecurePaymentConfirmation\PaymentCurrencyAmount;
 use Webauthn\Tests\AbstractTestCase;
@@ -123,6 +126,137 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
         $this->expectExceptionMessage('the browser-bound signature is missing');
 
         $this->register(true, false);
+    }
+
+    #[Test]
+    public function aRegistrationWithABrowserBoundSignatureButNoPublicKeyIsRejected(): void
+    {
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('the client data carries no browser-bound public key');
+
+        $this->register(false, true);
+    }
+
+    #[Test]
+    public function aRegistrationWhosePaymentMemberIsNotAnObjectCarriesNoBrowserBoundKey(): void
+    {
+        $credentialRecord = $this->checkRegistration(
+            $this->withRegistrationPayment($this->registration(false, false), 'not an object', false)
+        );
+
+        static::assertSame($this->credentialId, $credentialRecord->publicKeyCredentialId);
+    }
+
+    #[Test]
+    public function aRegistrationWhoseBrowserBoundPublicKeyIsNotAStringIsRejected(): void
+    {
+        $credential = $this->withRegistrationPayment($this->registration(false, false), [
+            'browserBoundPublicKey' => [
+                'publicKey' => Base64UrlSafe::encodeUnpadded(self::coseKey($this->browserBoundKey)),
+                'algorithm' => Algorithms::COSE_ALGORITHM_ES256,
+            ],
+        ], true);
+
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid browser-bound public key: expected a non-empty base64url string.');
+
+        $this->checkRegistration($credential);
+    }
+
+    #[Test]
+    public function aRegistrationWhoseBrowserBoundPublicKeyIsEmptyIsRejected(): void
+    {
+        $credential = $this->withRegistrationPayment($this->registration(false, false), [
+            'browserBoundPublicKey' => '',
+        ], true);
+
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('Invalid browser-bound public key: expected a non-empty base64url string.');
+
+        $this->checkRegistration($credential);
+    }
+
+    #[Test]
+    public function aRegistrationWithAPaddedBrowserBoundPublicKeyIsAccepted(): void
+    {
+        $credential = $this->withRegistrationPayment($this->registration(false, false), [
+            'browserBoundPublicKey' => Base64UrlSafe::encode(self::coseKey($this->browserBoundKey)),
+        ], true);
+
+        $credentialRecord = $this->checkRegistration($credential);
+
+        static::assertSame($this->credentialId, $credentialRecord->publicKeyCredentialId);
+    }
+
+    #[Test]
+    public function aRegistrationWhoseBrowserBoundPublicKeyHasNoAlgorithmIsRejected(): void
+    {
+        $credential = $this->withRegistrationPayment($this->registration(false, false), [
+            'browserBoundPublicKey' => Base64UrlSafe::encodeUnpadded(self::coseKey($this->browserBoundKey, false)),
+        ], true);
+
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage('the COSE_Key has no integer "alg" member');
+
+        $this->checkRegistration($credential);
+    }
+
+    #[Test]
+    public function theApplicationReadsTheBrowserBoundPublicKeyOfARegistration(): void
+    {
+        $credential = $this->registration(true, true);
+        $this->checkRegistration($credential);
+
+        $paymentData = $this->getSerializer()
+            ->denormalize(
+                $this->deserialize($credential)
+                    ->response->clientDataJSON->data,
+                CollectedClientPaymentData::class
+            );
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentRegistrationData::class, $paymentData->payment);
+        static::assertNotNull($paymentData->payment->browserBoundPublicKey);
+        static::assertSame(
+            self::coseKey($this->browserBoundKey),
+            $paymentData->payment->browserBoundPublicKey->publicKey
+        );
+        static::assertSame(
+            Algorithms::COSE_ALGORITHM_ES256,
+            $paymentData->payment->browserBoundPublicKey->algorithm()
+        );
+    }
+
+    #[Test]
+    public function theApplicationReadsTheSameBrowserBoundPublicKeyAtAuthentication(): void
+    {
+        $registration = $this->registration(true, true);
+        $this->checkRegistration($registration);
+        $payment = $this->payment(true, null);
+        $this->checkPayment($payment);
+
+        $registrationData = $this->getSerializer()
+            ->denormalize(
+                $this->deserialize($registration)
+                    ->response->clientDataJSON->data,
+                CollectedClientPaymentData::class
+            );
+        $paymentData = $this->getSerializer()
+            ->denormalize(
+                $this->deserialize($payment)
+                    ->response->clientDataJSON->data,
+                CollectedClientPaymentData::class
+            );
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentData::class, $paymentData->payment);
+        static::assertNotNull($paymentData->payment->browserBoundPublicKey);
+        static::assertSame(
+            Algorithms::COSE_ALGORITHM_ES256,
+            $paymentData->payment->browserBoundPublicKey->algorithm()
+        );
+        static::assertEquals(
+            $registrationData->payment->browserBoundPublicKey,
+            $paymentData->payment->browserBoundPublicKey
+        );
     }
 
     #[Test]
@@ -325,6 +459,19 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
         bool $withSignature,
         null|OpenSSLAsymmetricKey $signingKey = null
     ): CredentialRecord {
+        return $this->checkRegistration($this->registration($withPublicKey, $withSignature, $signingKey));
+    }
+
+    /**
+     * The JSON a browser posts after a registration made with the `payment` extension.
+     *
+     * @return array<string, mixed>
+     */
+    private function registration(
+        bool $withPublicKey,
+        bool $withSignature,
+        null|OpenSSLAsymmetricKey $signingKey = null
+    ): array {
         $payment = $withPublicKey ? [
             'browserBoundPublicKey' => Base64UrlSafe::encodeUnpadded(self::coseKey($this->browserBoundKey)),
         ] : [];
@@ -345,7 +492,8 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
             MapItem::create(TextStringObject::create('attStmt'), MapObject::create()),
             MapItem::create(TextStringObject::create('authData'), ByteStringObject::create($authData)),
         ]);
-        $data = [
+
+        return [
             'id' => Base64UrlSafe::encodeUnpadded($this->credentialId),
             'rawId' => Base64UrlSafe::encodeUnpadded($this->credentialId),
             'type' => 'public-key',
@@ -363,7 +511,42 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
                 ] : [],
             ],
         ];
+    }
 
+    /**
+     * Replaces the `payment` member of the client data of a registration. With the "none" attestation, the
+     * authenticator signs nothing that depends on the client data, so only the browser-bound signature is made again,
+     * when $withSignature is true.
+     *
+     * @param array<string, mixed> $credential
+     *
+     * @return array<string, mixed>
+     */
+    private function withRegistrationPayment(array $credential, mixed $payment, bool $withSignature): array
+    {
+        $clientData = json_decode(
+            Base64UrlSafe::decodeNoPadding($credential['response']['clientDataJSON']),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        $clientData['payment'] = $payment;
+        $clientDataJSON = json_encode($clientData, JSON_THROW_ON_ERROR);
+        $credential['response']['clientDataJSON'] = Base64UrlSafe::encodeUnpadded($clientDataJSON);
+        $credential['clientExtensionResults']['payment'] = $withSignature ? [
+            'browserBoundSignature' => [
+                'signature' => Base64UrlSafe::encodeUnpadded(self::sign($clientDataJSON, $this->browserBoundKey)),
+            ],
+        ] : [];
+
+        return $credential;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function checkRegistration(array $data): CredentialRecord
+    {
         $response = $this->deserialize($data)
             ->response;
         static::assertInstanceOf(AuthenticatorAttestationResponse::class, $response);
@@ -570,29 +753,33 @@ final class BrowserBoundSignatureTest extends AbstractTestCase
         return $signature;
     }
 
-    private static function coseKey(OpenSSLAsymmetricKey $key): string
+    private static function coseKey(OpenSSLAsymmetricKey $key, bool $withAlgorithm = true): string
     {
         $details = openssl_pkey_get_details($key);
         static::assertIsArray($details);
 
-        return (string) MapObject::create([
+        $items = [
             MapItem::create(UnsignedIntegerObject::create(Key::TYPE), UnsignedIntegerObject::create(Key::TYPE_EC2)),
-            MapItem::create(
+        ];
+        if ($withAlgorithm) {
+            $items[] = MapItem::create(
                 UnsignedIntegerObject::create(Key::ALG),
                 NegativeIntegerObject::create(Algorithms::COSE_ALGORITHM_ES256)
-            ),
-            MapItem::create(
-                NegativeIntegerObject::create(Ec2Key::DATA_CURVE),
-                UnsignedIntegerObject::create(Ec2Key::CURVE_P256)
-            ),
-            MapItem::create(
-                NegativeIntegerObject::create(Ec2Key::DATA_X),
-                ByteStringObject::create(str_pad($details['ec']['x'], 32, "\0", STR_PAD_LEFT))
-            ),
-            MapItem::create(
-                NegativeIntegerObject::create(Ec2Key::DATA_Y),
-                ByteStringObject::create(str_pad($details['ec']['y'], 32, "\0", STR_PAD_LEFT))
-            ),
-        ]);
+            );
+        }
+        $items[] = MapItem::create(
+            NegativeIntegerObject::create(Ec2Key::DATA_CURVE),
+            UnsignedIntegerObject::create(Ec2Key::CURVE_P256)
+        );
+        $items[] = MapItem::create(
+            NegativeIntegerObject::create(Ec2Key::DATA_X),
+            ByteStringObject::create(str_pad($details['ec']['x'], 32, "\0", STR_PAD_LEFT))
+        );
+        $items[] = MapItem::create(
+            NegativeIntegerObject::create(Ec2Key::DATA_Y),
+            ByteStringObject::create(str_pad($details['ec']['y'], 32, "\0", STR_PAD_LEFT))
+        );
+
+        return (string) MapObject::create($items);
     }
 }

@@ -6,7 +6,9 @@ namespace Webauthn\Tests\Unit\SecurePaymentConfirmation;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webauthn\SecurePaymentConfirmation\BrowserBoundPublicKey;
 use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData;
+use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentRegistrationData;
 use Webauthn\SecurePaymentConfirmation\CollectedClientPaymentData;
 use Webauthn\SecurePaymentConfirmation\PaymentCredentialInstrument;
 use Webauthn\SecurePaymentConfirmation\PaymentCurrencyAmount;
@@ -35,6 +37,18 @@ final class CollectedClientPaymentDataTest extends TestCase
         $paymentData = new CollectedClientPaymentData($additionalData);
 
         static::assertSame($additionalData, $paymentData->payment);
+    }
+
+    #[Test]
+    public function canBeCreatedWithRegistrationData(): void
+    {
+        $registrationData = CollectedClientAdditionalPaymentRegistrationData::create(
+            BrowserBoundPublicKey::create("\xa5\x01\x02")
+        );
+
+        $paymentData = CollectedClientPaymentData::create($registrationData);
+
+        static::assertSame($registrationData, $paymentData->payment);
     }
 
     private function createAdditionalData(): CollectedClientAdditionalPaymentData

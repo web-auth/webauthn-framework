@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\SecurePaymentConfirmation\BrowserBoundPublicKey;
 use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData;
+use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentRegistrationData;
 use Webauthn\SecurePaymentConfirmation\CollectedClientPaymentData;
 use Webauthn\SecurePaymentConfirmation\PaymentCredentialInstrument;
 use Webauthn\SecurePaymentConfirmation\PaymentCurrencyAmount;
@@ -205,6 +206,198 @@ final class PaymentDataSerializationTest extends AbstractTestCase
             );
 
         static::assertNull($deserialized->browserBoundPublicKey);
+    }
+
+    #[Test]
+    public function theRegistrationDataCarriesTheBrowserBoundPublicKey(): void
+    {
+        $json = sprintf('{"browserBoundPublicKey": "%s"}', self::CHROME_BROWSER_BOUND_PUBLIC_KEY);
+
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, CollectedClientAdditionalPaymentRegistrationData::class, 'json');
+
+        static::assertEquals(
+            BrowserBoundPublicKey::create(Base64UrlSafe::decodeNoPadding(self::CHROME_BROWSER_BOUND_PUBLIC_KEY)),
+            $deserialized->browserBoundPublicKey
+        );
+        static::assertSame(-7, $deserialized->browserBoundPublicKey?->algorithm());
+        static::assertJsonStringEqualsJsonString($json, $this->serialize($deserialized));
+    }
+
+    #[Test]
+    public function theBrowserBoundPublicKeyOfTheRegistrationDataIsOptional(): void
+    {
+        $deserialized = $this->getSerializer()
+            ->deserialize('{}', CollectedClientAdditionalPaymentRegistrationData::class, 'json');
+
+        static::assertNull($deserialized->browserBoundPublicKey);
+        static::assertSame([], $this->getSerializer()->normalize($deserialized));
+        static::assertEquals(
+            $deserialized,
+            $this->getSerializer()
+                ->deserialize(
+                    $this->serialize($deserialized),
+                    CollectedClientAdditionalPaymentRegistrationData::class,
+                    'json'
+                )
+        );
+    }
+
+    #[Test]
+    public function theOtherMembersOfTheRegistrationDataAreIgnored(): void
+    {
+        $deserialized = $this->getSerializer()
+            ->deserialize(
+                sprintf(
+                    '{"rpId":"example.com","browserBoundPublicKey":"%s","isPayment":true}',
+                    self::CHROME_BROWSER_BOUND_PUBLIC_KEY
+                ),
+                CollectedClientAdditionalPaymentRegistrationData::class,
+                'json'
+            );
+
+        static::assertSame(-7, $deserialized->browserBoundPublicKey?->algorithm());
+        static::assertJsonStringEqualsJsonString(
+            sprintf('{"browserBoundPublicKey":"%s"}', self::CHROME_BROWSER_BOUND_PUBLIC_KEY),
+            $this->serialize($deserialized)
+        );
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideMalformedRegistrationData(): iterable
+    {
+        yield 'not an object' => ['"payment"', 'expected an array'];
+        yield 'browserBoundPublicKey as an object' => [
+            '{"browserBoundPublicKey":{"publicKey":"pQECAyYgAQ","algorithm":-7}}',
+            'Invalid browserBoundPublicKey',
+        ];
+        yield 'empty browserBoundPublicKey' => ['{"browserBoundPublicKey":""}', 'browser-bound public key'];
+        yield 'browserBoundPublicKey that is not base64url' => [
+            '{"browserBoundPublicKey":"#not base64url#"}',
+            'Invalid data submitted',
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('provideMalformedRegistrationData')]
+    public function malformedRegistrationDataIsRejected(string $json, string $message): void
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->getSerializer()
+            ->deserialize($json, CollectedClientAdditionalPaymentRegistrationData::class, 'json');
+    }
+
+    #[Test]
+    public function theClientDataOfARegistrationGivesTheRegistrationDictionary(): void
+    {
+        $clientData = $this->getSerializer()
+            ->denormalize([
+                'type' => 'webauthn.create',
+                'challenge' => 'Y2hhbGxlbmdl',
+                'origin' => 'https://example.com',
+                'payment' => [
+                    'browserBoundPublicKey' => self::CHROME_BROWSER_BOUND_PUBLIC_KEY,
+                ],
+            ], CollectedClientPaymentData::class);
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentRegistrationData::class, $clientData->payment);
+        static::assertSame(-7, $clientData->payment->browserBoundPublicKey?->algorithm());
+    }
+
+    #[Test]
+    public function theClientDataOfARegistrationWithoutBrowserBoundKeyGivesTheRegistrationDictionary(): void
+    {
+        $clientData = $this->getSerializer()
+            ->denormalize([
+                'type' => 'webauthn.create',
+                'challenge' => 'Y2hhbGxlbmdl',
+                'origin' => 'https://example.com',
+                'payment' => [],
+            ], CollectedClientPaymentData::class);
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentRegistrationData::class, $clientData->payment);
+        static::assertNull($clientData->payment->browserBoundPublicKey);
+    }
+
+    #[Test]
+    public function theTypeOfTheClientDataPrevailsOverTheMembersOfThePayment(): void
+    {
+        $clientData = $this->getSerializer()
+            ->denormalize([
+                'type' => 'webauthn.create',
+                'payment' => [
+                    'rpId' => 'example.com',
+                    'browserBoundPublicKey' => self::CHROME_BROWSER_BOUND_PUBLIC_KEY,
+                ],
+            ], CollectedClientPaymentData::class);
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentRegistrationData::class, $clientData->payment);
+    }
+
+    #[Test]
+    public function theClientDataOfAPaymentGivesTheAuthenticationDictionary(): void
+    {
+        $clientData = $this->getSerializer()
+            ->denormalize([
+                'type' => 'payment.get',
+                'challenge' => 'Y2hhbGxlbmdl',
+                'origin' => 'https://example.com',
+                'payment' => [
+                    'rpId' => 'example.com',
+                    'topOrigin' => 'https://merchant.example.com',
+                    'total' => [
+                        'currency' => 'USD',
+                        'value' => '50.00',
+                    ],
+                    'instrument' => [
+                        'displayName' => 'Card',
+                        'icon' => 'https://example.com/icon.png',
+                    ],
+                    'browserBoundPublicKey' => self::CHROME_BROWSER_BOUND_PUBLIC_KEY,
+                ],
+            ], CollectedClientPaymentData::class);
+
+        static::assertInstanceOf(CollectedClientAdditionalPaymentData::class, $clientData->payment);
+        static::assertSame(-7, $clientData->payment->browserBoundPublicKey?->algorithm());
+    }
+
+    #[Test]
+    public function theClientDataOfAPaymentWithOnlyABrowserBoundPublicKeyIsRejected(): void
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('"rpId"');
+
+        $this->getSerializer()
+            ->denormalize([
+                'type' => 'payment.get',
+                'payment' => [
+                    'browserBoundPublicKey' => self::CHROME_BROWSER_BOUND_PUBLIC_KEY,
+                ],
+            ], CollectedClientPaymentData::class);
+    }
+
+    #[Test]
+    public function collectedClientPaymentDataWithRegistrationDataRoundTrip(): void
+    {
+        $paymentData = CollectedClientPaymentData::create(
+            CollectedClientAdditionalPaymentRegistrationData::create(
+                BrowserBoundPublicKey::create(Base64UrlSafe::decodeNoPadding(self::CHROME_BROWSER_BOUND_PUBLIC_KEY))
+            )
+        );
+
+        $json = $this->serialize($paymentData);
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, CollectedClientPaymentData::class, 'json');
+
+        static::assertJsonStringEqualsJsonString(
+            sprintf('{"payment":{"browserBoundPublicKey":"%s"}}', self::CHROME_BROWSER_BOUND_PUBLIC_KEY),
+            $json
+        );
+        static::assertEquals($paymentData, $deserialized);
     }
 
     #[Test]
