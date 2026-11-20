@@ -38,7 +38,7 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				Fetching class constant class of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
 			'''
 			identifier: classConstant.deprecatedInterface
@@ -77,7 +77,7 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to constant on deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
+				Fetching class constant class of deprecated interface Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface:
 				since 5.3, use CredentialRecordRepositoryInterface instead. Will be removed in 6.0.
 			'''
 			identifier: classConstant.deprecatedInterface
@@ -440,7 +440,7 @@ parameters:
 
 		-
 			rawMessage: '''
-				Access to constant on deprecated class Webauthn\PublicKeyCredentialSource:
+				Fetching class constant class of deprecated class Webauthn\PublicKeyCredentialSource:
 				since 5.3, use CredentialRecord instead. Will be removed in 6.0.
 			'''
 			identifier: classConstant.deprecatedClass
