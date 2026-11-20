@@ -8,12 +8,14 @@ use CBOR\ByteStringObject;
 use CBOR\MapObject;
 use CBOR\NegativeIntegerObject;
 use CBOR\UnsignedIntegerObject;
+use Cose\Algorithm\Mac\HS256;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
 use const OPENSSL_ALGO_SHA256;
 use const OPENSSL_KEYTYPE_EC;
 use function ord;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use const STR_PAD_LEFT;
@@ -104,6 +106,54 @@ final class BrowserBoundSignatureVerifierTest extends TestCase
 
         (new BrowserBoundSignatureVerifier(Manager::create()->add(ES256::create())))
             ->verify('any', (string) $coseKey, 'any');
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideMalformedKeys(): iterable
+    {
+        yield 'no alg' => ['a10102', 'Invalid browserBoundPublicKey: the COSE_Key has no integer "alg" member.'];
+        yield 'alg as a text string' => [
+            'a2010203622d37',
+            'Invalid browserBoundPublicKey: the COSE_Key has no integer "alg" member.',
+        ];
+        yield 'a CBOR array' => ['820102', 'Invalid browserBoundPublicKey: expected a CBOR map.'];
+        yield 'extra bytes' => ['a20102032600', 'Invalid browserBoundPublicKey: extra bytes after the COSE key.'];
+        yield 'truncated map' => ['a2010203', 'Invalid browserBoundPublicKey: the COSE_Key cannot be decoded.'];
+        yield 'EC2 key without coordinates' => [
+            'a201020326',
+            'Invalid browserBoundPublicKey: the COSE_Key is invalid.',
+        ];
+        yield 'empty key' => ['', 'The browser-bound public key must not be empty.'];
+    }
+
+    #[Test]
+    #[DataProvider('provideMalformedKeys')]
+    public function aMalformedKeyIsRejectedAsAVerificationFailure(string $hex, string $message): void
+    {
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage($message);
+
+        (new BrowserBoundSignatureVerifier(Manager::create()->add(ES256::create())))
+            ->verify('clientData', (string) hex2bin($hex), str_repeat("\x00", 64));
+    }
+
+    #[Test]
+    public function anAlgorithmThatIsNotASignatureAlgorithmIsRejected(): void
+    {
+        $coseKey = MapObject::create()
+            ->add(UnsignedIntegerObject::create(1), UnsignedIntegerObject::create(4))
+            ->add(UnsignedIntegerObject::create(3), UnsignedIntegerObject::create(HS256::identifier()))
+            ->add(NegativeIntegerObject::create(-1), ByteStringObject::create(str_repeat("\x01", 32)));
+
+        $this->expectException(AuthenticatorResponseVerificationException::class);
+        $this->expectExceptionMessage(
+            'Unsupported browser-bound signing algorithm "5" (need a COSE Signature algorithm).'
+        );
+
+        (new BrowserBoundSignatureVerifier(Manager::create()->add(HS256::create())))
+            ->verify('clientData', (string) $coseKey, str_repeat("\x00", 32));
     }
 
     #[Test]

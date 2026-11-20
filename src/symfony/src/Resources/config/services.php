@@ -49,6 +49,7 @@ use Webauthn\Denormalizer\AuthenticatorResponseDenormalizer;
 use Webauthn\Denormalizer\BrowserBoundPublicKeyDenormalizer;
 use Webauthn\Denormalizer\BrowserBoundSignatureDenormalizer;
 use Webauthn\Denormalizer\CollectedClientAdditionalPaymentDataDenormalizer;
+use Webauthn\Denormalizer\CollectedClientAdditionalPaymentRegistrationDataDenormalizer;
 use Webauthn\Denormalizer\CollectedClientDataDenormalizer;
 use Webauthn\Denormalizer\CollectedClientPaymentDataDenormalizer;
 use Webauthn\Denormalizer\ExtensionDescriptorDenormalizer;
@@ -298,6 +299,11 @@ return static function (ContainerConfigurator $container): void {
         ]);
     $service
         ->set(CollectedClientAdditionalPaymentDataDenormalizer::class)
+        ->tag('serializer.normalizer', [
+            'priority' => 1024,
+        ]);
+    $service
+        ->set(CollectedClientAdditionalPaymentRegistrationDataDenormalizer::class)
         ->tag('serializer.normalizer', [
             'priority' => 1024,
         ]);
