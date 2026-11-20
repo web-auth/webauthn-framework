@@ -74,6 +74,7 @@ final readonly class WebauthnSerializerFactory
             new BrowserBoundSignatureDenormalizer(),
             new BrowserBoundPublicKeyDenormalizer(),
             new CollectedClientAdditionalPaymentDataDenormalizer(),
+            new CollectedClientAdditionalPaymentRegistrationDataDenormalizer(),
             new CollectedClientPaymentDataDenormalizer(),
             new UidNormalizer(),
             new ArrayDenormalizer(),
