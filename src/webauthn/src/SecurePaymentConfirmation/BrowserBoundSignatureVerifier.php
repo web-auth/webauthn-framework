@@ -14,26 +14,22 @@ use function sprintf;
 use Throwable;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\StringStream;
+use Webauthn\Util\CoseSignatureFixer;
 
 /**
- * Cryptographically verifies the W3C SPC `browserBoundSignature`.
+ * Cryptographically verifies the W3C SPC browser-bound signature.
  *
- * Per W3C Secure Payment Confirmation §5.1, the user agent generates a
- * browser-bound key pair separate from the WebAuthn credential. During an
- * SPC assertion it returns:
- *
- *   - `clientExtensionResults.payment.browserBoundSignature.signature` —
- *     the signature produced by the browser-bound private key over the
- *     `clientDataJSON` of the WebAuthn ceremony;
- *   - in Chrome's implementation, also
- *     `clientDataJSON.payment.browserBoundPublicKey` — the matching
- *     COSE-encoded public key, sent on every assertion so the relying party
- *     can verify without having stashed it from registration.
+ * The user agent generates a browser-bound key pair, separate from the WebAuthn credential, and returns at
+ * registration and at authentication:
+ *   - `clientDataJSON.payment.browserBoundPublicKey`: the base64url COSE_Key of the public key;
+ *   - `clientExtensionResults.payment.browserBoundSignature.signature`: the signature made with the private key
+ *     over the raw `clientDataJSON` of the ceremony.
  *
  * Verification consists of:
  *   - CBOR-decoding the COSE public key bytes into a {@see Key};
  *   - looking up the matching {@see Signature} algorithm in the manager;
- *   - verifying the signature over the raw `clientDataJSON` bytes.
+ *   - verifying the signature over the raw `clientDataJSON` bytes. ECDSA signatures are accepted in the ASN.1 DER
+ *     form produced by the platform key stores, as for the passkey signature, or in the raw `r || s` form of COSE.
  */
 final readonly class BrowserBoundSignatureVerifier
 {
@@ -74,7 +70,7 @@ final readonly class BrowserBoundSignatureVerifier
         );
 
         try {
-            $verified = $algorithm->verify($clientDataJSON, $key, $signature);
+            $verified = $algorithm->verify($clientDataJSON, $key, CoseSignatureFixer::fix($signature, $algorithm));
         } catch (Throwable $e) {
             throw AuthenticatorResponseVerificationException::create(
                 'browserBoundSignature verification failed: ' . $e->getMessage(),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webauthn;
 
 use Webauthn\AttestationStatement\AttestationObject;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 /**
  * @see https://www.w3.org/TR/webauthn/#authenticatorattestationresponse
@@ -17,9 +18,10 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
     public function __construct(
         CollectedClientData $clientDataJSON,
         public readonly AttestationObject $attestationObject,
-        public readonly array $transports = []
+        public readonly array $transports = [],
+        null|AuthenticationExtensions $clientExtensionResults = null,
     ) {
-        parent::__construct($clientDataJSON);
+        parent::__construct($clientDataJSON, $clientExtensionResults);
     }
 
     /**
@@ -28,8 +30,9 @@ class AuthenticatorAttestationResponse extends AuthenticatorResponse
     public static function create(
         CollectedClientData $clientDataJSON,
         AttestationObject $attestationObject,
-        array $transports = []
+        array $transports = [],
+        null|AuthenticationExtensions $clientExtensionResults = null,
     ): self {
-        return new self($clientDataJSON, $attestationObject, $transports);
+        return new self($clientDataJSON, $attestationObject, $transports, $clientExtensionResults);
     }
 }

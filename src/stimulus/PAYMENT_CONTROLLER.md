@@ -8,9 +8,11 @@ values and behaviour apply) that adds two payment-specific concerns:
    the browser displays its own SPC confirmation UI from the
    server-supplied transaction details.
 2. The `browserBoundSignature.signature` returned in
-   `clientExtensionResults.payment` is an `ArrayBuffer`; the controller
-   encodes it to base64url before sending the credential to your verifier
-   so the JSON payload is well-formed.
+   `clientExtensionResults.payment` is an `ArrayBuffer`; the base controller
+   encodes it to base64url before sending the credential to your verifier,
+   which checks it against the browser-bound public key found in
+   `clientDataJSON.payment.browserBoundPublicKey`. The registration
+   controller does the same for an SPC registration.
 
 ## ⚠️ Security model
 
@@ -90,10 +92,16 @@ The Symfony bundle wires the SPC validation pieces automatically:
   `clientDataJSON.payment` field-by-field with the request options'
   `payment` extension input — closing the SPC threat that a compromised
   client substitutes the amount the user actually signs.
+- `CheckBrowserBoundSignature`, part of every ceremony, verifies the
+  browser-bound signature over the raw `clientDataJSON` with the
+  browser-bound public key of the client data, at registration and at
+  authentication. A user agent may return neither (no browser-bound key):
+  the ceremony then relies on the passkey alone. Only one of them, or a
+  signature that does not verify, fails the ceremony. Send
+  `clientExtensionResults` with the credential: the signature lives there.
 - `PaymentExtensionOutputChecker` is added to the
-  `ExtensionOutputCheckerHandler`. It asserts that
-  `clientExtensionResults.payment.browserBoundSignature` is present and
-  well-formed.
+  `ExtensionOutputCheckerHandler`. It rejects a `payment` entry in the
+  authenticator data, where a conforming authenticator never puts one.
 
 A standard `AuthenticatorAssertionResponseValidator->check(...)` call
 therefore performs full SPC validation:

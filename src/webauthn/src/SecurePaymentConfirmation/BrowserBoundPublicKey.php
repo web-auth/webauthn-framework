@@ -7,27 +7,31 @@ namespace Webauthn\SecurePaymentConfirmation;
 use Webauthn\Exception\InvalidDataException;
 
 /**
- * W3C Secure Payment Confirmation §5.1: BrowserBoundPublicKey dictionary.
- * Returned in `clientDataJSON.payment.browserBoundPublicKey` during an SPC
- * registration ceremony. The relying party SHOULD store this key alongside
- * the credential record so subsequent assertion `browserBoundSignature`
- * outputs can be verified.
+ * W3C Secure Payment Confirmation: the browser-bound public key.
+ *
+ * The client data carries it in `payment.browserBoundPublicKey`, at registration and at authentication, as the
+ * base64url encoding of a COSE_Key, encoded like the credential public key of the attested credential data. This
+ * object holds the decoded COSE_Key bytes: the algorithm of the key is its `alg` member. The serializer reads and
+ * writes the base64url string.
+ *
+ * @see https://w3c.github.io/secure-payment-confirmation/#sctn-collectedclientadditionalpaymentdata-dictionary
  */
 class BrowserBoundPublicKey
 {
     /**
-     * @param string $publicKey COSE-encoded raw public key bytes.
-     * @param int    $algorithm COSE algorithm identifier (e.g. -7 for ES256).
+     * @param string $publicKey COSE_Key bytes
      */
     public function __construct(
         public readonly string $publicKey,
-        public readonly int $algorithm,
     ) {
-        $publicKey !== '' || throw InvalidDataException::create($publicKey, 'The publicKey must not be empty.');
+        $publicKey !== '' || throw InvalidDataException::create(
+            $publicKey,
+            'The browser-bound public key must not be empty.'
+        );
     }
 
-    public static function create(string $publicKey, int $algorithm): self
+    public static function create(string $publicKey): self
     {
-        return new self($publicKey, $algorithm);
+        return new self($publicKey);
     }
 }

@@ -29,6 +29,9 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
     use NormalizerAwareTrait;
 
     /**
+     * The `browserBoundPublicKey` member is optional: the user agent omits it when it has no browser-bound key. When
+     * present, it must be the base64url encoding of a COSE_Key, see {@see BrowserBoundPublicKeyDenormalizer}.
+     *
      * @throws InvalidDataException
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
@@ -101,13 +104,7 @@ final class CollectedClientAdditionalPaymentDataDenormalizer implements Denormal
         }
 
         $browserBoundPublicKey = null;
-        // `browserBoundPublicKey` is only meaningful in a registration's
-        // clientData.payment (per W3C SPC §5.1). In an assertion the user
-        // agent may omit it entirely or send a stub object — only attempt
-        // to denormalize when the required `publicKey` field is present.
-        if (is_array($data['browserBoundPublicKey'] ?? null)
-            && array_key_exists('publicKey', $data['browserBoundPublicKey'])
-        ) {
+        if (isset($data['browserBoundPublicKey'])) {
             $browserBoundPublicKey = $this->denormalizer->denormalize(
                 $data['browserBoundPublicKey'],
                 BrowserBoundPublicKey::class,

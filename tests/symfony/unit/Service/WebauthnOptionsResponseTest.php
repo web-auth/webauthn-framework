@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Validation;
 use Webauthn\AttestationStatement\AttestationStatement;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
@@ -385,6 +386,78 @@ final class WebauthnOptionsResponseTest extends TestCase
                 ->getPublicKeyCredentialOptions()
                 ->userVerification,
         );
+    }
+
+    #[Test]
+    public function forRequestKeepsTheServerExtensionsWhenTheClientSendsEmptyExtensions(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $payment = AuthenticationExtension::create('payment', [
+            'isPayment' => true,
+            'rpId' => 'example.com',
+        ]);
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->withExtensions([$payment])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {}}'));
+
+        $extensions = $storage->last()
+            ->getPublicKeyCredentialOptions()
+            ->extensions;
+        static::assertTrue($extensions->has('payment'));
+        static::assertSame($payment->value, $extensions->get('payment')->value);
+    }
+
+    #[Test]
+    public function forRequestLetsTheClientAddExtensionsToThoseOfTheServer(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $payment = AuthenticationExtension::create('payment', [
+            'isPayment' => true,
+            'rpId' => 'example.com',
+        ]);
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->withExtensions([$payment])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {"payment": {"isPayment": false}, "uvm": true}}'));
+
+        $extensions = $storage->last()
+            ->getPublicKeyCredentialOptions()
+            ->extensions;
+        static::assertSame($payment->value, $extensions->get('payment')->value);
+        static::assertTrue($extensions->get('uvm')->value);
+    }
+
+    #[Test]
+    public function forCreationLetsTheClientAddExtensionsButNotReplaceTheServerOnes(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'h', 'Alice'))
+            ->withExtensions([AuthenticationExtension::create('credProps', true)])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {"credProps": false, "uvm": true}}'));
+
+        $extensions = self::storedCreationOptions($storage)->extensions;
+        static::assertTrue($extensions->get('credProps')->value);
+        static::assertTrue($extensions->get('uvm')->value);
     }
 
     #[Test]

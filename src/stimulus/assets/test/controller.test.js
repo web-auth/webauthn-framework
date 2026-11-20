@@ -70,7 +70,7 @@ describe('WebauthnController', () => {
     });
 });
 
-describe('WebauthnController PRF extension results', () => {
+describe('WebauthnController client extension results', () => {
     const prfFirst = new Uint8Array([1, 2, 3]).buffer;
     const prfSecond = new Uint8Array([4, 5, 6]).buffer;
     let application;
@@ -119,6 +119,70 @@ describe('WebauthnController PRF extension results', () => {
         clearDOM();
         jest.clearAllMocks();
         delete globalThis.fetch;
+    });
+
+    it('sends the browser-bound signature of an assertion as a base64url string', async () => {
+        const form = mountForm(
+            'data-action="submit->webauthn#signin" data-webauthn-request-result-url-value="/request"'
+        );
+
+        fetchMock
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+        SimpleWebAuthnBrowser.startAuthentication.mockResolvedValue({
+            id: 'credential-id',
+            type: 'public-key',
+            clientExtensionResults: {
+                payment: {
+                    browserBoundSignature: { signature: new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f]).buffer },
+                },
+            },
+        });
+
+        await startAndSubmit(form);
+
+        await waitFor(() => {
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+        });
+
+        const [url, request] = fetchMock.mock.calls[1];
+        expect(url).toBe('/request');
+        expect(JSON.parse(request.body).clientExtensionResults).toEqual({
+            payment: { browserBoundSignature: { signature: 'aGVsbG8' } },
+        });
+    });
+
+    it('sends the browser-bound signature of a registration as a base64url string', async () => {
+        const form = mountForm(
+            'data-action="submit->webauthn#signup" data-webauthn-creation-result-url-value="/creation"'
+        );
+
+        fetchMock
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ challenge: 'test', rp: {}, user: {} }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ verified: true }) });
+        SimpleWebAuthnBrowser.startRegistration.mockResolvedValue({
+            id: 'credential-id',
+            type: 'public-key',
+            clientExtensionResults: {
+                credProps: { rk: true },
+                payment: {
+                    browserBoundSignature: { signature: new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f]).buffer },
+                },
+            },
+        });
+
+        await startAndSubmit(form);
+
+        await waitFor(() => {
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+        });
+
+        const [url, request] = fetchMock.mock.calls[1];
+        expect(url).toBe('/creation');
+        expect(JSON.parse(request.body).clientExtensionResults).toEqual({
+            credProps: { rk: true },
+            payment: { browserBoundSignature: { signature: 'aGVsbG8' } },
+        });
     });
 
     it('keeps the PRF results out of the assertion request', async () => {

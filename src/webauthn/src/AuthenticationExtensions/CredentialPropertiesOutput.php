@@ -16,7 +16,12 @@ use Webauthn\Exception\AuthenticationExtensionException;
  * name suggested by the authenticator, added in Level 3).
  *
  * Use {@see fromExtensions()} or {@see fromExtension()} to materialise the
- * value object from the raw extension bag returned by the client.
+ * value object from the raw extension bag returned by the client. `credProps`
+ * is a client extension result, never an authenticator output: read it from
+ * {@see \Webauthn\AuthenticatorResponse::$clientExtensionResults} of a
+ * deserialized credential. Both methods validate the type of each member.
+ * Like every client extension result, the output is not signed by the
+ * authenticator.
  */
 final readonly class CredentialPropertiesOutput
 {

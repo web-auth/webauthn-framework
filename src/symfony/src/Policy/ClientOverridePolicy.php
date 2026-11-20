@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Policy;
 
 use function is_array;
+use function is_string;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 
 /**
  * Decides whether a request body field can override the server-side default
@@ -128,5 +131,33 @@ final readonly class ClientOverridePolicy
         }
 
         return $requestValue;
+    }
+
+    /**
+     * Resolve the extensions to use. The extensions set by the server are never removed nor replaced: when the
+     * `extensions` field is overridable, the client may only add extensions the server did not set. A client that
+     * sends no extensions, or an empty object, therefore gets the extensions of the server, and an extension input
+     * that the server relies on during the ceremony, such as the Secure Payment Confirmation `payment` input, stays
+     * in the stored options.
+     *
+     * @param array<array-key, mixed>|null $clientExtensions Extension inputs sent by the client, by identifier
+     */
+    public function getEffectiveExtensions(
+        ?array $clientExtensions,
+        AuthenticationExtensions $serverExtensions
+    ): AuthenticationExtensions {
+        if ($clientExtensions === null || ! $this->canOverride('extensions')) {
+            return $serverExtensions;
+        }
+
+        $extensions = array_values($serverExtensions->extensions);
+        foreach ($clientExtensions as $name => $value) {
+            if (! is_string($name) || $serverExtensions->has($name)) {
+                continue;
+            }
+            $extensions[] = AuthenticationExtension::create($name, $value);
+        }
+
+        return AuthenticationExtensions::create($extensions);
     }
 }

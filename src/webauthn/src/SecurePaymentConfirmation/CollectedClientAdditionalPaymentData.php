@@ -9,9 +9,12 @@ use function filter_var;
 use Webauthn\Exception\InvalidDataException;
 
 /**
- * W3C Secure Payment Confirmation §5.1: CollectedClientAdditionalPaymentData.
+ * W3C Secure Payment Confirmation: CollectedClientAdditionalPaymentData.
  * Encapsulates the payment confirmation data the authenticator signs as part
- * of the `clientDataJSON.payment` field.
+ * of the `clientDataJSON.payment` field of an authentication, including the
+ * browser-bound public key when the user agent has one.
+ *
+ * @see https://w3c.github.io/secure-payment-confirmation/#sctn-collectedclientadditionalpaymentdata-dictionary
  */
 class CollectedClientAdditionalPaymentData
 {

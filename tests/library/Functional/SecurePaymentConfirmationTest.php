@@ -8,9 +8,7 @@ use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
-use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticationExtensions\PaymentExtension;
-use Webauthn\AuthenticationExtensions\PaymentExtensionOutputChecker;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\ClientDataCollector\PaymentClientDataCollector;
 use Webauthn\CollectedClientData;
@@ -91,40 +89,6 @@ final class SecurePaymentConfirmationTest extends AbstractTestCase
     }
 
     #[Test]
-    public function outputCheckerAcceptsValidBrowserBoundSignature(): void
-    {
-        $handler = ExtensionOutputCheckerHandler::create();
-        $handler->add(new PaymentExtensionOutputChecker());
-
-        $inputs = new AuthenticationExtensions([PaymentExtension::register()]);
-        $outputs = new AuthenticationExtensions([
-            AuthenticationExtension::create('payment', $this->validBrowserBoundSignatureOutput()),
-        ]);
-
-        $handler->check($inputs, $outputs);
-        $this->expectNotToPerformAssertions();
-    }
-
-    #[Test]
-    public function outputCheckerRejectsMissingBrowserBoundSignature(): void
-    {
-        $handler = ExtensionOutputCheckerHandler::create();
-        $handler->add(new PaymentExtensionOutputChecker());
-
-        $inputs = new AuthenticationExtensions([PaymentExtension::register()]);
-        $outputs = new AuthenticationExtensions([
-            AuthenticationExtension::create('payment', [
-                'foo' => 'bar',
-            ]),
-        ]);
-
-        $this->expectException(AuthenticatorResponseVerificationException::class);
-        $this->expectExceptionMessage('"browserBoundSignature"');
-
-        $handler->check($inputs, $outputs);
-    }
-
-    #[Test]
     public function clientDataCollectorCatchesAmountTampering(): void
     {
         // Per W3C SPC §5.1, the transaction the user signs lives in
@@ -189,19 +153,6 @@ final class SecurePaymentConfirmationTest extends AbstractTestCase
         static::assertTrue($extensions->has('appid'));
         static::assertTrue($extensions->has('payment'));
         static::assertTrue($extensions->has('credProps'));
-    }
-
-    /**
-     * @return array{browserBoundSignature: array{signature: string}}
-     */
-    private function validBrowserBoundSignatureOutput(): array
-    {
-        return [
-            'browserBoundSignature' => [
-                // base64url("hello") = aGVsbG8
-                'signature' => 'aGVsbG8',
-            ],
-        ];
     }
 
     /**

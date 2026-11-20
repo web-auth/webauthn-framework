@@ -158,6 +158,7 @@ final class WebauthnCreationOptionsBuilder extends AbstractWebauthnOptionsBuilde
             $extensions = $this->mergeExtensions(
                 $optionsRequest->extensions,
                 $this->clientOverridePolicy,
+                $extensions,
             ) ?? $extensions;
         }
 

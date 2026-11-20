@@ -100,6 +100,15 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
+     * Extensions configured for the profile, before any extension sent by the client. A caller that lets the client
+     * add extensions starts from these ones, which the client can neither remove nor replace.
+     */
+    public function getExtensions(string $key): AuthenticationExtensions
+    {
+        return $this->createExtensions($this->getProfile($key));
+    }
+
+    /**
      * @return array{rp: array{name: string, id: ?string}, challenge_length: int, timeout?: ?int, attestation_conveyance?: ?string, authenticator_selection_criteria: array{authenticator_attachment: ?string, user_verification: ?string, resident_key: ?string}, public_key_credential_parameters: list<int>, extensions: array<string, mixed>, conditional_create?: bool}
      */
     private function getProfile(string $key): array
@@ -113,7 +122,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
     }
 
     /**
-     * @param array{extensions: array<string, mixed>} $profile
+     * @param array{extensions: array<string, mixed>, ...} $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {

@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Webauthn\Denormalizer;
 
-use function array_key_exists;
 use function assert;
-use function is_array;
-use function is_int;
 use function is_string;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\SecurePaymentConfirmation\BrowserBoundPublicKey;
+use Webauthn\Util\Base64;
 
+/**
+ * Reads and writes the browser-bound public key in the shape of W3C Secure Payment Confirmation: the base64url
+ * encoding of a COSE_Key.
+ */
 final class BrowserBoundPublicKeyDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
     /**
@@ -22,26 +24,12 @@ final class BrowserBoundPublicKeyDenormalizer implements DenormalizerInterface, 
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        if (! is_array($data)) {
-            throw InvalidDataException::create($data, 'Invalid BrowserBoundPublicKey payload: expected an array.');
-        }
-        if (! array_key_exists('publicKey', $data) || ! is_string($data['publicKey'])) {
-            throw InvalidDataException::create(
-                $data,
-                'Invalid BrowserBoundPublicKey payload: missing or invalid "publicKey" field.',
-            );
-        }
-        if (! array_key_exists('algorithm', $data) || ! is_int($data['algorithm'])) {
-            throw InvalidDataException::create(
-                $data,
-                'Invalid BrowserBoundPublicKey payload: missing or invalid "algorithm" field.',
-            );
-        }
-
-        return new BrowserBoundPublicKey(
-            publicKey: Base64UrlSafe::decodeNoPadding($data['publicKey']),
-            algorithm: $data['algorithm'],
+        is_string($data) || throw InvalidDataException::create(
+            $data,
+            'Invalid browserBoundPublicKey: expected the base64url encoding of a COSE_Key.'
         );
+
+        return BrowserBoundPublicKey::create(Base64::decode($data));
     }
 
     public function supportsDenormalization(
@@ -63,16 +51,11 @@ final class BrowserBoundPublicKeyDenormalizer implements DenormalizerInterface, 
         ];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function normalize(mixed $object, ?string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): string
     {
         assert($object instanceof BrowserBoundPublicKey);
-        return [
-            'publicKey' => Base64UrlSafe::encodeUnpadded($object->publicKey),
-            'algorithm' => $object->algorithm,
-        ];
+
+        return Base64UrlSafe::encodeUnpadded($object->publicKey);
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

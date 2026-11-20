@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Webauthn\Tests\Unit\SecurePaymentConfirmation;
 
 use const JSON_THROW_ON_ERROR;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use function sprintf;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\Exception\InvalidDataException;
+use Webauthn\SecurePaymentConfirmation\BrowserBoundPublicKey;
 use Webauthn\SecurePaymentConfirmation\CollectedClientAdditionalPaymentData;
 use Webauthn\SecurePaymentConfirmation\CollectedClientPaymentData;
 use Webauthn\SecurePaymentConfirmation\PaymentCredentialInstrument;
@@ -22,6 +24,11 @@ use Webauthn\Tests\AbstractTestCase;
  */
 final class PaymentDataSerializationTest extends AbstractTestCase
 {
+    /**
+     * The `browserBoundPublicKey` of a Chrome payment: an ES256 COSE_Key, encoded in base64url.
+     */
+    private const CHROME_BROWSER_BOUND_PUBLIC_KEY = 'pQECAyYgASFYIOUsBC35x2TSfRGkSeKL_uHMiWe_ptKFneJmAnIsaO4RIlggQWPJ1LAnV7OxxGq9ovhnXOqIQB7-7X6cduprsGgqEHk';
+
     #[Test]
     public function paymentCurrencyAmountRoundTrip(): void
     {
@@ -163,6 +170,44 @@ final class PaymentDataSerializationTest extends AbstractTestCase
     }
 
     #[Test]
+    public function theBrowserBoundPublicKeyIsTheBase64UrlEncodingOfACoseKey(): void
+    {
+        $json = sprintf('{
+            "rpId": "example.com",
+            "topOrigin": "https://merchant.example.com",
+            "total": {"currency": "USD", "value": "50.00"},
+            "instrument": {"displayName": "Card", "icon": "https://example.com/icon.png"},
+            "browserBoundPublicKey": "%s"
+        }', self::CHROME_BROWSER_BOUND_PUBLIC_KEY);
+
+        $deserialized = $this->getSerializer()
+            ->deserialize($json, CollectedClientAdditionalPaymentData::class, 'json');
+
+        static::assertEquals(
+            BrowserBoundPublicKey::create(Base64UrlSafe::decodeNoPadding(self::CHROME_BROWSER_BOUND_PUBLIC_KEY)),
+            $deserialized->browserBoundPublicKey
+        );
+        static::assertSame("\xa5", $deserialized->browserBoundPublicKey?->publicKey[0]);
+        static::assertSame(
+            self::CHROME_BROWSER_BOUND_PUBLIC_KEY,
+            json_decode($this->serialize($deserialized), true, 512, JSON_THROW_ON_ERROR)['browserBoundPublicKey']
+        );
+    }
+
+    #[Test]
+    public function theBrowserBoundPublicKeyIsOptional(): void
+    {
+        $deserialized = $this->getSerializer()
+            ->deserialize(
+                '{"rpId":"example.com","topOrigin":"https://merchant.example.com","total":{"currency":"USD","value":"1"},"instrument":{"displayName":"C","icon":"https://example.com/icon.png"}}',
+                CollectedClientAdditionalPaymentData::class,
+                'json'
+            );
+
+        static::assertNull($deserialized->browserBoundPublicKey);
+    }
+
+    #[Test]
     public function historicalRpFieldIsAccepted(): void
     {
         $json = '{
@@ -256,6 +301,14 @@ final class PaymentDataSerializationTest extends AbstractTestCase
         yield 'missing instrument' => [
             '{"rpId":"x","topOrigin":"https://x","total":{"currency":"USD","value":"1"}}',
             'instrument',
+        ];
+        yield 'browserBoundPublicKey as an object' => [
+            '{"rpId":"x","topOrigin":"https://x","total":{"currency":"USD","value":"1"},"instrument":{"displayName":"C","icon":"https://example.com/icon.png"},"browserBoundPublicKey":{"publicKey":"pQECAyYgAQ","algorithm":-7}}',
+            'browserBoundPublicKey',
+        ];
+        yield 'empty browserBoundPublicKey' => [
+            '{"rpId":"x","topOrigin":"https://x","total":{"currency":"USD","value":"1"},"instrument":{"displayName":"C","icon":"https://example.com/icon.png"},"browserBoundPublicKey":""}',
+            'browser-bound public key',
         ];
     }
 

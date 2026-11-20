@@ -68,13 +68,27 @@ final class PublicKeyCredentialRequestOptionsFactory implements CanDispatchEvent
         return $options;
     }
 
+    /**
+     * Extensions configured for the profile, before any extension sent by the client. A caller that lets the client
+     * add extensions starts from these ones, which the client can neither remove nor replace.
+     */
+    public function getExtensions(string $key): AuthenticationExtensions
+    {
+        array_key_exists($key, $this->profiles) || throw new InvalidArgumentException(sprintf(
+            'The profile with key "%s" does not exist.',
+            $key
+        ));
+
+        return $this->createExtensions($this->profiles[$key]);
+    }
+
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * @param array{extensions: array<string, mixed>} $profile
+     * @param array{extensions: array<string, mixed>, ...} $profile
      */
     private function createExtensions(array $profile): AuthenticationExtensions
     {

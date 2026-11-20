@@ -17,18 +17,17 @@ final class BrowserBoundPublicKeyTest extends TestCase
     #[Test]
     public function canBeCreated(): void
     {
-        $key = BrowserBoundPublicKey::create("\x01\x02\x03", -7);
+        $key = BrowserBoundPublicKey::create("\xa5\x01\x02");
 
-        static::assertSame("\x01\x02\x03", $key->publicKey);
-        static::assertSame(-7, $key->algorithm);
+        static::assertSame("\xa5\x01\x02", $key->publicKey);
     }
 
     #[Test]
     public function emptyPublicKeyIsRejected(): void
     {
         $this->expectException(InvalidDataException::class);
-        $this->expectExceptionMessage('The publicKey must not be empty.');
+        $this->expectExceptionMessage('The browser-bound public key must not be empty.');
 
-        new BrowserBoundPublicKey('', -7);
+        new BrowserBoundPublicKey('');
     }
 }

@@ -269,21 +269,25 @@ abstract class AbstractWebauthnOptionsBuilder
     }
 
     /**
+     * Extensions sent by the client, merged into the extensions set by the server: the client may add extensions the
+     * server did not set, never remove nor replace one of them, see
+     * {@see ClientOverridePolicy::getEffectiveExtensions()}. `null` when the policy does not let the client override
+     * the extensions or when it sent none, so that the caller keeps its own extensions.
+     *
      * @param array<string, mixed>|null $clientExtensions
      */
     final protected function mergeExtensions(
         ?array $clientExtensions,
         ClientOverridePolicy $policy,
+        ?AuthenticationExtensions $serverExtensions,
     ): ?AuthenticationExtensions {
         if (! $policy->canOverride('extensions') || ! is_array($clientExtensions)) {
             return null;
         }
 
-        $extensions = [];
-        foreach ($clientExtensions as $name => $data) {
-            $extensions[] = AuthenticationExtension::create($name, $data);
-        }
-
-        return AuthenticationExtensions::create($extensions);
+        return $policy->getEffectiveExtensions(
+            $clientExtensions,
+            $serverExtensions ?? AuthenticationExtensions::create()
+        );
     }
 }

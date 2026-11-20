@@ -449,6 +449,57 @@ describe('RegistrationController', () => {
         });
     });
 
+    describe('Secure Payment Confirmation browser-bound signature', () => {
+        beforeEach(() => {
+            if (jest.isMockFunction(SimpleWebAuthnBrowser.bufferToBase64URLString)) {
+                SimpleWebAuthnBrowser.bufferToBase64URLString.mockImplementation(
+                    jest.requireActual('@simplewebauthn/browser').bufferToBase64URLString
+                );
+            }
+        });
+
+        it('sends the browser-bound signature as a base64url string for the server to verify', async () => {
+            const form = getByTestId(container, 'registration-form');
+
+            fetchMock
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ challenge: 'test', rp: {}, user: {} }),
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ verified: true }),
+                });
+
+            SimpleWebAuthnBrowser.startRegistration.mockResolvedValue({
+                id: 'credential-id',
+                rawId: 'credential-raw-id',
+                response: { clientDataJSON: 'data', attestationObject: 'attestation' },
+                type: 'public-key',
+                clientExtensionResults: {
+                    payment: {
+                        browserBoundSignature: { signature: new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f]).buffer },
+                    },
+                },
+            });
+
+            const connectionPromise = waitForConnection(form);
+            application = startStimulus();
+            await connectionPromise;
+
+            submitForm(form);
+
+            await waitFor(() => {
+                expect(fetchMock).toHaveBeenCalledTimes(2);
+            });
+
+            const [, request] = fetchMock.mock.calls[1];
+            expect(JSON.parse(request.body).clientExtensionResults).toEqual({
+                payment: { browserBoundSignature: { signature: 'aGVsbG8' } },
+            });
+        });
+    });
+
     describe('Error handling', () => {
         it('dispatches unsupported event when browser does not support WebAuthn', async () => {
             SimpleWebAuthnBrowser.browserSupportsWebAuthn.mockReturnValue(false);
