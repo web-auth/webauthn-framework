@@ -37,6 +37,7 @@ use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\Util\CoseAlgorithmIdentifier;
 
 /**
  * The authenticator picks the "alg" of a TPM attestation statement, and some TPMs still sign with RS1
@@ -103,6 +104,10 @@ final class TPMAttestationStatementSupport implements AttestationStatementSuppor
                 sprintf('The attestation statement value "%s" is missing.', $key)
             );
         }
+        CoseAlgorithmIdentifier::isValid($attStmt['alg']) || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'The attestation statement value "alg" must be an integer.'
+        );
         $attStmt['ver'] === '2.0' || throw AttestationStatementLoadingException::create(
             $attestation,
             'Invalid attestation object'
