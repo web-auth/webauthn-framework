@@ -35,6 +35,7 @@ use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
 use Webauthn\TrustPath\EmptyTrustPath;
+use Webauthn\Util\CoseAlgorithmIdentifier;
 use Webauthn\Util\CoseSignatureFixer;
 
 final class PackedAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
@@ -81,6 +82,10 @@ final class PackedAttestationStatementSupport implements AttestationStatementSup
         array_key_exists('alg', $attStmt) || throw AttestationStatementLoadingException::create(
             $attestation,
             'The attestation statement value "alg" is missing.'
+        );
+        CoseAlgorithmIdentifier::isValid($attStmt['alg']) || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'The attestation statement value "alg" must be an integer.'
         );
         is_string($attStmt['sig']) || throw AttestationStatementLoadingException::create(
             $attestation,
